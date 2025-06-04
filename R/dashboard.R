@@ -63,7 +63,7 @@ thecolors <<- c(
 #' # To use a custom y-axis label:
 #' # generate_general(survey_data, q1, q5, var_labels, "Custom Y-axis Label")
 #'
-#' @dependancies dplyr, tidyr, highcharter, forcats
+#' Dependencies: dplyr, tidyr, highcharter, forcats
 #'               (Note: `std.error` function needs to be defined in the environment)
 generate_general <- function(data, var1, var2, thevarlabs, thelabel = "<- 1: never     -     7: very often ->") {
 
@@ -185,7 +185,7 @@ generate_general <- function(data, var1, var2, thevarlabs, thelabel = "<- 1: nev
 #' # `theorder` should exist from a previous call to `generate_general`.
 #' # by_age(survey_data, q1, q5, var_labels)
 #'
-#' @dependancies dplyr, tidyr, highcharter, forcats
+#' Dependencies: dplyr, tidyr, highcharter, forcats
 #'               (Note: `std.error` function needs to be defined;
 #'               `theorder` global variable should exist)
 by_age <- function(data, var1, var2, thevarlabs, thelabel = "<- 1: never     -     7: very often ->") {
@@ -340,7 +340,7 @@ by_age <- function(data, var1, var2, thevarlabs, thelabel = "<- 1: never     -  
 #' # and 'var_labels' for 'q1'-'q5'. `theorder` should exist.
 #' # by_gender(survey_data, q1, q5, var_labels)
 #'
-#' @dependancies dplyr, tidyr, highcharter, forcats, sjmisc
+#' Dependencies: dplyr, tidyr, highcharter, forcats, sjmisc
 #'               (Note: `std.error` function defined elsewhere; `theorder` global variable)
 by_gender <- function(data, var1, var2, thevarlabs, thelabel = "<- 1: never     -     7: very often ->") {
 
@@ -488,7 +488,7 @@ by_gender <- function(data, var1, var2, thevarlabs, thelabel = "<- 1: never     
 #' # and 'var_labels' for 'q1'-'q5'. `theorder` should exist.
 #' # by_edu(survey_data, q1, q5, var_labels)
 #'
-#' @dependancies dplyr, tidyr, highcharter, forcats, sjmisc
+#' Dependencies: dplyr, tidyr, highcharter, forcats, sjmisc
 #'               (Note: `std.error` function defined elsewhere; `theorder` global variable)
 by_edu <- function(data, var1, var2, thevarlabs, thelabel = "<- 1: never     -     7: very often ->") {
 
@@ -649,7 +649,7 @@ by_edu <- function(data, var1, var2, thevarlabs, thelabel = "<- 1: never     -  
 #' # and 'var_labels' for 'q1'-'q5'. `theorder` should exist.
 #' # by_pol(survey_data, q1, q5, var_labels)
 #'
-#' @dependancies dplyr, tidyr, highcharter, forcats, sjmisc
+#' Dependencies: dplyr, tidyr, highcharter, forcats, sjmisc
 #'               (Note: `std.error` function defined elsewhere; `theorder` global variable)
 by_pol <- function(data, var1, var2, thevarlabs, thelabel = "<- 1: never     -     7: very often ->") {
 
@@ -784,7 +784,7 @@ by_pol <- function(data, var1, var2, thevarlabs, thelabel = "<- 1: never     -  
 #' @examples
 #' # generate_general2(survey_data, q1, q2, q3, c("Label Q1", "Label Q2", "Label Q3"))
 #'
-#' @dependancies dplyr, tidyr, highcharter, forcats
+#' Dependencies: dplyr, tidyr, highcharter, forcats
 #'               (Note: `std.error` function defined elsewhere)
 generate_general2 <- function(data, var1, var2, var3, thevarlabs, thelabel = "<- 1: never     -     7: very often ->") {
 
@@ -891,7 +891,7 @@ generate_general2 <- function(data, var1, var2, var3, thevarlabs, thelabel = "<-
 #' # `theorder` should exist.
 #' # by_age2(survey_data, q1, q2, q3, c("LQ1", "LQ2", "LQ3"))
 #'
-#' @dependancies dplyr, tidyr, highcharter, forcats
+#' Dependencies: dplyr, tidyr, highcharter, forcats
 #'               (Note: `std.error` function defined elsewhere; `theorder` global variable)
 by_age2 <- function(data, var1, var2, var3, thevarlabs, thelabel = "<- 1: never     -     7: very often ->") {
 
@@ -1023,7 +1023,7 @@ by_age2 <- function(data, var1, var2, var3, thevarlabs, thelabel = "<- 1: never 
 #' # `theorder` should exist.
 #' # by_gender2(survey_data, q1, q2, q3, c("LQ1", "LQ2", "LQ3"))
 #'
-#' @dependancies dplyr, tidyr, highcharter, forcats, sjmisc
+#' Dependencies: dplyr, tidyr, highcharter, forcats, sjmisc
 #'               (Note: `std.error` defined elsewhere; `theorder` global variable)
 by_gender2 <- function(data, var1, var2, var3, thevarlabs, thelabel = "<- 1: never     -     7: very often ->") {
 
@@ -1162,7 +1162,7 @@ by_gender2 <- function(data, var1, var2, var3, thevarlabs, thelabel = "<- 1: nev
 #' # `theorder` should exist.
 #' # by_edu2(survey_data, q1, q2, q3, c("LQ1", "LQ2", "LQ3"))
 #'
-#' @dependancies dplyr, tidyr, highcharter, forcats, sjmisc
+#' Dependencies: dplyr, tidyr, highcharter, forcats, sjmisc
 #'               (Note: `std.error` defined elsewhere; `theorder` global variable)
 by_edu2 <- function(data, var1, var2, var3, thevarlabs, thelabel = "<- 1: never     -     7: very often ->") {
 
@@ -1317,7 +1317,7 @@ by_edu2 <- function(data, var1, var2, var3, thevarlabs, thelabel = "<- 1: never 
 #' # `theorder` should exist.
 #' # by_pol2(survey_data, q1, q2, q3, c("LQ1", "LQ2", "LQ3"))
 #'
-#' @dependancies dplyr, tidyr, highcharter, forcats, sjmisc
+#' Dependencies: dplyr, tidyr, highcharter, forcats, sjmisc
 #'               (Note: `std.error` defined elsewhere; `theorder` global variable)
 by_pol2 <- function(data, var1, var2, var3, thevarlabs, thelabel = "<- 1: never     -     7: very often ->") {
 
@@ -1444,7 +1444,7 @@ by_pol2 <- function(data, var1, var2, var3, thevarlabs, thelabel = "<- 1: never 
 #' # Handling a NULL plot:
 #' # plot_to_html(NULL)
 #'
-#' @dependancies htmltools, shiny (tags$div)
+#' Dependencies: htmltools, shiny (tags$div)
 plot_to_html <- function(plot) {
   # Check if the plot object is NULL.
   if (is.null(plot)) {
@@ -1504,7 +1504,7 @@ plot_to_html <- function(plot) {
 #' # my_plots <- list(plot1, plot2, plot3)
 #' # generate_quarto_elements(my_plots) # Will print Quarto content for each plot
 #'
-#' @dependancies purrr, htmltools (via plot_to_html), shiny (via plot_to_html)
+#' Dependencies: purrr, htmltools (via plot_to_html), shiny (via plot_to_html)
 #'               (Note: Uses global assignment `<<-` for `num_plots`, `num_pages`, and `page`)
 generate_quarto_elements <- function(list_of_plots, plots_per_page = 2) {
 
@@ -1643,7 +1643,7 @@ generate_quarto_elements <- function(list_of_plots, plots_per_page = 2) {
 #' #             grpvar = "age_category",
 #' #             groups = TRUE)
 #'
-#' @dependancies dplyr, tidyr, highcharter, forcats, purrr, sjmisc (implicitly if grpvar needs to_label)
+#' Dependencies: dplyr, tidyr, highcharter, forcats, purrr, sjmisc (implicitly if grpvar needs to_label)
 #'               (Note: Assumes `data`, `colors`, `myMenuItems` are globally available.
 #'               Uses global assignment `<<-` for `theorder` and within `generate_quarto_elements`.
 #'               The `std.error` function is not directly used here but might be part of the environment.)
@@ -1875,6 +1875,272 @@ viz_general <- function(vars, var_labels, categories_dat, grpvar = NULL, groups 
   }
 
 
+}
+
+
+viz_wave_change <- function(vars, var_labels, categories_dat, wavevar,
+                            range1 = 1:2, range2 = 3, range3 = 4:5,
+                            weight_var = NULL) {
+
+  # Prepare data
+  fin <- data %>%
+    select(all_of(vars), wave = !!sym(wavevar), weight = !!sym(weight_var)) %>%
+    drop_na() %>%
+    set_names(c(var_labels, "wave", "weight"))
+
+  media_wave <- fin %>%
+    pivot_longer(cols = all_of(var_labels), names_to = "key", values_to = "value") %>%
+    mutate(
+      value = case_when(
+        value %in% range1 ~ categories_dat[3],
+        value %in% range2 ~ categories_dat[2],
+        value %in% range3 ~ categories_dat[1],
+        TRUE ~ NA_character_
+      ),
+      value = fct_relevel(value, categories_dat)
+    ) %>%
+    drop_na(value) %>%
+    count(wave, key, value, wt = weight) %>%
+    group_by(wave, key) %>%
+    mutate(perc = n / sum(n) * 100) %>%
+    ungroup()
+
+  # Order variables by category3 in latest wave
+  latest_wave <- max(media_wave$wave)
+  theorder <- media_wave %>%
+    filter(wave == latest_wave, value == categories_dat[3]) %>%
+    arrange(desc(perc)) %>%
+    pull(key) %>%
+    unique()
+
+  # Plot one line chart per variable (key)
+  hcs <- map(theorder, function(varkey) {
+    media_wave %>%
+      filter(key == varkey) %>%
+      hchart("line", hcaes(x = as.character(wave), y = perc, group = value)) %>%
+      hc_title(text = varkey) %>%
+      hc_colors(colors) %>%
+      hc_xAxis(title = list(text = "Wave")) %>%
+      hc_yAxis(title = list(text = "Percentage"), max = max(media_wave$perc)+5) %>%
+      hc_tooltip(
+        shared = TRUE,
+        valueDecimals = 1,
+        valueSuffix = "%"
+      ) %>%
+      hc_plotOptions(
+        line = list(
+          dataLabels = list(
+            enabled = TRUE,
+            format = '{y:.0f}%',
+            style = list(fontSize = '10px')
+          ),
+          marker = list(enabled = TRUE)
+        )
+      ) %>%
+      hc_legend(enabled = TRUE) %>%
+      hc_caption(
+        text = paste0("<em>N = ", nrow(fin), ".</em>"),
+        align = "right",
+        style = list(fontSize = '10px', color = 'lightgrey')
+      ) %>%
+      hc_exporting(enabled = TRUE, buttons = list(contextButton = list(menuItems = myMenuItems)))
+  })
+
+  return(hcs)
+}
+
+
+
+# --------------------------------------------------------------------------
+# Function: viz_wave_change
+# --------------------------------------------------------------------------
+#' @title Visualize Changes Across Waves for Multiple Variables
+#' @description This function generates a series of line charts, one for each specified
+#'              variable, showing how the distribution of responses across three
+#'              predefined categories changes over different waves (e.g., survey waves).
+#'              It supports weighted data.
+#'
+#' @param vars A character vector of variable names from the global `data` object to be analyzed.
+#' @param var_labels A character vector of labels corresponding to the `vars`.
+#'                   These labels will be used as chart titles.
+#' @param categories_dat A character vector of exactly three category labels.
+#'                       The recoded data will be grouped into these three categories.
+#'                       Example: `c("Positive", "Neutral", "Negative")`.
+#' @param wavevar A character string specifying the name of the column in `data`
+#'                that identifies the different waves (e.g., "survey_round").
+#' @param range1 A numeric vector defining the raw values to be recoded into `categories_dat[3]` (the third category).
+#'               Defaults to `1:2`.
+#' @param range2 A numeric vector defining the raw values to be recoded into `categories_dat[2]` (the second category).
+#'               Defaults to `3`.
+#' @param range3 A numeric vector defining the raw values to be recoded into `categories_dat[1]` (the first category).
+#'               Defaults to `4:5`.
+#' @param weight_var An optional character string specifying the name of the column in `data`
+#'                   to be used for weighting. If `NULL` (default), data will not be weighted.
+#'
+#' @details
+#' The function performs the following main steps:
+#' 1.  **Data Preparation**: Selects the specified variables (`vars`), the wave variable (`wavevar`),
+#'     and an optional weight variable (`weight_var`) from the global `data` object.
+#'     It removes rows with missing values in these selected columns and renames them
+#'     using `var_labels` (for variables), "wave", and "weight".
+#' 2.  **Data Transformation**:
+#'     -   Pivots the data from a wide to a long format.
+#'     -   Recodes the values of each variable into three categories based on the `range1`,
+#'         `range2`, and `range3` arguments, assigning them labels from `categories_dat`.
+#'         The mapping is: `range1` -> `categories_dat[3]`, `range2` -> `categories_dat[2]`,
+#'         `range3` -> `categories_dat[1]`.
+#'     -   Converts the recoded categories into an ordered factor based on `categories_dat`.
+#'     -   Counts the (optionally weighted) occurrences of each category for each variable within each wave.
+#'     -   Calculates the percentage of each category within each variable and wave.
+#' 3.  **Variable Ordering**: Determines the plotting order of the variables. Variables are
+#'     ordered based on the descending percentage of the third category (`categories_dat[3]`)
+#'     in the latest available wave.
+#' 4.  **Plotting**: For each variable (in the determined order), it generates a line chart
+#'     using `highcharter`. Each chart displays:
+#'     -   Trends for the three categories over the waves.
+#'     -   A title corresponding to the variable label.
+#'     -   Custom colors (from a globally defined `colors` object).
+#'     -   Configured X and Y axes, tooltips, data labels on lines, legend, and a caption
+#'         showing the total number of observations (`N`) after initial NA removal.
+#'     -   Exporting options (using a globally defined `myMenuItems` object).
+#'
+#' @return A list of `highchart` objects. Each element in the list is a line chart
+#'         for one of the input variables, showing trends across waves.
+#'
+#' @examples
+#' # Assume 'data' is a data frame in the global environment with columns:
+#' # 'q1', 'q2' (numeric, e.g., 1-5 scale)
+#' # 'survey_round' (e.g., 1, 2, 3 indicating waves)
+#' # 'sample_weights' (optional numeric weights)
+#'
+#' # Assume 'colors' and 'myMenuItems' are defined globally for highcharter styling.
+#' # colors <- c("#007bff", "#28a745", "#dc3545")
+#' # myMenuItems <- c("downloadPNG", "downloadJPEG", "downloadSVG")
+#'
+#' # example_vars <- c("q1", "q2")
+#' # example_var_labels <- c("Question 1: Satisfaction", "Question 2: Agreement")
+#' # example_categories <- c("High (4-5)", "Mid (3)", "Low (1-2)")
+#'
+#' # wave_plots <- viz_wave_change(
+#' #   vars = example_vars,
+#' #   var_labels = example_var_labels,
+#' #   categories_dat = example_categories,
+#' #   wavevar = "survey_round",
+#' #   range1 = 1:2, # Maps to example_categories[3] "Low (1-2)"
+#' #   range2 = 3,   # Maps to example_categories[2] "Mid (3)"
+#' #   range3 = 4:5, # Maps to example_categories[1] "High (4-5)"
+#' #   weight_var = "sample_weights"
+#' # )
+#'
+#' # To display the first plot:
+#' # if (length(wave_plots) > 0) {
+#' #   wave_plots[[1]]
+#' # }
+#'
+#' Dependencies: dplyr, tidyr, highcharter, forcats, purrr
+#'               (Assumes `data`, `colors`, and `myMenuItems` are available in the global environment.)
+viz_wave_change <- function(vars, var_labels, categories_dat, wavevar,
+                            range1 = 1:2, range2 = 3, range3 = 4:5,
+                            weight_var = NULL) {
+
+  # Prepare data
+  # Select the specified variables, wave variable, and weight variable (if provided).
+  # Uses `!!sym()` to correctly evaluate string inputs for column names with `dplyr`.
+  fin <- data %>%
+    select(all_of(vars), wave = !!sym(wavevar), weight = !!sym(weight_var)) %>%
+    # Remove rows with NA in any of the selected columns.
+    drop_na() %>%
+    # Rename columns: variables get `var_labels`, wave column becomes "wave", weight column becomes "weight".
+    set_names(c(var_labels, "wave", "weight"))
+
+  # Transform data for plotting: calculate percentages for each category by wave and variable.
+  media_wave <- fin %>%
+    # Pivot data from wide to long format. `var_labels` are now in the 'key' column.
+    pivot_longer(cols = all_of(var_labels), names_to = "key", values_to = "value") %>%
+    # Recode the 'value' column into the three specified categories.
+    mutate(
+      value = case_when(
+        value %in% range1 ~ categories_dat[3], # Values in range1 map to the 3rd category label
+        value %in% range2 ~ categories_dat[2], # Values in range2 map to the 2nd category label
+        value %in% range3 ~ categories_dat[1], # Values in range3 map to the 1st category label
+        TRUE ~ NA_character_ # Assign NA if value doesn't fall into any range
+      ),
+      # Convert the 'value' column (categories) to a factor, ordered according to `categories_dat`.
+      value = fct_relevel(value, categories_dat)
+    ) %>%
+    # Remove rows where 'value' became NA after recoding (i.e., original values not in any range).
+    drop_na(value) %>%
+    # Count observations for each combination of wave, variable (key), and category (value).
+    # Apply weights if `weight_var` was specified (wt = weight).
+    count(wave, key, value, wt = weight) %>%
+    # Group by wave and variable (key) to calculate percentages within these groups.
+    group_by(wave, key) %>%
+    # Calculate percentage for each category.
+    mutate(perc = n / sum(n) * 100) %>%
+    # Ungroup for further operations.
+    ungroup()
+
+  # Determine the order of variables for plotting.
+  # Variables are ordered by the descending percentage of the third category (`categories_dat[3]`)
+  # in the latest wave.
+  latest_wave <- max(media_wave$wave) # Find the latest wave number.
+  theorder <- media_wave %>%
+    # Filter data for the latest wave and the third category.
+    filter(wave == latest_wave, value == categories_dat[3]) %>%
+    # Arrange by percentage in descending order.
+    arrange(desc(perc)) %>%
+    # Pull the unique variable keys (labels) in the determined order.
+    pull(key) %>%
+    unique()
+
+  # Generate one line chart per variable (key) using `purrr::map`.
+  hcs <- map(theorder, function(varkey) { # `varkey` is the current variable label being processed.
+    media_wave %>%
+      # Filter the processed data for the current variable.
+      filter(key == varkey) %>%
+      # Create a line chart with highcharter.
+      # X-axis is wave (converted to character for discrete points), Y-axis is percentage,
+      # lines are grouped by category ('value').
+      hchart("line", hcaes(x = as.character(wave), y = perc, group = value)) %>%
+      # Set the chart title to the current variable label (`varkey`).
+      hc_title(text = varkey) %>%
+      # Apply predefined colors (assumes `colors` is a global vector of color codes).
+      hc_colors(colors) %>%
+      # Configure X-axis.
+      hc_xAxis(title = list(text = "Wave")) %>%
+      # Configure Y-axis, setting max slightly above max percentage for better visualization.
+      hc_yAxis(title = list(text = "Percentage"), max = max(media_wave$perc, na.rm = TRUE) + 5) %>% # Ensure NA values in perc are handled for max
+      # Configure tooltip for shared display, showing percentages with one decimal place.
+      hc_tooltip(
+        shared = TRUE,
+        valueDecimals = 1,
+        valueSuffix = "%"
+      ) %>%
+      # Configure plot options for lines, including data labels and markers.
+      hc_plotOptions(
+        line = list(
+          dataLabels = list(
+            enabled = TRUE, # Enable data labels on lines.
+            format = '{y:.0f}%', # Format as integer percentage.
+            style = list(fontSize = '10px') # Style for data labels.
+          ),
+          marker = list(enabled = TRUE) # Enable markers on data points.
+        )
+      ) %>%
+      # Enable the legend.
+      hc_legend(enabled = TRUE) %>%
+      # Add a caption with the total number of initial valid observations (N from `fin`).
+      hc_caption(
+        text = paste0("<em>N = ", nrow(fin), ".</em>"),
+        align = "right",
+        style = list(fontSize = '10px', color = 'lightgrey')
+      ) %>%
+      # Enable exporting options (assumes `myMenuItems` is a global list for export buttons).
+      hc_exporting(enabled = TRUE, buttons = list(contextButton = list(menuItems = myMenuItems)))
+  })
+
+  # Return the list of generated highchart objects.
+  return(hcs)
 }
 
 # --------------------------------------------------------------------------
