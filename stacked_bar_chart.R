@@ -14,6 +14,7 @@ library(rlang)
 # General function
 create_stackedbar <- function(data,
                               x_var,
+                              y_var = NULL,
                               stack_var,
                               title = NULL,
                               subtitle = NULL,
@@ -30,10 +31,10 @@ create_stackedbar <- function(data,
                               x_breaks = NULL,
                               x_bin_labels = NULL,
                               x_map_values = NULL,
-                              stack_breaks = NULL,       
-                              stack_bin_labels = NULL,   
-                              stack_map_values = NULL) { 
-  
+                              stack_breaks = NULL,
+                              stack_bin_labels = NULL,
+                              stack_map_values = NULL) {
+
   # INPUT VALIDATION
   if (!is.data.frame(data)) {
     stop("Input 'data' must be a data frame.", call. = FALSE)
@@ -44,12 +45,12 @@ create_stackedbar <- function(data,
   if (!stack_var %in% names(data)) {
     stop(paste0("Column '", stack_var, "' not found in data."), call. = FALSE)
   }
-  
+
   stacked_type <- match.arg(stacked_type)
-  
+
   # Create a mutable copy of the data
   plot_data_temp <- tibble::as_tibble(data)
-  
+
   # DATA HANDLING (BASIC)
   # Handle 'haven_labelled' columns
   # This is for SPSS data. TODO ask Fleur what other file types ppl use
@@ -65,8 +66,7 @@ create_stackedbar <- function(data,
       message(paste0("Note: Column '", stack_var, "' was 'haven_labelled' and converted to factor (levels = values)."))
     }
   }
-  
-  
+
   # X VAR VALUE MAPPING
   # We need to map when values are numeric
   if (!is.null(x_map_values)) {
@@ -84,7 +84,7 @@ create_stackedbar <- function(data,
       warning("x_order provided with x_map_values. Ensure x_order refers to the *new* mapped labels.", call. = FALSE)
     }
   }
-  
+
   # STACK VAR VALUE MAPPING
   if (!is.null(stack_map_values)) {
     if (!is.list(stack_map_values) || is.null(names(stack_map_values))) {
@@ -101,8 +101,7 @@ create_stackedbar <- function(data,
       warning("stack_order provided with stack_map_values. Ensure stack_order refers to the *new* mapped labels.", call. = FALSE)
     }
   }
-  
-  
+
   # X_VAR BINNING
   # Binning is useful if you have a lot of entries (like age)
   x_var_for_plot <- x_var # Default to original x_var
@@ -118,7 +117,6 @@ create_stackedbar <- function(data,
       if (!is.null(x_bin_labels) && length(x_bin_labels) != (length(x_breaks) - 1)) {
         stop("The length of 'x_bin_labels' must be one less than the length of 'x_breaks'.", call. = FALSE)
       }
-      
       plot_data_temp <- plot_data_temp |>
         dplyr::mutate(
           .x_var_binned = cut(
@@ -135,7 +133,7 @@ create_stackedbar <- function(data,
       }
     }
   }
-  
+
   # STACK_VAR BINNING
   # Same as x_vars, depends what user wants
   stack_var_for_plot <- stack_var # Default to original stack_var
@@ -151,7 +149,6 @@ create_stackedbar <- function(data,
       if (!is.null(stack_bin_labels) && length(stack_bin_labels) != (length(stack_breaks) - 1)) {
         stop("The length of 'stack_bin_labels' must be one less than the length of 'stack_breaks'.", call. = FALSE)
       }
-      
       plot_data_temp <- plot_data_temp |>
         dplyr::mutate(
           .stack_var_binned = cut(
@@ -168,8 +165,7 @@ create_stackedbar <- function(data,
       }
     }
   }
-  
-  
+
   # DATA AGGREGATION
   # Use x_var_for_plot and stack_var_for_plot after all mutations (mapping, binning)
   plot_data <- plot_data_temp |>
@@ -185,46 +181,50 @@ create_stackedbar <- function(data,
         as.factor(!!rlang::sym(stack_var_for_plot))
       }
     )
-  
+
   # Apply custom ordering for stack_var
   if (!is.null(stack_order)) {
     actual_stack_levels <- levels(plot_data$.stack_var_col)
     filtered_stack_order <- stack_order[stack_order %in% actual_stack_levels]
     remaining_levels <- setdiff(actual_stack_levels, filtered_stack_order)
     final_stack_order <- c(filtered_stack_order, remaining_levels)
-    
+
     plot_data <- plot_data |>
       dplyr::mutate(
         .stack_var_col = factor(.stack_var_col, levels = final_stack_order, ordered = is.ordered(.stack_var_col))
       )
   }
-  
+
   # Apply custom ordering for x_var
   if (!is.null(x_order)) {
     actual_x_levels <- levels(plot_data$.x_var_col)
     filtered_x_order <- x_order[x_order %in% actual_x_levels]
     remaining_x_levels <- setdiff(actual_x_levels, filtered_x_order)
     final_x_order <- c(filtered_x_order, remaining_x_levels)
-    
+
     plot_data <- plot_data |>
       dplyr::mutate(
         .x_var_col = factor(.x_var_col, levels = final_x_order, ordered = is.ordered(.x_var_col))
       )
   }
-  
-  # Perform the aggregation
-  plot_data <- plot_data |>
-    dplyr::count(.x_var_col, .stack_var_col, name = "n") |>
-    dplyr::ungroup()
-  
-  
+
+  if (is.null(y_var)) {
+    # Perform the aggregation
+    plot_data <- plot_data |>
+      dplyr::count(.x_var_col, .stack_var_col, name = "n") |>
+      dplyr::ungroup()
+  } else {
+    plot_data <- plot_data |>
+      dplyr::rename(n := !!rlang::sym(y_var))
+  }
+
   # HIGHCHARTER
   hchart_obj <- highcharter::hchart(
     object = plot_data,
     type = "column",
     highcharter::hcaes(x = .x_var_col, y = n, group = .stack_var_col)
   )
-  
+
   # titles and subtitles
   if (!is.null(title)) {
     hchart_obj <- highcharter::hc_title(hchart_obj, text = title)
@@ -232,7 +232,7 @@ create_stackedbar <- function(data,
   if (!is.null(subtitle)) {
     hchart_obj <- highcharter::hc_subtitle(hchart_obj, text = subtitle)
   }
-  
+
   # Axes labels
   # X-axis Title Logic:
   final_x_label <- x_label
@@ -243,7 +243,7 @@ create_stackedbar <- function(data,
       final_x_label <- x_var
     }
   }
-  
+
   # Y-axis Title Logic:
   final_y_label <- y_label
   if (is.null(final_y_label)) {
@@ -253,15 +253,15 @@ create_stackedbar <- function(data,
       final_y_label <- "Number of Respondents"
     }
   }
-  
+
   # Apply axis titles
   hchart_obj <- highcharter::hc_xAxis(hchart_obj, title = list(text = final_x_label))
   hchart_obj <- highcharter::hc_yAxis(hchart_obj, title = list(text = final_y_label))
-  
+
   # Stacking and data labels
   data_label_format <- if (stacked_type == "percent") '{point.percentage:.1f}%' else '{point.y}'
   stacking_type_hc <- if (stacked_type == "percent") "percent" else "normal"
-  
+
   hchart_obj <- highcharter::hc_plotOptions(
     hchart_obj,
     column = list(
@@ -273,7 +273,7 @@ create_stackedbar <- function(data,
       )
     )
   )
-  
+
   # Legend
   # Stack label logic for legend:
   final_stack_label <- stack_label
@@ -285,7 +285,7 @@ create_stackedbar <- function(data,
     }
   }
   hchart_obj <- highcharter::hc_legend(hchart_obj, title = list(text = final_stack_label))
-  
+
   # Tooltips
   # defines the content and formatting of the interactive pop-up box that
   # appears when a user hovers their mouse over a data point
@@ -312,12 +312,12 @@ create_stackedbar <- function(data,
       )
     )
   )
-  
-  # colors and custom color palette 
+
+  # colors and custom color palette
   if (!is.null(color_palette)) {
     hchart_obj <- highcharter::hc_colors(hchart_obj, colors = color_palette)
   }
-  
+
   return(hchart_obj)
 }
 
