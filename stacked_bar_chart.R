@@ -4,12 +4,167 @@ library(tidyverse)
 library(timetk)
 library(dplyr)
 library(rlang)
+library(roxygen2)
 
 # Helper function (from rlang or magrittr)
 `%||%` <- function(x, y) {
   if (is.null(x)) y else y
 }
 
+# --------------------------------------------------------------------------
+# Function: create_stackedbar
+# --------------------------------------------------------------------------
+#' @title Create a Stacked Bar Chart
+#'
+#' @description This function creates a stacked barchart for survey data. It
+#'              handles raw (unaggregated) data, counting the occurrences of
+#'              categories, supporting ordered factors, allowing numerical x-axis
+#'              and stacked variables to be binned into custom groups, and
+#'              enables renaming of categorical values for display. It can also
+#'              handle SPSS (.sav) columns automatically.
+#'
+#'#' @details This function performs the following steps
+#' \enumerate{
+#'   \item **Input Validation:** Checks if the provided `data` is a data frame and if `x_var` and `stack_var` columns exist.
+#'   \item **Data Copy:** Creates a mutable copy of the input `data` to perform transformations without affecting the original.
+#'   \item **Handle 'haven_labelled' Columns:** If `haven` package is available, it detects if `x_var` or `stack_var` are of class `haven_labelled` (common for data imported from SPSS/Stata/SAS). If so, it converts them to standard R factors, using their underlying numeric values as levels (e.g., a '1' that was labeled "Male" will become a factor level "1"). This ensures `recode` can operate correctly.
+#'   \item **Apply Value Mapping (`x_map_values`, `stack_map_values`):** If provided, `x_map_values` and `stack_map_values` (named lists, e.g., `list("1"="Male")`) are used to rename the values in `x_var` and `stack_var` respectively. This is useful for converting numeric codes or abbreviations into descriptive labels. If the column is a factor, it's temporarily converted to character to ensure `dplyr::recode` works reliably on the values.
+#'   \item **Handle Binning (`x_breaks`, `x_bin_labels`, `stack_breaks`, `stack_bin_labels`):**
+#'     \itemize{
+#'       \item If `x_var` (or `stack_var`) is numeric and corresponding `_breaks` are provided, the function uses `base::cut()` to discretize the numeric variable into bins.
+#'       \item `_bin_labels` can be supplied to give custom names to these bins (e.g., "18-24" instead of "(17,25]"). If not provided, `cut()` generates default labels.
+#'       \item A temporary column (e.g., `.x_var_binned`) is created to hold the binned values, and this temporary column is then used for plotting.
+#'     }
+#'   \item **Data Aggregation and Final Factor Handling:**
+#'     \itemize{
+#'       \item The data is transformed using `dplyr::mutate` to ensure `x_var` and `stack_var` (or their binned versions) are treated as factors. If `include_na = TRUE`, missing values are converted into an explicit "(NA)" factor level.
+#'       \item `dplyr::count()` is then used to aggregate the data, counting occurrences for each unique combination of `x_var` and `stack_var`. This creates the `n` column required for `highcharter`.
+#'     }
+#'   \item **Apply Custom Ordering (`x_order`, `stack_order`):** If provided, `x_order` and `stack_order` are used to set the display order of the factor levels for the X-axis and stack categories, respectively. This is essential for ordinal scales (e.g., Likert scales) or custom desired sorting. Levels not found in the order vector are appended at the end.
+#'   \item **Highcharter Chart Generation:** The aggregated `plot_data` is passed to `highcharter::hchart()` to create the base stacked column chart.
+#'   \item **Chart Customization:** Titles, subtitles, axis labels, stacking type (normal vs. percent), data labels, legend titles, tooltips, and custom color palettes are applied based on the function's arguments.
+#'   \item **Return Value:** The function returns a `highcharter` plot object, which can be printed directly to display the interactive chart.
+#' }
+#'
+#'
+#' @param data A data frame containing the raw survey data (e.g., one row per respondent).
+#' @param x_var The name of the column to be plotted on the X-axis (as a string).
+#'              This typically represents a demographic variable or a question.
+#' @param stack_var The name of the column whose unique values will define the
+#'                stacks within each bar (as a string). This is often a
+#'                Likert scale, an agreement level, or another categorical response.
+#' @param title Optional. The main title of the chart (as a string).
+#' @param subtitle Optional. A subtitle for the chart (as a string).
+#' @param x_label Optional. The label for the X-axis (as a string). Defaults
+#'                to `x_var` or `x_var (Binned)`.
+#' @param y_label Optional. The label for the Y-axis (as a string). Defaults
+#'                to "Number of Respondents" or "Percentage of Respondents".
+#' @param stack_label Optional. The title for the stack legend (as a string).
+#'                   Defaults to `stack_var` or `stack_var (Binned)`.
+#' @param stacked_type Optional. The type of stacking. Can be "normal" (counts)
+#'                   or "percent" (100% stacked). Defaults to "normal".
+#' @param tooltip_prefix Optional. A string to prepend to values in tooltips.
+#' @param tooltip_suffix Optional. A string to append to values in tooltips.
+#' @param color_palette Optional. A character vector of colors to use for the
+#'                    stacks. If NULL, highcharter's default palette is used.
+#'                    Consider ordering colors to match `stack_order`.
+#' @param stack_order Optional. A character vector specifying the desired order
+#'                    of the `stack_var` levels. This is crucial for ordinal
+#'                    scales (e.g., Likert 1-7). If NULL, default factor order
+#'                    or alphabetical will be used. Levels not found in data
+#'                    will be ignored.
+#' @param x_order Optional. A character vector specifying the desired order
+#'                    of the `x_var` levels. If NULL, default factor order
+#'                    or alphabetical will be used.
+#' @param include_na Logical. If TRUE, explicit "(NA)" categories will be shown
+#'                   in counts for `x_var` and `stack_var`. If FALSE (default),
+#'                   rows with NA in `x_var` or `stack_var` are dropped.
+#' @param x_breaks Optional. A numeric vector of cut points for `x_var` if
+#'                 it is a continuous variable and you want to bin it.
+#'                 e.g., `c(16, 24, 33, 42, 51, 60, Inf)`.
+#' @param x_bin_labels Optional. A character vector of labels for the bins
+#'                     created by `x_breaks`. Must be one less than the number
+#'                     of breaks (or same if Inf is last break).
+#' @param x_map_values Optional. A named list (e.g., `list("1" = "Female", "2" = "Male")`)
+#'                     to rename values within `x_var` for display. Original values
+#'                     should be names, new labels should be values.
+#' @param stack_breaks Optional. A numeric vector of cut points for `stack_var` if
+#'                     it is a continuous variable and you want to bin it.
+#' @param stack_bin_labels Optional. A character vector of labels for the bins
+#'                         created by `stack_breaks`. Must be one less than the number
+#'                         of breaks (or same if Inf is last break).
+#' @param stack_map_values Optional. A named list (e.g., `list("1" = "Strongly Disagree", "7" = "Strongly Agree")`)
+#'                         to rename values within `stack_var` for display.
+#'
+#' @return An interactive `highcharter` bar chart plot object.
+#' 
+#' #' @examples
+#' # Ensure necessary packages are installed and loaded for examples
+#' # install.packages(c("highcharter", "dplyr", "rlang", "tibble", "haven"))
+#' library(highcharter)
+#' library(dplyr)
+#' library(rlang)
+#' library(tibble) # For tibble::tibble() and tibble::as_tibble()
+#' # library(haven) # Only needed if your real data is 'haven_labelled' type
+#'
+#' # Using the provided dummy data R file
+#' dummy1 <- create_stackedbar(
+#' data = survey_data,
+#' x_var = "satisfaction_likert",           
+#' stack_var = "socioeconomic_status", 
+#' title = "Satisfaction by socioeconomic status",
+#' subtitle = "", 
+#' x_label = "Satisfaction with treatment", 
+#' y_label = "Total responses",   
+#' stack_label = "SE status",
+#' stacked_type = "normal",
+#' include_na = TRUE
+#' )
+#' print(dummy1)
+#'
+#' # Example 2: Using more complex data + binning
+#' # Goal: Show the proportional distribution of familiarity with chatbots across different age groups.
+#' # We are going to bin the stacked variable (age)
+#' Note: we need to define mappings and orders in the environment
+#' familiarity_mapping <- list(
+#'  "1" = "Not at all familiar with", "2" = "unfamiliar", "3" = "Slightly unfamiliar",
+#'  "4" = "Neutral", "5" = "Slightly familiar", "6" = "Familiar", "7" = "Very familiar with"
+#'  )
+#' familiarity_order <- c(
+#'  "Not at all familiar with", "unfamiliar", "Slightly unfamiliar",
+#'  "Neutral", "Slightly familiar", "Familiar", "Very familiar with"
+#'  )
+
+#' # Define breaks, bin labels, and order for the stack_var
+#' age_numeric_breaks <- c(-Inf, 25, 35, 45, 55, 65, Inf) # Define your income ranges
+#' age_bins <- c("Under 25", "25 to 34", "35 to 44", "45 to 54", "55 to 64", "65+") # Custom labels for these ranges
+#' age_order <- age_bins # Order should follow the labels
+
+
+#' # Call the function
+#' algosoc_kai5 <- create_stackedbar(
+#'  data = algosoc,
+#'  x_var = "KAI5", # X-axis will be familiarity with chatbots
+#'  stack_var = "leeftijd",   # Age to be stacked and binned
+#'  title = "Familiarity with chatbots",
+#'  subtitle = "Age is binned into categories and stacked",
+#'  x_label = "Familiarity",
+#'  y_label = "Number of Respondents",
+#'  stack_label = "Age",
+#'  stacked_type = "normal",
+#'  # Arguments for the X-axis (familiarity with chatbots)
+#'  x_map_values = familiarity_mapping,
+#'  x_order = familiarity_order,
+#'  # Arguments for the stacked variable (age)
+#'  stack_breaks = age_numeric_breaks,         # Provide the numeric cut points for stack_var
+#'  stack_bin_labels = age_bins, # Provide custom labels for the stack_var bins
+#'  stack_order = age_order           # Order the stacks by these custom labels
+#'  )
+
+#' # Display the plot
+#' algosoc_kai5
+
+########################################################################
 
 # General function
 create_stackedbar <- function(data,
