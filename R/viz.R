@@ -1,6 +1,7 @@
 # --------------------------------------------------------------------------
 # Function: create_stackedbar
 # --------------------------------------------------------------------------
+#' @export
 #' @title Create a Stacked Bar Chart
 #'
 #' @description This function creates a stacked barchart for survey data. It

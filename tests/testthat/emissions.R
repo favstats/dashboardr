@@ -1,5 +1,6 @@
 
 ### FABIO: putting this here because there is no testing logic yet
+### actually seems more like a dev script to me, would move?
 donotrun <- F
 
 if(donotrun){
