@@ -85,15 +85,9 @@
 #'
 #' @return An interactive `highcharter` bar chart plot object.
 #'
-#' #' @examples
-#' # Ensure necessary packages are installed and loaded for examples
-#' # install.packages(c("highcharter", "dplyr", "rlang", "tibble", "haven"))
-#' library(highcharter)
-#' library(dplyr)
-#' library(rlang)
-#' library(tibble) # For tibble::tibble() and tibble::as_tibble()
-#' # library(haven) # Only needed if your real data is 'haven_labelled' type
+#' @examples
 #'
+#' TODO: actually make sure the dummy data is available. I also removed the library loading as it typically is assumed that you have your package (and all its dependencies) loaded in when using it.
 #' # Using the provided dummy data R file
 #' dummy1 <- create_stackedbar(
 #' data = survey_data,

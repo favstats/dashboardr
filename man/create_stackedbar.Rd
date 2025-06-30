@@ -101,62 +101,6 @@ to rename values within \code{stack_var} for display.}
 }
 \value{
 An interactive \code{highcharter} bar chart plot object.
-
-#' @examplesEnsure necessary packages are installed and loaded for examplesinstall.packages(c("highcharter", "dplyr", "rlang", "tibble", "haven"))
-
-library(highcharter)
-library(dplyr)
-library(rlang)
-library(tibble) # For tibble::tibble() and tibble::as_tibble()library(haven) # Only needed if your real data is 'haven_labelled' typeUsing the provided dummy data R file
-
-dummy1 <- create_stackedbar(
-data = survey_data,
-x_var = "satisfaction_likert",
-stack_var = "socioeconomic_status",
-title = "Satisfaction by socioeconomic status",
-subtitle = "",
-x_label = "Satisfaction with treatment",
-y_label = "Total responses",
-stack_label = "SE status",
-stacked_type = "normal",
-include_na = TRUE
-)
-print(dummy1)Example 2: Using more complex data + binningGoal: Show the proportional distribution of familiarity with chatbots across different age groups.We are going to bin the stacked variable (age)
-
-Note: we need to define mappings and orders in the environment
-familiarity_mapping <- list(
-"1" = "Not at all familiar with", "2" = "unfamiliar", "3" = "Slightly unfamiliar",
-"4" = "Neutral", "5" = "Slightly familiar", "6" = "Familiar", "7" = "Very familiar with"
-)
-familiarity_order <- c(
-"Not at all familiar with", "unfamiliar", "Slightly unfamiliar",
-"Neutral", "Slightly familiar", "Familiar", "Very familiar with"
-)Define breaks, bin labels, and order for the stack_var
-
-age_numeric_breaks <- c(-Inf, 25, 35, 45, 55, 65, Inf) # Define your income ranges
-age_bins <- c("Under 25", "25 to 34", "35 to 44", "45 to 54", "55 to 64", "65+") # Custom labels for these ranges
-age_order <- age_bins # Order should follow the labelsCall the function
-
-algosoc_kai5 <- create_stackedbar(
-data = algosoc,
-x_var = "KAI5", # X-axis will be familiarity with chatbots
-stack_var = "leeftijd",   # Age to be stacked and binned
-title = "Familiarity with chatbots",
-subtitle = "Age is binned into categories and stacked",
-x_label = "Familiarity",
-y_label = "Number of Respondents",
-stack_label = "Age",
-stacked_type = "normal",Arguments for the X-axis (familiarity with chatbots)
-
-x_map_values = familiarity_mapping,
-x_order = familiarity_order,Arguments for the stacked variable (age)
-
-stack_breaks = age_numeric_breaks,         # Provide the numeric cut points for stack_var
-stack_bin_labels = age_bins, # Provide custom labels for the stack_var bins
-stack_order = age_order           # Order the stacks by these custom labels
-)Display the plot
-
-algosoc_kai5
 }
 \description{
 This function creates a stacked barchart for survey data. It
@@ -188,4 +132,60 @@ handle SPSS (.sav) columns automatically.
 \item \strong{Chart Customization:} Titles, subtitles, axis labels, stacking type (normal vs. percent), data labels, legend titles, tooltips, and custom color palettes are applied based on the function's arguments.
 \item \strong{Return Value:} The function returns a \code{highcharter} plot object, which can be printed directly to display the interactive chart.
 }
+}
+\examples{
+
+TODO: actually make sure the dummy data is available. I also removed the library loading as it typically is assumed that you have your package (and all its dependencies) loaded in when using it.
+# Using the provided dummy data R file
+dummy1 <- create_stackedbar(
+data = survey_data,
+x_var = "satisfaction_likert",
+stack_var = "socioeconomic_status",
+title = "Satisfaction by socioeconomic status",
+subtitle = "",
+x_label = "Satisfaction with treatment",
+y_label = "Total responses",
+stack_label = "SE status",
+stacked_type = "normal",
+include_na = TRUE
+)
+print(dummy1)
+
+# Example 2: Using more complex data + binning
+# Goal: Show the proportional distribution of familiarity with chatbots across different age groups.
+# We are going to bin the stacked variable (age)
+Note: we need to define mappings and orders in the environment
+familiarity_mapping <- list(
+ "1" = "Not at all familiar with", "2" = "unfamiliar", "3" = "Slightly unfamiliar",
+ "4" = "Neutral", "5" = "Slightly familiar", "6" = "Familiar", "7" = "Very familiar with"
+ )
+familiarity_order <- c(
+ "Not at all familiar with", "unfamiliar", "Slightly unfamiliar",
+ "Neutral", "Slightly familiar", "Familiar", "Very familiar with"
+ )
+# Define breaks, bin labels, and order for the stack_var
+age_numeric_breaks <- c(-Inf, 25, 35, 45, 55, 65, Inf) # Define your income ranges
+age_bins <- c("Under 25", "25 to 34", "35 to 44", "45 to 54", "55 to 64", "65+") # Custom labels for these ranges
+age_order <- age_bins # Order should follow the labels
+# Call the function
+algosoc_kai5 <- create_stackedbar(
+ data = algosoc,
+ x_var = "KAI5", # X-axis will be familiarity with chatbots
+ stack_var = "leeftijd",   # Age to be stacked and binned
+ title = "Familiarity with chatbots",
+ subtitle = "Age is binned into categories and stacked",
+ x_label = "Familiarity",
+ y_label = "Number of Respondents",
+ stack_label = "Age",
+ stacked_type = "normal",
+ # Arguments for the X-axis (familiarity with chatbots)
+ x_map_values = familiarity_mapping,
+ x_order = familiarity_order,
+ # Arguments for the stacked variable (age)
+ stack_breaks = age_numeric_breaks,         # Provide the numeric cut points for stack_var
+ stack_bin_labels = age_bins, # Provide custom labels for the stack_var bins
+ stack_order = age_order           # Order the stacks by these custom labels
+ )
+# Display the plot
+algosoc_kai5
 }
