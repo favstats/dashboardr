@@ -1,16 +1,3 @@
-# Load dependencies
-library(highcharter)
-library(tidyverse)
-library(timetk)
-library(dplyr)
-library(rlang)
-library(roxygen2)
-
-# Helper function (from rlang or magrittr)
-`%||%` <- function(x, y) {
-  if (is.null(x)) y else y
-}
-
 # --------------------------------------------------------------------------
 # Function: create_stackedbar
 # --------------------------------------------------------------------------
@@ -97,7 +84,7 @@ library(roxygen2)
 #'                         to rename values within `stack_var` for display.
 #'
 #' @return An interactive `highcharter` bar chart plot object.
-#' 
+#'
 #' #' @examples
 #' # Ensure necessary packages are installed and loaded for examples
 #' # install.packages(c("highcharter", "dplyr", "rlang", "tibble", "haven"))
@@ -110,12 +97,12 @@ library(roxygen2)
 #' # Using the provided dummy data R file
 #' dummy1 <- create_stackedbar(
 #' data = survey_data,
-#' x_var = "satisfaction_likert",           
-#' stack_var = "socioeconomic_status", 
+#' x_var = "satisfaction_likert",
+#' stack_var = "socioeconomic_status",
 #' title = "Satisfaction by socioeconomic status",
-#' subtitle = "", 
-#' x_label = "Satisfaction with treatment", 
-#' y_label = "Total responses",   
+#' subtitle = "",
+#' x_label = "Satisfaction with treatment",
+#' y_label = "Total responses",
 #' stack_label = "SE status",
 #' stacked_type = "normal",
 #' include_na = TRUE
@@ -475,5 +462,3 @@ create_stackedbar <- function(data,
 
   return(hchart_obj)
 }
-
-

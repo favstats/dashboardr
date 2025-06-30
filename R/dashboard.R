@@ -16,6 +16,8 @@ thecolors <<- c(
   "#B0E0C6"      # Powder blue
 )
 
+
+
 # To view the defined colors, you would uncomment the line below:
 # thecolors
 
