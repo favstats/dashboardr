@@ -1,9 +1,16 @@
 # Install the package for loading a .sav SPSS file
-install.packages("haven")
-library(haven)
+if(!("pak" %in% as.data.frame(installed.packages())$Package)){
+  install.packages("pak")
+}
+
+pak::pak("haven")
+library(dashboardr)
+
 
 # Load the algosoc data (we're using wave 1)
-algosoc <- read_sav("C:\\Users\\alexa\\Documents\\Dashboardr\\data_files\\L_AlgoSoc_wave1_1.0p.sav")
+# algosoc <- read_sav("C:\\Users\\alexa\\Documents\\Dashboardr\\data_files\\L_AlgoSoc_wave1_1.0p.sav")
+
+algosoc <- haven::read_sav("~/Downloads/L_AlgoSoc_wave1_1.0p.sav")
 
 # View the first few rows
 head(algosoc)
@@ -119,5 +126,4 @@ algosoc_kai5 <- create_stackedbar(
 
 # Display the plot
 algosoc_kai5
-
 
