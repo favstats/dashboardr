@@ -1,0 +1,129 @@
+---
+title: "Getting Started With create_stackedbars()"
+author: "Alexandra Pafford"
+date: "2025-07-08"
+output:
+  rmarkdown::html_vignette:
+    keep_md: true
+vignette:
+  %\VignetteIndexEntry{Stacked Bar Chart Examples}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8"}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 7, # Default figure width
+  fig.height = 5, # Default figure height
+  warning = FALSE, # Suppress warnings from highcharter, haven etc. for cleaner output
+  message = FALSE  # Suppress messages (e.g., haven conversion notes) for cleaner output
+)
+```
+
+## Introduction
+
+This vignette demonstrates how to use the
+`create_stackedbar()` and `create_stackedbar_tabs()` functions to
+produce interactive stacked-bar charts in HTML, using the `iris` data
+set as a stand-in for survey results.
+
+## 1. Prepare the Data
+
+We’ll convert `iris` into a “survey” table by:
+
+- Introducing a few `NA` values  
+- Treating `Species` as a categorical question  
+- Binning `Petal.Length` into categories  
+
+```{r data-prep}
+iris_data <- as_tibble(iris) %>%
+  # Inject some NAs
+  mutate(
+    Species     = if_else(row_number() %% 10 == 0, NA_character_, as.character(Species)),
+    Petal_Length = if_else(row_number() %% 15 == 0, NA_real_, Petal.Length)
+  )
+
+# Define binning for Petal.Length
+petal_breaks <- c(0, 1.5, 3.0, 4.5, 6.0, Inf)
+petal_labels <- c(
+  "Very Short (0-1.5)",
+  "Short (1.5-3.0)",
+  "Medium (3.0-4.5)",
+  "Long (4.5-6.0)",
+  "Very Long (>6.0)"
+)
+
+# Desired display order
+petal_order <- petal_labels
+
+# A simple color palette
+pal <- c("#d7191c", "#fdae61", "#ffffbf", "#abdda4", "#2b83ba", "gray")
+```
+
+## 2. Single Stacked-Bar Chart
+
+Let’s see how `Petal.Length` categories distribute across `Species`.
+
+```{r single-chart, echo=TRUE}
+chart1 <- create_stackedbar(
+  data               = iris_data,
+  x_var              = "Species",
+  stack_var          = "Petal_Length",
+  title              = "Petal Length Distribution by Iris Species",
+  subtitle           = "Including explicit (NA) category",
+  x_label            = "Species",
+  y_label            = "Count",
+  stack_label        = "Petal Length Category",
+  stacked_type       = "normal",
+  include_na         = TRUE,
+  stack_breaks       = petal_breaks,
+  stack_bin_labels   = petal_labels,
+  stack_order        = petal_order,
+  color_palette      = pal
+)
+
+chart1
+```
+
+## 3. Multiple Charts in Tabs
+
+Suppose we have several “survey items” (`Petal.Length`, `Petal.Width`,
+`Sepal.Length`) and want to toggle between their distributions by
+`Species`.
+
+```{r multi-tabs, echo=TRUE}
+stack_items <- c("Petal_Length", "Petal.Width", "Sepal.Length")
+tab_labels  <- c("Petal Length",  "Petal Width",  "Sepal Length")
+
+tabs <- create_stackedbar_tabs(
+  data               = iris_data,
+  x_var              = "Species",
+  stack_vars         = stack_items,
+  stack_var_labels   = tab_labels,
+  common_title       = "Distribution of",
+  subtitle           = "by Iris Species",
+  x_label            = "Species",
+  y_label            = "Percentage",
+  stack_label        = "Category",
+  stacked_type       = "percent",
+  tooltip_suffix     = "%",
+  include_na         = FALSE,
+  # For demonstration we only bin Petal.Length; others use raw values
+  stack_breaks       = petal_breaks,
+  stack_bin_labels   = petal_labels,
+  stack_order        = petal_order,
+  color_palette      = pal
+)
+
+tabs
+```
+
+## Conclusion
+
+The `create_stackedbars` function provides a powerful and flexible tool for visualizing data relationships, particularly useful for survey data. By leveraging its various arguments for mapping, binning, and ordering, you can transform raw, coded, or continuous data into clear, interactive, and professional-looking stacked bar charts with minimal effort. This makes it ideal for generating dashboards, allowing users to quickly grasp key insights from complex datasets.
+
+You are easily able to flip through a battery of survey items to quickly compare responses to a single topic or idea, with the visualization flexibility of a typical stacked bar chart.
+
+Experiment with different combinations of arguments and your own datasets to unlock the full potential of this function!
