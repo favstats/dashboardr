@@ -533,39 +533,20 @@ create_stackedbar <- function(data,
   # defines the content and formatting of the interactive pop-up box that
   # appears when a user hovers their mouse over a data point
   # Pre-process R variables to ensure they are valid JS strings (empty if NULL/empty)
-  js_tooltip_prefix <- if (!is.null(tooltip_prefix) && nchar(tooltip_prefix) > 0) tooltip_prefix else ""
-  js_tooltip_suffix <- if (!is.null(tooltip_suffix) && nchar(tooltip_suffix) > 0) tooltip_suffix else ""
-  js_x_tooltip_suffix <- if (!is.null(x_tooltip_suffix) && nchar(x_tooltip_suffix) > 0) x_tooltip_suffix else ""
+  tooltip_prefix_js <- if(is.null(tooltip_prefix) || tooltip_prefix == "") "" else tooltip_prefix
+  tooltip_suffix_js <- if(is.null(tooltip_suffix) || tooltip_suffix == "") "" else tooltip_suffix
+  x_tooltip_suffix_js <- if(is.null(x_tooltip_suffix) || x_tooltip_suffix == "") "" else x_tooltip_suffix
   
   hchart_obj <- highcharter::hc_tooltip(
     hchart_obj,
     formatter = highcharter::JS(
       paste0(
         "function() {
-          let x_val = this.x; // Get the x-axis category label (e.g., \"5\")
-          let series_name = this.series.name; // Get the stack category label (e.g., \"Male\")
-          let y_val = this.y; // Get the count/value (e.g., 25)
-          let total = this.point.stackTotal; // Get the total for the stack
-          let percentage = (y_val / total * 100).toFixed(1); // Calculate percentage
-
-          // Apply x_tooltip_suffix if provided
-          let formatted_x_display = x_val + '", js_x_tooltip_suffix, "';
-
-          // Apply tooltip_prefix/suffix to the y-value
-          let formatted_y_display = '", js_tooltip_prefix, "' + y_val + '", js_tooltip_suffix, "';
-
-          let tooltip_text = '<b>' + formatted_x_display + '</b><br/>' + // Use formatted x-axis label
-                             series_name + ': ' + formatted_y_display + '<br/>'; // Stack name + formatted Y value
-
-          // Conditional text for total/percentage
-          if ('", stacked_type, "' === 'normal') {
-            tooltip_text += 'Total in category: ' + total;
-          } else if ('", stacked_type, "' === 'percent') {
-            tooltip_text += 'Percentage: ' + percentage + '%';
-          }
-
-          return tooltip_text;
-        }"
+        var value = ", if(stacked_type == "percent") "this.percentage.toFixed(1)" else "this.y", ";
+        return '<b>' + this.x + '", x_tooltip_suffix_js, "</b><br/>' +
+               this.series.name + ': ", tooltip_prefix_js, "' + value + '", tooltip_suffix_js, "<br/>' +
+               'Total: ' + ", if(stacked_type == "percent") "100" else "this.point.stackTotal", ";
+      }"
       )
     )
   )
