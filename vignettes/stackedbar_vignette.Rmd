@@ -1,0 +1,185 @@
+---
+title: "Getting Started With create_stackedbar"
+author: "Alexandra Pafford"
+date: "2025-07-07"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Getting Started with create_stackedbar}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 7, # Default figure width
+  fig.height = 5, # Default figure height
+  warning = FALSE, # Suppress warnings from highcharter, haven etc. for cleaner output
+  message = FALSE  # Suppress messages (e.g., haven conversion notes) for cleaner output
+)
+```
+
+## Introduction
+
+Welcome to this comprehensive guide on using the `create_stackedbar` function. This function is designed to simplify the process of generating interactive stacked bar charts. While optimized for survey data, its flexibility allows it to visualize relationships between categorical and continuous variables in various datasets.
+
+Built on the powerful `highcharter` library, the charts produced are interactive, offering a dynamic way to explore your data.
+
+### About this Guide
+
+For demonstration purposes, this guide will use the built-in `iris` dataset. While `iris` is not survey data, it provides a readily available dataset with both categorical (`Species`) and continuous (e.g., `Sepal.Length`, `Petal.Width`) variables, allowing us to illustrate all the features of `create_stackedbar`.
+
+Let's begin by preparing the `iris` data for our examples. We will first need to re-map the variables, and then create breaks and labels for the output variable. This is so that we can bin the variables later when visualizing them.
+
+```{r prepare_iris}
+# Load the iris dataset
+data(iris)
+
+# Convert Species to a factor if it isn't already (it is by default, but good practice)
+iris_data <- as_tibble(iris) |>
+  mutate(Species = as.factor(Species))
+
+# Define example mappings and orders for demonstration
+# We'll pretend Species is like a 'treatment group' in a survey
+species_map <- list(
+  "setosa" = "Type A (Setosa)",
+  "versicolor" = "Type B (Versicolor)",
+  "virginica" = "Type C (Virginica)"
+)
+species_order <- c("Type A (Setosa)", "Type B (Versicolor)", "Type C (Virginica)")
+
+# Create breaks and labels for binning petal length (our "Likert-style" continuous variable)
+petal_length_breaks <- c(0, 1.5, 3.0, 4.5, 6.0, Inf)
+petal_length_labels <- c("Very Short", "Short", "Medium", "Long", "Very Long")
+petal_length_order <- petal_length_labels # For sorting in the stacks/legend
+
+# Create breaks for binning sepal width (another continuous variable)
+sepal_width_breaks <- c(2.0, 2.8, 3.4, 4.0, Inf)
+sepal_width_labels <- c("Narrow", "Mid-Narrow", "Mid-Wide", "Wide")
+sepal_width_order <- sepal_width_labels
+```
+
+## Basic Stacked Bar Chart: `x_var` and `stack_var` Mapping
+
+Let's start by visualizing how `Species` (our `x_var`) breaks down by `Petal.Length` (our `stack_var`). We'll use `x_map_values` and `stack_map_values` to rename the raw `Species` names and bin `Petal.Length` into descriptive categories.
+
+```{r ex1, fig.height=6}
+plot_ex1 <- create_stackedbar(
+  data = iris_data,
+  x_var = "Species",         # Our original categorical Species column
+  stack_var = "Petal.Length", # Our continuous Petal.Length column
+  title = "Petal Length Distribution Across Iris Species",
+  subtitle = "Species and Petal Length Mapped to Descriptive Categories",
+  x_label = "Iris Species Type",
+  y_label = "Count of Observations",
+  stack_label = "Petal Length Category",
+  stacked_type = "normal", # Display raw counts
+
+  # Map 'Species' names to more descriptive labels on the X-axis
+  x_map_values = species_map,
+  x_order = species_order, # Order the species types on the X-axis
+
+  # Bin 'Petal.Length' for the stacks and provide custom labels
+  stack_breaks = petal_length_breaks,
+  stack_bin_labels = petal_length_labels,
+  stack_order = petal_length_order, # Order the length categories in the stacks
+
+  include_na = FALSE, # 'Iris' data doesn't have NAs, but this shows the option
+  # Provide a custom color palette for petal length categories
+  color_palette = c("orchid", "orchid1", "orchid2", "orchid3", "orchid4") # You can change these colors
+)
+print(plot_ex1)
+```
+
+## Advanced Usage: Binning Both `x_var` and `stack_var` (Percentage Stacked)
+
+This scenario demonstrates the power of binning for both variables. We'll show the proportional distribution of `Sepal.Width` categories (`stack_var`) across `Petal.Width` categories (`x_var`). Both of these are continuous numeric variables that will be binned and labeled. We'll also display percentages within each `Petal.Width` category.
+
+```{r ex2, fig.height=6}
+# Define breaks and labels for binning petal width (our X-axis variable)
+petal_width_breaks <- c(0, 0.8, 1.6, 2.4, Inf)
+petal_width_labels <- c("Very Narrow", "Narrow", "Medium", "Wide")
+petal_width_order <- petal_width_labels
+
+plot_ex2 <- create_stackedbar(
+  data = iris_data,
+  x_var = "Petal.Width",  # Continuous Petal.Width for X-axis
+  stack_var = "Sepal.Width", # Continuous Sepal.Width for stacks
+  title = "Sepal Width Distribution by Petal Width Category",
+  subtitle = "Percentage of observations within each Petal Width category",
+  x_label = "Petal Width Category",
+  y_label = "Percentage of Observations",
+  stack_label = "Sepal Width Category",
+  stacked_type = "percent", # Display percentages (100% stacked bar)
+  tooltip_suffix = "%",     # Add a '%' sign to percentages in tooltips
+
+  # Bin 'Petal.Width' for the X-axis:
+  x_breaks = petal_width_breaks,
+  x_bin_labels = petal_width_labels,
+  x_order = petal_width_order,
+
+  # Bin 'Sepal.Width' for the stacks:
+  stack_breaks = sepal_width_breaks,
+  stack_bin_labels = sepal_width_labels,
+  stack_order = sepal_width_order,
+
+  # Custom colors for sepal width categories
+  color_palette = c("slateblue", "slateblue1", "slateblue2", "slateblue3") # Iris-like colors
+)
+print(plot_ex2)
+```
+
+## Using Pre-Aggregated Data (`y_var`)
+
+Sometimes, your data might already be in a summary format (e.g., from a pre-calculated table) where counts are stored in a specific column. Instead of `create_stackedbar` counting the rows internally, you can tell it to use an existing count column via the `y_var` argument.
+
+Here, we'll manually aggregate `iris` data by `Species` and `Sepal.Length` bins to simulate such an input, then plot it.
+
+```{r ex3, fig.height=6}
+# Manually aggregate iris data to simulate pre-calculated counts
+# We'll bin Sepal.Length during aggregation for this example
+sepal_length_agg_breaks <- c(4.0, 5.0, 6.0, 7.0, Inf)
+sepal_length_agg_labels <- c("Short (4-5cm)", "Medium (5-6cm)", "Long (6-7cm)", "Very Long (>7cm)")
+sepal_length_agg_order <- sepal_length_agg_labels
+
+aggregated_iris_data <- iris_data |>
+  mutate(
+    # Create binned Sepal.Length here directly for aggregation
+    Sepal_Length_Binned = cut(
+      Sepal.Length,
+      breaks = sepal_length_agg_breaks,
+      labels = sepal_length_agg_labels,
+      include.lowest = TRUE, right = FALSE
+    )
+  ) |>
+  # Group by species and the new binned length, then count
+  group_by(Species, Sepal_Length_Binned) |>
+  summarise(n_observations = n(), .groups = "drop") |> # 'n_observations' is our pre-calculated count column
+  # Ensure factors are ordered after aggregation if they weren't before
+  mutate(
+    Species = factor(Species, levels = unlist(species_map[names(species_map) %in% levels(Species)]), ordered = TRUE, exclude = NULL),
+    Sepal_Length_Binned = factor(Sepal_Length_Binned, levels = sepal_length_agg_order, ordered = TRUE, exclude = NULL)
+  )
+
+plot_ex3 <- create_stackedbar(
+  data = aggregated_iris_data, # Use the already aggregated data
+  x_var = "Species",
+  y_var = "n_observations", # IMPORTANT: Specify the column with pre-calculated counts
+  stack_var = "Sepal_Length_Binned",
+  title = "Sepal Length Distribution by Species (From Pre-Aggregated Data)",
+  x_label = "Iris Species Type",
+  y_label = "Total Observations", # Custom Y-axis label
+  stack_label = "Sepal Length Category",
+  stacked_type = "normal"
+  # Note: x_map_values/stack_map_values are not needed here as we mapped/binned them in pre-processing.
+  # Orders are also handled if you factored them correctly in pre-processing.
+)
+print(plot_ex3)
+```
+
+## Conclusion
+
+The `create_stackedbar` function provides a powerful and flexible tool for visualizing data relationships, particularly useful for survey data. By leveraging its various arguments for mapping, binning, and ordering, you can transform raw, coded, or continuous data into clear, interactive, and professional-looking stacked bar charts with minimal effort. This makes it ideal for generating dashboards, allowing users to quickly grasp key insights from complex datasets.
+
+Experiment with different combinations of arguments and your own datasets to unlock the full potential of this function!

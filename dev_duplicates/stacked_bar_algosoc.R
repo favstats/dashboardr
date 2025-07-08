@@ -60,6 +60,7 @@ algosoc_plot1 <- create_stackedbar(
   y_label = "Aantal respondenten",   # Number of respondents
   stack_label = "Geslacht",        # Gender
   stacked_type = "normal",
+  x_tooltip_suffix = " dagen",
   include_na = TRUE, # Always good for survey data if you want to see missingness
   # Apply mapping to the X-axis variable if needed
   x_map_values = pu1_days_mapping,

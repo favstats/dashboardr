@@ -135,14 +135,20 @@ ggplot(survey_data, aes(x = age_group, fill = socioeconomic_status)) +
 # Try the function
 dummy1 <- create_stackedbar(
   data = survey_data,
-  x_var = "satisfaction_likert",           
-  stack_var = "socioeconomic_status", 
+  x_var = "satisfaction_likert",
+  stack_var = "socioeconomic_status",
   title = "Satisfaction by socioeconomic status",
-  subtitle = "", 
-  x_label = "Satisfaction with treatment", 
-  y_label = "Total responses",   
+  subtitle = "",
+  x_label = "Satisfaction with treatment",
+  y_label = "Total responses",
   stack_label = "SE status",
-  stacked_type = "normal",
+  stacked_type = "percent",
   include_na = TRUE
 )
-dummy1
+
+# dummy1 %>%
+#   hc_
+
+dummy1 %>%
+  hc_chart(inverted=T)
+
