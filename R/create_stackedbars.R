@@ -39,9 +39,6 @@
 #’
 #’ @return A `highcharter` stacked bar chart object.
 #’ @export
-#’ @export
-#’ @export
-#’ @export
 create_stackedbars <- function(data,
                                      questions,
                                      question_labels   = NULL,
