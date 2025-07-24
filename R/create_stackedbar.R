@@ -79,9 +79,61 @@ library(roxygen2)
 #'                         to rename values within `stack_var` for display.
 #'
 #' @return An interactive `highcharter` bar chart plot object.
-#' 
+#'
 #' @examples
-#' 
+#' # load in data
+#' data("gss_panel20")
+#'gss_data <- gss_panel20 |>
+#'  select(sex_1a, grass_1a, polviews_1a, educ_1a, happy_1a, #'goodlife_1a, finrela_1a) %>%
+#'  drop_na()
+#'
+#'
+#'## Example Graph with Opinion on Political Views
+#'
+#'# 1. Manually map the 7-point political view scale from the #'codebook
+#'polviews_map <- list(
+#'  "1" = "Extremely Liberal",
+#'  "2" = "Liberal",
+#'  "3" = "Slightly Liberal",
+#'  "4" = "Moderate",
+#'  "5" = "Slightly Conservative",
+#'  "6" = "Conservative",
+#'  "7" = "Extremely Conservative"
+#')
+#'# Define the logical order for the x-axis
+#'polviews_order <- c("Extremely Liberal", "Liberal", "Slightly #'Liberal", "Moderate",
+#'                    "Slightly Conservative", "Conservative", #'"Extremely Conservative")
+#'
+#'# 2. Manually map the 'grass_1a' variable
+#'grass_map <- list(
+#'  "1" = "Should be Legal",
+#'  "2" = "Should Not be Legal"
+#')
+#'# Define the display order and colors for the stacks
+#'grass_order <- c("Should be Legal", "Should Not be Legal")
+#'grass_colors <- c("#1a9641", "#d7191c") # Green for Legal, Red for #'Not Legal
+#'
+#'
+#'## By ideology
+#'create_stackedbar(
+#'  data = gss_data,
+#'  x_var = "polviews_1a",
+#'  stack_var = "grass_1a",
+#'  title = "Opinion on Marijuana Legalization by Political View",
+#'  stacked_type = "percent",
+#'  tooltip_suffix = "%",
+#'
+#'  # Arguments for the X-axis ('polviews_1a')
+#'  x_map_values = polviews_map,
+#'  x_order = polviews_order,
+#'  x_label = "Political View",
+#'
+#'  # Arguments for the Stack variable ('grass_1a')
+#'  stack_map_values = grass_map,
+#'  stack_order = grass_order,
+#'  color_palette = grass_colors,
+#'  stack_label = "Opinion"
+#')
 #' # DATA PREP
 #' # Prepare the preset `iris` data set for demo purposes
 #' # Although `iris` is not survey data, it serves well for illustrating
@@ -226,7 +278,7 @@ library(roxygen2)
 #'   # but `x_order`/`stack_order` can still be used if data is factor but order is not guaranteed.
 #' )
 #' print(plot_ex3)
-#' 
+#'
 #' @details This function performs the following steps:
 #' \enumerate{
 #'   \item **Input Validation:** Checks if the provided `data` is a data frame and if `x_var` and `stack_var` columns exist.
@@ -536,7 +588,7 @@ create_stackedbar <- function(data,
   tooltip_prefix_js <- if(is.null(tooltip_prefix) || tooltip_prefix == "") "" else tooltip_prefix
   tooltip_suffix_js <- if(is.null(tooltip_suffix) || tooltip_suffix == "") "" else tooltip_suffix
   x_tooltip_suffix_js <- if(is.null(x_tooltip_suffix) || x_tooltip_suffix == "") "" else x_tooltip_suffix
-  
+
   hchart_obj <- highcharter::hc_tooltip(
     hchart_obj,
     formatter = highcharter::JS(
