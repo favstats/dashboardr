@@ -3,7 +3,7 @@ library(tidyverse)
 library(dashboardr)
 library(forcats)
 data("gss_panel20")
-# Filter to valid years and simplify for examples
+
 gss_data <- gss_panel20 |>
   select(sex_1a, grass_1a, polviews_1a, educ_1a, happy_1a, goodlife_1a, finrela_1a) %>%
   drop_na()
