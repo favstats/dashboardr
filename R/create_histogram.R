@@ -4,6 +4,7 @@ library(tidyverse)
 library(dplyr)
 library(rlang)
 library(roxygen2)
+library(gssr)
 
 # --------------------------------------------------------------------------
 # Function: create_histogram
@@ -33,6 +34,7 @@ library(roxygen2)
 #' @param bin_labels Optional character vector of labels for the bins.
 #'   Must be length `length(breaks)-1`.
 #' @param include_na Logical. If TRUE, treats NA as explicit "(NA)" bin.
+#' @param na_label Optional string. Custom label for NA values. Defaults to "(Missing)".
 #' @param color Optional string or vector of colors for the bars.
 #' @param x_map_values Optional named list to recode raw `x_var` values
 #'   before binning.
@@ -41,6 +43,107 @@ library(roxygen2)
 #' @param include_na Logical. If TRUE, treats NA as explicit category.
 #'
 #' @return A `highcharter` histogram (column) plot object.
+#'
+#' @examples
+#'
+#' We will work with data from the GSS. The GSS dataset (`gssr`) is a dependency of
+#' our `dashboardr` package.
+#'
+#' # Filter to recent years and select relevant variables
+#' gss_recent <- gss_all %>%
+#'   filter(year >= 2010) %>%
+#'   select(age, degree, happy, sex, race, year)
+#'
+#' # Example 1: Basic histogram of age distribution
+#' plot1 <- create_histogram(
+#'   data = gss_recent,
+#'   x_var = "age",
+#'   title = "Age Distribution in GSS Data (2010+)",
+#'   subtitle = "General Social Survey respondents",
+#'   x_label = "Age (years)",
+#'   y_label = "Number of Respondents",
+#'   bins = 15,
+#'   color = "hotpink"
+#' )
+#' plot1
+#'
+#' # Example 2: Education levels with custom mapping and ordering
+#' # First check the unique values
+#' # unique(gss_recent$degree) # "Lt High School", "High School", "Junior College", "Bachelor", "Graduate"
+#'
+#' education_order <- c("Lt High School", "High School", "Junior College", "Bachelor", "Graduate")
+#'
+#' plot2 <- create_histogram(
+#'   data = gss_recent,
+#'   x_var = "degree",
+#'   title = "Educational Attainment Distribution",
+#'   subtitle = "GSS respondents 2010-present",
+#'   x_label = "Highest Degree Completed",
+#'   y_label = "Count",
+#'   histogram_type = "count",
+#'   x_order = education_order,
+#'   include_na = TRUE,
+#' )
+#' plot2
+#'
+#' # Example 3: Happiness levels as percentages with custom labels
+#' happiness_map <- list(
+#'   "Very Happy" = "Very Happy!",
+#'   "Pretty Happy" = "Pretty Happy",
+#'   "Not Too Happy" = "Not Too Happy :|"
+#' )
+#'
+#' plot3 <- create_histogram(
+#'   data = gss_recent,
+#'   x_var = "happy",
+#'   title = "Self-Reported Happiness Levels",
+#'   subtitle = "Percentage distribution among GSS respondents",
+#'   x_label = "Happiness Level",
+#'   y_label = "Percentage of Respondents",
+#'   histogram_type = "percent",
+#'   x_map_values = happiness_map,
+#'   tooltip_suffix = "%",
+#'   include_na = TRUE,
+#'   na_label = "No Response",
+#' )
+#' plot3
+#'
+#' # Example 4: Age binning with custom breaks and labels
+#' age_breaks <- c(18, 30, 45, 60, 75, Inf)
+#' age_labels <- c("18-29", "30-44", "45-59", "60-74", "75+")
+#'
+#' plot4 <- create_histogram(
+#'   data = gss_recent,
+#'   x_var = "age",
+#'   title = "Age Groups in GSS Sample",
+#'   subtitle = "Custom age categories",
+#'   x_label = "Age Group",
+#'   y_label = "Number of Respondents",
+#'   bin_breaks = age_breaks,
+#'   bin_labels = age_labels,
+#'   tooltip_prefix = "Count: ",
+#'   x_tooltip_suffix = " years old",
+#'   color = "seagreen1"
+#' )
+#' plot4
+#'
+#' # Example 5: Using pre-aggregated data
+#' # Create aggregated data first
+#' race_counts <- gss_recent %>%
+#'   count(race, name = "respondent_count") %>%
+#'   filter(!is.na(race))
+#'
+#' plot5 <- create_histogram(
+#'   data = race_counts,
+#'   x_var = "race",
+#'   y_var = "respondent_count",  # Use pre-computed counts
+#'   title = "Racial Distribution in GSS Sample",
+#'   subtitle = "Based on pre-aggregated data",
+#'   x_label = "Race/Ethnicity",
+#'   y_label = "Number of Respondents",
+#' )
+#' plot5
+#'
 #'
 #' @details
 #' This function performs the following steps:
@@ -96,6 +199,7 @@ create_histogram <- function(data,
                              bin_breaks = NULL,
                              bin_labels = NULL,
                              include_na = FALSE,
+                             na_label = "(Missing)",
                              color = NULL,
                              x_map_values = NULL,
                              x_order = NULL) {
