@@ -5,6 +5,7 @@ library(timetk)
 library(dplyr)
 library(rlang)
 library(roxygen2)
+library(gssr)
 
 # Helper function (from rlang or magrittr)
 `%||%` <- function(x, y) {
@@ -58,9 +59,11 @@ library(roxygen2)
 #' @param x_order Optional. A character vector specifying the desired order
 #'                    of the `x_var` levels. If NULL, default factor order
 #'                    or alphabetical will be used.
-#' @param include_na Logical. If TRUE, explicit "(NA)" categories will be shown
+#' @param include_na Logical. If TRUE, explicit NA categories will be shown
 #'                   in counts for `x_var` and `stack_var`. If FALSE (default),
 #'                   rows with NA in `x_var` or `stack_var` are dropped.
+#' @param na_label_x Optional string. Custom label for NA values in x_var. Defaults to "(Missing)".
+#' @param na_label_stack Optional string. Custom label for NA values in stack_var. Defaults to "(Missing)".
 #' @param x_breaks Optional. A numeric vector of cut points for `x_var` if
 #'                 it is a continuous variable and you want to bin it.
 #'                 e.g., `c(16, 24, 33, 42, 51, 60, Inf)`.
@@ -81,203 +84,138 @@ library(roxygen2)
 #' @return An interactive `highcharter` bar chart plot object.
 #'
 #' @examples
-#' # load in data
-#' data("gss_panel20")
-#'gss_data <- gss_panel20 |>
-#'  select(sex_1a, grass_1a, polviews_1a, educ_1a, happy_1a, #'goodlife_1a, finrela_1a) %>%
-#'  drop_na()
+#' # We will be using data from GSS for these examples.
+#' # Make sure you have the data loaded:
+#' data(gss_all)
 #'
+#' # Filter to recent years and select relevant variables
+#' gss_recent <- gss_all %>%
+#'   filter(year >= 2010) %>%
+#'   select(age, degree, happy, sex, race, year, polviews, attend)
 #'
-#'## Example Graph with Opinion on Political Views
+#' # Example 1: Basic stacked bar - Education by Gender
+#' education_order <- c("Lt High School", "High School", "Junior College", "Bachelor", "Graduate")
 #'
-#'# 1. Manually map the 7-point political view scale from the #'codebook
-#'polviews_map <- list(
-#'  "1" = "Extremely Liberal",
-#'  "2" = "Liberal",
-#'  "3" = "Slightly Liberal",
-#'  "4" = "Moderate",
-#'  "5" = "Slightly Conservative",
-#'  "6" = "Conservative",
-#'  "7" = "Extremely Conservative"
-#')
-#'# Define the logical order for the x-axis
-#'polviews_order <- c("Extremely Liberal", "Liberal", "Slightly #'Liberal", "Moderate",
-#'                    "Slightly Conservative", "Conservative", #'"Extremely Conservative")
-#'
-#'# 2. Manually map the 'grass_1a' variable
-#'grass_map <- list(
-#'  "1" = "Should be Legal",
-#'  "2" = "Should Not be Legal"
-#')
-#'# Define the display order and colors for the stacks
-#'grass_order <- c("Should be Legal", "Should Not be Legal")
-#'grass_colors <- c("#1a9641", "#d7191c") # Green for Legal, Red for #'Not Legal
-#'
-#'
-#'## By ideology
-#'create_stackedbar(
-#'  data = gss_data,
-#'  x_var = "polviews_1a",
-#'  stack_var = "grass_1a",
-#'  title = "Opinion on Marijuana Legalization by Political View",
-#'  stacked_type = "percent",
-#'  tooltip_suffix = "%",
-#'
-#'  # Arguments for the X-axis ('polviews_1a')
-#'  x_map_values = polviews_map,
-#'  x_order = polviews_order,
-#'  x_label = "Political View",
-#'
-#'  # Arguments for the Stack variable ('grass_1a')
-#'  stack_map_values = grass_map,
-#'  stack_order = grass_order,
-#'  color_palette = grass_colors,
-#'  stack_label = "Opinion"
-#')
-#' # DATA PREP
-#' # Prepare the preset `iris` data set for demo purposes
-#' # Although `iris` is not survey data, it serves well for illustrating
-#' # the function's capabilities with categorical and continuous variables.
-#' data(iris)
-#' iris_data <- as_tibble(iris) |>
-#'   # Introduce some NA values to demonstrate `include_na` argument
-#'   dplyr::mutate(
-#'     Species = ifelse(row_number() %% 10 == 0, NA_character_, as.character(Species)),
-#'     Petal.Length = ifelse(row_number() %% 15 == 0, NA_real_, Petal.Length)
-#'   )
-#'
-#' # Next, Define Mappings and Orders for Variables
-#' # These lists are used to convert raw values (e.g., "setosa", numeric scores)
-#' # into descriptive labels, and to control the display order on the chart.
-#'
-#' # Mapping for `Species` (e.g., if "setosa" was a code like 1)
-#' # Note: We map text labels here, but this is typical for numeric codes.
-#' species_map <- list(
-#'   "setosa" = "Iris Setosa Type",
-#'   "versicolor" = "Iris Versicolor Type",
-#'   "virginica" = "Iris Virginica Type"
+#' plot1 <- create_stackedbar(
+#'   data = gss_recent,
+#'   x_var = "degree",
+#'   stack_var = "sex",
+#'   title = "Educational Attainment by Gender",
+#'   subtitle = "GSS respondents 2010-present",
+#'   x_label = "Highest Degree Completed",
+#'   y_label = "Number of Respondents",
+#'   stack_label = "Gender",
+#'   x_order = education_order,
 #' )
-#' # Define the desired display order for mapped Species categories on the X-axis
-#' species_order <- c("Iris Setosa Type", "Iris Versicolor Type", "Iris Virginica Type")
+#' plot1
 #'
-#' # Mapping for `Petal.Length` (our "Likert-style" variable after binning)
-#' # We'll first define breaks for binning, then use these labels in the map/order.
-#' # Numeric cut points for Petal.Length
-#' petal_length_breaks <- c(0, 1.5, 3.0, 4.5, 6.0, Inf)
-#' # Labels that `cut()` will generate for the bins
-#' petal_length_bin_labels <- c("Very Short (0-1.5)", "Short (1.5-3.0)", "Medium (3.0-4.5)", "Long (4.5-6.0)", "Very Long (>6.0)")
-#' # Define the desired display order for binned Petal.Length categories in stacks
-#' petal_length_display_order <- petal_length_bin_labels
-#'
-#' # Mapping for `Sepal.Width` (another continuous variable for binning)
-#' sepal_width_breaks <- c(2.0, 2.8, 3.4, 4.0, Inf)
-#' sepal_width_bin_labels <- c("Narrow", "Mid-Narrow", "Mid-Wide", "Wide")
-#' sepal_width_display_order <- sepal_width_bin_labels
-#'
-#' # Now that we've specified our variables we can actually call the function
-#'
-#' # Example 1: `Species` vs. `Petal.Length` (Basic Mapping & Binning, with NAs) ---
-#' # Goal: Visualize how different Iris Species types relate to categories of Petal Length.
-#' #       Both variables are transformed: Species names are mapped, Petal.Length is binned.
-#' #       Missing values (NAs) are explicitly shown for comprehensive reporting.
-#'
-#' plot_ex1 <- create_stackedbar(
-#'   data = iris_data,
-#'   x_var = "Species",         # The original variable for X-axis
-#'   stack_var = "Petal.Length", # The original variable for stack categories
-#'   title = "Petal Length Distribution Across Iris Species",
-#'   subtitle = "Species and Petal Length are mapped and binned",
-#'   x_label = "Iris Species Type",
-#'   y_label = "Count of Observations",
-#'   stack_label = "Petal Length Category",
-#'   stacked_type = "normal", # Chart displays raw counts of observations
-#'
-#'   # Arguments for the X-axis (`Species`)
-#'   x_map_values = species_map,  # Apply mapping to Species names
-#'   x_order = species_order,     # Set explicit display order for Species
-#'
-#'   # Arguments for the Stack variable (`Petal.Length`)
-#'   stack_breaks = petal_length_breaks,        # Define numeric bins for Petal.Length
-#'   stack_bin_labels = petal_length_bin_labels, # Provide custom labels for these bins
-#'   stack_order = petal_length_display_order,  # Set explicit display order for Petal Length categories
-#'
-#'   include_na = TRUE, # Show (NA) bars/segments if missing values are present
-#'   # Custom colors for Petal Length categories (matching `stack_order`)
-#'   color_palette = c("#d7191c", "#fdae61", "#ffffbf", "#abdda4", "#2b83ba", "gray") # Add gray for (NA)
+#' # Example 2: Percentage stacked - Happiness by Education Level
+#' plot2 <- create_stackedbar(
+#'   data = gss_recent,
+#'   x_var = "degree",
+#'   stack_var = "happy",
+#'   title = "Happiness Distribution Across Education Levels",
+#'   subtitle = "Percentage breakdown within each education category",
+#'   x_label = "Education Level",
+#'   y_label = "Percentage of Respondents",
+#'   stack_label = "Happiness Level",
+#'   stacked_type = "percent",
+#'   x_order = education_order,
+#'   stack_order = c("Very Happy", "Pretty Happy", "Not Too Happy"),
+#'   tooltip_suffix = "%",
+#'   color_palette = c("turquoise", "slateblue", "steelblue")
 #' )
-#' print(plot_ex1)
+#' plot2
 #'
-#' # Example 2: `Petal.Width` vs. `Sepal.Width` (Binning Both, Percentage Stacked, Custom Tooltip)
-#' # Goal: Examine the proportional distribution of Sepal Width categories across Petal Width groups.
-#' #       Both X-axis and Stack variables are continuous and require binning.
-#' #       The chart will show percentages, and the tooltip will show a custom suffix for X-axis.
+#' # Example 3: Age binning with political views
+#' age_breaks <- c(18, 30, 45, 60, 75, Inf)
+#' age_labels <- c("18-29", "30-44", "45-59", "60-74", "75+")
 #'
-#' plot_ex2 <- create_stackedbar(
-#'   data = iris_data,
-#'   x_var = "Petal.Width",  # Continuous variable for X-axis
-#'   stack_var = "Sepal.Width", # Continuous variable for stacks
-#'   title = "Sepal Width Distribution by Petal Width Category",
-#'   subtitle = "Percentage of observations within each Petal Width category",
-#'   x_label = "Petal Width Category (cm)",
-#'   y_label = "Percentage of Observations",
-#'   stack_label = "Sepal Width Category (cm)",
-#'   stacked_type = "percent", # Chart displays percentages (100% stacked bar)
-#'   tooltip_suffix = "%",     # Adds '%' to the percentage value in tooltip
-#'   x_tooltip_suffix = " cm", #Adds " cm" suffix to the X-axis label in the tooltip
-#'
-#'   # Arguments for the X-axis (`Petal.Width`)
-#'   x_breaks = petal_width_breaks,
-#'   x_bin_labels = petal_width_labels,
-#'   x_order = petal_width_order,
-#'
-#'   # Arguments for the Stack variable (`Sepal.Width`)
-#'   stack_breaks = sepal_width_breaks,
-#'   stack_bin_labels = sepal_width_labels,
-#'   stack_order = sepal_width_order,
-#'
-#'   # Custom color palette for sepal width categories
-#'   color_palette = c("#fee090", "#fdae61", "#f46d43", "#d73027") # Yellow to Red gradient
+#' # Map political views to shorter labels
+#' polviews_map <- list(
+#'   "Extremely Liberal" = "Ext Liberal",
+#'   "Liberal" = "Liberal",
+#'   "Slightly Liberal" = "Sl Liberal",
+#'   "Moderate" = "Moderate",
+#'   "Slightly Conservative" = "Sl Conservative",
+#'   "Conservative" = "Conservative",
+#'   "Extremely Conservative" = "Ext Conservative"
 #' )
-#' print(plot_ex2)
 #'
-#' # Example 3: Using Pre-Aggregated Data (`y_var` argument)
-#' # Goal: Plot data where counts are already in a specific column,
-#' #       bypassing the internal `dplyr::count()` operation.
-#' #       This is useful if your data source provides aggregated counts directly.
-#'
-#' # Simulate pre-aggregated data: Group `iris` by `Species` and binned `Petal.Length`,
-#' # and then create a sum of `Sepal.Length` (just as an example `y_var` column).
-#' pre_aggregated_iris <- iris_data |>
-#'   dplyr::mutate(
-#'     Petal_Length_Binned = cut(
-#'       Petal.Length,
-#'       breaks = petal_length_breaks,
-#'       labels = petal_length_bin_labels,
-#'       include.lowest = TRUE, right = FALSE
-#'     )
-#'   ) |>
-#'   dplyr::group_by(Species, Petal_Length_Binned) |>
-#'   dplyr::summarise(total_sepal_length = sum(Sepal.Length, na.rm = TRUE), .groups = "drop") |>
-#'   # Ensure factors are ordered after aggregation if they weren't before
-#'   dplyr::mutate(
-#'     Species = factor(Species, levels = c("setosa", "versicolor", "virginica"), ordered = TRUE),
-#'     Petal_Length_Binned = factor(Petal_Length_Binned, levels = petal_length_display_order, ordered = TRUE)
-#'   )
-#'
-#' plot_ex3 <- create_stackedbar(
-#'   data = pre_aggregated_iris, # Use the already aggregated data
-#'   x_var = "Species",
-#'   y_var = "total_sepal_length", # IMPORTANT: Specify the column that contains the pre-calculated sums/counts
-#'   stack_var = "Petal_Length_Binned",
-#'   title = "Total Sepal Length by Species and Petal Length (From Pre-Aggregated Data)",
-#'   x_label = "Iris Species",
-#'   y_label = "Total Sepal Length (cm)", # Custom Y-axis label reflecting the sum
-#'   stack_label = "Petal Length Category",
-#'   stacked_type = "normal" # Normal stacking for sums
-#'   # Note: Mappings and breaks are often handled *before* for pre-aggregated data,
-#'   # but `x_order`/`stack_order` can still be used if data is factor but order is not guaranteed.
+#' plot3 <- create_stackedbar(
+#'   data = gss_recent,
+#'   x_var = "age",
+#'   stack_var = "polviews",
+#'   title = "Political Views by Age Group",
+#'   subtitle = "Distribution of political ideology across age cohorts",
+#'   x_label = "Age Group",
+#'   stack_label = "Political Views",
+#'   x_breaks = age_breaks,
+#'   x_bin_labels = age_labels,
+#'   stack_map_values = polviews_map,
+#'   stacked_type = "percent",
+#'   tooltip_suffix = "%",
+#'   x_tooltip_suffix = " years",
 #' )
-#' print(plot_ex3)
+#' plot3
+#'
+#' # Example 4: Including NA values with custom labels
+#' plot4 <- create_stackedbar(
+#'   data = gss_recent,
+#'   x_var = "race",
+#'   stack_var = "attend",
+#'   title = "Religious Attendance by Race/Ethnicity",
+#'   subtitle = "Including non-responses as explicit category",
+#'   x_label = "Race/Ethnicity",
+#'   stack_label = "Religious Attendance",
+#'   include_na = TRUE,
+#'   na_label_x = "Not Specified",
+#'   na_label_stack = "No Answer",
+#'   stacked_type = "percent",
+#'   tooltip_suffix = "%"
+#' )
+#' plot4
+#'
+#' # Example 5: Using pre-aggregated data
+#' # Create aggregated data first
+#' education_gender_counts <- gss_recent %>%
+#'   filter(!is.na(degree) & !is.na(sex)) %>%
+#'   count(degree, sex, name = "respondent_count") %>%
+#'   mutate(degree = factor(degree, levels = education_order))
+#'
+#' plot5 <- create_stackedbar(
+#'   data = education_gender_counts,
+#'   x_var = "degree",
+#'   y_var = "respondent_count",  # Use pre-computed counts
+#'   stack_var = "sex",
+#'   title = "Education by Gender (Pre-aggregated Data)",
+#'   subtitle = "Using pre-computed counts",
+#'   x_label = "Education Level",
+#'   y_label = "Number of Respondents",
+#'   stack_label = "Gender",
+#' )
+#' plot5
+#'
+#' # Example 6: Complex mapping with custom ordering
+#' # Map sex to more descriptive labels
+#' sex_map <- list("Male" = "Men", "Female" = "Women")
+#'
+#' plot6 <- create_stackedbar(
+#'   data = gss_recent,
+#'   x_var = "happy",
+#'   stack_var = "sex",
+#'   title = "Gender Distribution Across Happiness Levels",
+#'   subtitle = "With custom gender labels and happiness ordering",
+#'   x_label = "Self-Reported Happiness",
+#'   stack_label = "Gender",
+#'   x_order = c("Very Happy", "Pretty Happy", "Not Too Happy"),
+#'   stack_map_values = sex_map,
+#'   stack_order = c("Women", "Men"),
+#'   stacked_type = "normal",
+#'   tooltip_prefix = "Count: ",
+#' )
+#' plot6
+#'
 #'
 #' @details This function performs the following steps:
 #' \enumerate{
@@ -461,19 +399,31 @@ create_stackedbar <- function(data,
     }
   }
 
-  # DATA AGGREGATION
+  # DATA AGGREGATION WITH EXPLICIT NA HANDLING
   # Use x_var_for_plot and stack_var_for_plot after all mutations (mapping, binning)
   plot_data <- plot_data_temp |>
     dplyr::mutate(
       .x_var_col = if (include_na) {
-        as.factor(addNA(!!rlang::sym(x_var_for_plot), ifany = TRUE))
+        # Convert to character first to handle NAs explicitly
+        temp_var <- as.character(!!rlang::sym(x_var_for_plot))
+        # Replace NA with custom label
+        temp_var[is.na(temp_var)] <- na_label_x
+        # Convert to factor
+        factor(temp_var)
       } else {
-        as.factor(!!rlang::sym(x_var_for_plot))
+        # Standard factor conversion, NAs will be dropped during counting
+        factor(!!rlang::sym(x_var_for_plot))
       },
       .stack_var_col = if (include_na) {
-        as.factor(addNA(!!rlang::sym(stack_var_for_plot), ifany = TRUE))
+        # Convert to character first to handle NAs explicitly
+        temp_var <- as.character(!!rlang::sym(stack_var_for_plot))
+        # Replace NA with custom label
+        temp_var[is.na(temp_var)] <- na_label_stack
+        # Convert to factor
+        factor(temp_var)
       } else {
-        as.factor(!!rlang::sym(stack_var_for_plot))
+        # Standard factor conversion, NAs will be dropped during counting
+        factor(!!rlang::sym(stack_var_for_plot))
       }
     )
 

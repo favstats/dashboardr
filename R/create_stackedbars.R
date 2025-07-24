@@ -1,47 +1,179 @@
-#’ @title Likert‐Style Stacked Bar Chart
-#’ @description
-#’ Turns wide survey data (one column per question) into long format and then
-#’ creates a stacked‐bar chart where each bar is a question and each stack is
-#’ a Likert‐type response category.
-#’
-#’ @param data A data.frame with one column per survey question (one row per
-#’   respondent).
-#’ @param questions Character vector of column names to pivot (the survey
-#’   questions).
-#’ @param question_labels Optional character vector of labels for the
-#’   questions. Must be the same length as `questions`. If `NULL`, `questions`
-#’   are used as labels.
-#’ @param response_levels Optional character vector of factor levels for the
-#’   Likert responses (e.g. `c("Strongly Disagree", …, "Strongly Agree")`).
-#’ @param title Optional main title for the chart.
-#’ @param subtitle Optional subtitle for the chart.
-#’ @param x_label Optional label for the X‐axis. Defaults to “Questions”.
-#’ @param y_label Optional label for the Y‐axis. Defaults to “Number of Respondents” or
-#’   “Percentage of Respondents” if `stacked_type = "percent"`.
-#’ @param stack_label Optional title for the stack legend. Defaults to “Response”.
-#’ @param stacked_type Type of stacking: `"normal"` (counts) or `"percent"`
-#’   (100% stacked). Defaults to `"normal"`.
-#’ @param tooltip_prefix Optional string prepended to tooltip values.
-#’ @param tooltip_suffix Optional string appended to tooltip values.
-#’ @param x_tooltip_suffix Optional string appended to X‐axis tooltip values.
-#’ @param color_palette Optional character vector of colors for the stacks.
-#’ @param stack_order Optional character vector specifying the order of response levels.
-#’ @param x_order Optional character vector specifying the order of questions.
-#’ @param include_na Logical. If `TRUE`, `(NA)` is shown as a category; if `FALSE`,
-#’   rows with `NA` in question or response are dropped. Default `FALSE`.
-#’ @param x_breaks Optional numeric vector of cut points to bin the questions
-#’   (if they are numeric). Not typical for Likert.
-#’ @param x_bin_labels Optional character vector of labels for `x_breaks`.
-#’ @param x_map_values Optional named list to rename question values.
-#’ @param stack_breaks Optional numeric vector of cut points to bin the responses.
-#’ @param stack_bin_labels Optional character vector of labels for `stack_breaks`.
-#’ @param stack_map_values Optional named list to rename response values.
-#’
-#’ @return A `highcharter` stacked bar chart object.
-#’ @export
-#’ @export
-#’ @export
-#’ @export
+#' @title Stacked Bar Charts
+#' @description
+#' Turns wide survey data (one column per question) into long format and then
+#' creates a stacked‐bar chart where each bar is a question and each stack is
+#' a Likert‐type response category.
+#'
+#' @param data A data frame with one column per survey question (one row per
+#'   respondent).
+#' @param questions Character vector of column names to pivot (the survey
+#'   questions).
+#' @param question_labels Optional character vector of labels for the
+#'   questions. Must be the same length as `questions`. If `NULL`, `questions`
+#'   are used as labels.
+#' @param response_levels Optional character vector of factor levels for the
+#'   Likert responses (e.g. `c("Strongly Disagree", …, "Strongly Agree")`).
+#' @param title Optional main title for the chart.
+#' @param subtitle Optional subtitle for the chart.
+#' @param x_label Optional label for the X‐axis. Defaults to "Questions".
+#' @param y_label Optional label for the Y‐axis. Defaults to "Number of Respondents" or
+#'   "Percentage of Respondents" if `stacked_type = "percent"`.
+#' @param stack_label Optional title for the stack legend. Defaults to "Response".
+#' @param stacked_type Type of stacking: `"normal"` (counts) or `"percent"`
+#'   (100% stacked). Defaults to `"normal"`.
+#' @param tooltip_prefix Optional string prepended to tooltip values.
+#' @param tooltip_suffix Optional string appended to tooltip values.
+#' @param x_tooltip_suffix Optional string appended to X‐axis tooltip values.
+#' @param color_palette Optional character vector of colors for the stacks.
+#' @param stack_order Optional character vector specifying the order of response levels.
+#' @param x_order Optional character vector specifying the order of questions.
+#' @param include_na Logical. If `TRUE`, NA values are shown as explicit categories; if `FALSE`,
+#'   rows with `NA` in question or response are dropped. Default `FALSE`.
+#' @param na_label_x Optional string. Custom label for NA values in questions. Defaults to "(Missing)".
+#' @param na_label_stack Optional string. Custom label for NA values in responses. Defaults to "(Missing)".
+#' @param x_breaks Optional numeric vector of cut points to bin the questions
+#'   (if they are numeric). Not typical for Likert.
+#' @param x_bin_labels Optional character vector of labels for `x_breaks`.
+#' @param x_map_values Optional named list to rename question values.
+#' @param stack_breaks Optional numeric vector of cut points to bin the responses.
+#' @param stack_bin_labels Optional character vector of labels for `stack_breaks`.
+#' @param stack_map_values Optional named list to rename response values.
+#' @param show_question_tooltip Logical. If `TRUE`, shows custom tooltip with question labels.
+#'
+#' @return A `highcharter` stacked bar chart object.
+#'
+#' @examples
+#'
+#' # Load GSS data
+#' data(gss_all)
+#'
+#' # Filter to recent years and select Likert-style questions
+#' gss_recent <- gss_all %>%
+#'   filter(year >= 2010) %>%
+#'   select(year, confinan, confed, conmedic, conjudge, consci, conlegis)
+#'
+#' # Example 1: Basic Likert chart - Confidence in institutions
+#' confidence_questions <- c("confinan", "confed", "conmedic", "conjudge", "consci", "conlegis")
+#' confidence_labels <- c(
+#'   "Financial Institutions",
+#'   "Education",
+#'   "Medicine",
+#'   "Courts/Justice",
+#'   "Scientific Community",
+#'   "Congress"
+#' )
+#'
+#' # Define response order (typical GSS confidence scale)
+#' confidence_order <- c("A Great Deal", "Only Some", "Hardly Any")
+#'
+#' plot1 <- create_stackedbars(
+#'   data = gss_recent,
+#'   questions = confidence_questions,
+#'   question_labels = confidence_labels,
+#'   title = "Confidence in American Institutions",
+#'   subtitle = "GSS respondents 2010-present",
+#'   x_label = "Institution",
+#'   stack_label = "Level of Confidence",
+#'   response_levels = confidence_order,
+#'   stacked_type = "percent",
+#'   color_palette = c("#2E8B57", "#FFD700", "#CD5C5C")
+#' )
+#' plot1
+#'
+#' # Example 2: Including NA values with custom labels
+#' plot2 <- create_stackedbars(
+#'   data = gss_recent,
+#'   questions = confidence_questions,
+#'   question_labels = confidence_labels,
+#'   title = "Confidence in Institutions (Including Non-Responses)",
+#'   subtitle = "Showing missing data explicitly",
+#'   x_label = "Institution",
+#'   stack_label = "Response",
+#'   include_na = TRUE,
+#'   na_label_stack = "No Opinion/Refused",
+#'   stacked_type = "percent",
+#'   tooltip_suffix = "%",
+#'   color_palette = c("#2E8B57", "#FFD700", "#CD5C5C", "#808080")
+#' )
+#' plot2
+#'
+#' # Example 3: Custom response mapping and ordering
+#' # Map GSS codes to more descriptive labels
+#' confidence_map <- list(
+#'   "A Great Deal" = "High Confidence",
+#'   "Only Some" = "Moderate Confidence",
+#'   "Hardly Any" = "Low Confidence"
+#' )
+#'
+#' plot3 <- create_stackedbars(
+#'   data = gss_recent,
+#'   questions = confidence_questions[1:4],  # Just first 4 institutions
+#'   question_labels = confidence_labels[1:4],
+#'   title = "Institutional Confidence with Custom Labels",
+#'   subtitle = "Remapped response categories",
+#'   stack_map_values = confidence_map,
+#'   stack_order = c("High Confidence", "Moderate Confidence", "Low Confidence"),
+#'   stacked_type = "normal",
+#'   color_palette = c("#1f77b4", "#ff7f0e", "#d62728")
+#' )
+#' plot3
+#'
+#' # Example 4: Custom question ordering and tooltips
+#' # Reorder questions by typical confidence levels (highest to lowest)
+#' custom_question_order <- c(
+#'   "Scientific Community",
+#'   "Medicine",
+#'   "Education",
+#'   "Courts/Justice",
+#'   "Financial Institutions",
+#'   "Congress"
+#' )
+#'
+#' plot4 <- create_stackedbars(
+#'   data = gss_recent,
+#'   questions = confidence_questions,
+#'   question_labels = confidence_labels,
+#'   title = "Institutional Confidence (Reordered)",
+#'   subtitle = "Ordered from typically highest to lowest confidence",
+#'   x_order = custom_question_order,
+#'   response_levels = confidence_order,
+#'   stacked_type = "percent",
+#'   tooltip_prefix = "Response: ",
+#'   tooltip_suffix = "% of respondents",
+#'   x_tooltip_suffix = " institution",
+#'   color_palette = c("#2E8B57", "#FFD700", "#CD5C5C")
+#' )
+#' plot4
+#'
+#' # Example 5: Working with different Likert scales
+#' # Using happiness and life satisfaction questions if available
+#' if (all(c("happy", "satfin", "satjob") %in% names(gss_all))) {
+#'   satisfaction_data <- gss_all %>%
+#'     filter(year >= 2010) %>%
+#'     select(happy, satfin, satjob) %>%
+#'     # Convert to consistent scale for demonstration
+#'     mutate(across(everything(), as.character))
+#'
+#'   satisfaction_questions <- c("happy", "satfin", "satjob")
+#'   satisfaction_labels <- c("General Happiness", "Financial Satisfaction", "Job Satisfaction")
+#'
+#'   plot5 <- create_stackedbars(
+#'     data = satisfaction_data,
+#'     questions = satisfaction_questions,
+#'     question_labels = satisfaction_labels,
+#'     title = "Life Satisfaction Measures",
+#'     subtitle = "Multiple satisfaction domains",
+#'     x_label = "Life Domain",
+#'     stack_label = "Satisfaction Level",
+#'     stacked_type = "percent",
+#'     include_na = TRUE,
+#'     na_label_stack = "Not Asked/No Answer"
+#'   )
+#'   plot5
+#'
+#'
+#'
+#' @export
 create_stackedbars <- function(data,
                                      questions,
                                      question_labels   = NULL,
@@ -120,6 +252,8 @@ create_stackedbars <- function(data,
     stack_order      = stack_order,
     x_order          = x_order,
     include_na       = include_na,
+    na_label_x       = na_label_x,
+    na_label_stack   = na_label_stack,
     x_breaks         = x_breaks,
     x_bin_labels     = x_bin_labels,
     x_map_values     = x_map_values,
