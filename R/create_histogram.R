@@ -38,6 +38,7 @@ library(roxygen2)
 #'   before binning.
 #' @param x_order Optional character vector to order the factor levels
 #'   of the binned variable.
+#' @param include_na Logical. If TRUE, treats NA as explicit category.
 #'
 #' @return A `highcharter` histogram (column) plot object.
 #'
@@ -172,14 +173,20 @@ create_histogram <- function(data,
   } else {
     x_plot_var <- x_var
   }
-  # Factor & NA handling
+  # Factor & explicit NA handling
   df <- df |>
     dplyr::mutate(
       .x_factor = if (include_na) {
-        addNA(!!rlang::sym(x_plot_var), ifany = TRUE)
+        # Convert to character first to handle NAs explicitly
+        temp_var <- as.character(!!rlang::sym(x_plot_var))
+        # Replace NA with custom label
+        temp_var[is.na(temp_var)] <- na_label
+        # Convert to factor
+        factor(temp_var)
       } else {
-        !!rlang::sym(x_plot_var)
-      } |> as.factor()
+        # Standard factor conversion, NAs will be dropped during counting
+        factor(!!rlang::sym(x_plot_var))
+      }
     )
   # Apply custom ordering
   if (!is.null(x_order)) {
