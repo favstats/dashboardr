@@ -170,7 +170,7 @@
 #'     na_label_stack = "Not Asked/No Answer"
 #'   )
 #'   plot5
-#'
+#'}
 #'
 #'
 #' @export

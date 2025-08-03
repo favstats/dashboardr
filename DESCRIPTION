@@ -13,8 +13,11 @@ Imports:
     dplyr,
     highcharter,
     rlang,
-    tidyr
+    tidyr,
+    gssr
 Suggests:
   haven,
   testthat (>= 3.0.0)
 Config/testthat/edition: 3
+Remotes: 
+    kjhealy/gssr
