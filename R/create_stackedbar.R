@@ -261,6 +261,8 @@ create_stackedbar <- function(data,
                               stack_order = NULL,
                               x_order = NULL,
                               include_na = FALSE,
+                              na_label_x = "(Missing)",        # ADD THIS LINE
+                              na_label_stack = "(Missing)",    # ADD THIS LINE
                               x_breaks = NULL,
                               x_bin_labels = NULL,
                               x_map_values = NULL,
@@ -290,12 +292,13 @@ create_stackedbar <- function(data,
   if (requireNamespace("haven", quietly = TRUE)) {
     if (inherits(plot_data_temp[[x_var]], "haven_labelled")) {
       plot_data_temp <- plot_data_temp |>
-        dplyr::mutate(!!rlang::sym(x_var) := haven::as_factor(!!rlang::sym(x_var), levels = "values"))
+        dplyr::mutate(!!rlang::sym(x_var) := haven::as_factor(!!rlang::sym(x_var), levels = "labels"))
       message(paste0("Note: Column '", x_var, "' was 'haven_labelled' and converted to factor (levels = values)."))
     }
     if (inherits(plot_data_temp[[stack_var]], "haven_labelled")) {
       plot_data_temp <- plot_data_temp |>
-        dplyr::mutate(!!rlang::sym(stack_var) := haven::as_factor(!!rlang::sym(stack_var), levels = "values"))
+
+        dplyr::mutate(!!rlang::sym(stack_var) := haven::as_factor(!!rlang::sym(stack_var), levels = "labels"))
       message(paste0("Note: Column '", stack_var, "' was 'haven_labelled' and converted to factor (levels = values)."))
     }
   }
