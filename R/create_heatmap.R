@@ -61,27 +61,31 @@ library(gssr)
 #'
 #' @examples
 #'
-#' # We will work with GSS data, which is a dependency of our `dashboardr` package.
-#' data(gss_all)
+#' # Example 1: Average Age by Education and Gender
+#' Let's create a heatmap showing the average age across education levels and gender.
+#' # We will use the GSS dataset from 2020
 #'
-#' # Create age groups and education heatmap
-#' gss_recent <- gss_all %>%
-#'   filter(year >= 2010) %>%
-#'   mutate(
-#'     age_group = cut(age, breaks = c(18, 30, 45, 60, 75, Inf),
-#'                     labels = c("18-29", "30-44", "45-59", "60-74", "75+"))
-#'   ) %>%
-#'   count(age_group, degree) %>%
-#'   filter(!is.na(age_group), !is.na(degree))
+#' # Step 1: Prepare data for heatmap
+#' age_education_data <- gss_clean %>%
+#'   filter(!is.na(degree_3), !is.na(sex_3), !is.na(age_3)) %>%
+#'   group_by(degree_3, sex_3) %>%
+#'   summarise(avg_age = mean(age_3, na.rm = TRUE), .groups = 'drop')
 #'
-#' create_heatmap(
-#'   data = gss_recent,
-#'   x_var = "age_group",
-#'   y_var = "degree",
-#'   value_var = "n",
-#'   title = "Education by Age Group",
+#' # Step 2: Create basic heatmap
+#' plot1 <- create_heatmap(
+#'   data = age_education_data,
+#'   x_var = "degree_3",
+#'   y_var = "sex_3",
+#'   value_var = "avg_age",
+#'   title = "Average Age by Education Level and Gender",
+#'   subtitle = "GSS Panel 2020 - Wave 3",
+#'   x_label = "Education Level",
+#'   y_label = "Gender",
+#'   value_label = "Average Age",
 #'   color_palette = c("#ffffff", "#2E86AB")
 #' )
+#'
+#' plot1
 #'
 #' @details
 #' This function performs the following steps:
