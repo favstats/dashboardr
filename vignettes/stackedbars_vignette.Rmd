@@ -1,129 +1,569 @@
----
-title: "Getting Started With create_stackedbars()"
-author: "Alexandra Pafford"
-date: "2025-07-08"
-output:
-  rmarkdown::html_vignette:
-    keep_md: true
-vignette:
-  %\VignetteIndexEntry{Stacked Bar Chart Examples}
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8"}
----
+Here's a comprehensive vignette for the `create_stackedbars` function:
 
-```{r setup, include=FALSE}
+```{r setup, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
-  fig.width = 7, # Default figure width
-  fig.height = 5, # Default figure height
-  warning = FALSE, # Suppress warnings from highcharter, haven etc. for cleaner output
-  message = FALSE  # Suppress messages (e.g., haven conversion notes) for cleaner output
+  fig.width = 7, 
+  fig.height = 5, 
+  warning = FALSE, 
+  message = FALSE 
 )
 ```
+
+---
+title: "Creating Multi-Question Stacked Bar Charts with `create_stackedbars`"
+output: rmarkdown::html_vignette
+author: "Alexandra Pafford"
+date: "2025-08-03"
+vignette: >
+  %\VignetteIndexEntry{Creating Multi-Question Stacked Bar Charts with `create_stackedbars`}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
 
 ## Introduction
 
-This vignette demonstrates how to use the
-`create_stackedbar()` and `create_stackedbar_tabs()` functions to
-produce interactive stacked-bar charts in HTML, using the `iris` data
-set as a stand-in for survey results.
+Welcome to this comprehensive guide on using the `create_stackedbars` function from the `dashboardr` package. This function is specifically designed to handle a common challenge in survey research: visualizing responses to multiple Likert-type questions simultaneously.
 
-## 1. Prepare the Data
+The `create_stackedbars` function transforms wide survey data (where each question is a separate column) into an elegant stacked bar chart where:
+- Each bar represents a different survey question
+- Each stack within a bar represents a response category (e.g., "Strongly Agree", "Agree", etc.)
+- Colors show the distribution of responses across all questions
 
-We’ll convert `iris` into a “survey” table by:
+This approach is particularly valuable for:
+- **Comparing response patterns** across multiple related questions
+- **Identifying questions** with similar or different response distributions
+- **Visualizing survey batteries** (sets of questions with the same response scale)
+- **Showing institutional confidence**, satisfaction measures, or attitude scales
 
-- Introducing a few `NA` values  
-- Treating `Species` as a categorical question  
-- Binning `Petal.Length` into categories  
+The function handles many data preparation tasks automatically, including pivoting from wide to long format, managing `haven_labelled` variables from SPSS data, and creating publication-ready interactive visualizations.
+
+## Getting Started
+
+Let's load the necessary libraries and examine our dataset. For this demonstration, we will be using the 2020 wave from the GSS dataset.
+
+```{r libraries}
+library(gssr)
+library(dplyr)
+library(highcharter)
+library(tidyr)
+#library(dashboardr)
+
+# Load GSS Panel 2020 data
+data(gss_panel20)
+
+# Examine the structure
+glimpse(gss_panel20)
+```
+
+## Data Preparation
+
+Let's identify and prepare Likert-type questions from the 2016 wave (`_1a` variables) for ease of use in this practical.
 
 ```{r data-prep}
-iris_data <- as_tibble(iris) %>%
-  # Inject some NAs
+# Look for confidence-related questions (common Likert-type questions in GSS)
+confidence_vars <- names(gss_panel20)[grepl("^con.*_1a$", names(gss_panel20))]
+cat("Confidence variables found:\n")
+print(confidence_vars)
+
+# Look for other attitude/satisfaction variables
+attitude_vars <- names(gss_panel20)[grepl("(trust|fair|helpful|happy).*_1a$", names(gss_panel20))]
+cat("\nAttitude variables found:\n")
+print(attitude_vars)
+
+# Create a working dataset with key Likert-type variables
+gss_likert <- gss_panel20 %>%
+  select(
+    # Confidence in institutions (if available)
+    any_of(confidence_vars),
+    # Individual attitudes
+    trust_1a, fair_1a, helpful_1a, happy_1a,
+    # Additional context variables
+    age_1a, sex_1a, degree_1a
+  ) %>%
+  # Remove completely empty rows
+  filter(if_any(everything(), ~ !is.na(.)))
+
+# Check what we have
+glimpse(gss_likert)
+
+# Examine the response patterns for key variables
+cat("Trust responses:\n")
+table(gss_likert$trust_1a, useNA = "always")
+
+cat("\nFair responses:\n") 
+table(gss_likert$fair_1a, useNA = "always")
+
+cat("\nHelpful responses:\n")
+table(gss_likert$helpful_1a, useNA = "always")
+
+cat("\nHappy responses:\n")
+table(gss_likert$happy_1a, useNA = "always")
+```
+
+# Basic Multi-Question Charts
+
+## Example 1: Social Trust and Attitudes
+
+Now that we have our simplified data set, let's create our first multi-question chart using social attitude variables.
+
+```{r stackedbars-basic}
+# Define our questions and labels
+social_questions <- c("trust_1a", "fair_1a", "helpful_1a")
+social_labels <- c(
+  "Interpersonal Trust",
+  "Fairness of Others", 
+  "Helpfulness of Others"
+)
+
+# Create basic multi-question chart
+plot1 <- create_stackedbars(
+  data = gss_likert,
+  questions = social_questions,
+  question_labels = social_labels,
+  title = "Social Attitudes and Trust",
+  subtitle = "GSS Panel 2016 - Distribution of responses across social attitude questions",
+  x_label = "Social Attitude Dimension",
+  stack_label = "Response Level",
+  stacked_type = "normal"
+)
+
+plot1
+```
+
+## Example 2: Percentage-Based Comparison
+
+Now let's create a percentage-based chart to better compare response patterns across questions.
+
+```{r stackedbars-percentage}
+# Create percentage-based chart with custom colors
+plot2 <- create_stackedbars(
+  data = gss_likert,
+  questions = social_questions,
+  question_labels = social_labels,
+  title = "Social Attitudes - Response Distribution",
+  subtitle = "Percentage breakdown showing response patterns across questions",
+  x_label = "Social Attitude Dimension",
+  stack_label = "Response Category",
+  stacked_type = "percent",
+  tooltip_suffix = "%",
+  color_palette = c("#d7191c", "#fdae61", "#ffffbf", "#abdda4", "#2b83ba")
+)
+
+plot2
+```
+
+# Advanced Customization
+
+## Example 3: Custom Response Ordering and Mapping
+
+Let's create a more sophisticated chart with custom response ordering and cleaner labels.
+
+```{r stackedbars-custom}
+# First, let's examine what the actual response values are
+cat("Unique trust responses:\n")
+print(unique(as.character(gss_likert$trust_1a)))
+
+cat("\nUnique fair responses:\n")
+print(unique(as.character(gss_likert$fair_1a)))
+
+# Create response mapping for cleaner labels
+response_map <- list(
+  "can't trust" = "High Trust/Positive", # I know this doesn't make sense, let's just pretend for the sake of the demo
+  "can't be too careful" = "Low Trust/Negative", 
+  "depends" = "Situational/Neutral",
+  "would try to be fair" = "High Trust/Positive",
+  "would take advantage of you" = "Low Trust/Negative",
+  "depends" = "Situational/Neutral",
+  "try to be helpful" = "High Trust/Positive",
+  "looking out for themselves" = "Low Trust/Negative",
+  "depends" = "Situational/Neutral"
+)
+
+# Define response order (from negative to positive)
+response_order <- c("Low Trust/Negative", "Situational/Neutral", "High Trust/Positive")
+
+# Create chart with custom mapping and ordering
+plot3 <- create_stackedbars(
+  data = gss_likert,
+  questions = social_questions,
+  question_labels = social_labels,
+  title = "Social Trust Dimensions with Standardized Responses",
+  subtitle = "Responses mapped to consistent positive/negative categories",
+  x_label = "Trust Dimension",
+  stack_label = "Trust Level",
+  stack_map_values = response_map,
+  stack_order = response_order,
+  stacked_type = "percent",
+  tooltip_suffix = "%",
+  color_palette = c("#d62728", "#ffbb78", "#2ca02c", "grey")
+)
+
+plot3
+```
+
+## Example 4: Including Missing Values
+
+Let's create a chart that explicitly shows missing data patterns.
+
+```{r stackedbars-missing}
+# Create chart including NA values
+plot4 <- create_stackedbars(
+  data = gss_likert,
+  questions = social_questions,
+  question_labels = social_labels,
+  title = "Social Attitudes Including Non-Responses",
+  subtitle = "Showing missing data patterns explicitly",
+  x_label = "Social Attitude Question",
+  stack_label = "Response",
+  stack_map_values = response_map,
+  include_na = TRUE,
+  na_label_stack = "No Answer/Not Asked",
+  stacked_type = "percent",
+  tooltip_suffix = "%",
+  color_palette = c("forestgreen", "darkred", "grey", "yellow")
+)
+
+plot4
+```
+
+# Working with Different Question Types
+
+## Example 5: Happiness and Life Satisfaction
+
+Let's work with happiness as a different type of Likert scale.
+
+```{r stackedbars-happiness}
+# Create a happiness-focused analysis
+happiness_questions <- c("happy_1a")
+happiness_labels <- c("General Happiness")
+
+# Check happiness response values
+cat("Happiness responses:\n")
+table(gss_likert$happy_1a, useNA = "always")
+
+# Create happiness chart
+plot5 <- create_stackedbars(
+  data = gss_likert,
+  questions = "happy_1a",
+  title = "General Happiness Distribution",
+  x_label = "Well-being Measure",
+  stack_label = "Happiness Level",
+  stacked_type = "percent",
+  tooltip_suffix = "%",
+  color_palette = c("#2E8B57", "#FFD700", "#CD5C5C", "grey")
+)
+
+plot5
+```
+
+## Example 6: Combining Different Question Types
+
+Let's create a comprehensive chart combining different types of attitude questions. In general, we recommend to have one battery per chart. But, if you really want to have different responses in the same chart, then you'll need to standardize the response labels before charting, especially if using SPSS data.
+
+
+```{r stackedbars-comprehensive}
+# Standardize responses before charting
+gss_standardized <- gss_likert %>%
   mutate(
-    Species     = if_else(row_number() %% 10 == 0, NA_character_, as.character(Species)),
-    Petal_Length = if_else(row_number() %% 15 == 0, NA_real_, Petal.Length)
+    # Convert haven_labelled to character with labels first
+    trust_1a_char = as.character(haven::as_factor(trust_1a, levels = "labels")),
+    fair_1a_char = as.character(haven::as_factor(fair_1a, levels = "labels")),
+    helpful_1a_char = as.character(haven::as_factor(helpful_1a, levels = "labels")),
+    happy_1a_char = as.character(haven::as_factor(happy_1a, levels = "labels")),
+    
+    # Now do the case_when with the actual text labels
+    trust_1a_std = case_when(
+      trust_1a_char == "Can Trust" ~ "Positive",
+      trust_1a_char == "Can't Be Too Careful" ~ "Negative", 
+      trust_1a_char == "Depends" ~ "Neutral",
+      TRUE ~ trust_1a_char
+    ),
+    fair_1a_std = case_when(
+      fair_1a_char == "Most People Try to Be Fair" ~ "Positive",
+      fair_1a_char == "Most People Try to Take Advantage" ~ "Negative",
+      fair_1a_char == "Depends" ~ "Neutral",  # Fixed: was trust_1a
+      TRUE ~ fair_1a_char
+    ),
+    helpful_1a_std = case_when(
+      helpful_1a_char == "Most People Try to Be Helpful" ~ "Positive",
+      helpful_1a_char == "Most People Look Out for Themselves" ~ "Negative",
+      helpful_1a_char == "Depends" ~ "Neutral",  # Fixed: was trust_1a
+      TRUE ~ helpful_1a_char
+    ),
+    happy_1a_std = case_when(
+      happy_1a_char == "Very Happy" ~ "Positive",
+      happy_1a_char == "Pretty Happy" ~ "Neutral",
+      happy_1a_char == "Not Too Happy" ~ "Negative",
+      TRUE ~ happy_1a_char
+    )
   )
 
-# Define binning for Petal.Length
-petal_breaks <- c(0, 1.5, 3.0, 4.5, 6.0, Inf)
-petal_labels <- c(
-  "Very Short (0-1.5)",
-  "Short (1.5-3.0)",
-  "Medium (3.0-4.5)",
-  "Long (4.5-6.0)",
-  "Very Long (>6.0)"
+# Check what the actual labels are after conversion
+cat("Trust labels:\n")
+table(gss_standardized$trust_1a_char, useNA = "always")
+
+cat("\nFair labels:\n") 
+table(gss_standardized$fair_1a_char, useNA = "always")
+
+cat("\nHelpful labels:\n")
+table(gss_standardized$helpful_1a_char, useNA = "always")
+
+cat("\nHappy labels:\n")
+table(gss_standardized$happy_1a_char, useNA = "always")
+
+# Then use the standardized versions
+standardized_questions <- c("trust_1a_std", "fair_1a_std", "helpful_1a_std", "happy_1a_std")
+
+# Write the question labels
+standardized_labels <- c(
+  "Can People Be Trusted?",
+  "Are People Generally Fair?", 
+  "Are People Generally Helpful?",
+  "How Happy Are You?"
 )
 
-# Desired display order
-petal_order <- petal_labels
-
-# A simple color palette
-pal <- c("#d7191c", "#fdae61", "#ffffbf", "#abdda4", "#2b83ba", "gray")
-```
-
-## 2. Single Stacked-Bar Chart
-
-Let’s see how `Petal.Length` categories distribute across `Species`.
-
-```{r single-chart, echo=TRUE}
-chart1 <- create_stackedbar(
-  data               = iris_data,
-  x_var              = "Species",
-  stack_var          = "Petal_Length",
-  title              = "Petal Length Distribution by Iris Species",
-  subtitle           = "Including explicit (NA) category",
-  x_label            = "Species",
-  y_label            = "Count",
-  stack_label        = "Petal Length Category",
-  stacked_type       = "normal",
-  include_na         = TRUE,
-  stack_breaks       = petal_breaks,
-  stack_bin_labels   = petal_labels,
-  stack_order        = petal_order,
-  color_palette      = pal
+# Create comprehensive chart
+plot6 <- create_stackedbars(
+  data = gss_standardized,
+  questions = standardized_questions,
+  question_labels = standardized_labels,
+  title = "Social Attitudes and Well-being Battery",
+  subtitle = "Multiple dimensions of social trust and personal happiness",
+  x_label = "Question Domain",
+  stack_label = "Response",
+  stacked_type = "percent",
+  tooltip_prefix = "Response: ",
+  tooltip_suffix = "% of respondents",
+  x_tooltip_suffix = " question"
 )
 
-chart1
+plot6
 ```
 
-## 3. Multiple Charts in Tabs
+# Advanced Analysis Techniques
 
-Suppose we have several “survey items” (`Petal.Length`, `Petal.Width`,
-`Sepal.Length`) and want to toggle between their distributions by
-`Species`.
+## Example 7: Demographic Subgroup Analysis
 
-```{r multi-tabs, echo=TRUE}
-stack_items <- c("Petal_Length", "Petal.Width", "Sepal.Length")
-tab_labels  <- c("Petal Length",  "Petal Width",  "Sepal Length")
+Let's create separate charts for different demographic groups.
 
-tabs <- create_stackedbar_tabs(
-  data               = iris_data,
-  x_var              = "Species",
-  stack_vars         = stack_items,
-  stack_var_labels   = tab_labels,
-  common_title       = "Distribution of",
-  subtitle           = "by Iris Species",
-  x_label            = "Species",
-  y_label            = "Percentage",
-  stack_label        = "Category",
-  stacked_type       = "percent",
-  tooltip_suffix     = "%",
-  include_na         = FALSE,
-  # For demonstration we only bin Petal.Length; others use raw values
-  stack_breaks       = petal_breaks,
-  stack_bin_labels   = petal_labels,
-  stack_order        = petal_order,
-  color_palette      = pal
+```{r stackedbars-subgroups}
+# You probably noticed one of the response labels is incorrect. Let's fix that first. We can do this easily using mapping in the `create_barcharts` function.
+trust_fix_map <- list(
+  "can't trust" = "can trust"
+  # Add other mappings if needed
 )
 
-tabs
+# Next, let's examine what degree values actually exist
+cat("Degree values in data:\n")
+table(gss_likert$degree_1a, useNA = "always")
+
+# Convert degree to factor with labels to see what we're working with
+degree_labels <- as.character(haven::as_factor(gss_likert$degree_1a, levels = "labels"))
+cat("\nDegree labels:\n")
+table(degree_labels, useNA = "always")
+
+# Create education groups based on actual data
+gss_education <- gss_likert %>%
+  mutate(
+    degree_label = as.character(haven::as_factor(degree_1a, levels = "labels")),
+    education_group = case_when(
+      degree_label %in% c("less than high school", "high school") ~ "High School or Less",
+      degree_label %in% c("associate/junior college", "bachelor's", "graduate") ~ "College or More",
+      TRUE ~ "Other/Missing"
+    )
+  ) %>%
+  filter(education_group != "Other/Missing")
+
+# Check the groups
+cat("\nEducation groups:\n")
+table(gss_education$education_group, useNA = "always")
+
+# Filter for college or more
+college_data <- gss_education %>%
+  filter(education_group == "College or More")
+
+cat("\nCollege data rows:", nrow(college_data), "\n")
+
+# Filter for high school or less  
+high_school_data <- gss_education %>%
+  filter(education_group == "High School or Less")
+
+cat("High school data rows:", nrow(high_school_data), "\n")
+
+# Only create charts if we have sufficient data
+if (nrow(college_data) > 50) {
+  plot8a <- create_stackedbars(
+    data = college_data,
+    questions = social_questions,
+    question_labels = social_labels,
+    stack_map_values = trust_fix_map,
+    title = "Social Attitudes Among College-Educated",
+    subtitle = paste0("Junior college, bachelor's, and graduate degree holders (n=", nrow(college_data), ")"),
+    x_label = "Social Attitude Dimension",
+    stack_label = "Response",
+    stacked_type = "percent",
+    include_na = TRUE,
+    na_label_stack = "No Answer",
+    tooltip_suffix = "%",
+    color_palette = c("#2166ac", "#762a83", "#5aae61", "darkgrey")
+  )
+  
+  print("College-educated chart:")
+  print(plot8a)
+} else {
+  cat("Not enough college-educated respondents for analysis\n")
+}
+
+if (nrow(high_school_data) > 50) {
+  plot8b <- create_stackedbars(
+    data = high_school_data,
+    questions = social_questions,
+    question_labels = social_labels,
+    stack_map_values = trust_fix_map,
+    title = "Social Attitudes Among High School Educated",
+    subtitle = paste0("High school diploma or less (n=", nrow(high_school_data), ")"),
+    x_label = "Social Attitude Dimension", 
+    stack_label = "Response",
+    stacked_type = "percent",
+    include_na = TRUE,
+    na_label_stack = "No Answer",
+    tooltip_suffix = "%",
+    color_palette = c("#2166ac", "#762a83", "#5aae61", "darkgrey")
+  )
+  
+  print("High school educated chart:")
+  print(plot8b)
+} else {
+  cat("Not enough high school educated respondents for analysis\n")
+}
 ```
+
+# Working with Survey Batteries
+
+## Example 9: Creating Question Batteries
+
+Let's demonstrate how to work with related sets of questions (survey batteries).
+
+```{r stackedbars-battery}
+# Create a social trust battery
+trust_battery <- c("trust_1a", "fair_1a", "helpful_1a")
+trust_battery_labels <- c(
+  "Interpersonal Trust",
+  "Perceived Fairness",
+  "Perceived Helpfulness"
+)
+
+# Create a comprehensive battery analysis
+plot9 <- create_stackedbars(
+  data = gss_likert,
+  questions = trust_battery,
+  question_labels = trust_battery_labels,
+  title = "Social Trust Battery - Complete Analysis",
+  subtitle = "Comprehensive view of social trust dimensions with enhanced tooltips",
+  x_label = "Trust Dimension",
+  stack_label = "Response Category",
+  stacked_type = "percent",
+  tooltip_prefix = "Percentage: ",
+  tooltip_suffix = "% of respondents",
+  show_question_tooltip = TRUE,
+  include_na = TRUE,
+  na_label_stack= "No answer",
+  color_palette = c("#8c510a", "#d8b365", "#f6e8c3", "darkgrey")
+)
+
+plot9
+```
+
+# Best Practices and Tips
+
+## Example 10: Publication-Ready Chart
+
+Let's create a fully customized, publication-ready chart.
+
+```{r stackedbars-publication}
+# Create the most polished example
+plot10 <- create_stackedbars(
+  data = gss_likert,
+  questions = social_questions,
+  question_labels = c(
+    "Interpersonal Trust\n('Can most people be trusted?')",
+    "Perceived Fairness\n('Do people try to be fair?')",
+    "Perceived Helpfulness\n('Are people helpful?')"
+  ),
+  title = "Social Capital Dimensions in American Society",
+  subtitle = "General Social Survey Panel 2016 (N = 2,867 respondents)\nPercentage distribution of responses across social trust measures",
+  x_label = "Social Trust Dimension",
+  stack_label = "Response Category",
+  stacked_type = "percent",
+  tooltip_prefix = "",
+  tooltip_suffix = "% of respondents",
+  x_tooltip_suffix = "",
+  include_na = TRUE,
+  na_label_stack = "No response",
+  color_palette = c("#b2182b", "#ef8a62", "#fddbc7", "darkgrey"),
+  show_question_tooltip = TRUE
+)
+
+plot10
+```
+
+# Summary and Best Practices
+
+## Key Features Demonstrated
+
+1. **Multi-question visualization** with automatic wide-to-long data transformation
+2. **Custom question labeling** for more descriptive axis labels
+3. **Response mapping and ordering** for consistent presentation
+4. **Missing value handling** with explicit NA categories
+5. **Percentage vs. count displays** for different analytical needs
+6. **Demographic subgroup analysis** for comparative insights
+7. **Survey battery analysis** for related question sets
+8. **Publication-ready styling** with comprehensive customization
+
+## Best Practices for Multi-Question Charts
+
+1. Choose questions with similar response scales
+ - Use questions that have the same or compatible response categories
+ - Consider mapping different scales to common categories when appropriate
+
+2. Order questions logically
+ - Group related concepts together
+ - Consider ordering by typical response patterns (most positive to least positive)
+ - Place most important questions first
+
+3. Use appropriate stacking type
+ - Use "percent" for comparing response patterns across questions
+ - Use "normal" when absolute counts matter more than proportions
+
+4. Handle missing data thoughtfully
+ - Decide whether missing patterns are substantively meaningful
+ - Use include_na = TRUE when non-response patterns are important
+ - Provide clear labels for missing categories
+
+5. Choose colors carefully
+ - Use consistent color schemes across related charts
+ - Consider the meaning of response categories (positive/negative)
+ - Ensure sufficient contrast between adjacent categories
+ - Test for colorblind accessibility
+
+6. Customize tooltips for clarity
+ - Include question text in tooltips when helpful
+ - Use appropriate number formatting (percentages vs. counts)
+ - Provide context about sample sizes when relevant
+
 
 ## Conclusion
 
-The `create_stackedbars` function provides a powerful and flexible tool for visualizing data relationships, particularly useful for survey data. By leveraging its various arguments for mapping, binning, and ordering, you can transform raw, coded, or continuous data into clear, interactive, and professional-looking stacked bar charts with minimal effort. This makes it ideal for generating dashboards, allowing users to quickly grasp key insights from complex datasets.
+The `create_stackedbars()` function provides a powerful solution for visualizing multiple Likert-type survey questions simultaneously. Its key advantages include:
 
-You are easily able to flip through a battery of survey items to quickly compare responses to a single topic or idea, with the visualization flexibility of a typical stacked bar chart.
+- **Automatic data transformation** from wide to long format
+- **Flexible question labeling** for publication-ready displays
+- **Comprehensive customization options** for professional presentations
+- **Interactive tooltips** for enhanced data exploration
+- **Consistent handling** of survey data complexities
 
-Experiment with different combinations of arguments and your own datasets to unlock the full potential of this function!
+By leveraging the GSS Panel 2020 dataset, we've demonstrated how this function can reveal patterns in social attitudes, trust measures, and other survey constructs. The ability to compare response distributions across multiple related questions makes it an invaluable tool for survey researchers, enabling them to communicate complex patterns in public opinion and social attitudes effectively.
+
+Whether you're analyzing institutional confidence, social trust, life satisfaction, or any other multi-item survey construct, `create_stackedbars()` provides the flexibility and polish needed for both exploratory analysis and publication-ready visualizations.

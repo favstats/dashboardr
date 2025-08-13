@@ -261,8 +261,8 @@ create_stackedbar <- function(data,
                               stack_order = NULL,
                               x_order = NULL,
                               include_na = FALSE,
-                              na_label_x = "(Missing)",        # ADD THIS LINE
-                              na_label_stack = "(Missing)",    # ADD THIS LINE
+                              na_label_x = "(Missing)",
+                              na_label_stack = "(Missing)",
                               x_breaks = NULL,
                               x_bin_labels = NULL,
                               x_map_values = NULL,
