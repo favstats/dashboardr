@@ -80,6 +80,9 @@ library(gssr)
 #'                         of breaks (or same if Inf is last break).
 #' @param stack_map_values Optional. A named list (e.g., `list("1" = "Strongly Disagree", "7" = "Strongly Agree")`)
 #'                         to rename values within `stack_var` for display.
+#' @param x_tooltip_suffix Optional. A string to append to x-axis values in tooltips.
+#' @param na_label_x Optional string. Custom label for NA values in x_var. Defaults to "(Missing)".
+#' @param na_label_stack Optional string. Custom label for NA values in stack_var. Defaults to "(Missing)".
 #'
 #' @return An interactive `highcharter` bar chart plot object.
 #'
