@@ -1,0 +1,74 @@
+---
+title: "Welcome to Dashboardr"
+format: html
+editor: visual
+---
+
+```{r setup}
+#| include: false
+#library(dashboardr)
+library(highcharter)
+library(dplyr)
+library(gssr)
+
+# Load the data
+data <- readRDS("dashboard_data.rds")
+# Or if using SPSS data
+spss_data <-  read.spss("dashboard_data.sav")
+```
+
+# Welcome to Dashboardr!
+
+Dashboardr enables you to visualize data in a clean and straightforward way. It makes it easy to create beautiful plots, especially when you have little experience with R. To learn more about Dashboardr, check out our [GitHub](https://github.com/favstats/dashboardr).
+
+This is an example template of what your Dashboardr can look like. When you render, an HTML webpage with your data dashboard will be generated.
+
+# Visualizing Your Data
+
+The plots are easily generated when you use the visualization functions from the `dashboardr` package. Here are a few examples using the `gss_panel20` dataset.
+
+# Educational Attainment by Gender
+
+```{r stackedbar}
+# Create basic stacked bar chart
+plot1 <- create_stackedbar(
+  data = gss_clean,
+  x_var = "degree_1a",
+  stack_var = "sex_1a",
+  title = "Educational Attainment by Gender",
+  subtitle = "GSS Panel 2016 - Raw counts",
+  x_label = "Highest Degree Completed",
+  y_label = "Number of Respondents",
+  stack_label = "Gender",
+  stacked_type = "normal"
+)
+
+plot1
+```
+
+
+# Social Attitudes and Trust
+
+```{r stackedbars}
+# Define our questions and labels
+social_questions <- c("trust_1a", "fair_1a", "helpful_1a")
+social_labels <- c(
+  "Interpersonal Trust",
+  "Fairness of Others", 
+  "Helpfulness of Others"
+)
+
+# Create basic multi-question chart
+plot2 <- create_stackedbars(
+  data = gss_likert,
+  questions = social_questions,
+  question_labels = social_labels,
+  title = "Social Attitudes and Trust",
+  subtitle = "GSS Panel 2016 - Distribution of responses across social attitude questions",
+  x_label = "Social Attitude Dimension",
+  stack_label = "Response Level",
+  stacked_type = "normal"
+)
+
+plot2
+```

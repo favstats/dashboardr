@@ -22,6 +22,8 @@ create_stackedbars(
   stack_order = NULL,
   x_order = NULL,
   include_na = FALSE,
+  na_label_x = "(Missing)",
+  na_label_stack = "(Missing)",
   x_breaks = NULL,
   x_bin_labels = NULL,
   x_map_values = NULL,
@@ -74,6 +76,10 @@ Likert responses (e.g. \verb{c("Strongly Disagree", …, "Strongly Agree")}).}
 \item{include_na}{Logical. If \code{TRUE}, NA values are shown as explicit categories; if \code{FALSE},
 rows with \code{NA} in question or response are dropped. Default \code{FALSE}.}
 
+\item{na_label_x}{Optional string. Custom label for NA values in questions. Defaults to "(Missing)".}
+
+\item{na_label_stack}{Optional string. Custom label for NA values in responses. Defaults to "(Missing)".}
+
 \item{x_breaks}{Optional numeric vector of cut points to bin the questions
 (if they are numeric). Not typical for Likert.}
 
@@ -88,10 +94,6 @@ rows with \code{NA} in question or response are dropped. Default \code{FALSE}.}
 \item{stack_map_values}{Optional named list to rename response values.}
 
 \item{show_question_tooltip}{Logical. If \code{TRUE}, shows custom tooltip with question labels.}
-
-\item{na_label_x}{Optional string. Custom label for NA values in questions. Defaults to "(Missing)".}
-
-\item{na_label_stack}{Optional string. Custom label for NA values in responses. Defaults to "(Missing)".}
 }
 \value{
 A \code{highcharter} stacked bar chart object.
