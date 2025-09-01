@@ -129,7 +129,7 @@ of breaks (or same if Inf is last break).}
 \item{stack_map_values}{Optional. A named list (e.g., \code{list("1" = "Strongly Disagree", "7" = "Strongly Agree")})
 to rename values within \code{stack_var} for display.}
 
-\item{x_tooltip_suffix}{Optional. A string to append to values in tooltips.}
+\item{x_tooltip_suffix}{Optional. A string to append to x-axis values in tooltips.}
 
 \item{na_label_x}{Optional string. Custom label for NA values in x_var. Defaults to "(Missing)".}
 
