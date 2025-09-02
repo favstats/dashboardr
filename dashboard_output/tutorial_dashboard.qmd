@@ -123,28 +123,35 @@ create_stackedbars(
 
 ## Social Attitudes and Trust (if using GSS data)
 ```{r stackedbars_gss}
-# Define our questions and labels
-social_questions <- c("trust_1a", "fair_1a", "helpful_1a")
-social_labels <- c(
-  "Interpersonal Trust",
-  "Fairness of Others", 
-  "Helpfulness of Others"
-)
+if (all(c("trust_1a", "fair_1a", "helpful_1a") %in% names(data))) {
+  
+  # Define our questions and labels
+  social_questions <- c("trust_1a", "fair_1a", "helpful_1a")
+  social_labels <- c(
+    "Interpersonal Trust",
+    "Fairness of Others", 
+    "Helpfulness of Others"
+  )
+  
+  # Create basic multi-question chart
+  plot2 <- create_stackedbars(
+    data = data,
+    questions = social_questions,
+    question_labels = social_labels,
+    title = "Social Attitudes and Trust",
+    subtitle = "GSS Panel 2016 - Distribution of responses across social attitude questions",
+    x_label = "Social Attitude Dimension",
+    stack_label = "Response Level",
+    stacked_type = "normal"
+  )
+  
+  plot2
 
-# Create basic multi-question chart
-plot2 <- create_stackedbars(
-  data = data,
-  questions = social_questions,
-  question_labels = social_labels,
-  title = "Social Attitudes and Trust",
-  subtitle = "GSS Panel 2016 - Distribution of responses across social attitude questions",
-  x_label = "Social Attitude Dimension",
-  stack_label = "Response Level",
-  stacked_type = "normal"
-)
-
-plot2
-
+} else {
+  cat("📝 GSS columns not found. Use the template above with your column names!\n")
+  cat("Available columns:", paste(names(data)[1:min(10, ncol(data))], collapse = ", "))
+  if (ncol(data) > 10) cat("... and", ncol(data) - 10, "more")
+}
 ```
 
 # Quick Start Guide
