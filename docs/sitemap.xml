@@ -1,0 +1,21 @@
+<urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
+<url><loc>/404.html</loc></url>
+<url><loc>/LICENSE-text.html</loc></url>
+<url><loc>/LICENSE.html</loc></url>
+<url><loc>/articles/heatmap_vignette.html</loc></url>
+<url><loc>/articles/index.html</loc></url>
+<url><loc>/articles/stackedbar_vignette.html</loc></url>
+<url><loc>/articles/stackedbars_vignette.html</loc></url>
+<url><loc>/articles/timeline_vignette.html</loc></url>
+<url><loc>/authors.html</loc></url>
+<url><loc>/index.html</loc></url>
+<url><loc>/reference/create_dashboard.html</loc></url>
+<url><loc>/reference/create_heatmap.html</loc></url>
+<url><loc>/reference/create_histogram.html</loc></url>
+<url><loc>/reference/create_stackedbar.html</loc></url>
+<url><loc>/reference/create_stackedbars.html</loc></url>
+<url><loc>/reference/create_timeline.html</loc></url>
+<url><loc>/reference/index.html</loc></url>
+<url><loc>/reference/pipe.html</loc></url>
+</urlset>
+

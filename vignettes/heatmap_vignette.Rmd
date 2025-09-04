@@ -2,8 +2,7 @@
 title: "Creating Interactive Heatmaps with `create_heatmap`"
 output: rmarkdown::html_vignette
 author: "Alexandra Pafford"
-date: "2025-08-03
-output: rmarkdown::html_vignette
+date: "2025-08-03"
 vignette: >
   %\VignetteIndexEntry{Creating Interactive Heatmaps with `create_heatmap`}
   %\VignetteEngine{knitr::rmarkdown}

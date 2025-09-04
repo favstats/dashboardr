@@ -46,10 +46,11 @@ library(gssr)
 #'
 #' @examples
 #'
-#' We will work with data from the GSS. The GSS dataset (`gssr`) is a dependency of
-#' our `dashboardr` package.
+#' #We will work with data from the GSS. The GSS dataset (`gssr`) is a dependency of
+#' #our `dashboardr` package.
 #'
-#' # Filter to recent years and select relevant variables
+#' #Filter to recent years and select relevant variables
+#' #TODO: some of the examples look off for example plot 4 and 5
 #' gss_recent <- gss_all %>%
 #'   filter(year >= 2010) %>%
 #'   select(age, degree, happy, sex, race, year)
@@ -183,7 +184,6 @@ library(gssr)
 #'    }
 #'
 #' @export
-
 create_histogram <- function(data,
                              x_var,
                              y_var = NULL,

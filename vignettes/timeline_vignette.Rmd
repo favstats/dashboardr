@@ -1,14 +1,12 @@
 ---
 title: "Getting Started With `create_timeline()`"
 author: "Alexandra Pafford"
-date: "14/08/2025"
-output:
-  rmarkdown::html_vignette:
-    keep_md: true
-vignette:
-  %\VignetteIndexEntry{Getting Started With `create_timeline()`}
+date: "2025-08-14"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Creating interactive timeline visualizations with `create_timeline`}
   %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8"}
+  %\VignetteEncoding{UTF-8}
 ---
 
 ```{r, include = FALSE}
@@ -38,6 +36,7 @@ library(highcharter)
 library(stringr)
 library(haven)
 library(dashboardr)
+library(gssr)
 
 # Load GSS data
 data(gss_all)

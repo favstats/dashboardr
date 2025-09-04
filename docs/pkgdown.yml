@@ -1,0 +1,9 @@
+pandoc: 3.6.2
+pkgdown: 2.1.1
+pkgdown_sha: ~
+articles:
+  heatmap_vignette: heatmap_vignette.html
+  stackedbar_vignette: stackedbar_vignette.html
+  stackedbars_vignette: stackedbars_vignette.html
+  timeline_vignette: timeline_vignette.html
+last_built: 2025-09-04T09:56Z

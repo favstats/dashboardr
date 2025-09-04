@@ -1,4 +1,3 @@
-
 ---
 title: "Creating Interactive Stacked Bar Charts with `create_stackedbar`"
 output: rmarkdown::html_vignette

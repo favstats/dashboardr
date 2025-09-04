@@ -1,28 +1,14 @@
-Here's a comprehensive vignette for the `create_stackedbars` function:
-
-```{r setup, include = FALSE}
-knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>",
-  fig.width = 7, 
-  fig.height = 5, 
-  warning = FALSE, 
-  message = FALSE 
-)
-```
-
 ---
-title: "Creating Multi-Question Stacked Bar Charts with `create_stackedbars`"
-output: rmarkdown::html_vignette
+title: "Getting Started With `create_stackedbars()`"
 author: "Alexandra Pafford"
-date: "2025-08-03"
+date: "14/08/2025"
+output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Creating Multi-Question Stacked Bar Charts with `create_stackedbars`}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
 
-## Introduction
 
 Welcome to this comprehensive guide on using the `create_stackedbars` function from the `dashboardr` package. This function is specifically designed to handle a common challenge in survey research: visualizing responses to multiple Likert-type questions simultaneously.
 
@@ -48,7 +34,7 @@ library(gssr)
 library(dplyr)
 library(highcharter)
 library(tidyr)
-#library(dashboardr)
+library(dashboardr)
 
 # Load GSS Panel 2020 data
 data(gss_panel20)
