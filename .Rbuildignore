@@ -1,2 +1,11 @@
-^.*\.Rproj$
-^\.Rproj\.user$
+^docs$
+^pkgdown$
+^_pkgdown\.yml$
+^\.github$
+^dev($|/)
+^README\.Rmd$
+^README-.*\.png$
+dashboard_output
+dashboard_template
+^vignettes/.*_files$
+^vignettes/.*\.html$
