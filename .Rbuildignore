@@ -9,3 +9,5 @@ dashboard_output
 dashboard_template
 ^vignettes/.*_files$
 ^vignettes/.*\.html$
+^.*\.Rproj$
+^\.Rproj\.user$

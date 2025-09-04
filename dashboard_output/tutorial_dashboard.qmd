@@ -106,6 +106,7 @@ if (all(c("class_1a", "sex_1a") %in% names(data))) {
 ```
 
 ## Multiple Stacked Bars
+
 ```{r stackedbars}
 #| eval: false
 #| echo: true
@@ -122,6 +123,7 @@ create_stackedbars(
 ```
 
 ## Social Attitudes and Trust (if using GSS data)
+
 ```{r stackedbars_gss}
 if (all(c("trust_1a", "fair_1a", "helpful_1a") %in% names(data))) {
   
@@ -157,30 +159,27 @@ if (all(c("trust_1a", "fair_1a", "helpful_1a") %in% names(data))) {
 # Quick Start Guide
 
 ## Step 1: Choose Your Variables
-Look at the "Column Information" table above to identify:
-- **Categorical variables** for stacked bar charts (factors, characters, or numeric with few unique values)
-- **Variables with reasonable number of categories** (ideally < 15 for x-axis, < 10 for stacking)
+
+Look at the "Column Information" table above to identify: - **Categorical variables** for stacked bar charts (factors, characters, or numeric with few unique values) - **Variables with reasonable number of categories** (ideally \< 15 for x-axis, \< 10 for stacking)
 
 ## Step 2: Edit the Code
+
 Replace the placeholder variable names in the code chunks above with your actual column names.
 
 ## Step 3: Customize Your Charts
-- Change `stacked_type` to `"percent"` for proportional charts
-- Add custom `title`, `subtitle`, and labels
-- Use `stack_order` for Likert scales: `stack_order = c("Strongly Disagree", "Disagree", "Neutral", "Agree", "Strongly Agree")`
+
+-   Change `stacked_type` to `"percent"` for proportional charts
+-   Add custom `title`, `subtitle`, and labels
+-   Use `stack_order` for Likert scales: `stack_order = c("Strongly Disagree", "Disagree", "Neutral", "Agree", "Strongly Agree")`
 
 ## Step 4: Add More Charts
+
 Copy the stacked bar code chunk and modify it for different variable combinations.
 
----
+------------------------------------------------------------------------
 
-**💡 Pro Tips:**
-- Use `stacked_type = "percent"` when comparing groups of different sizes
-- Always specify `stack_order` for ordinal scales (like Likert)
-- Use `x_breaks` and `x_bin_labels` to group continuous variables like age
+**💡 Pro Tips:** - Use `stacked_type = "percent"` when comparing groups of different sizes - Always specify `stack_order` for ordinal scales (like Likert) - Use `x_breaks` and `x_bin_labels` to group continuous variables like age
 
-**🎨 Customization:**
-- Add `color_palette = c("#color1", "#color2", "#color3")` for custom colors
-- Use `x_map_values = list("1" = "Male", "2" = "Female")` to rename coded values
+**🎨 Customization:** - Add `color_palette = c("#color1", "#color2", "#color3")` for custom colors - Use `x_map_values = list("1" = "Male", "2" = "Female")` to rename coded values
 
 Happy plotting! 📊✨
