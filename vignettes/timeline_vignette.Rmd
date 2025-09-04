@@ -37,10 +37,7 @@ library(dplyr)
 library(highcharter)
 library(stringr)
 library(haven)
-#library(dashboardr)
-
-# Define the %||% operator
-`%||%` <- function(x, y) if (is.null(x)) y else x
+library(dashboardr)
 
 # Load GSS data
 data(gss_all)

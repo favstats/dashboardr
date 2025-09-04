@@ -2,6 +2,9 @@
 
 export("%>%")
 export(create_dashboard)
+export(create_heatmap)
+export(create_histogram)
 export(create_stackedbar)
 export(create_stackedbars)
+export(create_timeline)
 importFrom(magrittr,"%>%")

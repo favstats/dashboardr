@@ -52,25 +52,27 @@ library(tidyr)
 
 # Load GSS Panel 2020 data
 data(gss_panel20)
-
-# Examine the structure
-glimpse(gss_panel20)
 ```
 
 ## Data Preparation
 
 Let's identify and prepare Likert-type questions from the 2016 wave (`_1a` variables) for ease of use in this practical.
 
-```{r data-prep}
+```{r data-prep1}
 # Look for confidence-related questions (common Likert-type questions in GSS)
 confidence_vars <- names(gss_panel20)[grepl("^con.*_1a$", names(gss_panel20))]
 cat("Confidence variables found:\n")
 print(confidence_vars)
 
+
 # Look for other attitude/satisfaction variables
 attitude_vars <- names(gss_panel20)[grepl("(trust|fair|helpful|happy).*_1a$", names(gss_panel20))]
 cat("\nAttitude variables found:\n")
 print(attitude_vars)
+```
+
+
+```{r data-prep2}
 
 # Create a working dataset with key Likert-type variables
 gss_likert <- gss_panel20 %>%
@@ -84,9 +86,6 @@ gss_likert <- gss_panel20 %>%
   ) %>%
   # Remove completely empty rows
   filter(if_any(everything(), ~ !is.na(.)))
-
-# Check what we have
-glimpse(gss_likert)
 
 # Examine the response patterns for key variables
 cat("Trust responses:\n")
@@ -167,7 +166,12 @@ print(unique(as.character(gss_likert$trust_1a)))
 
 cat("\nUnique fair responses:\n")
 print(unique(as.character(gss_likert$fair_1a)))
+```
 
+
+```{r stackedbars-custom2}
+
+#TODO: There is a "Series 4" I think for NA values, that needs to be dealt with, i.e. ideally that has its own value?
 # Create response mapping for cleaner labels
 response_map <- list(
   "can't trust" = "High Trust/Positive", # I know this doesn't make sense, let's just pretend for the sake of the demo
@@ -242,7 +246,10 @@ happiness_labels <- c("General Happiness")
 # Check happiness response values
 cat("Happiness responses:\n")
 table(gss_likert$happy_1a, useNA = "always")
+```
 
+
+```{r stackedbars-happiness2}
 # Create happiness chart
 plot5 <- create_stackedbars(
   data = gss_likert,
@@ -264,6 +271,7 @@ Let's create a comprehensive chart combining different types of attitude questio
 
 
 ```{r stackedbars-comprehensive}
+#TODO: this chart I dont get it has so many different scales, I think ideally should only be used with same scale?
 # Standardize responses before charting
 gss_standardized <- gss_likert %>%
   mutate(
@@ -299,7 +307,10 @@ gss_standardized <- gss_likert %>%
       TRUE ~ happy_1a_char
     )
   )
+```
 
+
+```{r stackedbars-comprehensive2}
 # Check what the actual labels are after conversion
 cat("Trust labels:\n")
 table(gss_standardized$trust_1a_char, useNA = "always")
@@ -312,7 +323,10 @@ table(gss_standardized$helpful_1a_char, useNA = "always")
 
 cat("\nHappy labels:\n")
 table(gss_standardized$happy_1a_char, useNA = "always")
+```
 
+
+```{r stackedbars-comprehensive3}
 # Then use the standardized versions
 standardized_questions <- c("trust_1a_std", "fair_1a_std", "helpful_1a_std", "happy_1a_std")
 
@@ -348,7 +362,8 @@ plot6
 
 Let's create separate charts for different demographic groups.
 
-```{r stackedbars-subgroups}
+```{r stackedbars-subgroups} 
+## TODO: maybe we dont need the if logic here? I think is confusing for the tutorial.
 # You probably noticed one of the response labels is incorrect. Let's fix that first. We can do this easily using mapping in the `create_barcharts` function.
 trust_fix_map <- list(
   "can't trust" = "can trust"

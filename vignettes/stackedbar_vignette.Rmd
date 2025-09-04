@@ -47,13 +47,11 @@ library(gssr)
 library(dplyr)
 library(highcharter)
 library(tidyr)
-#library(dashboardr)
+library(dashboardr)
 
 # Load GSS Panel 2020 data
 data(gss_panel20)
 
-# Examine the structure
-glimpse(gss_panel20)
 ```
 
 ## Data Preparation
@@ -90,6 +88,7 @@ table(gss_clean$happy_1a, useNA = "always")
 Let's start with a basic stacked bar chart showing educational attainment by gender.
 
 ```{r stackedbar-basic}
+## TODO: there is a odd 5 chart
 # Create basic stacked bar chart
 plot1 <- create_stackedbar(
   data = gss_clean,
@@ -111,6 +110,8 @@ plot1
 Now let's create a percentage-based stacked bar chart to show happiness distribution across education levels.
 
 ```{r stackedbar-percentage}
+## TODO: there is also an odd 5 chart
+
 # Define education order for logical display
 education_order <- c("Lt High School", "High School", "Junior College", "Bachelor", "Graduate")
 
@@ -157,7 +158,11 @@ summary(gss_clean_age$age_numeric)
 # Define age breaks and labels (adjusted if needed based on actual data range)
 age_range <- range(gss_clean_age$age_numeric, na.rm = TRUE)
 cat("Age range in data:", age_range[1], "to", age_range[2], "\n")
+```
 
+
+
+```{r stackedbar-binning2}
 # Adjust breaks to match actual data range
 age_breaks <- c(18, 30, 45, 60, 75, Inf)
 age_labels <- c("18-29", "30-44", "45-59", "60-74", "75+")
@@ -227,6 +232,9 @@ plot4
 Let's demonstrate comprehensive value mapping for cleaner labels.
 
 ```{r stackedbar-mapping}
+
+## TODO: there is also an odd 4 chart
+
 # Create mappings for cleaner display
 sex_map <- list("Male" = "Men", "Female" = "Women")
 class_map <- list(
@@ -264,6 +272,9 @@ plot5
 Let's examine how trust levels vary across regions and social classes.
 
 ```{r stackedbar-regional}
+
+## TODO: there is also an odd Series 4 chart
+
 # Create regional trust analysis
 plot6 <- create_stackedbar(
   data = gss_clean,
@@ -287,6 +298,10 @@ plot6
 Let's create income groups and examine their relationship with happiness and gender.
 
 ```{r stackedbar-income}
+
+
+## TODO: there is also an odd 12 chart, + the order is off?
+
 # First, let's examine the income variable
 table(gss_clean$income_1a, useNA = "always")
 

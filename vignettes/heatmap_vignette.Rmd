@@ -49,16 +49,11 @@ library(gssr)
 library(dplyr)
 library(highcharter)
 library(tidyr)
-#library(dashboardr)
+library(dashboardr)
 
 # Load GSS Panel 2020 data
 data(gss_panel20)
 
-# Examine the structure
-glimpse(gss_panel20)
-
-# Check the first few variable names to understand the structure
-head(names(gss_panel20), 20)
 
 ```
 
@@ -126,6 +121,8 @@ table(gss_clean$income_group, useNA = "always")
 Let's create a heatmap showing the average age across education levels and gender.
 
 ```{r heatmap-basic}
+
+## TODO: some labels are off here also include the average age as text within the heatmap?
 # Prepare data for heatmap
 age_education_data <- gss_clean %>%
   filter(!is.na(degree_1a), !is.na(sex_1a), !is.na(age_1a)) %>%
@@ -154,6 +151,8 @@ plot1
 Let's examine the relationship between age groups and education, showing average income.
 
 ```{r heatmap-income}
+## TODO: some labels are off here also include the average age as text within the heatmap?
+
 # Prepare income data
 income_data <- gss_clean %>%
   filter(!is.na(age_group), !is.na(degree_1a), !is.na(income_1a)) %>%
@@ -193,6 +192,8 @@ plot2
 Let's create a heatmap that explicitly shows missing data patterns.
 
 ```{r heatmap-missing}
+## TODO: some labels are off here also include the average age as text within the heatmap?
+
 # Create data with some missing values for demonstration
 happiness_data <- gss_clean %>%
   # Keep some NAs to demonstrate include_na feature
@@ -232,6 +233,8 @@ plot3
 Let's use value mapping to create more readable labels and demonstrate different aggregation functions.
 
 ```{r heatmap-mapping}
+## TODO: some labels are off here also include the average age as text within the heatmap?
+
 # Prepare data with mapping
 political_data <- gss_clean %>%
   filter(!is.na(polviews_1a), !is.na(partyid_1a), !is.na(trust_1a)) %>%
