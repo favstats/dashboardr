@@ -1,103 +1,132 @@
-#' Create a dashboard from the bundled Quarto extension (and render it)
+#' Create a dashboard
 #'
-#' This installs the package's Quarto extension into `./_extensions/<ext_name>`,
-#' creates `<output_dir>/<dashboard_name>.qmd` from the template, saves the data
-#' as `dashboard_data.rds`, and optionally renders the HTML.
-#'
-#' Expected package layout (installed):
-#'   inst/extdata/_extensions/<ext_name>/{_extension.yml, template.qmd, header.tex?}
-#'   inst/quarto/dashboard_template.qmd   # fallback if extension template missing
-#'
-#' @param data A data object saved as `dashboard_data.rds` for the template.
-#' @param output_dir Output directory for the dashboard files.
-#' @param dashboard_name Base name for the .qmd/.html.
-#' @param render If TRUE, render the dashboard after creating files.
-#' @param ext_name Name of the bundled extension directory under inst/extdata/_extensions/.
+#' @param data A data.frame or a named list of data.frames (for multi-page site).
+#' @param output_dir Directory for output (site directory).
+#' @param dashboard_name Name for the dashboard (used when `site = FALSE`).
+#' @param site If TRUE, scaffold a website with index + dashboards.
+#' @param render If TRUE, render HTML with Quarto immediately.
+#' @param title Title for the dashboard/site.
+#' @param open If TRUE, open the rendered HTML in your browser (forces render).
 #' @export
 create_dashboard <- function(data,
                              output_dir = "dashboard_output",
-                             dashboard_name = "tutorial_dashboard",
+                             dashboard_name = "dashboard",
+                             site = FALSE,
                              render = FALSE,
-                             ext_name = "dashboardr") {
+                             title = "Dashboard Site",
+                             open = FALSE) {
 
-  # --- 1) Ensure output dir exists ------------------------------------------------
+  # If user wants to open, ensure we render
+  if (open && !render) render <- TRUE
+
+  if (site) {
+    .create_dashboard_site(data, output_dir, title, render, open)
+  } else {
+    .create_dashboard_page(data, output_dir, dashboard_name, render, open)
+  }
+}
+
+# Internal: single-page builder (renders a single .qmd)
+.create_dashboard_page <- function(data, output_dir, dashboard_name, render, open) {
   if (!dir.exists(output_dir)) dir.create(output_dir, recursive = TRUE)
 
-  # --- 2) Try to locate bundled extension inside the *installed* package ----------
-  ext_src_dir <- system.file(file.path("extdata", "_extensions", ext_name),
-                             package = "dashboardr")
-
-  # Destination for installed extension in the *current working directory*
-  dest_root <- "_extensions"
-  dest_dir  <- file.path(dest_root, ext_name)
-
-  # --- 3) Install the extension into ./_extensions/<ext_name> if available -------
-  if (nzchar(ext_src_dir) && dir.exists(ext_src_dir)) {
-    if (!dir.exists(dest_root)) {
-      dir.create(dest_root)
-      message("Created '_extensions' folder")
-    }
-    if (!dir.exists(dest_dir)) dir.create(dest_dir, recursive = TRUE)
-
-    ok <- file.copy(from = ext_src_dir,
-                    to   = dest_root,
-                    overwrite = TRUE, recursive = TRUE, copy.mode = TRUE)
-
-    if (!ok || !dir.exists(dest_dir)) {
-      warning("Extension copy seems to have failed. Proceeding with fallback template if available.")
-    } else {
-      # Optional friendly metadata
-      ext_yml_path <- file.path(dest_dir, "_extension.yml")
-      if (file.exists(ext_yml_path)) {
-        ext_yml <- readLines(ext_yml_path, warn = FALSE)
-        ext_ver <- sub("^version:\\s*", "", ext_yml[grepl("^version:", ext_yml)][1]) %||% "?"
-        ext_nm  <- sub("^title:\\s*",   "", ext_yml[grepl("^title:",   ext_yml)][1]) %||% ext_name
-        message(sprintf("%s v%s installed to '%s'.", ext_nm, ext_ver, dest_dir))
-      } else {
-        message(sprintf("Installed extension '%s' (no _extension.yml found for metadata).", ext_name))
-      }
-    }
-  } else {
-    message("Bundled extension not found in installed package; will try fallback template.")
-  }
-
-  # --- 4) Choose the template: extension first, fallback second -------------------
-  ext_template <- file.path(dest_dir, "template.qmd")
-
-  if (file.exists(ext_template)) {
-    template_path <- ext_template
-  } else {
-    stop(
-      "No template found.\n"
-    )
-  }
-
-  # --- 5) Create the .qmd and companion files ------------------------------------
-  target_file <- file.path(output_dir, paste0(dashboard_name, ".qmd"))
-  ok <- file.copy(template_path, target_file, overwrite = TRUE)
-  if (!ok) stop("Failed to copy template to: ", target_file)
-
-  # Save data for the template to load (e.g., via readRDS('dashboard_data.rds'))
+  # Save data next to the page
   saveRDS(data, file.path(output_dir, "dashboard_data.rds"))
 
-  # --- 6) Render (optional) -------------------------------------------------------
-  if (render) {
-    if (requireNamespace("quarto", quietly = TRUE)) {
-      quarto::quarto_render(target_file)
-      html_file <- file.path(output_dir, paste0(dashboard_name, ".html"))
-      message("✅ Dashboard created and rendered")
-      message("📄 Qmd:  ", target_file)
-      message("🌐 HTML: ", html_file)
-      message("💡 Edit the .qmd and re-render to customize your dashboard.")
-    } else {
-      message("❌ Package 'quarto' not available: install.packages('quarto')")
-      message("📄 Template created at: ", target_file)
-      message("🔧 Render manually with: quarto render ", shQuote(target_file))
+  # Locate template
+  template_path <- system.file("extdata/templates/template.qmd", package = "dashboardr")
+  if (template_path == "" || !file.exists(template_path)) {
+    stop("❌ Could not find 'template.qmd' in dashboardr (inst/extdata/templates).")
+  }
+
+  # Copy to target .qmd
+  target_file <- file.path(output_dir, paste0(dashboard_name, ".qmd"))
+  if (!file.copy(template_path, target_file, overwrite = TRUE)) {
+    stop("❌ Failed to copy template to: ", target_file)
+  }
+
+  # Render the .qmd
+  if (render && requireNamespace("quarto", quietly = TRUE)) {
+    owd <- setwd(normalizePath(output_dir)); on.exit(setwd(owd), add = TRUE)
+    quarto::quarto_render(basename(target_file), as_job = FALSE)
+    message("✅ Dashboard rendered: ", target_file)
+
+    # Open the resulting HTML if requested
+    if (open) {
+      html_path <- file.path(output_dir, paste0(dashboard_name, ".html"))
+      if (file.exists(html_path)) utils::browseURL(normalizePath(html_path))
     }
   } else {
-    message("📄 Template created at: ", target_file)
-    message("🔧 To render later: quarto render ", shQuote(target_file))
+    message("📄 Page created: ", target_file)
   }
 
   invisible(target_file)
+}
+
+# Internal: site builder (renders the project)
+.create_dashboard_site <- function(data, output_dir, title, render, open) {
+  if (!dir.exists(output_dir)) dir.create(output_dir, recursive = TRUE)
+
+  # Always write a clean _quarto.yml (idempotent)
+  quarto_yml <- file.path(output_dir, "_quarto.yml")
+  writeLines(c(
+    "project:",
+    "  type: website",
+    "  output-dir: docs",
+    "",
+    "website:",
+    paste0("  title: \"", title, "\""),
+    "  navbar:",
+    "    left:",
+    "      - href: index.qmd",
+    "        text: \"Home\""
+  ), quarto_yml)
+
+  # Landing page (don't overwrite if customized)
+  index_qmd <- file.path(output_dir, "index.qmd")
+  if (!file.exists(index_qmd)) {
+    writeLines(c(
+      "---",
+      paste0("title: \"", title, "\""),
+      "format: html",
+      "---",
+      "",
+      "# Welcome",
+      "",
+      "This is the landing page."
+    ), index_qmd)
+  }
+
+  # Generate dashboards and add to navbar
+  if (is.list(data) && !is.data.frame(data)) {
+    for (nm in names(data)) {
+      .create_dashboard_page(data[[nm]], output_dir, nm, render = FALSE, open = FALSE)
+      cat(
+        sprintf("      - href: %s.qmd\n        text: \"%s\"\n", nm, nm),
+        file = quarto_yml, append = TRUE
+      )
+    }
+  } else {
+    .create_dashboard_page(data, output_dir, "dashboard", render = FALSE, open = FALSE)
+    cat("      - href: dashboard.qmd\n        text: \"Dashboard\"\n",
+        file = quarto_yml, append = TRUE)
+  }
+
+  # Render the project from within the project directory
+  if (render && requireNamespace("quarto", quietly = TRUE)) {
+    proj_dir <- normalizePath(output_dir)
+    owd <- setwd(proj_dir); on.exit(setwd(owd), add = TRUE)
+    quarto::quarto_render(".", as_job = FALSE)
+    message("✅ Dashboard site rendered at: ", file.path(output_dir, "docs"))
+
+    # Open the site home if requested
+    if (open) {
+      index_html <- file.path(output_dir, "docs", "index.html")
+      if (file.exists(index_html)) utils::browseURL(normalizePath(index_html))
+    }
+  } else {
+    message("📂 Dashboard site initialized at: ", output_dir)
+  }
+
+  invisible(output_dir)
 }

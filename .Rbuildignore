@@ -11,3 +11,7 @@ dashboard_template
 ^vignettes/.*\.html$
 ^.*\.Rproj$
 ^\.Rproj\.user$
+^site_dashboard$
+^single_dashboard$
+^docs$
+^\.quarto$
