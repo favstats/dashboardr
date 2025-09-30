@@ -109,3 +109,7 @@ create_stackedbar(
   color_palette = optimism_colors,
   stack_label = "Chance of Improving Standard of Living"
 )
+
+library(gssr)
+data("gss_panel20")
+create_dashboard(gss_panel20, site = T, render = T, open = T)
