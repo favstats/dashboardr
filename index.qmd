@@ -1,0 +1,208 @@
+---
+title: "Dashboardr Showcase"
+description: "Comprehensive showcase of dashboardr capabilities through 12 distinct dashboard examples"
+author: "Dashboardr Team"
+format:
+  html:
+    theme: cosmo
+    toc: true
+    toc-depth: 3
+    code-fold: show
+    code-tools: true
+    value-boxes: true
+    search: true
+    navbar:
+      left:
+        - text: "Home"
+          href: index.qmd
+        - text: "Examples"
+          href: "#examples
+        - text: "Features"
+          href: "#features
+        - text: "Documentation"
+          href: "https://github.com/username/dashboardr"
+      right:
+        - icon: github
+          href: "https://github.com/username/dashboardr"
+        - icon: twitter
+          href: "https://twitter.com/username"
+---
+
+# Dashboardr Showcase
+
+Welcome to the comprehensive showcase of the **dashboardr** package! This collection demonstrates the full range of capabilities through 12 distinct dashboard examples, each showcasing different use cases, features, and design patterns.
+
+## 🚀 Quick Start
+
+Each dashboard example is self-contained and ready to run. Simply navigate to any dashboard directory and explore the features:
+
+```r
+# Load the package
+devtools::load_all()
+
+# Generate any dashboard
+generate_dashboard(your_dashboard, render = TRUE)
+```
+
+## 📊 Dashboard Examples {#examples}
+
+### 1. [Simple Sidebar Dashboard](01_simple_sidebar/)
+**Basic sidebar navigation** - Perfect for getting started with dashboardr
+
+**Features:** Basic sidebar, simple navigation, clean design
+
+**Use Case:** Quick data exploration, simple reports
+
+---
+
+### 2. [Hybrid Navigation Dashboard](02_hybrid_navigation/)
+**Advanced navigation** - Navbar sections linked to sidebar groups
+
+**Features:** Hybrid navigation, multiple sidebar groups, complex layouts
+
+**Use Case:** Large datasets, complex analysis workflows
+
+---
+
+### 3. [Social Media Dashboard](03_social_media/)
+**Social integration** - Complete with social media links and modern styling
+
+**Features:** Social media links, modern themes, value boxes, search
+
+**Use Case:** Social media analytics, public dashboards
+
+---
+
+### 4. [Academic Research Dashboard](04_academic_research/)
+**Academic styling** - Perfect for research publications and academic work
+
+**Features:** Math support, code folding, academic themes, analytics
+
+**Use Case:** Research publications, academic presentations
+
+---
+
+### 5. [Business Intelligence Dashboard](05_business_intelligence/)
+**Executive dashboard** - Designed for business intelligence and reporting
+
+**Features:** Value boxes, wide layout, business themes, analytics
+
+**Use Case:** Executive reporting, business analytics
+
+---
+
+### 6. [Data Science Portfolio](06_data_science_portfolio/)
+**Personal portfolio** - Showcase data science projects and skills
+
+**Features:** Portfolio styling, project showcase, personal branding
+
+**Use Case:** Personal portfolios, project showcases
+
+---
+
+### 7. [Minimalist Dashboard](07_minimalist/)
+**Clean design** - Minimalist approach with focus on content
+
+**Features:** Minimal design, no sidebar, clean typography
+
+**Use Case:** Simple presentations, clean reports
+
+---
+
+### 8. [Multilingual Dashboard](08_multilanguage/)
+**International support** - Dashboard supporting multiple languages
+
+**Features:** Multilingual content, international themes
+
+**Use Case:** International projects, multilingual teams
+
+---
+
+### 9. [Dark Theme Dashboard](09_dark_theme/)
+**Modern dark styling** - Dark theme with modern design elements
+
+**Features:** Dark themes, modern styling, custom CSS
+
+**Use Case:** Modern presentations, developer-focused dashboards
+
+---
+
+### 10. [Interactive Dashboard](10_interactive/)
+**Highly interactive** - Shiny, Observable, and Jupyter integration
+
+**Features:** Shiny integration, Observable JS, interactive controls
+
+**Use Case:** Interactive analysis, dynamic dashboards
+
+---
+
+### 11. [Publishing Dashboard](11_publishing/)
+**Content publishing** - Designed for content publishing and sharing
+
+**Features:** Publishing features, content management, sharing
+
+**Use Case:** Content publishing, blog integration
+
+---
+
+### 12. [Comprehensive Showcase](12_comprehensive_showcase/)
+**Full feature showcase** - Demonstrates all dashboardr capabilities
+
+**Features:** All features, complex navigation, comprehensive examples
+
+**Use Case:** Feature demonstration, comprehensive analysis
+
+## 🛠️ Key Features Demonstrated {#features}
+
+### Navigation Systems
+- **Simple Sidebar**: Basic sidebar navigation
+- **Hybrid Navigation**: Navbar sections linked to sidebar groups
+- **Mixed Navigation**: Combination of regular and sidebar navigation
+
+### Visualizations
+- **Stacked Bar Charts**: Categorical data analysis
+- **Heatmaps**: Correlation and pattern analysis
+- **Histograms**: Distribution analysis
+- **Timeline Charts**: Temporal data visualization
+- **Multiple Chart Types**: Comprehensive visualization suite
+
+### Styling & Themes
+- **Bootstrap Themes**: Cosmo, Flatly, Journal, and more
+- **Custom CSS**: Personalized styling options
+- **Dark Themes**: Modern dark styling
+- **Responsive Design**: Mobile-friendly layouts
+
+### Advanced Features
+- **Social Media Integration**: GitHub, Twitter, LinkedIn links
+- **Search Functionality**: Built-in search capabilities
+- **Math Support**: LaTeX and MathJax integration
+- **Code Features**: Syntax highlighting, folding, tools
+- **Analytics**: Google Analytics, Plausible integration
+- **Interactive Elements**: Shiny, Observable, Jupyter support
+
+### Publishing & Deployment
+- **GitHub Pages**: Automated deployment
+- **GitLab Pages**: Alternative deployment option
+- **Data Security**: Comprehensive data exclusion
+- **Version Control**: Git integration
+
+## 📚 Getting Started
+
+1. **Explore the examples** - Browse through the different dashboard types
+2. **Choose your style** - Find the design pattern that fits your needs
+3. **Customize** - Modify the examples to match your data and requirements
+4. **Deploy** - Use the built-in publishing features to share your dashboard
+
+## 🔗 Resources
+
+- **Package Documentation**: [dashboardr documentation](https://github.com/username/dashboardr)
+- **GitHub Repository**: [Source code and issues](https://github.com/username/dashboardr)
+- **Examples Gallery**: [More examples and tutorials](https://github.com/username/dashboardr-examples)
+
+## 📄 License
+
+This showcase is part of the dashboardr package. See the package documentation for licensing information.
+
+---
+
+*Built with ❤️ using the dashboardr package*
