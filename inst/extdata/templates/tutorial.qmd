@@ -1,0 +1,96 @@
+---
+title: "Dashboardr Tutorial"
+format: html
+---
+
+
+```{r setup, include=FALSE}
+library(gssr)
+library(dplyr)
+library(highcharter)
+library(dashboardr)
+library(haven)
+
+data(gss_panel20)
+data(gss_all)
+
+gss_clean <- gss_panel20 %>%
+  select(age_1a, sex_1a, degree_1a, happy_1a, trust_1a, 
+         fair_1a, helpful_1a, income_1a, polviews_1a) %>%
+  filter(!is.na(age_1a) | !is.na(sex_1a))
+```
+
+## Interactive Heatmaps
+
+Visualize relationships between two categorical variables with color intensity.
+
+```{r heatmap, echo=FALSE, message=FALSE, warning=FALSE}
+income_data <- gss_clean %>%
+  mutate(
+    age_group = case_when(
+      age_1a >= 18 & age_1a <= 29 ~ "18-29",
+      age_1a >= 30 & age_1a <= 44 ~ "30-44", 
+      age_1a >= 45 & age_1a <= 59 ~ "45-59",
+      age_1a >= 60 & age_1a <= 74 ~ "60-74",
+      age_1a >= 75 ~ "75+",
+      TRUE ~ NA_character_
+    )
+  ) %>%
+  filter(!is.na(age_group), !is.na(degree_1a), !is.na(income_1a)) %>%
+  group_by(age_group, degree_1a) %>%
+  summarise(avg_income = mean(as.numeric(income_1a), na.rm = TRUE), .groups = 'drop')
+
+create_heatmap(
+  data = income_data,
+  x_var = "age_group",
+  y_var = "degree_1a",
+  value_var = "avg_income",
+  title = "Income by Age and Education",
+  x_label = "Age Group",
+  y_label = "Education Level", 
+  value_label = "Income Level",
+  x_order = c("18-29", "30-44", "45-59", "60-74", "75+"),
+  y_order = c("Lt High School", "High School", "Junior College", "Bachelor", "Graduate"),
+  color_palette = c("#fff7ec", "#fee8c8", "#fdd49e", "#fdbb84", "#fc8d59", "#ef6548", "#d7301f")
+)
+```
+
+---
+
+## Multi-Question Batteries
+
+Compare response patterns across related survey questions.
+
+```{r stackedbars, echo=FALSE, message=FALSE, warning=FALSE}
+
+social_questions <- c("trust_1a", "fair_1a", "helpful_1a")
+social_labels <- c("Trust", "Fairness", "Helpfulness")
+
+create_stackedbars(
+  data = gss_clean,
+  questions = social_questions,
+  question_labels = social_labels,
+  title = "Social Attitudes Battery",
+  stack_label = "Response",
+  stacked_type = "percent",
+  tooltip_suffix = "%"
+)
+```
+
+---
+
+## Trends Over Time
+
+Track changes in survey responses across years or decades.
+
+```{r timeline, echo=FALSE, message=FALSE, warning=FALSE}
+create_timeline(
+  data = gss_all,
+  time_var = "year",
+  response_var = "happy",
+  chart_type = "stacked_area",
+  title = "Happiness Trends Over Time",
+  response_levels = c("very happy", "pretty happy", "not too happy"),
+  y_max = 100
+)
+```

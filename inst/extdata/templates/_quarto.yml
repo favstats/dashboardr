@@ -1,0 +1,15 @@
+project:
+  type: website
+
+website:
+  title: "Tutorial Dashboard"
+  navbar:
+    left:
+      - text: "Home"
+        href: index.qmd
+      - text: "Tutorial"
+        href: tutorial.qmd
+
+format:
+  html:
+    theme: cosmo

@@ -1,0 +1,11 @@
+---
+title: "Welcome to the Dashboardr Tutorial!"
+---
+
+Thank you for downloading and using Dashboardr. We hope that you'll find it helpful and fun to use. Here's some  information that you might find handy while you learn to use the package.
+
+This is a tutorial dashboard, which means that these pages were written by us, and are saved in the `dashboardr` R package. However, when you decide to call `create_dashboard()` using your own or sample data, an output directory will be generated. That is where your dashboard lives! You'll also have the option to write a new GitHub repository. `dashboardr` will tell you where it is saved upon rendering.
+
+If you'd like to edit your pages further, you can do so by navigating to the output directory and editing the .qmd files manually. If that doesn't suit you, then you can also create visualizations with `create_viz() %>% add_viz()`, and build out the dashboard with `add_page()`.
+
+For an example dashboard, click on the "Tutorial" tab on the toolbar above.
