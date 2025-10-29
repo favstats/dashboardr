@@ -1,11 +1,3 @@
-# Load dependencies
-library(highcharter)
-library(tidyverse)
-library(dplyr)
-library(rlang)
-library(roxygen2)
-library(gssr)
-
 # --------------------------------------------------------------------------
 # Function: create_histogram
 # --------------------------------------------------------------------------

@@ -18,15 +18,6 @@
 #   - Custom print methods for clarity
 # ===================================================================
 
-# Load required libraries
-library(highcharter)
-library(tidyverse)
-library(dplyr)
-library(rlang)
-library(tidyr)
-library(magrittr)
-library(digest)
-
 # ===================================================================
 # Internal Utility Functions
 # ===================================================================
@@ -253,11 +244,11 @@ add_viz <- function(viz_collection, type, ..., tabgroup = NULL, title = NULL, te
   if (is.null(type) || !is.character(type) || length(type) != 1 || nchar(type) == 0) {
     stop("type must be a non-empty character string")
   }
-  
+
   # Validate supported visualization types
   supported_types <- c("stackedbar", "stackedbars", "heatmap", "histogram", "timeline")
   if (!type %in% supported_types) {
-    warning("Unknown visualization type '", type, "'. Supported types: ", 
+    warning("Unknown visualization type '", type, "'. Supported types: ",
             paste(supported_types, collapse = ", "))
   }
 
@@ -288,7 +279,7 @@ add_viz <- function(viz_collection, type, ..., tabgroup = NULL, title = NULL, te
       stop("icon must be a character string or NULL")
     }
     # Validate icon format (should be "collection:name" or already formatted shortcode)
-    if (!grepl("^[a-zA-Z0-9_-]+:[a-zA-Z0-9_-]+$", icon) && 
+    if (!grepl("^[a-zA-Z0-9_-]+:[a-zA-Z0-9_-]+$", icon) &&
         !grepl("\\{\\{< iconify", icon, fixed = TRUE)) {
       warning("Icon '", icon, "' should be in format 'collection:name' (e.g., 'ph:users-three') ",
               "or a pre-formatted iconify shortcode")
@@ -838,16 +829,16 @@ card <- function(content, title = NULL, image = NULL, image_alt = NULL,
 #' \dontrun{
 #' # Display two cards in a row
 #' card_row(card1, card2)
-#' 
+#'
 #' # Display three cards in a row (3 columns)
 #' card_row(card1, card2, card3, cols = 3)
 #' }
 card_row <- function(..., cols = 2, class = NULL) {
   cards <- list(...)
-  
+
   # Calculate Bootstrap column class
   col_class <- paste0("col-md-", 12 %/% cols)
-  
+
   # Create row with cards
   row_div <- htmltools::div(
     class = paste(c("row", class), collapse = " "),
@@ -855,7 +846,7 @@ card_row <- function(..., cols = 2, class = NULL) {
       htmltools::div(class = col_class, card)
     })
   )
-  
+
   return(row_div)
 }
 
@@ -1036,7 +1027,7 @@ text_lines <- function(lines) {
       if (!dir.exists(iconify_dir)) {
         dir.create(iconify_dir, recursive = TRUE)
       }
-      
+
       # Copy all files from the source extension directory
       files_to_copy <- list.files(source_ext_dir, full.names = TRUE)
       for (file in files_to_copy) {
@@ -1085,12 +1076,12 @@ text_lines <- function(lines) {
   cat("\n")
   cat("🎉 DASHBOARD GENERATED SUCCESSFULLY!\n")
   cat(paste(rep("═", 50), collapse = ""), "\n")
-  
+
   # Dashboard info
   cat("📊 Dashboard: ", proj$title, "\n", sep = "")
   cat("📁 Location: ", output_dir, "\n", sep = "")
   cat("📄 Pages: ", length(proj$pages), "\n", sep = "")
-  
+
   # Count visualizations
   total_viz <- 0
   for (page in proj$pages) {
@@ -1099,22 +1090,22 @@ text_lines <- function(lines) {
     }
   }
   cat("📈 Visualizations: ", total_viz, "\n", sep = "")
-  
+
   cat("\n")
   cat("📁 GENERATED FILES:\n")
   cat(paste(rep("─", 30), collapse = ""), "\n")
-  
+
   # List all generated files (exclude site_libs and hidden files)
   files <- list.files(output_dir, recursive = TRUE, full.names = FALSE)
   files <- files[!grepl("^\\.", files)] # Exclude hidden files
   files <- files[!grepl("^docs/site_libs/", files)] # Exclude site_libs files
-  
+
   # Group files by type
   qmd_files <- files[grepl("\\.qmd$", files)]
   rds_files <- files[grepl("\\.rds$", files)]
   yml_files <- files[grepl("\\.yml$", files)]
   other_files <- files[!grepl("\\.(qmd|rds|yml)$", files)]
-  
+
   # Display QMD files (pages)
   if (length(qmd_files) > 0) {
     cat("📄 Pages (QMD files):\n")
@@ -1126,7 +1117,7 @@ text_lines <- function(lines) {
     }
     cat("\n")
   }
-  
+
   # Display data files
   if (length(rds_files) > 0) {
     cat("💾 Data files:\n")
@@ -1143,7 +1134,7 @@ text_lines <- function(lines) {
     }
     cat("\n")
   }
-  
+
   # Display configuration files
   if (length(yml_files) > 0) {
     cat("⚙️  Configuration:\n")
@@ -1152,7 +1143,7 @@ text_lines <- function(lines) {
     }
     cat("\n")
   }
-  
+
   # Display other files
   if (length(other_files) > 0) {
     cat("📎 Other files:\n")
@@ -1161,7 +1152,7 @@ text_lines <- function(lines) {
     }
     cat("\n")
   }
-  
+
   # Next steps
   cat("🚀 NEXT STEPS:\n")
   cat(paste(rep("─", 30), collapse = ""), "\n")
@@ -1179,12 +1170,12 @@ text_lines <- function(lines) {
   cat("   • Use Quarto's publishing features (GitHub Pages, Netlify, etc.)\n")
   cat("   • Share the docs/ folder contents\n")
   cat("\n")
-  
-  
+
+
   cat("🎯 Happy dashboarding!\n")
   cat(paste(rep("═", 50), collapse = ""), "\n")
   cat("\n")
-  
+
   invisible(NULL)
 }
 
@@ -1865,60 +1856,60 @@ text_lines <- function(lines) {
   # Sidebar configuration - supports both simple and hybrid navigation
   if (proj$sidebar || (!is.null(proj$sidebar_groups) && length(proj$sidebar_groups) > 0)) {
     yaml_lines <- c(yaml_lines, "  sidebar:")
-    
+
     # Check if we're using hybrid navigation (sidebar groups)
     if (!is.null(proj$sidebar_groups) && length(proj$sidebar_groups) > 0) {
       # Hybrid navigation mode - multiple sidebar groups
       for (i in seq_along(proj$sidebar_groups)) {
         group <- proj$sidebar_groups[[i]]
-        
+
         # Add group with ID
         yaml_lines <- c(yaml_lines, paste0("    - id: ", group$id))
         yaml_lines <- c(yaml_lines, paste0("      title: \"", group$title, "\""))
-        
+
         # Add styling options (inherit from first group if not specified)
         if (!is.null(group$style)) {
           yaml_lines <- c(yaml_lines, paste0("      style: \"", group$style, "\""))
         } else if (i == 1 && !is.null(proj$sidebar_style)) {
           yaml_lines <- c(yaml_lines, paste0("      style: \"", proj$sidebar_style, "\""))
         }
-        
+
         if (!is.null(group$background)) {
           yaml_lines <- c(yaml_lines, paste0("      background: \"", group$background, "\""))
         } else if (i == 1 && !is.null(proj$sidebar_background)) {
           yaml_lines <- c(yaml_lines, paste0("      background: \"", proj$sidebar_background, "\""))
         }
-        
+
         if (!is.null(group$foreground)) {
           yaml_lines <- c(yaml_lines, paste0("      foreground: \"", group$foreground, "\""))
         } else if (i == 1 && !is.null(proj$sidebar_foreground)) {
           yaml_lines <- c(yaml_lines, paste0("      foreground: \"", group$foreground, "\""))
         }
-        
+
         if (!is.null(group$border)) {
           yaml_lines <- c(yaml_lines, paste0("      border: ", tolower(group$border)))
         } else if (i == 1 && !is.null(proj$sidebar_border)) {
           yaml_lines <- c(yaml_lines, paste0("      border: ", tolower(proj$sidebar_border)))
         }
-        
+
         if (!is.null(group$alignment)) {
           yaml_lines <- c(yaml_lines, paste0("      alignment: \"", group$alignment, "\""))
         } else if (i == 1 && !is.null(proj$sidebar_alignment)) {
           yaml_lines <- c(yaml_lines, paste0("      alignment: \"", proj$sidebar_alignment, "\""))
         }
-        
+
         if (!is.null(group$collapse_level)) {
           yaml_lines <- c(yaml_lines, paste0("      collapse-level: ", group$collapse_level))
         } else if (i == 1 && !is.null(proj$sidebar_collapse_level)) {
           yaml_lines <- c(yaml_lines, paste0("      collapse-level: ", proj$sidebar_collapse_level))
         }
-        
+
         if (!is.null(group$pinned)) {
           yaml_lines <- c(yaml_lines, paste0("      pinned: ", tolower(group$pinned)))
         } else if (i == 1 && !is.null(proj$sidebar_pinned)) {
           yaml_lines <- c(yaml_lines, paste0("      pinned: ", tolower(proj$sidebar_pinned)))
         }
-        
+
         # Add tools if specified
         if (!is.null(group$tools) && length(group$tools) > 0) {
           yaml_lines <- c(yaml_lines, "      tools:")
@@ -1943,7 +1934,7 @@ text_lines <- function(lines) {
             }
           }
         }
-        
+
         # Add contents for this group (only if there are pages)
         pages_added <- 0
         for (page_name in group$pages) {
@@ -1955,21 +1946,21 @@ text_lines <- function(lines) {
               break
             }
           }
-          
+
           if (!is.null(matching_page)) {
             # Skip landing pages in sidebar groups (they're already in navbar)
             if (proj$pages[[matching_page]]$is_landing_page) {
               next
             }
-            
+
             if (pages_added == 0) {
               yaml_lines <- c(yaml_lines, "      contents:")
             }
             pages_added <- pages_added + 1
-            
+
             # Use lowercase with underscores for filenames
             filename <- tolower(gsub("[^a-zA-Z0-9]", "_", matching_page))
-            
+
             # Build text with icon if provided
             text_content <- paste0("\"", matching_page, "\"")
             if (!is.null(proj$pages[[matching_page]]$icon)) {
@@ -1980,14 +1971,14 @@ text_lines <- function(lines) {
               }
               text_content <- paste0("\"", icon_shortcode, " ", matching_page, "\"")
             }
-            
+
             yaml_lines <- c(yaml_lines,
               paste0("        - text: ", text_content),
               paste0("          href: ", filename, ".qmd")
             )
           }
         }
-        
+
         # If no pages were added, add a placeholder to avoid empty contents
         if (pages_added == 0) {
           yaml_lines <- c(yaml_lines, "      contents:")
@@ -1997,42 +1988,42 @@ text_lines <- function(lines) {
       }
     } else {
       # Simple sidebar mode - single sidebar (existing behavior)
-      
+
       # Sidebar style
       if (!is.null(proj$sidebar_style)) {
         yaml_lines <- c(yaml_lines, paste0("    style: \"", proj$sidebar_style, "\""))
       }
-      
+
       # Sidebar background
       if (!is.null(proj$sidebar_background)) {
         yaml_lines <- c(yaml_lines, paste0("    background: \"", proj$sidebar_background, "\""))
       }
-      
+
       # Sidebar foreground
       if (!is.null(proj$sidebar_foreground)) {
         yaml_lines <- c(yaml_lines, paste0("    foreground: \"", proj$sidebar_foreground, "\""))
       }
-      
+
       # Sidebar border
       if (!is.null(proj$sidebar_border)) {
         yaml_lines <- c(yaml_lines, paste0("    border: ", tolower(proj$sidebar_border)))
       }
-      
+
       # Sidebar alignment
       if (!is.null(proj$sidebar_alignment)) {
         yaml_lines <- c(yaml_lines, paste0("    alignment: \"", proj$sidebar_alignment, "\""))
       }
-      
+
       # Sidebar collapse level
       if (!is.null(proj$sidebar_collapse_level)) {
         yaml_lines <- c(yaml_lines, paste0("    collapse-level: ", proj$sidebar_collapse_level))
       }
-      
+
       # Sidebar pinned
       if (!is.null(proj$sidebar_pinned)) {
         yaml_lines <- c(yaml_lines, paste0("    pinned: ", tolower(proj$sidebar_pinned)))
       }
-      
+
       # Sidebar tools
       if (!is.null(proj$sidebar_tools) && length(proj$sidebar_tools) > 0) {
         yaml_lines <- c(yaml_lines, "    tools:")
@@ -2046,7 +2037,7 @@ text_lines <- function(lines) {
           }
         }
       }
-      
+
       # Sidebar contents - auto-generate from pages if not specified
       if (!is.null(proj$sidebar_contents)) {
         yaml_lines <- c(yaml_lines, "    contents:")
@@ -2076,7 +2067,7 @@ text_lines <- function(lines) {
       } else {
         # Auto-generate sidebar contents from pages
         yaml_lines <- c(yaml_lines, "    contents:")
-        
+
         # Add landing page first if it exists
         landing_page_name <- NULL
         for (page_name in names(proj$pages)) {
@@ -2085,21 +2076,21 @@ text_lines <- function(lines) {
             break
           }
         }
-        
+
         if (!is.null(landing_page_name)) {
           yaml_lines <- c(yaml_lines, "      - text: \"Home\"")
           yaml_lines <- c(yaml_lines, "        href: index.qmd")
         }
-        
+
         # Add other pages
         for (page_name in names(proj$pages)) {
           if (!is.null(proj$landing_page) && page_name == proj$landing_page) {
             next  # Skip landing page as it's already added
           }
-          
+
           # Use lowercase with underscores for filenames
           filename <- tolower(gsub("[^a-zA-Z0-9]", "_", page_name))
-          
+
           # Build text with icon if provided
           text_content <- paste0("\"", page_name, "\"")
           if (!is.null(proj$pages[[page_name]]$icon)) {
@@ -2110,7 +2101,7 @@ text_lines <- function(lines) {
             }
             text_content <- paste0("\"", icon_shortcode, " ", page_name, "\"")
           }
-          
+
           yaml_lines <- c(yaml_lines,
             paste0("      - text: ", text_content),
             paste0("        href: ", filename, ".qmd")
@@ -2124,22 +2115,22 @@ text_lines <- function(lines) {
   if (!is.null(proj$breadcrumbs)) {
     yaml_lines <- c(yaml_lines, paste0("  bread-crumbs: ", tolower(proj$breadcrumbs)))
   }
-  
+
   # Add page navigation
   if (!is.null(proj$page_navigation)) {
     yaml_lines <- c(yaml_lines, paste0("  page-navigation: ", tolower(proj$page_navigation)))
   }
-  
+
   # Add back to top
   if (!is.null(proj$back_to_top)) {
     yaml_lines <- c(yaml_lines, paste0("  back-to-top-navigation: ", tolower(proj$back_to_top)))
   }
-  
+
   # Add reader mode
   if (!is.null(proj$reader_mode)) {
     yaml_lines <- c(yaml_lines, paste0("  reader-mode: ", tolower(proj$reader_mode)))
   }
-  
+
   # Add repository URL and actions
   if (!is.null(proj$repo_url)) {
     yaml_lines <- c(yaml_lines, paste0("  repo-url: ", proj$repo_url))
@@ -2411,16 +2402,16 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser") {
       iconify_dir <- file.path(output_dir, "_extensions", "mcanouil", "iconify")
       if (!dir.exists(iconify_dir) || !file.exists(file.path(iconify_dir, "_extension.yml"))) {
         message("Icons detected in dashboard. Installing iconify extension...")
-        
-        # Attempt to install iconify extension with proper error handling
-        install_success <- .install_iconify_extension(output_dir)
-        if (!install_success) {
-          warning("Failed to install iconify extension automatically. Icons may not display correctly.")
-          message("To fix this manually:")
-          message("1. Install git: https://git-scm.com/downloads")
-          message("2. Run: git clone https://github.com/mcanouil/quarto-iconify.git _extensions/mcanouil/iconify")
-          message("3. Or remove icons from your dashboard to render without them")
-        }
+
+        # # Attempt to install iconify extension with proper error handling
+        # install_success <- .install_iconify_extension(output_dir)
+        # if (!install_success) {
+        #   warning("Failed to install iconify extension automatically. Icons may not display correctly.")
+        #   message("To fix this manually:")
+        #   message("1. Install git: https://git-scm.com/downloads")
+        #   message("2. Run: git clone https://github.com/mcanouil/quarto-iconify.git _extensions/mcanouil/iconify")
+        #   message("3. Or remove icons from your dashboard to render without them")
+        # }
     } else {
         message("Iconify extension already installed")
       }
@@ -2753,7 +2744,7 @@ print.viz_collection <- function(x, ...) {
 sidebar_group <- function(id, title, pages, style = NULL, background = NULL,
                          foreground = NULL, border = NULL, alignment = NULL,
                          collapse_level = NULL, pinned = NULL, tools = NULL) {
-  
+
   # Validate required parameters
   if (is.null(id) || !is.character(id) || length(id) != 1 || nchar(id) == 0) {
     stop("id must be a non-empty character string")
@@ -2764,14 +2755,14 @@ sidebar_group <- function(id, title, pages, style = NULL, background = NULL,
   if (is.null(pages) || !is.character(pages) || length(pages) == 0) {
     stop("pages must be a non-empty character vector")
   }
-  
+
   # Build the sidebar group configuration
   group <- list(
     id = id,
     title = title,
     pages = pages
   )
-  
+
   # Add optional styling parameters
   if (!is.null(style)) group$style <- style
   if (!is.null(background)) group$background <- background
@@ -2781,7 +2772,7 @@ sidebar_group <- function(id, title, pages, style = NULL, background = NULL,
   if (!is.null(collapse_level)) group$collapse_level <- collapse_level
   if (!is.null(pinned)) group$pinned <- pinned
   if (!is.null(tools)) group$tools <- tools
-  
+
   group
 }
 
@@ -2802,7 +2793,7 @@ sidebar_group <- function(id, title, pages, style = NULL, background = NULL,
 #' reference_section <- navbar_section("Reference", "reference", "ph:book")
 #' }
 navbar_section <- function(text, sidebar_id, icon = NULL) {
-  
+
   # Validate required parameters
   if (is.null(text) || !is.character(text) || length(text) != 1 || nchar(text) == 0) {
     stop("text must be a non-empty character string")
@@ -2810,18 +2801,18 @@ navbar_section <- function(text, sidebar_id, icon = NULL) {
   if (is.null(sidebar_id) || !is.character(sidebar_id) || length(sidebar_id) != 1 || nchar(sidebar_id) == 0) {
     stop("sidebar_id must be a non-empty character string")
   }
-  
+
   # Build the navbar section configuration
   section <- list(
     text = text,
     sidebar = sidebar_id
   )
-  
+
   # Add icon if provided
   if (!is.null(icon)) {
     section$icon <- icon
   }
-  
+
   section
 }
 
@@ -2879,64 +2870,64 @@ publish_dashboard <- function(dashboard_path,
                              branch = "main",
                              docs_subdir = "docs",
                              include_data = FALSE) {
-  
+
   platform <- match.arg(platform)
-  
+
   # Validate dashboard path
   if (!dir.exists(dashboard_path)) {
     stop("Dashboard directory does not exist: ", dashboard_path)
   }
-  
+
   # Check if docs directory exists
   docs_path <- file.path(dashboard_path, docs_subdir)
   if (!dir.exists(docs_path)) {
-    stop("Docs directory not found: ", docs_path, 
+    stop("Docs directory not found: ", docs_path,
          "\nMake sure to run generate_dashboard() first")
   }
-  
+
   # Check if docs directory has content (at least one HTML file)
   html_files <- list.files(docs_path, pattern = "\\.html$", full.names = FALSE)
   if (length(html_files) == 0) {
     stop("Docs directory is empty or contains no HTML files: ", docs_path,
          "\nMake sure to run generate_dashboard() with render = TRUE first")
   }
-  
+
   # Set default repo name
   if (is.null(repo_name)) {
     repo_name <- basename(normalizePath(dashboard_path))
   }
-  
+
   # Get username if not provided
   if (is.null(username)) {
     username <- .get_username_interactive(platform)
   }
-  
+
   cat("🚀 Publishing dashboard to ", platform, " Pages...\n", sep = "")
   cat("📁 Dashboard: ", dashboard_path, "\n", sep = "")
   cat("📦 Repository: ", username, "/", repo_name, "\n", sep = "")
   cat("🌐 Platform: ", platform, "\n\n", sep = "")
-  
+
   # Step 1: Check for data files and warn user
   .check_data_files(dashboard_path, include_data)
-  
+
   # Step 2: Initialize git repository
   .init_git_repo(dashboard_path)
-  
+
   # Step 3: Create .gitignore
   .create_gitignore(dashboard_path, include_data)
-  
+
   # Step 3: Create repository on platform
   repo_url <- .create_remote_repo(dashboard_path, platform, username, repo_name, private)
-  
+
   # Step 4: Configure for Pages deployment
   .configure_pages_deployment(dashboard_path, platform, branch, docs_subdir)
-  
+
   # Step 5: Commit and push
   .commit_and_push(dashboard_path, commit_message, branch)
-  
+
   # Step 6: Get deployment URL
   deployment_url <- .get_deployment_url(platform, username, repo_name)
-  
+
   cat("\n🎉 Dashboard published successfully!\n")
   cat("══════════════════════════════════════════════════\n")
   cat("🌐 Dashboard URL: ", deployment_url, "\n", sep = "")
@@ -2944,14 +2935,14 @@ publish_dashboard <- function(dashboard_path,
   cat("\n⏱️  IMPORTANT: GitHub Pages deployment takes 2-5 minutes\n")
   cat("   Your dashboard will be available at the URL above once deployed\n")
   cat("   You can check deployment status in your repository's Actions tab\n\n")
-  
+
   if (open_browser) {
     cat("🌐 Opening repository in browser (not dashboard - it's still building)...\n")
     .open_url(repo_url)
   } else {
     cat("💡 Tip: Visit the repository URL to monitor deployment progress\n")
   }
-  
+
   invisible(deployment_url)
 }
 
@@ -2962,11 +2953,11 @@ publish_dashboard <- function(dashboard_path,
 .get_username_interactive <- function(platform) {
   cat("Please enter your ", platform, " username:\n", sep = "")
   username <- readline("Username: ")
-  
+
   if (is.null(username) || nchar(trimws(username)) == 0) {
     stop("Username is required for publishing")
   }
-  
+
   trimws(username)
 }
 
@@ -2975,13 +2966,13 @@ publish_dashboard <- function(dashboard_path,
 #' @noRd
 .init_git_repo <- function(path) {
   cat("📝 Initializing git repository...\n")
-  
+
   # Check if already a git repo
   if (dir.exists(file.path(path, ".git"))) {
     cat("   ✓ Git repository already exists\n")
     return(invisible(TRUE))
   }
-  
+
   # Check if gert is available
   if (!requireNamespace("gert", quietly = TRUE)) {
     cat("   ⚠️  gert package not available. Please install it:\n")
@@ -2989,20 +2980,20 @@ publish_dashboard <- function(dashboard_path,
     cat("   📝 Falling back to system git...\n")
     return(.init_git_repo_system(path))
   }
-  
+
   tryCatch({
     # Initialize git repository using gert
     gert::git_init(path)
-    
+
     # Set default branch to main
     gert::git_branch_create("main", path)
-    
+
     cat("   ✓ Git repository initialized\n")
   }, error = function(e) {
     cat("   ⚠️  gert failed, falling back to system git...\n")
     .init_git_repo_system(path)
   })
-  
+
   invisible(TRUE)
 }
 
@@ -3013,19 +3004,19 @@ publish_dashboard <- function(dashboard_path,
   old_wd <- getwd()
   setwd(path)
   on.exit(setwd(old_wd), add = TRUE)
-  
+
   tryCatch({
     # Initialize git repository
     system2("git", c("init"), stdout = TRUE, stderr = TRUE)
-    
+
     # Set default branch to main
     system2("git", c("branch", "-M", "main"), stdout = TRUE, stderr = TRUE)
-    
+
     cat("   ✓ Git repository initialized\n")
   }, error = function(e) {
     stop("Failed to initialize git repository: ", e$message)
   })
-  
+
   invisible(TRUE)
 }
 
@@ -3035,7 +3026,7 @@ publish_dashboard <- function(dashboard_path,
 #' @noRd
 .check_data_files <- function(path, include_data) {
   cat("🔍 Checking for data files...\n")
-  
+
   # Define comprehensive data file patterns
   data_patterns <- c(
     # R Data Files
@@ -3055,7 +3046,7 @@ publish_dashboard <- function(dashboard_path,
     # Large Files
     "*.parquet", "*.feather", "*.fst", "*.h5", "*.hdf5"
   )
-  
+
   # Find all data files
   data_files <- character(0)
   for (pattern in data_patterns) {
@@ -3063,12 +3054,12 @@ publish_dashboard <- function(dashboard_path,
     regex_pattern <- gsub("\\*", ".*", pattern)
     # Make sure it matches the full filename, not just part of it
     regex_pattern <- paste0("^", regex_pattern, "$")
-    
-    files <- list.files(path, pattern = regex_pattern, 
+
+    files <- list.files(path, pattern = regex_pattern,
                        recursive = TRUE, full.names = FALSE, ignore.case = TRUE)
     data_files <- c(data_files, files)
   }
-  
+
   # Also check for data directories
   data_dirs <- c("data", "datasets", "raw_data", "processed_data", "output_data")
   for (dir in data_dirs) {
@@ -3076,25 +3067,25 @@ publish_dashboard <- function(dashboard_path,
       data_files <- c(data_files, paste0(dir, "/"))
     }
   }
-  
+
   # Check for large files (>10MB) that might be data
   large_files <- .find_large_files(path, size_mb = 10)
   if (length(large_files) > 0) {
     data_files <- c(data_files, large_files)
   }
-  
+
   # Remove duplicates and sort
   data_files <- unique(sort(data_files))
-  
+
   # Filter out common config files and Quarto-generated files that are not data
-  config_files <- c("_quarto.yml", "quarto.yml", ".gitignore", "README.md", "LICENSE", 
+  config_files <- c("_quarto.yml", "quarto.yml", ".gitignore", "README.md", "LICENSE",
                    "DESCRIPTION", "NAMESPACE", "Makefile", "Dockerfile", ".dockerignore",
                    "index.html", "sitemap.xml", ".nojekyll")
   data_files <- data_files[!data_files %in% config_files]
-  
+
   # Also filter out docs/search.json specifically (Quarto search index)
   data_files <- data_files[!grepl("^docs/search\\.json$", data_files)]
-  
+
   if (length(data_files) > 0) {
     if (!include_data) {
       cat("   ⚠️  Found ", length(data_files), " data file(s) that will be EXCLUDED:\n", sep = "")
@@ -3122,7 +3113,7 @@ publish_dashboard <- function(dashboard_path,
   } else {
     cat("   ✓ No data files detected\n")
   }
-  
+
   invisible(data_files)
 }
 
@@ -3133,7 +3124,7 @@ publish_dashboard <- function(dashboard_path,
 .find_large_files <- function(path, size_mb = 10) {
   all_files <- list.files(path, recursive = TRUE, full.names = TRUE, all.files = TRUE)
   large_files <- character(0)
-  
+
   for (file in all_files) {
     if (file.exists(file) && !dir.exists(file)) {
       file_size <- file.size(file) / (1024 * 1024)  # Convert to MB
@@ -3144,7 +3135,7 @@ publish_dashboard <- function(dashboard_path,
       }
     }
   }
-  
+
   large_files
 }
 
@@ -3154,12 +3145,12 @@ publish_dashboard <- function(dashboard_path,
 #' @noRd
 .create_gitignore <- function(path, include_data = FALSE) {
   gitignore_path <- file.path(path, ".gitignore")
-  
+
   if (file.exists(gitignore_path)) {
     cat("   ✓ .gitignore already exists\n")
     return(invisible(TRUE))
   }
-  
+
   gitignore_content <- c(
     "# R",
     ".Rproj.user",
@@ -3184,7 +3175,7 @@ publish_dashboard <- function(dashboard_path,
     "*.temp",
     "*.log"
   )
-  
+
   # Add comprehensive data exclusions unless explicitly included
   if (!include_data) {
     data_exclusions <- c(
@@ -3273,10 +3264,10 @@ publish_dashboard <- function(dashboard_path,
     )
     gitignore_content <- c(gitignore_content, warning_content)
   }
-  
+
   writeLines(gitignore_content, gitignore_path)
   cat("   ✓ .gitignore created\n")
-  
+
   invisible(TRUE)
 }
 
@@ -3290,13 +3281,13 @@ publish_dashboard <- function(dashboard_path,
 #' @noRd
 .create_remote_repo <- function(path, platform, username, repo_name, private) {
   cat("📦 Creating ", platform, " repository...\n", sep = "")
-  
+
   repo_url <- if (platform == "github") {
     paste0("https://github.com/", username, "/", repo_name, ".git")
   } else {
     paste0("https://gitlab.com/", username, "/", repo_name, ".git")
   }
-  
+
   # Check if usethis is available
   if (!requireNamespace("usethis", quietly = TRUE)) {
     cat("   ⚠️  usethis package not available. Please install it:\n")
@@ -3306,7 +3297,7 @@ publish_dashboard <- function(dashboard_path,
     cat("      2. Add remote: git remote add origin ", repo_url, "\n", sep = "")
     return(repo_url)
   }
-  
+
   # Try to create repository using GitHub API
   tryCatch({
     .create_github_repo_simple(path, username, repo_name, private)
@@ -3327,7 +3318,7 @@ publish_dashboard <- function(dashboard_path,
     cat("   🔧 Alternative: Use GitHub CLI if installed:\n")
     cat("         gh repo create ", username, "/", repo_name, " --", if(private) "private" else "public", " --source=. --remote=origin --push\n", sep = "")
   })
-  
+
   invisible(repo_url)
 }
 
@@ -3342,7 +3333,7 @@ publish_dashboard <- function(dashboard_path,
   if (!requireNamespace("httr", quietly = TRUE)) {
     stop("httr package is required for GitHub API calls. Please install it: install.packages('httr')")
   }
-  
+
   # Get GitHub token from environment or usethis
   token <- Sys.getenv("GITHUB_PAT")
   if (token == "") {
@@ -3357,10 +3348,10 @@ publish_dashboard <- function(dashboard_path,
       stop("No GitHub token found. Please set GITHUB_PAT environment variable")
     }
   }
-  
+
   # GitHub API endpoint
   url <- "https://api.github.com/user/repos"
-  
+
   # Repository data
   repo_data <- list(
     name = repo_name,
@@ -3368,7 +3359,7 @@ publish_dashboard <- function(dashboard_path,
     private = private,
     auto_init = FALSE
   )
-  
+
   # Make API request
   response <- httr::POST(
     url,
@@ -3379,12 +3370,12 @@ publish_dashboard <- function(dashboard_path,
     httr::content_type_json(),
     body = jsonlite::toJSON(repo_data, auto_unbox = TRUE)
   )
-  
+
   # Check response
   if (httr::status_code(response) == 201) {
     # Repository created successfully, add remote
     repo_url <- paste0("https://github.com/", username, "/", repo_name, ".git")
-    
+
     # Add or update remote using gert or system git
     if (requireNamespace("gert", quietly = TRUE)) {
       tryCatch({
@@ -3422,14 +3413,14 @@ publish_dashboard <- function(dashboard_path,
         system2("git", c("remote", "add", "origin", repo_url), stdout = TRUE, stderr = TRUE)
       }
     }
-    
+
     cat("   ✓ Remote origin added/updated\n")
-    
+
     return(invisible(TRUE))
   } else if (httr::status_code(response) == 422) {
     # Repository already exists - this is actually fine, just add the remote
     repo_url <- paste0("https://github.com/", username, "/", repo_name, ".git")
-    
+
     # Add or update remote using gert or system git
     if (requireNamespace("gert", quietly = TRUE)) {
       tryCatch({
@@ -3467,9 +3458,9 @@ publish_dashboard <- function(dashboard_path,
         system2("git", c("remote", "add", "origin", repo_url), stdout = TRUE, stderr = TRUE)
       }
     }
-    
+
     cat("   ✓ Repository already exists, remote origin added/updated\n")
-    
+
     return(invisible(TRUE))
   } else {
     # Parse error message
@@ -3483,7 +3474,7 @@ publish_dashboard <- function(dashboard_path,
     }, error = function(e) {
       error_msg <- error_content
     })
-    
+
     stop("GitHub API error (", httr::status_code(response), "): ", error_msg)
   }
 }
@@ -3497,7 +3488,7 @@ publish_dashboard <- function(dashboard_path,
   if (!requireNamespace("gert", quietly = TRUE)) {
     return(invisible(FALSE))
   }
-  
+
   tryCatch({
     # Check if remote exists
     remotes <- gert::git_remote_list(repo = path)
@@ -3509,7 +3500,7 @@ publish_dashboard <- function(dashboard_path,
   }, error = function(e) {
     # Silent fail - remote might already exist or other issue
   })
-  
+
   invisible(TRUE)
 }
 
@@ -3521,13 +3512,13 @@ publish_dashboard <- function(dashboard_path,
 #' @noRd
 .configure_pages_deployment <- function(path, platform, branch, docs_subdir) {
   cat("⚙️  Configuring ", platform, " Pages deployment...\n", sep = "")
-  
+
   if (platform == "github") {
     .configure_github_pages(path, branch, docs_subdir)
   } else {
     .configure_gitlab_pages(path, branch, docs_subdir)
   }
-  
+
   invisible(TRUE)
 }
 
@@ -3541,20 +3532,20 @@ publish_dashboard <- function(dashboard_path,
   if (!dir.exists(path)) {
     stop("Dashboard directory does not exist: ", path)
   }
-  
+
   # Create .nojekyll file to prevent Jekyll processing
   nojekyll_path <- file.path(path, ".nojekyll")
   if (!file.exists(nojekyll_path)) {
     writeLines("", nojekyll_path)
     cat("   ✓ .nojekyll file created\n")
   }
-  
+
   # Create GitHub Actions workflow for deployment
   workflow_dir <- file.path(path, ".github", "workflows")
   if (!dir.exists(workflow_dir)) {
     dir.create(workflow_dir, recursive = TRUE)
   }
-  
+
   workflow_content <- c(
     "name: Deploy to GitHub Pages",
     "",
@@ -3591,7 +3582,7 @@ publish_dashboard <- function(dashboard_path,
     "        id: deployment",
     "        uses: actions/deploy-pages@v4"
   )
-  
+
   workflow_file <- file.path(workflow_dir, "deploy.yml")
   writeLines(workflow_content, workflow_file)
   cat("   ✓ GitHub Actions workflow created\n")
@@ -3615,7 +3606,7 @@ publish_dashboard <- function(dashboard_path,
     "  only:",
     "    - ", branch
   )
-  
+
   gitlab_ci_path <- file.path(path, ".gitlab-ci.yml")
   writeLines(gitlab_ci_content, gitlab_ci_path)
   cat("   ✓ .gitlab-ci.yml created\n")
@@ -3628,7 +3619,7 @@ publish_dashboard <- function(dashboard_path,
 #' @noRd
 .commit_and_push <- function(path, commit_message, branch) {
   cat("📤 Committing and pushing changes...\n")
-  
+
   # Check if gert is available
   if (!requireNamespace("gert", quietly = TRUE)) {
     cat("   ⚠️  gert package not available. Please install it:\n")
@@ -3636,7 +3627,7 @@ publish_dashboard <- function(dashboard_path,
     cat("   📝 Falling back to system git...\n")
     return(.commit_and_push_system(path, commit_message, branch))
   }
-  
+
   tryCatch({
     # Check if there are changes to commit
     status <- gert::git_status(path)
@@ -3656,14 +3647,14 @@ publish_dashboard <- function(dashboard_path,
       }
       return(invisible(TRUE))
     }
-    
+
     # Add all files
     gert::git_add(".", repo = path)
-    
+
     # Commit changes
     gert::git_commit(commit_message, repo = path)
     cat("   ✓ Changes committed\n")
-    
+
     # Check if remote exists
     remotes <- gert::git_remote_list(repo = path)
     if (nrow(remotes) == 0 || !any(remotes$name == "origin")) {
@@ -3687,12 +3678,12 @@ publish_dashboard <- function(dashboard_path,
         })
       })
     }
-    
+
   }, error = function(e) {
     cat("   ⚠️  gert failed, falling back to system git...\n")
     .commit_and_push_system(path, commit_message, branch)
   })
-  
+
   invisible(TRUE)
 }
 
@@ -3706,23 +3697,23 @@ publish_dashboard <- function(dashboard_path,
   old_wd <- getwd()
   setwd(path)
   on.exit(setwd(old_wd), add = TRUE)
-  
+
   tryCatch({
     # Add all files
     system2("git", c("add", "."), stdout = TRUE, stderr = TRUE)
-    
+
     # Check if there are changes to commit
     status_result <- system2("git", c("status", "--porcelain"), stdout = TRUE)
     if (length(status_result) == 0 || all(status_result == "")) {
       cat("   ℹ️  No changes to commit\n")
       return(invisible(TRUE))
     }
-    
+
     # Commit changes
-    system2("git", c("commit", "-m", shQuote(commit_message)), 
+    system2("git", c("commit", "-m", shQuote(commit_message)),
             stdout = TRUE, stderr = TRUE)
     cat("   ✓ Changes committed\n")
-    
+
     # Check if remote exists before pushing
     remotes <- system2("git", c("remote", "-v"), stdout = TRUE, stderr = TRUE)
     if (length(remotes) == 0 || !any(grepl("origin", remotes))) {
@@ -3731,7 +3722,7 @@ publish_dashboard <- function(dashboard_path,
       cat("      git push -u origin ", branch, "\n", sep = "")
     } else {
       # Push to remote
-      push_result <- system2("git", c("push", "-u", "origin", branch), 
+      push_result <- system2("git", c("push", "-u", "origin", branch),
                             stdout = TRUE, stderr = TRUE)
       if (length(push_result) > 0 && any(grepl("pushed|Pushed", push_result))) {
         cat("   ✓ Changes pushed to remote\n")
@@ -3740,7 +3731,7 @@ publish_dashboard <- function(dashboard_path,
         cat("      git push -u origin ", branch, "\n", sep = "")
       }
     }
-    
+
   }, error = function(e) {
     cat("   ⚠️  Could not commit/push automatically:\n")
     cat("      Error: ", e$message, "\n", sep = "")
@@ -3749,7 +3740,7 @@ publish_dashboard <- function(dashboard_path,
     cat("      git commit -m \"", commit_message, "\"\n", sep = "")
     cat("      git push -u origin ", branch, "\n", sep = "")
   })
-  
+
   invisible(TRUE)
 }
 

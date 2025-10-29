@@ -30,12 +30,12 @@ The `create_heatmap` function is designed to simplify the creation of highly cus
 
 It handles common data preparation steps such as:
 
-*   Converting `haven_labelled` columns (e.g., from SPSS imports) to R factors.
-*   Mapping raw values to more descriptive labels.
-*   Ordering categorical levels.
-*   Explicitly including or excluding `NA` values as distinct categories.
-*   Aggregating `value_var` if multiple observations exist for a given `(x, y)` cell.
-*   Setting up titles, labels, tooltips, and color scales.
+-   Converting `haven_labelled` columns (e.g., from SPSS imports) to R factors.
+-   Mapping raw values to more descriptive labels.
+-   Ordering categorical levels.
+-   Explicitly including or excluding `NA` values as distinct categories.
+-   Aggregating `value_var` if multiple observations exist for a given `(x, y)` cell.
+-   Setting up titles, labels, tooltips, and color scales.
 
 This vignette demonstrates how to use the `create_heatmap()` function with the General Social Survey (GSS) Panel 2020 dataset. The GSS Panel 2020 dataset follows the same respondents across three waves (2016, 2018, 2020), providing rich longitudinal data for understanding social attitudes and demographic patterns.
 
@@ -62,7 +62,7 @@ With any data analysis, the first step is to examine the data (namely, the varia
 
 Once we have an idea of what the data looks like, we then need to prepare our data by creating some meaningful categorical variables.
 
-To keep it straightforward, we're going to work with the first wave of data, demarcated by the '_1a' suffix.
+To keep it straightforward, we're going to work with the first wave of data, demarcated by the '\_1a' suffix.
 
 Let's do so now:
 
@@ -420,13 +420,13 @@ plot6
 
 ## Key Features Demonstrated
 
-1. **Basic heatmaps** with continuous values mapped to color intensity
-2. **Custom ordering** of categorical variables for logical presentation
-3. **Missing value handling** with explicit NA categories and custom colors
-4. **Value mapping** for cleaner, more readable labels
-5. **Custom color palettes** for different data types and emphasis
-6. **Flexible aggregation** using different functions (mean, median)
-7. **Longitudinal analysis** showing change over time
+1.  **Basic heatmaps** with continuous values mapped to color intensity
+2.  **Custom ordering** of categorical variables for logical presentation
+3.  **Missing value handling** with explicit NA categories and custom colors
+4.  **Value mapping** for cleaner, more readable labels
+5.  **Custom color palettes** for different data types and emphasis
+6.  **Flexible aggregation** using different functions (mean, median)
+7.  **Longitudinal analysis** showing change over time
 
 ## Best Practices for Heatmaps
 
@@ -460,9 +460,9 @@ table(your_data$x_var, your_data$y_var, useNA = "always")
 
 The `create_heatmap()` function provides a powerful and flexible way to visualize bivariate relationships in survey data. By leveraging the rich GSS Panel 2020 dataset, we've demonstrated how heatmaps can reveal patterns in:
 
-- Demographic distributions
-- Attitude variations across groups  
-- Regional and temporal patterns
-- Missing data structures
+-   Demographic distributions
+-   Attitude variations across groups\
+-   Regional and temporal patterns
+-   Missing data structures
 
 The function's extensive customization options allow for publication-ready visualizations that can effectively communicate complex social science findings to diverse audiences.

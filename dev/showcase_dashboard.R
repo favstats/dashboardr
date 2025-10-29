@@ -1,10 +1,4 @@
-# Comprehensive Dashboard Test
-# This script tests all dashboard features using examples from the vignettes
-# All examples are proven to work from the package vignettes
-
-# Load the enhanced dashboard system
-devtools::load_all()
-source("R/create_dashboard_new.R")
+# This is the showcase dashboard
 
 # Load GSS data for realistic examples
 data(gss_panel20, package = "gssr")
@@ -32,7 +26,7 @@ analysis_vizzes <- create_viz() %>%
           stack_order = c("Very Happy", "Pretty Happy", "Not Too Happy"),
           tooltip_suffix = "%",
           color_palette = c("#2E86AB", "#A23B72", "#F18F01"),
-          text = "This chart shows how happiness levels vary across different education groups.",
+          text = "How happy are you with your life right now?",
           text_position = "above",
           icon = "ph:chart-bar",
           height = 500,
@@ -49,7 +43,7 @@ analysis_vizzes <- create_viz() %>%
           stack_order = c("Very Happy", "Pretty Happy", "Not Too Happy"),
           tooltip_suffix = "%",
           color_palette = c("#2E86AB", "#A23B72", "#F18F01"),
-          text = "Gender differences in reported happiness levels.",
+          text = "How happy are you with your life right now?",
           text_position = "below",
           icon = "ph:gender-intersex",
           height = 450,
@@ -83,7 +77,7 @@ analysis_vizzes <- create_viz() %>%
           stacked_type = "percent",
           tooltip_suffix = "%",
           color_palette = c("#2E8B57", "#DAA520", "#CD5C5C"),
-          text = "Regional patterns in trust levels across the United States.",
+          text = "Do you think you can usually trust strangers?",
           text_position = "below",
           icon = "ph:map-pin",
           height = 500,
@@ -168,7 +162,7 @@ summary_vizzes <- create_viz() %>%
           stack_order = c("Very Happy", "Pretty Happy", "Not Too Happy"),
           tooltip_suffix = "%",
           color_palette = c("#2E86AB", "#A23B72", "#F18F01"),
-          text = "This standalone chart shows the overall distribution of happiness across education levels.",
+          text = "How happy are you?",
           text_position = "above",
           icon = "ph:chart-bar",
           height = 600) %>%
@@ -190,7 +184,6 @@ summary_vizzes <- create_viz() %>%
           tooltip_prefix = "Trust: ",
           tooltip_suffix = "/3",
           data_labels_format = "{point.value:.2f}",
-          text = "This standalone heatmap shows trust patterns across political groups.",
           text_position = "below",
           icon = "ph:shield-check",
           height = 700)
@@ -199,7 +192,7 @@ summary_vizzes <- create_viz() %>%
 dashboard <- create_dashboard(
   output_dir = "comprehensive_dashboard_test",
   title = "Comprehensive Dashboard Test",
-  github = "https://github.com/username/dashboardr",
+  github = "https://github.com/favstats/dashboardr",
   twitter = "https://twitter.com/username",
   linkedin = "https://linkedin.com/in/username",
   email = "user@example.com",
@@ -249,18 +242,15 @@ dashboard <- create_dashboard(
 ) %>%
   # Landing page with icon
   add_page(
-    name = "Welcome to the Dashboard",
+    name = "Welcome to the Showcase Dashboard",
     text = md_text(
-      "# Welcome to the Dashboard",
-      "",
       "This dashboard demonstrates the `dashboardr` package using real examples from the vignettes.",
       "",
       "## Key Features",
       "",
       "- **Unified API**: Single `add_page()` function for all page types",
-      "- **Automatic Icons**: Beautiful icons throughout the interface",
+      "- **Automatic Icons**: Easy-to-use icons throughout the interface",
       "- **Flexible Visualizations**: Support for all chart types with tab grouping",
-      "- **Zero Configuration**: Everything works out of the box",
       "",
       "## Data Source",
       "",
@@ -313,10 +303,9 @@ dashboard <- create_dashboard(
     name = "About",
     icon = "ph:info",
     text = md_text(
-      "## Data Source",
-      "",
-      "This dashboard uses data from the **General Social Survey (GSS)** - a nationally representative survey of adults in the United States conducted since 1972.",
-      "",
+      "This dashboard aggregates and visualizes data collected via the General Social Survey (GSS) - ",
+      "a nationally representative survey of adults in the United States conducted since 1972.",
+      "The data is open-source and you can find out more about the GSS here.", #TODO ADD Link
       "## Variables Used",
       "",
       "- **Happiness**: Self-reported happiness levels",
@@ -332,7 +321,6 @@ dashboard <- create_dashboard(
       "library(htmltools)",
       "library(dashboardr)",
       "",
-      "# Create author cards using the card() function with Italian brainrot humor",
       "mario_card <- card(",
       "  content = \"Mario il Gatto is a data scientist who believes that every dataset has a soul and that R is the language of the gods. He spends his days making beautiful visualizations and his nights dreaming of perfectly normalized databases.\",",
       "  title = \"Mario il Gatto\",",
@@ -353,7 +341,12 @@ dashboard <- create_dashboard(
       "",
       "# Display cards in a row using the card_row function",
       "card_row(mario_card, giuseppe_card)",
-      "```"
+      "```",
+      "##More about Dashboardr",
+      "Dashboardr is an R package with a clear vision: to make it intuitive for everyone to create beautiful dashboards.",
+      "The package is especially useful when time is limited. The iterative piping logic means that it is very quick to add new pages",
+      "and plots, even when the user is inexperienced with programming.",
+      "In a variety of contexts, this means that you can get quick, beautiful insights to present findings to wider audiences."
     )
   )
 

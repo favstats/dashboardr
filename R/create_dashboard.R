@@ -1,3 +1,6 @@
+# --------------------------------------------------------------------------
+# Function: create_dashboard
+# --------------------------------------------------------------------------
 #' Create a dashboard
 #'
 #' @param data A data.frame or a named list of data.frames (for multi-page site).

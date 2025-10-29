@@ -1,16 +1,3 @@
-# Load dependencies
-library(highcharter)
-library(tidyverse)
-library(timetk)
-library(dplyr)
-library(rlang)
-library(roxygen2)
-library(gssr)
-
-# Helper function (from rlang or magrittr)
-`%||%` <- function(x, y) {
-  if (is.null(x)) y else y
-}
 
 # --------------------------------------------------------------------------
 # Function: create_timeline

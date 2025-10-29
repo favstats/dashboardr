@@ -14,7 +14,8 @@ Imports:
     highcharter,
     rlang,
     tidyr,
-    gssr
+    gssr,
+    digest
 Suggests:
   haven,
   testthat (>= 3.0.0)

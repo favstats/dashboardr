@@ -1,17 +1,3 @@
-# Load dependencies
-library(highcharter)
-library(tidyverse)
-library(dplyr)
-library(rlang)
-library(roxygen2)
-library(tidyr)
-library(gssr)
-
-# Helper function
-`%||%` <- function(x, y) {
-  if (is.null(x)) y else x
-}
-
 # --------------------------------------------------------------------------
 # Function: create_heatmap
 # --------------------------------------------------------------------------
