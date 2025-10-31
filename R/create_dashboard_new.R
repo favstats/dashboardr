@@ -1172,7 +1172,7 @@ text_lines <- function(lines) {
   cat("\n")
 
 
-  cat("🎯 Happy dashboarding!\n")
+  cat("🎯 Happy dashing!\n")
   cat(paste(rep("═", 50), collapse = ""), "\n")
   cat("\n")
 

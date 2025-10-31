@@ -190,8 +190,8 @@ summary_vizzes <- create_viz() %>%
 
 # Create comprehensive dashboard with ALL features
 dashboard <- create_dashboard(
-  output_dir = "comprehensive_dashboard_test",
-  title = "Comprehensive Dashboard Test",
+  output_dir = "comprehensive_dashboard_test", # TODO FIX
+  title = "Comprehensive Dashboard Test", # TODO FIX!!
   github = "https://github.com/favstats/dashboardr",
   twitter = "https://twitter.com/username",
   linkedin = "https://linkedin.com/in/username",
@@ -306,6 +306,7 @@ dashboard <- create_dashboard(
       "This dashboard aggregates and visualizes data collected via the General Social Survey (GSS) - ",
       "a nationally representative survey of adults in the United States conducted since 1972.",
       "The data is open-source and you can find out more about the GSS here.", #TODO ADD Link
+      "",
       "## Variables Used",
       "",
       "- **Happiness**: Self-reported happiness levels",
@@ -342,7 +343,7 @@ dashboard <- create_dashboard(
       "# Display cards in a row using the card_row function",
       "card_row(mario_card, giuseppe_card)",
       "```",
-      "##More about Dashboardr",
+      "## More about Dashboardr",
       "Dashboardr is an R package with a clear vision: to make it intuitive for everyone to create beautiful dashboards.",
       "The package is especially useful when time is limited. The iterative piping logic means that it is very quick to add new pages",
       "and plots, even when the user is inexperienced with programming.",
