@@ -39,6 +39,8 @@
 #' @param stack_bin_labels Optional character vector of labels for `stack_breaks`.
 #' @param stack_map_values Optional named list to rename response values.
 #' @param show_question_tooltip Logical. If `TRUE`, shows custom tooltip with question labels.
+#' @param horizontal Logical. If `TRUE`, creates a horizontal bar chart (bars extend from left to right).
+#'   If `FALSE` (default), creates a vertical column chart (bars extend from bottom to top).
 #'
 #' @return A `highcharter` stacked bar chart object.
 #'
@@ -145,7 +147,23 @@
 #' )
 #' plot4
 #'
-#' # Example 5: Working with different Likert scales
+#' # Example 5: Horizontal bar chart
+#' plot5 <- create_stackedbars(
+#'   data = gss_recent,
+#'   questions = confidence_questions,
+#'   question_labels = confidence_labels,
+#'   title = "Confidence in American Institutions (Horizontal)",
+#'   subtitle = "GSS respondents 2010-present",
+#'   x_label = "Institution",
+#'   stack_label = "Level of Confidence",
+#'   response_levels = confidence_order,
+#'   stacked_type = "percent",
+#'   horizontal = TRUE,  # Creates horizontal bars
+#'   color_palette = c("#2E8B57", "#FFD700", "#CD5C5C")
+#' )
+#' plot5
+#'
+#' # Example 6: Working with different Likert scales
 #' # Using happiness and life satisfaction questions if available
 #' if (all(c("happy", "satfin", "satjob") %in% names(gss_all))) {
 #'   satisfaction_data <- gss_all %>%
@@ -157,7 +175,7 @@
 #'   satisfaction_questions <- c("happy", "satfin", "satjob")
 #'   satisfaction_labels <- c("General Happiness", "Financial Satisfaction", "Job Satisfaction")
 #'
-#'   plot5 <- create_stackedbars(
+#'   plot6 <- create_stackedbars(
 #'     data = satisfaction_data,
 #'     questions = satisfaction_questions,
 #'     question_labels = satisfaction_labels,
@@ -169,7 +187,7 @@
 #'     include_na = TRUE,
 #'     na_label_stack = "Not Asked/No Answer"
 #'   )
-#'   plot5
+#'   plot6
 #'}
 #'
 #'
@@ -199,7 +217,8 @@ create_stackedbars <- function(data,
                                      stack_breaks      = NULL,
                                      stack_bin_labels  = NULL,
                                      stack_map_values  = NULL,
-                                     show_question_tooltip = TRUE) {
+                                     show_question_tooltip = TRUE,
+                                     horizontal = FALSE) {
   stacked_type <- match.arg(stacked_type)
 
   # 1. pivot wide → long
@@ -261,7 +280,8 @@ create_stackedbars <- function(data,
     x_map_values     = x_map_values,
     stack_breaks     = stack_breaks,
     stack_bin_labels = stack_bin_labels,
-    stack_map_values = stack_map_values
+    stack_map_values = stack_map_values,
+    horizontal       = horizontal
   )
 
   # 5. set the xAxis categories explicitly so JS knows them

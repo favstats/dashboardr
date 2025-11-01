@@ -29,8 +29,8 @@
 #'                to "Number of Respondents" or "Percentage of Respondents".
 #' @param stack_label Optional. The title for the stack legend (as a string).
 #'                   Defaults to `stack_var` or `stack_var (Binned)`.
-#' @param stacked_type Optional. The type of stacking. Can be "normal" (counts)
-#'                   or "percent" (100% stacked). Defaults to "normal".
+#' @param stacked_type Optional. The type of stacking. Can be "counts" (counts)
+#'                   or "percent" (100% stacked). Defaults to "counts".
 #' @param tooltip_prefix Optional. A string to prepend to values in tooltips.
 #' @param tooltip_suffix Optional. A string to append to values in tooltips.
 #' @param x_tooltip_suffix Optional. A string to append to values in tooltips.
@@ -69,6 +69,8 @@
 #' @param x_tooltip_suffix Optional. A string to append to x-axis values in tooltips.
 #' @param na_label_x Optional string. Custom label for NA values in x_var. Defaults to "(Missing)".
 #' @param na_label_stack Optional string. Custom label for NA values in stack_var. Defaults to "(Missing)".
+#' @param horizontal Logical. If `TRUE`, creates a horizontal bar chart (bars extend from left to right).
+#'                   If `FALSE` (default), creates a vertical column chart (bars extend from bottom to top).
 #'
 #' @return An interactive `highcharter` bar chart plot object.
 #'
@@ -200,7 +202,7 @@
 #'   x_order = c("Very Happy", "Pretty Happy", "Not Too Happy"),
 #'   stack_map_values = sex_map,
 #'   stack_order = c("Women", "Men"),
-#'   stacked_type = "normal",
+#'   stacked_type = "counts",
 #'   tooltip_prefix = "Count: ",
 #' )
 #' plot6
@@ -225,7 +227,7 @@
 #'     }
 #'   \item **Apply Custom Ordering (`x_order`, `stack_order`):** If provided, `x_order` and `stack_order` are used to set the display order of the factor levels for the X-axis and stack categories, respectively. This is essential for ordinal scales (e.g., Likert scales) or custom desired sorting. Levels not found in the order vector are appended at the end.
 #'   \item **Highcharter Chart Generation:** The aggregated `plot_data` is passed to `highcharter::hchart()` to create the base stacked column chart.
-#'   \item **Chart Customization:** Titles, subtitles, axis labels, stacking type (normal vs. percent), data labels, legend titles, tooltips, and custom color palettes are applied based on the function's arguments.
+#'   \item **Chart Customization:** Titles, subtitles, axis labels, stacking type (counts vs. percent), data labels, legend titles, tooltips, and custom color palettes are applied based on the function's arguments.
 #'   \item **Return Value:** The function returns a `highcharter` plot object, which can be printed directly to display the interactive chart.
 #' }
 #'
@@ -242,7 +244,7 @@ create_stackedbar <- function(data,
                               x_label = NULL,
                               y_label = NULL,
                               stack_label = NULL,
-                              stacked_type = c("normal", "percent"),
+                              stacked_type = c("counts", "percent"),
                               tooltip_prefix = "",
                               tooltip_suffix = "",
                               x_tooltip_suffix = "",
@@ -257,7 +259,8 @@ create_stackedbar <- function(data,
                               x_map_values = NULL,
                               stack_breaks = NULL,
                               stack_bin_labels = NULL,
-                              stack_map_values = NULL) {
+                              stack_map_values = NULL,
+                              horizontal = FALSE) {
 
   # INPUT VALIDATION
   if (!is.data.frame(data)) {
@@ -456,9 +459,12 @@ create_stackedbar <- function(data,
   }
 
   # HIGHCHARTER
+  # Determine chart type based on horizontal parameter
+  chart_type <- if (horizontal) "bar" else "column"
+  
   hchart_obj <- highcharter::hchart(
     object = plot_data,
-    type = "column",
+    type = chart_type,
     highcharter::hcaes(x = .x_var_col, y = n, group = .stack_var_col)
   )
 
@@ -497,19 +503,22 @@ create_stackedbar <- function(data,
 
   # Stacking and data labels
   data_label_format <- if (stacked_type == "percent") '{point.percentage:.1f}%' else '{point.y}'
-  stacking_type_hc <- if (stacked_type == "percent") "percent" else "normal"
+  stacking_type_hc <- if (stacked_type == "percent") "percent" else "counts"
 
-  hchart_obj <- highcharter::hc_plotOptions(
-    hchart_obj,
-    column = list(
-      stacking = stacking_type_hc,
-      dataLabels = list(
-        enabled = TRUE,
-        format = data_label_format, # Show percentage or count
-        style = list(textOutline = "none", fontSize = "10px")
-      )
+  # Use appropriate series type for plotOptions (bar or column)
+  series_type <- if (horizontal) "bar" else "column"
+  
+  plot_options <- list()
+  plot_options[[series_type]] <- list(
+    stacking = stacking_type_hc,
+    dataLabels = list(
+      enabled = TRUE,
+      format = data_label_format, # Show percentage or count
+      style = list(textOutline = "none", fontSize = "10px")
     )
   )
+  
+  hchart_obj <- do.call(highcharter::hc_plotOptions, c(list(hchart_obj), plot_options))
 
   # Legend
   # Stack label logic for legend:
