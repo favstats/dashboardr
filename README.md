@@ -29,6 +29,9 @@ This is a basic example which shows you how to solve a common problem:
 
 ``` r
 library(dashboardr)
+#> Registered S3 method overwritten by 'quantmod':
+#>   method            from
+#>   as.zoo.data.frame zoo
 ## basic example code
 ```
 

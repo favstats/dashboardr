@@ -1,5 +1,7 @@
 # This is the showcase dashboard
 
+library(tidyverse)
+
 # Load GSS data for realistic examples
 data(gss_panel20, package = "gssr")
 gss_clean <- gss_panel20 %>%

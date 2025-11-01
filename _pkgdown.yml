@@ -1,0 +1,22 @@
+url: https://favstats.github.io/dashboardr/
+
+favicon: false
+
+template:
+  bootstrap: 5
+  bslib:
+    bg: white
+    fg: "#212529"
+    primary: "#0d6efd"
+    secondary: "#6c757d"
+    success: "#198754"
+    info: "#0dcaf0"
+    warning: "#ffc107"
+    danger: "#dc3545"
+    base_font:
+      google: Inter
+    heading_font:
+      google: Inter
+    code_font:
+      google: "Fira Code"
+
