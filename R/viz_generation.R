@@ -129,7 +129,7 @@
   )
 
   # Determine which dataset to use
-  source_dataset <- spec$data %||% "data"  # Check if viz specifies a dataset
+  source_dataset <- spec[["data"]] %||% "data"  # Check if viz specifies a dataset (use [[ to avoid partial matching)
   
   if (!is.null(spec$filter)) {
     # Use pre-filtered dataset created in setup chunk
@@ -146,7 +146,7 @@
   args <- list()
 
   # Add data argument if page has data (either single or multi-dataset)
-  if (("data_path" %in% names(spec) && !is.null(spec$data_path)) || 
+  if (("data_path" %in% names(spec) && !is.null(spec[["data_path"]])) || 
       ("has_data" %in% names(spec) && isTRUE(spec$has_data))) {
     
     # Check if we should drop NAs for relevant variables
@@ -178,12 +178,12 @@
       # Build data pipeline with drop_na if we have variables
       if (length(vars_to_clean) > 0) {
         vars_str <- paste(vars_to_clean, collapse = ", ")
-        args$data <- paste0(data_var, " %>% tidyr::drop_na(", vars_str, ")")
+        args[["data"]] <- paste0(data_var, " %>% tidyr::drop_na(", vars_str, ")")
       } else {
-        args$data <- data_var
+        args[["data"]] <- data_var
       }
     } else {
-      args$data <- data_var  # Reference filtered or named dataset
+      args[["data"]] <- data_var  # Reference filtered or named dataset
     }
   }
 
@@ -234,7 +234,7 @@
   lines <- character(0)
 
   # Determine which dataset to use
-  source_dataset <- spec$data %||% "data"  # Check if viz specifies a dataset
+  source_dataset <- spec[["data"]] %||% "data"  # Check if viz specifies a dataset (use [[ to avoid partial matching)
   
   if (!is.null(spec$filter)) {
     # Use pre-filtered dataset created in setup chunk
@@ -248,8 +248,8 @@
   }
 
   # Load data if needed (shouldn't happen in normal flow, but kept for compatibility)
-  if ("data_path" %in% names(spec) && !is.null(spec$data_path) && data_var == source_dataset && source_dataset == "data") {
-    data_file <- basename(spec$data_path)
+  if ("data_path" %in% names(spec) && !is.null(spec[["data_path"]]) && data_var == source_dataset && source_dataset == "data") {
+    data_file <- basename(spec[["data_path"]])
     lines <- c(lines, paste0("data <- readRDS('", data_file, "')"))
   }
 
@@ -258,9 +258,9 @@
 
   # Add data argument if page has data (either single or multi-dataset)
   if ("data" %in% names(args) && 
-      (("data_path" %in% names(spec) && !is.null(spec$data_path)) || 
+      (("data_path" %in% names(spec) && !is.null(spec[["data_path"]])) || 
        ("has_data" %in% names(spec) && isTRUE(spec$has_data)))) {
-    args$data <- data_var
+    args[["data"]] <- data_var
   }
 
   if (length(args) == 0) {
@@ -298,7 +298,7 @@
   lines <- character(0)
 
   # Determine which dataset to use
-  source_dataset <- spec$data %||% "data"  # Check if viz specifies a dataset
+  source_dataset <- spec[["data"]] %||% "data"  # Check if viz specifies a dataset (use [[ to avoid partial matching)
   
   if (!is.null(spec$filter)) {
     # Use pre-filtered dataset created in setup chunk
@@ -312,8 +312,8 @@
   }
 
   # Load data if specified (shouldn't happen in normal flow, but kept for compatibility)
-  if ("data_path" %in% names(spec) && !is.null(spec$data_path) && data_var == source_dataset && source_dataset == "data") {
-    data_file <- basename(spec$data_path)
+  if ("data_path" %in% names(spec) && !is.null(spec[["data_path"]]) && data_var == source_dataset && source_dataset == "data") {
+    data_file <- basename(spec[["data_path"]])
     lines <- c(lines, paste0("data <- readRDS('", data_file, "')"))
   }
 
@@ -338,7 +338,7 @@
   # Add or replace data argument if page has data
   if (("data_path" %in% names(args) && !is.null(args$data_path)) || 
       ("has_data" %in% names(args) && isTRUE(args$has_data))) {
-    args$data <- data_var  # Use filtered or named dataset
+    args[["data"]] <- data_var  # Use filtered or named dataset
   }
   
   # Remove internal parameters
@@ -354,7 +354,7 @@
   args$title_tabset <- NULL
   
   # Remove the data argument if it's the source dataset name (internal param that was passed to add_viz)
-  if ("data" %in% names(args) && is.character(args$data) && args$data == spec$data) {
+  if ("data" %in% names(args) && is.character(args[["data"]]) && args[["data"]] == spec[["data"]]) {
     # This was the source dataset name parameter, not actual data
     # It will be added back as data_var above
   }

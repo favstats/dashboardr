@@ -4,12 +4,13 @@ pkgdown_sha: 274c1f4e8bb2141a217c9f1af28ce5ab108d4b2f
 articles:
   advanced-features: advanced-features.html
   bar_vignette: bar_vignette.html
+  demos: demos.html
   getting-started: getting-started.html
   heatmap_vignette: heatmap_vignette.html
   stackedbar_vignette: stackedbar_vignette.html
   stackedbars_vignette: stackedbars_vignette.html
   timeline_vignette: timeline_vignette.html
-last_built: 2025-11-02T20:07Z
+last_built: 2025-11-02T20:28Z
 urls:
   reference: https://favstats.github.io/dashboardr/reference
   article: https://favstats.github.io/dashboardr/articles

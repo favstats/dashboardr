@@ -1,0 +1,374 @@
+# Live Demos: Tutorial & Showcase Dashboards
+
+## Overview
+
+`dashboardr` includes two built-in demo dashboards that showcase its
+capabilities:
+
+1.  **Tutorial Dashboard** - A beginner-friendly dashboard demonstrating
+    basic features
+2.  **Showcase Dashboard** - A comprehensive dashboard showcasing
+    advanced features
+
+Both dashboards use real data from the General Social Survey (GSS) and
+can be generated with a single function call!
+
+## Tutorial Dashboard
+
+The tutorial dashboard is perfect for:
+
+- Learning the basics of dashboardr
+- Understanding how tabsets work
+- Seeing simple visualizations in action
+- Getting started quickly
+
+### Features Demonstrated
+
+- **Stacked bar charts** with custom colors and ordering
+- **Heatmaps** showing relationships between variables
+- **Tabset grouping** for organizing related visualizations
+- **Standalone charts** without tabsets
+- **Text-only pages** for context and documentation
+- **Icons** throughout the interface
+
+### Running the Tutorial Dashboard
+
+``` r
+library(dashboardr)
+```
+
+``` r
+# Requires the 'gssr' package
+# install.packages("gssr")
+
+# Generate and open the tutorial dashboard
+tutorial_dashboard()
+```
+
+This will:
+
+1.  Load GSS panel data
+2.  Create visualizations with stacked bars and heatmaps
+3.  Build a multi-page dashboard
+4.  Render it with Quarto
+5.  Open it in your browser
+
+**Output directory:** `tutorial_dashboard/`
+
+### What You’ll See
+
+The tutorial dashboard includes:
+
+- **Welcome Page** - Introduction and navigation guide
+- **Example Dashboard** - Two tabsets demonstrating different chart
+  types
+- **Standalone Charts** - Examples without tabsets
+- **Text-Only Page** - Pure markdown content
+- **Showcase Link** - Link to the more advanced showcase
+
+### Code Example
+
+Here’s what the tutorial dashboard does internally:
+
+``` r
+# Create visualization collection with tabsets
+analysis_vizzes <- create_viz() %>%
+  add_viz(
+    type = "stackedbar",
+    x_var = "degree_1a",
+    stack_var = "happy_1a",
+    title = "Happiness by Education",
+    tabgroup = "demographics",  # First tabset
+    stacked_type = "percent"
+  ) %>%
+  add_viz(
+    type = "heatmap",
+    x_var = "degree_1a",
+    y_var = "age_1a",
+    value_var = "trust_1a",
+    title = "Trust Patterns",
+    tabgroup = "social",  # Second tabset
+  )
+
+# Build dashboard
+dashboard <- create_dashboard(
+  title = "Tutorial Dashboard",
+  output_dir = "tutorial_dashboard"
+) %>%
+  add_page(
+    "Welcome",
+    text = "Introduction text here",
+    is_landing_page = TRUE
+  ) %>%
+  add_page(
+    "Analysis",
+    data = gss_data,
+    visualizations = analysis_vizzes
+  )
+
+# Generate
+generate_dashboard(dashboard, render = TRUE)
+```
+
+------------------------------------------------------------------------
+
+## Showcase Dashboard
+
+The showcase dashboard is perfect for:
+
+- Seeing the full power of dashboardr
+- Understanding advanced features
+- Getting inspiration for your own dashboards
+- Demonstrating to stakeholders
+
+### Features Demonstrated
+
+Everything from the tutorial dashboard, plus:
+
+- **Multiple tabset groups** (Demographics, Politics, Social Issues)
+- **Complex visualizations** with custom styling
+- **Mixed content pages** (text + visualizations)
+- **Card layouts** with images and custom content
+- **Advanced Quarto features** (breadcrumbs, search, code folding)
+- **All visualization types** in one dashboard
+
+### Running the Showcase Dashboard
+
+``` r
+# Requires the 'gssr' package
+# install.packages("gssr")
+
+# Generate and open the showcase dashboard
+showcase_dashboard()
+```
+
+This will:
+
+1.  Load GSS panel data
+2.  Create comprehensive visualizations across multiple tabsets
+3.  Build a multi-page dashboard with advanced features
+4.  Render it with Quarto
+5.  Open it in your browser
+
+**Output directory:** `comprehensive_dashboard_test/`
+
+### What You’ll See
+
+The showcase dashboard includes:
+
+- **Welcome Page** - Feature overview
+- **GSS Data Analysis** - Three tabsets:
+  - Demographics & Education (2 visualizations)
+  - Political Attitudes (3 visualizations)
+  - Social Issues (2 visualizations)
+- **Key Findings** - Mixed text and visualizations
+- **Summary Charts** - Standalone charts highlighting key insights
+- **About Page** - Card layout showcasing team members (with cat and dog
+  photos!)
+
+### Advanced Features
+
+The showcase demonstrates:
+
+``` r
+# Multiple tabset groups
+analysis_viz <- create_viz() %>%
+  add_viz(..., tabgroup = "demographics") %>%
+  add_viz(..., tabgroup = "demographics") %>%
+  add_viz(..., tabgroup = "politics") %>%
+  add_viz(..., tabgroup = "politics") %>%
+  add_viz(..., tabgroup = "social") %>%
+  set_tabgroup_labels(list(
+    demographics = "Demographics & Education",
+    politics = "Political Attitudes",
+    social = "Social Issues"
+  ))
+
+# Card layouts
+card(
+  content = "Team member bio",
+  title = "Mario il Gatto",
+  image = "https://images.unsplash.com/photo-cat",
+  footer = "Website: mario-il-gatto.data"
+)
+
+# Mixed content pages
+add_page(
+  "Findings",
+  text = md_text("Analysis summary..."),
+  data = data,
+  visualizations = viz
+)
+```
+
+------------------------------------------------------------------------
+
+## Comparison
+
+| Feature               | Tutorial            | Showcase            |
+|-----------------------|---------------------|---------------------|
+| **Pages**             | 4                   | 5                   |
+| **Tabsets**           | 2                   | 3                   |
+| **Visualizations**    | 6                   | 9                   |
+| **Chart Types**       | Stackedbar, Heatmap | Stackedbar, Heatmap |
+| **Standalone Charts** | ✅ Yes              | ✅ Yes              |
+| **Card Layouts**      | ❌ No               | ✅ Yes              |
+| **Mixed Content**     | ❌ No               | ✅ Yes              |
+| **Complexity**        | Beginner            | Advanced            |
+| **Purpose**           | Learning            | Inspiration         |
+
+------------------------------------------------------------------------
+
+## Customizing the Demos
+
+Both demo functions create dashboards in your working directory. You
+can:
+
+1.  **Run the demo** to see the output
+2.  **Inspect the generated files** in the output directory
+3.  **Modify the QMD files** if desired
+4.  **Use the code as a template** for your own dashboards
+
+### Extracting the Code
+
+Want to see the full code? Both functions are fully documented:
+
+``` r
+# View the tutorial dashboard code
+?tutorial_dashboard
+
+# View the showcase dashboard code
+?showcase_dashboard
+
+# See the actual implementation
+View(tutorial_dashboard)
+View(showcase_dashboard)
+```
+
+------------------------------------------------------------------------
+
+## Requirements
+
+Both demos require:
+
+1.  **Quarto CLI** installed on your system
+
+2.  **gssr package** for GSS data:
+
+    ``` r
+    install.packages("gssr")
+    ```
+
+If you don’t have these, you’ll get helpful error messages guiding you
+to install them.
+
+------------------------------------------------------------------------
+
+## Next Steps
+
+After exploring the demos:
+
+1.  **Start with the tutorial** - Run
+    [`tutorial_dashboard()`](https://favstats.github.io/dashboardr/reference/tutorial_dashboard.md)
+    to see basic features
+2.  **Try the showcase** - Run
+    [`showcase_dashboard()`](https://favstats.github.io/dashboardr/reference/showcase_dashboard.md)
+    to see advanced capabilities
+3.  **Read the vignettes** - Check out
+    [`vignette("getting-started")`](https://favstats.github.io/dashboardr/articles/getting-started.md)
+    for detailed guides
+4.  **Build your own** - Use the demos as templates for your projects!
+
+------------------------------------------------------------------------
+
+## Tips for Using the Demos
+
+### For Presentations
+
+``` r
+# Generate without opening (for presentations)
+dashboard <- tutorial_dashboard()
+
+# Then open manually when ready
+browseURL("tutorial_dashboard/docs/index.html")
+```
+
+### For Learning
+
+``` r
+# Generate the tutorial
+tutorial_dashboard()
+
+# Explore the output directory
+list.files("tutorial_dashboard", recursive = TRUE)
+
+# Examine the generated QMD files
+file.edit("tutorial_dashboard/index.qmd")
+```
+
+### For Inspiration
+
+``` r
+# Generate the showcase
+showcase_dashboard()
+
+# Compare different visualizations
+# Notice how tabgroups organize content
+# See how standalone charts work
+# Explore card layouts and mixed content
+```
+
+------------------------------------------------------------------------
+
+## Troubleshooting
+
+### Quarto Not Found
+
+    Error: Quarto CLI not found
+
+**Solution:** Install Quarto from <https://quarto.org/docs/get-started/>
+
+### gssr Package Missing
+
+    Error: package 'gssr' not found
+
+**Solution:**
+
+``` r
+install.packages("gssr")
+```
+
+### Port Already in Use
+
+If the dashboard doesn’t open, the port might be busy. Try:
+
+``` r
+# Generate without opening
+tutorial_dashboard()
+
+# Then open manually
+browseURL("tutorial_dashboard/docs/index.html")
+```
+
+------------------------------------------------------------------------
+
+## Getting Help
+
+``` r
+# Function documentation
+?tutorial_dashboard
+?showcase_dashboard
+
+# Package overview
+help(package = "dashboardr")
+
+# All vignettes
+vignette(package = "dashboardr")
+```
+
+------------------------------------------------------------------------
+
+**Happy dashboard building!** 🎉
+
+Remember: The best way to learn dashboardr is to see it in action. Run
+both demos and explore the generated files!

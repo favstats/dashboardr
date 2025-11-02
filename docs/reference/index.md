@@ -14,8 +14,15 @@ Functions for creating and managing dashboards
   : Generate all dashboard files
 - [`publish_dashboard()`](https://favstats.github.io/dashboardr/reference/publish_dashboard.md)
   : Publish dashboard to GitHub Pages or GitLab Pages
+
+## Demo Dashboards
+
+Built-in demo dashboards showcasing package features
+
 - [`tutorial_dashboard()`](https://favstats.github.io/dashboardr/reference/tutorial_dashboard.md)
   : Generate a tutorial dashboard.
+- [`showcase_dashboard()`](https://favstats.github.io/dashboardr/reference/showcase_dashboard.md)
+  : Generate a showcase dashboard demonstrating all dashboardr features.
 
 ## Visualization Creation
 

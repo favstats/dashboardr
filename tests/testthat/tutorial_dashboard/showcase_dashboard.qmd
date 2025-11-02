@@ -1,0 +1,7 @@
+---
+title: "{{< iconify ph link >}} Showcase Dashboard"
+format: html
+---
+
+This is a placeholder for a link to the showcase dashboard.
+

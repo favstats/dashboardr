@@ -17,7 +17,8 @@
 <link href="deps/Fira_Code-0.4.9/font.css" rel="stylesheet">
 <link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="What the Package Does (One Line, Title Case)">
+<script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><link href="extra.css" rel="stylesheet">
+<meta property="og:title" content="What the Package Does (One Line, Title Case)">
 <meta name="description" content="What the package does (one paragraph).">
 <meta property="og:description" content="What the package does (one paragraph).">
 <meta property="og:image" content="https://favstats.github.io/dashboardr/logo.svg">
@@ -43,13 +44,24 @@
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="articles/getting-started.html">Getting Started with dashboardr</a></li>
-    <li><a class="dropdown-item" href="articles/advanced-features.html">Advanced Features in dashboardr</a></li>
-    <li><a class="dropdown-item" href="articles/bar_vignette.html">Creating Bar Charts with create_bar()</a></li>
-    <li><a class="dropdown-item" href="articles/timeline_vignette.html">Getting Started With `create_timeline()`</a></li>
-    <li><a class="dropdown-item" href="articles/stackedbar_vignette.html">Creating Interactive Stacked Bar Charts with `create_stackedbar`</a></li>
-    <li><a class="dropdown-item" href="articles/stackedbars_vignette.html">Getting Started With `create_stackedbars()`</a></li>
-    <li><a class="dropdown-item" href="articles/heatmap_vignette.html">Creating Interactive Heatmaps with `create_heatmap`</a></li>
+<li><a class="dropdown-item" href="articles/getting-started.html">Getting Started</a></li>
+    <li><a class="dropdown-item" href="articles/advanced-features.html">Advanced Features</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Visualization Types</h6></li>
+    <li><a class="dropdown-item" href="articles/bar_vignette.html">Bar Charts</a></li>
+    <li><a class="dropdown-item" href="articles/timeline_vignette.html">Timelines</a></li>
+    <li><a class="dropdown-item" href="articles/stackedbar_vignette.html">Stacked Bars</a></li>
+    <li><a class="dropdown-item" href="articles/stackedbars_vignette.html">Stacked Bars (Multiple)</a></li>
+    <li><a class="dropdown-item" href="articles/heatmap_vignette.html">Heatmaps</a></li>
+  </ul>
+</li>
+<li class="nav-item dropdown">
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown--live-demos" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">🎯 Live Demos</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown--live-demos">
+<li><a class="dropdown-item" href="articles/demos.html">📚 About the Demos</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><a class="dropdown-item" href="live-demos/tutorial/docs/index.html">🎓 Tutorial Dashboard</a></li>
+    <li><a class="dropdown-item" href="live-demos/showcase/docs/index.html">🚀 Showcase Dashboard</a></li>
   </ul>
 </li>
       </ul>
@@ -139,13 +151,50 @@
 <p>This creates a complete Quarto dashboard with interactive visualizations!</p>
 </div>
 <div class="section level2">
+<h2 id="dart-try-the-live-demos">🎯 Try the Live Demos!<a class="anchor" aria-label="anchor" href="#dart-try-the-live-demos"></a>
+</h2>
+<p>Want to see dashboardr in action? We include two built-in demo dashboards:</p>
+<div class="section level3">
+<h3 id="tutorial-dashboard---perfect-for-learning">Tutorial Dashboard - Perfect for Learning<a class="anchor" aria-label="anchor" href="#tutorial-dashboard---perfect-for-learning"></a>
+</h3>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Run the tutorial dashboard (requires 'gssr' package)</span></span>
+<span><span class="fu"><a href="reference/tutorial_dashboard.html">tutorial_dashboard</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<p>The tutorial dashboard demonstrates:</p>
+<ul>
+<li>✅ Basic stacked bar charts and heatmaps</li>
+<li>✅ Tabset grouping for organizing visualizations</li>
+<li>✅ Standalone charts without tabsets</li>
+<li>✅ Text-only pages</li>
+<li>✅ Icons throughout</li>
+</ul>
+<p><strong>Output:</strong> Opens in your browser automatically!</p>
+</div>
+<div class="section level3">
+<h3 id="showcase-dashboard---full-feature-demo">Showcase Dashboard - Full Feature Demo<a class="anchor" aria-label="anchor" href="#showcase-dashboard---full-feature-demo"></a>
+</h3>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Run the comprehensive showcase dashboard</span></span>
+<span><span class="fu"><a href="reference/showcase_dashboard.html">showcase_dashboard</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<p>The showcase dashboard includes:</p>
+<ul>
+<li>✅ Multiple tabset groups (Demographics, Politics, Social Issues)</li>
+<li>✅ 9 different visualizations across 5 pages</li>
+<li>✅ Card layouts with images</li>
+<li>✅ Mixed content pages (text + visualizations)</li>
+<li>✅ All advanced features in one place</li>
+</ul>
+<p><strong>See the full demo guide:</strong> <a href="https://favstats.github.io/dashboardr/articles/demos.html">Live Demos Vignette</a></p>
+</div>
+</div>
+<div class="section level2">
 <h2 id="key-features">Key Features<a class="anchor" aria-label="anchor" href="#key-features"></a>
 </h2>
 <div class="section level3">
 <h3 id="dart-smart-defaults">🎯 Smart Defaults<a class="anchor" aria-label="anchor" href="#dart-smart-defaults"></a>
 </h3>
 <p>Set common parameters once and reuse them:</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">viz</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/create_viz.html">create_viz</a></span><span class="op">(</span></span>
 <span>  type <span class="op">=</span> <span class="st">"stackedbars"</span>,</span>
 <span>  questions <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Q"</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">)</span>,</span>
@@ -161,7 +210,7 @@
 <h3 id="zap-vectorized-creation">⚡ Vectorized Creation<a class="anchor" aria-label="anchor" href="#zap-vectorized-creation"></a>
 </h3>
 <p>Create multiple visualizations efficiently:</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">viz</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/create_viz.html">create_viz</a></span><span class="op">(</span></span>
 <span>  type <span class="op">=</span> <span class="st">"bar"</span>,</span>
 <span>  horizontal <span class="op">=</span> <span class="cn">TRUE</span>,</span>
@@ -178,7 +227,7 @@
 <h3 id="performing_arts-nested-tabgroups">🎭 Nested Tabgroups<a class="anchor" aria-label="anchor" href="#performing_arts-nested-tabgroups"></a>
 </h3>
 <p>Create hierarchical structures:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">viz</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/create_viz.html">create_viz</a></span><span class="op">(</span></span>
 <span>  type <span class="op">=</span> <span class="st">"stackedbar"</span>,</span>
 <span>  x_var <span class="op">=</span> <span class="st">"response"</span>,</span>
@@ -202,7 +251,7 @@
 <div class="section level3">
 <h3 id="books-multi-dataset-support">📚 Multi-Dataset Support<a class="anchor" aria-label="anchor" href="#books-multi-dataset-support"></a>
 </h3>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">dashboard</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="reference/add_page.html">add_page</a></span><span class="op">(</span></span>
 <span>    <span class="st">"Analysis"</span>,</span>
@@ -217,7 +266,7 @@
 <div class="section level3">
 <h3 id="clapper-loading-overlays">🎬 Loading Overlays<a class="anchor" aria-label="anchor" href="#clapper-loading-overlays"></a>
 </h3>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">dashboard</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="reference/add_page.html">add_page</a></span><span class="op">(</span></span>
 <span>    <span class="st">"Reports"</span>,</span>
@@ -295,7 +344,7 @@
 <li>
 <strong>segmented</strong> - Segmented control style</li>
 </ul>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">dashboard</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/create_dashboard.html">create_dashboard</a></span><span class="op">(</span></span>
 <span>  title <span class="op">=</span> <span class="st">"My Dashboard"</span>,</span>
 <span>  output_dir <span class="op">=</span> <span class="st">"output"</span>,</span>
@@ -332,7 +381,7 @@
 <h2 id="examples">Examples<a class="anchor" aria-label="anchor" href="#examples"></a>
 </h2>
 <p>Check out the demo scripts in the package:</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># View available demos</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"demo"</span>, package <span class="op">=</span> <span class="st">"dashboardr"</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
@@ -363,7 +412,7 @@
 <div class="section level2">
 <h2 id="citation">Citation<a class="anchor" aria-label="anchor" href="#citation"></a>
 </h2>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/citation.html" class="external-link">citation</a></span><span class="op">(</span><span class="st">"dashboardr"</span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>

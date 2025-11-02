@@ -50,7 +50,7 @@ viz_collection <- create_viz() %>%
           color_palette = c("#d7191c", "#fdae61", "#ffffbf", "#abdda4", "#2b83ba"),
           tooltip_prefix = "Trust: ",
           tooltip_suffix = "/3",
-          data_labels_format = "{point.value:.2f}",
+          tooltip_labels_format = "{point.value:.2f}",
           text = "Educational and regional patterns in trust distribution.",
           text_position = "above",
           icon = "ph:chart-pie",

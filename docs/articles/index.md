@@ -10,6 +10,11 @@
 - [Advanced Features in
   dashboardr](https://favstats.github.io/dashboardr/articles/advanced-features.md):
 
+### Live Demos
+
+- [Live Demos: Tutorial & Showcase
+  Dashboards](https://favstats.github.io/dashboardr/articles/demos.md):
+
 ### Visualization Types
 
 - [Creating Bar Charts with

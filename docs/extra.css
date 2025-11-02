@@ -1,0 +1,12 @@
+/* Custom styles for dashboardr pkgdown site */
+
+/* Make demo dashboard links stand out */
+.navbar-nav .nav-link.demo-link {
+  font-weight: 600;
+  color: #0d6efd !important;
+}
+
+.navbar-nav .nav-link.demo-link:hover {
+  color: #0a58ca !important;
+}
+

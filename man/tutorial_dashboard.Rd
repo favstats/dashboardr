@@ -4,7 +4,7 @@
 \alias{tutorial_dashboard}
 \title{Generate a tutorial dashboard.}
 \usage{
-tutorial_dashboard()
+tutorial_dashboard(directory = "docs", qmds_dir = "tutorial_dashboard")
 }
 \value{
 Invisibly returns the dashboard_project object.

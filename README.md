@@ -83,6 +83,44 @@ generate_dashboard(dashboard)
 This creates a complete Quarto dashboard with interactive
 visualizations!
 
+## 🎯 Try the Live Demos!
+
+Want to see dashboardr in action? We include two built-in demo dashboards:
+
+### Tutorial Dashboard - Perfect for Learning
+
+```r
+# Run the tutorial dashboard (requires 'gssr' package)
+tutorial_dashboard()
+```
+
+The tutorial dashboard demonstrates:
+
+- ✅ Basic stacked bar charts and heatmaps
+- ✅ Tabset grouping for organizing visualizations
+- ✅ Standalone charts without tabsets
+- ✅ Text-only pages
+- ✅ Icons throughout
+
+**Output:** Opens in your browser automatically!
+
+### Showcase Dashboard - Full Feature Demo
+
+```r
+# Run the comprehensive showcase dashboard
+showcase_dashboard()
+```
+
+The showcase dashboard includes:
+
+- ✅ Multiple tabset groups (Demographics, Politics, Social Issues)
+- ✅ 9 different visualizations across 5 pages
+- ✅ Card layouts with images
+- ✅ Mixed content pages (text + visualizations)
+- ✅ All advanced features in one place
+
+**See the full demo guide:** [Live Demos Vignette](https://favstats.github.io/dashboardr/articles/demos.html)
+
 ## Key Features
 
 ### 🎯 Smart Defaults

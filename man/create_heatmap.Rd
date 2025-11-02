@@ -27,7 +27,7 @@ create_heatmap(
   color_palette = c("#FFFFFF", "#7CB5EC"),
   na_color = "transparent",
   data_labels_enabled = TRUE,
-  data_labels_format = "{point.value}",
+  tooltip_labels_format = "{point.value}",
   include_na = FALSE,
   na_label_x = "(Missing)",
   na_label_y = "(Missing)",
@@ -84,7 +84,7 @@ Example: \code{c("#FFFFFF", "#7CB5EC")} for white to light blue. Can also be a s
 
 \item{data_labels_enabled}{Logical. If TRUE, display data labels on each cell. Default TRUE.}
 
-\item{data_labels_format}{Optional string. Format for data labels. Default "{point.value}".}
+\item{tooltip_labels_format}{Optional string. Format for data labels. Default "{point.value}".}
 
 \item{include_na}{Logical. If TRUE, treats NA values in \code{x_var} or \code{y_var}
 as explicit categories using \code{na_label_x} and \code{na_label_y}. If FALSE (default),

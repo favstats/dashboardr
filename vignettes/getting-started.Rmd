@@ -18,7 +18,7 @@ knitr::opts_chunk$set(
 
 ## Introduction: A Grammar of Dashboards
 
-Just as `ggplot2` revolutionized data visualization by providing a **grammar of graphics**, `dashboardr` provides a **grammar of dashboards** for organizing and presenting your analyses.
+`ggplot2` revolutionized data visualization by providing a **grammar of graphics**. The goal of `dashboardr` is the ambitious goal creating a **grammar of dashboards** for organizing and presenting your analyses.
 
 ### What is a Grammar?
 
@@ -51,7 +51,7 @@ library(dplyr)
 
 ```{r, eval=FALSE}
 # Install from GitHub
-# devtools::install_github("yourusername/dashboardr")
+# devtools::install_github("favstats/dashboardr")
 ```
 
 ## The Power of Print: Visualizing Structure
@@ -439,7 +439,7 @@ dashboard$navbar_sections <- list(
 )
 ```
 
-## Advanced Features
+## Helpful Features
 
 ### Loading Overlay
 
@@ -484,7 +484,7 @@ create_viz(
 
 Use `add_vizzes()` to expand vector parameters:
 
-```{r, eval=FALSE}
+```{r, eval=T}
 questions <- c("q1", "q2", "q3")
 labels <- c("Question 1", "Question 2", "Question 3")
 

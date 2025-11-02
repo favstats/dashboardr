@@ -16,7 +16,7 @@
 #' # Run the tutorial dashboard (requires Quarto CLI and 'gssr' package)
 #' tutorial_dashboard()
 #' }
-tutorial_dashboard <- function() {
+tutorial_dashboard <- function(directory = "docs", qmds_dir = "tutorial_dashboard") {
 
   # Load GSS data for realistic examples
   data(gss_panel20, package = "gssr") # Data is now handled by the function scope
@@ -81,7 +81,7 @@ tutorial_dashboard <- function() {
             color_palette = c("#d7191c", "#fdae61", "#ffffbf", "#abdda4", "#2b83ba"),
             tooltip_prefix = "Trust: ",
             tooltip_suffix = "/3",
-            data_labels_format = "{point.value:.2f}",
+            tooltip_labels_format = "{point.value:.2f}",
             text = "Here's another example of the kind of plots you can generate in your dashboard.",
             text_position = "above",
             icon = "ph:heatmap",
@@ -100,7 +100,7 @@ tutorial_dashboard <- function() {
             color_palette = c("#d7191c", "#fdae61", "#ffffbf", "#abdda4", "#2b83ba"),
             tooltip_prefix = "Trust: ",
             tooltip_suffix = "/3",
-            data_labels_format = "{point.value:.2f}",
+            tooltip_labels_format = "{point.value:.2f}",
             text = "Educational and regional patterns in trust distribution.",
             text_position = "above",
             icon = "ph:chart-pie",
@@ -150,7 +150,7 @@ tutorial_dashboard <- function() {
             color_palette = c("#d7191c", "#fdae61", "#ffffbf", "#abdda4", "#2b83ba"),
             tooltip_prefix = "Trust: ",
             tooltip_suffix = "/3",
-            data_labels_format = "{point.value:.2f}",
+            tooltip_labels_format = "{point.value:.2f}",
             text = "Subtitle for your standalone chart.",
             text_position = "below",
             icon = "ph:shield-check",
@@ -158,8 +158,9 @@ tutorial_dashboard <- function() {
 
   # Create tutorial dashboard
   dashboard <- create_dashboard(
-    output_dir = "tutorial_dashboard",
+    output_dir = qmds_dir,
     title = "Tutorial Dashboard",
+    allow_inside_pkg = TRUE,
     # github = "https://github.com/favstats/dashboardr",
     # twitter = "https://twitter.com/username",
     # linkedin = "https://linkedin.com/in/username",
@@ -204,7 +205,7 @@ tutorial_dashboard <- function() {
     metrics_style = "bootstrap",
     page_layout = "full",
     shiny = TRUE,
-    publish_dir = "docs",
+    publish_dir = directory,
     github_pages = "main",
     netlify = list(redirects = "/* /index.html 200")
   ) %>%
@@ -306,12 +307,37 @@ tutorial_dashboard <- function() {
 
 
 
-# This is the showcase dashboard
-
-# library(tidyverse)
-# devtools::load_all()
-
-showcase_dashboard <- function() {
+#' Generate a showcase dashboard demonstrating all dashboardr features.
+#'
+#' This function creates and renders a comprehensive showcase dashboard that
+#' demonstrates the full breadth of the dashboardr package. It includes multiple
+#' visualization types, tabset grouping, standalone charts, and various page layouts.
+#'
+#' @details
+#' The showcase dashboard uses General Social Survey (GSS) data to demonstrate:
+#' \itemize{
+#'   \item Multiple tabset groups (Demographics, Politics, Social Issues)
+#'   \item Stacked bar charts with custom styling
+#'   \item Heatmaps with custom color palettes
+#'   \item Standalone charts without tabsets
+#'   \item Text-only pages with card layouts
+#'   \item Mixed content pages (text + visualizations)
+#'   \item Custom icons throughout
+#'   \item All advanced dashboard features
+#' }
+#'
+#' This dashboard is more comprehensive than the tutorial dashboard and showcases
+#' the full power of dashboardr for creating complex, multi-page dashboards.
+#'
+#' @return Invisibly returns the dashboard_project object.
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' # Run the showcase dashboard (requires Quarto CLI and 'gssr' package)
+#' showcase_dashboard()
+#' }
+showcase_dashboard <- function(directory = "docs", qmds_dir = "showcase_dashboard") {
 # Load GSS data for realistic examples
 data(gss_panel20, package = "gssr")
 gss_clean <- gss_panel20 %>%
@@ -426,7 +452,7 @@ analysis_vizzes <- create_viz() %>%
           color_palette = c("#d7191c", "#fdae61", "#ffffbf", "#abdda4", "#2b83ba"),
           tooltip_prefix = "Trust: ",
           tooltip_suffix = "/3",
-          data_labels_format = "{point.value:.2f}",
+          tooltip_labels_format = "{point.value:.2f}",
           text = "This heatmap reveals trust patterns across education and age groups.",
           text_position = "below",
           icon = "ph:heatmap",
@@ -445,7 +471,7 @@ analysis_vizzes <- create_viz() %>%
           color_palette = c("#d7191c", "#fdae61", "#ffffbf", "#abdda4", "#2b83ba"),
           tooltip_prefix = "Trust: ",
           tooltip_suffix = "/3",
-          data_labels_format = "{point.value:.2f}",
+          tooltip_labels_format = "{point.value:.2f}",
           text = "Educational and regional patterns in trust distribution.",
           text_position = "above",
           icon = "ph:chart-pie",
@@ -495,7 +521,7 @@ summary_vizzes <- create_viz() %>%
           color_palette = c("#d7191c", "#fdae61", "#ffffbf", "#abdda4", "#2b83ba"),
           tooltip_prefix = "Trust: ",
           tooltip_suffix = "/3",
-          data_labels_format = "{point.value:.2f}",
+          tooltip_labels_format = "{point.value:.2f}",
           text_position = "below",
           icon = "ph:shield-check",
           height = 700)
@@ -504,8 +530,9 @@ summary_vizzes <- create_viz() %>%
 
 # Create comprehensive dashboard with ALL features
 dashboard <- create_dashboard(
-  output_dir = "comprehensive_dashboard_test", # TODO FIX
-  title = "Comprehensive Dashboard Test", # TODO FIX!!
+  output_dir = qmds_dir,
+  title = "Showcase Dashboard",
+  allow_inside_pkg = TRUE,
   github = "https://github.com/favstats/dashboardr",
   twitter = "https://twitter.com/username",
   linkedin = "https://linkedin.com/in/username",
@@ -551,7 +578,7 @@ dashboard <- create_dashboard(
   metrics_style = "bootstrap",
   page_layout = "full",
   shiny = TRUE,
-  publish_dir = "docs",
+  publish_dir = directory,
   github_pages = "main",
   netlify = list(redirects = "/* /index.html 200")
 ) %>%
@@ -691,4 +718,5 @@ cat(test_text, "\n")
 cat("\n=== Generating Dashboard ===\n")
 generate_dashboard(dashboard, render = TRUE, open = "browser")
 
+invisible(dashboard) # Return the dashboard object invisibly
 }

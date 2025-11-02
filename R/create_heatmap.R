@@ -33,7 +33,7 @@
 #'   Example: `c("#FFFFFF", "#7CB5EC")` for white to light blue. Can also be a single color for gradient start.
 #' @param na_color Optional string. Color for NA values in `value_var` cells. Default "transparent".
 #' @param data_labels_enabled Logical. If TRUE, display data labels on each cell. Default TRUE.
-#' @param data_labels_format Optional string. Format for data labels. Default "{point.value}".
+#' @param tooltip_labels_format Optional string. Format for data labels. Default "{point.value}".
 #' @param include_na Logical. If TRUE, treats NA values in `x_var` or `y_var`
 #'   as explicit categories using `na_label_x` and `na_label_y`. If FALSE (default),
 #'   rows with NA in `x_var` or `y_var` are excluded from aggregation.
@@ -123,7 +123,7 @@ create_heatmap <- function(data,
                            color_palette = c("#FFFFFF", "#7CB5EC"), # Default: white to light blue
                            na_color = "transparent",
                            data_labels_enabled = TRUE,
-                           data_labels_format = "{point.value}",
+                           tooltip_labels_format = "{point.value}",
                            include_na = FALSE,
                            na_label_x = "(Missing)",
                            na_label_y = "(Missing)",
@@ -373,7 +373,7 @@ create_heatmap <- function(data,
         heatmap = list(
           dataLabels = list(
             enabled = data_labels_enabled,
-            format = data_labels_format,
+            format = tooltip_labels_format,
             color = "#000000", # Label color, e.g., black
             style = list(textOutline = "none")
           ),

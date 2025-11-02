@@ -121,11 +121,16 @@
         return(arg)
       }
       # Quote string literals and escape internal quotes
-      return(paste0('"', gsub('"', '\\"', arg, fixed = TRUE), '"'))
+      # Note: Curly braces don't need escaping in R strings
+      escaped <- gsub('"', '\\"', arg, fixed = TRUE)
+      return(paste0('"', escaped, '"'))
     } else {
       # Create c() vector for multiple strings
-      quoted_args <- paste0('"', gsub('"', '\\"', arg, fixed = TRUE), '"')
-      return(paste0("c(", paste(quoted_args, collapse = ", "), ")"))
+      escaped_args <- sapply(arg, function(x) {
+        escaped <- gsub('"', '\\"', x, fixed = TRUE)
+        paste0('"', escaped, '"')
+      })
+      return(paste0("c(", paste(escaped_args, collapse = ", "), ")"))
     }
   } else if (is.numeric(arg)) {
     if (length(arg) == 1) {

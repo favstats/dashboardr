@@ -1,0 +1,53 @@
+project:
+  type: website
+  output-dir: docs/live-demos/tutorial
+
+website:
+  title: "Tutorial Dashboard"
+  navbar:
+    style: dark
+    brand: "Dashboardr"
+    toggle: collapse
+    left:
+      - href: index.qmd
+        text: "Home"
+      - href: example_dashboard.qmd
+        text: "{{< iconify ph chart-line >}} Example Dashboard"
+      - href: standalone_charts.qmd
+        text: "{{< iconify ph chart-pie >}} Standalone Charts"
+      - href: text_only_page.qmd
+        text: "{{< iconify ph chalkboard-simple-bold >}} Text-Only Page"
+      - href: showcase_dashboard.qmd
+        text: "{{< iconify ph link >}} Showcase Dashboard"
+    search: true
+  bread-crumbs: true
+  page-navigation: true
+  back-to-top-navigation: true
+  reader-mode: true
+  repo-url: https://github.com/username/dashboardr
+  repo-actions: [edit, source, issue]
+  page-footer: "© 2025 dashboardr Package - All Rights Reserved"
+
+format:
+  html:
+    theme:
+      - default
+      - _tabset_modern.scss
+
+    math:
+      engine: katex
+    code-fold: true
+    code-tools: true
+    value-boxes: true
+    page-layout: full
+    shiny: true
+    google-analytics:
+      id: "GA-XXXXXXXXX"
+    plausible:
+      domain: "example.com"
+    gtag:
+      id: "GTM-XXXXXXX"
+    github-pages:
+      branch: main
+    netlify:
+      redirects: /* /index.html 200
