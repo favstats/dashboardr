@@ -22,10 +22,13 @@ visualizations. All content is markdown-compatible."><meta property="og:image" c
       <ul class="navbar-nav me-auto"><li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/heatmap_vignette.html">Creating Interactive Heatmaps with `create_heatmap`</a></li>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/getting-started.html">Getting Started with dashboardr</a></li>
+    <li><a class="dropdown-item" href="../articles/advanced-features.html">Advanced Features in dashboardr</a></li>
+    <li><a class="dropdown-item" href="../articles/bar_vignette.html">Creating Bar Charts with create_bar()</a></li>
+    <li><a class="dropdown-item" href="../articles/timeline_vignette.html">Getting Started With `create_timeline()`</a></li>
     <li><a class="dropdown-item" href="../articles/stackedbar_vignette.html">Creating Interactive Stacked Bar Charts with `create_stackedbar`</a></li>
     <li><a class="dropdown-item" href="../articles/stackedbars_vignette.html">Getting Started With `create_stackedbars()`</a></li>
-    <li><a class="dropdown-item" href="../articles/timeline_vignette.html">Getting Started With `create_timeline()`</a></li>
+    <li><a class="dropdown-item" href="../articles/heatmap_vignette.html">Creating Interactive Heatmaps with `create_heatmap`</a></li>
   </ul></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json"></form></li>
@@ -59,7 +62,13 @@ visualizations. All content is markdown-compatible.</p>
 <span>  visualizations <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  text <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  icon <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  is_landing_page <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  is_landing_page <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  tabset_theme <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  tabset_colors <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  navbar_align <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"left"</span>, <span class="st">"right"</span><span class="op">)</span>,</span>
+<span>  overlay <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  overlay_theme <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"light"</span>, <span class="st">"glass"</span>, <span class="st">"dark"</span>, <span class="st">"accent"</span><span class="op">)</span>,</span>
+<span>  overlay_text <span class="op">=</span> <span class="st">"Loading"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -76,11 +85,13 @@ visualizations. All content is markdown-compatible.</p>
 
 
 <dt id="arg-data">data<a class="anchor" aria-label="anchor" href="#arg-data"></a></dt>
-<dd><p>Optional data frame to save for this page</p></dd>
+<dd><p>Optional data frame to save for this page. Can also be a named list of data frames
+for using multiple datasets: <code>list(survey = df1, demographics = df2)</code></p></dd>
 
 
 <dt id="arg-data-path">data_path<a class="anchor" aria-label="anchor" href="#arg-data-path"></a></dt>
-<dd><p>Path to existing data file (alternative to data parameter)</p></dd>
+<dd><p>Path to existing data file (alternative to data parameter). Can also be a named
+list of file paths for multiple datasets</p></dd>
 
 
 <dt id="arg-template">template<a class="anchor" aria-label="anchor" href="#arg-template"></a></dt>
@@ -106,6 +117,30 @@ visualizations. All content is markdown-compatible.</p>
 <dt id="arg-is-landing-page">is_landing_page<a class="anchor" aria-label="anchor" href="#arg-is-landing-page"></a></dt>
 <dd><p>Whether this should be the landing page (default: FALSE)</p></dd>
 
+
+<dt id="arg-tabset-theme">tabset_theme<a class="anchor" aria-label="anchor" href="#arg-tabset-theme"></a></dt>
+<dd><p>Optional tabset theme for this page (overrides dashboard-level theme)</p></dd>
+
+
+<dt id="arg-tabset-colors">tabset_colors<a class="anchor" aria-label="anchor" href="#arg-tabset-colors"></a></dt>
+<dd><p>Optional tabset colors for this page (overrides dashboard-level colors)</p></dd>
+
+
+<dt id="arg-navbar-align">navbar_align<a class="anchor" aria-label="anchor" href="#arg-navbar-align"></a></dt>
+<dd><p>Position of page in navbar: "left" (default) or "right"</p></dd>
+
+
+<dt id="arg-overlay">overlay<a class="anchor" aria-label="anchor" href="#arg-overlay"></a></dt>
+<dd><p>Whether to show a loading overlay on page load (default: FALSE)</p></dd>
+
+
+<dt id="arg-overlay-theme">overlay_theme<a class="anchor" aria-label="anchor" href="#arg-overlay-theme"></a></dt>
+<dd><p>Theme for loading overlay: "light", "glass", "dark", or "accent" (default: "light")</p></dd>
+
+
+<dt id="arg-overlay-text">overlay_text<a class="anchor" aria-label="anchor" href="#arg-overlay-text"></a></dt>
+<dd><p>Text to display in loading overlay (default: "Loading")</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
@@ -117,19 +152,19 @@ visualizations. All content is markdown-compatible.</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
 <span class="r-in"><span><span class="co"># Landing page</span></span></span>
 <span class="r-in"><span><span class="va">dashboard</span> <span class="op">&lt;-</span> <span class="fu"><a href="create_dashboard.html">create_dashboard</a></span><span class="op">(</span><span class="st">"test"</span><span class="op">)</span> <span class="op"><a href="pipe.html">%&gt;%</a></span></span></span>
-<span class="r-in"><span>  <span class="fu">add_page</span><span class="op">(</span><span class="st">"Welcome"</span>, text <span class="op">=</span> <span class="st">"# Welcome\n\nThis is the main page."</span>, is_landing_page <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="add_page.html">add_page</a></span><span class="op">(</span><span class="st">"Welcome"</span>, text <span class="op">=</span> <span class="st">"# Welcome\n\nThis is the main page."</span>, is_landing_page <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Analysis page with data and visualizations</span></span></span>
 <span class="r-in"><span><span class="va">dashboard</span> <span class="op">&lt;-</span> <span class="va">dashboard</span> <span class="op"><a href="pipe.html">%&gt;%</a></span></span></span>
-<span class="r-in"><span>  <span class="fu">add_page</span><span class="op">(</span><span class="st">"Demographics"</span>, data <span class="op">=</span> <span class="va">survey_data</span>, visualizations <span class="op">=</span> <span class="va">demo_viz</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="add_page.html">add_page</a></span><span class="op">(</span><span class="st">"Demographics"</span>, data <span class="op">=</span> <span class="va">survey_data</span>, visualizations <span class="op">=</span> <span class="va">demo_viz</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Text-only about page</span></span></span>
 <span class="r-in"><span><span class="va">dashboard</span> <span class="op">&lt;-</span> <span class="va">dashboard</span> <span class="op"><a href="pipe.html">%&gt;%</a></span></span></span>
-<span class="r-in"><span>  <span class="fu">add_page</span><span class="op">(</span><span class="st">"About"</span>, text <span class="op">=</span> <span class="st">"# About This Study\n\nThis dashboard shows..."</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="add_page.html">add_page</a></span><span class="op">(</span><span class="st">"About"</span>, text <span class="op">=</span> <span class="st">"# About This Study\n\nThis dashboard shows..."</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Mixed content page</span></span></span>
 <span class="r-in"><span><span class="va">dashboard</span> <span class="op">&lt;-</span> <span class="va">dashboard</span> <span class="op"><a href="pipe.html">%&gt;%</a></span></span></span>
-<span class="r-in"><span>  <span class="fu">add_page</span><span class="op">(</span><span class="st">"Results"</span>, text <span class="op">=</span> <span class="st">"# Key Findings\n\nHere are the results:"</span>,</span></span>
+<span class="r-in"><span>  <span class="fu"><a href="add_page.html">add_page</a></span><span class="op">(</span><span class="st">"Results"</span>, text <span class="op">=</span> <span class="st">"# Key Findings\n\nHere are the results:"</span>,</span></span>
 <span class="r-in"><span>           visualizations <span class="op">=</span> <span class="va">results_viz</span>, icon <span class="op">=</span> <span class="st">"ph:chart-line"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 </code></pre></div>

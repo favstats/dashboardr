@@ -2,15 +2,29 @@
 % Please edit documentation in R/create_dashboard_new.R
 \name{print.viz_collection}
 \alias{print.viz_collection}
-\title{Print method for visualization collections}
+\title{Print Visualization Collection}
 \usage{
 \method{print}{viz_collection}(x, ...)
 }
 \arguments{
-\item{x}{A viz_collection object}
+\item{x}{A viz_collection object created by \code{\link{create_viz}}.}
 
-\item{...}{Additional arguments (ignored)}
+\item{...}{Additional arguments (currently ignored).}
+}
+\value{
+Invisibly returns the input object \code{x}.
 }
 \description{
-Displays a summary of visualizations in the collection grouped by tabgroup.
+Displays a formatted summary of a visualization collection, including hierarchical
+tabgroup structure, visualization types, titles, filters, and defaults.
+}
+\details{
+The print method displays:
+\itemize{
+\item Total number of visualizations
+\item Default parameters (if set)
+\item Hierarchical tree structure showing tabgroup organization
+\item Visualization types with emoji indicators
+\item Filter status for each visualization
+}
 }

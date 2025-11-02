@@ -1,8 +1,8 @@
 # Generate global setup chunk for QMD files
 
 Creates a comprehensive setup chunk that includes libraries, data
-loading, and global settings to avoid repetition in individual
-visualizations.
+loading, filtered datasets, and global settings to avoid repetition in
+individual visualizations.
 
 ## Usage
 

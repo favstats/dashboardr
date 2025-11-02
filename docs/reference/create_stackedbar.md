@@ -19,7 +19,7 @@ create_stackedbar(
   x_label = NULL,
   y_label = NULL,
   stack_label = NULL,
-  stacked_type = c("normal", "percent"),
+  stacked_type = c("counts", "percent"),
   tooltip_prefix = "",
   tooltip_suffix = "",
   x_tooltip_suffix = "",
@@ -34,7 +34,8 @@ create_stackedbar(
   x_map_values = NULL,
   stack_breaks = NULL,
   stack_bin_labels = NULL,
-  stack_map_values = NULL
+  stack_map_values = NULL,
+  horizontal = FALSE
 )
 ```
 
@@ -83,13 +84,14 @@ create_stackedbar(
 
 - stack_label:
 
-  Optional. The title for the stack legend (as a string). Defaults to
-  `stack_var` or `stack_var (Binned)`.
+  Optional. The title for the stack legend (as a string). Set to NULL,
+  NA, FALSE, or "" to hide the legend title completely. If not provided,
+  no title is shown.
 
 - stacked_type:
 
-  Optional. The type of stacking. Can be "normal" (counts) or "percent"
-  (100% stacked). Defaults to "normal".
+  Optional. The type of stacking. Can be "counts" (counts) or "percent"
+  (100% stacked). Defaults to "counts".
 
 - tooltip_prefix:
 
@@ -173,6 +175,14 @@ create_stackedbar(
   `list("1" = "Strongly Disagree", "7" = "Strongly Agree")`) to rename
   values within `stack_var` for display.
 
+- horizontal:
+
+  Logical. If `TRUE`, creates a horizontal bar chart (bars extend from
+  left to right). If `FALSE` (default), creates a vertical column chart
+  (bars extend from bottom to top). Note: When horizontal = TRUE, the
+  stack order is automatically reversed so that the visual order of the
+  stacks matches the legend order.
+
 ## Value
 
 An interactive `highcharter` bar chart plot object.
@@ -247,7 +257,7 @@ This function performs the following steps:
     to create the base stacked column chart.
 
 9.  **Chart Customization:** Titles, subtitles, axis labels, stacking
-    type (normal vs. percent), data labels, legend titles, tooltips, and
+    type (counts vs. percent), data labels, legend titles, tooltips, and
     custom color palettes are applied based on the function's arguments.
 
 10. **Return Value:** The function returns a `highcharter` plot object,
@@ -396,7 +406,7 @@ plot6 <- create_stackedbar(
   x_order = c("Very Happy", "Pretty Happy", "Not Too Happy"),
   stack_map_values = sex_map,
   stack_order = c("Women", "Men"),
-  stacked_type = "normal",
+  stacked_type = "counts",
   tooltip_prefix = "Count: ",
 )
 #> Error: object 'gss_recent' not found

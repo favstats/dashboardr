@@ -16,3 +16,4 @@ Logical indicating if installation was successful
 Downloads and installs the official iconify extension to the project directory
 if icons are detected in the dashboard.
 }
+\keyword{internal}

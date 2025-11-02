@@ -26,3 +26,4 @@ This function:
 \item Formats the function call with proper indentation
 }
 }
+\keyword{internal}

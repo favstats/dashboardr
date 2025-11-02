@@ -113,7 +113,7 @@ plot1 <- create_stackedbar(
   x_label = "Highest Degree Completed",
   y_label = "Number of Respondents",
   stack_label = "Gender",
-  stacked_type = "normal"
+  stacked_type = "counts"
 )
 
 plot1
@@ -275,7 +275,7 @@ plot5 <- create_stackedbar(
   stack_map_values = sex_map,
   x_order = c("Lower", "Working", "Middle", "Upper"),
   stack_order = c("Women", "Men"),
-  stacked_type = "normal",
+  stacked_type = "counts",
   tooltip_prefix = "Count: ",
   color_palette = c("#E07A5F", "#3D5A80")
 )

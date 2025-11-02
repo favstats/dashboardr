@@ -6,7 +6,7 @@ dashboard files and provides helpful guidance to users.
 ## Usage
 
 ``` r
-.show_dashboard_summary(proj, output_dir)
+.show_dashboard_summary(proj, output_dir, elapsed_time = NULL)
 ```
 
 ## Arguments

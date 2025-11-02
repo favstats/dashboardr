@@ -28,10 +28,13 @@ handle SPSS (.sav) columns automatically."><meta property="og:image" content="ht
       <ul class="navbar-nav me-auto"><li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/heatmap_vignette.html">Creating Interactive Heatmaps with `create_heatmap`</a></li>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/getting-started.html">Getting Started with dashboardr</a></li>
+    <li><a class="dropdown-item" href="../articles/advanced-features.html">Advanced Features in dashboardr</a></li>
+    <li><a class="dropdown-item" href="../articles/bar_vignette.html">Creating Bar Charts with create_bar()</a></li>
+    <li><a class="dropdown-item" href="../articles/timeline_vignette.html">Getting Started With `create_timeline()`</a></li>
     <li><a class="dropdown-item" href="../articles/stackedbar_vignette.html">Creating Interactive Stacked Bar Charts with `create_stackedbar`</a></li>
     <li><a class="dropdown-item" href="../articles/stackedbars_vignette.html">Getting Started With `create_stackedbars()`</a></li>
-    <li><a class="dropdown-item" href="../articles/timeline_vignette.html">Getting Started With `create_timeline()`</a></li>
+    <li><a class="dropdown-item" href="../articles/heatmap_vignette.html">Creating Interactive Heatmaps with `create_heatmap`</a></li>
   </ul></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json"></form></li>
@@ -68,7 +71,7 @@ handle SPSS (.sav) columns automatically.</p>
 <span>  x_label <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  y_label <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  stack_label <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  stacked_type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"normal"</span>, <span class="st">"percent"</span><span class="op">)</span>,</span>
+<span>  stacked_type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"counts"</span>, <span class="st">"percent"</span><span class="op">)</span>,</span>
 <span>  tooltip_prefix <span class="op">=</span> <span class="st">""</span>,</span>
 <span>  tooltip_suffix <span class="op">=</span> <span class="st">""</span>,</span>
 <span>  x_tooltip_suffix <span class="op">=</span> <span class="st">""</span>,</span>
@@ -83,7 +86,8 @@ handle SPSS (.sav) columns automatically.</p>
 <span>  x_map_values <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  stack_breaks <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  stack_bin_labels <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  stack_map_values <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  stack_map_values <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  horizontal <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -133,12 +137,13 @@ to "Number of Respondents" or "Percentage of Respondents".</p></dd>
 
 <dt id="arg-stack-label">stack_label<a class="anchor" aria-label="anchor" href="#arg-stack-label"></a></dt>
 <dd><p>Optional. The title for the stack legend (as a string).
-Defaults to <code>stack_var</code> or <code>stack_var (Binned)</code>.</p></dd>
+Set to NULL, NA, FALSE, or "" to hide the legend title completely.
+If not provided, no title is shown.</p></dd>
 
 
 <dt id="arg-stacked-type">stacked_type<a class="anchor" aria-label="anchor" href="#arg-stacked-type"></a></dt>
-<dd><p>Optional. The type of stacking. Can be "normal" (counts)
-or "percent" (100% stacked). Defaults to "normal".</p></dd>
+<dd><p>Optional. The type of stacking. Can be "counts" (counts)
+or "percent" (100% stacked). Defaults to "counts".</p></dd>
 
 
 <dt id="arg-tooltip-prefix">tooltip_prefix<a class="anchor" aria-label="anchor" href="#arg-tooltip-prefix"></a></dt>
@@ -220,6 +225,13 @@ of breaks (or same if Inf is last break).</p></dd>
 <dd><p>Optional. A named list (e.g., <code>list("1" = "Strongly Disagree", "7" = "Strongly Agree")</code>)
 to rename values within <code>stack_var</code> for display.</p></dd>
 
+
+<dt id="arg-horizontal">horizontal<a class="anchor" aria-label="anchor" href="#arg-horizontal"></a></dt>
+<dd><p>Logical. If <code>TRUE</code>, creates a horizontal bar chart (bars extend from left to right).
+If <code>FALSE</code> (default), creates a vertical column chart (bars extend from bottom to top).
+Note: When horizontal = TRUE, the stack order is automatically reversed so that
+the visual order of the stacks matches the legend order.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
@@ -240,7 +252,7 @@ to rename values within <code>stack_var</code> for display.</p></dd>
 </ul></li>
 <li><p><strong>Apply Custom Ordering (<code>x_order</code>, <code>stack_order</code>):</strong> If provided, <code>x_order</code> and <code>stack_order</code> are used to set the display order of the factor levels for the X-axis and stack categories, respectively. This is essential for ordinal scales (e.g., Likert scales) or custom desired sorting. Levels not found in the order vector are appended at the end.</p></li>
 <li><p><strong>Highcharter Chart Generation:</strong> The aggregated <code>plot_data</code> is passed to <code><a href="https://jkunst.com/highcharter/reference/hchart.html" class="external-link">highcharter::hchart()</a></code> to create the base stacked column chart.</p></li>
-<li><p><strong>Chart Customization:</strong> Titles, subtitles, axis labels, stacking type (normal vs. percent), data labels, legend titles, tooltips, and custom color palettes are applied based on the function's arguments.</p></li>
+<li><p><strong>Chart Customization:</strong> Titles, subtitles, axis labels, stacking type (counts vs. percent), data labels, legend titles, tooltips, and custom color palettes are applied based on the function's arguments.</p></li>
 <li><p><strong>Return Value:</strong> The function returns a <code>highcharter</code> plot object, which can be printed directly to display the interactive chart.</p></li>
 </ol></div>
 
@@ -253,8 +265,8 @@ to rename values within <code>stack_var</code> for display.</p></dd>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Filter to recent years and select relevant variables</span></span></span>
 <span class="r-in"><span><span class="va">gss_recent</span> <span class="op">&lt;-</span> <span class="va">gss_all</span> <span class="op"><a href="pipe.html">%&gt;%</a></span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">year</span> <span class="op">&gt;=</span> <span class="fl">2010</span><span class="op">)</span> <span class="op"><a href="pipe.html">%&gt;%</a></span></span></span>
-<span class="r-in"><span>  <span class="fu">select</span><span class="op">(</span><span class="va">age</span>, <span class="va">degree</span>, <span class="va">happy</span>, <span class="va">sex</span>, <span class="va">race</span>, <span class="va">year</span>, <span class="va">polviews</span>, <span class="va">attend</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">year</span> <span class="op">&gt;=</span> <span class="fl">2010</span><span class="op">)</span> <span class="op"><a href="pipe.html">%&gt;%</a></span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">age</span>, <span class="va">degree</span>, <span class="va">happy</span>, <span class="va">sex</span>, <span class="va">race</span>, <span class="va">year</span>, <span class="va">polviews</span>, <span class="va">attend</span><span class="op">)</span></span></span>
 <span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in select(., age, degree, happy, sex, race, year, polviews, attend):</span> could not find function "select"</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Example 1: Basic stacked bar - Education by Gender</span></span></span>
@@ -351,9 +363,9 @@ to rename values within <code>stack_var</code> for display.</p></dd>
 <span class="r-in"><span><span class="co"># Example 5: Using pre-aggregated data</span></span></span>
 <span class="r-in"><span><span class="co"># Create aggregated data first</span></span></span>
 <span class="r-in"><span><span class="va">education_gender_counts</span> <span class="op">&lt;-</span> <span class="va">gss_recent</span> <span class="op"><a href="pipe.html">%&gt;%</a></span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">degree</span><span class="op">)</span> <span class="op">&amp;</span> <span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">sex</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="pipe.html">%&gt;%</a></span></span></span>
-<span class="r-in"><span>  <span class="fu">count</span><span class="op">(</span><span class="va">degree</span>, <span class="va">sex</span>, name <span class="op">=</span> <span class="st">"respondent_count"</span><span class="op">)</span> <span class="op"><a href="pipe.html">%&gt;%</a></span></span></span>
-<span class="r-in"><span>  <span class="fu">mutate</span><span class="op">(</span>degree <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">degree</span>, levels <span class="op">=</span> <span class="va">education_order</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">degree</span><span class="op">)</span> <span class="op">&amp;</span> <span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">sex</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="pipe.html">%&gt;%</a></span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/count.html" class="external-link">count</a></span><span class="op">(</span><span class="va">degree</span>, <span class="va">sex</span>, name <span class="op">=</span> <span class="st">"respondent_count"</span><span class="op">)</span> <span class="op"><a href="pipe.html">%&gt;%</a></span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>degree <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">degree</span>, levels <span class="op">=</span> <span class="va">education_order</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in mutate(., degree = factor(degree, levels = education_order)):</span> could not find function "mutate"</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">plot5</span> <span class="op">&lt;-</span> <span class="fu">create_stackedbar</span><span class="op">(</span></span></span>
@@ -386,7 +398,7 @@ to rename values within <code>stack_var</code> for display.</p></dd>
 <span class="r-in"><span>  x_order <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Very Happy"</span>, <span class="st">"Pretty Happy"</span>, <span class="st">"Not Too Happy"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  stack_map_values <span class="op">=</span> <span class="va">sex_map</span>,</span></span>
 <span class="r-in"><span>  stack_order <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Women"</span>, <span class="st">"Men"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  stacked_type <span class="op">=</span> <span class="st">"normal"</span>,</span></span>
+<span class="r-in"><span>  stacked_type <span class="op">=</span> <span class="st">"counts"</span>,</span></span>
 <span class="r-in"><span>  tooltip_prefix <span class="op">=</span> <span class="st">"Count: "</span>,</span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'gss_recent' not found</span>

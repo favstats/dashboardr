@@ -4,7 +4,7 @@
 \alias{.show_dashboard_summary}
 \title{Show beautiful dashboard summary}
 \usage{
-.show_dashboard_summary(proj, output_dir)
+.show_dashboard_summary(proj, output_dir, elapsed_time = NULL)
 }
 \arguments{
 \item{proj}{A dashboard_project object}
@@ -18,3 +18,4 @@ Invisible NULL
 Internal function that displays a comprehensive summary of the generated
 dashboard files and provides helpful guidance to users.
 }
+\keyword{internal}

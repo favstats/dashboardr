@@ -16,3 +16,4 @@ Logical indicating if icons are present
 Internal function to detect if iconify shortcodes are present
 in the dashboard content.
 }
+\keyword{internal}

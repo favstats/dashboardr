@@ -2,11 +2,14 @@ pandoc: 3.6.2
 pkgdown: 2.1.3.9000
 pkgdown_sha: 274c1f4e8bb2141a217c9f1af28ce5ab108d4b2f
 articles:
+  advanced-features: advanced-features.html
+  bar_vignette: bar_vignette.html
+  getting-started: getting-started.html
   heatmap_vignette: heatmap_vignette.html
   stackedbar_vignette: stackedbar_vignette.html
   stackedbars_vignette: stackedbars_vignette.html
   timeline_vignette: timeline_vignette.html
-last_built: 2025-11-01T10:27Z
+last_built: 2025-11-02T17:47Z
 urls:
   reference: https://favstats.github.io/dashboardr/reference
   article: https://favstats.github.io/dashboardr/articles

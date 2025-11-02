@@ -2,16 +2,36 @@
 % Please edit documentation in R/create_dashboard_new.R
 \name{print.dashboard_project}
 \alias{print.dashboard_project}
-\title{Print method for dashboard projects}
+\title{Print Dashboard Project}
 \usage{
 \method{print}{dashboard_project}(x, ...)
 }
 \arguments{
-\item{x}{A dashboard_project object}
+\item{x}{A dashboard_project object created by \code{\link{create_dashboard}}.}
 
-\item{...}{Additional arguments (ignored)}
+\item{...}{Additional arguments (currently ignored).}
+}
+\value{
+Invisibly returns the input object \code{x}.
 }
 \description{
-Displays a concise summary of the dashboard structure instead of
-the raw list internals.
+Displays a comprehensive summary of a dashboard project, including metadata,
+features, pages, visualizations, and integrations.
+}
+\details{
+The print method displays:
+\itemize{
+\item Project metadata (title, author, description)
+\item Output directory
+\item Enabled features (sidebar, search, themes, Shiny, Observable)
+\item Integrations (GitHub, Twitter, LinkedIn, Analytics)
+\item Page structure with properties:
+\itemize{
+\item 🏠 Landing page indicator
+\item ⏳ Loading overlay indicator
+\item → Right-aligned navbar indicator
+\item 💾 Associated datasets
+\item Nested visualization hierarchies
+}
+}
 }

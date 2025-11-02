@@ -17,7 +17,7 @@ create_stackedbars(
   x_label = NULL,
   y_label = NULL,
   stack_label = NULL,
-  stacked_type = c("normal", "percent"),
+  stacked_type = c("normal", "percent", "counts"),
   tooltip_prefix = "",
   tooltip_suffix = "",
   x_tooltip_suffix = "",
@@ -33,7 +33,8 @@ create_stackedbars(
   stack_breaks = NULL,
   stack_bin_labels = NULL,
   stack_map_values = NULL,
-  show_question_tooltip = TRUE
+  show_question_tooltip = TRUE,
+  horizontal = FALSE
 )
 ```
 
@@ -77,12 +78,14 @@ create_stackedbars(
 
 - stack_label:
 
-  Optional title for the stack legend. Defaults to "Response".
+  Optional title for the stack legend. Set to NULL, NA, FALSE, or "" to
+  hide the legend title completely.
 
 - stacked_type:
 
-  Type of stacking: `"normal"` (counts) or `"percent"` (100% stacked).
-  Defaults to `"normal"`.
+  Type of stacking: `"normal"` or `"counts"` (raw counts) or `"percent"`
+  (100% stacked). Defaults to `"normal"`. Note: "counts" is an alias for
+  "normal".
 
 - tooltip_prefix:
 
@@ -152,6 +155,14 @@ create_stackedbars(
 - show_question_tooltip:
 
   Logical. If `TRUE`, shows custom tooltip with question labels.
+
+- horizontal:
+
+  Logical. If `TRUE`, creates a horizontal bar chart (bars extend from
+  left to right). If `FALSE` (default), creates a vertical column chart
+  (bars extend from bottom to top). Note: When horizontal = TRUE, the
+  stack order is automatically reversed so that the visual order of the
+  stacks matches the legend order.
 
 ## Value
 
@@ -271,7 +282,25 @@ plot4 <- create_stackedbars(
 plot4
 #> Error: object 'plot4' not found
 
-# Example 5: Working with different Likert scales
+# Example 5: Horizontal bar chart
+plot5 <- create_stackedbars(
+  data = gss_recent,
+  questions = confidence_questions,
+  question_labels = confidence_labels,
+  title = "Confidence in American Institutions (Horizontal)",
+  subtitle = "GSS respondents 2010-present",
+  x_label = "Institution",
+  stack_label = "Level of Confidence",
+  response_levels = confidence_order,
+  stacked_type = "percent",
+  horizontal = TRUE,  # Creates horizontal bars
+  color_palette = c("#2E8B57", "#FFD700", "#CD5C5C")
+)
+#> Error: object 'gss_recent' not found
+plot5
+#> Error: object 'plot5' not found
+
+# Example 6: Working with different Likert scales
 # Using happiness and life satisfaction questions if available
 if (all(c("happy", "satfin", "satjob") %in% names(gss_all))) {
   satisfaction_data <- gss_all %>%
@@ -283,7 +312,7 @@ if (all(c("happy", "satfin", "satjob") %in% names(gss_all))) {
   satisfaction_questions <- c("happy", "satfin", "satjob")
   satisfaction_labels <- c("General Happiness", "Financial Satisfaction", "Job Satisfaction")
 
-  plot5 <- create_stackedbars(
+  plot6 <- create_stackedbars(
     data = satisfaction_data,
     questions = satisfaction_questions,
     question_labels = satisfaction_labels,
@@ -295,7 +324,7 @@ if (all(c("happy", "satfin", "satjob") %in% names(gss_all))) {
     include_na = TRUE,
     na_label_stack = "Not Asked/No Answer"
   )
-  plot5
+  plot6
 }
 #> Error: object 'gss_all' not found
 

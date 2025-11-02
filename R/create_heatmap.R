@@ -136,6 +136,15 @@ create_heatmap <- function(data,
   if (!is.data.frame(data)) {
     stop("`data` must be a data frame.", call. = FALSE)
   }
+  if (missing(x_var) || is.null(x_var)) {
+    dashboardr:::.stop_with_hint("x_var", example = "create_heatmap(data, x_var = \"country\", y_var = \"year\", value_var = \"population\")")
+  }
+  if (missing(y_var) || is.null(y_var)) {
+    dashboardr:::.stop_with_hint("y_var", example = "create_heatmap(data, x_var = \"country\", y_var = \"year\", value_var = \"population\")")
+  }
+  if (missing(value_var) || is.null(value_var)) {
+    dashboardr:::.stop_with_hint("value_var", example = "create_heatmap(data, x_var = \"country\", y_var = \"year\", value_var = \"population\")")
+  }
   required_vars <- c(x_var, y_var, value_var)
   if (!all(required_vars %in% names(data))) {
     missing_vars <- setdiff(required_vars, names(data))

@@ -164,6 +164,160 @@ The resulting charts are interactive Highcharts objects that support:
 - **Zooming and panning** for detailed exploration
 - **Exporting** charts as images or data
 
+## Advanced Features
+
+### Response Binning
+
+Bin numeric responses into categories for clearer visualization:
+
+```{r response-binning}
+# Bin responses into positive/neutral/negative
+plot5 <- create_timeline(
+  data = gss_all,
+  time_var = "year",
+  response_var = "satfin",  # Financial satisfaction (1-3 scale)
+  chart_type = "stacked_area",
+  title = "Financial Satisfaction (Binned)",
+  response_breaks = c(0.5, 1.5, 2.5, 3.5),
+  response_bin_labels = c("Not satisfied", "More or less", "Satisfied"),
+  y_max = 100
+)
+
+plot5
+```
+
+**When to use:**
+- Simplify complex response scales
+- Group similar responses together
+- Create more interpretable categories
+
+### Response Filtering
+
+Focus on specific response values:
+
+```{r response-filtering}
+# Show only "very happy" and "pretty happy" responses
+plot6 <- create_timeline(
+  data = gss_all,
+  time_var = "year",
+  response_var = "happy",
+  chart_type = "line",
+  title = "Positive Happiness Trends",
+  response_filter = c("very happy", "pretty happy")
+)
+
+plot6
+```
+
+For numeric scales, use range notation:
+
+```{r response-filter-numeric, eval=FALSE}
+# Show only top-box scores (5-7 on 1-7 scale)
+create_timeline(
+  data = survey_data,
+  time_var = "wave",
+  response_var = "satisfaction",
+  response_filter = 5:7,
+  response_filter_combine = TRUE,
+  response_filter_label = "Top 3 Box (5-7)"
+)
+```
+
+**Parameters:**
+- `response_filter`: Which values to include
+- `response_filter_combine`: Combine filtered values into single line (default: FALSE)
+- `response_filter_label`: Custom label when combined (default: auto-generated)
+
+**Calculation Note:** When `response_filter_combine = TRUE`, percentages are calculated out of the *total* responses (not just filtered ones), showing the true proportion of top-box scores.
+
+### Combining Filters with Groups
+
+Show filtered responses across multiple groups:
+
+```{r filter-with-groups, eval=FALSE}
+# Top-box satisfaction by age group
+create_timeline(
+  data = survey_data,
+  time_var = "year",
+  response_var = "satisfaction",
+  group_var = "age_group",
+  response_filter = 5:7,
+  response_filter_combine = TRUE,
+  response_filter_label = "Highly Satisfied",
+  title = "High Satisfaction by Age Group"
+)
+```
+
+This creates separate lines for each age group, all showing only the highly satisfied responses.
+
+## Integration with Dashboards
+
+The `create_timeline()` function works seamlessly with `dashboardr`:
+
+```{r dashboard-integration, eval=FALSE}
+library(dashboardr)
+
+# Create multiple timeline visualizations
+timeline_viz <- create_viz() %>%
+  add_viz(
+    type = "timeline",
+    time_var = "year",
+    response_var = "happy",
+    chart_type = "line",
+    title = "Happiness Trends",
+    tabgroup = "trends"
+  ) %>%
+  add_viz(
+    type = "timeline",
+    time_var = "year",
+    response_var = "satfin",
+    chart_type = "stacked_area",
+    title = "Financial Satisfaction",
+    tabgroup = "trends"
+  )
+
+# Create dashboard
+dashboard <- create_dashboard(
+  title = "GSS Trends Dashboard",
+  output_dir = "gss_dashboard"
+) %>%
+  add_page(
+    "Trends",
+    data = gss_all,
+    visualizations = timeline_viz,
+    is_landing_page = TRUE
+  )
+
+generate_dashboard(dashboard)
+```
+
+### Comparative Analysis with Filters
+
+Use dashboard filters to compare different time periods or demographics:
+
+```{r dashboard-filters, eval=FALSE}
+# Compare trends across different demographics
+timeline_viz <- create_viz(
+  type = "timeline",
+  time_var = "year",
+  response_var = "happy",
+  chart_type = "line"
+) %>%
+  add_viz(title = "All Respondents") %>%
+  add_viz(title = "Men", filter = ~ sex == "male") %>%
+  add_viz(title = "Women", filter = ~ sex == "female") %>%
+  add_viz(title = "Young Adults", filter = ~ age >= 18 & age <= 35)
+
+dashboard <- create_dashboard(...) %>%
+  add_page("Happiness Analysis", 
+           data = gss_all, 
+           visualizations = timeline_viz)
+
+generate_dashboard(dashboard)
+```
+
+This creates separate tabs for each filtered view, making it easy to compare trends across groups.
+
 ## Conclusion
 
 The `create_timeline()` function provides a flexible way to visualize survey data trends over time. The function handles the data processing and creates interactive visualizations that are perfect for exploring temporal patterns in survey responses.

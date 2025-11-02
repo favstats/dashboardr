@@ -14,7 +14,7 @@ create_stackedbars(
   x_label = NULL,
   y_label = NULL,
   stack_label = NULL,
-  stacked_type = c("normal", "percent"),
+  stacked_type = c("normal", "percent", "counts"),
   tooltip_prefix = "",
   tooltip_suffix = "",
   x_tooltip_suffix = "",
@@ -30,7 +30,8 @@ create_stackedbars(
   stack_breaks = NULL,
   stack_bin_labels = NULL,
   stack_map_values = NULL,
-  show_question_tooltip = TRUE
+  show_question_tooltip = TRUE,
+  horizontal = FALSE
 )
 }
 \arguments{
@@ -56,10 +57,11 @@ Likert responses (e.g. \verb{c("Strongly Disagree", …, "Strongly Agree")}).}
 \item{y_label}{Optional label for the Y‐axis. Defaults to "Number of Respondents" or
 "Percentage of Respondents" if \code{stacked_type = "percent"}.}
 
-\item{stack_label}{Optional title for the stack legend. Defaults to "Response".}
+\item{stack_label}{Optional title for the stack legend.
+Set to NULL, NA, FALSE, or "" to hide the legend title completely.}
 
-\item{stacked_type}{Type of stacking: \code{"normal"} (counts) or \code{"percent"}
-(100\% stacked). Defaults to \code{"normal"}.}
+\item{stacked_type}{Type of stacking: \code{"normal"} or \code{"counts"} (raw counts) or \code{"percent"}
+(100\% stacked). Defaults to \code{"normal"}. Note: "counts" is an alias for "normal".}
 
 \item{tooltip_prefix}{Optional string prepended to tooltip values.}
 
@@ -94,6 +96,11 @@ rows with \code{NA} in question or response are dropped. Default \code{FALSE}.}
 \item{stack_map_values}{Optional named list to rename response values.}
 
 \item{show_question_tooltip}{Logical. If \code{TRUE}, shows custom tooltip with question labels.}
+
+\item{horizontal}{Logical. If \code{TRUE}, creates a horizontal bar chart (bars extend from left to right).
+If \code{FALSE} (default), creates a vertical column chart (bars extend from bottom to top).
+Note: When horizontal = TRUE, the stack order is automatically reversed so that
+the visual order of the stacks matches the legend order.}
 }
 \value{
 A \code{highcharter} stacked bar chart object.
@@ -206,7 +213,23 @@ plot4 <- create_stackedbars(
 )
 plot4
 
-# Example 5: Working with different Likert scales
+# Example 5: Horizontal bar chart
+plot5 <- create_stackedbars(
+  data = gss_recent,
+  questions = confidence_questions,
+  question_labels = confidence_labels,
+  title = "Confidence in American Institutions (Horizontal)",
+  subtitle = "GSS respondents 2010-present",
+  x_label = "Institution",
+  stack_label = "Level of Confidence",
+  response_levels = confidence_order,
+  stacked_type = "percent",
+  horizontal = TRUE,  # Creates horizontal bars
+  color_palette = c("#2E8B57", "#FFD700", "#CD5C5C")
+)
+plot5
+
+# Example 6: Working with different Likert scales
 # Using happiness and life satisfaction questions if available
 if (all(c("happy", "satfin", "satjob") \%in\% names(gss_all))) {
   satisfaction_data <- gss_all \%>\%
@@ -218,7 +241,7 @@ if (all(c("happy", "satfin", "satjob") \%in\% names(gss_all))) {
   satisfaction_questions <- c("happy", "satfin", "satjob")
   satisfaction_labels <- c("General Happiness", "Financial Satisfaction", "Job Satisfaction")
 
-  plot5 <- create_stackedbars(
+  plot6 <- create_stackedbars(
     data = satisfaction_data,
     questions = satisfaction_questions,
     question_labels = satisfaction_labels,
@@ -230,7 +253,7 @@ if (all(c("happy", "satfin", "satjob") \%in\% names(gss_all))) {
     include_na = TRUE,
     na_label_stack = "Not Asked/No Answer"
   )
-  plot5
+  plot6
 }
 
 

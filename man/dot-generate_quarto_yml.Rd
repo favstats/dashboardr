@@ -30,3 +30,4 @@ This function generates a comprehensive Quarto configuration including:
 \item Iconify filter for icon support
 }
 }
+\keyword{internal}

@@ -14,7 +14,7 @@ create_stackedbar(
   x_label = NULL,
   y_label = NULL,
   stack_label = NULL,
-  stacked_type = c("normal", "percent"),
+  stacked_type = c("counts", "percent"),
   tooltip_prefix = "",
   tooltip_suffix = "",
   x_tooltip_suffix = "",
@@ -29,7 +29,8 @@ create_stackedbar(
   x_map_values = NULL,
   stack_breaks = NULL,
   stack_bin_labels = NULL,
-  stack_map_values = NULL
+  stack_map_values = NULL,
+  horizontal = FALSE
 )
 }
 \arguments{
@@ -58,10 +59,11 @@ to \code{x_var} or \code{x_var (Binned)}.}
 to "Number of Respondents" or "Percentage of Respondents".}
 
 \item{stack_label}{Optional. The title for the stack legend (as a string).
-Defaults to \code{stack_var} or \code{stack_var (Binned)}.}
+Set to NULL, NA, FALSE, or "" to hide the legend title completely.
+If not provided, no title is shown.}
 
-\item{stacked_type}{Optional. The type of stacking. Can be "normal" (counts)
-or "percent" (100\% stacked). Defaults to "normal".}
+\item{stacked_type}{Optional. The type of stacking. Can be "counts" (counts)
+or "percent" (100\% stacked). Defaults to "counts".}
 
 \item{tooltip_prefix}{Optional. A string to prepend to values in tooltips.}
 
@@ -112,6 +114,11 @@ of breaks (or same if Inf is last break).}
 
 \item{stack_map_values}{Optional. A named list (e.g., \code{list("1" = "Strongly Disagree", "7" = "Strongly Agree")})
 to rename values within \code{stack_var} for display.}
+
+\item{horizontal}{Logical. If \code{TRUE}, creates a horizontal bar chart (bars extend from left to right).
+If \code{FALSE} (default), creates a vertical column chart (bars extend from bottom to top).
+Note: When horizontal = TRUE, the stack order is automatically reversed so that
+the visual order of the stacks matches the legend order.}
 }
 \value{
 An interactive \code{highcharter} bar chart plot object.
@@ -144,7 +151,7 @@ This function performs the following steps:
 }
 \item \strong{Apply Custom Ordering (\code{x_order}, \code{stack_order}):} If provided, \code{x_order} and \code{stack_order} are used to set the display order of the factor levels for the X-axis and stack categories, respectively. This is essential for ordinal scales (e.g., Likert scales) or custom desired sorting. Levels not found in the order vector are appended at the end.
 \item \strong{Highcharter Chart Generation:} The aggregated \code{plot_data} is passed to \code{highcharter::hchart()} to create the base stacked column chart.
-\item \strong{Chart Customization:} Titles, subtitles, axis labels, stacking type (normal vs. percent), data labels, legend titles, tooltips, and custom color palettes are applied based on the function's arguments.
+\item \strong{Chart Customization:} Titles, subtitles, axis labels, stacking type (counts vs. percent), data labels, legend titles, tooltips, and custom color palettes are applied based on the function's arguments.
 \item \strong{Return Value:} The function returns a \code{highcharter} plot object, which can be printed directly to display the interactive chart.
 }
 }
@@ -276,7 +283,7 @@ plot6 <- create_stackedbar(
   x_order = c("Very Happy", "Pretty Happy", "Not Too Happy"),
   stack_map_values = sex_map,
   stack_order = c("Women", "Men"),
-  stacked_type = "normal",
+  stacked_type = "counts",
   tooltip_prefix = "Count: ",
 )
 plot6

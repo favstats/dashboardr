@@ -32,3 +32,4 @@ This function handles:
 \item Complex objects → deparsed representation
 }
 }
+\keyword{internal}

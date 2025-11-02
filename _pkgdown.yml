@@ -20,3 +20,78 @@ template:
     code_font:
       google: "Fira Code"
 
+articles:
+- title: Getting Started
+  navbar: ~
+  contents:
+  - getting-started
+  
+- title: Advanced Features
+  navbar: ~
+  contents:
+  - advanced-features
+  
+- title: Visualization Types
+  navbar: ~
+  contents:
+  - bar_vignette
+  - timeline_vignette
+  - stackedbar_vignette
+  - stackedbars_vignette
+  - heatmap_vignette
+
+reference:
+- title: Dashboard Creation
+  desc: Functions for creating and managing dashboards
+  contents:
+  - create_dashboard
+  - add_dashboard_page
+  - add_page
+  - generate_dashboard
+  - publish_dashboard
+  - tutorial_dashboard
+  
+- title: Visualization Creation
+  desc: Functions for creating visualizations
+  contents:
+  - create_viz
+  - add_viz
+  - add_vizzes
+  - combine_viz
+  - set_tabgroup_labels
+  
+- title: Visualization Types
+  desc: Functions for different chart types
+  contents:
+  - create_histogram
+  - create_bar
+  - create_stackedbar
+  - create_stackedbars
+  - create_timeline
+  - create_heatmap
+  
+- title: Navigation & Layout
+  desc: Functions for dashboard navigation and structure
+  contents:
+  - navbar_section
+  - navbar_menu
+  - sidebar_group
+  - icon
+  
+- title: Content Helpers
+  desc: Functions for adding content to dashboards
+  contents:
+  - md_text
+  - text_lines
+  - create_blockquote
+  - card
+  - card_row
+  - spec_viz
+  
+- title: Print Methods
+  desc: S3 methods for displaying objects
+  contents:
+  - print.viz_collection
+  - print.dashboard_project
+  - "+.viz_collection"
+

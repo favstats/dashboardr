@@ -18,9 +18,10 @@
 #' @param x_label Optional label for the X‐axis. Defaults to "Questions".
 #' @param y_label Optional label for the Y‐axis. Defaults to "Number of Respondents" or
 #'   "Percentage of Respondents" if `stacked_type = "percent"`.
-#' @param stack_label Optional title for the stack legend. Defaults to "Response".
-#' @param stacked_type Type of stacking: `"normal"` (counts) or `"percent"`
-#'   (100% stacked). Defaults to `"normal"`.
+#' @param stack_label Optional title for the stack legend.
+#'   Set to NULL, NA, FALSE, or "" to hide the legend title completely.
+#' @param stacked_type Type of stacking: `"normal"` or `"counts"` (raw counts) or `"percent"`
+#'   (100% stacked). Defaults to `"normal"`. Note: "counts" is an alias for "normal".
 #' @param tooltip_prefix Optional string prepended to tooltip values.
 #' @param tooltip_suffix Optional string appended to tooltip values.
 #' @param x_tooltip_suffix Optional string appended to X‐axis tooltip values.
@@ -41,6 +42,8 @@
 #' @param show_question_tooltip Logical. If `TRUE`, shows custom tooltip with question labels.
 #' @param horizontal Logical. If `TRUE`, creates a horizontal bar chart (bars extend from left to right).
 #'   If `FALSE` (default), creates a vertical column chart (bars extend from bottom to top).
+#'   Note: When horizontal = TRUE, the stack order is automatically reversed so that
+#'   the visual order of the stacks matches the legend order.
 #'
 #' @return A `highcharter` stacked bar chart object.
 #'
@@ -194,16 +197,16 @@
 #' @export
 create_stackedbars <- function(data,
                                      questions,
-                                     question_labels   = NULL,
-                                     response_levels   = NULL,
-                                     title             = NULL,
-                                     subtitle          = NULL,
-                                     x_label           = NULL,
-                                     y_label           = NULL,
-                                     stack_label       = NULL,
-                                     stacked_type      = c("normal","percent"),
-                                     tooltip_prefix    = "",
-                                     tooltip_suffix    = "",
+                                    question_labels   = NULL,
+                                    response_levels   = NULL,
+                                    title             = NULL,
+                                    subtitle          = NULL,
+                                    x_label           = NULL,
+                                    y_label           = NULL,
+                                    stack_label       = NULL,
+                                    stacked_type      = c("normal", "percent", "counts"),
+                                    tooltip_prefix    = "",
+                                    tooltip_suffix    = "",
                                      x_tooltip_suffix  = "",
                                      color_palette     = NULL,
                                      stack_order       = NULL,
@@ -220,6 +223,11 @@ create_stackedbars <- function(data,
                                      show_question_tooltip = TRUE,
                                      horizontal = FALSE) {
   stacked_type <- match.arg(stacked_type)
+  
+  # Normalize "normal" to "counts" for create_stackedbar
+  if (stacked_type == "normal") {
+    stacked_type <- "counts"
+  }
 
   # 1. pivot wide → long
   data_long <- tidyr::pivot_longer(

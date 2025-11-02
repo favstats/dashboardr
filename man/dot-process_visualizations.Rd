@@ -2,34 +2,27 @@
 % Please edit documentation in R/create_dashboard_new.R
 \name{.process_visualizations}
 \alias{.process_visualizations}
-\title{Process visualizations into organized specs with tab groups}
+\title{This function handles both viz_collection objects and plain lists of visualization
+specifications. It:
+\itemize{
+\item Attaches data_path to each visualization
+\item Groups visualizations by their tabgroup parameter (supports nested hierarchies)
+\item Converts single-item groups to standalone visualizations with group titles
+\item Creates tab group objects for multi-item groups
+\item Applies custom tab group labels if provided
+}}
 \usage{
 .process_visualizations(viz_input, data_path, tabgroup_labels = NULL)
 }
-\arguments{
-\item{viz_input}{Either a viz_collection object or a plain list of visualization specs}
-
-\item{data_path}{Path to the data file for this page (will be attached to each viz)}
-
-\item{tabgroup_labels}{Optional named list/vector of custom display labels for tab groups}
-}
-\value{
-List of processed visualization specs, with standalone visualizations first,
-followed by tab group objects
-}
 \description{
-Unified internal function that handles both viz_collection and plain list inputs,
-organizing visualizations into standalone items and tab groups based on their
-tabgroup parameter.
-}
-\details{
 This function handles both viz_collection objects and plain lists of visualization
 specifications. It:
 \itemize{
 \item Attaches data_path to each visualization
-\item Groups visualizations by their tabgroup parameter
+\item Groups visualizations by their tabgroup parameter (supports nested hierarchies)
 \item Converts single-item groups to standalone visualizations with group titles
 \item Creates tab group objects for multi-item groups
 \item Applies custom tab group labels if provided
 }
 }
+\keyword{internal}

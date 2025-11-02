@@ -1,7 +1,8 @@
-# Print method for visualization collections
+# Print Visualization Collection
 
-Displays a summary of visualizations in the collection grouped by
-tabgroup.
+Displays a formatted summary of a visualization collection, including
+hierarchical tabgroup structure, visualization types, titles, filters,
+and defaults.
 
 ## Usage
 
@@ -14,8 +15,27 @@ print(x, ...)
 
 - x:
 
-  A viz_collection object
+  A viz_collection object created by
+  [`create_viz`](https://favstats.github.io/dashboardr/reference/create_viz.md).
 
 - ...:
 
-  Additional arguments (ignored)
+  Additional arguments (currently ignored).
+
+## Value
+
+Invisibly returns the input object `x`.
+
+## Details
+
+The print method displays:
+
+- Total number of visualizations
+
+- Default parameters (if set)
+
+- Hierarchical tree structure showing tabgroup organization
+
+- Visualization types with emoji indicators
+
+- Filter status for each visualization

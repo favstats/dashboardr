@@ -1,0 +1,88 @@
+/*-- scss:rules --*/
+
+/* ============================================
+   CLASSIC THEME - Traditional Bootstrap-style tabs
+   ============================================ */
+
+/* Prevent page jump when clicking tabs */
+.panel-tabset {
+  scroll-margin-top: 0;
+}
+
+.panel-tabset .tab-pane {
+  scroll-margin-top: 0;
+}
+
+.panel-tabset .nav-tabs {
+  display: flex;
+  justify-content: flex-start;
+  width: 100%;
+  flex-wrap: wrap;
+  list-style: none;
+  padding: 0;
+  margin: 5px 0;  /* Reduced spacing */
+  border-bottom: 1px solid #dee2e6;
+}
+
+.panel-tabset .nav-item {
+  color: #495057;
+  background-color: transparent;
+  border-radius: 0.25rem 0.25rem 0 0;
+  transition: all 0.2s ease;
+  margin: 0;
+  border: 1px solid transparent;
+  border-bottom: none;
+}
+
+.panel-tabset .nav-item a {
+  display: block;
+  padding: 0.5rem 1rem;
+  text-decoration: none;
+  color: inherit;
+  background-color: inherit;
+  border: inherit;
+}
+
+/* Hover effect */
+.panel-tabset .nav-item:hover {
+  border-color: #e9ecef #e9ecef #dee2e6;
+  background-color: #f8f9fa;
+}
+
+/* Active tab styling */
+.panel-tabset .nav-tabs .nav-link.active {
+  color: #495057;
+  background-color: #fff;
+  border-color: #dee2e6 #dee2e6 #fff;
+  border-width: 1px;
+  border-style: solid;
+  margin-bottom: -1px;
+}
+
+/* Standard layout */
+.panel-tabset {
+  display: flex;
+  flex-direction: column;
+  border: none !important;  /* Remove all borders */
+  box-shadow: none !important;  /* Remove shadows */
+}
+
+.nav-tabs {
+  order: 1;
+}
+
+.panel-tabset .tab-content {
+  order: 2;
+  padding: 5px 0;  /* Reduced even further */
+  margin-top: 0;  /* No extra margin */
+  border: none !important;  /* Remove content borders */
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .panel-tabset .nav-item a {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.9rem;
+  }
+}
+

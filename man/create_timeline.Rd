@@ -13,6 +13,11 @@ create_timeline(
   title = NULL,
   y_max = NULL,
   response_levels = NULL,
+  response_breaks = NULL,
+  response_bin_labels = NULL,
+  response_filter = NULL,
+  response_filter_combine = TRUE,
+  response_filter_label = NULL,
   time_breaks = NULL,
   time_bin_labels = NULL
 )
@@ -35,6 +40,26 @@ create_timeline(
 
 \item{response_levels}{Optional character vector specifying order of response categories.}
 
+\item{response_breaks}{Optional numeric vector for binning numeric response values
+(e.g., \code{c(0, 2.5, 5, 7)} to create bins 0-2.5, 2.5-5, 5-7).}
+
+\item{response_bin_labels}{Optional character vector of labels for response bins
+(e.g., \code{c("Low (1-2)", "Medium (3-5)", "High (6-7)")}).}
+
+\item{response_filter}{Optional numeric or character vector specifying which response values to include.
+For numeric responses, use a range like \code{5:7} to show only values 5, 6, and 7.
+For categorical responses, use category names like \code{c("Agree", "Strongly Agree")}.
+Applied BEFORE binning (filters raw values first, then bins the filtered data).}
+
+\item{response_filter_combine}{Logical. When \code{response_filter} is used, should filtered values be combined
+into a single percentage? Defaults to \code{TRUE} (show combined \% of all filtered values).
+Set to \code{FALSE} to show separate lines for each filtered value.}
+
+\item{response_filter_label}{Character string. Custom label for the filtered responses in the legend.
+Only used when \code{response_filter} and \code{response_filter_combine = TRUE}.
+If \code{NULL} (default) and \code{group_var} is provided, shows only group names in legend (e.g., "AgeGroup1").
+If \code{NULL} and no \code{group_var}, uses auto-generated label (e.g., "5-7" for \code{response_filter = 5:7}).}
+
 \item{time_breaks}{Optional numeric vector for binning continuous time variables.}
 
 \item{time_bin_labels}{Optional character vector of labels for time bins.}
@@ -52,7 +77,7 @@ line charts, and diverging bar charts.
 data(gss_all)
 
 # Basic timeline - confidence in institutions over time
-plot1 <- create_timeline_(
+plot1 <- create_timeline(
            data = gss_all,
            time_var = "year",
            response_var = "confinan",
@@ -62,7 +87,7 @@ plot1 <- create_timeline_(
 plot1
 
 # Line chart by gender
-plot2 <- create_timeline_fixed(
+plot2 <- create_timeline(
    data = gss_all,
    time_var = "year",
    response_var = "happy",
@@ -72,5 +97,42 @@ plot2 <- create_timeline_fixed(
    response_levels = c("very happy", "pretty happy", "not too happy")
 )
 plot2
+
+# Show only high responses (5-7 on a 1-7 scale) - COMBINED
+plot3 <- create_timeline(
+   data = survey_data,
+   time_var = "wave",
+   response_var = "agreement",  # 1-7 scale
+   group_var = "age_group",
+   chart_type = "line",
+   response_filter = 5:7,  # Show combined \% who responded 5-7
+   title = "\% High Agreement (5-7) Over Time"
+)
+plot3
+
+# Custom legend label
+plot4 <- create_timeline(
+   data = survey_data,
+   time_var = "wave",
+   response_var = "agreement",
+   group_var = "age_group",
+   chart_type = "line",
+   response_filter = 5:7,
+   response_filter_label = "High Agreement",  # Custom label instead of "5-7"
+   title = "High Agreement Trends"
+)
+plot4
+
+# Show individual filtered values (not combined)
+plot5 <- create_timeline(
+   data = survey_data,
+   time_var = "wave",
+   response_var = "agreement",
+   chart_type = "line",
+   response_filter = 5:7,
+   response_filter_combine = FALSE,  # Show separate lines for 5, 6, 7
+   title = "Individual High Responses"
+)
+plot5
 
 }

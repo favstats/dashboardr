@@ -14,5 +14,6 @@ Character vector of setup chunk lines
 }
 \description{
 Creates a comprehensive setup chunk that includes libraries, data loading,
-and global settings to avoid repetition in individual visualizations.
+filtered datasets, and global settings to avoid repetition in individual visualizations.
 }
+\keyword{internal}

@@ -18,10 +18,13 @@
       <ul class="navbar-nav me-auto"><li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/heatmap_vignette.html">Creating Interactive Heatmaps with `create_heatmap`</a></li>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/getting-started.html">Getting Started with dashboardr</a></li>
+    <li><a class="dropdown-item" href="../articles/advanced-features.html">Advanced Features in dashboardr</a></li>
+    <li><a class="dropdown-item" href="../articles/bar_vignette.html">Creating Bar Charts with create_bar()</a></li>
+    <li><a class="dropdown-item" href="../articles/timeline_vignette.html">Getting Started With `create_timeline()`</a></li>
     <li><a class="dropdown-item" href="../articles/stackedbar_vignette.html">Creating Interactive Stacked Bar Charts with `create_stackedbar`</a></li>
     <li><a class="dropdown-item" href="../articles/stackedbars_vignette.html">Getting Started With `create_stackedbars()`</a></li>
-    <li><a class="dropdown-item" href="../articles/timeline_vignette.html">Getting Started With `create_timeline()`</a></li>
+    <li><a class="dropdown-item" href="../articles/heatmap_vignette.html">Creating Interactive Heatmaps with `create_heatmap`</a></li>
   </ul></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json"></form></li>
@@ -36,9 +39,9 @@
     </div>
 
     <div class="section level2">
-      <h2 id="all-functions">All functions<a class="anchor" aria-label="anchor" href="#all-functions"></a></h2>
+      <h2 id="dashboard-creation">Dashboard Creation<a class="anchor" aria-label="anchor" href="#dashboard-creation"></a></h2>
 
-
+      <div class="section-desc"><p>Functions for creating and managing dashboards</p></div>
 
       <dl></dl></div><div class="section level2">
 
@@ -47,10 +50,61 @@
 
       <dl><dt>
 
+          <code><a href="create_dashboard.html">create_dashboard()</a></code>
+
+        </dt>
+        <dd>Create a dashboard</dd>
+
+        <dt>
+
           <code><a href="add_dashboard_page.html">add_dashboard_page()</a></code>
 
         </dt>
         <dd>Add a page to the dashboard</dd>
+
+        <dt>
+
+          <code><a href="add_page.html">add_page()</a></code>
+
+        </dt>
+        <dd>Add Page to Dashboard (Alias)</dd>
+
+        <dt>
+
+          <code><a href="generate_dashboard.html">generate_dashboard()</a></code>
+
+        </dt>
+        <dd>Generate all dashboard files</dd>
+
+        <dt>
+
+          <code><a href="publish_dashboard.html">publish_dashboard()</a></code>
+
+        </dt>
+        <dd>Publish dashboard to GitHub Pages or GitLab Pages</dd>
+
+        <dt>
+
+          <code><a href="tutorial_dashboard.html">tutorial_dashboard()</a></code>
+
+        </dt>
+        <dd>Generate a tutorial dashboard.</dd>
+      </dl></div><div class="section level2">
+      <h2 id="visualization-creation">Visualization Creation<a class="anchor" aria-label="anchor" href="#visualization-creation"></a></h2>
+
+      <div class="section-desc"><p>Functions for creating visualizations</p></div>
+
+      <dl></dl></div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="create_viz.html">create_viz()</a></code>
+
+        </dt>
+        <dd>Create a new visualization collection</dd>
 
         <dt>
 
@@ -61,38 +115,47 @@
 
         <dt>
 
-          <code><a href="card.html">card()</a></code>
+          <code><a href="add_vizzes.html">add_vizzes()</a></code>
 
         </dt>
-        <dd>Create a Bootstrap card component</dd>
+        <dd>Add Multiple Visualizations at Once</dd>
 
         <dt>
 
-          <code><a href="card_row.html">card_row()</a></code>
+          <code><a href="combine_viz.html">combine_viz()</a></code>
 
         </dt>
-        <dd>Display cards in a Bootstrap row</dd>
+        <dd>Combine visualization collections</dd>
 
         <dt>
 
-          <code><a href="create_dashboard.html">create_dashboard()</a></code>
+          <code><a href="set_tabgroup_labels.html">set_tabgroup_labels()</a></code>
 
         </dt>
-        <dd>Create a dashboard</dd>
+        <dd>Set or update tabgroup display labels</dd>
+      </dl></div><div class="section level2">
+      <h2 id="visualization-types">Visualization Types<a class="anchor" aria-label="anchor" href="#visualization-types"></a></h2>
 
-        <dt>
+      <div class="section-desc"><p>Functions for different chart types</p></div>
 
-          <code><a href="create_heatmap.html">create_heatmap()</a></code>
+      <dl></dl></div><div class="section level2">
 
-        </dt>
-        <dd>Create a Heatmap</dd>
 
-        <dt>
+
+
+      <dl><dt>
 
           <code><a href="create_histogram.html">create_histogram()</a></code>
 
         </dt>
         <dd>Create an Histogram</dd>
+
+        <dt>
+
+          <code><a href="create_bar.html">create_bar()</a></code>
+
+        </dt>
+        <dd>Create Bar Chart</dd>
 
         <dt>
 
@@ -117,89 +180,21 @@
 
         <dt>
 
-          <code><a href="create_viz.html">create_viz()</a></code>
+          <code><a href="create_heatmap.html">create_heatmap()</a></code>
 
         </dt>
-        <dd>Create a new visualization collection</dd>
+        <dd>Create a Heatmap</dd>
+      </dl></div><div class="section level2">
+      <h2 id="navigation-layout">Navigation &amp; Layout<a class="anchor" aria-label="anchor" href="#navigation-layout"></a></h2>
 
-        <dt>
+      <div class="section-desc"><p>Functions for dashboard navigation and structure</p></div>
 
-          <code><a href="dot-check_for_icons.html">.check_for_icons()</a></code>
+      <dl></dl></div><div class="section level2">
 
-        </dt>
-        <dd>Check if any icons are used in the dashboard</dd>
 
-        <dt>
 
-          <code><a href="dot-generate_global_setup_chunk.html">.generate_global_setup_chunk()</a></code>
 
-        </dt>
-        <dd>Generate global setup chunk for QMD files</dd>
-
-        <dt>
-
-          <code><a href="dot-generate_quarto_yml.html">.generate_quarto_yml()</a></code>
-
-        </dt>
-        <dd>Generate _quarto.yml configuration file</dd>
-
-        <dt>
-
-          <code><a href="dot-generate_typed_viz.html">.generate_typed_viz()</a></code>
-
-        </dt>
-        <dd>Generate R code for typed visualizations</dd>
-
-        <dt>
-
-          <code><a href="dot-install_iconify_extension.html">.install_iconify_extension()</a></code>
-
-        </dt>
-        <dd>Install iconify extension automatically</dd>
-
-        <dt>
-
-          <code><a href="dot-process_visualizations.html">.process_visualizations()</a></code>
-
-        </dt>
-        <dd>Process visualizations into organized specs with tab groups</dd>
-
-        <dt>
-
-          <code><a href="dot-serialize_arg.html">.serialize_arg()</a></code>
-
-        </dt>
-        <dd>Convert R objects to proper R code strings for generating .qmd files</dd>
-
-        <dt>
-
-          <code><a href="dot-show_dashboard_summary.html">.show_dashboard_summary()</a></code>
-
-        </dt>
-        <dd>Show beautiful dashboard summary</dd>
-
-        <dt>
-
-          <code><a href="generate_dashboard.html">generate_dashboard()</a></code>
-
-        </dt>
-        <dd>Generate all dashboard files</dd>
-
-        <dt>
-
-          <code><a href="icon.html">icon()</a></code>
-
-        </dt>
-        <dd>Create iconify icon shortcode</dd>
-
-        <dt>
-
-          <code><a href="md_text.html">md_text()</a></code>
-
-        </dt>
-        <dd>Create multi-line markdown text content</dd>
-
-        <dt>
+      <dl><dt>
 
           <code><a href="navbar_section.html">navbar_section()</a></code>
 
@@ -208,31 +203,10 @@
 
         <dt>
 
-          <code><a href="print.dashboard_project.html">print(<i>&lt;dashboard_project&gt;</i>)</a></code>
+          <code><a href="navbar_menu.html">navbar_menu()</a></code>
 
         </dt>
-        <dd>Print method for dashboard projects</dd>
-
-        <dt>
-
-          <code><a href="print.viz_collection.html">print(<i>&lt;viz_collection&gt;</i>)</a></code>
-
-        </dt>
-        <dd>Print method for visualization collections</dd>
-
-        <dt>
-
-          <code><a href="publish_dashboard.html">publish_dashboard()</a></code>
-
-        </dt>
-        <dd>Publish dashboard to GitHub Pages or GitLab Pages</dd>
-
-        <dt>
-
-          <code><a href="set_tabgroup_labels.html">set_tabgroup_labels()</a></code>
-
-        </dt>
-        <dd>Set or update tabgroup display labels</dd>
+        <dd>Create a navbar dropdown menu</dd>
 
         <dt>
 
@@ -243,10 +217,26 @@
 
         <dt>
 
-          <code><a href="spec_viz.html">spec_viz()</a></code>
+          <code><a href="icon.html">icon()</a></code>
 
         </dt>
-        <dd>Create a single visualization specification</dd>
+        <dd>Create iconify icon shortcode</dd>
+      </dl></div><div class="section level2">
+      <h2 id="content-helpers">Content Helpers<a class="anchor" aria-label="anchor" href="#content-helpers"></a></h2>
+
+      <div class="section-desc"><p>Functions for adding content to dashboards</p></div>
+
+      <dl></dl></div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="md_text.html">md_text()</a></code>
+
+        </dt>
+        <dd>Create multi-line markdown text content</dd>
 
         <dt>
 
@@ -257,12 +247,64 @@
 
         <dt>
 
-          <code><a href="tutorial_dashboard.html">tutorial_dashboard()</a></code>
+          <code><a href="create_blockquote.html">create_blockquote()</a></code>
 
         </dt>
-        <dd>Generate a tutorial dashboard.</dd>
+        <dd>Create a Styled Blockquote</dd>
+
+        <dt>
+
+          <code><a href="card.html">card()</a></code>
+
+        </dt>
+        <dd>Create a Bootstrap card component</dd>
+
+        <dt>
+
+          <code><a href="card_row.html">card_row()</a></code>
+
+        </dt>
+        <dd>Display cards in a Bootstrap row</dd>
+
+        <dt>
+
+          <code><a href="spec_viz.html">spec_viz()</a></code>
+
+        </dt>
+        <dd>Create a single visualization specification</dd>
+      </dl></div><div class="section level2">
+      <h2 id="print-methods">Print Methods<a class="anchor" aria-label="anchor" href="#print-methods"></a></h2>
+
+      <div class="section-desc"><p>S3 methods for displaying objects</p></div>
+
+      <dl></dl></div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="print.viz_collection.html">print(<i>&lt;viz_collection&gt;</i>)</a></code>
+
+        </dt>
+        <dd>Print Visualization Collection</dd>
+
+        <dt>
+
+          <code><a href="print.dashboard_project.html">print(<i>&lt;dashboard_project&gt;</i>)</a></code>
+
+        </dt>
+        <dd>Print Dashboard Project</dd>
+
+        <dt>
+
+          <code><a href="plus-.viz_collection.html">`+`(<i>&lt;viz_collection&gt;</i>)</a></code>
+
+        </dt>
+        <dd>Combine Visualization Collections with + Operator</dd>
       </dl></div>
-  </main></div>
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
+    </nav></aside></div>
 
 
     <footer><div class="pkgdown-footer-left">

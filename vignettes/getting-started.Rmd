@@ -1,0 +1,489 @@
+---
+title: "Getting Started with dashboardr"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Getting Started with dashboardr}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  eval = FALSE
+)
+```
+
+## Introduction
+
+`dashboardr` is an R package for creating beautiful, interactive Quarto dashboards with minimal code. It provides a streamlined workflow for building dashboards with visualizations, custom layouts, and professional styling.
+
+## Installation
+
+```{r}
+# Install from GitHub
+# devtools::install_github("yourusername/dashboardr")
+
+library(dashboardr)
+library(dplyr)
+```
+
+## Quick Start
+
+Creating a dashboard with `dashboardr` involves three main steps:
+
+1. **Create** a dashboard project
+2. **Add** pages and visualizations
+3. **Generate** the Quarto dashboard
+
+### Your First Dashboard
+
+```{r}
+# Prepare some data
+my_data <- data.frame(
+  category = rep(c("A", "B", "C"), each = 100),
+  value = rnorm(300),
+  score = sample(1:5, 300, replace = TRUE)
+)
+
+# Create visualizations
+my_viz <- create_viz(
+  type = "histogram",
+  x_var = "value"
+) %>%
+  add_viz(title = "Distribution", tabgroup = "analysis")
+
+# Create dashboard
+dashboard <- create_dashboard(
+  title = "My First Dashboard",
+  output_dir = "my_dashboard"
+) %>%
+  add_page(
+    name = "Home",
+    data = my_data,
+    visualizations = my_viz,
+    is_landing_page = TRUE
+  )
+
+# Generate
+generate_dashboard(dashboard)
+```
+
+This creates a complete Quarto dashboard with:
+- Professional styling
+- Interactive visualizations
+- Responsive layout
+- Modern tabset themes
+
+## Core Concepts
+
+### 1. Visualization Collections
+
+Visualizations are created using `create_viz()` and `add_viz()`:
+
+```{r}
+viz <- create_viz() %>%
+  add_viz(
+    type = "histogram",
+    x_var = "age",
+    title = "Age Distribution"
+  ) %>%
+  add_viz(
+    type = "stackedbar",
+    x_var = "question",
+    stack_var = "response",
+    title = "Survey Responses"
+  )
+```
+
+### 2. Dashboard Pages
+
+Pages are added with `add_page()`:
+
+```{r}
+dashboard <- create_dashboard(
+  title = "My Dashboard",
+  output_dir = "output"
+) %>%
+  add_page("Home", text = "Welcome!", is_landing_page = TRUE) %>%
+  add_page("Analysis", data = my_data, visualizations = viz) %>%
+  add_page("About", text = "Dashboard created with dashboardr")
+```
+
+### 3. Dashboard Generation
+
+Generate your dashboard with:
+
+```{r}
+generate_dashboard(dashboard)
+```
+
+This creates:
+- QMD files for each page
+- `_quarto.yml` configuration
+- Data files (RDS format)
+- Custom themes and styling
+
+## Visualization Types
+
+### Histogram
+
+```{r}
+create_viz(type = "histogram", x_var = "value") %>%
+  add_viz(title = "Distribution", bins = 30)
+```
+
+### Stacked Bar
+
+```{r}
+create_viz(
+  type = "stackedbar",
+  x_var = "question",
+  stack_var = "response"
+) %>%
+  add_viz(title = "Survey Results", horizontal = TRUE)
+```
+
+### Timeline
+
+```{r}
+create_viz(
+  type = "timeline",
+  time_var = "year",
+  response_var = "score"
+) %>%
+  add_viz(title = "Trends Over Time")
+```
+
+### Bar Chart
+
+```{r}
+create_viz(
+  type = "bar",
+  x_var = "category",
+  group_var = "segment"
+) %>%
+  add_viz(title = "Category Comparison")
+```
+
+## Styling and Themes
+
+### Tabset Themes
+
+Choose from 6 built-in themes:
+
+```{r}
+dashboard <- create_dashboard(
+  title = "Styled Dashboard",
+  output_dir = "styled",
+  tabset_theme = "modern"  # or: minimal, pills, classic, underline, segmented
+)
+```
+
+### Custom Colors
+
+```{r}
+dashboard <- create_dashboard(
+  title = "Custom Colors",
+  output_dir = "custom",
+  tabset_theme = "modern",
+  tabset_colors = list(
+    active_bg = "#3498DB",
+    active_text = "#FFFFFF"
+  )
+)
+```
+
+## Navigation Features
+
+### Navbar Alignment
+
+```{r}
+dashboard %>%
+  add_page("Home", text = "Home", is_landing_page = TRUE) %>%
+  add_page("About", text = "About", navbar_align = "right")
+```
+
+### Dropdown Menus
+
+```{r}
+dashboard$navbar_sections <- list(
+  navbar_menu(
+    text = "Reports",
+    pages = c("Monthly", "Quarterly", "Annual")
+  )
+)
+```
+
+### Icons
+
+```{r}
+add_viz(
+  title = "Analysis",
+  icon = "ph:chart-line",
+  tabgroup = "reports"
+)
+```
+
+## Loading Overlay
+
+Add a loading animation to pages:
+
+```{r}
+add_page(
+  "Analysis",
+  data = large_dataset,
+  visualizations = viz,
+  overlay = TRUE,
+  overlay_theme = "glass",
+  overlay_text = "Loading analysis..."
+)
+```
+
+## Performance Tips
+
+### Quick Testing with Preview Mode
+
+When developing dashboards with multiple pages, you don't need to regenerate everything to test changes:
+
+```{r}
+# Only generate the page you're working on
+generate_dashboard(dashboard, preview = "Analysis")
+
+# Test multiple specific pages
+generate_dashboard(dashboard, preview = c("Home", "Analysis"))
+```
+
+**Why use it:**
+- **10-50x faster** than full dashboard generation
+- Perfect for iterative development
+- Test visualization tweaks instantly
+- Debug specific pages without waiting
+
+**Example workflow:**
+```{r}
+# 1. Create dashboard with many pages
+dashboard <- create_dashboard(...) %>%
+  add_page("Home", ...) %>%
+  add_page("Analysis", ...) %>%
+  add_page("Demographics", ...) %>%
+  add_page("Trends", ...) %>%
+  add_page("About", ...)
+
+# 2. Work on Analysis page
+# Make changes to visualizations...
+
+# 3. Quick test (< 1 second instead of 5+ seconds!)
+generate_dashboard(dashboard, preview = "Analysis")
+
+# 4. Once satisfied, generate full dashboard
+generate_dashboard(dashboard, render = TRUE)
+```
+
+### Faster Subsequent Builds
+
+Enable incremental builds to skip unchanged pages:
+
+```{r}
+# First build - generates all pages
+generate_dashboard(dashboard, incremental = TRUE)
+
+# Make changes to one page
+# Second build - only regenerates that page!
+generate_dashboard(dashboard, incremental = TRUE)
+```
+
+**How it works:**
+- Automatically tracks which pages have changed
+- Skips unchanged pages on subsequent builds
+- Detects changes to data, visualizations, text, and parameters
+
+**Perfect for:**
+- Large dashboards (10+ pages)
+- Iterative refinement
+- Working with slow computations
+- Development workflows
+
+### Combine Both for Maximum Speed
+
+```{r}
+# Ultimate speed: preview + incremental
+generate_dashboard(dashboard, 
+                  preview = "Analysis",
+                  incremental = TRUE)
+```
+
+**Result:** Sub-second build times! 🚀
+
+## Troubleshooting
+
+### Helpful Error Messages
+
+`dashboardr` provides clear error messages with suggestions when things go wrong:
+
+#### Typo in Visualization Type
+
+```{r}
+# Oops, typo!
+add_viz(type = "histogra", x_var = "age")
+
+# Error: Unknown type 'histogra'
+# ℹ Did you mean 'histogram'?
+# ℹ Available: histogram, bar, stackedbar, stackedbars, timeline, heatmap
+```
+
+#### Missing Required Parameter
+
+```{r}
+# Forgot x_var
+create_histogram(data, title = "My Chart")
+
+# Error: 'x_var' parameter is required
+# ℹ Example: create_histogram(data, x_var = "age")
+```
+
+#### Typo in Page Name
+
+```{r}
+# Typo in preview
+generate_dashboard(dashboard, preview = "Analisys")
+
+# Error: Page 'analisys' not found
+# ℹ Did you mean 'Analysis'?
+# Available pages: Home, Analysis, About
+```
+
+#### Typo in Theme
+
+```{r}
+# Typo in theme name
+create_dashboard(..., tabset_theme = "modrn")
+
+# Error: Unknown theme 'modrn'
+# ℹ Did you mean 'modern'?
+# ℹ Available: modern, minimal, pills, classic, underline, segmented
+```
+
+### Common Issues and Solutions
+
+#### Issue: Visualization Not Showing
+
+**Problem:** Chart appears empty or doesn't render
+
+**Solutions:**
+```{r}
+# 1. Check variable names match your data
+names(my_data)  # Verify column names
+
+# 2. Ensure data has rows
+nrow(my_data)
+
+# 3. Check for NA values
+summary(my_data$x_var)
+
+# 4. Use drop_na_vars to remove NAs
+add_viz(
+  type = "histogram",
+  x_var = "age",
+  drop_na_vars = TRUE  # Automatically removes NA rows
+)
+```
+
+#### Issue: Page Not Found
+
+**Problem:** Error when generating specific page
+
+**Solutions:**
+```{r}
+# Check exact page names (case-sensitive in code, but preview is case-insensitive)
+names(dashboard$pages)
+
+# Use exact name in preview
+generate_dashboard(dashboard, preview = "Analysis")  # Works
+generate_dashboard(dashboard, preview = "analysis")  # Also works!
+```
+
+#### Issue: Slow Dashboard Generation
+
+**Problem:** Takes a long time to generate
+
+**Solutions:**
+```{r}
+# 1. Use preview mode during development
+generate_dashboard(dashboard, preview = "WorkingPage")
+
+# 2. Enable incremental builds
+generate_dashboard(dashboard, incremental = TRUE)
+
+# 3. Check data size
+object.size(my_data)  # If > 10MB, consider filtering
+
+# 4. Reduce visualization complexity
+# - Fewer bins in histograms
+# - Sample large datasets
+# - Use filters to reduce data per viz
+```
+
+#### Issue: Tabs Not Organizing Correctly
+
+**Problem:** Tabs appear in wrong order or nesting
+
+**Solutions:**
+```{r}
+# 1. Check tabgroup syntax
+add_viz(
+  type = "histogram",
+  x_var = "age",
+  tabgroup = "demographics/age"  # Slash notation for nesting
+)
+
+# 2. Set explicit labels
+viz %>% set_tabgroup_labels(list(
+  demographics = "📊 Demographics",
+  age = "Age Groups"
+))
+
+# 3. Use .insertion_index to control order (automatic)
+# Tabs appear in the order you call add_viz()
+```
+
+### Getting More Help
+
+```{r}
+# View function documentation
+?create_dashboard
+?add_viz
+?generate_dashboard
+
+# See advanced examples
+vignette("advanced-features")
+
+# Check all available vignettes
+vignette(package = "dashboardr")
+```
+
+## Next Steps
+
+- **Advanced Features**: See `vignette("advanced-features")` for defaults, filters, nested tabs, and performance optimization
+- **Visualization Details**: See individual vignettes for each viz type
+- **Publishing**: See `?publish_dashboard` for deployment options
+
+## Resources
+
+- GitHub: [your-repo-url]
+- Documentation: Run `?create_dashboard` for function help
+- Examples: Check the `demo_*.R` files in the package
+
+## Getting Help
+
+```{r}
+# Function documentation
+?create_dashboard
+?add_viz
+?generate_dashboard
+
+# Package overview
+help(package = "dashboardr")
+```
+

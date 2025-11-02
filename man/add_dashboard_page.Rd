@@ -14,7 +14,13 @@ add_dashboard_page(
   visualizations = NULL,
   text = NULL,
   icon = NULL,
-  is_landing_page = FALSE
+  is_landing_page = FALSE,
+  tabset_theme = NULL,
+  tabset_colors = NULL,
+  navbar_align = c("left", "right"),
+  overlay = FALSE,
+  overlay_theme = c("light", "glass", "dark", "accent"),
+  overlay_text = "Loading"
 )
 }
 \arguments{
@@ -22,9 +28,11 @@ add_dashboard_page(
 
 \item{name}{Page display name}
 
-\item{data}{Optional data frame to save for this page}
+\item{data}{Optional data frame to save for this page. Can also be a named list of data frames
+for using multiple datasets: \code{list(survey = df1, demographics = df2)}}
 
-\item{data_path}{Path to existing data file (alternative to data parameter)}
+\item{data_path}{Path to existing data file (alternative to data parameter). Can also be a named
+list of file paths for multiple datasets}
 
 \item{template}{Optional custom template file path}
 
@@ -37,6 +45,18 @@ add_dashboard_page(
 \item{icon}{Optional iconify icon shortcode (e.g., "ph:users-three")}
 
 \item{is_landing_page}{Whether this should be the landing page (default: FALSE)}
+
+\item{tabset_theme}{Optional tabset theme for this page (overrides dashboard-level theme)}
+
+\item{tabset_colors}{Optional tabset colors for this page (overrides dashboard-level colors)}
+
+\item{navbar_align}{Position of page in navbar: "left" (default) or "right"}
+
+\item{overlay}{Whether to show a loading overlay on page load (default: FALSE)}
+
+\item{overlay_theme}{Theme for loading overlay: "light", "glass", "dark", or "accent" (default: "light")}
+
+\item{overlay_text}{Text to display in loading overlay (default: "Loading")}
 }
 \value{
 The updated dashboard_project object

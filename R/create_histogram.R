@@ -201,6 +201,9 @@ create_histogram <- function(data,
   if (!is.data.frame(data)) {
     stop("`data` must be a data frame.", call. = FALSE)
   }
+  if (missing(x_var) || is.null(x_var)) {
+    dashboardr:::.stop_with_hint("x_var", example = "create_histogram(data, x_var = \"age\")")
+  }
   if (!x_var %in% names(data)) {
     stop(paste0("Column '", x_var, "' not found in data."), call. = FALSE)
   }

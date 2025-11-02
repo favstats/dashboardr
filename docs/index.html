@@ -43,10 +43,13 @@
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="articles/heatmap_vignette.html">Creating Interactive Heatmaps with `create_heatmap`</a></li>
+<li><a class="dropdown-item" href="articles/getting-started.html">Getting Started with dashboardr</a></li>
+    <li><a class="dropdown-item" href="articles/advanced-features.html">Advanced Features in dashboardr</a></li>
+    <li><a class="dropdown-item" href="articles/bar_vignette.html">Creating Bar Charts with create_bar()</a></li>
+    <li><a class="dropdown-item" href="articles/timeline_vignette.html">Getting Started With `create_timeline()`</a></li>
     <li><a class="dropdown-item" href="articles/stackedbar_vignette.html">Creating Interactive Stacked Bar Charts with `create_stackedbar`</a></li>
     <li><a class="dropdown-item" href="articles/stackedbars_vignette.html">Getting Started With `create_stackedbars()`</a></li>
-    <li><a class="dropdown-item" href="articles/timeline_vignette.html">Getting Started With `create_timeline()`</a></li>
+    <li><a class="dropdown-item" href="articles/heatmap_vignette.html">Creating Interactive Heatmaps with `create_heatmap`</a></li>
   </ul>
 </li>
       </ul>
@@ -68,39 +71,300 @@
 </div>
 <!-- badges: start -->
 
-<p>The goal of dashboardr is to …</p>
+<p><strong>dashboardr</strong> makes it easy to create beautiful, interactive <a href="https://quarto.org/docs/dashboards/" class="external-link">Quarto dashboards</a> in R with minimal code. Perfect for survey data, analytics reports, and data storytelling.</p>
+<div class="section level2">
+<h2 id="sparkles-features">✨ Features<a class="anchor" aria-label="anchor" href="#sparkles-features"></a>
+</h2>
+<ul>
+<li>🎨 <strong>6 Built-in Themes</strong> - Modern, minimal, pills, classic, underline, segmented</li>
+<li>📊 <strong>Rich Visualizations</strong> - Histograms, timelines, stacked bars, heatmaps, bar charts</li>
+<li>🎯 <strong>Smart Defaults</strong> - Set parameters once, reuse everywhere</li>
+<li>🔍 <strong>Advanced Filtering</strong> - Row-level filters for each visualization</li>
+<li>📚 <strong>Multi-Dataset Support</strong> - Work with multiple datasets seamlessly</li>
+<li>🎭 <strong>Nested Tabgroups</strong> - Create hierarchical tab structures</li>
+<li>⚡ <strong>Vectorized Creation</strong> - Generate multiple visualizations efficiently</li>
+<li>🎬 <strong>Loading Overlays</strong> - 4 animated themes</li>
+<li>🧭 <strong>Flexible Navigation</strong> - Navbar menus, dropdown menus, icons</li>
+<li>📱 <strong>Responsive Design</strong> - Works on all screen sizes</li>
+</ul>
+</div>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
-<p>You can install the development version of dashboardr from <a href="https://github.com/" class="external-link">GitHub</a> with:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># install.packages("pak")</span></span>
 <span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pak.html" class="external-link">pak</a></span><span class="op">(</span><span class="st">"favstats/dashboardr"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="example">Example<a class="anchor" aria-label="anchor" href="#example"></a>
+<h2 id="quick-start">Quick Start<a class="anchor" aria-label="anchor" href="#quick-start"></a>
 </h2>
-<p>This is a basic example which shows you how to solve a common problem:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://favstats.github.io/dashboardr/">dashboardr</a></span><span class="op">)</span></span>
-<span><span class="co">#&gt; Registered S3 method overwritten by 'quantmod':</span></span>
-<span><span class="co">#&gt;   method            from</span></span>
-<span><span class="co">#&gt;   as.zoo.data.frame zoo</span></span>
-<span><span class="co">## basic example code</span></span></code></pre></div>
-<p>What is special about using <code>README.Rmd</code> instead of just <code>README.md</code>? You can include R chunks like so:</p>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Prepare data</span></span>
+<span><span class="va">data</span> <span class="op">&lt;-</span> <span class="va">mtcars</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
+<span>    cyl_label <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="va">cyl</span>, <span class="st">"cylinders"</span><span class="op">)</span>,</span>
+<span>    am_label <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">am</span> <span class="op">==</span> <span class="fl">0</span>, <span class="st">"Automatic"</span>, <span class="st">"Manual"</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Create visualizations</span></span>
+<span><span class="va">viz</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/create_viz.html">create_viz</a></span><span class="op">(</span></span>
+<span>  type <span class="op">=</span> <span class="st">"histogram"</span>,</span>
+<span>  x_var <span class="op">=</span> <span class="st">"mpg"</span></span>
+<span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="reference/add_viz.html">add_viz</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Fuel Efficiency"</span>, tabgroup <span class="op">=</span> <span class="st">"overview"</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="reference/add_viz.html">add_viz</a></span><span class="op">(</span></span>
+<span>    x_var <span class="op">=</span> <span class="st">"hp"</span>,</span>
+<span>    title <span class="op">=</span> <span class="st">"Horsepower"</span>,</span>
+<span>    tabgroup <span class="op">=</span> <span class="st">"overview"</span></span>
+<span>  <span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Create dashboard</span></span>
+<span><span class="va">dashboard</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/create_dashboard.html">create_dashboard</a></span><span class="op">(</span></span>
+<span>  title <span class="op">=</span> <span class="st">"Car Analysis Dashboard"</span>,</span>
+<span>  output_dir <span class="op">=</span> <span class="st">"my_dashboard"</span>,</span>
+<span>  tabset_theme <span class="op">=</span> <span class="st">"modern"</span></span>
+<span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="reference/add_page.html">add_page</a></span><span class="op">(</span></span>
+<span>    <span class="st">"Analysis"</span>,</span>
+<span>    data <span class="op">=</span> <span class="va">data</span>,</span>
+<span>    visualizations <span class="op">=</span> <span class="va">viz</span>,</span>
+<span>    is_landing_page <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>  <span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Generate</span></span>
+<span><span class="fu"><a href="reference/generate_dashboard.html">generate_dashboard</a></span><span class="op">(</span><span class="va">dashboard</span><span class="op">)</span></span></code></pre></div>
+<p>This creates a complete Quarto dashboard with interactive visualizations!</p>
+</div>
+<div class="section level2">
+<h2 id="key-features">Key Features<a class="anchor" aria-label="anchor" href="#key-features"></a>
+</h2>
+<div class="section level3">
+<h3 id="dart-smart-defaults">🎯 Smart Defaults<a class="anchor" aria-label="anchor" href="#dart-smart-defaults"></a>
+</h3>
+<p>Set common parameters once and reuse them:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">cars</span><span class="op">)</span></span>
-<span><span class="co">#&gt;      speed           dist       </span></span>
-<span><span class="co">#&gt;  Min.   : 4.0   Min.   :  2.00  </span></span>
-<span><span class="co">#&gt;  1st Qu.:12.0   1st Qu.: 26.00  </span></span>
-<span><span class="co">#&gt;  Median :15.0   Median : 36.00  </span></span>
-<span><span class="co">#&gt;  Mean   :15.4   Mean   : 42.98  </span></span>
-<span><span class="co">#&gt;  3rd Qu.:19.0   3rd Qu.: 56.00  </span></span>
-<span><span class="co">#&gt;  Max.   :25.0   Max.   :120.00</span></span></code></pre></div>
-<p>You’ll still need to render <code>README.Rmd</code> regularly, to keep <code>README.md</code> up-to-date. <code><a href="https://devtools.r-lib.org/reference/build_rmd.html" class="external-link">devtools::build_readme()</a></code> is handy for this.</p>
-<p>You can also embed plots, for example:</p>
-<p><img src="reference/figures/README-pressure-1.png" width="100%"></p>
-<p>In that case, don’t forget to commit and push the resulting figure files, so they display on GitHub and CRAN.</p>
+<code class="sourceCode R"><span><span class="va">viz</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/create_viz.html">create_viz</a></span><span class="op">(</span></span>
+<span>  type <span class="op">=</span> <span class="st">"stackedbars"</span>,</span>
+<span>  questions <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Q"</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">)</span>,</span>
+<span>  stacked_type <span class="op">=</span> <span class="st">"percent"</span>,</span>
+<span>  horizontal <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  color_palette <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"#E74C3C"</span>, <span class="st">"#95A5A6"</span>, <span class="st">"#27AE60"</span><span class="op">)</span></span>
+<span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="reference/add_viz.html">add_viz</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Wave 1"</span>, filter <span class="op">=</span> <span class="op">~</span> <span class="va">wave</span> <span class="op">==</span> <span class="fl">1</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="reference/add_viz.html">add_viz</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Wave 2"</span>, filter <span class="op">=</span> <span class="op">~</span> <span class="va">wave</span> <span class="op">==</span> <span class="fl">2</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="reference/add_viz.html">add_viz</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Wave 3"</span>, filter <span class="op">=</span> <span class="op">~</span> <span class="va">wave</span> <span class="op">==</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="zap-vectorized-creation">⚡ Vectorized Creation<a class="anchor" aria-label="anchor" href="#zap-vectorized-creation"></a>
+</h3>
+<p>Create multiple visualizations efficiently:</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">viz</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/create_viz.html">create_viz</a></span><span class="op">(</span></span>
+<span>  type <span class="op">=</span> <span class="st">"bar"</span>,</span>
+<span>  horizontal <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  bar_type <span class="op">=</span> <span class="st">"percent"</span></span>
+<span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="reference/add_vizzes.html">add_vizzes</a></span><span class="op">(</span></span>
+<span>    x_var <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"question_"</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">10</span><span class="op">)</span>,</span>
+<span>    title <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"Question"</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">10</span><span class="op">)</span>,</span>
+<span>    .tabgroup_template <span class="op">=</span> <span class="st">"survey/{title}"</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="co"># Creates 10 visualizations with one call!</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="performing_arts-nested-tabgroups">🎭 Nested Tabgroups<a class="anchor" aria-label="anchor" href="#performing_arts-nested-tabgroups"></a>
+</h3>
+<p>Create hierarchical structures:</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">viz</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/create_viz.html">create_viz</a></span><span class="op">(</span></span>
+<span>  type <span class="op">=</span> <span class="st">"stackedbar"</span>,</span>
+<span>  x_var <span class="op">=</span> <span class="st">"response"</span>,</span>
+<span>  stack_var <span class="op">=</span> <span class="st">"category"</span></span>
+<span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="co"># Wave 1 tabs</span></span>
+<span>  <span class="fu"><a href="reference/add_viz.html">add_viz</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Overall"</span>, tabgroup <span class="op">=</span> <span class="st">"survey/wave1"</span>, filter <span class="op">=</span> <span class="op">~</span> <span class="va">wave</span> <span class="op">==</span> <span class="fl">1</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="reference/add_viz.html">add_viz</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"By Age"</span>, tabgroup <span class="op">=</span> <span class="st">"survey/wave1/age"</span>, filter <span class="op">=</span> <span class="op">~</span> <span class="va">wave</span> <span class="op">==</span> <span class="fl">1</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="reference/add_viz.html">add_viz</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"By Gender"</span>, tabgroup <span class="op">=</span> <span class="st">"survey/wave1/gender"</span>, filter <span class="op">=</span> <span class="op">~</span> <span class="va">wave</span> <span class="op">==</span> <span class="fl">1</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="co"># Wave 2 tabs</span></span>
+<span>  <span class="fu"><a href="reference/add_viz.html">add_viz</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Overall"</span>, tabgroup <span class="op">=</span> <span class="st">"survey/wave2"</span>, filter <span class="op">=</span> <span class="op">~</span> <span class="va">wave</span> <span class="op">==</span> <span class="fl">2</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="reference/add_viz.html">add_viz</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"By Age"</span>, tabgroup <span class="op">=</span> <span class="st">"survey/wave2/age"</span>, filter <span class="op">=</span> <span class="op">~</span> <span class="va">wave</span> <span class="op">==</span> <span class="fl">2</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="reference/add_viz.html">add_viz</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"By Gender"</span>, tabgroup <span class="op">=</span> <span class="st">"survey/wave2/gender"</span>, filter <span class="op">=</span> <span class="op">~</span> <span class="va">wave</span> <span class="op">==</span> <span class="fl">2</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="co"># Custom labels</span></span>
+<span>  <span class="fu"><a href="reference/set_tabgroup_labels.html">set_tabgroup_labels</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>    survey <span class="op">=</span> <span class="st">"📊 Survey Results"</span>,</span>
+<span>    wave1 <span class="op">=</span> <span class="st">"Wave 1 (2024)"</span>,</span>
+<span>    wave2 <span class="op">=</span> <span class="st">"Wave 2 (2025)"</span></span>
+<span>  <span class="op">)</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="books-multi-dataset-support">📚 Multi-Dataset Support<a class="anchor" aria-label="anchor" href="#books-multi-dataset-support"></a>
+</h3>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">dashboard</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="reference/add_page.html">add_page</a></span><span class="op">(</span></span>
+<span>    <span class="st">"Analysis"</span>,</span>
+<span>    data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>      sales <span class="op">=</span> <span class="va">sales_data</span>,</span>
+<span>      customers <span class="op">=</span> <span class="va">customer_data</span>,</span>
+<span>      products <span class="op">=</span> <span class="va">product_data</span></span>
+<span>    <span class="op">)</span>,</span>
+<span>    visualizations <span class="op">=</span> <span class="va">viz</span></span>
+<span>  <span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="clapper-loading-overlays">🎬 Loading Overlays<a class="anchor" aria-label="anchor" href="#clapper-loading-overlays"></a>
+</h3>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">dashboard</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="reference/add_page.html">add_page</a></span><span class="op">(</span></span>
+<span>    <span class="st">"Reports"</span>,</span>
+<span>    data <span class="op">=</span> <span class="va">large_dataset</span>,</span>
+<span>    visualizations <span class="op">=</span> <span class="va">viz</span>,</span>
+<span>    overlay <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>    overlay_theme <span class="op">=</span> <span class="st">"glass"</span>,</span>
+<span>    overlay_text <span class="op">=</span> <span class="st">"Loading reports..."</span></span>
+<span>  <span class="op">)</span></span></code></pre></div>
+</div>
+</div>
+<div class="section level2">
+<h2 id="visualization-types">Visualization Types<a class="anchor" aria-label="anchor" href="#visualization-types"></a>
+</h2>
+<table class="table">
+<colgroup>
+<col width="33%">
+<col width="33%">
+<col width="33%">
+</colgroup>
+<thead><tr>
+<th>Function</th>
+<th>Description</th>
+<th>Use Case</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code><a href="reference/create_histogram.html">create_histogram()</a></code></td>
+<td>Distribution visualization</td>
+<td>Age, income, scores</td>
+</tr>
+<tr>
+<td><code><a href="reference/create_bar.html">create_bar()</a></code></td>
+<td>Grouped/clustered bars</td>
+<td>Category comparisons</td>
+</tr>
+<tr>
+<td><code><a href="reference/create_stackedbar.html">create_stackedbar()</a></code></td>
+<td>Single stacked bar</td>
+<td>Likert scales, compositions</td>
+</tr>
+<tr>
+<td><code><a href="reference/create_stackedbars.html">create_stackedbars()</a></code></td>
+<td>Multiple stacked bars</td>
+<td>Multiple questions</td>
+</tr>
+<tr>
+<td><code><a href="reference/create_timeline.html">create_timeline()</a></code></td>
+<td>Time series</td>
+<td>Trends over time</td>
+</tr>
+<tr>
+<td><code><a href="reference/create_heatmap.html">create_heatmap()</a></code></td>
+<td>2D heatmap</td>
+<td>Correlations, matrices</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section level2">
+<h2 id="themes">Themes<a class="anchor" aria-label="anchor" href="#themes"></a>
+</h2>
+<p>Choose from 6 built-in themes:</p>
+<ul>
+<li>
+<strong>modern</strong> - Clean, centered tabs with subtle shadows</li>
+<li>
+<strong>minimal</strong> - Simple, flat design</li>
+<li>
+<strong>pills</strong> - Rounded pill-shaped tabs</li>
+<li>
+<strong>classic</strong> - Traditional tabbed interface</li>
+<li>
+<strong>underline</strong> - Underlined active tabs</li>
+<li>
+<strong>segmented</strong> - Segmented control style</li>
+</ul>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">dashboard</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/create_dashboard.html">create_dashboard</a></span><span class="op">(</span></span>
+<span>  title <span class="op">=</span> <span class="st">"My Dashboard"</span>,</span>
+<span>  output_dir <span class="op">=</span> <span class="st">"output"</span>,</span>
+<span>  tabset_theme <span class="op">=</span> <span class="st">"modern"</span>,</span>
+<span>  tabset_colors <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>    active_bg <span class="op">=</span> <span class="st">"#3498DB"</span>,</span>
+<span>    active_text <span class="op">=</span> <span class="st">"#FFFFFF"</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="documentation">Documentation<a class="anchor" aria-label="anchor" href="#documentation"></a>
+</h2>
+<ul>
+<li>
+<strong>Getting Started</strong>: <code><a href="articles/getting-started.html">vignette("getting-started")</a></code>
+</li>
+<li>
+<strong>Advanced Features</strong>: <code><a href="articles/advanced-features.html">vignette("advanced-features")</a></code>
+</li>
+<li>
+<strong>Specific Visualizations</strong>:
+<ul>
+<li><code><a href="articles/bar_vignette.html">vignette("bar_vignette")</a></code></li>
+<li><code><a href="articles/timeline_vignette.html">vignette("timeline_vignette")</a></code></li>
+<li><code><a href="articles/stackedbar_vignette.html">vignette("stackedbar_vignette")</a></code></li>
+<li><code><a href="articles/stackedbars_vignette.html">vignette("stackedbars_vignette")</a></code></li>
+<li><code><a href="articles/heatmap_vignette.html">vignette("heatmap_vignette")</a></code></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section level2">
+<h2 id="examples">Examples<a class="anchor" aria-label="anchor" href="#examples"></a>
+</h2>
+<p>Check out the demo scripts in the package:</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># View available demos</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"demo"</span>, package <span class="op">=</span> <span class="st">"dashboardr"</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Run a demo</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/source.html" class="external-link">source</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"demo/demo_add_vizzes_dashboard.R"</span>, package <span class="op">=</span> <span class="st">"dashboardr"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="real-world-use-cases">Real-World Use Cases<a class="anchor" aria-label="anchor" href="#real-world-use-cases"></a>
+</h2>
+<ul>
+<li>📊 <strong>Survey Analysis</strong> - Visualize Likert-scale responses across waves</li>
+<li>📈 <strong>Business Analytics</strong> - Track KPIs over time by department</li>
+<li>🎓 <strong>Academic Research</strong> - Present study results interactively</li>
+<li>💼 <strong>Consulting Reports</strong> - Create client-ready dashboards</li>
+<li>📱 <strong>Data Journalism</strong> - Build interactive data stories</li>
+</ul>
+</div>
+<div class="section level2">
+<h2 id="contributing">Contributing<a class="anchor" aria-label="anchor" href="#contributing"></a>
+</h2>
+<p>Contributions are welcome! Please feel free to submit a Pull Request.</p>
+</div>
+<div class="section level2">
+<h2 id="license">License<a class="anchor" aria-label="anchor" href="#license"></a>
+</h2>
+<p>MIT License - see <a href="LICENSE.html">LICENSE.md</a> for details.</p>
+</div>
+<div class="section level2">
+<h2 id="citation">Citation<a class="anchor" aria-label="anchor" href="#citation"></a>
+</h2>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/citation.html" class="external-link">citation</a></span><span class="op">(</span><span class="st">"dashboardr"</span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>
   </main><aside class="col-md-3"><div class="license">

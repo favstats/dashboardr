@@ -22,10 +22,13 @@ a Likert‐type response category."><meta property="og:image" content="https://f
       <ul class="navbar-nav me-auto"><li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/heatmap_vignette.html">Creating Interactive Heatmaps with `create_heatmap`</a></li>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/getting-started.html">Getting Started with dashboardr</a></li>
+    <li><a class="dropdown-item" href="../articles/advanced-features.html">Advanced Features in dashboardr</a></li>
+    <li><a class="dropdown-item" href="../articles/bar_vignette.html">Creating Bar Charts with create_bar()</a></li>
+    <li><a class="dropdown-item" href="../articles/timeline_vignette.html">Getting Started With `create_timeline()`</a></li>
     <li><a class="dropdown-item" href="../articles/stackedbar_vignette.html">Creating Interactive Stacked Bar Charts with `create_stackedbar`</a></li>
     <li><a class="dropdown-item" href="../articles/stackedbars_vignette.html">Getting Started With `create_stackedbars()`</a></li>
-    <li><a class="dropdown-item" href="../articles/timeline_vignette.html">Getting Started With `create_timeline()`</a></li>
+    <li><a class="dropdown-item" href="../articles/heatmap_vignette.html">Creating Interactive Heatmaps with `create_heatmap`</a></li>
   </ul></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json"></form></li>
@@ -59,7 +62,7 @@ a Likert‐type response category.</p>
 <span>  x_label <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  y_label <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  stack_label <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  stacked_type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"normal"</span>, <span class="st">"percent"</span><span class="op">)</span>,</span>
+<span>  stacked_type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"normal"</span>, <span class="st">"percent"</span>, <span class="st">"counts"</span><span class="op">)</span>,</span>
 <span>  tooltip_prefix <span class="op">=</span> <span class="st">""</span>,</span>
 <span>  tooltip_suffix <span class="op">=</span> <span class="st">""</span>,</span>
 <span>  x_tooltip_suffix <span class="op">=</span> <span class="st">""</span>,</span>
@@ -75,7 +78,8 @@ a Likert‐type response category.</p>
 <span>  stack_breaks <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  stack_bin_labels <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  stack_map_values <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  show_question_tooltip <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>  show_question_tooltip <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  horizontal <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -122,12 +126,13 @@ Likert responses (e.g. <code>c("Strongly Disagree", …, "Strongly Agree")</code
 
 
 <dt id="arg-stack-label">stack_label<a class="anchor" aria-label="anchor" href="#arg-stack-label"></a></dt>
-<dd><p>Optional title for the stack legend. Defaults to "Response".</p></dd>
+<dd><p>Optional title for the stack legend.
+Set to NULL, NA, FALSE, or "" to hide the legend title completely.</p></dd>
 
 
 <dt id="arg-stacked-type">stacked_type<a class="anchor" aria-label="anchor" href="#arg-stacked-type"></a></dt>
-<dd><p>Type of stacking: <code>"normal"</code> (counts) or <code>"percent"</code>
-(100% stacked). Defaults to <code>"normal"</code>.</p></dd>
+<dd><p>Type of stacking: <code>"normal"</code> or <code>"counts"</code> (raw counts) or <code>"percent"</code>
+(100% stacked). Defaults to <code>"normal"</code>. Note: "counts" is an alias for "normal".</p></dd>
 
 
 <dt id="arg-tooltip-prefix">tooltip_prefix<a class="anchor" aria-label="anchor" href="#arg-tooltip-prefix"></a></dt>
@@ -195,6 +200,13 @@ rows with <code>NA</code> in question or response are dropped. Default <code>FAL
 <dt id="arg-show-question-tooltip">show_question_tooltip<a class="anchor" aria-label="anchor" href="#arg-show-question-tooltip"></a></dt>
 <dd><p>Logical. If <code>TRUE</code>, shows custom tooltip with question labels.</p></dd>
 
+
+<dt id="arg-horizontal">horizontal<a class="anchor" aria-label="anchor" href="#arg-horizontal"></a></dt>
+<dd><p>Logical. If <code>TRUE</code>, creates a horizontal bar chart (bars extend from left to right).
+If <code>FALSE</code> (default), creates a vertical column chart (bars extend from bottom to top).
+Note: When horizontal = TRUE, the stack order is automatically reversed so that
+the visual order of the stacks matches the legend order.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
@@ -210,8 +222,8 @@ rows with <code>NA</code> in question or response are dropped. Default <code>FAL
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Filter to recent years and select Likert-style questions</span></span></span>
 <span class="r-in"><span><span class="va">gss_recent</span> <span class="op">&lt;-</span> <span class="va">gss_all</span> <span class="op"><a href="pipe.html">%&gt;%</a></span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">year</span> <span class="op">&gt;=</span> <span class="fl">2010</span><span class="op">)</span> <span class="op"><a href="pipe.html">%&gt;%</a></span></span></span>
-<span class="r-in"><span>  <span class="fu">select</span><span class="op">(</span><span class="va">year</span>, <span class="va">confinan</span>, <span class="va">confed</span>, <span class="va">conmedic</span>, <span class="va">conjudge</span>, <span class="va">consci</span>, <span class="va">conlegis</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">year</span> <span class="op">&gt;=</span> <span class="fl">2010</span><span class="op">)</span> <span class="op"><a href="pipe.html">%&gt;%</a></span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">year</span>, <span class="va">confinan</span>, <span class="va">confed</span>, <span class="va">conmedic</span>, <span class="va">conjudge</span>, <span class="va">consci</span>, <span class="va">conlegis</span><span class="op">)</span></span></span>
 <span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in select(., year, confinan, confed, conmedic, conjudge, consci,     conlegis):</span> could not find function "select"</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Example 1: Basic Likert chart - Confidence in institutions</span></span></span>
@@ -315,19 +327,37 @@ rows with <code>NA</code> in question or response are dropped. Default <code>FAL
 <span class="r-in"><span><span class="va">plot4</span></span></span>
 <span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'plot4' not found</span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Example 5: Working with different Likert scales</span></span></span>
+<span class="r-in"><span><span class="co"># Example 5: Horizontal bar chart</span></span></span>
+<span class="r-in"><span><span class="va">plot5</span> <span class="op">&lt;-</span> <span class="fu">create_stackedbars</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  data <span class="op">=</span> <span class="va">gss_recent</span>,</span></span>
+<span class="r-in"><span>  questions <span class="op">=</span> <span class="va">confidence_questions</span>,</span></span>
+<span class="r-in"><span>  question_labels <span class="op">=</span> <span class="va">confidence_labels</span>,</span></span>
+<span class="r-in"><span>  title <span class="op">=</span> <span class="st">"Confidence in American Institutions (Horizontal)"</span>,</span></span>
+<span class="r-in"><span>  subtitle <span class="op">=</span> <span class="st">"GSS respondents 2010-present"</span>,</span></span>
+<span class="r-in"><span>  x_label <span class="op">=</span> <span class="st">"Institution"</span>,</span></span>
+<span class="r-in"><span>  stack_label <span class="op">=</span> <span class="st">"Level of Confidence"</span>,</span></span>
+<span class="r-in"><span>  response_levels <span class="op">=</span> <span class="va">confidence_order</span>,</span></span>
+<span class="r-in"><span>  stacked_type <span class="op">=</span> <span class="st">"percent"</span>,</span></span>
+<span class="r-in"><span>  horizontal <span class="op">=</span> <span class="cn">TRUE</span>,  <span class="co"># Creates horizontal bars</span></span></span>
+<span class="r-in"><span>  color_palette <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"#2E8B57"</span>, <span class="st">"#FFD700"</span>, <span class="st">"#CD5C5C"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'gss_recent' not found</span>
+<span class="r-in"><span><span class="va">plot5</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'plot5' not found</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Example 6: Working with different Likert scales</span></span></span>
 <span class="r-in"><span><span class="co"># Using happiness and life satisfaction questions if available</span></span></span>
 <span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/all.html" class="external-link">all</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"happy"</span>, <span class="st">"satfin"</span>, <span class="st">"satjob"</span><span class="op">)</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">gss_all</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
 <span class="r-in"><span>  <span class="va">satisfaction_data</span> <span class="op">&lt;-</span> <span class="va">gss_all</span> <span class="op"><a href="pipe.html">%&gt;%</a></span></span></span>
-<span class="r-in"><span>    <span class="fu"><a href="https://rdrr.io/r/stats/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">year</span> <span class="op">&gt;=</span> <span class="fl">2010</span><span class="op">)</span> <span class="op"><a href="pipe.html">%&gt;%</a></span></span></span>
-<span class="r-in"><span>    <span class="fu">select</span><span class="op">(</span><span class="va">happy</span>, <span class="va">satfin</span>, <span class="va">satjob</span><span class="op">)</span> <span class="op"><a href="pipe.html">%&gt;%</a></span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">year</span> <span class="op">&gt;=</span> <span class="fl">2010</span><span class="op">)</span> <span class="op"><a href="pipe.html">%&gt;%</a></span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">happy</span>, <span class="va">satfin</span>, <span class="va">satjob</span><span class="op">)</span> <span class="op"><a href="pipe.html">%&gt;%</a></span></span></span>
 <span class="r-in"><span>    <span class="co"># Convert to consistent scale for demonstration</span></span></span>
-<span class="r-in"><span>    <span class="fu">mutate</span><span class="op">(</span><span class="fu">across</span><span class="op">(</span><span class="fu">everything</span><span class="op">(</span><span class="op">)</span>, <span class="va">as.character</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/across.html" class="external-link">across</a></span><span class="op">(</span><span class="fu"><a href="https://tidyselect.r-lib.org/reference/everything.html" class="external-link">everything</a></span><span class="op">(</span><span class="op">)</span>, <span class="va">as.character</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span>  <span class="va">satisfaction_questions</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"happy"</span>, <span class="st">"satfin"</span>, <span class="st">"satjob"</span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="va">satisfaction_labels</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"General Happiness"</span>, <span class="st">"Financial Satisfaction"</span>, <span class="st">"Job Satisfaction"</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span>  <span class="va">plot5</span> <span class="op">&lt;-</span> <span class="fu">create_stackedbars</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">plot6</span> <span class="op">&lt;-</span> <span class="fu">create_stackedbars</span><span class="op">(</span></span></span>
 <span class="r-in"><span>    data <span class="op">=</span> <span class="va">satisfaction_data</span>,</span></span>
 <span class="r-in"><span>    questions <span class="op">=</span> <span class="va">satisfaction_questions</span>,</span></span>
 <span class="r-in"><span>    question_labels <span class="op">=</span> <span class="va">satisfaction_labels</span>,</span></span>
@@ -339,7 +369,7 @@ rows with <code>NA</code> in question or response are dropped. Default <code>FAL
 <span class="r-in"><span>    include_na <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
 <span class="r-in"><span>    na_label_stack <span class="op">=</span> <span class="st">"Not Asked/No Answer"</span></span></span>
 <span class="r-in"><span>  <span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="va">plot5</span></span></span>
+<span class="r-in"><span>  <span class="va">plot6</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
 <span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'gss_all' not found</span>
 <span class="r-in"><span></span></span>

@@ -1,7 +1,7 @@
 # This is the showcase dashboard
 
 library(tidyverse)
-
+devtools::load_all()
 # Load GSS data for realistic examples
 data(gss_panel20, package = "gssr")
 gss_clean <- gss_panel20 %>%
@@ -94,7 +94,7 @@ analysis_vizzes <- create_viz() %>%
           stack_label = "Gender",
           x_order = c("Lower Class", "Working Class", "Middle Class", "Upper Class"),
           stack_order = c("Female", "Male"),
-          stacked_type = "normal",
+          stacked_type = "counts",
           tooltip_prefix = "Count: ",
           color_palette = c("#E07A5F", "#3D5A80"),
           text = "Gender distribution across different social class categories.",
@@ -205,6 +205,7 @@ dashboard <- create_dashboard(
   description = "Comprehensive data analysis dashboard with all features",
   page_footer = "© 2025 dashboardr Package - All Rights Reserved",
   date = "2024-01-15",
+  tabset_theme = "minimal",
   # sidebar = TRUE,
   # sidebar_style = "docked",
   # sidebar_background = "light",

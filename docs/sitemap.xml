@@ -2,6 +2,9 @@
 <url><loc>https://favstats.github.io/dashboardr/404.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/LICENSE-text.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/LICENSE.html</loc></url>
+<url><loc>https://favstats.github.io/dashboardr/articles/advanced-features.html</loc></url>
+<url><loc>https://favstats.github.io/dashboardr/articles/bar_vignette.html</loc></url>
+<url><loc>https://favstats.github.io/dashboardr/articles/getting-started.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/articles/heatmap_vignette.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/articles/index.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/articles/stackedbar_vignette.html</loc></url>
@@ -10,9 +13,14 @@
 <url><loc>https://favstats.github.io/dashboardr/authors.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/index.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/add_dashboard_page.html</loc></url>
+<url><loc>https://favstats.github.io/dashboardr/reference/add_page.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/add_viz.html</loc></url>
+<url><loc>https://favstats.github.io/dashboardr/reference/add_vizzes.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/card.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/card_row.html</loc></url>
+<url><loc>https://favstats.github.io/dashboardr/reference/combine_viz.html</loc></url>
+<url><loc>https://favstats.github.io/dashboardr/reference/create_bar.html</loc></url>
+<url><loc>https://favstats.github.io/dashboardr/reference/create_blockquote.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/create_dashboard.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/create_heatmap.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/create_histogram.html</loc></url>
@@ -32,8 +40,10 @@
 <url><loc>https://favstats.github.io/dashboardr/reference/icon.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/index.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/md_text.html</loc></url>
+<url><loc>https://favstats.github.io/dashboardr/reference/navbar_menu.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/navbar_section.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/pipe.html</loc></url>
+<url><loc>https://favstats.github.io/dashboardr/reference/plus-.viz_collection.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/print.dashboard_project.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/print.viz_collection.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/publish_dashboard.html</loc></url>

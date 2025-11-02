@@ -28,7 +28,8 @@
 #' @param y_label Optional. The label for the Y-axis (as a string). Defaults
 #'                to "Number of Respondents" or "Percentage of Respondents".
 #' @param stack_label Optional. The title for the stack legend (as a string).
-#'                   Defaults to `stack_var` or `stack_var (Binned)`.
+#'                   Set to NULL, NA, FALSE, or "" to hide the legend title completely.
+#'                   If not provided, no title is shown.
 #' @param stacked_type Optional. The type of stacking. Can be "counts" (counts)
 #'                   or "percent" (100% stacked). Defaults to "counts".
 #' @param tooltip_prefix Optional. A string to prepend to values in tooltips.
@@ -71,6 +72,8 @@
 #' @param na_label_stack Optional string. Custom label for NA values in stack_var. Defaults to "(Missing)".
 #' @param horizontal Logical. If `TRUE`, creates a horizontal bar chart (bars extend from left to right).
 #'                   If `FALSE` (default), creates a vertical column chart (bars extend from bottom to top).
+#'                   Note: When horizontal = TRUE, the stack order is automatically reversed so that
+#'                   the visual order of the stacks matches the legend order.
 #'
 #' @return An interactive `highcharter` bar chart plot object.
 #'
@@ -266,6 +269,12 @@ create_stackedbar <- function(data,
   if (!is.data.frame(data)) {
     stop("Input 'data' must be a data frame.", call. = FALSE)
   }
+  if (missing(x_var) || is.null(x_var)) {
+    dashboardr:::.stop_with_hint("x_var", example = "create_stackedbar(data, x_var = \"question\", stack_var = \"response\")")
+  }
+  if (missing(stack_var) || is.null(stack_var)) {
+    dashboardr:::.stop_with_hint("stack_var", example = "create_stackedbar(data, x_var = \"question\", stack_var = \"response\")")
+  }
   if (!x_var %in% names(data)) {
     stop(paste0("Column '", x_var, "' not found in data."), call. = FALSE)
   }
@@ -434,6 +443,16 @@ create_stackedbar <- function(data,
         .stack_var_col = factor(.stack_var_col, levels = final_stack_order, ordered = TRUE)
       )
   }
+  
+  # When horizontal = TRUE, reverse the stack order so the visual order matches the legend
+  # In horizontal bar charts, stacks are reversed visually, so we need to reverse the factor levels
+  if (horizontal) {
+    current_levels <- levels(plot_data$.stack_var_col)
+    plot_data <- plot_data |>
+      dplyr::mutate(
+        .stack_var_col = factor(.stack_var_col, levels = rev(current_levels), ordered = TRUE)
+      )
+  }
 
   # Apply custom ordering for x_var
   if (!is.null(x_order)) {
@@ -510,11 +529,11 @@ create_stackedbar <- function(data,
   
   plot_options <- list()
   plot_options[[series_type]] <- list(
-    stacking = stacking_type_hc,
-    dataLabels = list(
-      enabled = TRUE,
-      format = data_label_format, # Show percentage or count
-      style = list(textOutline = "none", fontSize = "10px")
+      stacking = stacking_type_hc,
+      dataLabels = list(
+        enabled = TRUE,
+        format = data_label_format, # Show percentage or count
+        style = list(textOutline = "none", fontSize = "10px")
     )
   )
   
@@ -522,15 +541,19 @@ create_stackedbar <- function(data,
 
   # Legend
   # Stack label logic for legend:
-  final_stack_label <- stack_label
-  if (is.null(final_stack_label)) {
-    if (!is.null(stack_breaks)) {
-      final_stack_label <- paste0(stack_var, " (Binned)")
+  # Allow stack_label to be NULL, NA, FALSE, or "" to hide the title
+  if (is.null(stack_label) || (length(stack_label) == 1 && (is.na(stack_label) || isFALSE(stack_label) || stack_label == ""))) {
+    # Hide legend title
+    hchart_obj <- highcharter::hc_legend(hchart_obj, title = list(text = NULL))
     } else {
-      final_stack_label <- stack_var
+    # Use custom label
+    hchart_obj <- highcharter::hc_legend(hchart_obj, title = list(text = stack_label))
     }
+  
+  # Reverse legend order for horizontal charts to match visual stacking order
+  if (horizontal) {
+    hchart_obj <- highcharter::hc_legend(hchart_obj, reversed = TRUE)
   }
-  hchart_obj <- highcharter::hc_legend(hchart_obj, title = list(text = final_stack_label))
 
   # Tooltips
   # defines the content and formatting of the interactive pop-up box that
