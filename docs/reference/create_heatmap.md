@@ -33,7 +33,7 @@ create_heatmap(
   color_palette = c("#FFFFFF", "#7CB5EC"),
   na_color = "transparent",
   data_labels_enabled = TRUE,
-  data_labels_format = "{point.value}",
+  tooltip_labels_format = "{point.value}",
   include_na = FALSE,
   na_label_x = "(Missing)",
   na_label_y = "(Missing)",
@@ -140,7 +140,7 @@ create_heatmap(
 
   Logical. If TRUE, display data labels on each cell. Default TRUE.
 
-- data_labels_format:
+- tooltip_labels_format:
 
   Optional string. Format for data labels. Default "point.value".
 

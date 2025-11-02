@@ -8,8 +8,16 @@ charts, and various page layouts.
 ## Usage
 
 ``` r
-showcase_dashboard()
+showcase_dashboard(directory = "showcase_dashboard")
 ```
+
+## Arguments
+
+- directory:
+
+  Character string. Directory where the dashboard files will be created.
+  Defaults to "showcase_dashboard". Quarto will render HTML to
+  directory/docs/.
 
 ## Value
 
@@ -46,5 +54,8 @@ dashboards.
 if (FALSE) { # \dontrun{
 # Run the showcase dashboard (requires Quarto CLI and 'gssr' package)
 showcase_dashboard()
+
+# Specify custom directory
+showcase_dashboard(directory = "my_showcase")
 } # }
 ```

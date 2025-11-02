@@ -1,6 +1,6 @@
 project:
   type: website
-  output-dir: ../docs/live-demos/tutorial
+  output-dir: ../docs/live-demos/tutorial/docs
 
 website:
   title: "Tutorial Dashboard"

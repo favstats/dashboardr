@@ -1,6 +1,6 @@
 project:
   type: website
-  output-dir: ../docs/live-demos/showcase
+  output-dir: ../docs/live-demos/showcase/docs
 
 website:
   title: "Showcase Dashboard"

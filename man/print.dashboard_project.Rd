@@ -22,7 +22,21 @@ Invisibly returns the input object \code{x}.
 Helper function to generate iconify icon shortcodes for use in pages and visualizations.
 }
 \details{
-
+The print method displays:
+\itemize{
+\item Project metadata (title, author, description)
+\item Output directory
+\item Enabled features (sidebar, search, themes, Shiny, Observable)
+\item Integrations (GitHub, Twitter, LinkedIn, Analytics)
+\item Page structure with properties:
+\itemize{
+\item Landing page indicator
+\item Loading overlay indicator
+\item Right-aligned navbar indicator
+\item Associated datasets
+\item Nested visualization hierarchies
+}
+}
 }
 \examples{
 \dontrun{

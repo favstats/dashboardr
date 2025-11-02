@@ -1,0 +1,100 @@
+[
+  {
+    "objectID": "showcase_dashboard.html",
+    "href": "showcase_dashboard.html",
+    "title": " Showcase Dashboard",
+    "section": "",
+    "text": "This is a placeholder for a link to the showcase dashboard.\n\n\n\n\n\n\n Back to top"
+  },
+  {
+    "objectID": "text_only_page.html",
+    "href": "text_only_page.html",
+    "title": " Text-Only Page",
+    "section": "",
+    "text": "You can also have a text-only page in your dashboard.\nThis might be useful if you want to add some context or extra information about your plots.\n\n\n\n\n\n\n Back to top"
+  },
+  {
+    "objectID": "standalone_charts.html",
+    "href": "standalone_charts.html",
+    "title": " Standalone Charts",
+    "section": "",
+    "text": "This page demonstrates standalone charts (no tabsets) for key findings.\nFor example, you could use this layout to visualize the most important trends or overarching themes of your data."
+  },
+  {
+    "objectID": "standalone_charts.html#this-is-a-standalone-chart.",
+    "href": "standalone_charts.html#this-is-a-standalone-chart.",
+    "title": " Standalone Charts",
+    "section": " This is a standalone chart.",
+    "text": "This is a standalone chart.\nThis standalone chart shows the overall distribution of happiness across education levels."
+  },
+  {
+    "objectID": "standalone_charts.html#heres-another-summary-chart",
+    "href": "standalone_charts.html#heres-another-summary-chart",
+    "title": " Standalone Charts",
+    "section": " Here’s another summary chart",
+    "text": "Here’s another summary chart\n\n\n\n\n\n\nSubtitle for your standalone chart."
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": " Welcome to the Tutorial Dashboard!",
+    "section": "",
+    "text": "Thank you for downloading and using Dashboardr. We hope that you’ll find it helpful and fun to use."
+  },
+  {
+    "objectID": "index.html#how-to-use-this-package",
+    "href": "index.html#how-to-use-this-package",
+    "title": " Welcome to the Tutorial Dashboard!",
+    "section": "How to use this package",
+    "text": "How to use this package\nHere’s some information that you might find handy while you learn to use the package. This is a tutorial dashboard, which means that these pages were written by us, and are saved in the dashboardr R package. However, when you decide to call create_dashboard() using your own or sample data, an output directory will be generated."
+  },
+  {
+    "objectID": "index.html#locating-your-dashboard",
+    "href": "index.html#locating-your-dashboard",
+    "title": " Welcome to the Tutorial Dashboard!",
+    "section": "Locating your dashboard",
+    "text": "Locating your dashboard\nUnless otherwise specified, your dashboard lives in the output directory! For example:\nC:/Users/user/test_dashboard\n├── index.qmd\n├── example_dashboard.qmd\n├── standalone_charts.qmd\n├── text_only_page.qmd\n└── showcase_dashboard.qmd"
+  },
+  {
+    "objectID": "index.html#editing-your-dashboard-after-rendering",
+    "href": "index.html#editing-your-dashboard-after-rendering",
+    "title": " Welcome to the Tutorial Dashboard!",
+    "section": "Editing your dashboard after rendering",
+    "text": "Editing your dashboard after rendering\nYou’ll also have the option to write a new GitHub repository. dashboardr will tell you where it is saved upon rendering.\nIf you’d like to edit your pages further, you can do so by navigating to the output directory and editing the .qmd files manually. If that doesn’t suit you, then you can also create visualizations with create_viz() %&gt;% add_viz(), and build out the dashboard with add_page().\nFor an example of a dashboard that demonstrates the full breadth of this package, click on the Showcase tab on the toolbar above. This tutorial dashboard demonstrates the dashboardr package using real examples from the vignettes."
+  },
+  {
+    "objectID": "index.html#about-this-tutorial-dashboard",
+    "href": "index.html#about-this-tutorial-dashboard",
+    "title": " Welcome to the Tutorial Dashboard!",
+    "section": "About this tutorial dashboard",
+    "text": "About this tutorial dashboard\nThis dashboard uses data from the General Social Survey (GSS) to explore patterns in happiness, trust, and political attitudes.\nNavigate through the pages above to explore the data and see the package features in action."
+  },
+  {
+    "objectID": "example_dashboard.html",
+    "href": "example_dashboard.html",
+    "title": " Example Dashboard",
+    "section": "",
+    "text": "Here, you can see how to add text within a dashboard."
+  },
+  {
+    "objectID": "example_dashboard.html#add-a-new-heading-like-this",
+    "href": "example_dashboard.html#add-a-new-heading-like-this",
+    "title": " Example Dashboard",
+    "section": "Add a new heading like this",
+    "text": "Add a new heading like this\nA line break is displayed when you add a new section."
+  },
+  {
+    "objectID": "example_dashboard.html#example-1-stacked-bars",
+    "href": "example_dashboard.html#example-1-stacked-bars",
+    "title": " Example Dashboard",
+    "section": "Example 1: Stacked Bars",
+    "text": "Example 1: Stacked Bars\n\n Change the title here… Tabset #2\n\n\nIf you want to add text within the tab, you can do so here.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nChange the position of the text using the text_position argument."
+  },
+  {
+    "objectID": "example_dashboard.html#example-2-heatmap",
+    "href": "example_dashboard.html#example-2-heatmap",
+    "title": " Example Dashboard",
+    "section": "Example 2: Heatmap",
+    "text": "Example 2: Heatmap\n\n Trust by Education and Age Trust by Region and Education\n\n\nHere’s another example of the kind of plots you can generate in your dashboard.\n\n\n\n\n\n\n\n\nEducational and regional patterns in trust distribution."
+  }
+]

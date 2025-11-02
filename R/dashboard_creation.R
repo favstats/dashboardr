@@ -545,12 +545,13 @@ add_page <- add_dashboard_page
 #'   \item Integrations (GitHub, Twitter, LinkedIn, Analytics)
 #'   \item Page structure with properties:
 #'     \itemize{
-#'       \item 🏠 Landing page indicator
-#'       \item ⏳ Loading overlay indicator
-#'       \item → Right-aligned navbar indicator
-#'       \item 💾 Associated datasets
+#'       \item Landing page indicator
+#'       \item Loading overlay indicator
+#'       \item Right-aligned navbar indicator
+#'       \item Associated datasets
 #'       \item Nested visualization hierarchies
 #'     }
+#' }
 #'
 #' @export
 print.dashboard_project <- function(x, ...) {

@@ -4,7 +4,11 @@
 \alias{tutorial_dashboard}
 \title{Generate a tutorial dashboard.}
 \usage{
-tutorial_dashboard(directory = "docs", qmds_dir = "tutorial_dashboard")
+tutorial_dashboard(directory = "tutorial_dashboard")
+}
+\arguments{
+\item{directory}{Character string. Directory where the dashboard files will be created.
+Defaults to "tutorial_dashboard". Quarto will render HTML to directory/docs/.}
 }
 \value{
 Invisibly returns the dashboard_project object.
@@ -22,5 +26,8 @@ demonstrate visualization and layout options.
 \dontrun{
 # Run the tutorial dashboard (requires Quarto CLI and 'gssr' package)
 tutorial_dashboard()
+
+# Specify custom directory
+tutorial_dashboard(directory = "my_tutorial")
 }
 }

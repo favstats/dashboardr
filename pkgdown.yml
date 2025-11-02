@@ -1,0 +1,141 @@
+url: https://favstats.github.io/dashboardr/
+
+favicon: false
+
+template:
+  bootstrap: 5
+  bslib:
+    bg: white
+    fg: "#212529"
+    primary: "#0d6efd"
+    secondary: "#6c757d"
+    success: "#198754"
+    info: "#0dcaf0"
+    warning: "#ffc107"
+    danger: "#dc3545"
+    base_font:
+      google: Inter
+    heading_font:
+      google: Inter
+    code_font:
+      google: "Fira Code"
+
+navbar:
+  structure:
+    left: [intro, reference, articles, demos_menu, news]
+    right: [search, github]
+  components:
+    articles:
+      text: Articles
+      menu:
+      - text: Getting Started
+        href: articles/getting-started.html
+      - text: Advanced Features
+        href: articles/advanced-features.html
+      - text: -------
+      - text: Visualization Types
+      - text: Bar Charts
+        href: articles/bar_vignette.html
+      - text: Timelines
+        href: articles/timeline_vignette.html
+      - text: Stacked Bars
+        href: articles/stackedbar_vignette.html
+      - text: Stacked Bars (Multiple)
+        href: articles/stackedbars_vignette.html
+      - text: Heatmaps
+        href: articles/heatmap_vignette.html
+    demos_menu:
+      text: 🎯 Live Demos
+      menu:
+      - text: "📚 About the Demos"
+        href: articles/demos.html
+      - text: -------
+      - text: "🎓 Tutorial Dashboard"
+        href: live-demos/tutorial/index.html
+      - text: "🚀 Showcase Dashboard"
+        href: live-demos/showcase/index.html
+
+articles:
+- title: Getting Started
+  navbar: ~
+  contents:
+  - getting-started
+
+- title: Advanced Features
+  navbar: ~
+  contents:
+  - advanced-features
+
+- title: Live Demos
+  navbar: Live Demos
+  contents:
+  - demos
+
+- title: Visualization Types
+  navbar: ~
+  contents:
+  - bar_vignette
+  - timeline_vignette
+  - stackedbar_vignette
+  - stackedbars_vignette
+  - heatmap_vignette
+
+reference:
+- title: Dashboard Creation
+  desc: Functions for creating and managing dashboards
+  contents:
+  - create_dashboard
+  - add_dashboard_page
+  - add_page
+  - generate_dashboard
+  - publish_dashboard
+
+- title: Demo Dashboards
+  desc: Built-in demo dashboards showcasing package features
+  contents:
+  - tutorial_dashboard
+  - showcase_dashboard
+
+- title: Visualization Creation
+  desc: Functions for creating visualizations
+  contents:
+  - create_viz
+  - add_viz
+  - add_vizzes
+  - combine_viz
+  - set_tabgroup_labels
+
+- title: Visualization Types
+  desc: Functions for different chart types
+  contents:
+  - create_histogram
+  - create_bar
+  - create_stackedbar
+  - create_stackedbars
+  - create_timeline
+  - create_heatmap
+
+- title: Navigation & Layout
+  desc: Functions for dashboard navigation and structure
+  contents:
+  - navbar_section
+  - navbar_menu
+  - sidebar_group
+  - icon
+
+- title: Content Helpers
+  desc: Functions for adding content to dashboards
+  contents:
+  - md_text
+  - text_lines
+  - create_blockquote
+  - card
+  - card_row
+  - spec_viz
+
+- title: Print Methods
+  desc: S3 methods for displaying objects
+  contents:
+  - print.viz_collection
+  - print.dashboard_project
+  - "+.viz_collection"

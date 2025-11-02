@@ -2,9 +2,9 @@
 
 ## Introduction: A Grammar of Dashboards
 
-Just as `ggplot2` revolutionized data visualization by providing a
-**grammar of graphics**, `dashboardr` provides a **grammar of
-dashboards** for organizing and presenting your analyses.
+`ggplot2` revolutionized data visualization by providing a **grammar of
+graphics**. The goal of `dashboardr` is the ambitious goal creating a
+**grammar of dashboards** for organizing and presenting your analyses.
 
 ### What is a Grammar?
 
@@ -17,18 +17,54 @@ A grammar provides:
 
 ### dashboardr’s Grammar
 
-`dashboardr` gives you a grammar with these core components:
+`dashboardr` gives you a grammar with five core components:
 
 1.  **Data** - What you’re visualizing
-2.  **Visualizations** - How you show it (histograms, timelines, etc.)
-3.  **Hierarchy** - How you organize it (automatic nesting via
-    tabgroups)
-4.  **Layout** - How you arrange it (pages, cards, rows)
-5.  **Navigation** - How users explore it (navbar, sidebar, tabs)
-6.  **Styling** - How it looks (themes, colors, icons)
 
-By combining these elements through a **fluent piping interface**, you
-can build complex dashboards that are both powerful and maintainable.
+    ``` r
+    data = survey_data
+    ```
+
+2.  **Visualizations** - How you show it
+
+    ``` r
+    create_viz(type = "histogram") %>%
+      add_viz(x_var = "age", title = "Age Distribution")
+    ```
+
+3.  **Layout** - How you organize it within pages
+
+    ``` r
+    # Nested tabs via tabgroups
+    tabgroup = "demographics/age"  # Creates "demographics" tab with "age" nested inside
+
+    # Multiple pages
+    add_page("Analysis") %>%
+      add_page("Reports")
+    ```
+
+4.  **Navigation** - How users move between pages
+
+    ``` r
+    # Navbar (top navigation)
+    add_page("Home") %>%
+      add_page("Analysis") %>%
+      add_page("About")
+
+    # Dropdown menus
+    navbar_menu("Reports", pages = c("Sales", "Inventory"))
+    ```
+
+5.  **Styling** - How it looks
+
+    ``` r
+    tabset_theme = "modern"
+    color_palette = c("#3498DB", "#E74C3C")
+    icon = "ph:chart-line"
+    ```
+
+By combining these through a **fluent piping interface** (`%>%`), you
+build dashboards that are both powerful and maintainable.
 
 ``` r
 library(dashboardr)
@@ -37,11 +73,132 @@ library(dashboardr)
 library(dplyr)
 ```
 
+## Core Workflow: Three Steps
+
+Every dashboard follows the same pattern:
+
+### Step 1: Build Visualizations
+
+**What happens:** You create a collection of charts/graphs that share
+common properties.
+
+``` r
+# Set defaults that ALL visualizations will inherit
+my_viz <- create_viz(
+  type = "histogram",          # All will be histograms
+  color_palette = c("#3498DB"), # All use this color
+  bins = 30                     # All use 30 bins
+)
+```
+
+**Why defaults matter:** Instead of repeating `type = "histogram"` for
+every chart, you set it once. This is the *Data* layer of the grammar -
+defining what kind of visualization to use.
+
+``` r
+# Add individual visualizations
+my_viz <- my_viz %>%
+  add_viz(
+    x_var = "age",                # REQUIRED: what variable to plot
+    title = "Age Distribution",    # Chart title
+    tabgroup = "overview"          # Where it appears (Layout)
+  ) %>%
+  add_viz(
+    x_var = "income",
+    title = "Income Distribution",
+    tabgroup = "overview",
+    bins = 50  # Override: this one uses 50 bins instead of 30
+  )
+```
+
+**Key point:** Each
+[`add_viz()`](https://favstats.github.io/dashboardr/reference/add_viz.md)
+creates ONE chart. The `tabgroup` determines the *Layout* - where the
+chart appears in the dashboard’s tab structure.
+
+### Step 2: Build Dashboard Structure
+
+**What happens:** You configure the dashboard and add pages to it.
+
+``` r
+# Configure dashboard-level settings
+dashboard <- create_dashboard(
+  title = "Employee Survey Dashboard",  # Appears at the top
+  output_dir = "my_dashboard",           # Where files are saved
+  tabset_theme = "modern"                # Styling: how tabs look
+)
+```
+
+**Add pages with different content:**
+
+``` r
+# Text-only landing page (Navigation layer)
+dashboard <- dashboard %>%
+  add_page(
+    "Home",
+    text = md_text(
+      "# Welcome!",
+      "",
+      "This dashboard presents employee survey results.",
+      "",
+      "**Key findings:**",
+      "",
+      "- Average satisfaction: 4.2/5",
+      "- Response rate: 85%"
+    ),
+    is_landing_page = TRUE  # This page loads first
+  )
+```
+
+**About
+[`md_text()`](https://favstats.github.io/dashboardr/reference/md_text.md):**
+Takes multiple strings, each becomes a line. Empty strings (`""`) create
+blank lines. Supports all markdown: `#` for headings, `**bold**`, `-`
+for lists, etc.
+
+``` r
+# Data + visualizations page
+dashboard <- dashboard %>%
+  add_page(
+    "Analysis",
+    data = survey_data,         # Data layer: attach your data
+    visualizations = my_viz,     # Visualizations from Step 1
+    icon = "ph:chart-line"       # Styling: icon in navbar
+  )
+```
+
+**What’s happening:** The `data` parameter makes `survey_data` available
+to all visualizations on this page. The `visualizations` parameter
+inserts all charts you created in Step 1.
+
+### Step 3: Generate HTML
+
+**What happens:** dashboardr creates Quarto files (.qmd) and optionally
+renders them to HTML.
+
+``` r
+# Option A: Just create files (fast, for development)
+generate_dashboard(dashboard, render = FALSE)
+# Creates: my_dashboard/home.qmd, my_dashboard/analysis.qmd, etc.
+
+# Option B: Create files AND render to HTML (requires Quarto CLI)
+generate_dashboard(dashboard, render = TRUE)
+# Creates: my_dashboard/docs/index.html (and all other pages)
+
+# Option C: Render + open in browser
+generate_dashboard(dashboard, render = TRUE, open = "browser")
+# Does everything and opens the dashboard automatically
+```
+
+**Why two steps?** - `render = FALSE`: Fast iteration. Check the .qmd
+files, make sure structure is correct. - `render = TRUE`: Final output.
+Creates the actual interactive HTML dashboard.
+
 ## Installation
 
 ``` r
 # Install from GitHub
-# devtools::install_github("yourusername/dashboardr")
+# devtools::install_github("favstats/dashboardr")
 ```
 
 ## The Power of Print: Visualizing Structure
@@ -511,7 +668,7 @@ dashboard$navbar_sections <- list(
 )
 ```
 
-## Advanced Features
+## Helpful Features
 
 ### Loading Overlay
 
@@ -571,6 +728,18 @@ viz <- create_viz(type = "stackedbar") %>%
 
 # Creates one viz for each question!
 print(viz)
+#> 
+#> ╔══════════════════════════════════════════════════════════════════════════
+#> ║ 📊 VISUALIZATION COLLECTION
+#> ╠══════════════════════════════════════════════════════════════════════════
+#> ║ Total visualizations: 3
+#> ║
+#> ║ STRUCTURE:
+#> ║ └─ 📁 survey
+#> ║    ├─ 📊 STACKEDBAR: Question 1
+#> ║    ├─ 📊 STACKEDBAR: Question 2
+#> ║    └─ 📊 STACKEDBAR: Question 3
+#> ╚══════════════════════════════════════════════════════════════════════════
 ```
 
 ## Performance Tips

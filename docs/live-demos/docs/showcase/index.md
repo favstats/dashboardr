@@ -1,0 +1,25 @@
+# Welcome to the Showcase Dashboard
+
+# Welcome to the Showcase Dashboard
+
+Code
+
+This dashboard demonstrates the `dashboardr` package using real examples
+from the vignettes.
+
+## Key Features
+
+- **Unified API**: Single `add_page()` function for all page types
+- **Automatic Icons**: Easy-to-use icons throughout the interface
+- **Flexible Visualizations**: Support for all chart types with tab
+  grouping
+
+## Data Source
+
+This dashboard uses data from the **General Social Survey (GSS)** to
+explore patterns in happiness, trust, and political attitudes.
+
+Navigate through the pages above to explore the data and see the package
+features in action.
+
+Back to top

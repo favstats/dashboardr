@@ -11,12 +11,10 @@ combine_viz(...)
 }
 \value{
 A combined viz_collection
-
-A combined viz_collection
 }
 \description{
 Alternative function to combine viz_collection objects.
-Use this if the \code{+} operator doesn't work (e.g., with devtools::load_all()).
+Use this if the + operator does not work (e.g., with devtools::load_all()).
 }
 \examples{
 \dontrun{

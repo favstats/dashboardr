@@ -27,50 +27,187 @@ Perfect for survey data, analytics reports, and data storytelling.
 pak::pak("favstats/dashboardr")
 ```
 
-## Quick Start
+## Core Workflow: Data → Visualizations → Dashboard
+
+Creating a dashboard follows a simple three-step pattern:
+
+### Step 1: Build Visualizations
+
+Use
+[`create_viz()`](https://favstats.github.io/dashboardr/reference/create_viz.md)
+to set shared defaults, then
+[`add_viz()`](https://favstats.github.io/dashboardr/reference/add_viz.md)
+for each chart:
+
+``` r
+library(dashboardr)
+
+# Set defaults once (type, colors, etc.)
+my_viz <- create_viz(
+  type = "histogram",           # All charts will be histograms
+  color_palette = c("#3498DB"),  # All charts use this color
+  bins = 30                      # All charts use 30 bins
+) %>%
+  # Add individual visualizations
+  add_viz(
+    x_var = "age",              # What to plot
+    title = "Age Distribution",  # Chart title
+    tabgroup = "overview"        # Which tab group
+  ) %>%
+  add_viz(
+    x_var = "income",
+    title = "Income Distribution",
+    tabgroup = "overview",
+    bins = 50  # Override: this one uses 50 bins
+  )
+
+# See what you built
+print(my_viz)
+#> 📊 VISUALIZATION COLLECTION
+#> Total visualizations: 2
+#> STRUCTURE:
+#> └─ 📁 overview
+#>    ├─ 📉 HISTOGRAM: Age Distribution
+#>    └─ 📉 HISTOGRAM: Income Distribution
+```
+
+**Key concepts:** -
+[`create_viz()`](https://favstats.github.io/dashboardr/reference/create_viz.md):
+Sets defaults that apply to all visualizations -
+[`add_viz()`](https://favstats.github.io/dashboardr/reference/add_viz.md):
+Adds one visualization, can override any default - `tabgroup`: Organizes
+visualizations into tabs (e.g., “overview”, “demographics/age”) -
+[`print()`](https://rdrr.io/r/base/print.html): Shows the structure
+before generating
+
+### Step 2: Build Dashboard Structure
+
+Use
+[`create_dashboard()`](https://favstats.github.io/dashboardr/reference/create_dashboard.md)
+to configure, then
+[`add_page()`](https://favstats.github.io/dashboardr/reference/add_page.md)
+for each page:
+
+``` r
+dashboard <- create_dashboard(
+  title = "Employee Survey Dashboard",
+  output_dir = "my_first_dashboard",
+  tabset_theme = "modern"  # Tab styling
+) %>%
+  # Landing page with text
+  add_page(
+    "Home",
+    text = md_text(
+      "# Welcome!",
+      "",
+      "This dashboard presents employee survey results.",
+      "",
+      "Navigate using the tabs above to explore different analyses."
+    ),
+    is_landing_page = TRUE
+  ) %>%
+  # Analysis page with data + visualizations
+  add_page(
+    "Analysis",
+    data = survey_data,        # Your data
+    visualizations = my_viz,    # The viz you created above
+    icon = "ph:chart-line"      # Optional icon
+  )
+
+# See the dashboard structure
+print(dashboard)
+```
+
+**Key concepts:** -
+[`create_dashboard()`](https://favstats.github.io/dashboardr/reference/create_dashboard.md):
+Sets dashboard-level options (title, theme, output location) -
+[`add_page()`](https://favstats.github.io/dashboardr/reference/add_page.md):
+Adds a page to the navbar -
+[`md_text()`](https://favstats.github.io/dashboardr/reference/md_text.md):
+Creates markdown text blocks (headings, paragraphs, etc.) - `data`:
+Attaches your dataset to a page (available to all visualizations on that
+page) - `is_landing_page`: Makes this the default page users see first
+
+### Step 3: Generate HTML
+
+Use
+[`generate_dashboard()`](https://favstats.github.io/dashboardr/reference/generate_dashboard.md)
+to create the actual dashboard:
+
+``` r
+# Generate QMD files only (fast, for development)
+generate_dashboard(dashboard, render = FALSE)
+
+# Generate QMD files AND render to HTML (slower, for final output)
+generate_dashboard(dashboard, render = TRUE)
+
+# Generate + render + open in browser
+generate_dashboard(dashboard, render = TRUE, open = "browser")
+```
+
+**Key concepts:** - `render = FALSE`: Only creates Quarto files (.qmd),
+doesn’t run Quarto - `render = TRUE`: Creates files AND renders to HTML
+(requires Quarto CLI) - `open = "browser"`: Opens the dashboard in your
+browser after rendering
+
+### Complete Example
 
 ``` r
 library(dashboardr)
 library(dplyr)
 
-# Prepare data
+# Your data
 data <- mtcars %>%
-  mutate(
-    cyl_label = paste(cyl, "cylinders"),
-    am_label = ifelse(am == 0, "Automatic", "Manual")
-  )
+  mutate(cyl_label = paste(cyl, "cylinders"))
 
-# Create visualizations
-viz <- create_viz(
-  type = "histogram",
-  x_var = "mpg"
-) %>%
-  add_viz(title = "Fuel Efficiency", tabgroup = "overview") %>%
-  add_viz(
-    x_var = "hp",
-    title = "Horsepower",
-    tabgroup = "overview"
-  )
+# Step 1: Visualizations
+viz <- create_viz(type = "histogram") %>%
+  add_viz(x_var = "mpg", title = "MPG", tabgroup = "overview") %>%
+  add_viz(x_var = "hp", title = "Horsepower", tabgroup = "overview")
 
-# Create dashboard
+# Step 2: Dashboard
 dashboard <- create_dashboard(
-  title = "Car Analysis Dashboard",
-  output_dir = "my_dashboard",
-  tabset_theme = "modern"
+  title = "Car Dashboard",
+  output_dir = "my_dashboard"
 ) %>%
-  add_page(
-    "Analysis",
-    data = data,
-    visualizations = viz,
-    is_landing_page = TRUE
-  )
+  add_page("Home", text = md_text("# Welcome!"), is_landing_page = TRUE) %>%
+  add_page("Charts", data = data, visualizations = viz)
 
-# Generate
-generate_dashboard(dashboard)
+# Step 3: Generate
+generate_dashboard(dashboard, render = TRUE, open = "browser")
 ```
 
-This creates a complete Quarto dashboard with interactive
-visualizations!
+That’s it! You now have a complete interactive dashboard.
+
+### Composing Visualizations with `+`
+
+You can combine visualization collections using the `+` operator (like
+ggplot2):
+
+``` r
+# Create separate collections for different topics
+demographics <- create_viz(type = "histogram") %>%
+  add_viz(x_var = "age", title = "Age", tabgroup = "demographics")
+
+feedback <- create_viz(type = "histogram") %>%
+  add_viz(x_var = "satisfaction", title = "Satisfaction", tabgroup = "feedback")
+
+# Combine them!
+combined <- demographics + feedback
+
+print(combined)
+#> 📊 VISUALIZATION COLLECTION
+#> Total visualizations: 2
+#> STRUCTURE:
+#> ├─ 📁 demographics
+#> │  └─ 📉 HISTOGRAM: Age
+#> └─ 📁 feedback
+#>    └─ 📉 HISTOGRAM: Satisfaction
+```
+
+**When to use `+`:** - Organize complex dashboards into logical
+modules - Combine visualizations from different scripts/team members -
+Keep related visualizations grouped together in your code
 
 ## 🎯 Try the Live Demos!
 

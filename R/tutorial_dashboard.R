@@ -4,6 +4,9 @@
 #' various features of the dashboardr package. It includes examples of
 #' stacked bar charts, heatmaps, multiple pages, and custom components.
 #'
+#' @param directory Character string. Directory where the dashboard files will be created.
+#'   Defaults to "tutorial_dashboard". Quarto will render HTML to directory/docs/.
+#'
 #' @details
 #' The dashboard uses data from the General Social Survey (GSS) to
 #' demonstrate visualization and layout options.
@@ -15,8 +18,12 @@
 #' \dontrun{
 #' # Run the tutorial dashboard (requires Quarto CLI and 'gssr' package)
 #' tutorial_dashboard()
+#' 
+#' # Specify custom directory
+#' tutorial_dashboard(directory = "my_tutorial")
 #' }
-tutorial_dashboard <- function(directory = "docs", qmds_dir = "tutorial_dashboard") {
+tutorial_dashboard <- function(directory = "tutorial_dashboard") {
+  qmds_dir <- directory  # Use directory parameter for QMD files location
 
   # Load GSS data for realistic examples
   data(gss_panel20, package = "gssr") # Data is now handled by the function scope
@@ -329,6 +336,9 @@ tutorial_dashboard <- function(directory = "docs", qmds_dir = "tutorial_dashboar
 #' This dashboard is more comprehensive than the tutorial dashboard and showcases
 #' the full power of dashboardr for creating complex, multi-page dashboards.
 #'
+#' @param directory Character string. Directory where the dashboard files will be created.
+#'   Defaults to "showcase_dashboard". Quarto will render HTML to directory/docs/.
+#'
 #' @return Invisibly returns the dashboard_project object.
 #' @export
 #'
@@ -336,8 +346,13 @@ tutorial_dashboard <- function(directory = "docs", qmds_dir = "tutorial_dashboar
 #' \dontrun{
 #' # Run the showcase dashboard (requires Quarto CLI and 'gssr' package)
 #' showcase_dashboard()
+#' 
+#' # Specify custom directory
+#' showcase_dashboard(directory = "my_showcase")
 #' }
-showcase_dashboard <- function(directory = "docs", qmds_dir = "showcase_dashboard") {
+showcase_dashboard <- function(directory = "showcase_dashboard") {
+  qmds_dir <- directory  # Use directory parameter for QMD files location
+  
 # Load GSS data for realistic examples
 data(gss_panel20, package = "gssr")
 gss_clean <- gss_panel20 %>%

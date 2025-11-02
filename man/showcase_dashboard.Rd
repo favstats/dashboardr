@@ -4,7 +4,11 @@
 \alias{showcase_dashboard}
 \title{Generate a showcase dashboard demonstrating all dashboardr features.}
 \usage{
-showcase_dashboard(directory = "docs", qmds_dir = "showcase_dashboard")
+showcase_dashboard(directory = "showcase_dashboard")
+}
+\arguments{
+\item{directory}{Character string. Directory where the dashboard files will be created.
+Defaults to "showcase_dashboard". Quarto will render HTML to directory/docs/.}
 }
 \value{
 Invisibly returns the dashboard_project object.
@@ -34,5 +38,8 @@ the full power of dashboardr for creating complex, multi-page dashboards.
 \dontrun{
 # Run the showcase dashboard (requires Quarto CLI and 'gssr' package)
 showcase_dashboard()
+
+# Specify custom directory
+showcase_dashboard(directory = "my_showcase")
 }
 }

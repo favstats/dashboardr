@@ -189,7 +189,7 @@ plot2 <- create_heatmap(
   color_palette = c("#fff7ec", "#fee8c8", "#fdd49e", "#fdbb84", "#fc8d59", "#ef6548", "#d7301f"),
   tooltip_prefix = "Income Level: ",
   x_tooltip_suffix = " years old",
-  data_labels_format = "{point.value:.1f}"
+  tooltip_labels_format = "{point.value:.1f}"
 )
 
 plot2
@@ -303,7 +303,7 @@ plot4 <- create_heatmap(
   color_max = 3,
   tooltip_prefix = "Median Trust: ",
   tooltip_suffix = "/3",
-  data_labels_format = "{point.value:.2f}"
+  tooltip_labels_format = "{point.value:.2f}"
 )
 
 plot4
@@ -345,7 +345,7 @@ plot5 <- create_heatmap(
   tooltip_suffix = " (1-3 scale)",
   x_tooltip_prefix = "Region: ",
   y_tooltip_prefix = "Education: ",
-  data_labels_format = "{point.value:.2f}"
+  tooltip_labels_format = "{point.value:.2f}"
 )
 
 plot5
@@ -422,7 +422,7 @@ plot6 <- create_heatmap(
   color_max = 3,
   tooltip_prefix = "Happiness: ",
   tooltip_suffix = " (1-3 scale)",
-  data_labels_format = "{point.value:.2f}"
+  tooltip_labels_format = "{point.value:.2f}"
 )
 
 plot6

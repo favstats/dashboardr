@@ -19,18 +19,18 @@ if (!requireNamespace("gssr", quietly = TRUE)) {
 }
 
 # Create output directory for demos
-demo_dir <- "../docs/live-demos"
+demo_dir <- "../docs/live-demos/docs"
 if (!dir.exists(demo_dir)) {
   dir.create(demo_dir, recursive = TRUE)
 }
 
 cat("📊 Generating Tutorial Dashboard...\n")
 # QMD files go to live-demos/tutorial, Quarto renders HTML to live-demos/tutorial/docs
-tutorial_dashboard(directory = file.path(demo_dir, "tutorial"))
+tutorial_dashboard(directory = "../docs/live-demos/tutorial/docs")
 
 cat("📊 Generating Showcase Dashboard...\n")
 # QMD files go to live-demos/showcase, Quarto renders HTML to live-demos/showcase/docs
-showcase_dashboard(directory = file.path(demo_dir, "showcase"))
+showcase_dashboard(directory = "../docs/live-demos/showcase/docs")
 
 cat("✨ Demo dashboard generation complete!\n")
 cat("   Tutorial: docs/live-demos/tutorial/docs/index.html\n")

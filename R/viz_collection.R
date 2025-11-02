@@ -142,27 +142,10 @@ create_viz <- function(tabgroup_labels = NULL, ...) {
     defaults = if (length(combined_defaults) > 0) combined_defaults else list()
   ), class = "viz_collection")
 }
-
 #' Combine visualization collections
 #'
 #' Alternative function to combine viz_collection objects.
-#' Use this if the `+` operator doesn't work (e.g., with devtools::load_all()).
-#'
-#' @param ... One or more viz_collection objects to combine
-#' @return A combined viz_collection
-#' @export
-#' @examples
-#' \dontrun{
-#' viz1 <- create_viz() %>% add_viz(type = "histogram", x_var = "age")
-#' viz2 <- create_viz() %>% add_viz(type = "histogram", x_var = "income")
-#' combined <- combine_viz(viz1, viz2)  # Combines both
-#' }
-
-
-#' Combine visualization collections
-#'
-#' Alternative function to combine viz_collection objects.
-#' Use this if the `+` operator doesn't work (e.g., with devtools::load_all()).
+#' Use this if the + operator does not work (e.g., with devtools::load_all()).
 #'
 #' @param ... One or more viz_collection objects to combine
 #' @return A combined viz_collection
