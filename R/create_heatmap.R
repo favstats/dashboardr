@@ -129,7 +129,8 @@ create_heatmap <- function(data,
                            na_label_y = "(Missing)",
                            x_map_values = NULL,
                            y_map_values = NULL,
-                           agg_fun = mean
+                           agg_fun = mean,
+                           weight_var = NULL
 ) {
 
   # Input Validation
@@ -279,16 +280,42 @@ create_heatmap <- function(data,
 
   # Use complete data to ensure all combinations exist, filling missing values with NA for value_var
   # This uses the factors directly to generate all combinations
-  df_plot_complete <- df_processed |>
-    dplyr::group_by(.x_plot, .y_plot) |>
-    dplyr::summarise(.value_plot = agg_fun(.value_plot, na.rm = TRUE), .groups = 'drop') |>
-    tidyr::complete(
-      .x_plot = factor(final_x_levels, levels = final_x_levels),
-      .y_plot = factor(final_y_levels, levels = final_y_levels),
-      fill = list(.value_plot = NA_real_)
-    ) |>
-    # Re-order to ensure consistency for hcaes mapping
-    dplyr::arrange(.x_plot, .y_plot)
+  if (!is.null(weight_var)) {
+    if (!weight_var %in% names(df_processed)) {
+      stop("`weight_var` '", weight_var, "' not found in data.", call. = FALSE)
+    }
+    df_plot_complete <- df_processed |>
+      dplyr::group_by(.x_plot, .y_plot) |>
+      dplyr::summarise(
+        .value_plot = if (all(is.na(.value_plot)) || all(is.na(!!rlang::sym(weight_var)))) {
+          NA_real_
+        } else if (identical(agg_fun, mean)) {
+          stats::weighted.mean(.value_plot, !!rlang::sym(weight_var), na.rm = TRUE)
+        } else {
+          # For other agg functions, use weighted sum divided by sum of weights
+          sum(.value_plot * !!rlang::sym(weight_var), na.rm = TRUE) / sum(!!rlang::sym(weight_var), na.rm = TRUE)
+        },
+        .groups = 'drop'
+      ) |>
+      tidyr::complete(
+        .x_plot = factor(final_x_levels, levels = final_x_levels),
+        .y_plot = factor(final_y_levels, levels = final_y_levels),
+        fill = list(.value_plot = NA_real_)
+      ) |>
+      # Re-order to ensure consistency for hcaes mapping
+      dplyr::arrange(.x_plot, .y_plot)
+  } else {
+    df_plot_complete <- df_processed |>
+      dplyr::group_by(.x_plot, .y_plot) |>
+      dplyr::summarise(.value_plot = agg_fun(.value_plot, na.rm = TRUE), .groups = 'drop') |>
+      tidyr::complete(
+        .x_plot = factor(final_x_levels, levels = final_x_levels),
+        .y_plot = factor(final_y_levels, levels = final_y_levels),
+        fill = list(.value_plot = NA_real_)
+      ) |>
+      # Re-order to ensure consistency for hcaes mapping
+      dplyr::arrange(.x_plot, .y_plot)
+  }
 
 
   # Chart construction

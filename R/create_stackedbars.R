@@ -221,7 +221,8 @@ create_stackedbars <- function(data,
                                      stack_bin_labels  = NULL,
                                      stack_map_values  = NULL,
                                      show_question_tooltip = TRUE,
-                                     horizontal = FALSE) {
+                                     horizontal = FALSE,
+                                     weight_var = NULL) {
   stacked_type <- match.arg(stacked_type)
   
   # Normalize "normal" to "counts" for create_stackedbar
@@ -289,7 +290,8 @@ create_stackedbars <- function(data,
     stack_breaks     = stack_breaks,
     stack_bin_labels = stack_bin_labels,
     stack_map_values = stack_map_values,
-    horizontal       = horizontal
+    horizontal       = horizontal,
+    weight_var       = weight_var
   )
 
   # 5. set the xAxis categories explicitly so JS knows them

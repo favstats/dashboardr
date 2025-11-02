@@ -4,7 +4,13 @@
 \alias{.show_dashboard_summary}
 \title{Show beautiful dashboard summary}
 \usage{
-.show_dashboard_summary(proj, output_dir, elapsed_time = NULL)
+.show_dashboard_summary(
+  proj,
+  output_dir,
+  elapsed_time = NULL,
+  build_info = NULL,
+  show_progress = TRUE
+)
 }
 \arguments{
 \item{proj}{A dashboard_project object}

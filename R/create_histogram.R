@@ -33,6 +33,9 @@
 #' @param x_order Optional character vector to order the factor levels
 #'   of the binned variable.
 #' @param include_na Logical. If TRUE, treats NA as explicit category.
+#' @param weight_var Optional string. Name of a weight variable to use for
+#'   weighted aggregation. When provided, counts are computed as the sum of
+#'   weights instead of simple counts.
 #'
 #' @return A `highcharter` histogram (column) plot object.
 #'
@@ -194,7 +197,8 @@ create_histogram <- function(data,
                              na_label = "(Missing)",
                              color = NULL,
                              x_map_values = NULL,
-                             x_order = NULL) {
+                             x_order = NULL,
+                             weight_var = NULL) {
   histogram_type <- match.arg(histogram_type)
 
   # INPUT VALIDATION
@@ -304,12 +308,27 @@ create_histogram <- function(data,
 
   # AGGREGATION
   if (is.null(y_var)) {
-    df <- df |>
-      dplyr::count(.x_factor, name = "n") |>
-      # IMPORTANT: Use complete to ensure all factor levels are present, even with 0 count
-      tidyr::complete(.x_factor = factor(factor_levels_for_completion,
-                                         levels = factor_levels_for_completion),
-                      fill = list(n = 0))
+    if (!is.null(weight_var)) {
+      # Use weights for aggregation
+      if (!weight_var %in% names(df)) {
+        stop("`weight_var` '", weight_var, "' not found in data.", call. = FALSE)
+      }
+      df <- df |>
+        dplyr::group_by(.x_factor, .drop = FALSE) |>
+        dplyr::summarise(n = sum(!!rlang::sym(weight_var), na.rm = TRUE), .groups = "drop") |>
+        # IMPORTANT: Use complete to ensure all factor levels are present, even with 0 count
+        tidyr::complete(.x_factor = factor(factor_levels_for_completion,
+                                           levels = factor_levels_for_completion),
+                        fill = list(n = 0))
+    } else {
+      # Standard counting without weights
+      df <- df |>
+        dplyr::count(.x_factor, name = "n") |>
+        # IMPORTANT: Use complete to ensure all factor levels are present, even with 0 count
+        tidyr::complete(.x_factor = factor(factor_levels_for_completion,
+                                           levels = factor_levels_for_completion),
+                        fill = list(n = 0))
+    }
   } else {
     if (!y_var %in% names(df)) {
       stop("`y_var` not found in data.", call. = FALSE)

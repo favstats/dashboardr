@@ -20,7 +20,8 @@ create_bar(
   x_breaks = NULL,
   x_bin_labels = NULL,
   include_na = FALSE,
-  na_label = "Missing"
+  na_label = "Missing",
+  weight_var = NULL
 )
 }
 \arguments{
@@ -56,6 +57,9 @@ create_bar(
 \item{include_na}{Logical. Whether to include NA values as a separate category. Defaults to \code{FALSE}.}
 
 \item{na_label}{Character string. Label for NA category if \code{include_na = TRUE}. Defaults to "Missing".}
+
+\item{weight_var}{Optional character string. Name of a weight variable to use for weighted
+aggregation. When provided, counts are computed as the sum of weights instead of simple counts.}
 }
 \value{
 A highcharter plot object.

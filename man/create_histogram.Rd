@@ -23,7 +23,8 @@ create_histogram(
   na_label = "(Missing)",
   color = NULL,
   x_map_values = NULL,
-  x_order = NULL
+  x_order = NULL,
+  weight_var = NULL
 )
 }
 \arguments{
@@ -69,6 +70,10 @@ before binning.}
 
 \item{x_order}{Optional character vector to order the factor levels
 of the binned variable.}
+
+\item{weight_var}{Optional string. Name of a weight variable to use for
+weighted aggregation. When provided, counts are computed as the sum of
+weights instead of simple counts.}
 }
 \value{
 A \code{highcharter} histogram (column) plot object.

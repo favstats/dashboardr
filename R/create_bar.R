@@ -23,6 +23,8 @@
 #' @param x_bin_labels Optional character vector of labels for x bins.
 #' @param include_na Logical. Whether to include NA values as a separate category. Defaults to `FALSE`.
 #' @param na_label Character string. Label for NA category if `include_na = TRUE`. Defaults to "Missing".
+#' @param weight_var Optional character string. Name of a weight variable to use for weighted
+#'   aggregation. When provided, counts are computed as the sum of weights instead of simple counts.
 #'
 #' @return A highcharter plot object.
 #'
@@ -65,7 +67,8 @@ create_bar <- function(data,
                        x_breaks = NULL,
                        x_bin_labels = NULL,
                        include_na = FALSE,
-                       na_label = "Missing") {
+                       na_label = "Missing",
+                       weight_var = NULL) {
   
   # Input validation
   if (!is.data.frame(data)) {
@@ -91,6 +94,7 @@ create_bar <- function(data,
   # Select relevant variables
   vars_to_select <- x_var
   if (!is.null(group_var)) vars_to_select <- c(vars_to_select, group_var)
+  if (!is.null(weight_var)) vars_to_select <- c(vars_to_select, weight_var)
   
   plot_data <- data %>%
     dplyr::select(dplyr::all_of(vars_to_select)) %>%
@@ -164,8 +168,17 @@ create_bar <- function(data,
   # Aggregate data
   if (is.null(group_var)) {
     # Simple bar chart - count by x_var
-    agg_data <- plot_data %>%
-      dplyr::count(!!rlang::sym(x_var_plot), name = "count")
+    if (!is.null(weight_var)) {
+      if (!weight_var %in% names(plot_data)) {
+        stop("`weight_var` '", weight_var, "' not found in data.", call. = FALSE)
+      }
+      agg_data <- plot_data %>%
+        dplyr::group_by(!!rlang::sym(x_var_plot)) %>%
+        dplyr::summarise(count = sum(!!rlang::sym(weight_var), na.rm = TRUE), .groups = "drop")
+    } else {
+      agg_data <- plot_data %>%
+        dplyr::count(!!rlang::sym(x_var_plot), name = "count")
+    }
     
     if (bar_type == "percent") {
       agg_data <- agg_data %>%
@@ -176,8 +189,17 @@ create_bar <- function(data,
     }
   } else {
     # Grouped bar chart - count by x_var and group_var
-    agg_data <- plot_data %>%
-      dplyr::count(!!rlang::sym(x_var_plot), !!rlang::sym(group_var), name = "count")
+    if (!is.null(weight_var)) {
+      if (!weight_var %in% names(plot_data)) {
+        stop("`weight_var` '", weight_var, "' not found in data.", call. = FALSE)
+      }
+      agg_data <- plot_data %>%
+        dplyr::group_by(!!rlang::sym(x_var_plot), !!rlang::sym(group_var)) %>%
+        dplyr::summarise(count = sum(!!rlang::sym(weight_var), na.rm = TRUE), .groups = "drop")
+    } else {
+      agg_data <- plot_data %>%
+        dplyr::count(!!rlang::sym(x_var_plot), !!rlang::sym(group_var), name = "count")
+    }
     
     if (bar_type == "percent") {
       # Calculate percentage within each x_var category

@@ -243,78 +243,17 @@ add_page(
 
 ## Performance Tips
 
-### Quick Testing with Preview Mode
-
-When developing dashboards with multiple pages, you don't need to regenerate everything to test changes:
+For faster iteration during development:
 
 ```{r}
-# Only generate the page you're working on
-generate_dashboard(dashboard, preview = "Analysis")
+# Skip rendering during development (faster)
+generate_dashboard(dashboard, render = FALSE)
 
-# Test multiple specific pages
-generate_dashboard(dashboard, preview = c("Home", "Analysis"))
+# Only render when you want to see the final HTML
+generate_dashboard(dashboard, render = TRUE, open = "browser")
 ```
 
-**Why use it:**
-- **10-50x faster** than full dashboard generation
-- Perfect for iterative development
-- Test visualization tweaks instantly
-- Debug specific pages without waiting
-
-**Example workflow:**
-```{r}
-# 1. Create dashboard with many pages
-dashboard <- create_dashboard(...) %>%
-  add_page("Home", ...) %>%
-  add_page("Analysis", ...) %>%
-  add_page("Demographics", ...) %>%
-  add_page("Trends", ...) %>%
-  add_page("About", ...)
-
-# 2. Work on Analysis page
-# Make changes to visualizations...
-
-# 3. Quick test (< 1 second instead of 5+ seconds!)
-generate_dashboard(dashboard, preview = "Analysis")
-
-# 4. Once satisfied, generate full dashboard
-generate_dashboard(dashboard, render = TRUE)
-```
-
-### Faster Subsequent Builds
-
-Enable incremental builds to skip unchanged pages:
-
-```{r}
-# First build - generates all pages
-generate_dashboard(dashboard, incremental = TRUE)
-
-# Make changes to one page
-# Second build - only regenerates that page!
-generate_dashboard(dashboard, incremental = TRUE)
-```
-
-**How it works:**
-- Automatically tracks which pages have changed
-- Skips unchanged pages on subsequent builds
-- Detects changes to data, visualizations, text, and parameters
-
-**Perfect for:**
-- Large dashboards (10+ pages)
-- Iterative refinement
-- Working with slow computations
-- Development workflows
-
-### Combine Both for Maximum Speed
-
-```{r}
-# Ultimate speed: preview + incremental
-generate_dashboard(dashboard, 
-                  preview = "Analysis",
-                  incremental = TRUE)
-```
-
-**Result:** Sub-second build times! 🚀
+Quarto's internal caching makes subsequent renders faster automatically.
 
 ## Troubleshooting
 
@@ -346,12 +285,11 @@ create_histogram(data, title = "My Chart")
 #### Typo in Page Name
 
 ```{r}
-# Typo in preview
-generate_dashboard(dashboard, preview = "Analisys")
+# Typo in page name
+add_dashboard_page("Analisys", ...)
 
-# Error: Page 'analisys' not found
+# Error messages will suggest the correct name
 # ℹ Did you mean 'Analysis'?
-# Available pages: Home, Analysis, About
 ```
 
 #### Typo in Theme
@@ -396,12 +334,11 @@ add_viz(
 
 **Solutions:**
 ```{r}
-# Check exact page names (case-sensitive in code, but preview is case-insensitive)
+# Check page names
 names(dashboard$pages)
 
-# Use exact name in preview
-generate_dashboard(dashboard, preview = "Analysis")  # Works
-generate_dashboard(dashboard, preview = "analysis")  # Also works!
+# Verify page was added correctly
+dashboard
 ```
 
 #### Issue: Slow Dashboard Generation
@@ -410,16 +347,13 @@ generate_dashboard(dashboard, preview = "analysis")  # Also works!
 
 **Solutions:**
 ```{r}
-# 1. Use preview mode during development
-generate_dashboard(dashboard, preview = "WorkingPage")
+# 1. Skip rendering during development
+generate_dashboard(dashboard, render = FALSE)
 
-# 2. Enable incremental builds
-generate_dashboard(dashboard, incremental = TRUE)
-
-# 3. Check data size
+# 2. Check data size
 object.size(my_data)  # If > 10MB, consider filtering
 
-# 4. Reduce visualization complexity
+# 3. Reduce visualization complexity
 # - Fewer bins in histograms
 # - Sample large datasets
 # - Use filters to reduce data per viz

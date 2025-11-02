@@ -263,7 +263,8 @@ create_stackedbar <- function(data,
                               stack_breaks = NULL,
                               stack_bin_labels = NULL,
                               stack_map_values = NULL,
-                              horizontal = FALSE) {
+                              horizontal = FALSE,
+                              weight_var = NULL) {
 
   # INPUT VALIDATION
   if (!is.data.frame(data)) {
@@ -469,9 +470,18 @@ create_stackedbar <- function(data,
 
   if (is.null(y_var)) {
     # Perform the aggregation
-    plot_data <- plot_data |>
-      dplyr::count(.x_var_col, .stack_var_col, name = "n") |>
-      dplyr::ungroup()
+    if (!is.null(weight_var)) {
+      if (!weight_var %in% names(plot_data)) {
+        stop("`weight_var` '", weight_var, "' not found in data.", call. = FALSE)
+      }
+      plot_data <- plot_data |>
+        dplyr::group_by(.x_var_col, .stack_var_col) |>
+        dplyr::summarise(n = sum(!!rlang::sym(weight_var), na.rm = TRUE), .groups = "drop")
+    } else {
+      plot_data <- plot_data |>
+        dplyr::count(.x_var_col, .stack_var_col, name = "n") |>
+        dplyr::ungroup()
+    }
   } else {
     plot_data <- plot_data |>
       dplyr::rename(n := !!rlang::sym(y_var))

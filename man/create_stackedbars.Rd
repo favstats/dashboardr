@@ -31,7 +31,8 @@ create_stackedbars(
   stack_bin_labels = NULL,
   stack_map_values = NULL,
   show_question_tooltip = TRUE,
-  horizontal = FALSE
+  horizontal = FALSE,
+  weight_var = NULL
 )
 }
 \arguments{

@@ -117,7 +117,8 @@ create_timeline <- function(data,
                             response_filter_combine = TRUE,
                             response_filter_label = NULL,
                             time_breaks = NULL,
-                            time_bin_labels = NULL) {
+                            time_bin_labels = NULL,
+                            weight_var = NULL) {
 
   # INPUT VALIDATION
   if (!is.data.frame(data)) {
@@ -133,6 +134,7 @@ create_timeline <- function(data,
   # Basic data processing
   vars_to_select <- c(time_var, response_var)
   if (!is.null(group_var)) vars_to_select <- c(vars_to_select, group_var)
+  if (!is.null(weight_var)) vars_to_select <- c(vars_to_select, weight_var)
 
   plot_data <- data %>%
     select(all_of(vars_to_select)) %>%
@@ -239,17 +241,41 @@ create_timeline <- function(data,
 
   # Aggregate data - calculate percentages from ALL data (before filtering)
   if (is.null(group_var)) {
-    agg_data <- plot_data %>%
-      count(!!sym(time_var_plot), !!sym(response_var), name = "count") %>%
-      group_by(!!sym(time_var_plot)) %>%
-      mutate(percentage = round(count / sum(count) * 100, 1)) %>%
-      ungroup()
+    if (!is.null(weight_var)) {
+      if (!weight_var %in% names(plot_data)) {
+        stop("`weight_var` '", weight_var, "' not found in data.", call. = FALSE)
+      }
+      agg_data <- plot_data %>%
+        group_by(!!sym(time_var_plot), !!sym(response_var)) %>%
+        summarise(count = sum(!!sym(weight_var), na.rm = TRUE), .groups = "drop") %>%
+        group_by(!!sym(time_var_plot)) %>%
+        mutate(percentage = round(count / sum(count) * 100, 1)) %>%
+        ungroup()
+    } else {
+      agg_data <- plot_data %>%
+        count(!!sym(time_var_plot), !!sym(response_var), name = "count") %>%
+        group_by(!!sym(time_var_plot)) %>%
+        mutate(percentage = round(count / sum(count) * 100, 1)) %>%
+        ungroup()
+    }
   } else {
-    agg_data <- plot_data %>%
-      count(!!sym(time_var_plot), !!sym(response_var), !!sym(group_var), name = "count") %>%
-      group_by(!!sym(time_var_plot), !!sym(group_var)) %>%
-      mutate(percentage = round(count / sum(count) * 100, 1)) %>%
-      ungroup()
+    if (!is.null(weight_var)) {
+      if (!weight_var %in% names(plot_data)) {
+        stop("`weight_var` '", weight_var, "' not found in data.", call. = FALSE)
+      }
+      agg_data <- plot_data %>%
+        group_by(!!sym(time_var_plot), !!sym(response_var), !!sym(group_var)) %>%
+        summarise(count = sum(!!sym(weight_var), na.rm = TRUE), .groups = "drop") %>%
+        group_by(!!sym(time_var_plot), !!sym(group_var)) %>%
+        mutate(percentage = round(count / sum(count) * 100, 1)) %>%
+        ungroup()
+    } else {
+      agg_data <- plot_data %>%
+        count(!!sym(time_var_plot), !!sym(response_var), !!sym(group_var), name = "count") %>%
+        group_by(!!sym(time_var_plot), !!sym(group_var)) %>%
+        mutate(percentage = round(count / sum(count) * 100, 1)) %>%
+        ungroup()
+    }
   }
 
   # NOW filter to show only the desired response values

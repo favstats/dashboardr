@@ -439,98 +439,19 @@ dashboard <- create_dashboard(
 generate_dashboard(dashboard)
 ```
 
-## Performance Optimization
+## Performance Tips
 
-When working with large dashboards or iterating during development, these performance features can dramatically speed up your workflow.
-
-### Preview Mode
-
-Generate only specific pages for rapid testing and iteration:
+For faster iteration during development:
 
 ```{r}
-# Generate only one page
-generate_dashboard(dashboard, preview = "Analysis")
+# Skip rendering during development (faster)
+generate_dashboard(dashboard, render = FALSE)
 
-# Generate multiple specific pages
-generate_dashboard(dashboard, preview = c("Demographics", "Results"))
-```
-
-**Benefits:**
-- **10-50x faster** for large dashboards
-- Perfect for testing changes to specific pages
-- Works with visualizations, data, and all page features
-
-**Use cases:**
-- Quick iteration during development
-- Testing visualization tweaks
-- Debugging specific pages
-- CI/CD pipelines (test specific pages in parallel)
-
-### Incremental Builds
-
-Skip regenerating unchanged pages on subsequent builds:
-
-```{r}
-# First build - generates all pages
-result1 <- generate_dashboard(dashboard, incremental = TRUE)
-
-# Make changes to one page
-# Second build - only regenerates changed pages
-result2 <- generate_dashboard(dashboard, incremental = TRUE)
-
-# Check what was rebuilt
-result2$build_info$regenerated  # Changed pages
-result2$build_info$skipped      # Unchanged pages
-```
-
-**How it works:**
-- Tracks content hashes of each page
-- Only regenerates pages with changed content
-- Automatically detects changes to data, visualizations, text, etc.
-
-**Performance:**
-- First build: Normal speed
-- Subsequent builds: Only changed pages (often < 1 second!)
-
-### Maximum Speed: Combine Both!
-
-For the ultimate development speed, combine preview mode with incremental builds:
-
-```{r}
-# Work on a specific page with incremental optimization
-generate_dashboard(dashboard, 
-                  preview = "Analysis",
-                  incremental = TRUE)
-```
-
-**Result:** Sub-second builds! 🚀
-
-**Perfect for:**
-- Large dashboards (20+ pages)
-- Iterative visualization refinement
-- Dashboards with expensive computations
-- Quick preview/test cycles
-
-### Performance Best Practices
-
-```{r}
-# 1. Use preview mode during development
-generate_dashboard(dashboard, preview = "WorkInProgress")
-
-# 2. Enable incremental for iterative work
-generate_dashboard(dashboard, incremental = TRUE)
-
-# 3. Combine for maximum speed
-generate_dashboard(dashboard, preview = "WorkInProgress", incremental = TRUE)
-
-# 4. Full build for final output
+# Render when you want to see the final HTML
 generate_dashboard(dashboard, render = TRUE, open = "browser")
 ```
 
-**Typical speed-ups:**
-- 5-page dashboard: ~5 seconds → ~1 second (5x)
-- 20-page dashboard: ~30 seconds → ~2 seconds (15x)  
-- 50-page dashboard: ~2 minutes → ~5 seconds (24x)
+Quarto's internal caching makes subsequent renders faster automatically.
 
 ## Advanced Navigation
 
@@ -697,8 +618,8 @@ dashboard <- create_dashboard(
     navbar_align = "right"
   )
 
-# Generate with performance features
-generate_dashboard(dashboard, incremental = TRUE)
+# Generate dashboard
+generate_dashboard(dashboard)
 ```
 
 ## See Also
@@ -707,6 +628,6 @@ generate_dashboard(dashboard, incremental = TRUE)
 - `?create_viz` - Visualization creation
 - `?add_vizzes` - Vectorized visualization creation
 - `?set_tabgroup_labels` - Custom tab labels
-- `?generate_dashboard` - Generation options (preview, incremental)
+- `?generate_dashboard` - Dashboard generation options
 - `?navbar_menu` - Dropdown menu creation
 

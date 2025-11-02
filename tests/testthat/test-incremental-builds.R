@@ -205,3 +205,26 @@ test_that("incremental build handles missing manifest gracefully", {
   expect_true(length(result$build_info$regenerated) > 0)
 })
 
+test_that("incremental builds skip Quarto rendering when nothing changed", {
+  temp_dir <- tempfile()
+  dir.create(temp_dir)
+  on.exit(unlink(temp_dir, recursive = TRUE), add = TRUE)
+  
+  dashboard <- create_dashboard(
+    "test_render_skip",
+    "Test",
+    output_dir = temp_dir
+  ) %>%
+    add_page("Home", text = "Test", is_landing_page = TRUE)
+  
+  # First build
+  result1 <- generate_dashboard(dashboard, render = FALSE, incremental = TRUE)
+  expect_equal(length(result1$build_info$regenerated), 1)
+  
+  # Second build - should skip everything
+  result2 <- generate_dashboard(dashboard, render = FALSE, incremental = TRUE)
+  
+  expect_equal(length(result2$build_info$skipped), 1)
+  expect_equal(length(result2$build_info$regenerated), 0)
+})
+

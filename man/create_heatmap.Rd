@@ -33,7 +33,8 @@ create_heatmap(
   na_label_y = "(Missing)",
   x_map_values = NULL,
   y_map_values = NULL,
-  agg_fun = mean
+  agg_fun = mean,
+  weight_var = NULL
 )
 }
 \arguments{

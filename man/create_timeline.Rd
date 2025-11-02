@@ -19,7 +19,8 @@ create_timeline(
   response_filter_combine = TRUE,
   response_filter_label = NULL,
   time_breaks = NULL,
-  time_bin_labels = NULL
+  time_bin_labels = NULL,
+  weight_var = NULL
 )
 }
 \arguments{

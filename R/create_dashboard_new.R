@@ -1421,7 +1421,7 @@ add_dashboard_page <- function(proj, name, data = NULL, data_path = NULL,
 
       # If not found, create a new descriptive filename
       if (is.null(data_path)) {
-        data_name <- "gss_data"
+        data_name <- "dataset"
         if (nrow(data) < 1000) {
           data_name <- paste0(data_name, "_small")
         } else if (nrow(data) > 5000) {
@@ -1851,15 +1851,19 @@ text_lines <- function(lines) {
 #' @param output_dir Path to the output directory
 #' @return Invisible NULL
 #' @keywords internal
-.show_dashboard_summary <- function(proj, output_dir, elapsed_time = NULL) {
+.show_dashboard_summary <- function(proj, output_dir, elapsed_time = NULL, build_info = NULL, show_progress = TRUE) {
+  if (!show_progress) return(invisible(NULL))
+  
   cat("\n")
-  cat("🎉 DASHBOARD GENERATED SUCCESSFULLY!\n")
-  cat(paste(rep("═", 50), collapse = ""), "\n")
+  cat("╔═══════════════════════════════════════════════════╗\n")
+  cat("║     🎉 DASHBOARD GENERATED SUCCESSFULLY! 🎉      ║\n")
+  cat("╚═══════════════════════════════════════════════════╝\n")
+  cat("\n")
 
-  # Dashboard info
-  cat("📊 Dashboard: ", proj$title, "\n", sep = "")
-  cat("📁 Location: ", output_dir, "\n", sep = "")
-  cat("📄 Pages: ", length(proj$pages), "\n", sep = "")
+  # Dashboard info with enhanced formatting
+  cat("📊 Dashboard:", proj$title, "\n")
+  cat("📁 Location:", output_dir, "\n")
+  cat("📄 Pages:", length(proj$pages), "\n")
 
   # Count visualizations
   total_viz <- 0
@@ -1868,7 +1872,17 @@ text_lines <- function(lines) {
       total_viz <- total_viz + length(page$visualizations)
     }
   }
-  cat("📈 Visualizations: ", total_viz, "\n", sep = "")
+  cat("📈 Visualizations:", total_viz, "\n")
+  
+  # Show build info if available (incremental builds)
+  if (!is.null(build_info)) {
+    if (length(build_info$regenerated) > 0) {
+      cat("🔄 Regenerated:", length(build_info$regenerated), "page(s)\n")
+    }
+    if (length(build_info$skipped) > 0) {
+      cat("⏭️  Skipped:", length(build_info$skipped), "unchanged page(s)\n")
+    }
+  }
   
   # Display generation time if available
   if (!is.null(elapsed_time)) {
@@ -1881,7 +1895,7 @@ text_lines <- function(lines) {
       secs <- round(elapsed_time %% 60, 1)
       paste0(mins, " min ", secs, " sec")
     }
-    cat("⏱  Generation time: ", time_str, "\n", sep = "")
+    cat("⏱️  Total time:", time_str, "\n")
   }
 
   cat("\n")
@@ -1911,9 +1925,35 @@ text_lines <- function(lines) {
     cat("\n")
   }
 
-  # Display data files
+  # Display data files with page mapping
   if (length(rds_files) > 0) {
     cat("💾 Data files:\n")
+    
+    # Build mapping from data files to pages
+    data_to_pages <- list()
+    for (page_name in names(proj$pages)) {
+      page <- proj$pages[[page_name]]
+      if (!is.null(page$data_path)) {
+        if (is.list(page$data_path)) {
+          # Multiple datasets
+          for (dataset_name in names(page$data_path)) {
+            data_file <- basename(page$data_path[[dataset_name]])
+            if (is.null(data_to_pages[[data_file]])) {
+              data_to_pages[[data_file]] <- list(pages = c(), dataset_name = dataset_name)
+            }
+            data_to_pages[[data_file]]$pages <- c(data_to_pages[[data_file]]$pages, page_name)
+          }
+        } else {
+          # Single dataset
+          data_file <- basename(page$data_path)
+          if (is.null(data_to_pages[[data_file]])) {
+            data_to_pages[[data_file]] <- list(pages = c(), dataset_name = NULL)
+          }
+          data_to_pages[[data_file]]$pages <- c(data_to_pages[[data_file]]$pages, page_name)
+        }
+      }
+    }
+    
     for (file in sort(rds_files)) {
       file_size <- file.size(file.path(output_dir, file))
       size_str <- if (file_size > 1024*1024) {
@@ -1923,7 +1963,14 @@ text_lines <- function(lines) {
       } else {
         paste0(file_size, " B")
       }
-      cat("   • ", file, " (", size_str, ")\n", sep = "")
+      
+      # Show which pages use this data
+      if (!is.null(data_to_pages[[file]]) && length(data_to_pages[[file]]$pages) > 0) {
+        pages_str <- paste(data_to_pages[[file]]$pages, collapse = ", ")
+        cat("   • ", file, " (", size_str, ") → Used by: ", pages_str, "\n", sep = "")
+      } else {
+        cat("   • ", file, " (", size_str, ")\n", sep = "")
+      }
     }
     cat("\n")
   }
@@ -2896,7 +2943,7 @@ text_lines <- function(lines) {
   # Generate meaningful chunk label
   chunk_label <- .generate_chunk_label(spec, spec_name)
   
-  # Simple R chunk - global settings handle echo, warning, etc.
+  # Simple R chunk - caching enabled for performance
   lines <- c(lines,
     paste0("```{r ", chunk_label, "}"),
     paste0("# ", spec$title %||% paste(spec$type, "visualization"))
@@ -4715,6 +4762,104 @@ text_lines <- function(lines) {
 }
 
 # ===================================================================
+# Custom Progress Display
+# ===================================================================
+
+#' Show custom progress message
+#'
+#' @param msg Message to display
+#' @param icon Emoji or symbol to prefix
+#' @param show_progress Whether to show progress
+#' @keywords internal
+.progress_msg <- function(msg, icon = "▪", show_progress = TRUE) {
+  if (show_progress) {
+    cat(icon, msg, "\n")
+  }
+}
+
+#' Show custom progress step
+#'
+#' @param msg Step message
+#' @param elapsed Optional elapsed time in seconds
+#' @param show_progress Whether to show progress
+#' @keywords internal
+.progress_step <- function(msg, elapsed = NULL, show_progress = TRUE, is_last = FALSE, use_page_style = FALSE) {
+  if (show_progress) {
+    time_str <- if (!is.null(elapsed)) {
+      if (elapsed < 1) {
+        sprintf("  (%.0f ms)", elapsed * 1000)
+      } else {
+        sprintf("  (%.0f ms)", elapsed * 1000)
+      }
+    } else {
+      ""
+    }
+    
+    if (use_page_style) {
+      # Use print method style for pages
+      prefix <- if (is_last) "║ └─ 📄 " else "║ ├─ 📄 "
+      cat(prefix, msg, time_str, "\n", sep = "")
+    } else {
+      # Use regular style for setup/config steps
+      cat("  ✓", msg, time_str, "\n")
+    }
+  }
+}
+
+#' Show progress header
+#'
+#' @param title Header title
+#' @param show_progress Whether to show progress
+#' @keywords internal
+.progress_header <- function(title, show_progress = TRUE) {
+  if (show_progress) {
+    cat("\n")
+    cat("╔═══════════════════════════════════════════════════╗\n")
+    cat("║  ", title, sprintf("%*s", max(0, 45 - nchar(title)), ""), "║\n")
+    cat("╚═══════════════════════════════════════════════════╝\n")
+  }
+}
+
+#' Show progress section
+#'
+#' @param title Section title
+#' @param show_progress Whether to show progress
+#' @keywords internal
+.progress_section <- function(title, show_progress = TRUE) {
+  if (show_progress) {
+    cat("\n")
+    cat("┌─", title, "\n")
+  }
+}
+
+#' Show progress bar
+#'
+#' @param current Current step
+#' @param total Total steps
+#' @param label Optional label
+#' @param show_progress Whether to show progress
+#' @keywords internal
+.progress_bar <- function(current, total, label = "", show_progress = TRUE) {
+  if (show_progress) {
+    pct <- round((current / total) * 100)
+    filled <- round(pct / 5)  # 20 chars total
+    empty <- 20 - filled
+    
+    bar <- paste0(
+      "[",
+      paste(rep("█", filled), collapse = ""),
+      paste(rep("░", empty), collapse = ""),
+      "] ",
+      sprintf("%3d%%", pct),
+      if (nzchar(label)) paste0(" - ", label) else ""
+    )
+    
+    cat("\r", bar)
+    if (current == total) cat("\n")
+  }
+}
+
+# ===================================================================
 # Dashboard Generation and Rendering
 # ===================================================================
 
@@ -4727,33 +4872,48 @@ text_lines <- function(lines) {
 #' @param proj A dashboard_project object
 #' @param render Whether to render to HTML (requires Quarto CLI)
 #' @param open How to open the result: "browser", "viewer", or FALSE
-#' @param incremental Whether to use incremental builds (default: FALSE). When TRUE, only
-#'   regenerates pages that have changed since the last build.
+#' @param incremental Whether to use incremental builds (default: FALSE). When TRUE, skips 
+#'   regenerating QMD files for unchanged pages and skips Quarto rendering if nothing changed.
+#'   Uses MD5 hashing to detect changes.
 #' @param preview Optional character vector of page names to generate. When specified, only
 #'   the listed pages will be generated, skipping all others. Useful for quick testing of
 #'   specific pages without waiting for the entire dashboard to generate. Page names are
 #'   case-insensitive. If a page name doesn't exist, the function will suggest alternatives
 #'   based on typo detection. Default: NULL (generates all pages).
+#' @param show_progress Whether to display custom progress indicators (default: TRUE). When
+#'   TRUE, shows a beautiful progress display with timing information, progress bars, and
+#'   visual indicators for each generation stage. Set to FALSE for minimal output.
+#' @param quiet Whether to suppress all output (default: FALSE). When TRUE, completely
+#'   silences all messages, progress indicators, and Quarto rendering output. Useful for
+#'   scripts and automated workflows. Overrides show_progress.
 #' @return Invisibly returns the project object with build_info attached
 #' @export
 #' @examples
 #' \dontrun{
-#' # Standard generation
+#' # Generate and render dashboard
 #' dashboard %>% generate_dashboard(render = TRUE, open = "browser")
 #' 
-#' # Incremental build (faster for subsequent builds)
+#' # Generate without rendering (faster for quick iterations)
+#' dashboard %>% generate_dashboard(render = FALSE)
+#' 
+#' # Incremental builds (skip unchanged pages)
 #' dashboard %>% generate_dashboard(render = TRUE, incremental = TRUE)
 #' 
-#' # Preview mode - generate only specific pages
+#' # Preview specific page
 #' dashboard %>% generate_dashboard(preview = "Analysis")
-#' dashboard %>% generate_dashboard(preview = c("Home", "Analysis"))
 #' 
-#' # Combine preview with incremental for maximum speed
-#' dashboard %>% generate_dashboard(preview = "Analysis", incremental = TRUE)
+#' # Quiet mode for scripts
+#' dashboard %>% generate_dashboard(render = FALSE, quiet = TRUE)
 #' }
-generate_dashboard <- function(proj, render = TRUE, open = "browser", incremental = FALSE, preview = NULL) {
+generate_dashboard <- function(proj, render = TRUE, open = "browser", incremental = FALSE, preview = NULL, 
+                              show_progress = TRUE, quiet = FALSE) {
   # Start timing
   start_time <- Sys.time()
+  
+  # Quiet mode overrides show_progress
+  if (quiet) {
+    show_progress <- FALSE
+  }
   
   if (!inherits(proj, "dashboard_project")) {
     stop("proj must be a dashboard_project object")
@@ -4784,9 +4944,14 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
     # Map preview names to actual page names
     preview_pages <- names(proj$pages)[tolower(names(proj$pages)) %in% preview]
     
-    message("📄 Preview mode: Generating only ", length(preview_pages), " page(s): ", 
-            paste(preview_pages, collapse = ", "))
+    if (!quiet) {
+      message("📄 Preview mode: Generating only ", length(preview_pages), " page(s): ", 
+              paste(preview_pages, collapse = ", "))
+    }
   }
+  
+  # Show progress header
+  .progress_header(paste0("🚀 Generating Dashboard: ", proj$title), show_progress)
   
   # Reset chunk label tracker for new generation
   if (exists(".chunk_label_tracker", envir = .GlobalEnv)) {
@@ -4794,6 +4959,8 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
   }
 
   output_dir <- .resolve_output_dir(proj$output_dir, proj$allow_inside_pkg)
+  .progress_msg("Output directory:", "📁", show_progress)
+  if (show_progress) cat("   ", output_dir, "\n")
 
   if (!dir.exists(output_dir)) {
     dir.create(output_dir, recursive = TRUE)
@@ -4814,24 +4981,30 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
   )
 
   tryCatch({
+    # Setup phase
+    .progress_section("⚙️  Setup", show_progress)
+    setup_start <- Sys.time()
+    
     # Check if icons are used and install iconify extension if needed
     if (.check_for_icons(proj)) {
       # Check if iconify extension is already installed
       iconify_dir <- file.path(output_dir, "_extensions", "mcanouil", "iconify")
       if (!dir.exists(iconify_dir) || !file.exists(file.path(iconify_dir, "_extension.yml"))) {
-        message("Icons detected in dashboard. Installing iconify extension...")
+        if (!quiet) message("Icons detected in dashboard. Installing iconify extension...")
 
         # Attempt to install iconify extension with proper error handling
         install_success <- .install_iconify_extension(output_dir)
         if (!install_success) {
           warning("Failed to install iconify extension automatically. Icons may not display correctly.")
-          message("To fix this manually:")
-          message("  cd ", output_dir)
-          message("  quarto add mcanouil/quarto-iconify")
-          message("\nOr remove icons from your dashboard to render without them")
+          if (!quiet) {
+            message("To fix this manually:")
+            message("  cd ", output_dir)
+            message("  quarto add mcanouil/quarto-iconify")
+            message("\nOr remove icons from your dashboard to render without them")
+          }
         }
       } else {
-        message("Iconify extension already installed")
+        if (!quiet) message("Iconify extension already installed")
       }
     }
 
@@ -4851,7 +5024,7 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
       if (file.exists(theme_scss_path)) {
         target_path <- file.path(output_dir, paste0("_tabset_", proj$tabset_theme, ".scss"))
         file.copy(theme_scss_path, target_path, overwrite = TRUE)
-        message("Using tabset theme: ", proj$tabset_theme)
+        if (!quiet) message("Using tabset theme: ", proj$tabset_theme)
       } else {
         warning("Tabset theme file not found: ", theme_scss_name)
       }
@@ -4861,13 +5034,40 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
     if (!is.null(proj$tabset_colors) && length(proj$tabset_colors) > 0) {
       color_scss <- .generate_tabset_color_scss(proj$tabset_colors)
       writeLines(color_scss, file.path(output_dir, "_tabset_colors.scss"))
-      message("Applied custom tabset colors")
+      if (!quiet) message("Applied custom tabset colors")
     }
 
     # Generate _quarto.yml
     yaml_content <- .generate_quarto_yml(proj)
     writeLines(yaml_content, file.path(output_dir, "_quarto.yml"))
+    
+    setup_elapsed <- as.numeric(difftime(Sys.time(), setup_start, units = "secs"))
+    .progress_step("Configuration files ready", setup_elapsed, show_progress)
 
+    # Page generation
+    if (show_progress) {
+      cat("\n")
+      cat("║\n")
+      cat("║ 📄 GENERATING PAGES:\n")
+    }
+    
+    # Calculate total pages to generate
+    pages_to_generate <- names(proj$pages)
+    if (!is.null(proj$landing_page)) {
+      # Exclude landing page from count as it's handled separately
+      pages_to_generate <- setdiff(pages_to_generate, proj$landing_page)
+    }
+    if (!is.null(preview_pages)) {
+      pages_to_generate <- intersect(pages_to_generate, preview_pages)
+    }
+    
+    total_pages <- length(pages_to_generate)
+    current_page <- 0
+    
+    # Determine if we'll also show landing page for last detection
+    will_show_landing <- !is.null(proj$landing_page) && 
+                         (is.null(preview_pages) || proj$landing_page %in% preview_pages)
+    
     # Generate each page
     for (page_name in names(proj$pages)) {
       page <- proj$pages[[page_name]]
@@ -4882,6 +5082,13 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
         next
       }
 
+      # Track progress (no progress bar - page generation is fast)
+      current_page <- current_page + 1
+      page_start <- Sys.time()
+      
+      # Check if this is the last page (only if no landing page will be shown after)
+      is_last_page <- (current_page == total_pages && !will_show_landing)
+
       # Use lowercase with underscores for filenames
       filename <- tolower(gsub("[^a-zA-Z0-9]", "_", page_name))
       page_file <- file.path(output_dir, paste0(filename, ".qmd"))
@@ -4894,6 +5101,9 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
         build_info$skipped <- c(build_info$skipped, page_name)
         # Store hash in new manifest
         new_manifest$pages[[page_name]] <- list(hash = .compute_hash(page))
+        
+        page_elapsed <- as.numeric(difftime(Sys.time(), page_start, units = "secs"))
+        .progress_step(paste0(page_name, " (skipped)"), page_elapsed, show_progress, is_last_page, use_page_style = TRUE)
         next
       }
       
@@ -4915,6 +5125,9 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
       
       # Store hash in new manifest
       new_manifest$pages[[page_name]] <- list(hash = .compute_hash(page))
+      
+      page_elapsed <- as.numeric(difftime(Sys.time(), page_start, units = "secs"))
+      .progress_step(page_name, page_elapsed, show_progress, is_last_page, use_page_style = TRUE)
 
       # Copy data file(s) if needed
       if (!is.null(page$data_path)) {
@@ -4953,6 +5166,7 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
       
       # Skip landing page if in preview mode and not in preview list
       if (is.null(preview_pages) || landing_page_name %in% preview_pages) {
+        landing_start <- Sys.time()
         landing_page <- proj$pages[[landing_page_name]]
         index_file <- file.path(output_dir, "index.qmd")
 
@@ -4962,6 +5176,9 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
         if (incremental && !needs_rebuild) {
           build_info$skipped <- c(build_info$skipped, landing_page_name)
           new_manifest$pages[[landing_page_name]] <- list(hash = .compute_hash(landing_page))
+          
+          landing_elapsed <- as.numeric(difftime(Sys.time(), landing_start, units = "secs"))
+          .progress_step(paste0(landing_page_name, " [🏠 Landing] (skipped)"), landing_elapsed, show_progress, is_last = TRUE, use_page_style = TRUE)
         } else {
           build_info$regenerated <- c(build_info$regenerated, landing_page_name)
           
@@ -4979,6 +5196,9 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
 
           writeLines(content, index_file)
           new_manifest$pages[[landing_page_name]] <- list(hash = .compute_hash(landing_page))
+          
+          landing_elapsed <- as.numeric(difftime(Sys.time(), landing_start, units = "secs"))
+          .progress_step(paste0(landing_page_name, " [🏠 Landing]"), landing_elapsed, show_progress, is_last = TRUE, use_page_style = TRUE)
         }
       }
     }
@@ -5005,7 +5225,7 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
     }
 
     # Show build summary
-    if (incremental) {
+    if (incremental && !quiet) {
       if (length(build_info$skipped) > 0) {
         message("Skipped ", length(build_info$skipped), " unchanged page(s): ",
                 paste(head(build_info$skipped, 3), collapse = ", "),
@@ -5018,20 +5238,64 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
       }
     }
     
-    message("Dashboard files generated successfully")
+    if (!quiet) message("Dashboard files generated successfully")
 
     # Render to HTML if requested
     render_success <- FALSE
+    render_was_skipped <- FALSE
     if (render) {
-      render_success <- .render_dashboard(output_dir, open)
+      # Skip rendering if incremental and nothing changed
+      if (incremental && length(build_info$regenerated) == 0) {
+        if (!quiet) {
+          message("✓ All pages unchanged - skipping Quarto rendering (incremental mode)")
+          message("  Use render = TRUE, incremental = FALSE to force re-render")
+          if (open == "browser") {
+            message("  Note: Opening existing HTML (if available)")
+          }
+        }
+        render_success <- TRUE  # Consider it successful since nothing needed rendering
+        render_was_skipped <- TRUE
+      } else {
+        .progress_section("🎨 Rendering Dashboard", show_progress)
+        render_start <- Sys.time()
+        render_success <- .render_dashboard(output_dir, open, quiet, show_progress)
+        render_elapsed <- as.numeric(difftime(Sys.time(), render_start, units = "secs"))
+        
+        if (render_success) {
+          .progress_step("Rendering complete", render_elapsed, show_progress)
+        } else {
+          if (!quiet) {
+            message("\n❌ Rendering FAILED")
+            message("   QMD files were generated successfully, but Quarto rendering failed")
+            message("   Check the error/warning messages above for details")
+            message("\n   Common causes:")
+            message("   • Quarto not installed: https://quarto.org/docs/get-started/")
+            message("   • Missing iconify extension: cd ", output_dir, " && quarto add mcanouil/quarto-iconify")
+          }
+        }
+      }
     }
 
+    # Open browser if rendering was skipped but user requested it
+    if (render_was_skipped && open == "browser") {
+      output_dir_abs <- normalizePath(output_dir, mustWork = FALSE)
+      index_file <- file.path(output_dir_abs, "docs", "index.html")
+      if (file.exists(index_file)) {
+        if (!quiet) message("Opening existing dashboard in browser...")
+        utils::browseURL(index_file)
+      } else {
+        if (!quiet) {
+          warning("Cannot open browser - no HTML files exist yet. Run with render = TRUE to create them.")
+        }
+      }
+    }
+    
     # Calculate elapsed time
     elapsed_time <- as.numeric(difftime(Sys.time(), start_time, units = "secs"))
     
     # Show beautiful CLI output after rendering (only if successful or not rendering)
-    if (render_success || !render) {
-      .show_dashboard_summary(proj, output_dir, elapsed_time)
+    if (!quiet && (render_success || !render)) {
+      .show_dashboard_summary(proj, output_dir, elapsed_time, build_info, show_progress)
     }
 
   }, error = function(e) {
@@ -5045,10 +5309,12 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
 }
 
 # Render Quarto project to HTML
-.render_dashboard <- function(output_dir, open = FALSE) {
+.render_dashboard <- function(output_dir, open = FALSE, quiet = FALSE, show_progress = TRUE) {
   if (!requireNamespace("quarto", quietly = TRUE)) {
-    message("quarto package not available. Skipping render.")
-    message("Install with: install.packages('quarto')")
+    if (!quiet) {
+      message("quarto package not available. Skipping render.")
+      message("Install with: install.packages('quarto')")
+    }
     return(FALSE)
   }
 
@@ -5056,20 +5322,75 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
   docs_dir <- file.path(output_dir, "docs")
   if (!dir.exists(docs_dir)) {
     dir.create(docs_dir, recursive = TRUE)
-    message("Created docs folder.")
+    if (!quiet) message("Created docs folder.")
   }
 
   owd <- setwd(normalizePath(output_dir))
   on.exit(setwd(owd), add = TRUE)
+  
+  # Check for remnant .rmarkdown files that cause cryptic errors
+  rmarkdown_files <- list.files(output_dir, pattern = "\\.rmarkdown$", recursive = TRUE)
+  if (length(rmarkdown_files) > 0) {
+    stop(
+      "\n❌ REMNANT .rmarkdown FILE DETECTED\n\n",
+      "Found .rmarkdown file(s) in output directory:\n",
+      paste("  •", rmarkdown_files, collapse = "\n"), "\n\n",
+      "These files cause Quarto rendering to fail with cryptic errors.\n\n",
+      "To fix:\n",
+      "  1. Delete the .rmarkdown file(s)\n",
+      "  2. Make sure you're using .qmd files (not .Rmd or .rmarkdown)\n",
+      "  3. Try rendering again\n\n",
+      "Command to remove: rm ", rmarkdown_files[1], "\n"
+    )
+  }
 
   tryCatch({
-    quarto::quarto_render(".", as_job = FALSE)
-    message("Dashboard rendered successfully")
+    # Render with Quarto
+    if (quiet) {
+      # Completely silent
+      invisible(capture.output(quarto::quarto_render(".", as_job = FALSE), type = "message"))
+    } else {
+      # Show Quarto's normal output
+      quarto::quarto_render(".", as_job = FALSE)
+    }
+    
+    if (!quiet) message("Dashboard rendered successfully")
 
+    # Open in browser if requested and render succeeded
     if (open == "browser") {
-      index_file <- file.path(output_dir, "docs", "index.html")
+      # Normalize output_dir to absolute path to handle relative paths like "../docs"
+      output_dir_abs <- normalizePath(output_dir, mustWork = FALSE)
+      index_file <- file.path(output_dir_abs, "docs", "index.html")
+      
       if (file.exists(index_file)) {
+        if (!quiet) message("Opening dashboard in browser...")
         utils::browseURL(index_file)
+      } else {
+        # Check what files exist in docs/ for helpful error message
+        docs_dir <- file.path(output_dir_abs, "docs")
+        if (dir.exists(docs_dir)) {
+          docs_files <- list.files(docs_dir, pattern = "\\.html$", full.names = FALSE)
+        } else {
+          docs_files <- character(0)
+        }
+        
+        if (!quiet) {
+          warning(
+            "Could not find index.html to open in browser\n",
+            "  Expected: ", index_file, "\n",
+            "  docs/ exists: ", dir.exists(docs_dir), "\n",
+            "  HTML files in docs/: ", if (length(docs_files) > 0) paste(docs_files, collapse = ", ") else "(none)", "\n",
+            "\n",
+            "  Possible reasons:\n",
+            "  1. Rendering failed (check error messages above)\n",
+            "  2. Quarto output directory mismatch\n",
+            "  3. Landing page has different name\n",
+            "\n",
+            "  Try:\n",
+            "  • Check for errors in Quarto output above\n",
+            "  • Look in: ", docs_dir
+          )
+        }
       }
     }
     return(TRUE)
@@ -5127,6 +5448,23 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
 #'
 #' @export
 print.dashboard_project <- function(x, ...) {
+  # Helper function to print page badges
+  .print_page_badges <- function(page) {
+    badges <- c()
+    if (!is.null(page$is_landing_page) && page$is_landing_page) badges <- c(badges, "🏠 Landing")
+    if (!is.null(page$icon)) badges <- c(badges, paste0("🎯 Icon"))
+    if (!is.null(page$overlay) && page$overlay) badges <- c(badges, paste0("⏳ Overlay"))
+    if (!is.null(page$navbar_align) && page$navbar_align == "right") badges <- c(badges, "→ Right")
+    if (!is.null(page$data_path)) {
+      num_datasets <- if (is.list(page$data_path)) length(page$data_path) else 1
+      badges <- c(badges, paste0("💾 ", num_datasets, " dataset", if (num_datasets > 1) "s" else ""))
+    }
+    
+    if (length(badges) > 0) {
+      cat(" [", paste(badges, collapse = ", "), "]", sep = "")
+    }
+  }
+  
   cat("\n")
   cat("╔══════════════════════════════════════════════════════════════════════════\n")
   cat("║ 🎨 DASHBOARD PROJECT\n")
@@ -5179,37 +5517,117 @@ print.dashboard_project <- function(x, ...) {
   if (length(x$pages) == 0) {
     cat("║    (no pages yet)\n")
   } else {
-    page_names <- names(x$pages)
+    # Check if there are navbar sections/menus with actual pages
+    has_navbar_structure <- FALSE
+    if (!is.null(x$navbar_sections) && length(x$navbar_sections) > 0) {
+      # Check if any section has pages
+      for (sec in x$navbar_sections) {
+        if (!is.null(sec$type) && length(sec$type) > 0) {
+          if ((sec$type == "sidebar" && length(sec$pages) > 0) ||
+              (sec$type == "menu" && length(sec$menu_pages) > 0)) {
+            has_navbar_structure <- TRUE
+            break
+          }
+        }
+      }
+    }
     
-    for (i in seq_along(page_names)) {
-      page_name <- page_names[i]
-      page <- x$pages[[page_name]]
-      is_last_page <- (i == length(page_names))
+    if (has_navbar_structure) {
+      # Show pages organized by navbar structure
+      pages_in_structure <- c()
       
-      # Page branch
-      if (is_last_page) {
-        cat("║ └─ 📄 ", page_name, sep = "")
-        page_prefix <- "║    "
-      } else {
-        cat("║ ├─ 📄 ", page_name, sep = "")
-        page_prefix <- "║ │  "
+      for (i in seq_along(x$navbar_sections)) {
+        section <- x$navbar_sections[[i]]
+        is_last_section <- (i == length(x$navbar_sections))
+        
+        # Skip if section type is missing
+        if (is.null(section$type) || length(section$type) == 0) {
+          next
+        }
+        
+        if (section$type == "sidebar") {
+          # Sidebar group - find the actual sidebar group by ID
+          cat("║ ", if (is_last_section) "└─" else "├─", " 📚 ", section$text, " (Sidebar)\n", sep = "")
+          section_prefix <- paste0("║ ", if (is_last_section) "   " else "│  ")
+          
+          # Find the sidebar group with matching ID
+          sidebar_group <- NULL
+          if (!is.null(x$sidebar_groups)) {
+            for (sg in x$sidebar_groups) {
+              if (!is.null(sg$id) && sg$id == section$sidebar) {
+                sidebar_group <- sg
+                break
+              }
+            }
+          }
+          
+          # Display pages if sidebar group found
+          if (!is.null(sidebar_group) && !is.null(sidebar_group$pages)) {
+            for (j in seq_along(sidebar_group$pages)) {
+              page_name <- sidebar_group$pages[j]
+              pages_in_structure <- c(pages_in_structure, page_name)
+              page <- x$pages[[page_name]]
+              is_last_page <- (j == length(sidebar_group$pages))
+              
+              cat(section_prefix, if (is_last_page) "└─" else "├─", " 📄 ", page_name, sep = "")
+              .print_page_badges(page)
+              cat("\n")
+            }
+          }
+        } else if (section$type == "menu") {
+          # Dropdown menu
+          cat("║ ", if (is_last_section) "└─" else "├─", " 📑 ", section$text, " (Menu)\n", sep = "")
+          section_prefix <- paste0("║ ", if (is_last_section) "   " else "│  ")
+          
+          for (j in seq_along(section$menu_pages)) {
+            page_name <- section$menu_pages[j]
+            pages_in_structure <- c(pages_in_structure, page_name)
+            page <- x$pages[[page_name]]
+            is_last_page <- (j == length(section$menu_pages))
+            
+            cat(section_prefix, if (is_last_page) "└─" else "├─", " 📄 ", page_name, sep = "")
+            .print_page_badges(page)
+            cat("\n")
+          }
+        }
       }
       
-      # Page badges
-      badges <- c()
-      if (!is.null(page$is_landing_page) && page$is_landing_page) badges <- c(badges, "🏠 Landing")
-      if (!is.null(page$icon)) badges <- c(badges, paste0("🎯 Icon"))
-      if (!is.null(page$overlay) && page$overlay) badges <- c(badges, paste0("⏳ Overlay"))
-      if (!is.null(page$navbar_align) && page$navbar_align == "right") badges <- c(badges, "→ Right")
-      if (!is.null(page$data_path)) {
-        num_datasets <- if (is.list(page$data_path)) length(page$data_path) else 1
-        badges <- c(badges, paste0("💾 ", num_datasets, " dataset", if (num_datasets > 1) "s" else ""))
-      }
+      # Show any pages NOT in navbar structure
+      all_page_names <- names(x$pages)
+      pages_not_in_structure <- setdiff(all_page_names, pages_in_structure)
       
-      if (length(badges) > 0) {
-        cat(" [", paste(badges, collapse = ", "), "]", sep = "")
+      if (length(pages_not_in_structure) > 0) {
+        for (i in seq_along(pages_not_in_structure)) {
+          page_name <- pages_not_in_structure[i]
+          page <- x$pages[[page_name]]
+          is_last <- (i == length(pages_not_in_structure)) && length(x$navbar_sections) == 0
+          
+          cat("║ ", if (is_last) "└─" else "├─", " 📄 ", page_name, sep = "")
+          .print_page_badges(page)
+          cat("\n")
+        }
       }
-      cat("\n")
+    } else {
+      # Flat list of pages (no navbar structure)
+      page_names <- names(x$pages)
+      
+      for (i in seq_along(page_names)) {
+        page_name <- page_names[i]
+        page <- x$pages[[page_name]]
+        is_last_page <- (i == length(page_names))
+      
+        # Page branch
+        if (is_last_page) {
+          cat("║ └─ 📄 ", page_name, sep = "")
+          page_prefix <- "║    "
+        } else {
+          cat("║ ├─ 📄 ", page_name, sep = "")
+          page_prefix <- "║ │  "
+        }
+        
+        # Page badges
+        .print_page_badges(page)
+        cat("\n")
       
       # Show visualizations
       viz_list <- page$visualizations %||% list()
@@ -5308,6 +5726,7 @@ print.dashboard_project <- function(x, ...) {
         }
         
         .print_page_viz_tree(viz_tree, page_prefix)
+        }
       }
     }
   }
@@ -5599,6 +6018,7 @@ navbar_section <- function(text, sidebar_id, icon = NULL) {
 
   # Build the navbar section configuration
   section <- list(
+    type = "sidebar",
     text = text,
     sidebar = sidebar_id
   )
@@ -5646,6 +6066,7 @@ navbar_menu <- function(text, pages, icon = NULL) {
   
   # Build the navbar menu configuration
   menu <- list(
+    type = "menu",
     text = text,
     menu_pages = pages  # Use menu_pages to distinguish from sidebar reference
   )
