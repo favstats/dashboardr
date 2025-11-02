@@ -145,7 +145,7 @@ create_viz <- function(tabgroup_labels = NULL, ...) {
 #' Combine visualization collections
 #'
 #' Alternative function to combine viz_collection objects.
-#' Use this if the + operator does not work (e.g., with devtools::load_all()).
+
 #'
 #' @param ... One or more viz_collection objects to combine
 #' @return A combined viz_collection

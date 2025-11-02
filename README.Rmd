@@ -224,23 +224,12 @@ dashboard <- create_dashboard(
   - `vignette("stackedbars_vignette")`
   - `vignette("heatmap_vignette")`
 
-## Examples
-
-Check out the demo scripts in the package:
-
-```{r demos, eval=FALSE}
-# View available demos
-list.files(system.file("demo", package = "dashboardr"))
-
-# Run a demo
-source(system.file("demo/demo_add_vizzes_dashboard.R", package = "dashboardr"))
-```
 
 ## Real-World Use Cases
 
+- 🎓 **Academic Research** - Present study results interactively
 - 📊 **Survey Analysis** - Visualize Likert-scale responses across waves
 - 📈 **Business Analytics** - Track KPIs over time by department
-- 🎓 **Academic Research** - Present study results interactively
 - 💼 **Consulting Reports** - Create client-ready dashboards
 - 📱 **Data Journalism** - Build interactive data stories
 

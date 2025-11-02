@@ -14,7 +14,6 @@ A combined viz_collection
 }
 \description{
 Alternative function to combine viz_collection objects.
-Use this if the + operator does not work (e.g., with devtools::load_all()).
 }
 \examples{
 \dontrun{
