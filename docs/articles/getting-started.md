@@ -1,171 +1,436 @@
 # Getting Started with dashboardr
 
-## Introduction
+## Introduction: A Grammar of Dashboards
 
-`dashboardr` is an R package for creating beautiful, interactive Quarto
-dashboards with minimal code. It provides a streamlined workflow for
-building dashboards with visualizations, custom layouts, and
-professional styling.
+Just as `ggplot2` revolutionized data visualization by providing a
+**grammar of graphics**, `dashboardr` provides a **grammar of
+dashboards** for organizing and presenting your analyses.
+
+### What is a Grammar?
+
+A grammar provides:
+
+- **Building blocks** - Fundamental components you can combine
+- **Composition rules** - How components fit together
+- **Layering** - Build complex structures from simple pieces
+- **Consistency** - Predictable behavior across contexts
+
+### dashboardr’s Grammar
+
+`dashboardr` gives you a grammar with these core components:
+
+1.  **Data** - What you’re visualizing
+2.  **Visualizations** - How you show it (histograms, timelines, etc.)
+3.  **Hierarchy** - How you organize it (automatic nesting via
+    tabgroups)
+4.  **Layout** - How you arrange it (pages, cards, rows)
+5.  **Navigation** - How users explore it (navbar, sidebar, tabs)
+6.  **Styling** - How it looks (themes, colors, icons)
+
+By combining these elements through a **fluent piping interface**, you
+can build complex dashboards that are both powerful and maintainable.
+
+``` r
+library(dashboardr)
+#> Error in get(paste0(generic, ".", class), envir = get_method_env()) : 
+#>   object 'type_sum.accel' not found
+library(dplyr)
+```
 
 ## Installation
 
 ``` r
 # Install from GitHub
 # devtools::install_github("yourusername/dashboardr")
-
-library(dashboardr)
-library(dplyr)
 ```
 
-## Quick Start
+## The Power of Print: Visualizing Structure
 
-Creating a dashboard with `dashboardr` involves three main steps:
+**One of dashboardr’s unique features:** When you print a visualization
+object, it shows you the **tree structure** it will create. This makes
+the hierarchy visible and debuggable!
 
-1.  **Create** a dashboard project
-2.  **Add** pages and visualizations
-3.  **Generate** the Quarto dashboard
-
-### Your First Dashboard
+Let’s see this in action:
 
 ``` r
-# Prepare some data
-my_data <- data.frame(
-  category = rep(c("A", "B", "C"), each = 100),
-  value = rnorm(300),
-  score = sample(1:5, 300, replace = TRUE)
+# Create some sample data
+survey_data <- data.frame(
+  age = sample(18:80, 300, replace = TRUE),
+  income = rnorm(300, mean = 50000, sd = 15000),
+  satisfaction = sample(1:5, 300, replace = TRUE),
+  department = sample(c("Sales", "Engineering", "Marketing"), 300, replace = TRUE),
+  wave = sample(1:2, 300, replace = TRUE)
 )
 
-# Create visualizations
-my_viz <- create_viz(
-  type = "histogram",
-  x_var = "value"
-) %>%
-  add_viz(title = "Distribution", tabgroup = "analysis")
-
-# Create dashboard
-dashboard <- create_dashboard(
-  title = "My First Dashboard",
-  output_dir = "my_dashboard"
-) %>%
-  add_page(
-    name = "Home",
-    data = my_data,
-    visualizations = my_viz,
-    is_landing_page = TRUE
-  )
-
-# Generate
-generate_dashboard(dashboard)
-```
-
-This creates a complete Quarto dashboard with: - Professional styling -
-Interactive visualizations - Responsive layout - Modern tabset themes
-
-## Core Concepts
-
-### 1. Visualization Collections
-
-Visualizations are created using
-[`create_viz()`](https://favstats.github.io/dashboardr/reference/create_viz.md)
-and
-[`add_viz()`](https://favstats.github.io/dashboardr/reference/add_viz.md):
-
-``` r
-viz <- create_viz() %>%
+# Create a simple visualization collection
+viz <- create_viz(type = "histogram") %>%
   add_viz(
-    type = "histogram",
     x_var = "age",
+    tabgroup = "demographics",
     title = "Age Distribution"
   ) %>%
   add_viz(
-    type = "stackedbar",
-    x_var = "question",
-    stack_var = "response",
-    title = "Survey Responses"
+    x_var = "income",
+    tabgroup = "demographics",
+    title = "Income Distribution"
+  ) %>%
+  add_viz(
+    x_var = "satisfaction",
+    tabgroup = "feedback",
+    title = "Satisfaction Scores"
   )
+
+# Print it to see the tree structure!
+print(viz)
+#> 
+#> ╔══════════════════════════════════════════════════════════════════════════
+#> ║ 📊 VISUALIZATION COLLECTION
+#> ╠══════════════════════════════════════════════════════════════════════════
+#> ║ Total visualizations: 3
+#> ║
+#> ║ STRUCTURE:
+#> ║ ├─ 📁 demographics
+#> ║ │  ├─ 📉 HISTOGRAM: Age Distribution
+#> ║ │  └─ 📉 HISTOGRAM: Income Distribution
+#> ║ └─ 📁 feedback
+#> ║    └─ 📉 HISTOGRAM: Satisfaction Scores
+#> ╚══════════════════════════════════════════════════════════════════════════
 ```
 
-### 2. Dashboard Pages
+**See the hierarchy?** dashboardr automatically organized your
+visualizations into a tree based on the `tabgroup` parameter. This tree
+determines the tab structure in your final dashboard.
 
-Pages are added with
-[`add_page()`](https://favstats.github.io/dashboardr/reference/add_page.md):
+### Nested Hierarchies
+
+You can create deeper nesting using `/` in tabgroup paths:
+
+``` r
+# Create nested structure
+nested_viz <- create_viz(type = "histogram") %>%
+  add_viz(
+    x_var = "age",
+    tabgroup = "analysis/demographics/age",
+    title = "Age"
+  ) %>%
+  add_viz(
+    x_var = "income",
+    tabgroup = "analysis/demographics/income",
+    title = "Income"
+  ) %>%
+  add_viz(
+    x_var = "satisfaction",
+    tabgroup = "analysis/feedback/overall",
+    title = "Overall Satisfaction"
+  )
+
+# Print to see the nested tree!
+print(nested_viz)
+#> 
+#> ╔══════════════════════════════════════════════════════════════════════════
+#> ║ 📊 VISUALIZATION COLLECTION
+#> ╠══════════════════════════════════════════════════════════════════════════
+#> ║ Total visualizations: 3
+#> ║
+#> ║ STRUCTURE:
+#> ║ └─ 📁 analysis
+#> ║    ├─ 📁 demographics
+#> ║    │  ├─ 📁 age
+#> ║    │  │  └─ 📉 HISTOGRAM: Age
+#> ║    │  └─ 📁 income
+#> ║    │     └─ 📉 HISTOGRAM: Income
+#> ║    └─ 📁 feedback
+#> ║       └─ 📁 overall
+#> ║          └─ 📉 HISTOGRAM: Overall Satisfaction
+#> ╚══════════════════════════════════════════════════════════════════════════
+```
+
+**The tree shows exactly what your dashboard will look like!** Each
+level becomes a tab, automatically organized.
+
+## Core Workflow
+
+Creating a dashboard involves three steps:
+
+1.  **Create visualizations** with `create_viz() %>% add_viz()`
+2.  **Build dashboard project** with `create_dashboard() %>% add_page()`
+3.  **Generate output** with
+    [`generate_dashboard()`](https://favstats.github.io/dashboardr/reference/generate_dashboard.md)
+
+### Step 1: Create Visualizations
+
+``` r
+# Use defaults to avoid repetition
+my_viz <- create_viz(
+  type = "histogram",           # Default type
+  color_palette = c("#3498DB"),  # Default color
+  bins = 30                      # Default bins
+) %>%
+  add_viz(
+    x_var = "age",
+    title = "Age Distribution",
+    tabgroup = "overview"
+  ) %>%
+  add_viz(
+    x_var = "income",
+    title = "Income Distribution",
+    tabgroup = "overview",
+    bins = 50  # Override default bins
+  )
+
+# See the structure
+print(my_viz)
+#> 
+#> ╔══════════════════════════════════════════════════════════════════════════
+#> ║ 📊 VISUALIZATION COLLECTION
+#> ╠══════════════════════════════════════════════════════════════════════════
+#> ║ Total visualizations: 2
+#> ║
+#> ║ STRUCTURE:
+#> ║ └─ 📁 overview
+#> ║    ├─ 📉 HISTOGRAM: Age Distribution
+#> ║    └─ 📉 HISTOGRAM: Income Distribution
+#> ╚══════════════════════════════════════════════════════════════════════════
+```
+
+### Step 2: Build Dashboard
 
 ``` r
 dashboard <- create_dashboard(
-  title = "My Dashboard",
-  output_dir = "output"
+  title = "Employee Survey Dashboard",
+  output_dir = "my_first_dashboard",
+  tabset_theme = "modern"
 ) %>%
-  add_page("Home", text = "Welcome!", is_landing_page = TRUE) %>%
-  add_page("Analysis", data = my_data, visualizations = viz) %>%
-  add_page("About", text = "Dashboard created with dashboardr")
+  add_page(
+    "Home",
+    text = md_text(
+      "# Welcome!",
+      "",
+      "This dashboard presents employee survey results.",
+      "",
+      "Navigate using the tabs above to explore different analyses."
+    ),
+    is_landing_page = TRUE
+  ) %>%
+  add_page(
+    "Analysis",
+    data = survey_data,
+    visualizations = my_viz,
+    icon = "ph:chart-line"
+  )
+
+# Print to see dashboard structure
+print(dashboard)
 ```
 
-### 3. Dashboard Generation
-
-Generate your dashboard with:
+### Step 3: Generate
 
 ``` r
-generate_dashboard(dashboard)
+# Generate without rendering (faster for development)
+generate_dashboard(dashboard, render = FALSE)
+
+# Generate and open in browser when ready
+generate_dashboard(dashboard, render = TRUE, open = "browser")
 ```
 
-This creates: - QMD files for each page - `_quarto.yml` configuration -
-Data files (RDS format) - Custom themes and styling
+## Composing Visualizations: The + Operator
+
+You can combine visualization collections using the `+` operator (like
+ggplot2!):
+
+``` r
+# Create separate collections
+demographics <- create_viz(type = "histogram") %>%
+  add_viz(x_var = "age", title = "Age", tabgroup = "demographics")
+
+feedback <- create_viz(type = "histogram") %>%
+  add_viz(x_var = "satisfaction", title = "Satisfaction", tabgroup = "feedback")
+
+# Combine them!
+combined <- demographics + feedback
+
+print(combined)
+#> 
+#> ╔══════════════════════════════════════════════════════════════════════════
+#> ║ 📊 VISUALIZATION COLLECTION
+#> ╠══════════════════════════════════════════════════════════════════════════
+#> ║ Total visualizations: 2
+#> ║
+#> ║ STRUCTURE:
+#> ║ ├─ 📁 demographics
+#> ║ │  └─ 📉 HISTOGRAM: Age
+#> ║ └─ 📁 feedback
+#> ║    └─ 📉 HISTOGRAM: Satisfaction
+#> ╚══════════════════════════════════════════════════════════════════════════
+```
+
+This makes it easy to organize complex dashboards into logical modules.
+
+## Defaults and Overrides
+
+Set common parameters once, override when needed:
+
+``` r
+# Set defaults that apply to all visualizations
+viz_with_defaults <- create_viz(
+  type = "histogram",
+  color_palette = c("#E74C3C"),  # Default: red
+  bins = 20,                      # Default: 20 bins
+  title_align = "center"          # Default: centered titles
+) %>%
+  add_viz(
+    x_var = "age",
+    title = "Age (uses defaults)"
+  ) %>%
+  add_viz(
+    x_var = "income",
+    title = "Income (custom bins)",
+    bins = 40,  # Override bins
+    color_palette = c("#2ECC71")  # Override color
+  )
+
+print(viz_with_defaults)
+#> 
+#> ╔══════════════════════════════════════════════════════════════════════════
+#> ║ 📊 VISUALIZATION COLLECTION
+#> ╠══════════════════════════════════════════════════════════════════════════
+#> ║ Total visualizations: 2
+#> ║
+#> ║ STRUCTURE:
+#> ║ └─ 📁 (no tabgroup)
+#> ║    ├─ 📉 HISTOGRAM: Age (uses defaults)
+#> ║    └─ 📉 HISTOGRAM: Income (custom bins)
+#> ╚══════════════════════════════════════════════════════════════════════════
+```
+
+This is especially powerful for surveys with many similar questions!
+
+## Filter-Aware Grouping
+
+dashboardr automatically groups visualizations by their filters:
+
+``` r
+# Create visualizations with filters
+filtered_viz <- create_viz(type = "histogram") %>%
+  add_viz(
+    x_var = "age",
+    title = "Age Distribution",
+    filter = ~ wave == 1,
+    tabgroup = "analysis"
+  ) %>%
+  add_viz(
+    x_var = "age",
+    title = "Age Distribution",
+    filter = ~ wave == 2,
+    tabgroup = "analysis"
+  )
+
+# dashboardr automatically creates "Wave 1" and "Wave 2" tabs!
+print(filtered_viz)
+#> 
+#> ╔══════════════════════════════════════════════════════════════════════════
+#> ║ 📊 VISUALIZATION COLLECTION
+#> ╠══════════════════════════════════════════════════════════════════════════
+#> ║ Total visualizations: 2
+#> ║
+#> ║ STRUCTURE:
+#> ║ └─ 📁 analysis
+#> ║    ├─ 📉 HISTOGRAM: Age Distribution [filtered]
+#> ║    └─ 📉 HISTOGRAM: Age Distribution [filtered]
+#> ╚══════════════════════════════════════════════════════════════════════════
+```
+
+See how it organized by filter? No manual grouping needed!
 
 ## Visualization Types
 
 ### Histogram
 
 ``` r
-create_viz(type = "histogram", x_var = "value") %>%
-  add_viz(title = "Distribution", bins = 30)
+create_viz(type = "histogram") %>%
+  add_viz(
+    x_var = "age",
+    title = "Age Distribution",
+    bins = 30,
+    color_palette = c("#3498DB")
+  )
 ```
 
 ### Stacked Bar
 
 ``` r
-create_viz(
-  type = "stackedbar",
-  x_var = "question",
-  stack_var = "response"
-) %>%
-  add_viz(title = "Survey Results", horizontal = TRUE)
+create_viz(type = "stackedbar") %>%
+  add_viz(
+    x_var = "department",
+    stack_var = "satisfaction",
+    title = "Satisfaction by Department",
+    stacked_type = "percent",  # or "counts"
+    horizontal = TRUE
+  )
 ```
 
 ### Timeline
 
 ``` r
-create_viz(
-  type = "timeline",
-  time_var = "year",
-  response_var = "score"
-) %>%
-  add_viz(title = "Trends Over Time")
+create_viz(type = "timeline") %>%
+  add_viz(
+    time_var = "year",
+    response_var = "score",
+    title = "Trends Over Time",
+    chart_type = "line",  # or "area"
+    group_var = "category"  # Optional grouping
+  )
 ```
 
-### Bar Chart
+### Bar Chart (Grouped)
 
 ``` r
-create_viz(
-  type = "bar",
-  x_var = "category",
-  group_var = "segment"
-) %>%
-  add_viz(title = "Category Comparison")
+create_viz(type = "bar") %>%
+  add_viz(
+    x_var = "department",
+    group_var = "wave",
+    title = "Department Sizes by Wave",
+    horizontal = TRUE,
+    bar_type = "percent"  # or "count"
+  )
+```
+
+### Heatmap
+
+``` r
+create_viz(type = "heatmap") %>%
+  add_viz(
+    x_var = "department",
+    y_var = "satisfaction",
+    value_var = "score",
+    title = "Satisfaction Heatmap",
+    agg_fun = "mean"  # or "sum", "count", etc.
+  )
 ```
 
 ## Styling and Themes
 
-### Tabset Themes
+### Built-in Tabset Themes
 
-Choose from 6 built-in themes:
+Choose from 6 professionally designed themes:
 
 ``` r
 dashboard <- create_dashboard(
   title = "Styled Dashboard",
   output_dir = "styled",
-  tabset_theme = "modern"  # or: minimal, pills, classic, underline, segmented
+  tabset_theme = "modern"  
+  # Options: modern, minimal, pills, classic, underline, segmented
 )
 ```
+
+**Themes:**
+
+- **modern** - Clean, centered tabs with subtle shadows
+- **minimal** - Simple, understated design
+- **pills** - Rounded pill-shaped tabs
+- **classic** - Traditional tab appearance
+- **underline** - Bottom-underline active indicator
+- **segmented** - Segmented control style
 
 ### Custom Colors
 
@@ -175,10 +440,29 @@ dashboard <- create_dashboard(
   output_dir = "custom",
   tabset_theme = "modern",
   tabset_colors = list(
-    active_bg = "#3498DB",
-    active_text = "#FFFFFF"
+    active_bg = "#3498DB",      # Active tab background
+    active_text = "#FFFFFF",    # Active tab text
+    inactive_bg = "#ECF0F1",    # Inactive tab background
+    inactive_text = "#7F8C8D",  # Inactive tab text
+    hover_bg = "#BDC3C7"        # Hover background
   )
 )
+```
+
+### Custom Tab Labels
+
+Add icons and custom text to your tabs:
+
+``` r
+viz <- create_viz() %>%
+  add_viz(
+    type = "histogram",
+    x_var = "age",
+    tabgroup = "demo"
+  ) %>%
+  set_tabgroup_labels(list(
+    demo = "📊 Demographics"  # Icon + label
+  ))
 ```
 
 ## Navigation Features
@@ -197,22 +481,39 @@ dashboard %>%
 dashboard$navbar_sections <- list(
   navbar_menu(
     text = "Reports",
-    pages = c("Monthly", "Quarterly", "Annual")
+    pages = c("Monthly", "Quarterly", "Annual"),
+    icon = "ph:file-text"
   )
 )
 ```
 
-### Icons
+### Sidebar Groups
+
+For many related pages, use sidebars:
 
 ``` r
-add_viz(
-  title = "Analysis",
-  icon = "ph:chart-line",
-  tabgroup = "reports"
+# Create sidebar group
+dashboard$sidebar_groups <- list(
+  sidebar_group(
+    id = "analysis",
+    title = "Analysis",
+    pages = c("Overview", "Detailed", "Trends")
+  )
+)
+
+# Link from navbar
+dashboard$navbar_sections <- list(
+  navbar_section(
+    text = "Analysis",
+    sidebar_id = "analysis",
+    icon = "ph:chart-line"
+  )
 )
 ```
 
-## Loading Overlay
+## Advanced Features
+
+### Loading Overlay
 
 Add a loading animation to pages:
 
@@ -222,90 +523,75 @@ add_page(
   data = large_dataset,
   visualizations = viz,
   overlay = TRUE,
-  overlay_theme = "glass",
+  overlay_theme = "glass",  # or "light", "dark"
   overlay_text = "Loading analysis..."
 )
 ```
 
+### Drop NA Values
+
+Automatically remove rows with NA values:
+
+``` r
+add_viz(
+  type = "histogram",
+  x_var = "age",
+  drop_na_vars = TRUE  # Removes rows where age is NA
+)
+```
+
+### Weighted Visualizations
+
+Use survey weights or other weighting variables:
+
+``` r
+create_viz(
+  type = "histogram",
+  weight_var = "survey_weight"  # Apply weights
+) %>%
+  add_viz(x_var = "age", title = "Weighted Age Distribution")
+```
+
+### Multiple Visualizations at Once
+
+Use
+[`add_vizzes()`](https://favstats.github.io/dashboardr/reference/add_vizzes.md)
+to expand vector parameters:
+
+``` r
+questions <- c("q1", "q2", "q3")
+labels <- c("Question 1", "Question 2", "Question 3")
+
+viz <- create_viz(type = "stackedbar") %>%
+  add_vizzes(
+    x_var = questions,  # Expands to 3 visualizations
+    title = labels,
+    tabgroup = "survey"
+  )
+
+# Creates one viz for each question!
+print(viz)
+```
+
 ## Performance Tips
 
-### Quick Testing with Preview Mode
-
-When developing dashboards with multiple pages, you don’t need to
-regenerate everything to test changes:
+For faster iteration during development:
 
 ``` r
-# Only generate the page you're working on
-generate_dashboard(dashboard, preview = "Analysis")
+# Skip rendering during development (just generate QMD files)
+generate_dashboard(dashboard, render = FALSE)
 
-# Test multiple specific pages
-generate_dashboard(dashboard, preview = c("Home", "Analysis"))
+# Only render when you want to see the final HTML
+generate_dashboard(dashboard, render = TRUE, open = "browser")
 ```
 
-**Why use it:** - **10-50x faster** than full dashboard generation -
-Perfect for iterative development - Test visualization tweaks
-instantly - Debug specific pages without waiting
+Quarto’s internal caching makes subsequent renders faster automatically.
 
-**Example workflow:**
+## Helpful Error Messages
 
-``` r
-# 1. Create dashboard with many pages
-dashboard <- create_dashboard(...) %>%
-  add_page("Home", ...) %>%
-  add_page("Analysis", ...) %>%
-  add_page("Demographics", ...) %>%
-  add_page("Trends", ...) %>%
-  add_page("About", ...)
+`dashboardr` provides clear error messages with suggestions:
 
-# 2. Work on Analysis page
-# Make changes to visualizations...
-
-# 3. Quick test (< 1 second instead of 5+ seconds!)
-generate_dashboard(dashboard, preview = "Analysis")
-
-# 4. Once satisfied, generate full dashboard
-generate_dashboard(dashboard, render = TRUE)
-```
-
-### Faster Subsequent Builds
-
-Enable incremental builds to skip unchanged pages:
-
-``` r
-# First build - generates all pages
-generate_dashboard(dashboard, incremental = TRUE)
-
-# Make changes to one page
-# Second build - only regenerates that page!
-generate_dashboard(dashboard, incremental = TRUE)
-```
-
-**How it works:** - Automatically tracks which pages have changed -
-Skips unchanged pages on subsequent builds - Detects changes to data,
-visualizations, text, and parameters
-
-**Perfect for:** - Large dashboards (10+ pages) - Iterative refinement -
-Working with slow computations - Development workflows
-
-### Combine Both for Maximum Speed
-
-``` r
-# Ultimate speed: preview + incremental
-generate_dashboard(dashboard, 
-                  preview = "Analysis",
-                  incremental = TRUE)
-```
-
-**Result:** Sub-second build times! 🚀
-
-## Troubleshooting
-
-### Helpful Error Messages
-
-`dashboardr` provides clear error messages with suggestions when things
-go wrong:
-
-#### Typo in Visualization Type
+### Typo in Visualization Type
 
 ``` r
 # Oops, typo!
@@ -313,10 +599,10 @@ add_viz(type = "histogra", x_var = "age")
 
 # Error: Unknown type 'histogra'
 # ℹ Did you mean 'histogram'?
-# ℹ Available: histogram, bar, stackedbar, stackedbars, timeline, heatmap
+# ℹ Available: histogram, bar, stackedbar, timeline, heatmap
 ```
 
-#### Missing Required Parameter
+### Missing Required Parameter
 
 ``` r
 # Forgot x_var
@@ -326,18 +612,7 @@ create_histogram(data, title = "My Chart")
 # ℹ Example: create_histogram(data, x_var = "age")
 ```
 
-#### Typo in Page Name
-
-``` r
-# Typo in preview
-generate_dashboard(dashboard, preview = "Analisys")
-
-# Error: Page 'analisys' not found
-# ℹ Did you mean 'Analysis'?
-# Available pages: Home, Analysis, About
-```
-
-#### Typo in Theme
+### Typo in Theme
 
 ``` r
 # Typo in theme name
@@ -348,125 +623,105 @@ create_dashboard(..., tabset_theme = "modrn")
 # ℹ Available: modern, minimal, pills, classic, underline, segmented
 ```
 
-### Common Issues and Solutions
+## Debugging Your Dashboard
 
-#### Issue: Visualization Not Showing
+### Print Everything!
 
-**Problem:** Chart appears empty or doesn’t render
-
-**Solutions:**
+The print methods show you exactly what’s being built:
 
 ``` r
-# 1. Check variable names match your data
-names(my_data)  # Verify column names
+# Print visualizations to see tree structure
+print(my_viz)
 
-# 2. Ensure data has rows
-nrow(my_data)
+# Print dashboard to see pages and data
+print(dashboard)
 
-# 3. Check for NA values
+# After generation, check the summary
+dashboard_result <- generate_dashboard(dashboard)
+# Shows: pages generated, data files, rendering time
+```
+
+### Common Issues
+
+#### Visualization Not Showing
+
+``` r
+# Check variable names
+names(my_data)
+
+# Check for NA values
 summary(my_data$x_var)
 
-# 4. Use drop_na_vars to remove NAs
-add_viz(
-  type = "histogram",
-  x_var = "age",
-  drop_na_vars = TRUE  # Automatically removes NA rows
-)
+# Use drop_na_vars if needed
+add_viz(x_var = "age", drop_na_vars = TRUE)
 ```
 
-#### Issue: Page Not Found
-
-**Problem:** Error when generating specific page
-
-**Solutions:**
+#### Tabs in Wrong Order
 
 ``` r
-# Check exact page names (case-sensitive in code, but preview is case-insensitive)
-names(dashboard$pages)
-
-# Use exact name in preview
-generate_dashboard(dashboard, preview = "Analysis")  # Works
-generate_dashboard(dashboard, preview = "analysis")  # Also works!
-```
-
-#### Issue: Slow Dashboard Generation
-
-**Problem:** Takes a long time to generate
-
-**Solutions:**
-
-``` r
-# 1. Use preview mode during development
-generate_dashboard(dashboard, preview = "WorkingPage")
-
-# 2. Enable incremental builds
-generate_dashboard(dashboard, incremental = TRUE)
-
-# 3. Check data size
-object.size(my_data)  # If > 10MB, consider filtering
-
-# 4. Reduce visualization complexity
-# - Fewer bins in histograms
-# - Sample large datasets
-# - Use filters to reduce data per viz
-```
-
-#### Issue: Tabs Not Organizing Correctly
-
-**Problem:** Tabs appear in wrong order or nesting
-
-**Solutions:**
-
-``` r
-# 1. Check tabgroup syntax
-add_viz(
-  type = "histogram",
-  x_var = "age",
-  tabgroup = "demographics/age"  # Slash notation for nesting
-)
-
-# 2. Set explicit labels
-viz %>% set_tabgroup_labels(list(
-  demographics = "📊 Demographics",
-  age = "Age Groups"
-))
-
-# 3. Use .insertion_index to control order (automatic)
 # Tabs appear in the order you call add_viz()
-```
+# To change order, change the order of add_viz() calls
 
-### Getting More Help
+# Check the structure
+print(viz)  # See the tree!
 
-``` r
-# View function documentation
-?create_dashboard
-?add_viz
-?generate_dashboard
-
-# See advanced examples
-vignette("advanced-features")
-
-# Check all available vignettes
-vignette(package = "dashboardr")
+# Use set_tabgroup_labels for custom names
+viz %>% set_tabgroup_labels(list(
+  tab1 = "First Tab",
+  tab2 = "Second Tab"
+))
 ```
 
 ## Next Steps
 
 - **Advanced Features**: See
   [`vignette("advanced-features")`](https://favstats.github.io/dashboardr/articles/advanced-features.md)
-  for defaults, filters, nested tabs, and performance optimization
-- **Visualization Details**: See individual vignettes for each viz type
-- **Publishing**: See
-  [`?publish_dashboard`](https://favstats.github.io/dashboardr/reference/publish_dashboard.md)
-  for deployment options
+  for complex hierarchies, multi-dataset support, and more
+- **Visualization Details**: See individual vignettes for detailed
+  parameters:
+  - [`vignette("timeline_vignette")`](https://favstats.github.io/dashboardr/articles/timeline_vignette.md)
+  - [`vignette("stackedbar_vignette")`](https://favstats.github.io/dashboardr/articles/stackedbar_vignette.md)
+  - [`vignette("heatmap_vignette")`](https://favstats.github.io/dashboardr/articles/heatmap_vignette.md)
+  - [`vignette("bar_vignette")`](https://favstats.github.io/dashboardr/articles/bar_vignette.md)
 
-## Resources
+## The Grammar in Action
 
-- GitHub: \[your-repo-url\]
-- Documentation: Run
-  [`?create_dashboard`](https://favstats.github.io/dashboardr/reference/create_dashboard.md)
-  for function help
-- Examples: Check the `demo_*.R` files in the package
+Let’s put it all together with a complete example:
+
+``` r
+# 1. DATA - What we're visualizing
+data <- survey_data
+
+# 2. VISUALIZATIONS - How we show it
+viz <- create_viz(
+  type = "histogram",
+  color_palette = c("#3498DB")
+) %>%
+  add_viz(x_var = "age", tabgroup = "demographics", title = "Age") %>%
+  add_viz(x_var = "income", tabgroup = "demographics", title = "Income") %>%
+  add_viz(x_var = "satisfaction", tabgroup = "feedback", title = "Satisfaction")
+
+# 3. HIERARCHY - How we organize it (automatic from tabgroups!)
+print(viz)  # See the tree!
+
+# 4. LAYOUT - How we arrange it
+dashboard <- create_dashboard(
+  title = "Survey Dashboard",
+  output_dir = "survey_dashboard"
+) %>%
+  add_page("Home", text = "Welcome!", is_landing_page = TRUE) %>%
+  add_page("Analysis", data = data, visualizations = viz)
+
+# 5. STYLING - How it looks
+dashboard$tabset_theme <- "modern"
+dashboard$tabset_colors <- list(active_bg = "#3498DB")
+
+# 6. GENERATE - Bring it all together
+generate_dashboard(dashboard, render = TRUE, open = "browser")
+```
+
+**This is the grammar of dashboards in action!** Composable,
+declarative, and powerful.
 
 ## Getting Help
 
@@ -478,4 +733,14 @@ vignette(package = "dashboardr")
 
 # Package overview
 help(package = "dashboardr")
+
+# See all vignettes
+vignette(package = "dashboardr")
 ```
+
+------------------------------------------------------------------------
+
+**Happy dashboard building!** 🎉
+
+Remember: **Print your objects to see the structure!** It’s the key to
+understanding how dashboardr builds your dashboards.

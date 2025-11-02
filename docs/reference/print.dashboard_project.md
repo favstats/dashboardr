@@ -1,7 +1,7 @@
-# Print Dashboard Project
+# Create iconify icon shortcode
 
-Displays a comprehensive summary of a dashboard project, including
-metadata, features, pages, visualizations, and integrations.
+Helper function to generate iconify icon shortcodes for use in pages and
+visualizations.
 
 ## Usage
 
@@ -21,30 +21,16 @@ print(x, ...)
 
   Additional arguments (currently ignored).
 
+- icon_name:
+
+  Icon name in format "collection:name" (e.g., "ph:users-three")
+
 ## Value
+
+Iconify shortcode string
 
 Invisibly returns the input object `x`.
 
 ## Details
 
-The print method displays:
-
-- Project metadata (title, author, description)
-
-- Output directory
-
-- Enabled features (sidebar, search, themes, Shiny, Observable)
-
-- Integrations (GitHub, Twitter, LinkedIn, Analytics)
-
-- Page structure with properties:
-
-  - 🏠 Landing page indicator
-
-  - ⏳ Loading overlay indicator
-
-  - → Right-aligned navbar indicator
-
-  - 💾 Associated datasets
-
-  - Nested visualization hierarchies
+## Examples

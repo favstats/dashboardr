@@ -1,9 +1,7 @@
-# Add a visualization to the collection
+# Parse tabgroup into normalized hierarchy
 
-Adds a single visualization specification to an existing collection.
-Visualizations with the same tabgroup value will be organized into tabs
-on the generated page. Supports nested tabsets through hierarchy
-notation.
+Internal helper to parse tabgroup parameter from various formats into a
+standardized character vector representing the hierarchy.
 
 ## Usage
 
@@ -95,6 +93,14 @@ add_viz(
     "demographics")
 
 ## Value
+
+Character vector of hierarchy levels, or NULL Add a visualization to the
+collection
+
+Adds a single visualization specification to an existing collection.
+Visualizations with the same tabgroup value will be organized into tabs
+on the generated page. Supports nested tabsets through hierarchy
+notation.
 
 The updated viz_collection object
 

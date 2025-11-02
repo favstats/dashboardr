@@ -27,12 +27,6 @@ navbar_section(text, sidebar_id, icon = NULL)
 
 List containing navbar section configuration
 
-## Examples
+List containing navbar section configuration
 
-``` r
-if (FALSE) { # \dontrun{
-# Create navbar sections that link to sidebar groups
-analysis_section <- navbar_section("Analysis", "analysis", "ph:chart-bar")
-reference_section <- navbar_section("Reference", "reference", "ph:book")
-} # }
-```
+## Examples

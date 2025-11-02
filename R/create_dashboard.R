@@ -1,7 +1,7 @@
 # --------------------------------------------------------------------------
 # Function: create_dashboard
 # --------------------------------------------------------------------------
-#' Create a dashboard
+#' Create a dashboard (old version)
 #'
 #' @param data A data.frame or a named list of data.frames (for multi-page site).
 #' @param output_dir Directory for output (site directory).
@@ -10,8 +10,9 @@
 #' @param render If TRUE, render HTML with Quarto immediately.
 #' @param title Title for the dashboard/site.
 #' @param open If TRUE, open the rendered HTML in your browser (forces render).
+#' @keywords internal
 #' @export
-create_dashboard <- function(data,
+create_dashboard_old <- function(data,
                              output_dir = "dashboard_output",
                              dashboard_name = "dashboard",
                              site = FALSE,

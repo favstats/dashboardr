@@ -31,12 +31,6 @@ spec_viz(type, ..., tabgroup = NULL, title = NULL)
 
 A list containing the visualization specification
 
-## Examples
+A list containing the visualization specification
 
-``` r
-if (FALSE) { # \dontrun{
-viz1 <- spec_viz(type = "heatmap", x_var = "party", y_var = "ideology")
-viz2 <- spec_viz(type = "histogram", x_var = "age")
-page_viz <- list(viz1, viz2)
-} # }
-```
+## Examples

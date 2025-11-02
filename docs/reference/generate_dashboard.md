@@ -12,7 +12,9 @@ generate_dashboard(
   render = TRUE,
   open = "browser",
   incremental = FALSE,
-  preview = NULL
+  preview = NULL,
+  show_progress = TRUE,
+  quiet = FALSE
 )
 ```
 
@@ -32,8 +34,9 @@ generate_dashboard(
 
 - incremental:
 
-  Whether to use incremental builds (default: FALSE). When TRUE, only
-  regenerates pages that have changed since the last build.
+  Whether to use incremental builds (default: FALSE). When TRUE, skips
+  regenerating QMD files for unchanged pages and skips Quarto rendering
+  if nothing changed. Uses MD5 hashing to detect changes.
 
 - preview:
 
@@ -44,6 +47,20 @@ generate_dashboard(
   doesn't exist, the function will suggest alternatives based on typo
   detection. Default: NULL (generates all pages).
 
+- show_progress:
+
+  Whether to display custom progress indicators (default: TRUE). When
+  TRUE, shows a beautiful progress display with timing information,
+  progress bars, and visual indicators for each generation stage. Set to
+  FALSE for minimal output.
+
+- quiet:
+
+  Whether to suppress all output (default: FALSE). When TRUE, completely
+  silences all messages, progress indicators, and Quarto rendering
+  output. Useful for scripts and automated workflows. Overrides
+  show_progress.
+
 ## Value
 
 Invisibly returns the project object with build_info attached
@@ -52,17 +69,19 @@ Invisibly returns the project object with build_info attached
 
 ``` r
 if (FALSE) { # \dontrun{
-# Standard generation
+# Generate and render dashboard
 dashboard %>% generate_dashboard(render = TRUE, open = "browser")
 
-# Incremental build (faster for subsequent builds)
+# Generate without rendering (faster for quick iterations)
+dashboard %>% generate_dashboard(render = FALSE)
+
+# Incremental builds (skip unchanged pages)
 dashboard %>% generate_dashboard(render = TRUE, incremental = TRUE)
 
-# Preview mode - generate only specific pages
+# Preview specific page
 dashboard %>% generate_dashboard(preview = "Analysis")
-dashboard %>% generate_dashboard(preview = c("Home", "Analysis"))
 
-# Combine preview with incremental for maximum speed
-dashboard %>% generate_dashboard(preview = "Analysis", incremental = TRUE)
+# Quiet mode for scripts
+dashboard %>% generate_dashboard(render = FALSE, quiet = TRUE)
 } # }
 ```

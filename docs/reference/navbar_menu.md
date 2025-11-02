@@ -27,19 +27,6 @@ navbar_menu(text, pages, icon = NULL)
 
 List containing navbar menu configuration
 
+List containing navbar menu configuration
+
 ## Examples
-
-``` r
-if (FALSE) { # \dontrun{
-# Create a simple dropdown menu
-dimensions_menu <- navbar_menu(
-  text = "Dimensions",
-  pages = c("Strategic Information", "Critical Information"),
-  icon = "ph:book"
-)
-
-dashboard <- create_dashboard(
-  navbar_sections = list(dimensions_menu)
-)
-} # }
-```

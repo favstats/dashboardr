@@ -24,12 +24,6 @@ set_tabgroup_labels(viz_collection, labels)
 
 The updated viz_collection
 
-## Examples
+The updated viz_collection
 
-``` r
-if (FALSE) { # \dontrun{
-vizzes <- create_viz() %>%
-  add_viz(type = "heatmap", tabgroup = "demo") %>%
-  set_tabgroup_labels(c("demo" = "Demographic Breakdowns"))
-} # }
-```
+## Examples

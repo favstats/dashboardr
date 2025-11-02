@@ -22,7 +22,8 @@ create_bar(
   x_breaks = NULL,
   x_bin_labels = NULL,
   include_na = FALSE,
-  na_label = "Missing"
+  na_label = "Missing",
+  weight_var = NULL
 )
 ```
 
@@ -97,6 +98,12 @@ create_bar(
 
   Character string. Label for NA category if `include_na = TRUE`.
   Defaults to "Missing".
+
+- weight_var:
+
+  Optional character string. Name of a weight variable to use for
+  weighted aggregation. When provided, counts are computed as the sum of
+  weights instead of simple counts.
 
 ## Value
 

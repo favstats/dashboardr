@@ -1,4 +1,4 @@
-# Create a dashboard
+# Create a new dashboard project
 
 Initializes a dashboard project object that can be built up using the
 piping workflow with add_landingpage() and add_page().
@@ -6,68 +6,6 @@ piping workflow with add_landingpage() and add_page().
 ## Usage
 
 ``` r
-create_dashboard(
-  output_dir = "site",
-  title = "Dashboard",
-  logo = NULL,
-  favicon = NULL,
-  github = NULL,
-  twitter = NULL,
-  linkedin = NULL,
-  email = NULL,
-  website = NULL,
-  search = TRUE,
-  theme = NULL,
-  custom_css = NULL,
-  custom_scss = NULL,
-  tabset_theme = "modern",
-  tabset_colors = NULL,
-  author = NULL,
-  description = NULL,
-  page_footer = NULL,
-  date = NULL,
-  sidebar = FALSE,
-  sidebar_style = "docked",
-  sidebar_background = "light",
-  sidebar_foreground = NULL,
-  sidebar_border = TRUE,
-  sidebar_alignment = "left",
-  sidebar_collapse_level = 2,
-  sidebar_pinned = FALSE,
-  sidebar_tools = NULL,
-  sidebar_contents = NULL,
-  breadcrumbs = TRUE,
-  page_navigation = FALSE,
-  back_to_top = FALSE,
-  reader_mode = FALSE,
-  repo_url = NULL,
-  repo_actions = NULL,
-  navbar_style = NULL,
-  navbar_brand = NULL,
-  navbar_toggle = NULL,
-  math = NULL,
-  code_folding = NULL,
-  code_tools = NULL,
-  toc = NULL,
-  toc_depth = 3,
-  google_analytics = NULL,
-  plausible = NULL,
-  gtag = NULL,
-  value_boxes = FALSE,
-  metrics_style = NULL,
-  page_layout = NULL,
-  shiny = FALSE,
-  observable = FALSE,
-  jupyter = FALSE,
-  publish_dir = NULL,
-  github_pages = NULL,
-  netlify = NULL,
-  allow_inside_pkg = FALSE,
-  warn_before_overwrite = TRUE,
-  sidebar_groups = NULL,
-  navbar_sections = NULL
-)
-
 create_dashboard(
   output_dir = "site",
   title = "Dashboard",
@@ -304,26 +242,6 @@ create_dashboard(
 - navbar_sections:
 
   List of navbar sections that link to sidebar groups (optional)
-
-- data:
-
-  A data.frame or a named list of data.frames (for multi-page site).
-
-- dashboard_name:
-
-  Name for the dashboard (used when `site = FALSE`).
-
-- site:
-
-  If TRUE, scaffold a website with index + dashboards.
-
-- render:
-
-  If TRUE, render HTML with Quarto immediately.
-
-- open:
-
-  If TRUE, open the rendered HTML in your browser (forces render).
 
 ## Value
 

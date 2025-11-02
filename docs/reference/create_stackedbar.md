@@ -35,7 +35,8 @@ create_stackedbar(
   stack_breaks = NULL,
   stack_bin_labels = NULL,
   stack_map_values = NULL,
-  horizontal = FALSE
+  horizontal = FALSE,
+  weight_var = NULL
 )
 ```
 

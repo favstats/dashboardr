@@ -17,4 +17,10 @@ directory if icons are detected in the dashboard.
 
 ## Value
 
+Logical indicating if installation was successful Install iconify
+extension automatically
+
+Downloads and installs the official iconify extension to the project
+directory if icons are detected in the dashboard.
+
 Logical indicating if installation was successful

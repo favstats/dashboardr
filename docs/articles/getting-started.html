@@ -76,117 +76,371 @@
     
     
 <div class="section level2">
-<h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
+<h2 id="introduction-a-grammar-of-dashboards">Introduction: A Grammar of Dashboards<a class="anchor" aria-label="anchor" href="#introduction-a-grammar-of-dashboards"></a>
 </h2>
-<p><code>dashboardr</code> is an R package for creating beautiful,
-interactive Quarto dashboards with minimal code. It provides a
-streamlined workflow for building dashboards with visualizations, custom
-layouts, and professional styling.</p>
+<p>Just as <code>ggplot2</code> revolutionized data visualization by
+providing a <strong>grammar of graphics</strong>,
+<code>dashboardr</code> provides a <strong>grammar of
+dashboards</strong> for organizing and presenting your analyses.</p>
+<div class="section level3">
+<h3 id="what-is-a-grammar">What is a Grammar?<a class="anchor" aria-label="anchor" href="#what-is-a-grammar"></a>
+</h3>
+<p>A grammar provides:</p>
+<ul>
+<li>
+<strong>Building blocks</strong> - Fundamental components you can
+combine</li>
+<li>
+<strong>Composition rules</strong> - How components fit
+together</li>
+<li>
+<strong>Layering</strong> - Build complex structures from simple
+pieces</li>
+<li>
+<strong>Consistency</strong> - Predictable behavior across
+contexts</li>
+</ul>
+</div>
+<div class="section level3">
+<h3 id="dashboardrs-grammar">dashboardr’s Grammar<a class="anchor" aria-label="anchor" href="#dashboardrs-grammar"></a>
+</h3>
+<p><code>dashboardr</code> gives you a grammar with these core
+components:</p>
+<ol style="list-style-type: decimal">
+<li>
+<strong>Data</strong> - What you’re visualizing</li>
+<li>
+<strong>Visualizations</strong> - How you show it (histograms,
+timelines, etc.)</li>
+<li>
+<strong>Hierarchy</strong> - How you organize it (automatic nesting
+via tabgroups)</li>
+<li>
+<strong>Layout</strong> - How you arrange it (pages, cards,
+rows)</li>
+<li>
+<strong>Navigation</strong> - How users explore it (navbar, sidebar,
+tabs)</li>
+<li>
+<strong>Styling</strong> - How it looks (themes, colors, icons)</li>
+</ol>
+<p>By combining these elements through a <strong>fluent piping
+interface</strong>, you can build complex dashboards that are both
+powerful and maintainable.</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://favstats.github.io/dashboardr/">dashboardr</a></span><span class="op">)</span></span>
+<span><span class="co">#&gt; Error in get(paste0(generic, ".", class), envir = get_method_env()) : </span></span>
+<span><span class="co">#&gt;   object 'type_sum.accel' not found</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span></code></pre></div>
+</div>
 </div>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Install from GitHub</span></span>
-<span><span class="co"># devtools::install_github("yourusername/dashboardr")</span></span>
-<span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://favstats.github.io/dashboardr/">dashboardr</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span></code></pre></div>
+<span><span class="co"># devtools::install_github("yourusername/dashboardr")</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="quick-start">Quick Start<a class="anchor" aria-label="anchor" href="#quick-start"></a>
+<h2 id="the-power-of-print-visualizing-structure">The Power of Print: Visualizing Structure<a class="anchor" aria-label="anchor" href="#the-power-of-print-visualizing-structure"></a>
 </h2>
-<p>Creating a dashboard with <code>dashboardr</code> involves three main
-steps:</p>
-<ol style="list-style-type: decimal">
-<li>
-<strong>Create</strong> a dashboard project</li>
-<li>
-<strong>Add</strong> pages and visualizations</li>
-<li>
-<strong>Generate</strong> the Quarto dashboard</li>
-</ol>
-<div class="section level3">
-<h3 id="your-first-dashboard">Your First Dashboard<a class="anchor" aria-label="anchor" href="#your-first-dashboard"></a>
-</h3>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Prepare some data</span></span>
-<span><span class="va">my_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
-<span>  category <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"C"</span><span class="op">)</span>, each <span class="op">=</span> <span class="fl">100</span><span class="op">)</span>,</span>
-<span>  value <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">300</span><span class="op">)</span>,</span>
-<span>  score <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>, <span class="fl">300</span>, replace <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<p><strong>One of dashboardr’s unique features:</strong> When you print
+a visualization object, it shows you the <strong>tree structure</strong>
+it will create. This makes the hierarchy visible and debuggable!</p>
+<p>Let’s see this in action:</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Create some sample data</span></span>
+<span><span class="va">survey_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>  age <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fl">18</span><span class="op">:</span><span class="fl">80</span>, <span class="fl">300</span>, replace <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
+<span>  income <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">300</span>, mean <span class="op">=</span> <span class="fl">50000</span>, sd <span class="op">=</span> <span class="fl">15000</span><span class="op">)</span>,</span>
+<span>  satisfaction <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>, <span class="fl">300</span>, replace <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
+<span>  department <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Sales"</span>, <span class="st">"Engineering"</span>, <span class="st">"Marketing"</span><span class="op">)</span>, <span class="fl">300</span>, replace <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
+<span>  wave <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, <span class="fl">300</span>, replace <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Create visualizations</span></span>
-<span><span class="va">my_viz</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_viz.html">create_viz</a></span><span class="op">(</span></span>
-<span>  type <span class="op">=</span> <span class="st">"histogram"</span>,</span>
-<span>  x_var <span class="op">=</span> <span class="st">"value"</span></span>
-<span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Distribution"</span>, tabgroup <span class="op">=</span> <span class="st">"analysis"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Create dashboard</span></span>
-<span><span class="va">dashboard</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_dashboard.html">create_dashboard</a></span><span class="op">(</span></span>
-<span>  title <span class="op">=</span> <span class="st">"My First Dashboard"</span>,</span>
-<span>  output_dir <span class="op">=</span> <span class="st">"my_dashboard"</span></span>
-<span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="../reference/add_page.html">add_page</a></span><span class="op">(</span></span>
-<span>    name <span class="op">=</span> <span class="st">"Home"</span>,</span>
-<span>    data <span class="op">=</span> <span class="va">my_data</span>,</span>
-<span>    visualizations <span class="op">=</span> <span class="va">my_viz</span>,</span>
-<span>    is_landing_page <span class="op">=</span> <span class="cn">TRUE</span></span>
-<span>  <span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Generate</span></span>
-<span><span class="fu"><a href="../reference/generate_dashboard.html">generate_dashboard</a></span><span class="op">(</span><span class="va">dashboard</span><span class="op">)</span></span></code></pre></div>
-<p>This creates a complete Quarto dashboard with: - Professional styling
-- Interactive visualizations - Responsive layout - Modern tabset
-themes</p>
-</div>
-</div>
-<div class="section level2">
-<h2 id="core-concepts">Core Concepts<a class="anchor" aria-label="anchor" href="#core-concepts"></a>
-</h2>
-<div class="section level3">
-<h3 id="visualization-collections">1. Visualization Collections<a class="anchor" aria-label="anchor" href="#visualization-collections"></a>
-</h3>
-<p>Visualizations are created using <code><a href="../reference/create_viz.html">create_viz()</a></code> and
-<code><a href="../reference/add_viz.html">add_viz()</a></code>:</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">viz</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_viz.html">create_viz</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span><span class="co"># Create a simple visualization collection</span></span>
+<span><span class="va">viz</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_viz.html">create_viz</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"histogram"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span></span>
-<span>    type <span class="op">=</span> <span class="st">"histogram"</span>,</span>
 <span>    x_var <span class="op">=</span> <span class="st">"age"</span>,</span>
+<span>    tabgroup <span class="op">=</span> <span class="st">"demographics"</span>,</span>
 <span>    title <span class="op">=</span> <span class="st">"Age Distribution"</span></span>
 <span>  <span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span></span>
-<span>    type <span class="op">=</span> <span class="st">"stackedbar"</span>,</span>
-<span>    x_var <span class="op">=</span> <span class="st">"question"</span>,</span>
-<span>    stack_var <span class="op">=</span> <span class="st">"response"</span>,</span>
-<span>    title <span class="op">=</span> <span class="st">"Survey Responses"</span></span>
-<span>  <span class="op">)</span></span></code></pre></div>
-</div>
+<span>    x_var <span class="op">=</span> <span class="st">"income"</span>,</span>
+<span>    tabgroup <span class="op">=</span> <span class="st">"demographics"</span>,</span>
+<span>    title <span class="op">=</span> <span class="st">"Income Distribution"</span></span>
+<span>  <span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span></span>
+<span>    x_var <span class="op">=</span> <span class="st">"satisfaction"</span>,</span>
+<span>    tabgroup <span class="op">=</span> <span class="st">"feedback"</span>,</span>
+<span>    title <span class="op">=</span> <span class="st">"Satisfaction Scores"</span></span>
+<span>  <span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Print it to see the tree structure!</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">viz</span><span class="op">)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; ╔══════════════════════════════════════════════════════════════════════════</span></span>
+<span><span class="co">#&gt; ║ 📊 VISUALIZATION COLLECTION</span></span>
+<span><span class="co">#&gt; ╠══════════════════════════════════════════════════════════════════════════</span></span>
+<span><span class="co">#&gt; ║ Total visualizations: 3</span></span>
+<span><span class="co">#&gt; ║</span></span>
+<span><span class="co">#&gt; ║ STRUCTURE:</span></span>
+<span><span class="co">#&gt; ║ ├─ 📁 demographics</span></span>
+<span><span class="co">#&gt; ║ │  ├─ 📉 HISTOGRAM: Age Distribution</span></span>
+<span><span class="co">#&gt; ║ │  └─ 📉 HISTOGRAM: Income Distribution</span></span>
+<span><span class="co">#&gt; ║ └─ 📁 feedback</span></span>
+<span><span class="co">#&gt; ║    └─ 📉 HISTOGRAM: Satisfaction Scores</span></span>
+<span><span class="co">#&gt; ╚══════════════════════════════════════════════════════════════════════════</span></span></code></pre></div>
+<p><strong>See the hierarchy?</strong> dashboardr automatically
+organized your visualizations into a tree based on the
+<code>tabgroup</code> parameter. This tree determines the tab structure
+in your final dashboard.</p>
 <div class="section level3">
-<h3 id="dashboard-pages">2. Dashboard Pages<a class="anchor" aria-label="anchor" href="#dashboard-pages"></a>
+<h3 id="nested-hierarchies">Nested Hierarchies<a class="anchor" aria-label="anchor" href="#nested-hierarchies"></a>
 </h3>
-<p>Pages are added with <code><a href="../reference/add_page.html">add_page()</a></code>:</p>
+<p>You can create deeper nesting using <code>/</code> in tabgroup
+paths:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">dashboard</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_dashboard.html">create_dashboard</a></span><span class="op">(</span></span>
-<span>  title <span class="op">=</span> <span class="st">"My Dashboard"</span>,</span>
-<span>  output_dir <span class="op">=</span> <span class="st">"output"</span></span>
+<code class="sourceCode R"><span><span class="co"># Create nested structure</span></span>
+<span><span class="va">nested_viz</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_viz.html">create_viz</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"histogram"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span></span>
+<span>    x_var <span class="op">=</span> <span class="st">"age"</span>,</span>
+<span>    tabgroup <span class="op">=</span> <span class="st">"analysis/demographics/age"</span>,</span>
+<span>    title <span class="op">=</span> <span class="st">"Age"</span></span>
+<span>  <span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span></span>
+<span>    x_var <span class="op">=</span> <span class="st">"income"</span>,</span>
+<span>    tabgroup <span class="op">=</span> <span class="st">"analysis/demographics/income"</span>,</span>
+<span>    title <span class="op">=</span> <span class="st">"Income"</span></span>
+<span>  <span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span></span>
+<span>    x_var <span class="op">=</span> <span class="st">"satisfaction"</span>,</span>
+<span>    tabgroup <span class="op">=</span> <span class="st">"analysis/feedback/overall"</span>,</span>
+<span>    title <span class="op">=</span> <span class="st">"Overall Satisfaction"</span></span>
+<span>  <span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Print to see the nested tree!</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">nested_viz</span><span class="op">)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; ╔══════════════════════════════════════════════════════════════════════════</span></span>
+<span><span class="co">#&gt; ║ 📊 VISUALIZATION COLLECTION</span></span>
+<span><span class="co">#&gt; ╠══════════════════════════════════════════════════════════════════════════</span></span>
+<span><span class="co">#&gt; ║ Total visualizations: 3</span></span>
+<span><span class="co">#&gt; ║</span></span>
+<span><span class="co">#&gt; ║ STRUCTURE:</span></span>
+<span><span class="co">#&gt; ║ └─ 📁 analysis</span></span>
+<span><span class="co">#&gt; ║    ├─ 📁 demographics</span></span>
+<span><span class="co">#&gt; ║    │  ├─ 📁 age</span></span>
+<span><span class="co">#&gt; ║    │  │  └─ 📉 HISTOGRAM: Age</span></span>
+<span><span class="co">#&gt; ║    │  └─ 📁 income</span></span>
+<span><span class="co">#&gt; ║    │     └─ 📉 HISTOGRAM: Income</span></span>
+<span><span class="co">#&gt; ║    └─ 📁 feedback</span></span>
+<span><span class="co">#&gt; ║       └─ 📁 overall</span></span>
+<span><span class="co">#&gt; ║          └─ 📉 HISTOGRAM: Overall Satisfaction</span></span>
+<span><span class="co">#&gt; ╚══════════════════════════════════════════════════════════════════════════</span></span></code></pre></div>
+<p><strong>The tree shows exactly what your dashboard will look
+like!</strong> Each level becomes a tab, automatically organized.</p>
+</div>
+</div>
+<div class="section level2">
+<h2 id="core-workflow">Core Workflow<a class="anchor" aria-label="anchor" href="#core-workflow"></a>
+</h2>
+<p>Creating a dashboard involves three steps:</p>
+<ol style="list-style-type: decimal">
+<li>
+<strong>Create visualizations</strong> with
+<code>create_viz() %&gt;% add_viz()</code>
+</li>
+<li>
+<strong>Build dashboard project</strong> with
+<code>create_dashboard() %&gt;% add_page()</code>
+</li>
+<li>
+<strong>Generate output</strong> with
+<code><a href="../reference/generate_dashboard.html">generate_dashboard()</a></code>
+</li>
+</ol>
+<div class="section level3">
+<h3 id="step-1-create-visualizations">Step 1: Create Visualizations<a class="anchor" aria-label="anchor" href="#step-1-create-visualizations"></a>
+</h3>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Use defaults to avoid repetition</span></span>
+<span><span class="va">my_viz</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_viz.html">create_viz</a></span><span class="op">(</span></span>
+<span>  type <span class="op">=</span> <span class="st">"histogram"</span>,           <span class="co"># Default type</span></span>
+<span>  color_palette <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"#3498DB"</span><span class="op">)</span>,  <span class="co"># Default color</span></span>
+<span>  bins <span class="op">=</span> <span class="fl">30</span>                      <span class="co"># Default bins</span></span>
 <span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="../reference/add_page.html">add_page</a></span><span class="op">(</span><span class="st">"Home"</span>, text <span class="op">=</span> <span class="st">"Welcome!"</span>, is_landing_page <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="../reference/add_page.html">add_page</a></span><span class="op">(</span><span class="st">"Analysis"</span>, data <span class="op">=</span> <span class="va">my_data</span>, visualizations <span class="op">=</span> <span class="va">viz</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="../reference/add_page.html">add_page</a></span><span class="op">(</span><span class="st">"About"</span>, text <span class="op">=</span> <span class="st">"Dashboard created with dashboardr"</span><span class="op">)</span></span></code></pre></div>
+<span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span></span>
+<span>    x_var <span class="op">=</span> <span class="st">"age"</span>,</span>
+<span>    title <span class="op">=</span> <span class="st">"Age Distribution"</span>,</span>
+<span>    tabgroup <span class="op">=</span> <span class="st">"overview"</span></span>
+<span>  <span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span></span>
+<span>    x_var <span class="op">=</span> <span class="st">"income"</span>,</span>
+<span>    title <span class="op">=</span> <span class="st">"Income Distribution"</span>,</span>
+<span>    tabgroup <span class="op">=</span> <span class="st">"overview"</span>,</span>
+<span>    bins <span class="op">=</span> <span class="fl">50</span>  <span class="co"># Override default bins</span></span>
+<span>  <span class="op">)</span></span>
+<span></span>
+<span><span class="co"># See the structure</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">my_viz</span><span class="op">)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; ╔══════════════════════════════════════════════════════════════════════════</span></span>
+<span><span class="co">#&gt; ║ 📊 VISUALIZATION COLLECTION</span></span>
+<span><span class="co">#&gt; ╠══════════════════════════════════════════════════════════════════════════</span></span>
+<span><span class="co">#&gt; ║ Total visualizations: 2</span></span>
+<span><span class="co">#&gt; ║</span></span>
+<span><span class="co">#&gt; ║ STRUCTURE:</span></span>
+<span><span class="co">#&gt; ║ └─ 📁 overview</span></span>
+<span><span class="co">#&gt; ║    ├─ 📉 HISTOGRAM: Age Distribution</span></span>
+<span><span class="co">#&gt; ║    └─ 📉 HISTOGRAM: Income Distribution</span></span>
+<span><span class="co">#&gt; ╚══════════════════════════════════════════════════════════════════════════</span></span></code></pre></div>
 </div>
 <div class="section level3">
-<h3 id="dashboard-generation">3. Dashboard Generation<a class="anchor" aria-label="anchor" href="#dashboard-generation"></a>
+<h3 id="step-2-build-dashboard">Step 2: Build Dashboard<a class="anchor" aria-label="anchor" href="#step-2-build-dashboard"></a>
 </h3>
-<p>Generate your dashboard with:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/generate_dashboard.html">generate_dashboard</a></span><span class="op">(</span><span class="va">dashboard</span><span class="op">)</span></span></code></pre></div>
-<p>This creates: - QMD files for each page - <code>_quarto.yml</code>
-configuration - Data files (RDS format) - Custom themes and styling</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">dashboard</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_dashboard.html">create_dashboard</a></span><span class="op">(</span></span>
+<span>  title <span class="op">=</span> <span class="st">"Employee Survey Dashboard"</span>,</span>
+<span>  output_dir <span class="op">=</span> <span class="st">"my_first_dashboard"</span>,</span>
+<span>  tabset_theme <span class="op">=</span> <span class="st">"modern"</span></span>
+<span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/add_page.html">add_page</a></span><span class="op">(</span></span>
+<span>    <span class="st">"Home"</span>,</span>
+<span>    text <span class="op">=</span> <span class="fu"><a href="../reference/md_text.html">md_text</a></span><span class="op">(</span></span>
+<span>      <span class="st">"# Welcome!"</span>,</span>
+<span>      <span class="st">""</span>,</span>
+<span>      <span class="st">"This dashboard presents employee survey results."</span>,</span>
+<span>      <span class="st">""</span>,</span>
+<span>      <span class="st">"Navigate using the tabs above to explore different analyses."</span></span>
+<span>    <span class="op">)</span>,</span>
+<span>    is_landing_page <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>  <span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/add_page.html">add_page</a></span><span class="op">(</span></span>
+<span>    <span class="st">"Analysis"</span>,</span>
+<span>    data <span class="op">=</span> <span class="va">survey_data</span>,</span>
+<span>    visualizations <span class="op">=</span> <span class="va">my_viz</span>,</span>
+<span>    icon <span class="op">=</span> <span class="st">"ph:chart-line"</span></span>
+<span>  <span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Print to see dashboard structure</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">dashboard</span><span class="op">)</span></span></code></pre></div>
 </div>
+<div class="section level3">
+<h3 id="step-3-generate">Step 3: Generate<a class="anchor" aria-label="anchor" href="#step-3-generate"></a>
+</h3>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Generate without rendering (faster for development)</span></span>
+<span><span class="fu"><a href="../reference/generate_dashboard.html">generate_dashboard</a></span><span class="op">(</span><span class="va">dashboard</span>, render <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Generate and open in browser when ready</span></span>
+<span><span class="fu"><a href="../reference/generate_dashboard.html">generate_dashboard</a></span><span class="op">(</span><span class="va">dashboard</span>, render <span class="op">=</span> <span class="cn">TRUE</span>, open <span class="op">=</span> <span class="st">"browser"</span><span class="op">)</span></span></code></pre></div>
+</div>
+</div>
+<div class="section level2">
+<h2 id="composing-visualizations-the-operator">Composing Visualizations: The + Operator<a class="anchor" aria-label="anchor" href="#composing-visualizations-the-operator"></a>
+</h2>
+<p>You can combine visualization collections using the <code>+</code>
+operator (like ggplot2!):</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Create separate collections</span></span>
+<span><span class="va">demographics</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_viz.html">create_viz</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"histogram"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span>x_var <span class="op">=</span> <span class="st">"age"</span>, title <span class="op">=</span> <span class="st">"Age"</span>, tabgroup <span class="op">=</span> <span class="st">"demographics"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">feedback</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_viz.html">create_viz</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"histogram"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span>x_var <span class="op">=</span> <span class="st">"satisfaction"</span>, title <span class="op">=</span> <span class="st">"Satisfaction"</span>, tabgroup <span class="op">=</span> <span class="st">"feedback"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Combine them!</span></span>
+<span><span class="va">combined</span> <span class="op">&lt;-</span> <span class="va">demographics</span> <span class="op">+</span> <span class="va">feedback</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">combined</span><span class="op">)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; ╔══════════════════════════════════════════════════════════════════════════</span></span>
+<span><span class="co">#&gt; ║ 📊 VISUALIZATION COLLECTION</span></span>
+<span><span class="co">#&gt; ╠══════════════════════════════════════════════════════════════════════════</span></span>
+<span><span class="co">#&gt; ║ Total visualizations: 2</span></span>
+<span><span class="co">#&gt; ║</span></span>
+<span><span class="co">#&gt; ║ STRUCTURE:</span></span>
+<span><span class="co">#&gt; ║ ├─ 📁 demographics</span></span>
+<span><span class="co">#&gt; ║ │  └─ 📉 HISTOGRAM: Age</span></span>
+<span><span class="co">#&gt; ║ └─ 📁 feedback</span></span>
+<span><span class="co">#&gt; ║    └─ 📉 HISTOGRAM: Satisfaction</span></span>
+<span><span class="co">#&gt; ╚══════════════════════════════════════════════════════════════════════════</span></span></code></pre></div>
+<p>This makes it easy to organize complex dashboards into logical
+modules.</p>
+</div>
+<div class="section level2">
+<h2 id="defaults-and-overrides">Defaults and Overrides<a class="anchor" aria-label="anchor" href="#defaults-and-overrides"></a>
+</h2>
+<p>Set common parameters once, override when needed:</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Set defaults that apply to all visualizations</span></span>
+<span><span class="va">viz_with_defaults</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_viz.html">create_viz</a></span><span class="op">(</span></span>
+<span>  type <span class="op">=</span> <span class="st">"histogram"</span>,</span>
+<span>  color_palette <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"#E74C3C"</span><span class="op">)</span>,  <span class="co"># Default: red</span></span>
+<span>  bins <span class="op">=</span> <span class="fl">20</span>,                      <span class="co"># Default: 20 bins</span></span>
+<span>  title_align <span class="op">=</span> <span class="st">"center"</span>          <span class="co"># Default: centered titles</span></span>
+<span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span></span>
+<span>    x_var <span class="op">=</span> <span class="st">"age"</span>,</span>
+<span>    title <span class="op">=</span> <span class="st">"Age (uses defaults)"</span></span>
+<span>  <span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span></span>
+<span>    x_var <span class="op">=</span> <span class="st">"income"</span>,</span>
+<span>    title <span class="op">=</span> <span class="st">"Income (custom bins)"</span>,</span>
+<span>    bins <span class="op">=</span> <span class="fl">40</span>,  <span class="co"># Override bins</span></span>
+<span>    color_palette <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"#2ECC71"</span><span class="op">)</span>  <span class="co"># Override color</span></span>
+<span>  <span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">viz_with_defaults</span><span class="op">)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; ╔══════════════════════════════════════════════════════════════════════════</span></span>
+<span><span class="co">#&gt; ║ 📊 VISUALIZATION COLLECTION</span></span>
+<span><span class="co">#&gt; ╠══════════════════════════════════════════════════════════════════════════</span></span>
+<span><span class="co">#&gt; ║ Total visualizations: 2</span></span>
+<span><span class="co">#&gt; ║</span></span>
+<span><span class="co">#&gt; ║ STRUCTURE:</span></span>
+<span><span class="co">#&gt; ║ └─ 📁 (no tabgroup)</span></span>
+<span><span class="co">#&gt; ║    ├─ 📉 HISTOGRAM: Age (uses defaults)</span></span>
+<span><span class="co">#&gt; ║    └─ 📉 HISTOGRAM: Income (custom bins)</span></span>
+<span><span class="co">#&gt; ╚══════════════════════════════════════════════════════════════════════════</span></span></code></pre></div>
+<p>This is especially powerful for surveys with many similar
+questions!</p>
+</div>
+<div class="section level2">
+<h2 id="filter-aware-grouping">Filter-Aware Grouping<a class="anchor" aria-label="anchor" href="#filter-aware-grouping"></a>
+</h2>
+<p>dashboardr automatically groups visualizations by their filters:</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Create visualizations with filters</span></span>
+<span><span class="va">filtered_viz</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_viz.html">create_viz</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"histogram"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span></span>
+<span>    x_var <span class="op">=</span> <span class="st">"age"</span>,</span>
+<span>    title <span class="op">=</span> <span class="st">"Age Distribution"</span>,</span>
+<span>    filter <span class="op">=</span> <span class="op">~</span> <span class="va">wave</span> <span class="op">==</span> <span class="fl">1</span>,</span>
+<span>    tabgroup <span class="op">=</span> <span class="st">"analysis"</span></span>
+<span>  <span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span></span>
+<span>    x_var <span class="op">=</span> <span class="st">"age"</span>,</span>
+<span>    title <span class="op">=</span> <span class="st">"Age Distribution"</span>,</span>
+<span>    filter <span class="op">=</span> <span class="op">~</span> <span class="va">wave</span> <span class="op">==</span> <span class="fl">2</span>,</span>
+<span>    tabgroup <span class="op">=</span> <span class="st">"analysis"</span></span>
+<span>  <span class="op">)</span></span>
+<span></span>
+<span><span class="co"># dashboardr automatically creates "Wave 1" and "Wave 2" tabs!</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">filtered_viz</span><span class="op">)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; ╔══════════════════════════════════════════════════════════════════════════</span></span>
+<span><span class="co">#&gt; ║ 📊 VISUALIZATION COLLECTION</span></span>
+<span><span class="co">#&gt; ╠══════════════════════════════════════════════════════════════════════════</span></span>
+<span><span class="co">#&gt; ║ Total visualizations: 2</span></span>
+<span><span class="co">#&gt; ║</span></span>
+<span><span class="co">#&gt; ║ STRUCTURE:</span></span>
+<span><span class="co">#&gt; ║ └─ 📁 analysis</span></span>
+<span><span class="co">#&gt; ║    ├─ 📉 HISTOGRAM: Age Distribution [filtered]</span></span>
+<span><span class="co">#&gt; ║    └─ 📉 HISTOGRAM: Age Distribution [filtered]</span></span>
+<span><span class="co">#&gt; ╚══════════════════════════════════════════════════════════════════════════</span></span></code></pre></div>
+<p>See how it organized by filter? No manual grouping needed!</p>
 </div>
 <div class="section level2">
 <h2 id="visualization-types">Visualization Types<a class="anchor" aria-label="anchor" href="#visualization-types"></a>
@@ -194,71 +448,130 @@ configuration - Data files (RDS format) - Custom themes and styling</p>
 <div class="section level3">
 <h3 id="histogram">Histogram<a class="anchor" aria-label="anchor" href="#histogram"></a>
 </h3>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/create_viz.html">create_viz</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"histogram"</span>, x_var <span class="op">=</span> <span class="st">"value"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Distribution"</span>, bins <span class="op">=</span> <span class="fl">30</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/create_viz.html">create_viz</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"histogram"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span></span>
+<span>    x_var <span class="op">=</span> <span class="st">"age"</span>,</span>
+<span>    title <span class="op">=</span> <span class="st">"Age Distribution"</span>,</span>
+<span>    bins <span class="op">=</span> <span class="fl">30</span>,</span>
+<span>    color_palette <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"#3498DB"</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="stacked-bar">Stacked Bar<a class="anchor" aria-label="anchor" href="#stacked-bar"></a>
 </h3>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/create_viz.html">create_viz</a></span><span class="op">(</span></span>
-<span>  type <span class="op">=</span> <span class="st">"stackedbar"</span>,</span>
-<span>  x_var <span class="op">=</span> <span class="st">"question"</span>,</span>
-<span>  stack_var <span class="op">=</span> <span class="st">"response"</span></span>
-<span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Survey Results"</span>, horizontal <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/create_viz.html">create_viz</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"stackedbar"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span></span>
+<span>    x_var <span class="op">=</span> <span class="st">"department"</span>,</span>
+<span>    stack_var <span class="op">=</span> <span class="st">"satisfaction"</span>,</span>
+<span>    title <span class="op">=</span> <span class="st">"Satisfaction by Department"</span>,</span>
+<span>    stacked_type <span class="op">=</span> <span class="st">"percent"</span>,  <span class="co"># or "counts"</span></span>
+<span>    horizontal <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>  <span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="timeline">Timeline<a class="anchor" aria-label="anchor" href="#timeline"></a>
 </h3>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/create_viz.html">create_viz</a></span><span class="op">(</span></span>
-<span>  type <span class="op">=</span> <span class="st">"timeline"</span>,</span>
-<span>  time_var <span class="op">=</span> <span class="st">"year"</span>,</span>
-<span>  response_var <span class="op">=</span> <span class="st">"score"</span></span>
-<span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Trends Over Time"</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/create_viz.html">create_viz</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"timeline"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span></span>
+<span>    time_var <span class="op">=</span> <span class="st">"year"</span>,</span>
+<span>    response_var <span class="op">=</span> <span class="st">"score"</span>,</span>
+<span>    title <span class="op">=</span> <span class="st">"Trends Over Time"</span>,</span>
+<span>    chart_type <span class="op">=</span> <span class="st">"line"</span>,  <span class="co"># or "area"</span></span>
+<span>    group_var <span class="op">=</span> <span class="st">"category"</span>  <span class="co"># Optional grouping</span></span>
+<span>  <span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
-<h3 id="bar-chart">Bar Chart<a class="anchor" aria-label="anchor" href="#bar-chart"></a>
+<h3 id="bar-chart-grouped">Bar Chart (Grouped)<a class="anchor" aria-label="anchor" href="#bar-chart-grouped"></a>
 </h3>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/create_viz.html">create_viz</a></span><span class="op">(</span></span>
-<span>  type <span class="op">=</span> <span class="st">"bar"</span>,</span>
-<span>  x_var <span class="op">=</span> <span class="st">"category"</span>,</span>
-<span>  group_var <span class="op">=</span> <span class="st">"segment"</span></span>
-<span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Category Comparison"</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/create_viz.html">create_viz</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"bar"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span></span>
+<span>    x_var <span class="op">=</span> <span class="st">"department"</span>,</span>
+<span>    group_var <span class="op">=</span> <span class="st">"wave"</span>,</span>
+<span>    title <span class="op">=</span> <span class="st">"Department Sizes by Wave"</span>,</span>
+<span>    horizontal <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>    bar_type <span class="op">=</span> <span class="st">"percent"</span>  <span class="co"># or "count"</span></span>
+<span>  <span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="heatmap">Heatmap<a class="anchor" aria-label="anchor" href="#heatmap"></a>
+</h3>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/create_viz.html">create_viz</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"heatmap"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span></span>
+<span>    x_var <span class="op">=</span> <span class="st">"department"</span>,</span>
+<span>    y_var <span class="op">=</span> <span class="st">"satisfaction"</span>,</span>
+<span>    value_var <span class="op">=</span> <span class="st">"score"</span>,</span>
+<span>    title <span class="op">=</span> <span class="st">"Satisfaction Heatmap"</span>,</span>
+<span>    agg_fun <span class="op">=</span> <span class="st">"mean"</span>  <span class="co"># or "sum", "count", etc.</span></span>
+<span>  <span class="op">)</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
 <h2 id="styling-and-themes">Styling and Themes<a class="anchor" aria-label="anchor" href="#styling-and-themes"></a>
 </h2>
 <div class="section level3">
-<h3 id="tabset-themes">Tabset Themes<a class="anchor" aria-label="anchor" href="#tabset-themes"></a>
+<h3 id="built-in-tabset-themes">Built-in Tabset Themes<a class="anchor" aria-label="anchor" href="#built-in-tabset-themes"></a>
 </h3>
-<p>Choose from 6 built-in themes:</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<p>Choose from 6 professionally designed themes:</p>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">dashboard</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_dashboard.html">create_dashboard</a></span><span class="op">(</span></span>
 <span>  title <span class="op">=</span> <span class="st">"Styled Dashboard"</span>,</span>
 <span>  output_dir <span class="op">=</span> <span class="st">"styled"</span>,</span>
-<span>  tabset_theme <span class="op">=</span> <span class="st">"modern"</span>  <span class="co"># or: minimal, pills, classic, underline, segmented</span></span>
+<span>  tabset_theme <span class="op">=</span> <span class="st">"modern"</span>  </span>
+<span>  <span class="co"># Options: modern, minimal, pills, classic, underline, segmented</span></span>
 <span><span class="op">)</span></span></code></pre></div>
+<p><strong>Themes:</strong></p>
+<ul>
+<li>
+<strong>modern</strong> - Clean, centered tabs with subtle
+shadows</li>
+<li>
+<strong>minimal</strong> - Simple, understated design</li>
+<li>
+<strong>pills</strong> - Rounded pill-shaped tabs</li>
+<li>
+<strong>classic</strong> - Traditional tab appearance</li>
+<li>
+<strong>underline</strong> - Bottom-underline active indicator</li>
+<li>
+<strong>segmented</strong> - Segmented control style</li>
+</ul>
 </div>
 <div class="section level3">
 <h3 id="custom-colors">Custom Colors<a class="anchor" aria-label="anchor" href="#custom-colors"></a>
 </h3>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">dashboard</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_dashboard.html">create_dashboard</a></span><span class="op">(</span></span>
 <span>  title <span class="op">=</span> <span class="st">"Custom Colors"</span>,</span>
 <span>  output_dir <span class="op">=</span> <span class="st">"custom"</span>,</span>
 <span>  tabset_theme <span class="op">=</span> <span class="st">"modern"</span>,</span>
 <span>  tabset_colors <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
-<span>    active_bg <span class="op">=</span> <span class="st">"#3498DB"</span>,</span>
-<span>    active_text <span class="op">=</span> <span class="st">"#FFFFFF"</span></span>
+<span>    active_bg <span class="op">=</span> <span class="st">"#3498DB"</span>,      <span class="co"># Active tab background</span></span>
+<span>    active_text <span class="op">=</span> <span class="st">"#FFFFFF"</span>,    <span class="co"># Active tab text</span></span>
+<span>    inactive_bg <span class="op">=</span> <span class="st">"#ECF0F1"</span>,    <span class="co"># Inactive tab background</span></span>
+<span>    inactive_text <span class="op">=</span> <span class="st">"#7F8C8D"</span>,  <span class="co"># Inactive tab text</span></span>
+<span>    hover_bg <span class="op">=</span> <span class="st">"#BDC3C7"</span>        <span class="co"># Hover background</span></span>
 <span>  <span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="custom-tab-labels">Custom Tab Labels<a class="anchor" aria-label="anchor" href="#custom-tab-labels"></a>
+</h3>
+<p>Add icons and custom text to your tabs:</p>
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">viz</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_viz.html">create_viz</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span></span>
+<span>    type <span class="op">=</span> <span class="st">"histogram"</span>,</span>
+<span>    x_var <span class="op">=</span> <span class="st">"age"</span>,</span>
+<span>    tabgroup <span class="op">=</span> <span class="st">"demo"</span></span>
+<span>  <span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/set_tabgroup_labels.html">set_tabgroup_labels</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>    demo <span class="op">=</span> <span class="st">"📊 Demographics"</span>  <span class="co"># Icon + label</span></span>
+<span>  <span class="op">)</span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
@@ -267,7 +580,7 @@ configuration - Data files (RDS format) - Custom themes and styling</p>
 <div class="section level3">
 <h3 id="navbar-alignment">Navbar Alignment<a class="anchor" aria-label="anchor" href="#navbar-alignment"></a>
 </h3>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">dashboard</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="../reference/add_page.html">add_page</a></span><span class="op">(</span><span class="st">"Home"</span>, text <span class="op">=</span> <span class="st">"Home"</span>, is_landing_page <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="../reference/add_page.html">add_page</a></span><span class="op">(</span><span class="st">"About"</span>, text <span class="op">=</span> <span class="st">"About"</span>, navbar_align <span class="op">=</span> <span class="st">"right"</span><span class="op">)</span></span></code></pre></div>
@@ -275,149 +588,140 @@ configuration - Data files (RDS format) - Custom themes and styling</p>
 <div class="section level3">
 <h3 id="dropdown-menus">Dropdown Menus<a class="anchor" aria-label="anchor" href="#dropdown-menus"></a>
 </h3>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">dashboard</span><span class="op">$</span><span class="va">navbar_sections</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
 <span>  <span class="fu"><a href="../reference/navbar_menu.html">navbar_menu</a></span><span class="op">(</span></span>
 <span>    text <span class="op">=</span> <span class="st">"Reports"</span>,</span>
-<span>    pages <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Monthly"</span>, <span class="st">"Quarterly"</span>, <span class="st">"Annual"</span><span class="op">)</span></span>
+<span>    pages <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Monthly"</span>, <span class="st">"Quarterly"</span>, <span class="st">"Annual"</span><span class="op">)</span>,</span>
+<span>    icon <span class="op">=</span> <span class="st">"ph:file-text"</span></span>
 <span>  <span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
-<h3 id="icons">Icons<a class="anchor" aria-label="anchor" href="#icons"></a>
+<h3 id="sidebar-groups">Sidebar Groups<a class="anchor" aria-label="anchor" href="#sidebar-groups"></a>
 </h3>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span></span>
-<span>  title <span class="op">=</span> <span class="st">"Analysis"</span>,</span>
-<span>  icon <span class="op">=</span> <span class="st">"ph:chart-line"</span>,</span>
-<span>  tabgroup <span class="op">=</span> <span class="st">"reports"</span></span>
+<p>For many related pages, use sidebars:</p>
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Create sidebar group</span></span>
+<span><span class="va">dashboard</span><span class="op">$</span><span class="va">sidebar_groups</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="../reference/sidebar_group.html">sidebar_group</a></span><span class="op">(</span></span>
+<span>    id <span class="op">=</span> <span class="st">"analysis"</span>,</span>
+<span>    title <span class="op">=</span> <span class="st">"Analysis"</span>,</span>
+<span>    pages <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Overview"</span>, <span class="st">"Detailed"</span>, <span class="st">"Trends"</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Link from navbar</span></span>
+<span><span class="va">dashboard</span><span class="op">$</span><span class="va">navbar_sections</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="../reference/navbar_section.html">navbar_section</a></span><span class="op">(</span></span>
+<span>    text <span class="op">=</span> <span class="st">"Analysis"</span>,</span>
+<span>    sidebar_id <span class="op">=</span> <span class="st">"analysis"</span>,</span>
+<span>    icon <span class="op">=</span> <span class="st">"ph:chart-line"</span></span>
+<span>  <span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
-<h2 id="loading-overlay">Loading Overlay<a class="anchor" aria-label="anchor" href="#loading-overlay"></a>
+<h2 id="advanced-features">Advanced Features<a class="anchor" aria-label="anchor" href="#advanced-features"></a>
 </h2>
+<div class="section level3">
+<h3 id="loading-overlay">Loading Overlay<a class="anchor" aria-label="anchor" href="#loading-overlay"></a>
+</h3>
 <p>Add a loading animation to pages:</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/add_page.html">add_page</a></span><span class="op">(</span></span>
 <span>  <span class="st">"Analysis"</span>,</span>
 <span>  data <span class="op">=</span> <span class="va">large_dataset</span>,</span>
 <span>  visualizations <span class="op">=</span> <span class="va">viz</span>,</span>
 <span>  overlay <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  overlay_theme <span class="op">=</span> <span class="st">"glass"</span>,</span>
+<span>  overlay_theme <span class="op">=</span> <span class="st">"glass"</span>,  <span class="co"># or "light", "dark"</span></span>
 <span>  overlay_text <span class="op">=</span> <span class="st">"Loading analysis..."</span></span>
 <span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="drop-na-values">Drop NA Values<a class="anchor" aria-label="anchor" href="#drop-na-values"></a>
+</h3>
+<p>Automatically remove rows with NA values:</p>
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span></span>
+<span>  type <span class="op">=</span> <span class="st">"histogram"</span>,</span>
+<span>  x_var <span class="op">=</span> <span class="st">"age"</span>,</span>
+<span>  drop_na_vars <span class="op">=</span> <span class="cn">TRUE</span>  <span class="co"># Removes rows where age is NA</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="weighted-visualizations">Weighted Visualizations<a class="anchor" aria-label="anchor" href="#weighted-visualizations"></a>
+</h3>
+<p>Use survey weights or other weighting variables:</p>
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/create_viz.html">create_viz</a></span><span class="op">(</span></span>
+<span>  type <span class="op">=</span> <span class="st">"histogram"</span>,</span>
+<span>  weight_var <span class="op">=</span> <span class="st">"survey_weight"</span>  <span class="co"># Apply weights</span></span>
+<span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span>x_var <span class="op">=</span> <span class="st">"age"</span>, title <span class="op">=</span> <span class="st">"Weighted Age Distribution"</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="multiple-visualizations-at-once">Multiple Visualizations at Once<a class="anchor" aria-label="anchor" href="#multiple-visualizations-at-once"></a>
+</h3>
+<p>Use <code><a href="../reference/add_vizzes.html">add_vizzes()</a></code> to expand vector parameters:</p>
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">questions</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"q1"</span>, <span class="st">"q2"</span>, <span class="st">"q3"</span><span class="op">)</span></span>
+<span><span class="va">labels</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Question 1"</span>, <span class="st">"Question 2"</span>, <span class="st">"Question 3"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">viz</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_viz.html">create_viz</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"stackedbar"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/add_vizzes.html">add_vizzes</a></span><span class="op">(</span></span>
+<span>    x_var <span class="op">=</span> <span class="va">questions</span>,  <span class="co"># Expands to 3 visualizations</span></span>
+<span>    title <span class="op">=</span> <span class="va">labels</span>,</span>
+<span>    tabgroup <span class="op">=</span> <span class="st">"survey"</span></span>
+<span>  <span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Creates one viz for each question!</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">viz</span><span class="op">)</span></span></code></pre></div>
+</div>
 </div>
 <div class="section level2">
 <h2 id="performance-tips">Performance Tips<a class="anchor" aria-label="anchor" href="#performance-tips"></a>
 </h2>
-<div class="section level3">
-<h3 id="quick-testing-with-preview-mode">Quick Testing with Preview Mode<a class="anchor" aria-label="anchor" href="#quick-testing-with-preview-mode"></a>
-</h3>
-<p>When developing dashboards with multiple pages, you don’t need to
-regenerate everything to test changes:</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Only generate the page you're working on</span></span>
-<span><span class="fu"><a href="../reference/generate_dashboard.html">generate_dashboard</a></span><span class="op">(</span><span class="va">dashboard</span>, preview <span class="op">=</span> <span class="st">"Analysis"</span><span class="op">)</span></span>
+<p>For faster iteration during development:</p>
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Skip rendering during development (just generate QMD files)</span></span>
+<span><span class="fu"><a href="../reference/generate_dashboard.html">generate_dashboard</a></span><span class="op">(</span><span class="va">dashboard</span>, render <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Test multiple specific pages</span></span>
-<span><span class="fu"><a href="../reference/generate_dashboard.html">generate_dashboard</a></span><span class="op">(</span><span class="va">dashboard</span>, preview <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Home"</span>, <span class="st">"Analysis"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><strong>Why use it:</strong> - <strong>10-50x faster</strong> than
-full dashboard generation - Perfect for iterative development - Test
-visualization tweaks instantly - Debug specific pages without
-waiting</p>
-<p><strong>Example workflow:</strong></p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># 1. Create dashboard with many pages</span></span>
-<span><span class="va">dashboard</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_dashboard.html">create_dashboard</a></span><span class="op">(</span><span class="va">...</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="../reference/add_page.html">add_page</a></span><span class="op">(</span><span class="st">"Home"</span>, <span class="va">...</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="../reference/add_page.html">add_page</a></span><span class="op">(</span><span class="st">"Analysis"</span>, <span class="va">...</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="../reference/add_page.html">add_page</a></span><span class="op">(</span><span class="st">"Demographics"</span>, <span class="va">...</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="../reference/add_page.html">add_page</a></span><span class="op">(</span><span class="st">"Trends"</span>, <span class="va">...</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="../reference/add_page.html">add_page</a></span><span class="op">(</span><span class="st">"About"</span>, <span class="va">...</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># 2. Work on Analysis page</span></span>
-<span><span class="co"># Make changes to visualizations...</span></span>
-<span></span>
-<span><span class="co"># 3. Quick test (&lt; 1 second instead of 5+ seconds!)</span></span>
-<span><span class="fu"><a href="../reference/generate_dashboard.html">generate_dashboard</a></span><span class="op">(</span><span class="va">dashboard</span>, preview <span class="op">=</span> <span class="st">"Analysis"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># 4. Once satisfied, generate full dashboard</span></span>
-<span><span class="fu"><a href="../reference/generate_dashboard.html">generate_dashboard</a></span><span class="op">(</span><span class="va">dashboard</span>, render <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level3">
-<h3 id="faster-subsequent-builds">Faster Subsequent Builds<a class="anchor" aria-label="anchor" href="#faster-subsequent-builds"></a>
-</h3>
-<p>Enable incremental builds to skip unchanged pages:</p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># First build - generates all pages</span></span>
-<span><span class="fu"><a href="../reference/generate_dashboard.html">generate_dashboard</a></span><span class="op">(</span><span class="va">dashboard</span>, incremental <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Make changes to one page</span></span>
-<span><span class="co"># Second build - only regenerates that page!</span></span>
-<span><span class="fu"><a href="../reference/generate_dashboard.html">generate_dashboard</a></span><span class="op">(</span><span class="va">dashboard</span>, incremental <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p><strong>How it works:</strong> - Automatically tracks which pages
-have changed - Skips unchanged pages on subsequent builds - Detects
-changes to data, visualizations, text, and parameters</p>
-<p><strong>Perfect for:</strong> - Large dashboards (10+ pages) -
-Iterative refinement - Working with slow computations - Development
-workflows</p>
-</div>
-<div class="section level3">
-<h3 id="combine-both-for-maximum-speed">Combine Both for Maximum Speed<a class="anchor" aria-label="anchor" href="#combine-both-for-maximum-speed"></a>
-</h3>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Ultimate speed: preview + incremental</span></span>
-<span><span class="fu"><a href="../reference/generate_dashboard.html">generate_dashboard</a></span><span class="op">(</span><span class="va">dashboard</span>, </span>
-<span>                  preview <span class="op">=</span> <span class="st">"Analysis"</span>,</span>
-<span>                  incremental <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p><strong>Result:</strong> Sub-second build times! 🚀</p>
-</div>
+<span><span class="co"># Only render when you want to see the final HTML</span></span>
+<span><span class="fu"><a href="../reference/generate_dashboard.html">generate_dashboard</a></span><span class="op">(</span><span class="va">dashboard</span>, render <span class="op">=</span> <span class="cn">TRUE</span>, open <span class="op">=</span> <span class="st">"browser"</span><span class="op">)</span></span></code></pre></div>
+<p>Quarto’s internal caching makes subsequent renders faster
+automatically.</p>
 </div>
 <div class="section level2">
-<h2 id="troubleshooting">Troubleshooting<a class="anchor" aria-label="anchor" href="#troubleshooting"></a>
+<h2 id="helpful-error-messages">Helpful Error Messages<a class="anchor" aria-label="anchor" href="#helpful-error-messages"></a>
 </h2>
-<div class="section level3">
-<h3 id="helpful-error-messages">Helpful Error Messages<a class="anchor" aria-label="anchor" href="#helpful-error-messages"></a>
-</h3>
 <p><code>dashboardr</code> provides clear error messages with
-suggestions when things go wrong:</p>
-<div class="section level4">
-<h4 id="typo-in-visualization-type">Typo in Visualization Type<a class="anchor" aria-label="anchor" href="#typo-in-visualization-type"></a>
-</h4>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+suggestions:</p>
+<div class="section level3">
+<h3 id="typo-in-visualization-type">Typo in Visualization Type<a class="anchor" aria-label="anchor" href="#typo-in-visualization-type"></a>
+</h3>
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Oops, typo!</span></span>
 <span><span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"histogra"</span>, x_var <span class="op">=</span> <span class="st">"age"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Error: Unknown type 'histogra'</span></span>
 <span><span class="co"># ℹ Did you mean 'histogram'?</span></span>
-<span><span class="co"># ℹ Available: histogram, bar, stackedbar, stackedbars, timeline, heatmap</span></span></code></pre></div>
+<span><span class="co"># ℹ Available: histogram, bar, stackedbar, timeline, heatmap</span></span></code></pre></div>
 </div>
-<div class="section level4">
-<h4 id="missing-required-parameter">Missing Required Parameter<a class="anchor" aria-label="anchor" href="#missing-required-parameter"></a>
-</h4>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<div class="section level3">
+<h3 id="missing-required-parameter">Missing Required Parameter<a class="anchor" aria-label="anchor" href="#missing-required-parameter"></a>
+</h3>
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Forgot x_var</span></span>
 <span><span class="fu"><a href="../reference/create_histogram.html">create_histogram</a></span><span class="op">(</span><span class="va">data</span>, title <span class="op">=</span> <span class="st">"My Chart"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Error: 'x_var' parameter is required</span></span>
 <span><span class="co"># ℹ Example: create_histogram(data, x_var = "age")</span></span></code></pre></div>
 </div>
-<div class="section level4">
-<h4 id="typo-in-page-name">Typo in Page Name<a class="anchor" aria-label="anchor" href="#typo-in-page-name"></a>
-</h4>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Typo in preview</span></span>
-<span><span class="fu"><a href="../reference/generate_dashboard.html">generate_dashboard</a></span><span class="op">(</span><span class="va">dashboard</span>, preview <span class="op">=</span> <span class="st">"Analisys"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Error: Page 'analisys' not found</span></span>
-<span><span class="co"># ℹ Did you mean 'Analysis'?</span></span>
-<span><span class="co"># Available pages: Home, Analysis, About</span></span></code></pre></div>
-</div>
-<div class="section level4">
-<h4 id="typo-in-theme">Typo in Theme<a class="anchor" aria-label="anchor" href="#typo-in-theme"></a>
-</h4>
-<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<div class="section level3">
+<h3 id="typo-in-theme">Typo in Theme<a class="anchor" aria-label="anchor" href="#typo-in-theme"></a>
+</h3>
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Typo in theme name</span></span>
 <span><span class="fu"><a href="../reference/create_dashboard.html">create_dashboard</a></span><span class="op">(</span><span class="va">...</span>, tabset_theme <span class="op">=</span> <span class="st">"modrn"</span><span class="op">)</span></span>
 <span></span>
@@ -426,101 +730,56 @@ suggestions when things go wrong:</p>
 <span><span class="co"># ℹ Available: modern, minimal, pills, classic, underline, segmented</span></span></code></pre></div>
 </div>
 </div>
+<div class="section level2">
+<h2 id="debugging-your-dashboard">Debugging Your Dashboard<a class="anchor" aria-label="anchor" href="#debugging-your-dashboard"></a>
+</h2>
 <div class="section level3">
-<h3 id="common-issues-and-solutions">Common Issues and Solutions<a class="anchor" aria-label="anchor" href="#common-issues-and-solutions"></a>
+<h3 id="print-everything">Print Everything!<a class="anchor" aria-label="anchor" href="#print-everything"></a>
+</h3>
+<p>The print methods show you exactly what’s being built:</p>
+<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Print visualizations to see tree structure</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">my_viz</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Print dashboard to see pages and data</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">dashboard</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># After generation, check the summary</span></span>
+<span><span class="va">dashboard_result</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/generate_dashboard.html">generate_dashboard</a></span><span class="op">(</span><span class="va">dashboard</span><span class="op">)</span></span>
+<span><span class="co"># Shows: pages generated, data files, rendering time</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="common-issues">Common Issues<a class="anchor" aria-label="anchor" href="#common-issues"></a>
 </h3>
 <div class="section level4">
-<h4 id="issue-visualization-not-showing">Issue: Visualization Not Showing<a class="anchor" aria-label="anchor" href="#issue-visualization-not-showing"></a>
+<h4 id="visualization-not-showing">Visualization Not Showing<a class="anchor" aria-label="anchor" href="#visualization-not-showing"></a>
 </h4>
-<p><strong>Problem:</strong> Chart appears empty or doesn’t render</p>
-<p><strong>Solutions:</strong></p>
-<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># 1. Check variable names match your data</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">my_data</span><span class="op">)</span>  <span class="co"># Verify column names</span></span>
+<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Check variable names</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">my_data</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># 2. Ensure data has rows</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">my_data</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># 3. Check for NA values</span></span>
+<span><span class="co"># Check for NA values</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">my_data</span><span class="op">$</span><span class="va">x_var</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># 4. Use drop_na_vars to remove NAs</span></span>
-<span><span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span></span>
-<span>  type <span class="op">=</span> <span class="st">"histogram"</span>,</span>
-<span>  x_var <span class="op">=</span> <span class="st">"age"</span>,</span>
-<span>  drop_na_vars <span class="op">=</span> <span class="cn">TRUE</span>  <span class="co"># Automatically removes NA rows</span></span>
-<span><span class="op">)</span></span></code></pre></div>
+<span><span class="co"># Use drop_na_vars if needed</span></span>
+<span><span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span>x_var <span class="op">=</span> <span class="st">"age"</span>, drop_na_vars <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level4">
-<h4 id="issue-page-not-found">Issue: Page Not Found<a class="anchor" aria-label="anchor" href="#issue-page-not-found"></a>
+<h4 id="tabs-in-wrong-order">Tabs in Wrong Order<a class="anchor" aria-label="anchor" href="#tabs-in-wrong-order"></a>
 </h4>
-<p><strong>Problem:</strong> Error when generating specific page</p>
-<p><strong>Solutions:</strong></p>
-<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Check exact page names (case-sensitive in code, but preview is case-insensitive)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">dashboard</span><span class="op">$</span><span class="va">pages</span><span class="op">)</span></span>
+<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Tabs appear in the order you call add_viz()</span></span>
+<span><span class="co"># To change order, change the order of add_viz() calls</span></span>
 <span></span>
-<span><span class="co"># Use exact name in preview</span></span>
-<span><span class="fu"><a href="../reference/generate_dashboard.html">generate_dashboard</a></span><span class="op">(</span><span class="va">dashboard</span>, preview <span class="op">=</span> <span class="st">"Analysis"</span><span class="op">)</span>  <span class="co"># Works</span></span>
-<span><span class="fu"><a href="../reference/generate_dashboard.html">generate_dashboard</a></span><span class="op">(</span><span class="va">dashboard</span>, preview <span class="op">=</span> <span class="st">"analysis"</span><span class="op">)</span>  <span class="co"># Also works!</span></span></code></pre></div>
-</div>
-<div class="section level4">
-<h4 id="issue-slow-dashboard-generation">Issue: Slow Dashboard Generation<a class="anchor" aria-label="anchor" href="#issue-slow-dashboard-generation"></a>
-</h4>
-<p><strong>Problem:</strong> Takes a long time to generate</p>
-<p><strong>Solutions:</strong></p>
-<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># 1. Use preview mode during development</span></span>
-<span><span class="fu"><a href="../reference/generate_dashboard.html">generate_dashboard</a></span><span class="op">(</span><span class="va">dashboard</span>, preview <span class="op">=</span> <span class="st">"WorkingPage"</span><span class="op">)</span></span>
+<span><span class="co"># Check the structure</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">viz</span><span class="op">)</span>  <span class="co"># See the tree!</span></span>
 <span></span>
-<span><span class="co"># 2. Enable incremental builds</span></span>
-<span><span class="fu"><a href="../reference/generate_dashboard.html">generate_dashboard</a></span><span class="op">(</span><span class="va">dashboard</span>, incremental <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># 3. Check data size</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/object.size.html" class="external-link">object.size</a></span><span class="op">(</span><span class="va">my_data</span><span class="op">)</span>  <span class="co"># If &gt; 10MB, consider filtering</span></span>
-<span></span>
-<span><span class="co"># 4. Reduce visualization complexity</span></span>
-<span><span class="co"># - Fewer bins in histograms</span></span>
-<span><span class="co"># - Sample large datasets</span></span>
-<span><span class="co"># - Use filters to reduce data per viz</span></span></code></pre></div>
-</div>
-<div class="section level4">
-<h4 id="issue-tabs-not-organizing-correctly">Issue: Tabs Not Organizing Correctly<a class="anchor" aria-label="anchor" href="#issue-tabs-not-organizing-correctly"></a>
-</h4>
-<p><strong>Problem:</strong> Tabs appear in wrong order or nesting</p>
-<p><strong>Solutions:</strong></p>
-<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># 1. Check tabgroup syntax</span></span>
-<span><span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span></span>
-<span>  type <span class="op">=</span> <span class="st">"histogram"</span>,</span>
-<span>  x_var <span class="op">=</span> <span class="st">"age"</span>,</span>
-<span>  tabgroup <span class="op">=</span> <span class="st">"demographics/age"</span>  <span class="co"># Slash notation for nesting</span></span>
-<span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># 2. Set explicit labels</span></span>
+<span><span class="co"># Use set_tabgroup_labels for custom names</span></span>
 <span><span class="va">viz</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/set_tabgroup_labels.html">set_tabgroup_labels</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
-<span>  demographics <span class="op">=</span> <span class="st">"📊 Demographics"</span>,</span>
-<span>  age <span class="op">=</span> <span class="st">"Age Groups"</span></span>
-<span><span class="op">)</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># 3. Use .insertion_index to control order (automatic)</span></span>
-<span><span class="co"># Tabs appear in the order you call add_viz()</span></span></code></pre></div>
+<span>  tab1 <span class="op">=</span> <span class="st">"First Tab"</span>,</span>
+<span>  tab2 <span class="op">=</span> <span class="st">"Second Tab"</span></span>
+<span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 </div>
-</div>
-<div class="section level3">
-<h3 id="getting-more-help">Getting More Help<a class="anchor" aria-label="anchor" href="#getting-more-help"></a>
-</h3>
-<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># View function documentation</span></span>
-<span><span class="op">?</span><span class="va">create_dashboard</span></span>
-<span><span class="op">?</span><span class="va">add_viz</span></span>
-<span><span class="op">?</span><span class="va">generate_dashboard</span></span>
-<span></span>
-<span><span class="co"># See advanced examples</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/vignette.html" class="external-link">vignette</a></span><span class="op">(</span><span class="st">"advanced-features"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Check all available vignettes</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/vignette.html" class="external-link">vignette</a></span><span class="op">(</span>package <span class="op">=</span> <span class="st">"dashboardr"</span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
@@ -529,37 +788,75 @@ suggestions when things go wrong:</p>
 <ul>
 <li>
 <strong>Advanced Features</strong>: See
-<code><a href="../articles/advanced-features.html">vignette("advanced-features")</a></code> for defaults, filters, nested
-tabs, and performance optimization</li>
+<code><a href="../articles/advanced-features.html">vignette("advanced-features")</a></code> for complex hierarchies,
+multi-dataset support, and more</li>
 <li>
 <strong>Visualization Details</strong>: See individual vignettes for
-each viz type</li>
-<li>
-<strong>Publishing</strong>: See <code><a href="../reference/publish_dashboard.html">?publish_dashboard</a></code> for
-deployment options</li>
+detailed parameters:
+<ul>
+<li><code><a href="../articles/timeline_vignette.html">vignette("timeline_vignette")</a></code></li>
+<li><code><a href="../articles/stackedbar_vignette.html">vignette("stackedbar_vignette")</a></code></li>
+<li><code><a href="../articles/heatmap_vignette.html">vignette("heatmap_vignette")</a></code></li>
+<li><code><a href="../articles/bar_vignette.html">vignette("bar_vignette")</a></code></li>
+</ul>
+</li>
 </ul>
 </div>
 <div class="section level2">
-<h2 id="resources">Resources<a class="anchor" aria-label="anchor" href="#resources"></a>
+<h2 id="the-grammar-in-action">The Grammar in Action<a class="anchor" aria-label="anchor" href="#the-grammar-in-action"></a>
 </h2>
-<ul>
-<li>GitHub: [your-repo-url]</li>
-<li>Documentation: Run <code><a href="../reference/create_dashboard.html">?create_dashboard</a></code> for function
-help</li>
-<li>Examples: Check the <code>demo_*.R</code> files in the package</li>
-</ul>
+<p>Let’s put it all together with a complete example:</p>
+<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># 1. DATA - What we're visualizing</span></span>
+<span><span class="va">data</span> <span class="op">&lt;-</span> <span class="va">survey_data</span></span>
+<span></span>
+<span><span class="co"># 2. VISUALIZATIONS - How we show it</span></span>
+<span><span class="va">viz</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_viz.html">create_viz</a></span><span class="op">(</span></span>
+<span>  type <span class="op">=</span> <span class="st">"histogram"</span>,</span>
+<span>  color_palette <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"#3498DB"</span><span class="op">)</span></span>
+<span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span>x_var <span class="op">=</span> <span class="st">"age"</span>, tabgroup <span class="op">=</span> <span class="st">"demographics"</span>, title <span class="op">=</span> <span class="st">"Age"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span>x_var <span class="op">=</span> <span class="st">"income"</span>, tabgroup <span class="op">=</span> <span class="st">"demographics"</span>, title <span class="op">=</span> <span class="st">"Income"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span>x_var <span class="op">=</span> <span class="st">"satisfaction"</span>, tabgroup <span class="op">=</span> <span class="st">"feedback"</span>, title <span class="op">=</span> <span class="st">"Satisfaction"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># 3. HIERARCHY - How we organize it (automatic from tabgroups!)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">viz</span><span class="op">)</span>  <span class="co"># See the tree!</span></span>
+<span></span>
+<span><span class="co"># 4. LAYOUT - How we arrange it</span></span>
+<span><span class="va">dashboard</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_dashboard.html">create_dashboard</a></span><span class="op">(</span></span>
+<span>  title <span class="op">=</span> <span class="st">"Survey Dashboard"</span>,</span>
+<span>  output_dir <span class="op">=</span> <span class="st">"survey_dashboard"</span></span>
+<span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/add_page.html">add_page</a></span><span class="op">(</span><span class="st">"Home"</span>, text <span class="op">=</span> <span class="st">"Welcome!"</span>, is_landing_page <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/add_page.html">add_page</a></span><span class="op">(</span><span class="st">"Analysis"</span>, data <span class="op">=</span> <span class="va">data</span>, visualizations <span class="op">=</span> <span class="va">viz</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># 5. STYLING - How it looks</span></span>
+<span><span class="va">dashboard</span><span class="op">$</span><span class="va">tabset_theme</span> <span class="op">&lt;-</span> <span class="st">"modern"</span></span>
+<span><span class="va">dashboard</span><span class="op">$</span><span class="va">tabset_colors</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>active_bg <span class="op">=</span> <span class="st">"#3498DB"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># 6. GENERATE - Bring it all together</span></span>
+<span><span class="fu"><a href="../reference/generate_dashboard.html">generate_dashboard</a></span><span class="op">(</span><span class="va">dashboard</span>, render <span class="op">=</span> <span class="cn">TRUE</span>, open <span class="op">=</span> <span class="st">"browser"</span><span class="op">)</span></span></code></pre></div>
+<p><strong>This is the grammar of dashboards in action!</strong>
+Composable, declarative, and powerful.</p>
 </div>
 <div class="section level2">
 <h2 id="getting-help">Getting Help<a class="anchor" aria-label="anchor" href="#getting-help"></a>
 </h2>
-<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Function documentation</span></span>
 <span><span class="op">?</span><span class="va">create_dashboard</span></span>
 <span><span class="op">?</span><span class="va">add_viz</span></span>
 <span><span class="op">?</span><span class="va">generate_dashboard</span></span>
 <span></span>
 <span><span class="co"># Package overview</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/help.html" class="external-link">help</a></span><span class="op">(</span>package <span class="op">=</span> <span class="st">"dashboardr"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/help.html" class="external-link">help</a></span><span class="op">(</span>package <span class="op">=</span> <span class="st">"dashboardr"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># See all vignettes</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/vignette.html" class="external-link">vignette</a></span><span class="op">(</span>package <span class="op">=</span> <span class="st">"dashboardr"</span><span class="op">)</span></span></code></pre></div>
+<hr>
+<p><strong>Happy dashboard building!</strong> 🎉</p>
+<p>Remember: <strong>Print your objects to see the structure!</strong>
+It’s the key to understanding how dashboardr builds your dashboards.</p>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>

@@ -19,6 +19,8 @@ combine_viz(...)
 
 A combined viz_collection
 
+A combined viz_collection
+
 ## Examples
 
 ``` r

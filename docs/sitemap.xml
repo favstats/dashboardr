@@ -1,7 +1,11 @@
 <urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
 <url><loc>https://favstats.github.io/dashboardr/404.html</loc></url>
+<url><loc>https://favstats.github.io/dashboardr/GRAMMAR_OF_DASHBOARDS.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/LICENSE-text.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/LICENSE.html</loc></url>
+<url><loc>https://favstats.github.io/dashboardr/REFACTORING_PLAN_ORIGINAL.html</loc></url>
+<url><loc>https://favstats.github.io/dashboardr/REFACTOR_COMPLETE.html</loc></url>
+<url><loc>https://favstats.github.io/dashboardr/VIGNETTE_UPDATES.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/articles/advanced-features.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/articles/bar_vignette.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/articles/getting-started.html</loc></url>
@@ -22,6 +26,7 @@
 <url><loc>https://favstats.github.io/dashboardr/reference/create_bar.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/create_blockquote.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/create_dashboard.html</loc></url>
+<url><loc>https://favstats.github.io/dashboardr/reference/create_dashboard_old.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/create_heatmap.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/create_histogram.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/create_stackedbar.html</loc></url>
@@ -29,11 +34,18 @@
 <url><loc>https://favstats.github.io/dashboardr/reference/create_timeline.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/create_viz.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/dot-check_for_icons.html</loc></url>
+<url><loc>https://favstats.github.io/dashboardr/reference/dot-generate_chunk_label.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/dot-generate_global_setup_chunk.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/dot-generate_quarto_yml.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/dot-generate_typed_viz.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/dot-install_iconify_extension.html</loc></url>
+<url><loc>https://favstats.github.io/dashboardr/reference/dot-process_template.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/dot-process_visualizations.html</loc></url>
+<url><loc>https://favstats.github.io/dashboardr/reference/dot-progress_bar.html</loc></url>
+<url><loc>https://favstats.github.io/dashboardr/reference/dot-progress_header.html</loc></url>
+<url><loc>https://favstats.github.io/dashboardr/reference/dot-progress_msg.html</loc></url>
+<url><loc>https://favstats.github.io/dashboardr/reference/dot-progress_section.html</loc></url>
+<url><loc>https://favstats.github.io/dashboardr/reference/dot-progress_step.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/dot-serialize_arg.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/dot-show_dashboard_summary.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/generate_dashboard.html</loc></url>

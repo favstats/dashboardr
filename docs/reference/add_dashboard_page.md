@@ -102,25 +102,6 @@ add_dashboard_page(
 
 The updated dashboard_project object
 
+The updated dashboard_project object
+
 ## Examples
-
-``` r
-if (FALSE) { # \dontrun{
-# Landing page
-dashboard <- create_dashboard("test") %>%
-  add_page("Welcome", text = "# Welcome\n\nThis is the main page.", is_landing_page = TRUE)
-
-# Analysis page with data and visualizations
-dashboard <- dashboard %>%
-  add_page("Demographics", data = survey_data, visualizations = demo_viz)
-
-# Text-only about page
-dashboard <- dashboard %>%
-  add_page("About", text = "# About This Study\n\nThis dashboard shows...")
-
-# Mixed content page
-dashboard <- dashboard %>%
-  add_page("Results", text = "# Key Findings\n\nHere are the results:",
-           visualizations = results_viz, icon = "ph:chart-line")
-} # }
-```

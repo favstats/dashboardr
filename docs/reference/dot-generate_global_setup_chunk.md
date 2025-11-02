@@ -1,8 +1,6 @@
-# Generate global setup chunk for QMD files
+# Collect unique filters from all visualizations
 
-Creates a comprehensive setup chunk that includes libraries, data
-loading, filtered datasets, and global settings to avoid repetition in
-individual visualizations.
+Collect unique filters from all visualizations
 
 ## Usage
 
@@ -16,6 +14,17 @@ individual visualizations.
 
   Page object containing data_path and visualizations
 
+- visualizations:
+
+  List of visualization specifications
+
 ## Value
+
+List of unique filter formulas with generated names, including source
+dataset Generate global setup chunk for QMD files
+
+Creates a comprehensive setup chunk that includes libraries, data
+loading, filtered datasets, and global settings to avoid repetition in
+individual visualizations.
 
 Character vector of setup chunk lines

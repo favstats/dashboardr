@@ -1,7 +1,6 @@
-# Check if any icons are used in the dashboard
+# Show custom progress message
 
-Internal function to detect if iconify shortcodes are present in the
-dashboard content.
+Show custom progress message
 
 ## Usage
 
@@ -14,6 +13,21 @@ dashboard content.
 - proj:
 
   A dashboard_project object
+
+- msg:
+
+  Message to display
+
+- icon:
+
+  Emoji or symbol to prefix
+
+- show_progress:
+
+  Whether to show progress Check if any icons are used in the dashboard
+
+  Internal function to detect if iconify shortcodes are present in the
+  dashboard content.
 
 ## Value
 

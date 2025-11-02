@@ -5,7 +5,7 @@
 Functions for creating and managing dashboards
 
 - [`create_dashboard()`](https://favstats.github.io/dashboardr/reference/create_dashboard.md)
-  : Create a dashboard
+  : Create a new dashboard project
 - [`add_dashboard_page()`](https://favstats.github.io/dashboardr/reference/add_dashboard_page.md)
   : Add a page to the dashboard
 - [`add_page()`](https://favstats.github.io/dashboardr/reference/add_page.md)
@@ -24,7 +24,7 @@ Functions for creating visualizations
 - [`create_viz()`](https://favstats.github.io/dashboardr/reference/create_viz.md)
   : Create a new visualization collection
 - [`add_viz()`](https://favstats.github.io/dashboardr/reference/add_viz.md)
-  : Add a visualization to the collection
+  : Parse tabgroup into normalized hierarchy
 - [`add_vizzes()`](https://favstats.github.io/dashboardr/reference/add_vizzes.md)
   : Add Multiple Visualizations at Once
 - [`combine_viz()`](https://favstats.github.io/dashboardr/reference/combine_viz.md)
@@ -84,8 +84,8 @@ Functions for adding content to dashboards
 S3 methods for displaying objects
 
 - [`print(`*`<viz_collection>`*`)`](https://favstats.github.io/dashboardr/reference/print.viz_collection.md)
-  : Print Visualization Collection
+  : Create a new dashboard project
 - [`print(`*`<dashboard_project>`*`)`](https://favstats.github.io/dashboardr/reference/print.dashboard_project.md)
-  : Print Dashboard Project
+  : Create iconify icon shortcode
 - [`` `+`( ``*`<viz_collection>`*`)`](https://favstats.github.io/dashboardr/reference/plus-.viz_collection.md)
   : Combine Visualization Collections with + Operator

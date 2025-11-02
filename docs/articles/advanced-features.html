@@ -507,82 +507,17 @@ visualizations efficiently.</p>
 <span><span class="fu"><a href="../reference/generate_dashboard.html">generate_dashboard</a></span><span class="op">(</span><span class="va">dashboard</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="performance-optimization">Performance Optimization<a class="anchor" aria-label="anchor" href="#performance-optimization"></a>
+<h2 id="performance-tips">Performance Tips<a class="anchor" aria-label="anchor" href="#performance-tips"></a>
 </h2>
-<p>When working with large dashboards or iterating during development,
-these performance features can dramatically speed up your workflow.</p>
-<div class="section level3">
-<h3 id="preview-mode">Preview Mode<a class="anchor" aria-label="anchor" href="#preview-mode"></a>
-</h3>
-<p>Generate only specific pages for rapid testing and iteration:</p>
+<p>For faster iteration during development:</p>
 <div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Generate only one page</span></span>
-<span><span class="fu"><a href="../reference/generate_dashboard.html">generate_dashboard</a></span><span class="op">(</span><span class="va">dashboard</span>, preview <span class="op">=</span> <span class="st">"Analysis"</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="co"># Skip rendering during development (faster)</span></span>
+<span><span class="fu"><a href="../reference/generate_dashboard.html">generate_dashboard</a></span><span class="op">(</span><span class="va">dashboard</span>, render <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Generate multiple specific pages</span></span>
-<span><span class="fu"><a href="../reference/generate_dashboard.html">generate_dashboard</a></span><span class="op">(</span><span class="va">dashboard</span>, preview <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Demographics"</span>, <span class="st">"Results"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><strong>Benefits:</strong> - <strong>10-50x faster</strong> for large
-dashboards - Perfect for testing changes to specific pages - Works with
-visualizations, data, and all page features</p>
-<p><strong>Use cases:</strong> - Quick iteration during development -
-Testing visualization tweaks - Debugging specific pages - CI/CD
-pipelines (test specific pages in parallel)</p>
-</div>
-<div class="section level3">
-<h3 id="incremental-builds">Incremental Builds<a class="anchor" aria-label="anchor" href="#incremental-builds"></a>
-</h3>
-<p>Skip regenerating unchanged pages on subsequent builds:</p>
-<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># First build - generates all pages</span></span>
-<span><span class="va">result1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/generate_dashboard.html">generate_dashboard</a></span><span class="op">(</span><span class="va">dashboard</span>, incremental <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Make changes to one page</span></span>
-<span><span class="co"># Second build - only regenerates changed pages</span></span>
-<span><span class="va">result2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/generate_dashboard.html">generate_dashboard</a></span><span class="op">(</span><span class="va">dashboard</span>, incremental <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Check what was rebuilt</span></span>
-<span><span class="va">result2</span><span class="op">$</span><span class="va">build_info</span><span class="op">$</span><span class="va">regenerated</span>  <span class="co"># Changed pages</span></span>
-<span><span class="va">result2</span><span class="op">$</span><span class="va">build_info</span><span class="op">$</span><span class="va">skipped</span>      <span class="co"># Unchanged pages</span></span></code></pre></div>
-<p><strong>How it works:</strong> - Tracks content hashes of each page -
-Only regenerates pages with changed content - Automatically detects
-changes to data, visualizations, text, etc.</p>
-<p><strong>Performance:</strong> - First build: Normal speed -
-Subsequent builds: Only changed pages (often &lt; 1 second!)</p>
-</div>
-<div class="section level3">
-<h3 id="maximum-speed-combine-both">Maximum Speed: Combine Both!<a class="anchor" aria-label="anchor" href="#maximum-speed-combine-both"></a>
-</h3>
-<p>For the ultimate development speed, combine preview mode with
-incremental builds:</p>
-<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Work on a specific page with incremental optimization</span></span>
-<span><span class="fu"><a href="../reference/generate_dashboard.html">generate_dashboard</a></span><span class="op">(</span><span class="va">dashboard</span>, </span>
-<span>                  preview <span class="op">=</span> <span class="st">"Analysis"</span>,</span>
-<span>                  incremental <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p><strong>Result:</strong> Sub-second builds! 🚀</p>
-<p><strong>Perfect for:</strong> - Large dashboards (20+ pages) -
-Iterative visualization refinement - Dashboards with expensive
-computations - Quick preview/test cycles</p>
-</div>
-<div class="section level3">
-<h3 id="performance-best-practices">Performance Best Practices<a class="anchor" aria-label="anchor" href="#performance-best-practices"></a>
-</h3>
-<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># 1. Use preview mode during development</span></span>
-<span><span class="fu"><a href="../reference/generate_dashboard.html">generate_dashboard</a></span><span class="op">(</span><span class="va">dashboard</span>, preview <span class="op">=</span> <span class="st">"WorkInProgress"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># 2. Enable incremental for iterative work</span></span>
-<span><span class="fu"><a href="../reference/generate_dashboard.html">generate_dashboard</a></span><span class="op">(</span><span class="va">dashboard</span>, incremental <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># 3. Combine for maximum speed</span></span>
-<span><span class="fu"><a href="../reference/generate_dashboard.html">generate_dashboard</a></span><span class="op">(</span><span class="va">dashboard</span>, preview <span class="op">=</span> <span class="st">"WorkInProgress"</span>, incremental <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># 4. Full build for final output</span></span>
+<span><span class="co"># Render when you want to see the final HTML</span></span>
 <span><span class="fu"><a href="../reference/generate_dashboard.html">generate_dashboard</a></span><span class="op">(</span><span class="va">dashboard</span>, render <span class="op">=</span> <span class="cn">TRUE</span>, open <span class="op">=</span> <span class="st">"browser"</span><span class="op">)</span></span></code></pre></div>
-<p><strong>Typical speed-ups:</strong> - 5-page dashboard: ~5 seconds →
-~1 second (5x) - 20-page dashboard: ~30 seconds → ~2 seconds (15x)<br>
-- 50-page dashboard: ~2 minutes → ~5 seconds (24x)</p>
-</div>
+<p>Quarto’s internal caching makes subsequent renders faster
+automatically.</p>
 </div>
 <div class="section level2">
 <h2 id="advanced-navigation">Advanced Navigation<a class="anchor" aria-label="anchor" href="#advanced-navigation"></a>
@@ -593,7 +528,7 @@ custom layouts.</p>
 <h3 id="dropdown-menus">Dropdown Menus<a class="anchor" aria-label="anchor" href="#dropdown-menus"></a>
 </h3>
 <p>Organize related pages into dropdown menus in the navbar:</p>
-<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Create a dropdown menu</span></span>
 <span><span class="va">reports_menu</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/navbar_menu.html">navbar_menu</a></span><span class="op">(</span></span>
 <span>  text <span class="op">=</span> <span class="st">"Reports"</span>,</span>
@@ -613,7 +548,7 @@ custom layouts.</p>
 <span></span>
 <span><span class="fu"><a href="../reference/generate_dashboard.html">generate_dashboard</a></span><span class="op">(</span><span class="va">dashboard</span><span class="op">)</span></span></code></pre></div>
 <p><strong>Multiple menus:</strong></p>
-<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Create multiple dropdown menus</span></span>
 <span><span class="va">reports_menu</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/navbar_menu.html">navbar_menu</a></span><span class="op">(</span></span>
 <span>  text <span class="op">=</span> <span class="st">"Reports"</span>,</span>
@@ -640,7 +575,7 @@ custom layouts.</p>
 <h3 id="navbar-alignment">Navbar Alignment<a class="anchor" aria-label="anchor" href="#navbar-alignment"></a>
 </h3>
 <p>Control the position of pages in the navbar:</p>
-<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">dashboard</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_dashboard.html">create_dashboard</a></span><span class="op">(</span><span class="va">...</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="co"># Left-aligned pages (default)</span></span>
 <span>  <span class="fu"><a href="../reference/add_page.html">add_page</a></span><span class="op">(</span><span class="st">"Home"</span>, <span class="va">...</span>, navbar_align <span class="op">=</span> <span class="st">"left"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
@@ -659,7 +594,7 @@ Analysis, Reports) - Right: Meta pages (About, Help, Settings)</p>
 </h3>
 <p>Add loading overlays to pages with heavy visualizations or data
 processing:</p>
-<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">dashboard</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_dashboard.html">create_dashboard</a></span><span class="op">(</span><span class="va">...</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="../reference/add_page.html">add_page</a></span><span class="op">(</span></span>
 <span>    <span class="st">"Heavy Analysis"</span>,</span>
@@ -680,7 +615,7 @@ datasets (&gt; 10MB) - Complex computations - Shiny integration</p>
 <h3 id="complete-navigation-example">Complete Navigation Example<a class="anchor" aria-label="anchor" href="#complete-navigation-example"></a>
 </h3>
 <p>Combining all navigation features:</p>
-<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Create dropdown menus</span></span>
 <span><span class="va">data_menu</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/navbar_menu.html">navbar_menu</a></span><span class="op">(</span></span>
 <span>  text <span class="op">=</span> <span class="st">"Data Views"</span>,</span>
@@ -737,8 +672,8 @@ datasets (&gt; 10MB) - Complex computations - Shiny integration</p>
 <span>    navbar_align <span class="op">=</span> <span class="st">"right"</span></span>
 <span>  <span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Generate with performance features</span></span>
-<span><span class="fu"><a href="../reference/generate_dashboard.html">generate_dashboard</a></span><span class="op">(</span><span class="va">dashboard</span>, incremental <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<span><span class="co"># Generate dashboard</span></span>
+<span><span class="fu"><a href="../reference/generate_dashboard.html">generate_dashboard</a></span><span class="op">(</span><span class="va">dashboard</span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
@@ -755,8 +690,7 @@ creation</li>
 <li>
 <code><a href="../reference/set_tabgroup_labels.html">?set_tabgroup_labels</a></code> - Custom tab labels</li>
 <li>
-<code><a href="../reference/generate_dashboard.html">?generate_dashboard</a></code> - Generation options (preview,
-incremental)</li>
+<code><a href="../reference/generate_dashboard.html">?generate_dashboard</a></code> - Dashboard generation options</li>
 <li>
 <code><a href="../reference/navbar_menu.html">?navbar_menu</a></code> - Dropdown menu creation</li>
 </ul>

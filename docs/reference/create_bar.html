@@ -65,7 +65,8 @@ Supports simple bars or grouped bars (when <code>group_var</code> is provided).<
 <span>  x_breaks <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  x_bin_labels <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  include_na <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  na_label <span class="op">=</span> <span class="st">"Missing"</span></span>
+<span>  na_label <span class="op">=</span> <span class="st">"Missing"</span>,</span>
+<span>  weight_var <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -136,6 +137,11 @@ Supports simple bars or grouped bars (when <code>group_var</code> is provided).<
 
 <dt id="arg-na-label">na_label<a class="anchor" aria-label="anchor" href="#arg-na-label"></a></dt>
 <dd><p>Character string. Label for NA category if <code>include_na = TRUE</code>. Defaults to "Missing".</p></dd>
+
+
+<dt id="arg-weight-var">weight_var<a class="anchor" aria-label="anchor" href="#arg-weight-var"></a></dt>
+<dd><p>Optional character string. Name of a weight variable to use for weighted
+aggregation. When provided, counts are computed as the sum of weights instead of simple counts.</p></dd>
 
 </dl></div>
     <div class="section level2">
