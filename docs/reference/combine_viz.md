@@ -1,7 +1,6 @@
 # Combine visualization collections
 
-Alternative function to combine viz_collection objects. Use this if
-the + operator does not work (e.g., with devtools::load_all()).
+Alternative function to combine viz_collection objects.
 
 ## Usage
 

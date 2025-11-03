@@ -4,6 +4,58 @@
 dashboards](https://quarto.org/docs/dashboards/) in R with minimal code.
 Perfect for survey data, analytics reports, and data storytelling.
 
+## The Grammar of Dashboards
+
+Just as ggplot2 gave us a **grammar of graphics**, dashboardr has the
+ambitious goal of providing a **grammar of dashboards**. Instead of
+wrestling with configuration files and layout code, you compose
+dashboards from five intuitive building blocks:
+
+**Data** + **Visualizations** + **Layout** + **Navigation** +
+**Styling** = Dashboard
+
+``` r
+library(dashboardr)
+
+# Prepare data
+data <- mtcars %>%
+  mutate(
+    cyl_label = paste(cyl, "cylinders"),
+    am_label = ifelse(am == 0, "Automatic", "Manual")
+  )
+
+# Create visualizations + # Layout (e.g. via tabgroups)
+viz <- create_viz(
+  type = "histogram",
+  x_var = "mpg"
+) %>%
+  add_viz(title = "Fuel Efficiency", tabgroup = "overview") %>%
+  add_viz(
+    x_var = "hp",
+    title = "Horsepower",
+    tabgroup = "overview"
+  )
+
+# Create dashboard + Styling (tabset_theme) + Navigation (pages)
+dashboard <- create_dashboard(
+  title = "Car Analysis Dashboard",
+  output_dir = "my_dashboard",
+  tabset_theme = "modern"           
+) %>%
+  add_page(
+    "Analysis",
+    data = data,
+    visualizations = viz,
+    is_landing_page = TRUE
+  )
+
+# Generate
+generate_dashboard(dashboard)
+```
+
+This creates a complete Quarto dashboard with interactive
+visualizations!
+
 ## ✨ Features
 
 - 🎨 **6 Built-in Themes** - Modern, minimal, pills, classic, underline,
@@ -26,6 +78,8 @@ Perfect for survey data, analytics reports, and data storytelling.
 # install.packages("pak")
 pak::pak("favstats/dashboardr")
 ```
+
+## Quick Start
 
 ## Core Workflow: Data → Visualizations → Dashboard
 
@@ -71,14 +125,16 @@ print(my_viz)
 #>    └─ 📉 HISTOGRAM: Income Distribution
 ```
 
-**Key concepts:** -
-[`create_viz()`](https://favstats.github.io/dashboardr/reference/create_viz.md):
-Sets defaults that apply to all visualizations -
-[`add_viz()`](https://favstats.github.io/dashboardr/reference/add_viz.md):
-Adds one visualization, can override any default - `tabgroup`: Organizes
-visualizations into tabs (e.g., “overview”, “demographics/age”) -
-[`print()`](https://rdrr.io/r/base/print.html): Shows the structure
-before generating
+**Key concepts:**
+
+- [`create_viz()`](https://favstats.github.io/dashboardr/reference/create_viz.md):
+  Sets defaults that apply to all visualizations
+- [`add_viz()`](https://favstats.github.io/dashboardr/reference/add_viz.md):
+  Adds one visualization, can override any default
+- `tabgroup`: Organizes visualizations into tabs (e.g., “overview”,
+  “demographics/age”)
+- [`print()`](https://rdrr.io/r/base/print.html): Shows the structure
+  before generating
 
 ### Step 2: Build Dashboard Structure
 
@@ -118,15 +174,17 @@ dashboard <- create_dashboard(
 print(dashboard)
 ```
 
-**Key concepts:** -
-[`create_dashboard()`](https://favstats.github.io/dashboardr/reference/create_dashboard.md):
-Sets dashboard-level options (title, theme, output location) -
-[`add_page()`](https://favstats.github.io/dashboardr/reference/add_page.md):
-Adds a page to the navbar -
-[`md_text()`](https://favstats.github.io/dashboardr/reference/md_text.md):
-Creates markdown text blocks (headings, paragraphs, etc.) - `data`:
-Attaches your dataset to a page (available to all visualizations on that
-page) - `is_landing_page`: Makes this the default page users see first
+**Key concepts:**
+
+- [`create_dashboard()`](https://favstats.github.io/dashboardr/reference/create_dashboard.md):
+  Sets dashboard-level options (title, theme, output location)
+- [`add_page()`](https://favstats.github.io/dashboardr/reference/add_page.md):
+  Adds a page to the navbar
+- [`md_text()`](https://favstats.github.io/dashboardr/reference/md_text.md):
+  Creates markdown text blocks (headings, paragraphs, etc.)
+- `data`: Attaches your dataset to a page (available to all
+  visualizations on that page)
+- `is_landing_page`: Makes this the default page users see first
 
 ### Step 3: Generate HTML
 
@@ -145,10 +203,13 @@ generate_dashboard(dashboard, render = TRUE)
 generate_dashboard(dashboard, render = TRUE, open = "browser")
 ```
 
-**Key concepts:** - `render = FALSE`: Only creates Quarto files (.qmd),
-doesn’t run Quarto - `render = TRUE`: Creates files AND renders to HTML
-(requires Quarto CLI) - `open = "browser"`: Opens the dashboard in your
-browser after rendering
+**Key concepts:**
+
+- `render = FALSE`: Only creates Quarto files (.qmd), doesn’t run Quarto
+- `render = TRUE`: Creates files AND renders to HTML (requires Quarto
+  151. 
+- `open = "browser"`: Opens the dashboard in your browser after
+  rendering
 
 ### Complete Example
 
@@ -205,49 +266,11 @@ print(combined)
 #>    └─ 📉 HISTOGRAM: Satisfaction
 ```
 
-**When to use `+`:** - Organize complex dashboards into logical
-modules - Combine visualizations from different scripts/team members -
-Keep related visualizations grouped together in your code
+**When to use `+`:**
 
-## 🎯 Try the Live Demos!
-
-Want to see dashboardr in action? We include two built-in demo
-dashboards:
-
-### Tutorial Dashboard - Perfect for Learning
-
-``` r
-# Run the tutorial dashboard (requires 'gssr' package)
-tutorial_dashboard()
-```
-
-The tutorial dashboard demonstrates:
-
-- ✅ Basic stacked bar charts and heatmaps
-- ✅ Tabset grouping for organizing visualizations
-- ✅ Standalone charts without tabsets
-- ✅ Text-only pages
-- ✅ Icons throughout
-
-**Output:** Opens in your browser automatically!
-
-### Showcase Dashboard - Full Feature Demo
-
-``` r
-# Run the comprehensive showcase dashboard
-showcase_dashboard()
-```
-
-The showcase dashboard includes:
-
-- ✅ Multiple tabset groups (Demographics, Politics, Social Issues)
-- ✅ 9 different visualizations across 5 pages
-- ✅ Card layouts with images
-- ✅ Mixed content pages (text + visualizations)
-- ✅ All advanced features in one place
-
-**See the full demo guide:** [Live Demos
-Vignette](https://favstats.github.io/dashboardr/articles/demos.html)
+- Organize complex dashboards into logical modules
+- Combine visualizations from different scripts/team members
+- Keep related visualizations grouped together in your code
 
 ## Key Features
 
@@ -388,23 +411,11 @@ dashboard <- create_dashboard(
   - [`vignette("stackedbars_vignette")`](https://favstats.github.io/dashboardr/articles/stackedbars_vignette.md)
   - [`vignette("heatmap_vignette")`](https://favstats.github.io/dashboardr/articles/heatmap_vignette.md)
 
-## Examples
-
-Check out the demo scripts in the package:
-
-``` r
-# View available demos
-list.files(system.file("demo", package = "dashboardr"))
-
-# Run a demo
-source(system.file("demo/demo_add_vizzes_dashboard.R", package = "dashboardr"))
-```
-
 ## Real-World Use Cases
 
+- 🎓 **Academic Research** - Present study results interactively
 - 📊 **Survey Analysis** - Visualize Likert-scale responses across waves
 - 📈 **Business Analytics** - Track KPIs over time by department
-- 🎓 **Academic Research** - Present study results interactively
 - 💼 **Consulting Reports** - Create client-ready dashboards
 - 📱 **Data Journalism** - Build interactive data stories
 

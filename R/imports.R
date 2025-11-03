@@ -6,6 +6,5 @@
 #' @importFrom digest digest
 #' @importFrom highcharter highchart hc_chart hc_title hc_xAxis hc_yAxis hc_plotOptions hc_add_series list_parse2
 #' @importFrom htmltools div img h5 tagAppendChild
-#' @import gssr
 #' @importFrom utils data
 NULL
