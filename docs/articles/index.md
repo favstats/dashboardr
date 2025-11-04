@@ -12,8 +12,8 @@
 
 ### Live Demos
 
-- [Live Demos: Tutorial & Showcase
-  Dashboards](https://favstats.github.io/dashboardr/articles/demos.md):
+- [UNKNOWN
+  TITLE](https://favstats.github.io/dashboardr/articles/demos.md):
 
 ### Visualization Types
 

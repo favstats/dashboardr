@@ -15,6 +15,28 @@ status](https://www.r-pkg.org/badges/version/dashboardr)](https://CRAN.R-project
 dashboards](https://quarto.org/docs/dashboards/) in R with minimal code.
 Perfect for survey data, analytics reports, and data storytelling.
 
+## Installation
+
+``` r
+# install.packages("pak")
+pak::pak("favstats/dashboardr")
+```
+
+## See some Example Dashboards
+
+`dashboardr` includes two built-in demo dashboards that showcase its
+capabilities:
+
+1.  [**Tutorial
+    Dashboard**](https://favstats.github.io/dashboardr/live-demos/tutorial/docs/index.html) -
+    A beginner-friendly dashboard demonstrating basic features
+2.  [**Showcase
+    Dashboard**](https://favstats.github.io/dashboardr/live-demos/showcase/docs/index.html) -
+    A comprehensive dashboard showcasing advanced features
+
+Both dashboards use real data from the General Social Survey (GSS) and
+can be generated with a single function call!
+
 ## The Grammar of Dashboards
 
 Just as ggplot2 gave us a **grammar of graphics**, dashboardr has the
@@ -28,19 +50,18 @@ dashboards from five intuitive building blocks:
 ``` r
 library(dashboardr)
 
-# Prepare data
+# Prepare Data
 data <- mtcars %>%
   mutate(
     cyl_label = paste(cyl, "cylinders"),
     am_label = ifelse(am == 0, "Automatic", "Manual")
   )
 
-# Create visualizations + # Layout (e.g. via tabgroups)
+# Create Visualizations + # Layout (e.g. via tabgroups)
 viz <- create_viz(
   type = "histogram",
   x_var = "mpg"
 ) %>%
-  add_viz(title = "Fuel Efficiency", tabgroup = "overview") %>%
   add_viz(
     x_var = "hp",
     title = "Horsepower",
@@ -69,8 +90,13 @@ visualizations!
 
 ## ✨ Features
 
-- 🎨 **6 Built-in Themes** - Modern, minimal, pills, classic, underline,
-  segmented
+`dashboardr` works with **pre-rendered static HTMLs** which in many
+cases makes it faster to load than a Shiny application (provided a good
+internet connection). It also is more robust since no new graphs have to
+be calculated.
+
+- 🎨 **6 Built-in Tabset Themes** - Modern, minimal, pills, classic,
+  underline, segmented
 - 📊 **Rich Visualizations** - Histograms, timelines, stacked bars,
   heatmaps, bar charts
 - 🎯 **Smart Defaults** - Set parameters once, reuse everywhere
@@ -79,18 +105,9 @@ visualizations!
 - 🎭 **Nested Tabgroups** - Create hierarchical tab structures
 - ⚡ **Vectorized Creation** - Generate multiple visualizations
   efficiently
-- 🎬 **Loading Overlays** - 4 animated themes
+- 🎬 **Loading Overlays** - 4 animated overlay themes
 - 🧭 **Flexible Navigation** - Navbar menus, dropdown menus, icons
 - 📱 **Responsive Design** - Works on all screen sizes
-
-## Installation
-
-``` r
-# install.packages("pak")
-pak::pak("favstats/dashboardr")
-```
-
-## Quick Start
 
 ## Core Workflow: Data → Visualizations → Dashboard
 
@@ -125,12 +142,17 @@ my_viz <- create_viz(
 
 # See what you built
 print(my_viz)
-#> 📊 VISUALIZATION COLLECTION
-#> Total visualizations: 2
-#> STRUCTURE:
-#> └─ 📁 overview
-#>    ├─ 📉 HISTOGRAM: Age Distribution
-#>    └─ 📉 HISTOGRAM: Income Distribution
+#> 
+#> ╔══════════════════════════════════════════════════════════════════════════
+#> ║ 📊 VISUALIZATION COLLECTION
+#> ╠══════════════════════════════════════════════════════════════════════════
+#> ║ Total visualizations: 2
+#> ║
+#> ║ STRUCTURE:
+#> ║ └─ 📁 overview
+#> ║    ├─ 📉 HISTOGRAM: Age Distribution
+#> ║    └─ 📉 HISTOGRAM: Income Distribution
+#> ╚══════════════════════════════════════════════════════════════════════════
 ```
 
 **Key concepts:**
@@ -146,9 +168,11 @@ print(my_viz)
 Use `create_dashboard()` to configure, then `add_page()` for each page:
 
 ``` r
+survey_data <- cars
+
 dashboard <- create_dashboard(
   title = "Employee Survey Dashboard",
-  output_dir = "my_first_dashboard",
+  output_dir = "my_first_dashboard", # where to put the qmd files
   tabset_theme = "modern"  # Tab styling
 ) %>%
   # Landing page with text
@@ -170,9 +194,29 @@ dashboard <- create_dashboard(
     visualizations = my_viz,    # The viz you created above
     icon = "ph:chart-line"      # Optional icon
   )
+#> Detected package repo at: /Users/favstats/Dropbox/postdoc/dashboardr
+#> Writing output outside the package at: /Users/favstats/Dropbox/postdoc/my_first_dashboard (set allow_inside_pkg = TRUE to disable relocation)
+#> Output directory already exists: /Users/favstats/Dropbox/postdoc/my_first_dashboard
+#> Files may be overwritten when generate_dashboard() is called.
+#> Dashboard project initialized at: /Users/favstats/Dropbox/postdoc/my_first_dashboard
 
 # See the dashboard structure
 print(dashboard)
+#> 
+#> ╔══════════════════════════════════════════════════════════════════════════
+#> ║ 🎨 DASHBOARD PROJECT
+#> ╠══════════════════════════════════════════════════════════════════════════
+#> ║ 📝 Title: Employee Survey Dashboard
+#> ║ 📁 Output: /Users/favstats/Dropbox/postdoc/my_first_dashboard
+#> ║
+#> ║ ⚙️  FEATURES:
+#> ║    • 🔍 Search
+#> ║    • 🗂️  Tabs: modern
+#> ║
+#> ║ 📄 PAGES (2):
+#> ║ ├─ 📄 Home [🏠 Landing]
+#> ║ └─ 📄 Analysis [🎯 Icon, 💾 1 dataset]
+#> ╚══════════════════════════════════════════════════════════════════════════
 ```
 
 **Key concepts:**
@@ -426,4 +470,19 @@ MIT License - see [LICENSE.md](LICENSE.md) for details.
 
 ``` r
 citation("dashboardr")
+#> To cite package 'dashboardr' in publications use:
+#> 
+#>   Last F (2025). _dashboardr: What the Package Does (One Line, Title
+#>   Case)_. R package version 0.0.0.9000,
+#>   <https://favstats.github.io/dashboardr/>.
+#> 
+#> A BibTeX entry for LaTeX users is
+#> 
+#>   @Manual{,
+#>     title = {dashboardr: What the Package Does (One Line, Title Case)},
+#>     author = {First Last},
+#>     year = {2025},
+#>     note = {R package version 0.0.0.9000},
+#>     url = {https://favstats.github.io/dashboardr/},
+#>   }
 ```

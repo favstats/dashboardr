@@ -2,9 +2,8 @@
 
 ## Introduction: A Grammar of Dashboards
 
-`ggplot2` revolutionized data visualization by providing a **grammar of
-graphics**. The goal of `dashboardr` is the ambitious goal creating a
-**grammar of dashboards** for organizing and presenting your analyses.
+Just as ggplot2 gave us a **grammar of graphics**, dashboardr has the
+ambitious goal of providing a **grammar of dashboards**.
 
 ### What is a Grammar?
 
@@ -66,11 +65,17 @@ A grammar provides:
 By combining these through a **fluent piping interface** (`%>%`), you
 build dashboards that are both powerful and maintainable.
 
+## Installation and Loading
+
+``` r
+# Install from GitHub
+devtools::install_github("favstats/dashboardr")
+```
+
 ``` r
 library(dashboardr)
 #> Error in get(paste0(generic, ".", class), envir = get_method_env()) : 
 #>   object 'type_sum.accel' not found
-library(dplyr)
 ```
 
 ## Core Workflow: Three Steps
@@ -193,13 +198,6 @@ generate_dashboard(dashboard, render = TRUE, open = "browser")
 **Why two steps?** - `render = FALSE`: Fast iteration. Check the .qmd
 files, make sure structure is correct. - `render = TRUE`: Final output.
 Creates the actual interactive HTML dashboard.
-
-## Installation
-
-``` r
-# Install from GitHub
-# devtools::install_github("favstats/dashboardr")
-```
 
 ## The Power of Print: Visualizing Structure
 

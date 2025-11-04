@@ -1,14 +1,25 @@
-# Live Demos: Tutorial & Showcase Dashboards
+# 
+
+|                                                   |
+|---------------------------------------------------|
+| tle: “Live Demos: Tutorial & Showcase Dashboards” |
+| tput: rmarkdown::html_vignette                    |
+| gnette: \>                                        |
+| %                                                 |
+| %                                                 |
+| %                                                 |
 
 ## Overview
 
 `dashboardr` includes two built-in demo dashboards that showcase its
 capabilities:
 
-1.  **Tutorial Dashboard** - A beginner-friendly dashboard demonstrating
-    basic features
-2.  **Showcase Dashboard** - A comprehensive dashboard showcasing
-    advanced features
+1.  [**Tutorial
+    Dashboard**](https://favstats.github.io/dashboardr/live-demos/tutorial/docs/index.html) -
+    A beginner-friendly dashboard demonstrating basic features
+2.  [**Showcase
+    Dashboard**](https://favstats.github.io/dashboardr/live-demos/showcase/docs/index.html) -
+    A comprehensive dashboard showcasing advanced features
 
 Both dashboards use real data from the General Social Survey (GSS) and
 can be generated with a single function call!

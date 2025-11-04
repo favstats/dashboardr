@@ -4,7 +4,7 @@ output: github_document
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-```{r, include = FALSE}
+```{r, include = FALSE, warning=FALSE, message=F}
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
@@ -12,6 +12,8 @@ knitr::opts_chunk$set(
   out.width = "100%",
   eval = FALSE
 )
+library(tidyverse)
+library(dashboardr)
 ```
 
 # dashboardr <img src="man/figures/logo.svg" align="right" height="139" alt="" />
@@ -25,10 +27,20 @@ knitr::opts_chunk$set(
 
 ## Installation
 
-```{r install}
+```{r install, eval = F}
 # install.packages("pak")
 pak::pak("favstats/dashboardr")
 ```
+
+
+## See some Example Dashboards
+
+`dashboardr` includes two built-in demo dashboards that showcase its capabilities:
+
+1. [**Tutorial Dashboard**](https://favstats.github.io/dashboardr/live-demos/tutorial/docs/index.html) - A beginner-friendly dashboard demonstrating basic features
+2. [**Showcase Dashboard**](https://favstats.github.io/dashboardr/live-demos/showcase/docs/index.html) - A comprehensive dashboard showcasing advanced features
+
+Both dashboards use real data from the General Social Survey (GSS) and can be generated with a single function call! 
 
 ## The Grammar of Dashboards
 
@@ -79,14 +91,16 @@ This creates a complete Quarto dashboard with interactive visualizations!
 
 ## ✨ Features
 
-- 🎨 **6 Built-in Themes** - Modern, minimal, pills, classic, underline, segmented
+`dashboardr` works with **pre-rendered static HTMLs** which in many cases makes it faster to load than a Shiny application (provided a good internet connection). It also is more robust since no new graphs have to be calculated.
+
+- 🎨 **6 Built-in Tabset Themes** - Modern, minimal, pills, classic, underline, segmented
 - 📊 **Rich Visualizations** - Histograms, timelines, stacked bars, heatmaps, bar charts
 - 🎯 **Smart Defaults** - Set parameters once, reuse everywhere
 - 🔍 **Advanced Filtering** - Row-level filters for each visualization
 - 📚 **Multi-Dataset Support** - Work with multiple datasets seamlessly
 - 🎭 **Nested Tabgroups** - Create hierarchical tab structures
 - ⚡ **Vectorized Creation** - Generate multiple visualizations efficiently
-- 🎬 **Loading Overlays** - 4 animated themes
+- 🎬 **Loading Overlays** - 4 animated overlay themes
 - 🧭 **Flexible Navigation** - Navbar menus, dropdown menus, icons
 - 📱 **Responsive Design** - Works on all screen sizes
 
@@ -100,7 +114,7 @@ Creating a dashboard follows a simple three-step pattern:
 
 Use `create_viz()` to set shared defaults, then `add_viz()` for each chart:
 
-```{r step1, eval=FALSE}
+```{r step1, eval=T}
 library(dashboardr)
 
 # Set defaults once (type, colors, etc.)
@@ -124,12 +138,6 @@ my_viz <- create_viz(
 
 # See what you built
 print(my_viz)
-#> 📊 VISUALIZATION COLLECTION
-#> Total visualizations: 2
-#> STRUCTURE:
-#> └─ 📁 overview
-#>    ├─ 📉 HISTOGRAM: Age Distribution
-#>    └─ 📉 HISTOGRAM: Income Distribution
 ```
 
 **Key concepts:**
@@ -143,12 +151,10 @@ print(my_viz)
 
 Use `create_dashboard()` to configure, then `add_page()` for each page:
 
-```{r, include=F}
-survey_data <- cars
-```
-
 
 ```{r step2, eval=T}
+survey_data <- cars
+
 dashboard <- create_dashboard(
   title = "Employee Survey Dashboard",
   output_dir = "my_first_dashboard", # where to put the qmd files
@@ -332,7 +338,7 @@ viz <- create_viz(
 
 ### 📚 Multi-Dataset Support
 
-```{r multi-dataset}
+```{r multi-dataset, eval=F}
 dashboard %>%
   add_page(
     "Analysis",
@@ -347,7 +353,7 @@ dashboard %>%
 
 ### 🎬 Loading Overlays
 
-```{r overlay}
+```{r overlay, eval=FALSE}
 dashboard %>%
   add_page(
     "Reports",
@@ -423,6 +429,6 @@ MIT License - see [LICENSE.md](LICENSE.md) for details.
 
 ## Citation
 
-```{r citation, eval=FALSE}
+```{r citation, eval=T}
 citation("dashboardr")
 ```

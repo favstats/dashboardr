@@ -90,10 +90,9 @@
 <div class="section level2">
 <h2 id="introduction-a-grammar-of-dashboards">Introduction: A Grammar of Dashboards<a class="anchor" aria-label="anchor" href="#introduction-a-grammar-of-dashboards"></a>
 </h2>
-<p><code>ggplot2</code> revolutionized data visualization by providing a
-<strong>grammar of graphics</strong>. The goal of
-<code>dashboardr</code> is the ambitious goal creating a <strong>grammar
-of dashboards</strong> for organizing and presenting your analyses.</p>
+<p>Just as ggplot2 gave us a <strong>grammar of graphics</strong>,
+dashboardr has the ambitious goal of providing a <strong>grammar of
+dashboards</strong>.</p>
 <div class="section level3">
 <h3 id="what-is-a-grammar">What is a Grammar?<a class="anchor" aria-label="anchor" href="#what-is-a-grammar"></a>
 </h3>
@@ -162,12 +161,18 @@ components:</p>
 <p>By combining these through a <strong>fluent piping interface</strong>
 (<code>%&gt;%</code>), you build dashboards that are both powerful and
 maintainable.</p>
+</div>
+</div>
+<div class="section level2">
+<h2 id="installation-and-loading">Installation and Loading<a class="anchor" aria-label="anchor" href="#installation-and-loading"></a>
+</h2>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Install from GitHub</span></span>
+<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"favstats/dashboardr"</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://favstats.github.io/dashboardr/">dashboardr</a></span><span class="op">)</span></span>
 <span><span class="co">#&gt; Error in get(paste0(generic, ".", class), envir = get_method_env()) : </span></span>
-<span><span class="co">#&gt;   object 'type_sum.accel' not found</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span></code></pre></div>
-</div>
+<span><span class="co">#&gt;   object 'type_sum.accel' not found</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="core-workflow-three-steps">Core Workflow: Three Steps<a class="anchor" aria-label="anchor" href="#core-workflow-three-steps"></a>
@@ -178,7 +183,7 @@ maintainable.</p>
 </h3>
 <p><strong>What happens:</strong> You create a collection of
 charts/graphs that share common properties.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Set defaults that ALL visualizations will inherit</span></span>
 <span><span class="va">my_viz</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_viz.html">create_viz</a></span><span class="op">(</span></span>
 <span>  type <span class="op">=</span> <span class="st">"histogram"</span>,          <span class="co"># All will be histograms</span></span>
@@ -189,7 +194,7 @@ charts/graphs that share common properties.</p>
 <code>type = "histogram"</code> for every chart, you set it once. This
 is the <em>Data</em> layer of the grammar - defining what kind of
 visualization to use.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Add individual visualizations</span></span>
 <span><span class="va">my_viz</span> <span class="op">&lt;-</span> <span class="va">my_viz</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span></span>
@@ -212,7 +217,7 @@ the chart appears in the dashboard’s tab structure.</p>
 </h3>
 <p><strong>What happens:</strong> You configure the dashboard and add
 pages to it.</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Configure dashboard-level settings</span></span>
 <span><span class="va">dashboard</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_dashboard.html">create_dashboard</a></span><span class="op">(</span></span>
 <span>  title <span class="op">=</span> <span class="st">"Employee Survey Dashboard"</span>,  <span class="co"># Appears at the top</span></span>
@@ -220,7 +225,7 @@ pages to it.</p>
 <span>  tabset_theme <span class="op">=</span> <span class="st">"modern"</span>                <span class="co"># Styling: how tabs look</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p><strong>Add pages with different content:</strong></p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Text-only landing page (Navigation layer)</span></span>
 <span><span class="va">dashboard</span> <span class="op">&lt;-</span> <span class="va">dashboard</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="../reference/add_page.html">add_page</a></span><span class="op">(</span></span>
@@ -241,7 +246,7 @@ pages to it.</p>
 strings, each becomes a line. Empty strings (<code>""</code>) create
 blank lines. Supports all markdown: <code>#</code> for headings,
 <code>**bold**</code>, <code>-</code> for lists, etc.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Data + visualizations page</span></span>
 <span><span class="va">dashboard</span> <span class="op">&lt;-</span> <span class="va">dashboard</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="../reference/add_page.html">add_page</a></span><span class="op">(</span></span>
@@ -260,7 +265,7 @@ created in Step 1.</p>
 </h3>
 <p><strong>What happens:</strong> dashboardr creates Quarto files (.qmd)
 and optionally renders them to HTML.</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Option A: Just create files (fast, for development)</span></span>
 <span><span class="fu"><a href="../reference/generate_dashboard.html">generate_dashboard</a></span><span class="op">(</span><span class="va">dashboard</span>, render <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="co"># Creates: my_dashboard/home.qmd, my_dashboard/analysis.qmd, etc.</span></span>
@@ -277,13 +282,6 @@ iteration. Check the .qmd files, make sure structure is correct. -
 <code>render = TRUE</code>: Final output. Creates the actual interactive
 HTML dashboard.</p>
 </div>
-</div>
-<div class="section level2">
-<h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
-</h2>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Install from GitHub</span></span>
-<span><span class="co"># devtools::install_github("favstats/dashboardr")</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="the-power-of-print-visualizing-structure">The Power of Print: Visualizing Structure<a class="anchor" aria-label="anchor" href="#the-power-of-print-visualizing-structure"></a>
