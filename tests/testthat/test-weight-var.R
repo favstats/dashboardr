@@ -8,7 +8,7 @@ test_that("create_histogram accepts weight_var parameter", {
     add_viz(title = "Weighted Histogram")
   
   expect_s3_class(viz, "viz_collection")
-  expect_equal(viz$visualizations[[1]]$weight_var, "weight")
+  expect_equal(viz$items[[1]]$weight_var, "weight")
 })
 
 test_that("create_bar accepts weight_var parameter", {
@@ -21,7 +21,7 @@ test_that("create_bar accepts weight_var parameter", {
     add_viz(title = "Weighted Bar")
   
   expect_s3_class(viz, "viz_collection")
-  expect_equal(viz$visualizations[[1]]$weight_var, "weight")
+  expect_equal(viz$items[[1]]$weight_var, "weight")
 })
 
 test_that("create_stackedbar accepts weight_var parameter", {
@@ -40,7 +40,7 @@ test_that("create_stackedbar accepts weight_var parameter", {
     add_viz(title = "Weighted Stacked Bar")
   
   expect_s3_class(viz, "viz_collection")
-  expect_equal(viz$visualizations[[1]]$weight_var, "weight")
+  expect_equal(viz$items[[1]]$weight_var, "weight")
 })
 
 test_that("create_timeline accepts weight_var parameter", {
@@ -59,7 +59,7 @@ test_that("create_timeline accepts weight_var parameter", {
     add_viz(title = "Weighted Timeline")
   
   expect_s3_class(viz, "viz_collection")
-  expect_equal(viz$visualizations[[1]]$weight_var, "weight")
+  expect_equal(viz$items[[1]]$weight_var, "weight")
 })
 
 test_that("create_heatmap accepts weight_var parameter", {
@@ -80,7 +80,7 @@ test_that("create_heatmap accepts weight_var parameter", {
     add_viz(title = "Weighted Heatmap")
   
   expect_s3_class(viz, "viz_collection")
-  expect_equal(viz$visualizations[[1]]$weight_var, "weight")
+  expect_equal(viz$items[[1]]$weight_var, "weight")
 })
 
 test_that("weight_var defaults to NULL when not specified", {
@@ -89,7 +89,7 @@ test_that("weight_var defaults to NULL when not specified", {
   viz <- create_viz(type = "histogram", x_var = "x") %>%
     add_viz(title = "Unweighted")
   
-  expect_true(is.null(viz$visualizations[[1]]$weight_var))
+  expect_true(is.null(viz$items[[1]]$weight_var))
 })
 
 test_that("weight_var can be set via create_viz defaults", {
@@ -102,8 +102,8 @@ test_that("weight_var can be set via create_viz defaults", {
     add_viz(title = "Viz 1") %>%
     add_viz(title = "Viz 2")
   
-  expect_equal(viz$visualizations[[1]]$weight_var, "weight")
-  expect_equal(viz$visualizations[[2]]$weight_var, "weight")
+  expect_equal(viz$items[[1]]$weight_var, "weight")
+  expect_equal(viz$items[[2]]$weight_var, "weight")
 })
 
 test_that("weight_var can be overridden in add_viz", {
@@ -117,7 +117,7 @@ test_that("weight_var can be overridden in add_viz", {
     add_viz(title = "Default weight") %>%
     add_viz(title = "Override weight", weight_var = "weight2")
   
-  expect_equal(viz$visualizations[[1]]$weight_var, "weight1")
-  expect_equal(viz$visualizations[[2]]$weight_var, "weight2")
+  expect_equal(viz$items[[1]]$weight_var, "weight1")
+  expect_equal(viz$items[[2]]$weight_var, "weight2")
 })
 

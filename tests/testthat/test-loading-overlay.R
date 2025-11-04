@@ -121,16 +121,17 @@ test_that("overlay chunk uses correct theme", {
 test_that("overlay chunk uses correct text", {
   proj <- create_dashboard("test", output_dir = tempdir())
   proj <- add_dashboard_page(proj, "Home", text = "# Home", 
-                            is_landing_page = TRUE, 
+                            is_landing_page = TRUE,
                             overlay = TRUE,
-                            overlay_text = "Even wachten…")
+                            overlay_text = "Please wait...")
   
   generate_dashboard(proj, render = FALSE)
   
   qmd_content <- readLines(file.path(tempdir(), "index.qmd"))
   qmd_text <- paste(qmd_content, collapse = "\n")
   
-  expect_true(grepl('"Even wachten…"', qmd_text, fixed = TRUE))
+  # Check for custom text (no longer checks for Dutch text that was removed)
+  expect_true(grepl('"Please wait..."', qmd_text, fixed = TRUE))
 })
 
 test_that("overlay chunk contains complete function definition", {

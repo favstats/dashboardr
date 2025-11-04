@@ -11,8 +11,8 @@ test_that("response_breaks bins numeric values", {
   ) %>%
     add_viz(title = "Binned Timeline")
   
-  expect_equal(viz$visualizations[[1]]$response_breaks, c(0.5, 4.5, 7.5))
-  expect_equal(viz$visualizations[[1]]$response_bin_labels, c("Low", "High"))
+  expect_equal(viz$items[[1]]$response_breaks, c(0.5, 4.5, 7.5))
+  expect_equal(viz$items[[1]]$response_bin_labels, c("Low", "High"))
 })
 
 test_that("response_filter with range syntax", {
@@ -24,7 +24,7 @@ test_that("response_filter with range syntax", {
   ) %>%
     add_viz(title = "Filtered Timeline")
   
-  expect_equal(viz$visualizations[[1]]$response_filter, 5:7)
+  expect_equal(viz$items[[1]]$response_filter, 5:7)
 })
 
 test_that("response_filter_combine combines filtered responses", {
@@ -37,7 +37,7 @@ test_that("response_filter_combine combines filtered responses", {
   ) %>%
     add_viz(title = "Combined")
   
-  expect_true(viz$visualizations[[1]]$response_filter_combine)
+  expect_true(viz$items[[1]]$response_filter_combine)
 })
 
 test_that("response_filter_label customizes legend", {
@@ -51,7 +51,7 @@ test_that("response_filter_label customizes legend", {
   ) %>%
     add_viz(title = "Custom Label")
   
-  expect_equal(viz$visualizations[[1]]$response_filter_label, "High Scores")
+  expect_equal(viz$items[[1]]$response_filter_label, "High Scores")
 })
 
 test_that("timeline binning generates correct code", {
@@ -138,8 +138,8 @@ test_that("binning and filtering can be combined", {
   ) %>%
     add_viz(title = "Binned and Filtered")
   
-  expect_equal(viz$visualizations[[1]]$response_breaks, c(0.5, 3.5, 7.5))
-  expect_equal(viz$visualizations[[1]]$response_filter, 5:7)
+  expect_equal(viz$items[[1]]$response_breaks, c(0.5, 3.5, 7.5))
+  expect_equal(viz$items[[1]]$response_filter, 5:7)
 })
 
 test_that("response_filter with group_var", {
@@ -153,8 +153,8 @@ test_that("response_filter with group_var", {
   ) %>%
     add_viz(title = "Filtered by Group")
   
-  expect_equal(viz$visualizations[[1]]$group_var, "category")
-  expect_equal(viz$visualizations[[1]]$response_filter, 5:7)
+  expect_equal(viz$items[[1]]$group_var, "category")
+  expect_equal(viz$items[[1]]$response_filter, 5:7)
 })
 
 test_that("empty response_filter_label with group_var shows only group", {
@@ -170,7 +170,7 @@ test_that("empty response_filter_label with group_var shows only group", {
     add_viz(title = "Group Only")
   
   # Should store empty label (will show only group_var values in legend)
-  expect_equal(viz$visualizations[[1]]$response_filter_label, "")
+  expect_equal(viz$items[[1]]$response_filter_label, "")
 })
 
 test_that("response percentages calculated from total not filtered", {
@@ -187,8 +187,8 @@ test_that("response percentages calculated from total not filtered", {
   
   # The visualization should calculate % out of 1-7, not 5-7
   # This is tested behaviorally in the create_timeline function
-  expect_equal(viz$visualizations[[1]]$response_filter, 5:7)
-  expect_true(viz$visualizations[[1]]$response_filter_combine)
+  expect_equal(viz$items[[1]]$response_filter, 5:7)
+  expect_true(viz$items[[1]]$response_filter_combine)
 })
 
 test_that("multiple timelines with different filters", {
@@ -211,10 +211,10 @@ test_that("multiple timelines with different filters", {
       title = "High Scores"
     )
   
-  expect_equal(viz$visualizations[[1]]$response_filter, 1:3)
-  expect_equal(viz$visualizations[[2]]$response_filter, 5:7)
-  expect_equal(viz$visualizations[[1]]$response_filter_label, "Low")
-  expect_equal(viz$visualizations[[2]]$response_filter_label, "High")
+  expect_equal(viz$items[[1]]$response_filter, 1:3)
+  expect_equal(viz$items[[2]]$response_filter, 5:7)
+  expect_equal(viz$items[[1]]$response_filter_label, "Low")
+  expect_equal(viz$items[[2]]$response_filter_label, "High")
 })
 
 test_that("timeline binning works with defaults", {
@@ -229,8 +229,8 @@ test_that("timeline binning works with defaults", {
     add_viz(title = "Chart 2")  # Should inherit breaks
   
   # Both should have the binning
-  expect_equal(viz$visualizations[[1]]$response_breaks, c(0.5, 3.5, 7.5))
-  expect_equal(viz$visualizations[[2]]$response_breaks, c(0.5, 3.5, 7.5))
+  expect_equal(viz$items[[1]]$response_breaks, c(0.5, 3.5, 7.5))
+  expect_equal(viz$items[[2]]$response_breaks, c(0.5, 3.5, 7.5))
 })
 
 test_that("response_filter can be overridden in add_viz", {
@@ -247,8 +247,8 @@ test_that("response_filter can be overridden in add_viz", {
       response_filter_label = "High"
     )
   
-  expect_equal(viz$visualizations[[1]]$response_filter, 1:3)
-  expect_equal(viz$visualizations[[2]]$response_filter, 5:7)
+  expect_equal(viz$items[[1]]$response_filter, 1:3)
+  expect_equal(viz$items[[2]]$response_filter, 5:7)
 })
 
 test_that("timeline with all features combined", {
@@ -266,7 +266,7 @@ test_that("timeline with all features combined", {
   ) %>%
     add_viz(title = "Complex Timeline")
   
-  v <- viz$visualizations[[1]]
+  v <- viz$items[[1]]
   expect_equal(v$time_var, "year")
   expect_equal(v$response_var, "satisfaction")
   expect_equal(v$group_var, "age_group")
@@ -291,8 +291,8 @@ test_that("response_filter works with filter parameter", {
       filter = ~ wave == 1  # Row filter
     )
   
-  expect_equal(viz$visualizations[[1]]$response_filter, 5:7)
-  expect_s3_class(viz$visualizations[[1]]$filter, "formula")
+  expect_equal(viz$items[[1]]$response_filter, 5:7)
+  expect_s3_class(viz$items[[1]]$filter, "formula")
 })
 
 test_that("NULL response_filter_label shows default behavior", {
@@ -307,6 +307,6 @@ test_that("NULL response_filter_label shows default behavior", {
     add_viz(title = "Default Label")
   
   # Should allow NULL (create_timeline will use default like "5-7")
-  expect_null(viz$visualizations[[1]]$response_filter_label)
+  expect_null(viz$items[[1]]$response_filter_label)
 })
 

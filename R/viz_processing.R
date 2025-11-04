@@ -13,11 +13,11 @@
 #' @keywords internal
 .process_visualizations <- function(viz_input, data_path, tabgroup_labels = NULL) {
   # Handle different input types
-  if (inherits(viz_input, "viz_collection")) {
-    if (is.null(viz_input) || length(viz_input$visualizations) == 0) {
+  if (inherits(viz_input, "viz_collection") || inherits(viz_input, "content_collection")) {
+    if (is.null(viz_input) || length(viz_input$items) == 0) {
       return(NULL)
     }
-    viz_list <- viz_input$visualizations
+    viz_list <- viz_input$items
     tabgroup_labels <- viz_input$tabgroup_labels
   } else if (is.list(viz_input)) {
     if (length(viz_input) == 0) {

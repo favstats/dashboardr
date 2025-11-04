@@ -12,15 +12,15 @@ test_that("defaults in create_viz propagate to add_viz", {
     add_viz(title = "Chart 2")
   
   # Both visualizations should have the defaults
-  expect_equal(viz$visualizations[[1]]$type, "histogram")
-  expect_equal(viz$visualizations[[1]]$x_var, "value")
-  expect_equal(viz$visualizations[[1]]$bins, 30)
-  expect_equal(viz$visualizations[[1]]$color, "blue")
+  expect_equal(viz$items[[1]]$viz_type, "histogram")
+  expect_equal(viz$items[[1]]$x_var, "value")
+  expect_equal(viz$items[[1]]$bins, 30)
+  expect_equal(viz$items[[1]]$color, "blue")
   
-  expect_equal(viz$visualizations[[2]]$type, "histogram")
-  expect_equal(viz$visualizations[[2]]$x_var, "value")
-  expect_equal(viz$visualizations[[2]]$bins, 30)
-  expect_equal(viz$visualizations[[2]]$color, "blue")
+  expect_equal(viz$items[[2]]$viz_type, "histogram")
+  expect_equal(viz$items[[2]]$x_var, "value")
+  expect_equal(viz$items[[2]]$bins, 30)
+  expect_equal(viz$items[[2]]$color, "blue")
 })
 
 test_that("add_viz parameters override defaults", {
@@ -34,16 +34,16 @@ test_that("add_viz parameters override defaults", {
     add_viz(title = "Custom Colors", color = "red", bins = 50)
   
   # First viz uses defaults
-  expect_equal(viz$visualizations[[1]]$color, "blue")
-  expect_equal(viz$visualizations[[1]]$bins, 30)
+  expect_equal(viz$items[[1]]$color, "blue")
+  expect_equal(viz$items[[1]]$bins, 30)
   
   # Second viz overrides defaults
-  expect_equal(viz$visualizations[[2]]$color, "red")
-  expect_equal(viz$visualizations[[2]]$bins, 50)
+  expect_equal(viz$items[[2]]$color, "red")
+  expect_equal(viz$items[[2]]$bins, 50)
   
   # But keeps other defaults
-  expect_equal(viz$visualizations[[2]]$x_var, "value")
-  expect_equal(viz$visualizations[[2]]$type, "histogram")
+  expect_equal(viz$items[[2]]$x_var, "value")
+  expect_equal(viz$items[[1]]$viz_type, "histogram")
 })
 
 test_that("defaults work with different viz types", {
@@ -56,9 +56,9 @@ test_that("defaults work with different viz types", {
   ) %>%
     add_viz(x_var = "category", stack_var = "group")
   
-  expect_equal(viz_stacked$visualizations[[1]]$stacked_type, "percent")
-  expect_equal(viz_stacked$visualizations[[1]]$horizontal, TRUE)
-  expect_equal(viz_stacked$visualizations[[1]]$color_palette, c("#FF0000", "#00FF00"))
+  expect_equal(viz_stacked$items[[1]]$stacked_type, "percent")
+  expect_equal(viz_stacked$items[[1]]$horizontal, TRUE)
+  expect_equal(viz_stacked$items[[1]]$color_palette, c("#FF0000", "#00FF00"))
   
   # Timeline defaults
   viz_timeline <- create_viz(
@@ -69,10 +69,10 @@ test_that("defaults work with different viz types", {
     add_viz(response_var = "sales") %>%
     add_viz(response_var = "profit")
   
-  expect_equal(viz_timeline$visualizations[[1]]$time_var, "year")
-  expect_equal(viz_timeline$visualizations[[1]]$chart_type, "line")
-  expect_equal(viz_timeline$visualizations[[2]]$time_var, "year")
-  expect_equal(viz_timeline$visualizations[[2]]$chart_type, "line")
+  expect_equal(viz_timeline$items[[1]]$time_var, "year")
+  expect_equal(viz_timeline$items[[1]]$chart_type, "line")
+  expect_equal(viz_timeline$items[[2]]$time_var, "year")
+  expect_equal(viz_timeline$items[[2]]$chart_type, "line")
 })
 
 test_that("defaults work with combine_viz", {
@@ -91,8 +91,8 @@ test_that("defaults work with combine_viz", {
   combined <- combine_viz(viz1, viz2)
   
   # Each should retain its own defaults
-  expect_equal(combined$visualizations[[1]]$bins, 20)
-  expect_equal(combined$visualizations[[2]]$bins, 40)
+  expect_equal(combined$items[[1]]$bins, 20)
+  expect_equal(combined$items[[2]]$bins, 40)
 })
 
 test_that("empty defaults in create_viz still allows add_viz params", {
@@ -103,9 +103,9 @@ test_that("empty defaults in create_viz still allows add_viz params", {
       bins = 30
     )
   
-  expect_equal(viz$visualizations[[1]]$type, "histogram")
-  expect_equal(viz$visualizations[[1]]$x_var, "value")
-  expect_equal(viz$visualizations[[1]]$bins, 30)
+  expect_equal(viz$items[[1]]$viz_type, "histogram")
+  expect_equal(viz$items[[1]]$x_var, "value")
+  expect_equal(viz$items[[1]]$bins, 30)
 })
 
 test_that("defaults work with complex stackedbars parameters", {
@@ -123,19 +123,19 @@ test_that("defaults work with complex stackedbars parameters", {
   
   # Both should have all the complex defaults
   for (i in 1:2) {
-    expect_equal(viz$visualizations[[i]]$type, "stackedbars")
-    expect_equal(viz$visualizations[[i]]$questions, c("q1", "q2", "q3"))
-    expect_equal(viz$visualizations[[i]]$question_labels, 
+    expect_equal(viz$items[[1]]$viz_type, "stackedbars")
+    expect_equal(viz$items[[i]]$questions, c("q1", "q2", "q3"))
+    expect_equal(viz$items[[i]]$question_labels, 
                  c("Question 1", "Question 2", "Question 3"))
-    expect_equal(viz$visualizations[[i]]$stacked_type, "percent")
-    expect_equal(viz$visualizations[[i]]$horizontal, TRUE)
-    expect_equal(viz$visualizations[[i]]$stack_breaks, c(0.5, 2.5, 4.5))
-    expect_equal(viz$visualizations[[i]]$stack_bin_labels, c("Low", "Medium", "High"))
+    expect_equal(viz$items[[i]]$stacked_type, "percent")
+    expect_equal(viz$items[[i]]$horizontal, TRUE)
+    expect_equal(viz$items[[i]]$stack_breaks, c(0.5, 2.5, 4.5))
+    expect_equal(viz$items[[i]]$stack_bin_labels, c("Low", "Medium", "High"))
   }
   
   # But different filters
-  expect_equal(as.character(viz$visualizations[[1]]$filter)[2], "wave == 1")
-  expect_equal(as.character(viz$visualizations[[2]]$filter)[2], "wave == 2")
+  expect_equal(as.character(viz$items[[1]]$filter)[2], "wave == 1")
+  expect_equal(as.character(viz$items[[2]]$filter)[2], "wave == 2")
 })
 
 test_that("defaults with tabgroup parameter", {
@@ -146,10 +146,10 @@ test_that("defaults with tabgroup parameter", {
     add_viz(title = "Chart 1", tabgroup = "group1") %>%
     add_viz(title = "Chart 2", tabgroup = "group2")
   
-  expect_equal(viz$visualizations[[1]]$x_var, "value")
-  expect_equal(viz$visualizations[[1]]$tabgroup, "group1")
-  expect_equal(viz$visualizations[[2]]$x_var, "value")
-  expect_equal(viz$visualizations[[2]]$tabgroup, "group2")
+  expect_equal(viz$items[[1]]$x_var, "value")
+  expect_equal(viz$items[[1]]$tabgroup, "group1")
+  expect_equal(viz$items[[2]]$x_var, "value")
+  expect_equal(viz$items[[2]]$tabgroup, "group2")
 })
 
 test_that("NULL defaults don't override add_viz parameters", {
@@ -160,7 +160,7 @@ test_that("NULL defaults don't override add_viz parameters", {
     add_viz(x_var = "value", bins = 30)
   
   # Should use the add_viz parameter, not NULL
-  expect_equal(viz$visualizations[[1]]$bins, 30)
+  expect_equal(viz$items[[1]]$bins, 30)
 })
 
 test_that("defaults work in dashboard generation", {
@@ -204,8 +204,8 @@ test_that("defaults with data parameter", {
     add_viz(title = "From Dataset 2") %>%
     add_viz(title = "From Dataset 1", data = "dataset1")  # Override
   
-  expect_equal(viz$visualizations[[1]]$data, "dataset2")
-  expect_equal(viz$visualizations[[2]]$data, "dataset1")
+  expect_equal(viz$items[[1]]$data, "dataset2")
+  expect_equal(viz$items[[2]]$data, "dataset1")
 })
 
 test_that("defaults preserve all parameter types", {
@@ -225,7 +225,7 @@ test_that("defaults preserve all parameter types", {
   ) %>%
     add_viz(title = "Trend", group_var = "category")
   
-  v <- viz$visualizations[[1]]
+  v <- viz$items[[1]]
   expect_equal(v$time_var, "year")
   expect_equal(v$response_var, "value")
   expect_equal(v$response_breaks, c(1.5, 3.5, 5.5))

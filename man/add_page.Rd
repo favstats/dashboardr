@@ -12,6 +12,7 @@ add_page(
   template = NULL,
   params = list(),
   visualizations = NULL,
+  content = NULL,
   text = NULL,
   icon = NULL,
   is_landing_page = FALSE,
@@ -20,7 +21,8 @@ add_page(
   navbar_align = c("left", "right"),
   overlay = FALSE,
   overlay_theme = c("light", "glass", "dark", "accent"),
-  overlay_text = "Loading"
+  overlay_text = "Loading",
+  overlay_duration = 2200
 )
 }
 \arguments{

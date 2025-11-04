@@ -190,79 +190,134 @@ summary_vizzes <- create_viz() %>%
           icon = "ph:shield-check",
           height = 700)
 
+# Create a summary table of survey demographics
+demographics_summary <- gss_clean %>%
+  group_by(degree_1a, sex_1a) %>%
+  summarise(
+    n = n(),
+    avg_age = mean(age_1a, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  head(8) %>%
+  gt::gt() %>%
+  gt::tab_header(
+    title = "Survey Demographics",
+    subtitle = "Summary by Education and Gender"
+  ) %>%
+  gt::cols_label(
+    degree_1a = "Education",
+    sex_1a = "Gender",
+    n = "Count",
+    avg_age = "Avg Age"
+  ) %>%
+  gt::fmt_number(
+    columns = avg_age,
+    decimals = 1
+  )
+
+# Create navbar menu to organize analysis pages
+analysis_menu <- navbar_menu(
+  text = "📊 Analysis",
+  pages = c("GSS Data Analysis", "Key Findings", "Summary Charts"),
+  icon = "ph:chart-line"
+)
+
 # Create comprehensive dashboard with ALL features
 dashboard <- create_dashboard(
-  output_dir = "comprehensive_dashboard_test", # TODO FIX
-  title = "Comprehensive Dashboard Test", # TODO FIX!!
+  output_dir = "comprehensive_dashboard_test",
+  title = "GSS Data Dashboard - Showcase",
   github = "https://github.com/favstats/dashboardr",
-  twitter = "https://twitter.com/username",
-  linkedin = "https://linkedin.com/in/username",
-  email = "user@example.com",
-  website = "https://example.com",
+  twitter = "https://twitter.com/favstats",
+  linkedin = "https://linkedin.com/in/fabio-votta",
+  email = "fabio.votta@gmail.com",
+  website = "https://favstats.github.io/",
   search = TRUE,
-  # theme = "cosmo",
-  author = "Dr. Jane Smith",
-  description = "Comprehensive data analysis dashboard with all features",
-  page_footer = "© 2025 dashboardr Package - All Rights Reserved",
-  date = "2024-01-15",
-  tabset_theme = "minimal",
-  # sidebar = TRUE,
-  # sidebar_style = "docked",
-  # sidebar_background = "light",
-  # sidebar_foreground = "dark",
-  # sidebar_border = TRUE,
-  # sidebar_alignment = "left",
-  # sidebar_collapse_level = 2,
-  # sidebar_pinned = FALSE,
-  # sidebar_tools = list(
-  #   list(icon = "github", href = "https://github.com/username/dashboardr", text = "Source Code"),
-  #   list(icon = "twitter", href = "https://twitter.com/username", text = "Follow Us")
-  # ),
+  author = "Dashboardr Team",
+  description = "Comprehensive data analysis dashboard showcasing all dashboardr features",
+  page_footer = "© 2025 dashboardr Package - Built with ❤️ in R",
+  date = format(Sys.Date(), "%Y-%m-%d"),
+  tabset_theme = "modern",
   breadcrumbs = TRUE,
   page_navigation = TRUE,
   back_to_top = TRUE,
   reader_mode = TRUE,
-  repo_url = "https://github.com/username/dashboardr",
+  repo_url = "https://github.com/favstats/dashboardr",
   repo_actions = c("edit", "source", "issue"),
   navbar_style = "dark",
-  navbar_brand = "Dashboardr",
+  navbar_brand = "📊 Dashboardr Showcase",
   navbar_toggle = "collapse",
-  math = "katex",
-  code_folding = "show",
+  navbar_sections = list(analysis_menu),  # Add navbar menu!
+  code_folding = "hide",
   code_tools = TRUE,
-  # toc = "floating",
-  # toc_depth = 3,
-  google_analytics = "GA-XXXXXXXXX",
-  plausible = "example.com",
-  gtag = "GTM-XXXXXXX",
   value_boxes = TRUE,
-  metrics_style = "bootstrap",
   page_layout = "full",
-  shiny = TRUE,
-  publish_dir = "docs",
-  github_pages = "main",
-  netlify = list(redirects = "/* /index.html 200")
+  publish_dir = "docs"
 ) %>%
-  # Landing page with icon
+  # Landing page with images and rich content
   add_page(
-    name = "Welcome to the Showcase Dashboard",
-    text = md_text(
-      "This dashboard demonstrates the `dashboardr` package using real examples from the vignettes.",
-      "",
-      "## Key Features",
-      "",
-      "- **Unified API**: Single `add_page()` function for all page types",
-      "- **Automatic Icons**: Easy-to-use icons throughout the interface",
-      "- **Flexible Visualizations**: Support for all chart types with tab grouping",
-      "",
-      "## Data Source",
-      "",
-      "This dashboard uses data from the **General Social Survey (GSS)** to explore patterns in happiness, trust, and political attitudes.",
-      "",
-      "Navigate through the pages above to explore the data and see the package features in action."
-    ),
+    name = "Welcome",
     icon = "ph:house",
-    is_landing_page = TRUE
+    is_landing_page = TRUE,
+    content = create_content() %>%
+      add_image(
+        src = "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=300&fit=crop",
+        alt = "Data visualization dashboard",
+        caption = "Modern data analytics and visualization",
+        width = "100%",
+        align = "center"
+      ) %>%
+      add_text(md_text(
+        "# Welcome to the Dashboardr Showcase",
+        "",
+        "This dashboard demonstrates the **dashboardr** package using real data from the General Social Survey (GSS).",
+        ""
+      )) %>%
+      add_spacer(height = "1rem") %>%
+      # Add metrics row
+      add_metric(value = "2,867", title = "Survey Respondents", icon = "ph:users", color = "#2E86AB") %>%
+      add_metric(value = "11", title = "Variables Analyzed", icon = "ph:chart-bar", color = "#F18F01") %>%
+      add_metric(value = "20+", title = "Visualizations", icon = "ph:chart-pie", color = "#A23B72") %>%
+      add_spacer(height = "1rem") %>%
+      add_callout(
+        md_text(
+          "This showcase demonstrates all major features of dashboardr including:",
+          "",
+          "- **Rich Content**: Images, tables, callouts, and more",
+          "- **Interactive Visualizations**: Heatmaps and stacked bar charts",
+          "- **Flexible Layouts**: Tabsets, sidebars, and navbar organization"
+        ),
+        type = "tip",
+        title = "What's Inside"
+      ) %>%
+      add_spacer(height = "1.5rem") %>%
+      add_quote(
+        "The best thing about a Boolean is even if you are wrong, you are only off by a bit.",
+        attribution = "Anonymous",
+        cite = "https://example.com"
+      ) %>%
+      add_spacer(height = "1.5rem") %>%
+      add_text(md_text(
+        "## Key Features"
+      )) %>%
+      add_badge("New", "success") %>%
+      add_text(" ") %>%
+      add_badge("Interactive", "info") %>%
+      add_text(" ") %>%
+      add_badge("Modern", "primary") %>%
+      add_text(md_text(
+        "",
+        "",
+        "- **Unified API**: Single `add_page()` function for all page types",
+        "- **Automatic Icons**: Easy-to-use [Iconify](https://iconify.design/) icons",
+        "- **Flexible Visualizations**: Support for all chart types with tab grouping",
+        "- **Modern Content Blocks**: Images, tables, callouts, videos, quotes, badges, metrics, and more",
+        "",
+        "## Data Source",
+        "",
+        "This dashboard uses data from the **General Social Survey (GSS)** to explore patterns in happiness, trust, and political attitudes.",
+        "",
+        "Navigate through the pages above to explore the data and see the package features in action."
+      ))
   ) %>%
   # Analysis page with data and visualizations
   add_page(
@@ -271,35 +326,64 @@ dashboard <- create_dashboard(
     visualizations = analysis_vizzes,
     icon = "ph:chart-line"
   ) %>%
-  # Mixed content page (text + visualizations)
+  # Mixed content page with table
   add_page(
     name = "Key Findings",
-    text = md_text(
-      "Our analysis reveals a clear relationship between education and happiness levels. Higher education is generally associated with greater reported happiness. Political trust varies significantly across party lines and ideological positions, with interesting regional and demographic patterns.",
-      "",
-      "## Next Steps",
-      "",
-      "Future research should explore the causal mechanisms behind these relationships."
-    ),
+    icon = "ph:lightbulb",
     data = gss_clean,
-    visualizations = analysis_vizzes,
-    icon = "ph:lightbulb"
+    content = list(
+      create_content() %>%
+        add_text(md_text(
+          "# Key Findings from the Analysis",
+          "",
+          "Our analysis reveals a clear relationship between education and happiness levels."
+        )) %>%
+        add_spacer(height = "1rem") %>%
+        add_text("## Demographics Summary") %>%
+        add_text("The table below shows the breakdown of survey respondents by education and gender:") %>%
+        add_gt(demographics_summary) %>%
+        add_spacer(height = "1rem") %>%
+        add_callout(
+          "Higher education is generally associated with greater reported happiness. Political trust varies significantly across party lines and ideological positions.",
+          type = "note",
+          title = "Main Insight"
+        ) %>%
+        add_text(md_text(
+          "",
+          "## Next Steps",
+          "",
+          "Future research should explore the causal mechanisms behind these relationships."
+        )),
+      analysis_vizzes
+    )
   ) %>%
   # Summary page with standalone charts (no tabsets)
   add_page(
     name = "Summary Charts",
-    text = md_text(
-      "# Summary Charts",
-      "",
-      "This page demonstrates standalone charts (no tabsets) for key findings.",
-      "",
-      "## Overview",
-      "",
-      "These charts provide a high-level summary of the most important patterns in the data."
-    ),
+    icon = "ph:chart-pie",
+    navbar_align = "right",
     data = gss_clean,
-    visualizations = summary_vizzes,
-    icon = "ph:chart-pie"
+    content = list(
+      create_content() %>%
+        add_text(md_text(
+          "# Summary Charts",
+          "",
+          "This page demonstrates standalone charts (no tabsets) for key findings.",
+          ""
+        )) %>%
+        add_image(
+          src = "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600&h=200&fit=crop",
+          alt = "Data analytics",
+          width = "100%"
+        ) %>%
+        add_spacer(height = "1rem") %>%
+        add_text(md_text(
+          "## Overview",
+          "",
+          "These charts provide a high-level summary of the most important patterns in the data."
+        )),
+      summary_vizzes
+    )
   )  %>%
   # Text-only page with icon showcasing card function
   add_page(

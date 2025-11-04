@@ -14,17 +14,17 @@ test_that("add_vizzes creates multiple visualizations from vector input", {
     )
   
   # Should have 3 visualizations
-  expect_equal(length(viz$visualizations), 3)
+  expect_equal(length(viz$items), 3)
   
   # Check each has correct response_var
-  expect_equal(viz$visualizations[[1]]$response_var, "var1")
-  expect_equal(viz$visualizations[[2]]$response_var, "var2")
-  expect_equal(viz$visualizations[[3]]$response_var, "var3")
+  expect_equal(viz$items[[1]]$response_var, "var1")
+  expect_equal(viz$items[[2]]$response_var, "var2")
+  expect_equal(viz$items[[3]]$response_var, "var3")
   
   # Check tabgroups were templated correctly (parsed into vectors)
-  expect_equal(viz$visualizations[[1]]$tabgroup, c("test", "item1"))
-  expect_equal(viz$visualizations[[2]]$tabgroup, c("test", "item2"))
-  expect_equal(viz$visualizations[[3]]$tabgroup, c("test", "item3"))
+  expect_equal(viz$items[[1]]$tabgroup, c("test", "item1"))
+  expect_equal(viz$items[[2]]$tabgroup, c("test", "item2"))
+  expect_equal(viz$items[[3]]$tabgroup, c("test", "item3"))
 })
 
 test_that("add_vizzes shares common parameters across all viz", {
@@ -36,13 +36,13 @@ test_that("add_vizzes shares common parameters across all viz", {
       .tabgroup_template = "test/item{i}"
     )
   
-  expect_equal(length(viz$visualizations), 2)
+  expect_equal(length(viz$items), 2)
   
   # Both should have same group_var and time_var
-  expect_equal(viz$visualizations[[1]]$group_var, "AgeGroup")
-  expect_equal(viz$visualizations[[2]]$group_var, "AgeGroup")
-  expect_equal(viz$visualizations[[1]]$time_var, "wave")
-  expect_equal(viz$visualizations[[2]]$time_var, "wave")
+  expect_equal(viz$items[[1]]$group_var, "AgeGroup")
+  expect_equal(viz$items[[2]]$group_var, "AgeGroup")
+  expect_equal(viz$items[[1]]$time_var, "wave")
+  expect_equal(viz$items[[2]]$time_var, "wave")
 })
 
 test_that("add_vizzes works with parallel expansion of multiple params", {
@@ -53,17 +53,17 @@ test_that("add_vizzes works with parallel expansion of multiple params", {
       .tabgroup_template = "demo/item{i}"
     )
   
-  expect_equal(length(viz$visualizations), 3)
+  expect_equal(length(viz$items), 3)
   
   # Check parallel expansion
-  expect_equal(viz$visualizations[[1]]$x_var, "Age")
-  expect_equal(viz$visualizations[[1]]$title, "By Age")
+  expect_equal(viz$items[[1]]$x_var, "Age")
+  expect_equal(viz$items[[1]]$title, "By Age")
   
-  expect_equal(viz$visualizations[[2]]$x_var, "Gender")
-  expect_equal(viz$visualizations[[2]]$title, "By Gender")
+  expect_equal(viz$items[[2]]$x_var, "Gender")
+  expect_equal(viz$items[[2]]$title, "By Gender")
   
-  expect_equal(viz$visualizations[[3]]$x_var, "Education")
-  expect_equal(viz$visualizations[[3]]$title, "By Education")
+  expect_equal(viz$items[[3]]$x_var, "Education")
+  expect_equal(viz$items[[3]]$title, "By Education")
 })
 
 test_that("add_vizzes uses tabgroup vector if no template provided", {
@@ -73,10 +73,10 @@ test_that("add_vizzes uses tabgroup vector if no template provided", {
       tabgroup = c("test/a", "test/b")  # Explicit tabgroups
     )
   
-  expect_equal(length(viz$visualizations), 2)
+  expect_equal(length(viz$items), 2)
   # Tabgroups are parsed into vectors by add_viz
-  expect_equal(viz$visualizations[[1]]$tabgroup, c("test", "a"))
-  expect_equal(viz$visualizations[[2]]$tabgroup, c("test", "b"))
+  expect_equal(viz$items[[1]]$tabgroup, c("test", "a"))
+  expect_equal(viz$items[[2]]$tabgroup, c("test", "b"))
 })
 
 test_that("add_vizzes template can use variable values", {
@@ -86,10 +86,10 @@ test_that("add_vizzes template can use variable values", {
       .tabgroup_template = "skills/{response_var}"  # Use actual var name
     )
   
-  expect_equal(length(viz$visualizations), 3)
-  expect_equal(viz$visualizations[[1]]$tabgroup, c("skills", "SInfo1"))
-  expect_equal(viz$visualizations[[2]]$tabgroup, c("skills", "SInfo2"))
-  expect_equal(viz$visualizations[[3]]$tabgroup, c("skills", "SInfo3"))
+  expect_equal(length(viz$items), 3)
+  expect_equal(viz$items[[1]]$tabgroup, c("skills", "SInfo1"))
+  expect_equal(viz$items[[2]]$tabgroup, c("skills", "SInfo2"))
+  expect_equal(viz$items[[3]]$tabgroup, c("skills", "SInfo3"))
 })
 
 test_that("add_vizzes works with title_template", {
@@ -100,9 +100,9 @@ test_that("add_vizzes works with title_template", {
       .title_template = "Question {i}"
     )
   
-  expect_equal(length(viz$visualizations), 2)
-  expect_equal(viz$visualizations[[1]]$title, "Question 1")
-  expect_equal(viz$visualizations[[2]]$title, "Question 2")
+  expect_equal(length(viz$items), 2)
+  expect_equal(viz$items[[1]]$title, "Question 1")
+  expect_equal(viz$items[[2]]$title, "Question 2")
 })
 
 test_that("add_vizzes inherits defaults from create_viz", {
@@ -118,12 +118,12 @@ test_that("add_vizzes inherits defaults from create_viz", {
     )
   
   # Check defaults were inherited
-  expect_equal(viz$visualizations[[1]]$time_var, "wave")
-  expect_equal(viz$visualizations[[1]]$chart_type, "line")
-  expect_equal(viz$visualizations[[1]]$color_palette, c("#red", "#blue"))
+  expect_equal(viz$items[[1]]$time_var, "wave")
+  expect_equal(viz$items[[1]]$chart_type, "line")
+  expect_equal(viz$items[[1]]$color_palette, c("#red", "#blue"))
   
-  expect_equal(viz$visualizations[[2]]$time_var, "wave")
-  expect_equal(viz$visualizations[[2]]$chart_type, "line")
+  expect_equal(viz$items[[2]]$time_var, "wave")
+  expect_equal(viz$items[[2]]$chart_type, "line")
 })
 
 test_that("add_vizzes errors if no expandable params with length > 1", {
@@ -159,10 +159,10 @@ test_that("add_vizzes can be chained with add_viz", {
       tabgroup = "test/manual"
     )
   
-  expect_equal(length(viz$visualizations), 3)
-  expect_equal(viz$visualizations[[1]]$tabgroup, c("test", "auto1"))
-  expect_equal(viz$visualizations[[2]]$tabgroup, c("test", "auto2"))
-  expect_equal(viz$visualizations[[3]]$tabgroup, c("test", "manual"))
+  expect_equal(length(viz$items), 3)
+  expect_equal(viz$items[[1]]$tabgroup, c("test", "auto1"))
+  expect_equal(viz$items[[2]]$tabgroup, c("test", "auto2"))
+  expect_equal(viz$items[[3]]$tabgroup, c("test", "manual"))
 })
 
 test_that("add_vizzes works with filters", {
@@ -173,11 +173,11 @@ test_that("add_vizzes works with filters", {
       .tabgroup_template = "test/wave1/{i}"
     )
   
-  expect_equal(length(viz$visualizations), 2)
+  expect_equal(length(viz$items), 2)
   
   # Both should have the same filter
-  expect_equal(deparse(viz$visualizations[[1]]$filter[[2]]), "wave == 1")
-  expect_equal(deparse(viz$visualizations[[2]]$filter[[2]]), "wave == 1")
+  expect_equal(deparse(viz$items[[1]]$filter[[2]]), "wave == 1")
+  expect_equal(deparse(viz$items[[2]]$filter[[2]]), "wave == 1")
 })
 
 test_that("add_vizzes preserves insertion order", {
@@ -188,9 +188,9 @@ test_that("add_vizzes preserves insertion order", {
     )
   
   # Check insertion indices are sequential
-  expect_equal(viz$visualizations[[1]]$.insertion_index, 1)
-  expect_equal(viz$visualizations[[2]]$.insertion_index, 2)
-  expect_equal(viz$visualizations[[3]]$.insertion_index, 3)
+  expect_equal(viz$items[[1]]$.insertion_index, 1)
+  expect_equal(viz$items[[2]]$.insertion_index, 2)
+  expect_equal(viz$items[[3]]$.insertion_index, 3)
 })
 
 test_that("add_vizzes works with complex tabgroup template using glue", {
@@ -204,8 +204,8 @@ test_that("add_vizzes works with complex tabgroup template using glue", {
       .tabgroup_template = glue::glue("{tbgrp}/{wave}/{demographic}/item{{i}}")
     )
   
-  expect_equal(viz$visualizations[[1]]$tabgroup, c("skills", "wave1", "age", "item1"))
-  expect_equal(viz$visualizations[[2]]$tabgroup, c("skills", "wave1", "age", "item2"))
+  expect_equal(viz$items[[1]]$tabgroup, c("skills", "wave1", "age", "item1"))
+  expect_equal(viz$items[[2]]$tabgroup, c("skills", "wave1", "age", "item2"))
 })
 
 test_that("add_vizzes works for user's helper function pattern", {
@@ -229,12 +229,12 @@ test_that("add_vizzes works for user's helper function pattern", {
       wave_label = "Over Time"
     )
   
-  expect_equal(length(viz$visualizations), 3)
-  expect_equal(viz$visualizations[[1]]$tabgroup, c("skills", "overtime", "age", "item1"))
-  expect_equal(viz$visualizations[[1]]$response_var, "SInfo1")
-  expect_equal(viz$visualizations[[1]]$group_var, "AgeGroup")
+  expect_equal(length(viz$items), 3)
+  expect_equal(viz$items[[1]]$tabgroup, c("skills", "overtime", "age", "item1"))
+  expect_equal(viz$items[[1]]$response_var, "SInfo1")
+  expect_equal(viz$items[[1]]$group_var, "AgeGroup")
   
-  expect_equal(viz$visualizations[[3]]$tabgroup, c("skills", "overtime", "age", "item3"))
-  expect_equal(viz$visualizations[[3]]$response_var, "SInfo3")
+  expect_equal(viz$items[[3]]$tabgroup, c("skills", "overtime", "age", "item3"))
+  expect_equal(viz$items[[3]]$response_var, "SInfo3")
 })
 

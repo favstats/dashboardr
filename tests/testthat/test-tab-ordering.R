@@ -198,9 +198,9 @@ test_that("Insertion indices are correctly assigned in add_viz", {
     add_viz(type = "histogram", x_var = "z", tabgroup = "third")
   
   # Check that insertion indices are sequential
-  expect_equal(viz$visualizations[[1]]$.insertion_index, 1)
-  expect_equal(viz$visualizations[[2]]$.insertion_index, 2)
-  expect_equal(viz$visualizations[[3]]$.insertion_index, 3)
+  expect_equal(viz$items[[1]]$.insertion_index, 1)
+  expect_equal(viz$items[[2]]$.insertion_index, 2)
+  expect_equal(viz$items[[3]]$.insertion_index, 3)
 })
 
 test_that("Insertion indices are renumbered correctly in combine_viz", {
@@ -214,9 +214,9 @@ test_that("Insertion indices are renumbered correctly in combine_viz", {
   combined <- combine_viz(viz1, viz2)
   
   # Check that indices are renumbered sequentially
-  expect_equal(combined$visualizations[[1]]$.insertion_index, 1)
-  expect_equal(combined$visualizations[[2]]$.insertion_index, 2)
-  expect_equal(combined$visualizations[[3]]$.insertion_index, 3)
+  expect_equal(combined$items[[1]]$.insertion_index, 1)
+  expect_equal(combined$items[[2]]$.insertion_index, 2)
+  expect_equal(combined$items[[3]]$.insertion_index, 3)
 })
 
 test_that("Tabs with borders removed in pills theme", {

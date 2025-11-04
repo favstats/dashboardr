@@ -30,6 +30,8 @@ Functions for creating visualizations
 
 - [`create_viz()`](https://favstats.github.io/dashboardr/reference/create_viz.md)
   : Create a new visualization collection
+- [`create_content()`](https://favstats.github.io/dashboardr/reference/create_content.md)
+  : Create a new content/visualization collection (alias for create_viz)
 - [`add_viz()`](https://favstats.github.io/dashboardr/reference/add_viz.md)
   : Parse tabgroup into normalized hierarchy
 - [`add_vizzes()`](https://favstats.github.io/dashboardr/reference/add_vizzes.md)
@@ -85,6 +87,68 @@ Functions for adding content to dashboards
   : Display cards in a Bootstrap row
 - [`spec_viz()`](https://favstats.github.io/dashboardr/reference/spec_viz.md)
   : Create a single visualization specification
+
+## Content Blocks
+
+Functions for adding rich content blocks to pages
+
+- [`add_text()`](https://favstats.github.io/dashboardr/reference/add_text.md)
+  : Add text to content collection (pipeable)
+- [`add_image()`](https://favstats.github.io/dashboardr/reference/add_image.md)
+  : Add image to content collection (pipeable)
+- [`add_callout()`](https://favstats.github.io/dashboardr/reference/add_callout.md)
+  : Add callout box
+- [`add_divider()`](https://favstats.github.io/dashboardr/reference/add_divider.md)
+  : Add horizontal divider
+- [`add_code()`](https://favstats.github.io/dashboardr/reference/add_code.md)
+  : Add code block
+- [`add_card()`](https://favstats.github.io/dashboardr/reference/add_card.md)
+  : Add card
+- [`add_accordion()`](https://favstats.github.io/dashboardr/reference/add_accordion.md)
+  : Add collapsible accordion/details section
+- [`add_spacer()`](https://favstats.github.io/dashboardr/reference/add_spacer.md)
+  : Add vertical spacer
+- [`add_html()`](https://favstats.github.io/dashboardr/reference/add_html.md)
+  : Add raw HTML content
+- [`add_quote()`](https://favstats.github.io/dashboardr/reference/add_quote.md)
+  : Add a blockquote
+- [`add_badge()`](https://favstats.github.io/dashboardr/reference/add_badge.md)
+  : Add a status badge
+
+## Metrics & Value Boxes
+
+Functions for displaying KPIs and metrics
+
+- [`add_metric()`](https://favstats.github.io/dashboardr/reference/add_metric.md)
+  : Add a metric/value box
+- [`add_value_box()`](https://favstats.github.io/dashboardr/reference/add_value_box.md)
+  : Add a custom styled value box
+- [`add_value_box_row()`](https://favstats.github.io/dashboardr/reference/add_value_box_row.md)
+  : Start a value box row
+- [`end_value_box_row()`](https://favstats.github.io/dashboardr/reference/end_value_box_row.md)
+  : End a value box row
+
+## Embedded Content
+
+Functions for embedding external content
+
+- [`add_iframe()`](https://favstats.github.io/dashboardr/reference/add_iframe.md)
+  : Add iframe
+- [`add_video()`](https://favstats.github.io/dashboardr/reference/add_video.md)
+  : Add video
+
+## Tables
+
+Functions for adding tables to pages
+
+- [`add_table()`](https://favstats.github.io/dashboardr/reference/add_table.md)
+  : Add generic table (data frame)
+- [`add_gt()`](https://favstats.github.io/dashboardr/reference/add_gt.md)
+  : Add gt table
+- [`add_reactable()`](https://favstats.github.io/dashboardr/reference/add_reactable.md)
+  : Add reactable table
+- [`add_DT()`](https://favstats.github.io/dashboardr/reference/add_DT.md)
+  : Add DT datatable
 
 ## Print Methods
 

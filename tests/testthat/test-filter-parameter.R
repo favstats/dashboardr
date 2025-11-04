@@ -10,12 +10,12 @@ test_that("basic filter syntax works", {
     add_viz(title = "Wave 2", filter = ~ wave == 2)
   
   # Filters should be stored as formulas
-  expect_s3_class(viz$visualizations[[1]]$filter, "formula")
-  expect_s3_class(viz$visualizations[[2]]$filter, "formula")
+  expect_s3_class(viz$items[[1]]$filter, "formula")
+  expect_s3_class(viz$items[[2]]$filter, "formula")
   
   # Check filter expressions
-  expect_equal(as.character(viz$visualizations[[1]]$filter)[2], "wave == 1")
-  expect_equal(as.character(viz$visualizations[[2]]$filter)[2], "wave == 2")
+  expect_equal(as.character(viz$items[[1]]$filter)[2], "wave == 1")
+  expect_equal(as.character(viz$items[[2]]$filter)[2], "wave == 2")
 })
 
 test_that("complex filter expressions work", {
@@ -25,8 +25,8 @@ test_that("complex filter expressions work", {
       filter = ~ wave %in% c(1, 2) & age > 30 & gender == "F"
     )
   
-  expect_s3_class(viz$visualizations[[1]]$filter, "formula")
-  filter_expr <- as.character(viz$visualizations[[1]]$filter)[2]
+  expect_s3_class(viz$items[[1]]$filter, "formula")
+  filter_expr <- as.character(viz$items[[1]]$filter)[2]
   
   expect_true(grepl("wave", filter_expr))
   expect_true(grepl("age", filter_expr))
@@ -178,8 +178,8 @@ test_that("filter works with combine_viz", {
   combined <- combine_viz(viz1, viz2)
   
   # Both filters should be preserved
-  expect_equal(as.character(combined$visualizations[[1]]$filter)[2], "group == \"A\"")
-  expect_equal(as.character(combined$visualizations[[2]]$filter)[2], "group == \"B\"")
+  expect_equal(as.character(combined$items[[1]]$filter)[2], "group == \"A\"")
+  expect_equal(as.character(combined$items[[2]]$filter)[2], "group == \"B\"")
 })
 
 test_that("filter with nested tabgroups", {
@@ -313,8 +313,8 @@ test_that("filter with %in% operator", {
       filter = ~ wave %in% c(1, 2, 3)
     )
   
-  expect_s3_class(viz$visualizations[[1]]$filter, "formula")
-  filter_expr <- as.character(viz$visualizations[[1]]$filter)[2]
+  expect_s3_class(viz$items[[1]]$filter, "formula")
+  filter_expr <- as.character(viz$items[[1]]$filter)[2]
   expect_true(grepl("%in%", filter_expr))
 })
 
@@ -325,8 +325,8 @@ test_that("filter with logical AND/OR operators", {
       filter = ~ (wave == 1 | wave == 2) & age > 30
     )
   
-  expect_s3_class(viz$visualizations[[1]]$filter, "formula")
-  filter_expr <- as.character(viz$visualizations[[1]]$filter)[2]
+  expect_s3_class(viz$items[[1]]$filter, "formula")
+  filter_expr <- as.character(viz$items[[1]]$filter)[2]
   expect_true(grepl("wave", filter_expr))
   expect_true(grepl("age", filter_expr))
 })

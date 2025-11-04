@@ -259,6 +259,7 @@ create_dashboard <- function(output_dir = "site",
 #' @param overlay Whether to show a loading overlay on page load (default: FALSE)
 #' @param overlay_theme Theme for loading overlay: "light", "glass", "dark", or "accent" (default: "light")
 #' @param overlay_text Text to display in loading overlay (default: "Loading")
+#' @param overlay_duration Duration in milliseconds for how long overlay stays visible (default: 2200)
 #' @return The updated dashboard_project object
 #' @export
 #' @examples
@@ -306,6 +307,7 @@ create_dashboard <- function(output_dir = "site",
 #' @param overlay Whether to show a loading overlay on page load (default: FALSE)
 #' @param overlay_theme Theme for loading overlay: "light", "glass", "dark", or "accent" (default: "light")
 #' @param overlay_text Text to display in loading overlay (default: "Loading")
+#' @param overlay_duration Duration in milliseconds for how long overlay stays visible (default: 2200)
 #' @return The updated dashboard_project object
 #' @export
 #' @examples
@@ -329,15 +331,105 @@ create_dashboard <- function(output_dir = "site",
 #' }
 add_dashboard_page <- function(proj, name, data = NULL, data_path = NULL,
                                template = NULL, params = list(),
-                               visualizations = NULL, text = NULL, icon = NULL,
+                               visualizations = NULL, content = NULL, text = NULL, icon = NULL,
                                is_landing_page = FALSE,
                                tabset_theme = NULL, tabset_colors = NULL,
                                navbar_align = c("left", "right"),
                                overlay = FALSE,
                                overlay_theme = c("light", "glass", "dark", "accent"),
-                               overlay_text = "Loading") {
+                               overlay_text = "Loading",
+                               overlay_duration = 2200) {
   if (!inherits(proj, "dashboard_project")) {
     stop("proj must be a dashboard_project object")
+  }
+
+  # Handle content parameter (alias for visualizations, but supports mixed content)
+  # If both are provided, content takes precedence
+  content_blocks <- NULL
+  
+  if (!is.null(content)) {
+    # content can be: content_collection, viz_collection, content_block, or list of mixed content
+    if (inherits(content, "content_collection")) {
+      # New unified content collection system
+      viz_specs <- list()
+      content_list <- list()
+      
+      for (item in content$items) {
+        if (!is.null(item$type) && item$type == "viz") {
+          # This is a viz item
+          viz_specs <- c(viz_specs, list(item))
+        } else if (inherits(item, "content_block")) {
+          # This is other content (text, image, etc)
+          content_list <- c(content_list, list(item))
+        }
+      }
+      
+      # Create a viz_collection from the viz specs if we found any
+      if (length(viz_specs) > 0) {
+        viz_list <- create_viz()
+        viz_list$items <- viz_specs
+        visualizations <- viz_list
+      }
+      
+      # Store content blocks
+      if (length(content_list) > 0) {
+        content_blocks <- content_list
+      }
+    } else if (inherits(content, "viz_collection")) {
+      # Backward compatibility: treat viz_collection as visualizations
+      if (is.null(visualizations)) {
+        visualizations <- content
+      }
+    } else if (inherits(content, "content_block")) {
+      # Single content block
+      content_blocks <- list(content)
+    } else if (is.list(content)) {
+      # List of mixed content - extract viz_collections and content blocks
+      viz_list <- NULL
+      content_list <- list()
+      
+      for (item in content) {
+        if (inherits(item, "content_collection")) {
+          # Process content_collection - extract viz and content separately
+          for (sub_item in item$items) {
+            if (!is.null(sub_item$type) && sub_item$type == "viz") {
+              # Add to viz_list
+              if (is.null(viz_list)) {
+                viz_list <- create_viz()
+                viz_list$items <- list(sub_item)
+              } else {
+                viz_list$items <- c(viz_list$items, list(sub_item))
+              }
+            } else if (inherits(sub_item, "content_block")) {
+              content_list <- c(content_list, list(sub_item))
+            }
+          }
+        } else if (inherits(item, "viz_collection")) {
+          # Combine all viz_collections
+          if (is.null(viz_list)) {
+            viz_list <- item
+          } else {
+            viz_list <- combine_viz(viz_list, item)
+          }
+        } else if (inherits(item, "content_block")) {
+          content_list <- c(content_list, list(item))
+        } else {
+          stop("Content items must be viz_collection, content_collection, content_block, or list of these")
+        }
+      }
+      
+      # Set visualizations if we found any
+      if (!is.null(viz_list) && length(viz_list$items) > 0) {
+        visualizations <- viz_list
+      }
+      
+      # Store content blocks
+      if (length(content_list) > 0) {
+        content_blocks <- content_list
+      }
+    } else {
+      stop("content must be a content_collection, viz_collection, content_block, or list of these")
+    }
   }
 
   # Validate and match navbar alignment
@@ -464,8 +556,11 @@ add_dashboard_page <- function(proj, name, data = NULL, data_path = NULL,
 
   # Process visualization specifications
   viz_specs <- NULL
+  
   if (!is.null(visualizations)) {
-    viz_specs <- .process_visualizations(visualizations, data_path)
+    if (inherits(visualizations, "viz_collection")) {
+      viz_specs <- .process_visualizations(visualizations, data_path)
+    }
   }
 
   # Create page record
@@ -476,6 +571,7 @@ add_dashboard_page <- function(proj, name, data = NULL, data_path = NULL,
     template = template,
     params = params,
     visualizations = viz_specs,
+    content_blocks = content_blocks,
     text = text,
     icon = icon,
     is_landing_page = is_landing_page,
@@ -484,7 +580,8 @@ add_dashboard_page <- function(proj, name, data = NULL, data_path = NULL,
     navbar_align = navbar_align,
     overlay = overlay,
     overlay_theme = if(overlay) overlay_theme else NULL,
-    overlay_text = if(overlay) overlay_text else NULL
+    overlay_text = if(overlay) overlay_text else NULL,
+    overlay_duration = if(overlay) overlay_duration else NULL
   )
 
   proj$pages[[name]] <- page
@@ -737,7 +834,7 @@ print.dashboard_project <- function(x, ...) {
         cat("\n")
 
       # Show visualizations
-      viz_list <- page$visualizations %||% list()
+      viz_list <- page$items %||% list()
       if (length(viz_list) > 0) {
         # Build tree for this page's visualizations
         viz_tree <- list()

@@ -179,9 +179,9 @@ test_that("set_tabgroup_labels preserves visualization order", {
     ))
   
   # Visualizations should still be in original order
-  expect_equal(viz$visualizations[[1]]$title, "Chart 1")
-  expect_equal(viz$visualizations[[2]]$title, "Chart 2")
-  expect_equal(viz$visualizations[[3]]$title, "Chart 3")
+  expect_equal(viz$items[[1]]$title, "Chart 1")
+  expect_equal(viz$items[[2]]$title, "Chart 2")
+  expect_equal(viz$items[[3]]$title, "Chart 3")
 })
 
 test_that("set_tabgroup_labels works with special characters", {

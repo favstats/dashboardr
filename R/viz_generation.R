@@ -31,8 +31,10 @@
   # Remove nested_children from spec - it's only for structure, not for visualization generation
   spec <- spec[names(spec) != "nested_children"]
 
-  # Determine text position (default to "above" if not specified)
-  text_position <- spec$text_position %||% "above"
+  # Add text_above_title if provided (before the title/header)
+  if (!is.null(spec$text_above_title) && nzchar(spec$text_above_title)) {
+    lines <- c(lines, "", spec$text_above_title, "")
+  }
 
   # Add section header with icon if provided (skip if in tabgroup)
   if (!skip_header && !is.null(spec$title)) {
@@ -48,9 +50,22 @@
     lines <- c(lines, paste0("## ", header_text), "")
   }
 
-  # Add custom text content if provided (above chart by default)
-  if (!is.null(spec$text) && nzchar(spec$text) && text_position == "above") {
-    lines <- c(lines, "", spec$text, "")
+  # Add text_above_tabs if provided (only applies when there's a tabgroup)
+  if (!is.null(spec$text_above_tabs) && nzchar(spec$text_above_tabs) && !is.null(spec$tabgroup)) {
+    lines <- c(lines, "", spec$text_above_tabs, "")
+  }
+
+  # Add text_above_graphs if provided
+  if (!is.null(spec$text_above_graphs) && nzchar(spec$text_above_graphs)) {
+    lines <- c(lines, "", spec$text_above_graphs, "")
+  }
+  
+  # Backward compatibility: handle old text parameter
+  if (!is.null(spec$text) && nzchar(spec$text)) {
+    text_position <- spec$text_position %||% "above"
+    if (text_position == "above" && is.null(spec$text_above_graphs)) {
+      lines <- c(lines, "", spec$text, "")
+    }
   }
 
   # Generate meaningful chunk label
@@ -59,11 +74,11 @@
   # Simple R chunk - caching enabled for performance
   lines <- c(lines,
     paste0("```{r ", chunk_label, "}"),
-    paste0("# ", spec$title %||% paste(spec$type, "visualization"))
+    paste0("# ", spec$title %||% paste(spec$viz_type, "visualization"))
   )
 
   # Dispatch to appropriate generator
-  if ("type" %in% names(spec)) {
+  if ("viz_type" %in% names(spec) && !is.null(spec$viz_type)) {
     lines <- c(lines, .generate_typed_viz(spec))
   } else if ("fn" %in% names(spec)) {
     lines <- c(lines, .generate_function_viz(spec))
@@ -73,9 +88,17 @@
 
   lines <- c(lines, "```")
 
-  # Add custom text content if provided (below chart)
-  if (!is.null(spec$text) && nzchar(spec$text) && text_position == "below") {
-    lines <- c(lines, "", spec$text, "")
+  # Add text_below_graphs if provided
+  if (!is.null(spec$text_below_graphs) && nzchar(spec$text_below_graphs)) {
+    lines <- c(lines, "", spec$text_below_graphs, "")
+  }
+  
+  # Backward compatibility: handle old text parameter with text_position = "below"
+  if (!is.null(spec$text) && nzchar(spec$text)) {
+    text_position <- spec$text_position %||% "above"
+    if (text_position == "below" && is.null(spec$text_below_graphs)) {
+      lines <- c(lines, "", spec$text, "")
+    }
   }
 
   lines <- c(lines, "")
@@ -118,14 +141,14 @@
 
   ## TODO: this needs to create from some list of available visualizations (maybe!)
   # Map type to function name
-  viz_function <- switch(spec$type,
+  viz_function <- switch(spec$viz_type,
                          "stackedbars" = "create_stackedbars",
                          "stackedbar" = "create_stackedbar",
                          "histogram" = "create_histogram",
                          "heatmap" = "create_heatmap",
                          "timeline" = "create_timeline",
                          "bar" = "create_bar",
-                         spec$type
+                         spec$viz_type
   )
 
   # Determine which dataset to use
@@ -154,22 +177,22 @@
       # Determine which variables are used in this visualization
       vars_to_clean <- character(0)
       
-      if (spec$type == "stackedbar") {
+      if (spec$viz_type == "stackedbar") {
         if (!is.null(spec$x_var)) vars_to_clean <- c(vars_to_clean, spec$x_var)
         if (!is.null(spec$stack_var)) vars_to_clean <- c(vars_to_clean, spec$stack_var)
-      } else if (spec$type == "stackedbars") {
+      } else if (spec$viz_type == "stackedbars") {
         if (!is.null(spec$questions)) vars_to_clean <- c(vars_to_clean, spec$questions)
-      } else if (spec$type == "timeline") {
+      } else if (spec$viz_type == "timeline") {
         if (!is.null(spec$response_var)) vars_to_clean <- c(vars_to_clean, spec$response_var)
         if (!is.null(spec$group_var)) vars_to_clean <- c(vars_to_clean, spec$group_var)
         if (!is.null(spec$time_var)) vars_to_clean <- c(vars_to_clean, spec$time_var)
-      } else if (spec$type == "histogram") {
+      } else if (spec$viz_type == "histogram") {
         if (!is.null(spec$x_var)) vars_to_clean <- c(vars_to_clean, spec$x_var)
         if (!is.null(spec$group_var)) vars_to_clean <- c(vars_to_clean, spec$group_var)
-      } else if (spec$type == "bar") {
+      } else if (spec$viz_type == "bar") {
         if (!is.null(spec$x_var)) vars_to_clean <- c(vars_to_clean, spec$x_var)
         if (!is.null(spec$group_var)) vars_to_clean <- c(vars_to_clean, spec$group_var)
-      } else if (spec$type == "heatmap") {
+      } else if (spec$viz_type == "heatmap") {
         if (!is.null(spec$x_var)) vars_to_clean <- c(vars_to_clean, spec$x_var)
         if (!is.null(spec$y_var)) vars_to_clean <- c(vars_to_clean, spec$y_var)
         if (!is.null(spec$fill_var)) vars_to_clean <- c(vars_to_clean, spec$fill_var)
@@ -188,7 +211,7 @@
   }
 
   for (param in names(spec)) {
-    if (!param %in% c("type", "data_path", "tabgroup", "text", "icon", "text_position", "height", "filter", "data", "has_data", "multi_dataset", "title_tabset", "nested_children", "drop_na_vars", ".insertion_index", ".min_index")) { # Exclude internal parameters
+    if (!param %in% c("type", "viz_type", "data_path", "tabgroup", "text", "icon", "text_position", "text_above_title", "text_above_tabs", "text_above_graphs", "text_below_graphs", "height", "filter", "data", "has_data", "multi_dataset", "title_tabset", "nested_children", "drop_na_vars", ".insertion_index", ".min_index")) { # Exclude internal parameters
       args[[param]] <- .serialize_arg(spec[[param]])
     }
   }
@@ -714,22 +737,24 @@
   if (is.null(label)) {
     vars <- character(0)
     
-    if (!is.null(spec$type)) {
+    viz_type <- spec$viz_type %||% spec$type  # Support both new and old field names
+    
+    if (!is.null(viz_type)) {
       # Type-specific variable extraction
-      if (spec$type == "stackedbar" || spec$type == "bar") {
+      if (viz_type == "stackedbar" || viz_type == "bar") {
         if (!is.null(spec$x_var)) vars <- c(vars, spec$x_var)
         if (!is.null(spec$stack_var)) vars <- c(vars, spec$stack_var)
         if (!is.null(spec$group_var)) vars <- c(vars, spec$group_var)
-      } else if (spec$type == "stackedbars") {
+      } else if (viz_type == "stackedbars") {
         if (!is.null(spec$questions) && length(spec$questions) > 0) {
           vars <- c(vars, spec$questions[1])  # Use first question
         }
-      } else if (spec$type == "timeline") {
+      } else if (viz_type == "timeline") {
         if (!is.null(spec$response_var)) vars <- c(vars, spec$response_var)
         if (!is.null(spec$group_var)) vars <- c(vars, spec$group_var)
-      } else if (spec$type == "histogram") {
+      } else if (viz_type == "histogram") {
         if (!is.null(spec$x_var)) vars <- c(vars, spec$x_var)
-      } else if (spec$type == "heatmap") {
+      } else if (viz_type == "heatmap") {
         if (!is.null(spec$x_var)) vars <- c(vars, spec$x_var)
         if (!is.null(spec$y_var)) vars <- c(vars, spec$y_var)
         if (!is.null(spec$value_var)) vars <- c(vars, spec$value_var)
@@ -739,7 +764,7 @@
       if (length(vars) > 0) {
         # Limit to first 2 variables to keep reasonable length
         vars_label <- paste(head(vars, 2), collapse = "-")
-        label <- paste(spec$type, vars_label, sep = "-")
+        label <- paste(viz_type, vars_label, sep = "-")
       }
     }
   }
@@ -751,8 +776,9 @@
   
   # Priority 4: Use type or fallback
   if (is.null(label)) {
-    if (!is.null(spec$type)) {
-      label <- spec$type
+    viz_type <- spec$viz_type %||% spec$type
+    if (!is.null(viz_type)) {
+      label <- viz_type
     } else if (!is.null(spec_name)) {
       label <- spec_name
     } else {

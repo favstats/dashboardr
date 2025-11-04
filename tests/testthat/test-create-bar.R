@@ -155,8 +155,8 @@ test_that("create_bar works in viz_collection", {
   ) %>%
     add_viz(title = "Bar Chart")
   
-  expect_equal(viz$visualizations[[1]]$type, "bar")
-  expect_equal(viz$visualizations[[1]]$x_var, "category")
+  expect_equal(viz$items[[1]]$viz_type, "bar")
+  expect_equal(viz$items[[1]]$x_var, "category")
 })
 
 test_that("create_bar in dashboard generation", {
@@ -274,10 +274,10 @@ test_that("create_bar with defaults in create_viz", {
     )
   
   # Both should inherit defaults
-  expect_true(viz$visualizations[[1]]$horizontal)
-  expect_true(viz$visualizations[[2]]$horizontal)
-  expect_equal(viz$visualizations[[1]]$bar_type, "percent")
-  expect_equal(viz$visualizations[[2]]$bar_type, "percent")
+  expect_true(viz$items[[1]]$horizontal)
+  expect_true(viz$items[[2]]$horizontal)
+  expect_equal(viz$items[[1]]$bar_type, "percent")
+  expect_equal(viz$items[[2]]$bar_type, "percent")
 })
 
 test_that("create_bar with filter parameter", {
@@ -290,8 +290,8 @@ test_that("create_bar with filter parameter", {
       filter = ~ wave == 1
     )
   
-  expect_s3_class(viz$visualizations[[1]]$filter, "formula")
-  expect_equal(as.character(viz$visualizations[[1]]$filter)[2], "wave == 1")
+  expect_s3_class(viz$items[[1]]$filter, "formula")
+  expect_equal(as.character(viz$items[[1]]$filter)[2], "wave == 1")
 })
 
 test_that("create_bar with x_order", {
@@ -358,5 +358,5 @@ test_that("create_bar works with drop_na_vars", {
       drop_na_vars = TRUE
     )
   
-  expect_true(viz$visualizations[[1]]$drop_na_vars)
+  expect_true(viz$items[[1]]$drop_na_vars)
 })

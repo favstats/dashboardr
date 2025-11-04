@@ -291,7 +291,9 @@ test_that("Complex nested structure with age and gender tabgroups works correctl
   wave2_has_age <- FALSE
   wave2_has_gender <- FALSE
   
+  # Tree nodes use $visualizations, not $items
   for (viz_item in sis_tabgroup$visualizations) {
+    # Check if this is a viz item (not a nested tabgroup)
     if (is.null(viz_item$type) || viz_item$type != "tabgroup") {
       # This is a visualization (Wave tab)
       if (!is.null(viz_item$title_tabset)) {
@@ -301,7 +303,7 @@ test_that("Complex nested structure with age and gender tabgroups works correctl
             for (nc in viz_item$nested_children) {
               if (nc$name == "age") {
                 wave1_has_age <- TRUE
-                # Check it has item1, item2, item3
+                # Check it has item1, item2, item3 - tree nodes use $visualizations
                 expect_true(length(nc$visualizations) >= 3, 
                            "Age tabgroup should have at least 3 items (Question 1, 2, 3)")
               }

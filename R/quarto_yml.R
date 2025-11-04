@@ -745,15 +745,15 @@
 
 # Generate default page content when no custom template is used
 
-.generate_loading_overlay_chunk <- function(theme = "light", text = "Loading") {
+.generate_loading_overlay_chunk <- function(theme = "light", text = "Loading", duration_ms = 2200) {
   c(
     "",
     "```{r, echo=FALSE, message=FALSE, warning=FALSE, results='asis'}",
     "library(htmltools)",
     "",
     "add_loading_overlay <- function(",
-    "  text = \"Loading…\",",
-    "  timeout_ms = 2200,",
+    "  text,",
+    "  timeout_ms,",
     "  theme = c(\"light\", \"glass\", \"dark\", \"accent\")",
     ") {",
     "  theme <- match.arg(theme)",
@@ -882,8 +882,7 @@
     "      tags$div(",
     "        class = \"plo-card\",",
     "        tags$div(class = \"plo-spinner\"),",
-    "        tags$div(class = \"plo-title\", text),",
-    "        tags$div(class = \"plo-sub\", \"Even geduld.\")",
+    "        tags$div(class = \"plo-title\", text)",
     "      )",
     "    ),",
     "    tags$script(HTML(sprintf(\"",
@@ -897,7 +896,7 @@
     "  )",
     "}",
     "",
-    paste0("add_loading_overlay(\"", text, "\", theme = \"", theme, "\")"),
+    paste0("add_loading_overlay(\"", text, "\", ", duration_ms, ", theme = \"", theme, "\")"),
     "```",
     ""
   )

@@ -48,8 +48,8 @@ test_that("viz can specify which dataset to use", {
     add_viz(x_var = "value1", data = "dataset1", title = "From Dataset 1") %>%
     add_viz(x_var = "value2", data = "dataset2", title = "From Dataset 2")
   
-  expect_equal(viz$visualizations[[1]]$data, "dataset1")
-  expect_equal(viz$visualizations[[2]]$data, "dataset2")
+  expect_equal(viz$items[[1]]$data, "dataset1")
+  expect_equal(viz$items[[2]]$data, "dataset2")
 })
 
 test_that("multi-dataset generates correct setup code", {
@@ -306,8 +306,8 @@ test_that("multi-dataset with combine_viz preserves dataset references", {
   combined <- combine_viz(viz1, viz2)
   
   # Dataset references should be preserved
-  expect_equal(combined$visualizations[[1]]$data, "data1")
-  expect_equal(combined$visualizations[[2]]$data, "data2")
+  expect_equal(combined$items[[1]]$data, "data1")
+  expect_equal(combined$items[[2]]$data, "data2")
 })
 
 test_that("multi-dataset summary output shows all datasets", {

@@ -12,6 +12,7 @@ add_dashboard_page(
   template = NULL,
   params = list(),
   visualizations = NULL,
+  content = NULL,
   text = NULL,
   icon = NULL,
   is_landing_page = FALSE,
@@ -20,7 +21,8 @@ add_dashboard_page(
   navbar_align = c("left", "right"),
   overlay = FALSE,
   overlay_theme = c("light", "glass", "dark", "accent"),
-  overlay_text = "Loading"
+  overlay_text = "Loading",
+  overlay_duration = 2200
 )
 }
 \arguments{
@@ -57,6 +59,8 @@ list of file paths for multiple datasets}
 \item{overlay_theme}{Theme for loading overlay: "light", "glass", "dark", or "accent" (default: "light")}
 
 \item{overlay_text}{Text to display in loading overlay (default: "Loading")}
+
+\item{overlay_duration}{Duration in milliseconds for how long overlay stays visible (default: 2200)}
 }
 \value{
 The updated dashboard_project object

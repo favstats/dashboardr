@@ -100,6 +100,7 @@ reference:
   desc: Functions for creating visualizations
   contents:
   - create_viz
+  - create_content
   - add_viz
   - add_vizzes
   - combine_viz
@@ -132,6 +133,42 @@ reference:
   - card
   - card_row
   - spec_viz
+
+- title: Content Blocks
+  desc: Functions for adding rich content blocks to pages
+  contents:
+  - add_text
+  - add_image
+  - add_callout
+  - add_divider
+  - add_code
+  - add_card
+  - add_accordion
+  - add_spacer
+  - add_html
+  - add_quote
+  - add_badge
+
+- title: Metrics & Value Boxes
+  desc: Functions for displaying KPIs and metrics
+  contents:
+  - add_metric
+  - add_value_box
+  - add_value_box_row
+
+- title: Embedded Content
+  desc: Functions for embedding external content
+  contents:
+  - add_iframe
+  - add_video
+
+- title: Tables
+  desc: Functions for adding tables to pages
+  contents:
+  - add_table
+  - add_gt
+  - add_reactable
+  - add_DT
 
 - title: Print Methods
   desc: S3 methods for displaying objects

@@ -250,6 +250,40 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
       # Mark as regenerated
       build_info$regenerated <- c(build_info$regenerated, page_name)
 
+      # Save table objects (entire styled objects for direct rendering)
+      if (!is.null(page$content_blocks)) {
+        table_counter <- 0
+        for (i in seq_along(page$content_blocks)) {
+          block <- page$content_blocks[[i]]
+          if (!inherits(block, "content_block")) next
+          if (!block$type %in% c("table", "gt", "reactable", "DT")) next
+          
+          table_counter <- table_counter + 1
+          
+          # Get the table object to save
+          table_obj <- NULL
+          if (block$type == "table" && !is.null(block$table_object)) {
+            table_obj <- block$table_object
+          } else if (block$type == "gt" && !is.null(block$gt_object)) {
+            table_obj <- block$gt_object
+          } else if (block$type == "reactable" && !is.null(block$reactable_object)) {
+            table_obj <- block$reactable_object
+          } else if (block$type == "DT" && !is.null(block$table_data)) {
+            table_obj <- block$table_data
+          }
+          
+          # Save the ENTIRE styled object (preserves all styling!)
+          if (!is.null(table_obj)) {
+            obj_filename <- paste0("table_obj_", table_counter, ".rds")
+            obj_filepath <- file.path(output_dir, obj_filename)
+            saveRDS(table_obj, obj_filepath)
+            page$content_blocks[[i]]$table_file <- obj_filename
+            page$content_blocks[[i]]$table_var <- paste0("table_obj_", table_counter)
+          }
+        }
+      }
+      
+      # Now generate the page content with updated blocks
       if (!is.null(page$template)) {
         # Custom template
         content <- .process_template(page$template, page$params, output_dir)
@@ -268,7 +302,7 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
       
       page_elapsed <- as.numeric(difftime(Sys.time(), page_start, units = "secs"))
       .progress_step(page_name, page_elapsed, show_progress, is_last_page, use_page_style = TRUE)
-
+      
       # Copy data file(s) if needed
       if (!is.null(page$data_path)) {
         if (is.list(page$data_path)) {

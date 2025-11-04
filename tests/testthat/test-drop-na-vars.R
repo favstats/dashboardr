@@ -11,7 +11,7 @@ test_that("drop_na_vars basic functionality", {
       drop_na_vars = TRUE
     )
   
-  expect_true(viz$visualizations[[1]]$drop_na_vars)
+  expect_true(viz$items[[1]]$drop_na_vars)
 })
 
 test_that("drop_na_vars defaults to FALSE", {
@@ -21,7 +21,7 @@ test_that("drop_na_vars defaults to FALSE", {
   ) %>%
     add_viz(title = "Chart")
   
-  expect_false(viz$visualizations[[1]]$drop_na_vars %||% FALSE)
+  expect_false(viz$items[[1]]$drop_na_vars %||% FALSE)
 })
 
 test_that("drop_na_vars generates tidyr::drop_na call for histogram", {
@@ -218,8 +218,8 @@ test_that("drop_na_vars works with defaults", {
     add_viz(title = "Chart 2")
   
   # Both should inherit drop_na_vars
-  expect_true(viz$visualizations[[1]]$drop_na_vars)
-  expect_true(viz$visualizations[[2]]$drop_na_vars)
+  expect_true(viz$items[[1]]$drop_na_vars)
+  expect_true(viz$items[[2]]$drop_na_vars)
 })
 
 test_that("drop_na_vars can be overridden in add_viz", {
@@ -231,8 +231,8 @@ test_that("drop_na_vars can be overridden in add_viz", {
     add_viz(title = "Clean", drop_na_vars = TRUE) %>%
     add_viz(title = "With NAs", drop_na_vars = FALSE)  # Override
   
-  expect_true(viz$visualizations[[1]]$drop_na_vars)
-  expect_false(viz$visualizations[[2]]$drop_na_vars)
+  expect_true(viz$items[[1]]$drop_na_vars)
+  expect_false(viz$items[[2]]$drop_na_vars)
 })
 
 test_that("drop_na_vars with stackedbars includes all questions", {
@@ -393,9 +393,9 @@ test_that("drop_na_vars with add_vizzes", {
     add_viz(title = "Wave 3", filter = ~ wave == 3)
   
   # All should have drop_na_vars
-  expect_true(viz$visualizations[[1]]$drop_na_vars)
-  expect_true(viz$visualizations[[2]]$drop_na_vars)
-  expect_true(viz$visualizations[[3]]$drop_na_vars)
+  expect_true(viz$items[[1]]$drop_na_vars)
+  expect_true(viz$items[[2]]$drop_na_vars)
+  expect_true(viz$items[[3]]$drop_na_vars)
 })
 
 test_that("drop_na_vars with multi-dataset", {

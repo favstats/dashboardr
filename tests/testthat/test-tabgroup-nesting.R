@@ -209,7 +209,8 @@ test_that("combine_viz preserves insertion order (not grouped by filter)", {
   combined <- combine_viz(sis_viz, subvizzes, subvizzes2)
   
   # Verify order after sorting (should be insertion order)
-  expect_equal(length(combined$visualizations), 4)
+  # Note: combined is a viz_collection (input), so it uses $items with type="viz" wrappers
+  expect_equal(length(combined$items), 4)
   
   # Insertion order should be:
   # 1. sis (wave == 1) - index 1
@@ -217,29 +218,29 @@ test_that("combine_viz preserves insertion order (not grouped by filter)", {
   # 3. sis/age/item1 (wave == 1) - index 3
   # 4. sis/age/item1 (wave == 2) - index 4
   
-  expect_equal(combined$visualizations[[1]]$.insertion_index, 1)
-  expect_equal(combined$visualizations[[2]]$.insertion_index, 2)
-  expect_equal(combined$visualizations[[3]]$.insertion_index, 3)
-  expect_equal(combined$visualizations[[4]]$.insertion_index, 4)
+  expect_equal(combined$items[[1]]$.insertion_index, 1)
+  expect_equal(combined$items[[2]]$.insertion_index, 2)
+  expect_equal(combined$items[[3]]$.insertion_index, 3)
+  expect_equal(combined$items[[4]]$.insertion_index, 4)
   
-  # Verify tabgroups
-  expect_equal(length(combined$visualizations[[1]]$tabgroup), 1)  # sis
-  expect_equal(combined$visualizations[[1]]$tabgroup[[1]], "sis")
+  # Verify tabgroups (items ARE the specs with type="viz" mixed in)
+  expect_equal(length(combined$items[[1]]$tabgroup), 1)  # sis
+  expect_equal(combined$items[[1]]$tabgroup[[1]], "sis")
   
-  expect_equal(length(combined$visualizations[[2]]$tabgroup), 1)  # sis
-  expect_equal(combined$visualizations[[2]]$tabgroup[[1]], "sis")
+  expect_equal(length(combined$items[[2]]$tabgroup), 1)  # sis
+  expect_equal(combined$items[[2]]$tabgroup[[1]], "sis")
   
-  expect_equal(length(combined$visualizations[[3]]$tabgroup), 3)  # sis/age/item1
-  expect_equal(combined$visualizations[[3]]$tabgroup[[1]], "sis")
+  expect_equal(length(combined$items[[3]]$tabgroup), 3)  # sis/age/item1
+  expect_equal(combined$items[[3]]$tabgroup[[1]], "sis")
   
-  expect_equal(length(combined$visualizations[[4]]$tabgroup), 3)  # sis/age/item1
-  expect_equal(combined$visualizations[[4]]$tabgroup[[1]], "sis")
+  expect_equal(length(combined$items[[4]]$tabgroup), 3)  # sis/age/item1
+  expect_equal(combined$items[[4]]$tabgroup[[1]], "sis")
   
   # Verify filters exist
-  expect_true(!is.null(combined$visualizations[[1]]$filter))
-  expect_true(!is.null(combined$visualizations[[2]]$filter))
-  expect_true(!is.null(combined$visualizations[[3]]$filter))
-  expect_true(!is.null(combined$visualizations[[4]]$filter))
+  expect_true(!is.null(combined$items[[1]]$filter))
+  expect_true(!is.null(combined$items[[2]]$filter))
+  expect_true(!is.null(combined$items[[3]]$filter))
+  expect_true(!is.null(combined$items[[4]]$filter))
 })
 
 test_that("Hierarchy building creates separate nested structures per parent filter", {

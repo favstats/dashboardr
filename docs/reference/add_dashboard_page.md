@@ -15,6 +15,7 @@ add_dashboard_page(
   template = NULL,
   params = list(),
   visualizations = NULL,
+  content = NULL,
   text = NULL,
   icon = NULL,
   is_landing_page = FALSE,
@@ -23,7 +24,8 @@ add_dashboard_page(
   navbar_align = c("left", "right"),
   overlay = FALSE,
   overlay_theme = c("light", "glass", "dark", "accent"),
-  overlay_text = "Loading"
+  overlay_text = "Loading",
+  overlay_duration = 2200
 )
 ```
 
@@ -97,6 +99,11 @@ add_dashboard_page(
 - overlay_text:
 
   Text to display in loading overlay (default: "Loading")
+
+- overlay_duration:
+
+  Duration in milliseconds for how long overlay stays visible (default:
+  2200)
 
 ## Value
 

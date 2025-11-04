@@ -36,10 +36,10 @@ create_viz <- function(tabgroup_labels = NULL, ...) {
   defaults <- list(...)
   
   structure(list(
-    visualizations = list(),
+    items = list(),  # Unified storage for all content
     tabgroup_labels = tabgroup_labels,
     defaults = defaults
-  ), class = "viz_collection")
+  ), class = c("content_collection", "viz_collection"))  # Both classes for backward compat
 }
 
 
@@ -95,8 +95,8 @@ create_viz <- function(tabgroup_labels = NULL, ...) {
   combined_viz <- list()
   
   # Add e1's visualizations first
-  for (i in seq_along(e1$visualizations)) {
-    viz <- e1$visualizations[[i]]
+  for (i in seq_along(e1$items)) {
+    viz <- e1$items[[i]]
     # Remove old index and set new one
     viz[[".insertion_index"]] <- NULL
     viz[[".insertion_index"]] <- i
@@ -104,9 +104,9 @@ create_viz <- function(tabgroup_labels = NULL, ...) {
   }
   
   # Renumber e2's visualizations to come after e1's
-  offset <- length(e1$visualizations)
-  for (i in seq_along(e2$visualizations)) {
-    viz <- e2$visualizations[[i]]
+  offset <- length(e1$items)
+  for (i in seq_along(e2$items)) {
+    viz <- e2$items[[i]]
     # Remove old index and set new one
     viz[[".insertion_index"]] <- NULL
     viz[[".insertion_index"]] <- offset + i
@@ -137,10 +137,10 @@ create_viz <- function(tabgroup_labels = NULL, ...) {
   
   # Return new combined collection
   structure(list(
-    visualizations = combined_viz,
+    items = combined_viz,
     tabgroup_labels = if (length(combined_labels) > 0) combined_labels else NULL,
     defaults = if (length(combined_defaults) > 0) combined_defaults else list()
-  ), class = "viz_collection")
+  ), class = c("content_collection", "viz_collection"))
 }
 #' Combine visualization collections
 #'
@@ -178,12 +178,13 @@ combine_viz <- function(...) {
   for (col in collections) {
     # Renumber indices to maintain global order
     offset <- length(combined_viz)
-    for (i in seq_along(col$visualizations)) {
-      viz <- col$visualizations[[i]]
+    for (i in seq_along(col$items)) {
+      item <- col$items[[i]]
+      # Items ARE the specs with type="viz" mixed in, not wrapped
       # Remove old insertion index and add new one
-      viz[[".insertion_index"]] <- NULL
-      viz[[".insertion_index"]] <- offset + i
-      combined_viz[[length(combined_viz) + 1]] <- viz
+      item[[".insertion_index"]] <- NULL
+      item[[".insertion_index"]] <- offset + i
+      combined_viz[[length(combined_viz) + 1]] <- item
     }
     
     if (!is.null(col$tabgroup_labels)) {
@@ -204,10 +205,10 @@ combine_viz <- function(...) {
   combined_viz <- .sort_viz_by_tabgroup_hierarchy(combined_viz)
   
   structure(list(
-    visualizations = combined_viz,
+    items = combined_viz,
     tabgroup_labels = if (length(combined_labels) > 0) combined_labels else NULL,
     defaults = if (length(combined_defaults) > 0) combined_defaults else list()
-  ), class = "viz_collection")
+  ), class = c("content_collection", "viz_collection"))
 }
 
 #' Sort visualizations by tabgroup hierarchy
@@ -373,7 +374,7 @@ combine_viz <- function(...) {
   # The hierarchy builder will handle grouping and nesting correctly.
   # We don't need to pre-sort by tabgroup hierarchy here.
   
-  # Extract insertion indices
+  # Extract insertion indices (items ARE the specs with type="viz" mixed in)
   sort_order <- order(sapply(viz_list, function(v) v$.insertion_index %||% Inf))
   
   # Return sorted by insertion index
@@ -463,10 +464,10 @@ combine_viz <- function(...) {
 #'     title = "Age Distribution of Survey Respondents by Gender and Region"  # Long viz title
 #'   )
 #' }
-add_viz <- function(viz_collection, type = NULL, ..., tabgroup = NULL, title = NULL, title_tabset = NULL, text = NULL, icon = NULL, text_position = NULL, height = NULL, filter = NULL, data = NULL, drop_na_vars = FALSE) {
-  # Validate first argument
-  if (!inherits(viz_collection, "viz_collection")) {
-    stop("First argument must be a viz_collection object")
+add_viz <- function(viz_collection, type = NULL, ..., tabgroup = NULL, title = NULL, title_tabset = NULL, text = NULL, icon = NULL, text_position = NULL, text_above_title = NULL, text_above_tabs = NULL, text_above_graphs = NULL, text_below_graphs = NULL, height = NULL, filter = NULL, data = NULL, drop_na_vars = FALSE) {
+  # Validate first argument - accept both content_collection and viz_collection
+  if (!inherits(viz_collection, "content_collection") && !inherits(viz_collection, "viz_collection")) {
+    stop("First argument must be a viz_collection or content_collection object")
   }
 
   # Get explicitly provided arguments (not defaults)
@@ -501,6 +502,10 @@ add_viz <- function(viz_collection, type = NULL, ..., tabgroup = NULL, title = N
   if ("text" %in% names(call_args)) merged_params$text <- text
   if ("icon" %in% names(call_args)) merged_params$icon <- icon
   if ("text_position" %in% names(call_args)) merged_params$text_position <- text_position
+  if ("text_above_title" %in% names(call_args)) merged_params$text_above_title <- text_above_title
+  if ("text_above_tabs" %in% names(call_args)) merged_params$text_above_tabs <- text_above_tabs
+  if ("text_above_graphs" %in% names(call_args)) merged_params$text_above_graphs <- text_above_graphs
+  if ("text_below_graphs" %in% names(call_args)) merged_params$text_below_graphs <- text_below_graphs
   if ("height" %in% names(call_args)) merged_params$height <- height
   if ("filter" %in% names(call_args)) merged_params$filter <- filter
   if ("data" %in% names(call_args)) merged_params$data <- data
@@ -516,14 +521,33 @@ add_viz <- function(viz_collection, type = NULL, ..., tabgroup = NULL, title = N
   text <- merged_params$text
   icon <- merged_params$icon
   text_position <- merged_params$text_position %||% "above"
+  text_above_title <- merged_params$text_above_title
+  text_above_tabs <- merged_params$text_above_tabs
+  text_above_graphs <- merged_params$text_above_graphs
+  text_below_graphs <- merged_params$text_below_graphs
   height <- merged_params$height
   filter <- merged_params$filter
   data <- merged_params$data
   # Note: Using if/else instead of %||% due to unexpected behavior with FALSE values
   drop_na_vars <- if (is.null(merged_params$drop_na_vars)) FALSE else merged_params$drop_na_vars
   
+  # Backward compatibility: map text parameter to text_above_graphs or text_below_graphs
+  if (!is.null(text) && nzchar(text)) {
+    if (text_position == "above") {
+      # If text_above_graphs not explicitly set, use text
+      if (is.null(text_above_graphs)) {
+        text_above_graphs <- text
+      }
+    } else {
+      # text_position == "below"
+      if (is.null(text_below_graphs)) {
+        text_below_graphs <- text
+      }
+    }
+  }
+  
   # Now apply merged_params from dots to the ... parameters
-  dot_args <- merged_params[!names(merged_params) %in% c("type", "tabgroup", "title", "title_tabset", "text", "icon", "text_position", "height", "filter", "data", "drop_na_vars")]
+  dot_args <- merged_params[!names(merged_params) %in% c("type", "tabgroup", "title", "title_tabset", "text", "icon", "text_position", "text_above_title", "text_above_tabs", "text_above_graphs", "text_below_graphs", "height", "filter", "data", "drop_na_vars")]
 
   # Validate supported visualization types
   supported_types <- c("stackedbar", "stackedbars", "heatmap", "histogram", "timeline", "bar")
@@ -555,10 +579,32 @@ add_viz <- function(viz_collection, type = NULL, ..., tabgroup = NULL, title = N
     }
   }
 
-  # Validate text parameter
+  # Validate text parameter (backward compatibility)
   if (!is.null(text)) {
     if (!is.character(text) || length(text) != 1) {
       stop("text must be a character string or NULL")
+    }
+  }
+  
+  # Validate new text positioning parameters
+  if (!is.null(text_above_title)) {
+    if (!is.character(text_above_title) || length(text_above_title) != 1) {
+      stop("text_above_title must be a character string or NULL")
+    }
+  }
+  if (!is.null(text_above_tabs)) {
+    if (!is.character(text_above_tabs) || length(text_above_tabs) != 1) {
+      stop("text_above_tabs must be a character string or NULL")
+    }
+  }
+  if (!is.null(text_above_graphs)) {
+    if (!is.character(text_above_graphs) || length(text_above_graphs) != 1) {
+      stop("text_above_graphs must be a character string or NULL")
+    }
+  }
+  if (!is.null(text_below_graphs)) {
+    if (!is.character(text_below_graphs) || length(text_below_graphs) != 1) {
+      stop("text_below_graphs must be a character string or NULL")
     }
   }
 
@@ -607,13 +653,17 @@ add_viz <- function(viz_collection, type = NULL, ..., tabgroup = NULL, title = N
   # Bundle all parameters into a spec
   viz_spec <- c(
     list(
-      type = type,
+      type = "viz",  # Mark as viz content type
+      viz_type = type,  # Store actual viz type (histogram, bar, etc)
       tabgroup = tabgroup_parsed,
       title = title,
       title_tabset = title_tabset,
-      text = text,
       icon = icon,
       text_position = text_position,
+      text_above_title = text_above_title,
+      text_above_tabs = text_above_tabs,
+      text_above_graphs = text_above_graphs,
+      text_below_graphs = text_below_graphs,
       height = height,
       filter = filter,
       data = data,
@@ -623,11 +673,11 @@ add_viz <- function(viz_collection, type = NULL, ..., tabgroup = NULL, title = N
   )
 
   # Add insertion index to preserve order
-  insertion_idx <- length(viz_collection$visualizations) + 1
+  insertion_idx <- length(viz_collection$items) + 1
   viz_spec$.insertion_index <- insertion_idx
   
-  # Append to the collection
-  viz_collection$visualizations <- c(viz_collection$visualizations, list(viz_spec))
+  # Append to the collection using unified $items
+  viz_collection$items <- c(viz_collection$items, list(viz_spec))
 
   viz_collection
 }
@@ -1059,7 +1109,7 @@ spec_viz <- function(type, ..., tabgroup = NULL, title = NULL) {
 #'
 #' @export
 print.viz_collection <- function(x, ...) {
-  total <- length(x$visualizations)
+  total <- length(x$items)
   cat("\n")
   cat("╔══════════════════════════════════════════════════════════════════════════\n")
   cat("║ 📊 VISUALIZATION COLLECTION\n")
@@ -1074,8 +1124,8 @@ print.viz_collection <- function(x, ...) {
 
   # Build hierarchical tree structure
   tree <- list()
-  for (i in seq_along(x$visualizations)) {
-    v <- x$visualizations[[i]]
+  for (i in seq_along(x$items)) {
+    v <- x$items[[i]]
     path <- if (is.null(v$tabgroup)) {
       c("(no tabgroup)")
     } else if (is.character(v$tabgroup) && length(v$tabgroup) > 0) {
@@ -1186,7 +1236,7 @@ print.viz_collection <- function(x, ...) {
           is_last_item <- (j == length(items)) && !has_children
           
           # Get visualization details
-          type_icon <- switch(v$type,
+          type_icon <- switch(v$viz_type,
             "timeline" = "📈",
             "stackedbar" = "📊",
             "stackedbars" = "📊",
@@ -1196,14 +1246,35 @@ print.viz_collection <- function(x, ...) {
             "📊"
           )
           
-          type_label <- toupper(v$type)
+          type_label <- toupper(v$viz_type)
           title_text <- if (!is.null(v$title)) paste0(": ", v$title) else ""
           filter_text <- if (!is.null(v$filter)) " [filtered]" else ""
           
-          if (is_last_item) {
-            cat(new_prefix, "└─ ", type_icon, " ", type_label, title_text, filter_text, "\n", sep = "")
+          # Add badges for text positioning
+          text_badges <- c()
+          if (!is.null(v$text_above_title) && nzchar(v$text_above_title)) {
+            text_badges <- c(text_badges, "text-above-title")
+          }
+          if (!is.null(v$text_above_tabs) && nzchar(v$text_above_tabs)) {
+            text_badges <- c(text_badges, "text-above-tabs")
+          }
+          if (!is.null(v$text_above_graphs) && nzchar(v$text_above_graphs)) {
+            text_badges <- c(text_badges, "text-above")
+          }
+          if (!is.null(v$text_below_graphs) && nzchar(v$text_below_graphs)) {
+            text_badges <- c(text_badges, "text-below")
+          }
+          
+          badge_text <- if (length(text_badges) > 0) {
+            paste0(" [", paste(text_badges, collapse = ", "), "]")
           } else {
-            cat(new_prefix, "├─ ", type_icon, " ", type_label, title_text, filter_text, "\n", sep = "")
+            ""
+          }
+          
+          if (is_last_item) {
+            cat(new_prefix, "└─ ", type_icon, " ", type_label, title_text, filter_text, badge_text, "\n", sep = "")
+          } else {
+            cat(new_prefix, "├─ ", type_icon, " ", type_label, title_text, filter_text, badge_text, "\n", sep = "")
           }
         }
       }
