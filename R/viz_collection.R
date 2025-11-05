@@ -955,37 +955,42 @@ add_vizzes <- function(viz_collection, ...,
 #' Useful when you want to change the section headers after creating the collection.
 #'
 #' @param viz_collection A viz_collection object
-#' @param labels Named character vector or list mapping tabgroup IDs to labels
+#' @param labels Named character vector or list mapping tabgroup IDs to labels (deprecated, use ... instead)
+#' @param ... Named arguments where names are tabgroup IDs and values are display labels
 #' @return The updated viz_collection
 #' @export
 #' @examples
 #' \dontrun{
+#' # New style: direct key-value pairs (recommended)
 #' vizzes <- create_viz() %>%
 #'   add_viz(type = "heatmap", tabgroup = "demo") %>%
-#'   set_tabgroup_labels(c("demo" = "Demographic Breakdowns"))
-#' }
-
-
-#' Set or update tabgroup display labels
+#'   set_tabgroup_labels(demo = "Demographic Breakdowns", age = "Age Groups")
 #'
-#' Updates the display labels for tab groups in a visualization collection.
-#' Useful when you want to change the section headers after creating the collection.
-#'
-#' @param viz_collection A viz_collection object
-#' @param labels Named character vector or list mapping tabgroup IDs to labels
-#' @return The updated viz_collection
-#' @export
-#' @examples
-#' \dontrun{
+#' # Old style: still supported for backwards compatibility
 #' vizzes <- create_viz() %>%
 #'   add_viz(type = "heatmap", tabgroup = "demo") %>%
-#'   set_tabgroup_labels(c("demo" = "Demographic Breakdowns"))
+#'   set_tabgroup_labels(list(demo = "Demographic Breakdowns"))
 #' }
-set_tabgroup_labels <- function(viz_collection, labels) {
+set_tabgroup_labels <- function(viz_collection, labels = NULL, ...) {
   if (!inherits(viz_collection, "viz_collection")) {
     stop("First argument must be a viz_collection object")
   }
-  viz_collection$tabgroup_labels <- labels
+  
+  # Get key-value pairs from ...
+  dots <- list(...)
+  
+  # Backwards compatibility: if labels is provided (not NULL), use it
+  # Otherwise, use the ... arguments
+  if (!is.null(labels)) {
+    # Old style: labels is a list or vector
+    viz_collection$tabgroup_labels <- labels
+  } else if (length(dots) > 0) {
+    # New style: direct key-value pairs
+    viz_collection$tabgroup_labels <- dots
+  } else {
+    stop("Either provide 'labels' argument or key-value pairs via ...")
+  }
+  
   viz_collection
 }
 

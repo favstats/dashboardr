@@ -4,16 +4,16 @@
 \alias{set_tabgroup_labels}
 \title{Set or update tabgroup display labels}
 \usage{
-set_tabgroup_labels(viz_collection, labels)
+set_tabgroup_labels(viz_collection, labels = NULL, ...)
 }
 \arguments{
 \item{viz_collection}{A viz_collection object}
 
-\item{labels}{Named character vector or list mapping tabgroup IDs to labels}
+\item{labels}{Named character vector or list mapping tabgroup IDs to labels (deprecated, use ... instead)}
+
+\item{...}{Named arguments where names are tabgroup IDs and values are display labels}
 }
 \value{
-The updated viz_collection
-
 The updated viz_collection
 }
 \description{
@@ -22,18 +22,14 @@ Useful when you want to change the section headers after creating the collection
 }
 \examples{
 \dontrun{
+# New style: direct key-value pairs (recommended)
 vizzes <- create_viz() \%>\%
   add_viz(type = "heatmap", tabgroup = "demo") \%>\%
-  set_tabgroup_labels(c("demo" = "Demographic Breakdowns"))
-}
-Set or update tabgroup display labels
+  set_tabgroup_labels(demo = "Demographic Breakdowns", age = "Age Groups")
 
-Updates the display labels for tab groups in a visualization collection.
-Useful when you want to change the section headers after creating the collection.
-
-\dontrun{
+# Old style: still supported for backwards compatibility
 vizzes <- create_viz() \%>\%
   add_viz(type = "heatmap", tabgroup = "demo") \%>\%
-  set_tabgroup_labels(c("demo" = "Demographic Breakdowns"))
+  set_tabgroup_labels(list(demo = "Demographic Breakdowns"))
 }
 }

@@ -29,8 +29,26 @@
 #' @param sidebar_style Sidebar style (floating, docked, etc.) (optional)
 #' @param sidebar_background Sidebar background color (optional)
 #' @param navbar_style Navbar style (default, dark, light) (optional)
+#' @param navbar_bg_color Navbar background color (CSS color value, e.g., "#2563eb", "rgb(37, 99, 235)") (optional)
+#' @param navbar_text_color Navbar text color (CSS color value, e.g., "#ffffff", "rgb(255, 255, 255)") (optional)
 #' @param navbar_brand Custom brand text (optional)
 #' @param navbar_toggle Mobile menu toggle behavior (optional)
+#' @param max_width Maximum width for page content (e.g., "1400px", "90%") (optional)
+#' @param mainfont Font family for document text. Recommended: "Fira Sans" (smooth, modern), 
+#'   "Lato" (warm), "Source Sans Pro" (elegant), or "Roboto" (technical). 
+#'   Default is "Fira Sans" for a smooth, professional look.
+#' @param fontsize Base font size for document (default: "16px" for optimal readability)
+#' @param fontcolor Default text color (e.g., "#1f2937" for readable dark gray) (optional)
+#' @param linkcolor Default hyperlink color (e.g., "#2563eb" for vibrant blue) (optional)
+#' @param monofont Font family for code elements. Recommended: "Fira Code" (with ligatures), 
+#'   "JetBrains Mono", "Source Code Pro", or "IBM Plex Mono". Default: "Fira Code".
+#' @param monobackgroundcolor Background color for code elements (e.g., "#f8fafc" for subtle gray) (optional)
+#' @param linestretch Line height for text (default: 1.5) (optional)
+#' @param backgroundcolor Background color for document (optional)
+#' @param margin_left Left margin for document body (optional)
+#' @param margin_right Right margin for document body (optional)
+#' @param margin_top Top margin for document body (optional)
+#' @param margin_bottom Bottom margin for document body (optional)
 #' @param math Enable/disable math rendering (katex, mathjax) (optional)
 #' @param code_folding Code folding behavior (none, show, hide) (optional)
 #' @param code_tools Code tools (copy, download, etc.) (optional)
@@ -89,6 +107,46 @@
 #'   lazy_load_margin = "300px",
 #'   lazy_load_tabs = TRUE
 #' )
+#' 
+#' # Professional styling with modern fonts (Google Fonts work great!)
+#' dashboard <- create_dashboard(
+#'   "styled_dashboard",
+#'   "Beautifully Styled Dashboard",
+#'   navbar_bg_color = "#1e40af",     # Deep blue navbar
+#'   mainfont = "Fira Sans",           # Smooth, modern (default choice) ⭐
+#'   fontsize = "16px",
+#'   fontcolor = "#1f2937",            # Dark gray for readability
+#'   linkcolor = "#2563eb",            # Vibrant blue links
+#'   monofont = "Fira Code",           # Code font with ligatures
+#'   monobackgroundcolor = "#f8fafc",  # Light gray code background
+#'   linestretch = 1.6,                # Comfortable line spacing
+#'   backgroundcolor = "#ffffff"
+#' )
+#' 
+#' # Alternative professional font combinations:
+#' # Option 1: Warm & Friendly
+#' dashboard <- create_dashboard(
+#'   "friendly_dashboard",
+#'   title = "Friendly Dashboard",
+#'   mainfont = "Lato",                # Warm, approachable
+#'   monofont = "JetBrains Mono"       # Excellent for code
+#' )
+#' 
+#' # Option 2: Elegant & Refined
+#' dashboard <- create_dashboard(
+#'   "elegant_dashboard", 
+#'   title = "Elegant Dashboard",
+#'   mainfont = "Source Sans Pro",     # Elegant, highly readable
+#'   monofont = "Source Code Pro"      # Matching code font
+#' )
+#' 
+#' # Option 3: Technical Feel
+#' dashboard <- create_dashboard(
+#'   "tech_dashboard",
+#'   title = "Tech Dashboard", 
+#'   mainfont = "Roboto",              # Technical, clean
+#'   monofont = "JetBrains Mono"       # Excellent for code
+#' )
 #' }
 create_dashboard <- function(output_dir = "site",
                             title = "Dashboard",
@@ -126,8 +184,23 @@ create_dashboard <- function(output_dir = "site",
                             repo_url = NULL,
                             repo_actions = NULL,
                             navbar_style = NULL,
+                            navbar_bg_color = NULL,
+                            navbar_text_color = NULL,
                             navbar_brand = NULL,
                             navbar_toggle = NULL,
+                            max_width = NULL,
+                            mainfont = "Fira Sans",
+                            fontsize = "16px",
+                            fontcolor = NULL,
+                            linkcolor = NULL,
+                            monofont = "Fira Code",
+                            monobackgroundcolor = NULL,
+                            linestretch = NULL,
+                            backgroundcolor = NULL,
+                            margin_left = NULL,
+                            margin_right = NULL,
+                            margin_top = NULL,
+                            margin_bottom = NULL,
                             math = NULL,
                             code_folding = NULL,
                             code_tools = NULL,
@@ -231,8 +304,23 @@ create_dashboard <- function(output_dir = "site",
     repo_url = repo_url,
     repo_actions = repo_actions,
     navbar_style = navbar_style,
+    navbar_bg_color = navbar_bg_color,
+    navbar_text_color = navbar_text_color,
     navbar_brand = navbar_brand,
     navbar_toggle = navbar_toggle,
+    max_width = max_width,
+    mainfont = mainfont,
+    fontsize = fontsize,
+    fontcolor = fontcolor,
+    linkcolor = linkcolor,
+    monofont = monofont,
+    monobackgroundcolor = monobackgroundcolor,
+    linestretch = linestretch,
+    backgroundcolor = backgroundcolor,
+    margin_left = margin_left,
+    margin_right = margin_right,
+    margin_top = margin_top,
+    margin_bottom = margin_bottom,
     math = math,
     code_folding = code_folding,
     code_tools = code_tools,

@@ -54,6 +54,10 @@
     yaml_lines <- c(yaml_lines, paste0("    style: ", proj$navbar_style))
   }
 
+  # Navbar background color is handled via SCSS (not directly in YAML)
+  # Quarto only accepts Bootstrap color names for navbar.background
+  # Custom colors (navbar_bg_color) are applied via SCSS theme file
+
   # Navbar brand
   if (!is.null(proj$navbar_brand)) {
     yaml_lines <- c(yaml_lines, paste0("    brand: \"", proj$navbar_brand, "\""))
@@ -62,6 +66,11 @@
   # Navbar toggle
   if (!is.null(proj$navbar_toggle)) {
     yaml_lines <- c(yaml_lines, paste0("    toggle: ", proj$navbar_toggle))
+  }
+
+  # Add logo if provided (at navbar level, before left/right sections)
+  if (!is.null(proj$logo)) {
+    yaml_lines <- c(yaml_lines, paste0("    logo: ", proj$logo))
   }
 
   # Separate pages by navbar alignment
@@ -108,13 +117,6 @@
     "      - href: index.qmd",
       "        text: \"Home\""
   )
-  }
-
-  # Add logo if provided
-  if (!is.null(proj$logo)) {
-    yaml_lines <- c(yaml_lines,
-      paste0("    logo: ", proj$logo)
-    )
   }
 
   # Add navigation links - support both regular pages and navbar sections
@@ -638,6 +640,11 @@
     yaml_lines <- c(yaml_lines, "      - _tabset_colors.scss")
   }
   
+  # Add theme customization SCSS if navbar_bg_color or other custom theme options are set
+  if (!is.null(proj$navbar_bg_color) || !is.null(proj$navbar_text_color)) {
+    yaml_lines <- c(yaml_lines, "      - _theme_custom.scss")
+  }
+  
   # Add custom SCSS if provided
   if (!is.null(proj$custom_scss)) {
     yaml_lines <- c(yaml_lines, paste0("      - ", proj$custom_scss))
@@ -649,6 +656,83 @@
   if (!is.null(proj$custom_css)) {
     yaml_lines <- c(yaml_lines, "    css:")
     yaml_lines <- c(yaml_lines, paste0("      - ", proj$custom_css))
+  }
+
+  # Add HTML format options
+  if (!is.null(proj$max_width)) {
+    yaml_lines <- c(yaml_lines, paste0("    max-width: ", proj$max_width))
+  }
+  
+  # Add Google Fonts import in header if needed
+  if (!is.null(proj$mainfont) || !is.null(proj$monofont)) {
+    fonts_to_import <- c()
+    
+    # Common Google Fonts that need importing
+    google_fonts <- c("Fira Sans", "Fira Code", "Inter", "Roboto", "Lato", 
+                     "Source Sans Pro", "Source Code Pro", "IBM Plex Mono", 
+                     "JetBrains Mono")
+    
+    if (!is.null(proj$mainfont) && proj$mainfont %in% google_fonts) {
+      fonts_to_import <- c(fonts_to_import, proj$mainfont)
+    }
+    if (!is.null(proj$monofont) && proj$monofont %in% google_fonts) {
+      fonts_to_import <- c(fonts_to_import, proj$monofont)
+    }
+    
+    # Add font imports
+    if (length(fonts_to_import) > 0) {
+      # Convert font names to Google Fonts format (replace spaces with +)
+      font_params <- sapply(unique(fonts_to_import), function(f) {
+        paste0("family=", gsub(" ", "+", f), ":wght@300;400;500;600;700")
+      })
+      
+      import_url <- paste0("https://fonts.googleapis.com/css2?", 
+                          paste(font_params, collapse = "&"), 
+                          "&display=swap")
+      
+      yaml_lines <- c(yaml_lines, "    include-in-header:")
+      yaml_lines <- c(yaml_lines, "      text: |")
+      yaml_lines <- c(yaml_lines, paste0("        <link rel=\"preconnect\" href=\"https://fonts.googleapis.com\">"))
+      yaml_lines <- c(yaml_lines, paste0("        <link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin>"))
+      yaml_lines <- c(yaml_lines, paste0("        <link href=\"", import_url, "\" rel=\"stylesheet\">"))
+    }
+  }
+  
+  if (!is.null(proj$mainfont)) {
+    yaml_lines <- c(yaml_lines, paste0("    mainfont: \"", proj$mainfont, "\""))
+  }
+  if (!is.null(proj$fontsize)) {
+    yaml_lines <- c(yaml_lines, paste0("    fontsize: ", proj$fontsize))
+  }
+  if (!is.null(proj$fontcolor)) {
+    yaml_lines <- c(yaml_lines, paste0("    fontcolor: \"", proj$fontcolor, "\""))
+  }
+  if (!is.null(proj$linkcolor)) {
+    yaml_lines <- c(yaml_lines, paste0("    linkcolor: \"", proj$linkcolor, "\""))
+  }
+  if (!is.null(proj$monofont)) {
+    yaml_lines <- c(yaml_lines, paste0("    monofont: \"", proj$monofont, "\""))
+  }
+  if (!is.null(proj$monobackgroundcolor)) {
+    yaml_lines <- c(yaml_lines, paste0("    monobackgroundcolor: \"", proj$monobackgroundcolor, "\""))
+  }
+  if (!is.null(proj$linestretch)) {
+    yaml_lines <- c(yaml_lines, paste0("    linestretch: ", proj$linestretch))
+  }
+  if (!is.null(proj$backgroundcolor)) {
+    yaml_lines <- c(yaml_lines, paste0("    backgroundcolor: \"", proj$backgroundcolor, "\""))
+  }
+  if (!is.null(proj$margin_left)) {
+    yaml_lines <- c(yaml_lines, paste0("    margin-left: ", proj$margin_left))
+  }
+  if (!is.null(proj$margin_right)) {
+    yaml_lines <- c(yaml_lines, paste0("    margin-right: ", proj$margin_right))
+  }
+  if (!is.null(proj$margin_top)) {
+    yaml_lines <- c(yaml_lines, paste0("    margin-top: ", proj$margin_top))
+  }
+  if (!is.null(proj$margin_bottom)) {
+    yaml_lines <- c(yaml_lines, paste0("    margin-bottom: ", proj$margin_bottom))
   }
 
   # Add table of contents (simplified)
@@ -1126,6 +1210,59 @@
   
   scss_lines
 }
+
+
+#' Generate SCSS for custom theme options
+#'
+#' Internal helper to generate SCSS code for theme customizations like navbar color
+#'
+#' @param proj Dashboard project object
+#' @return Character vector of SCSS lines
+#' @noRd
+.generate_theme_custom_scss <- function(proj) {
+  scss_lines <- c(
+    "/*-- scss:rules --*/",
+    "",
+    "/* Custom theme overrides */",
+    ""
+  )
+  
+  # Navbar background color
+  if (!is.null(proj$navbar_bg_color)) {
+    scss_lines <- c(scss_lines,
+      "/* Custom navbar background color */",
+      ".navbar {",
+      paste0("  background-color: ", proj$navbar_bg_color, " !important;"),
+      "}",
+      ""
+    )
+  }
+  
+  # Navbar text color
+  if (!is.null(proj$navbar_text_color)) {
+    scss_lines <- c(scss_lines,
+      "/* Custom navbar text color */",
+      ".navbar, .navbar a, .navbar .navbar-brand, .navbar .navbar-nav .nav-link {",
+      paste0("  color: ", proj$navbar_text_color, " !important;"),
+      "}",
+      "",
+      "/* Navbar icons and SVG elements */",
+      ".navbar svg, .navbar .aa-DetachedSearchButton svg, .navbar button svg {",
+      paste0("  fill: ", proj$navbar_text_color, " !important;"),
+      paste0("  stroke: ", proj$navbar_text_color, " !important;"),
+      "}",
+      "",
+      "/* Navbar search button */",
+      ".navbar .aa-DetachedSearchButton, .navbar button {",
+      paste0("  color: ", proj$navbar_text_color, " !important;"),
+      "}",
+      ""
+    )
+  }
+  
+  scss_lines
+}
+
 
 # ===================================================================
 # Custom Progress Display

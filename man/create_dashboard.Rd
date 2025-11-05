@@ -41,8 +41,22 @@ create_dashboard(
   repo_url = NULL,
   repo_actions = NULL,
   navbar_style = NULL,
+  navbar_color = NULL,
   navbar_brand = NULL,
   navbar_toggle = NULL,
+  max_width = NULL,
+  mainfont = "Fira Sans",
+  fontsize = "16px",
+  fontcolor = NULL,
+  linkcolor = NULL,
+  monofont = "Fira Code",
+  monobackgroundcolor = NULL,
+  linestretch = NULL,
+  backgroundcolor = NULL,
+  margin_left = NULL,
+  margin_right = NULL,
+  margin_top = NULL,
+  margin_bottom = NULL,
   math = NULL,
   code_folding = NULL,
   code_tools = NULL,
@@ -114,9 +128,40 @@ create_dashboard(
 
 \item{navbar_style}{Navbar style (default, dark, light) (optional)}
 
+\item{navbar_color}{Navbar background color (CSS color value, e.g., "#2563eb", "rgb(37, 99, 235)") (optional)}
+
 \item{navbar_brand}{Custom brand text (optional)}
 
 \item{navbar_toggle}{Mobile menu toggle behavior (optional)}
+
+\item{max_width}{Maximum width for page content (e.g., "1400px", "90\%") (optional)}
+
+\item{mainfont}{Font family for document text. Recommended: "Fira Sans" (smooth, modern),
+"Lato" (warm), "Source Sans Pro" (elegant), or "Roboto" (technical).
+Default is "Fira Sans" for a smooth, professional look.}
+
+\item{fontsize}{Base font size for document (default: "16px" for optimal readability)}
+
+\item{fontcolor}{Default text color (e.g., "#1f2937" for readable dark gray) (optional)}
+
+\item{linkcolor}{Default hyperlink color (e.g., "#2563eb" for vibrant blue) (optional)}
+
+\item{monofont}{Font family for code elements. Recommended: "Fira Code" (with ligatures),
+"JetBrains Mono", "Source Code Pro", or "IBM Plex Mono". Default: "Fira Code".}
+
+\item{monobackgroundcolor}{Background color for code elements (e.g., "#f8fafc" for subtle gray) (optional)}
+
+\item{linestretch}{Line height for text (default: 1.5) (optional)}
+
+\item{backgroundcolor}{Background color for document (optional)}
+
+\item{margin_left}{Left margin for document body (optional)}
+
+\item{margin_right}{Right margin for document body (optional)}
+
+\item{margin_top}{Top margin for document body (optional)}
+
+\item{margin_bottom}{Bottom margin for document body (optional)}
 
 \item{math}{Enable/disable math rendering (katex, mathjax) (optional)}
 
@@ -205,6 +250,46 @@ dashboard <- create_dashboard(
   lazy_load_charts = TRUE,
   lazy_load_margin = "300px",
   lazy_load_tabs = TRUE
+)
+
+# Professional styling with modern fonts (Google Fonts work great!)
+dashboard <- create_dashboard(
+  "styled_dashboard",
+  "Beautifully Styled Dashboard",
+  navbar_color = "#1e40af",        # Deep blue navbar
+  mainfont = "Fira Sans",           # Smooth, modern (default choice) ⭐
+  fontsize = "16px",
+  fontcolor = "#1f2937",            # Dark gray for readability
+  linkcolor = "#2563eb",            # Vibrant blue links
+  monofont = "Fira Code",           # Code font with ligatures
+  monobackgroundcolor = "#f8fafc",  # Light gray code background
+  linestretch = 1.6,                # Comfortable line spacing
+  backgroundcolor = "#ffffff"
+)
+
+# Alternative professional font combinations:
+# Option 1: Warm & Friendly
+dashboard <- create_dashboard(
+  "friendly_dashboard",
+  title = "Friendly Dashboard",
+  mainfont = "Lato",                # Warm, approachable
+  monofont = "JetBrains Mono"       # Excellent for code
+)
+
+# Option 2: Elegant & Refined
+dashboard <- create_dashboard(
+  "elegant_dashboard", 
+  title = "Elegant Dashboard",
+  mainfont = "Source Sans Pro",     # Elegant, highly readable
+  monofont = "Source Code Pro"      # Matching code font
+)
+
+# Option 3: Technical Feel
+dashboard <- create_dashboard(
+  "tech_dashboard",
+  title = "Tech Dashboard", 
+  mainfont = "Roboto",              # Technical, clean
+  monofont = "JetBrains Mono"       # Excellent for code
 )
 }
 }
