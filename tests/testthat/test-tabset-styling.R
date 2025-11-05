@@ -38,7 +38,7 @@ test_that("modern theme generates correct SCSS file", {
 
 test_that("minimal theme generates correct SCSS file", {
   dashboard <- create_dashboard(
-    output_dir = tempfile("theme_minimal"),
+    output_dir = tempfile("theme_clean"),
     title = "Test",
     tabset_theme = "minimal"
   ) %>%

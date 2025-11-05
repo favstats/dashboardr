@@ -177,13 +177,14 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
       if (!quiet) message("Applied custom tabset colors")
     }
     
-    # Generate theme customization SCSS if navbar_bg_color or navbar_text_color is specified
-    if (!is.null(proj$navbar_bg_color) || !is.null(proj$navbar_text_color)) {
+    # Generate theme customization SCSS if navbar colors are specified
+    if (!is.null(proj$navbar_bg_color) || !is.null(proj$navbar_text_color) || !is.null(proj$navbar_text_hover_color)) {
       theme_scss <- .generate_theme_custom_scss(proj)
       writeLines(theme_scss, file.path(output_dir, "_theme_custom.scss"))
       custom_items <- c()
-      if (!is.null(proj$navbar_bg_color)) custom_items <- c(custom_items, "navbar bg color")
-      if (!is.null(proj$navbar_text_color)) custom_items <- c(custom_items, "navbar text color")
+      if (!is.null(proj$navbar_bg_color)) custom_items <- c(custom_items, "navbar bg")
+      if (!is.null(proj$navbar_text_color)) custom_items <- c(custom_items, "navbar text")
+      if (!is.null(proj$navbar_text_hover_color)) custom_items <- c(custom_items, "navbar hover")
       if (!quiet) message("Applied custom theme settings (", paste(custom_items, collapse = ", "), ")")
     }
 

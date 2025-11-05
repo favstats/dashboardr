@@ -31,6 +31,7 @@
 #' @param navbar_style Navbar style (default, dark, light) (optional)
 #' @param navbar_bg_color Navbar background color (CSS color value, e.g., "#2563eb", "rgb(37, 99, 235)") (optional)
 #' @param navbar_text_color Navbar text color (CSS color value, e.g., "#ffffff", "rgb(255, 255, 255)") (optional)
+#' @param navbar_text_hover_color Navbar text color on hover (CSS color value, e.g., "#f0f0f0") (optional)
 #' @param navbar_brand Custom brand text (optional)
 #' @param navbar_toggle Mobile menu toggle behavior (optional)
 #' @param max_width Maximum width for page content (e.g., "1400px", "90%") (optional)
@@ -186,6 +187,7 @@ create_dashboard <- function(output_dir = "site",
                             navbar_style = NULL,
                             navbar_bg_color = NULL,
                             navbar_text_color = NULL,
+                            navbar_text_hover_color = NULL,
                             navbar_brand = NULL,
                             navbar_toggle = NULL,
                             max_width = NULL,
@@ -306,6 +308,7 @@ create_dashboard <- function(output_dir = "site",
     navbar_style = navbar_style,
     navbar_bg_color = navbar_bg_color,
     navbar_text_color = navbar_text_color,
+    navbar_text_hover_color = navbar_text_hover_color,
     navbar_brand = navbar_brand,
     navbar_toggle = navbar_toggle,
     max_width = max_width,

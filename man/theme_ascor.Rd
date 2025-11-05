@@ -4,11 +4,14 @@
 \alias{theme_ascor}
 \title{Apply ASCoR/UvA Theme to Dashboard}
 \usage{
-theme_ascor(navbar_style = "dark")
+theme_ascor(navbar_style = "dark", ...)
 }
 \arguments{
 \item{navbar_style}{Style of the navbar. Options: "dark" (default), "light".
 Dark style works best with UvA red.}
+
+\item{...}{Additional theme parameters to override defaults. Can include any styling parameter
+like \code{navbar_bg_color}, \code{navbar_text_color}, \code{navbar_text_hover_color}, \code{mainfont}, \code{fontsize}, etc.}
 }
 \value{
 A named list of theme parameters that can be unpacked into \code{create_dashboard()}
@@ -17,12 +20,13 @@ A named list of theme parameters that can be unpacked into \code{create_dashboar
 Returns a list of styling parameters that apply University of Amsterdam
 and ASCoR (Amsterdam School of Communication Research) branding to a dashboard.
 Can be used with \code{apply_theme()} for piping or unpacked into \code{create_dashboard()}.
+All parameters can be overridden to customize the theme.
 }
 \details{
 The ASCoR theme includes:
 \itemize{
 \item UvA red (#CB0D0D) as primary brand color
-\item Professional Inter font for body text
+\item Professional Fira Sans font for body text
 \item Fira Code for code blocks
 \item Optimal readability settings
 \item Clean, academic styling
@@ -30,32 +34,17 @@ The ASCoR theme includes:
 }
 \examples{
 \dontrun{
-# Method 1: Pipe theme into dashboard (RECOMMENDED! ⭐)
+# Method 1: Use default ASCoR theme
 dashboard <- create_dashboard("my_dashboard", "My Research Dashboard") \%>\%
   apply_theme(theme_ascor()) \%>\%
-  add_page("Home", text = "# Welcome", is_landing_page = TRUE) \%>\%
-  add_page("Analysis", data = my_data, visualizations = my_viz)
+  add_page("Home", text = "# Welcome", is_landing_page = TRUE)
 
-# Method 2: Use do.call to unpack theme parameters
-ascor_theme <- theme_ascor()
-dashboard <- do.call(create_dashboard, c(
-  list(
-    output_dir = "my_dashboard",
-    title = "My Research Dashboard"
-  ),
-  ascor_theme
-))
-
-# Method 3: Manual specification (most verbose)
-theme <- theme_ascor()
-dashboard <- create_dashboard(
-  output_dir = "my_dashboard",
-  title = "My ASCoR Research",
-  navbar_color = theme$navbar_color,
-  mainfont = theme$mainfont,
-  fontsize = theme$fontsize,
-  fontcolor = theme$fontcolor,
-  linkcolor = theme$linkcolor
-)
+# Method 2: Override specific parameters
+dashboard <- create_dashboard("custom", "Custom ASCoR Dashboard") \%>\%
+  apply_theme(theme_ascor(
+    fontsize = "18px",
+    max_width = "1400px",
+    mainfont = "Inter"
+  ))
 }
 }

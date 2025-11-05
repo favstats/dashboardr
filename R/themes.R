@@ -8,7 +8,7 @@
 #'   If NULL, returns the theme parameters as a list.
 #' @param theme A theme list (e.g., from `theme_ascor()`, `theme_academic()`, etc.)
 #' @param ... Additional parameters to override theme defaults. Can include any of:
-#'   `navbar_bg_color`, `navbar_text_color`, `mainfont`, `fontsize`, `fontcolor`, `linkcolor`, `monofont`, 
+#'   `navbar_bg_color`, `navbar_text_color`, `navbar_text_hover_color`, `mainfont`, `fontsize`, `fontcolor`, `linkcolor`, `monofont`, 
 #'   `monobackgroundcolor`, `linestretch`, `backgroundcolor`, `max_width`, 
 #'   `margin_left`, `margin_right`, `margin_top`, `margin_bottom`
 #'
@@ -34,7 +34,7 @@
 #' # Method 4: Customize multiple parameters
 #' dashboard <- create_dashboard("custom", "Custom Dashboard") %>%
 #'   apply_theme(
-#'     theme_minimal(),
+#'     theme_clean(),
 #'     mainfont = "Inter",
 #'     fontsize = "18px",
 #'     linkcolor = "#8B0000",
@@ -79,21 +79,8 @@ apply_theme <- function(proj = NULL, theme, ...) {
 #'
 #' @param navbar_style Style of the navbar. Options: "dark" (default), "light". 
 #'   Dark style works best with UvA red.
-#' @param navbar_bg_color Navbar background color. Default: "#CB0D0D" (UvA red)
-#' @param navbar_text_color Navbar text color. Default: "#ffffff" (white)
-#' @param mainfont Main body font. Default: "Fira Sans"
-#' @param fontsize Base font size. Default: "16px"
-#' @param fontcolor Main text color. Default: "#2c2c2c"
-#' @param linkcolor Hyperlink color. Default: "#CB0D0D" (UvA red)
-#' @param monofont Code font family. Default: "Fira Code"
-#' @param monobackgroundcolor Code block background. Default: "#f8f8f8"
-#' @param linestretch Line height multiplier. Default: 1.6
-#' @param backgroundcolor Page background color. Default: "#ffffff"
-#' @param max_width Maximum content width. Default: "1200px"
-#' @param margin_left Left margin. Default: "2rem"
-#' @param margin_right Right margin. Default: "2rem"
-#' @param margin_top Top margin. Default: "1rem"
-#' @param margin_bottom Bottom margin. Default: "1rem"
+#' @param ... Additional theme parameters to override defaults. Can include any styling parameter
+#'   like `navbar_bg_color`, `navbar_text_color`, `navbar_text_hover_color`, `mainfont`, `fontsize`, etc.
 #'
 #' @return A named list of theme parameters that can be unpacked into `create_dashboard()`
 #' @export
@@ -123,48 +110,39 @@ apply_theme <- function(proj = NULL, theme, ...) {
 #'     mainfont = "Inter"
 #'   ))
 #' }
-theme_ascor <- function(navbar_style = "dark",
-                       navbar_bg_color = "#CB0D0D",
-                       navbar_text_color = "#ffffff",
-                       mainfont = "Fira Sans",
-                       fontsize = "16px",
-                       fontcolor = "#2c2c2c",
-                       linkcolor = "#CB0D0D",
-                       monofont = "Fira Code",
-                       monobackgroundcolor = "#f8f8f8",
-                       linestretch = 1.6,
-                       backgroundcolor = "#ffffff",
-                       max_width = "1200px",
-                       margin_left = "2rem",
-                       margin_right = "2rem",
-                       margin_top = "1rem",
-                       margin_bottom = "1rem") {
-  list(
+theme_ascor <- function(navbar_style = "dark", ...) {
+  # Default ASCoR/UvA theme settings
+  defaults <- list(
     # Colors
-    navbar_bg_color = navbar_bg_color,
-    navbar_text_color = navbar_text_color,
-    linkcolor = linkcolor,
-    backgroundcolor = backgroundcolor,
+    navbar_bg_color = "#CB0D0D",          # UvA red
+    navbar_text_color = "#ffffff",         # White text
+    navbar_text_hover_color = "#f0f0f0",  # Light gray on hover
+    linkcolor = "#CB0D0D",                 # UvA red for links
+    backgroundcolor = "#ffffff",           # White background
     
     # Typography
-    mainfont = mainfont,
-    fontsize = fontsize,
-    fontcolor = fontcolor,
-    monofont = monofont,
-    monobackgroundcolor = monobackgroundcolor,
-    linestretch = linestretch,
+    mainfont = "Fira Sans",                # Smooth, modern, professional
+    fontsize = "16px",                     # Optimal readability
+    fontcolor = "#2c2c2c",                 # Dark gray for text
+    monofont = "Fira Code",                # Code font with ligatures
+    monobackgroundcolor = "#f8f8f8",       # Light gray for code blocks
+    linestretch = 1.6,                     # Comfortable line spacing
     
     # Layout
-    max_width = max_width,
-    margin_left = margin_left,
-    margin_right = margin_right,
-    margin_top = margin_top,
-    margin_bottom = margin_bottom,
+    max_width = "1200px",                  # Maximum content width
+    margin_left = "2rem",
+    margin_right = "2rem",
+    margin_top = "1rem",
+    margin_bottom = "1rem",
     
     # Navbar styling
     navbar_style = navbar_style,
     navbar_brand = "ASCoR"
   )
+  
+  # Merge with any custom overrides from ...
+  overrides <- list(...)
+  modifyList(defaults, overrides)
 }
 
 
@@ -196,21 +174,8 @@ theme_uva <- function(navbar_style = "dark") {
 #'
 #' @param accent_color Primary accent color (hex code). Default: "#2563eb" (blue)
 #' @param navbar_style Style of the navbar. Options: "dark" (default), "light"
-#' @param navbar_bg_color Navbar background color. Defaults to `accent_color`
-#' @param navbar_text_color Navbar text color. Default: "#ffffff" (white)
-#' @param mainfont Main body font. Default: "Fira Sans"
-#' @param fontsize Base font size. Default: "16px"
-#' @param fontcolor Main text color. Default: "#1f2937"
-#' @param linkcolor Hyperlink color. Defaults to `accent_color`
-#' @param monofont Code font family. Default: "Source Code Pro"
-#' @param monobackgroundcolor Code block background. Default: "#f8fafc"
-#' @param linestretch Line height multiplier. Default: 1.6
-#' @param backgroundcolor Page background color. Default: "#ffffff"
-#' @param max_width Maximum content width. Default: "1200px"
-#' @param margin_left Left margin. Default: "2rem"
-#' @param margin_right Right margin. Default: "2rem"
-#' @param margin_top Top margin. Default: "1rem"
-#' @param margin_bottom Bottom margin. Default: "1rem"
+#' @param ... Additional theme parameters to override defaults. Can include any styling parameter
+#'   like `navbar_bg_color`, `navbar_text_color`, `navbar_text_hover_color`, `mainfont`, `fontsize`, etc.
 #'
 #' @return A named list of theme parameters that can be unpacked into `create_dashboard()`
 #' @export
@@ -239,48 +204,38 @@ theme_uva <- function(navbar_style = "dark") {
 #'     fontsize = "17px"
 #'   ))
 #' }
-theme_academic <- function(accent_color = "#2563eb", 
-                          navbar_style = "dark",
-                          navbar_bg_color = accent_color,
-                          navbar_text_color = "#ffffff",
-                          mainfont = "Fira Sans",
-                          fontsize = "16px",
-                          fontcolor = "#1f2937",
-                          linkcolor = accent_color,
-                          monofont = "Source Code Pro",
-                          monobackgroundcolor = "#f8fafc",
-                          linestretch = 1.6,
-                          backgroundcolor = "#ffffff",
-                          max_width = "1200px",
-                          margin_left = "2rem",
-                          margin_right = "2rem",
-                          margin_top = "1rem",
-                          margin_bottom = "1rem") {
-  list(
+theme_academic <- function(accent_color = "#2563eb", navbar_style = "dark", ...) {
+  # Default academic theme settings
+  defaults <- list(
     # Colors
-    navbar_bg_color = navbar_bg_color,
-    navbar_text_color = navbar_text_color,
-    linkcolor = linkcolor,
-    backgroundcolor = backgroundcolor,
+    navbar_bg_color = accent_color,
+    navbar_text_color = "#ffffff",
+    navbar_text_hover_color = "#f0f0f0",
+    linkcolor = accent_color,
+    backgroundcolor = "#ffffff",
     
     # Typography
-    mainfont = mainfont,
-    fontsize = fontsize,
-    fontcolor = fontcolor,
-    monofont = monofont,
-    monobackgroundcolor = monobackgroundcolor,
-    linestretch = linestretch,
+    mainfont = "Fira Sans",
+    fontsize = "16px",
+    fontcolor = "#1f2937",                 # Professional dark gray
+    monofont = "Source Code Pro",
+    monobackgroundcolor = "#f8fafc",       # Very light gray
+    linestretch = 1.6,
     
     # Layout
-    max_width = max_width,
-    margin_left = margin_left,
-    margin_right = margin_right,
-    margin_top = margin_top,
-    margin_bottom = margin_bottom,
+    max_width = "1200px",
+    margin_left = "2rem",
+    margin_right = "2rem",
+    margin_top = "1rem",
+    margin_bottom = "1rem",
     
     # Navbar
     navbar_style = navbar_style
   )
+  
+  # Merge with any custom overrides from ...
+  overrides <- list(...)
+  modifyList(defaults, overrides)
 }
 
 
@@ -290,22 +245,8 @@ theme_academic <- function(accent_color = "#2563eb",
 #' Features bold colors and contemporary typography. All parameters can be overridden.
 #'
 #' @param style Style variant. Options: "blue" (default), "purple", "green", "orange", "white"
-#' @param navbar_bg_color Navbar background color. Defaults based on `style`
-#' @param navbar_text_color Navbar text color. Default: "#ffffff" (white)
-#' @param mainfont Main body font. Default: "Roboto"
-#' @param fontsize Base font size. Default: "16px"
-#' @param fontcolor Main text color. Default: "#1f2937"
-#' @param linkcolor Hyperlink color. Defaults based on `style`
-#' @param monofont Code font family. Default: "JetBrains Mono"
-#' @param monobackgroundcolor Code block background. Default: "#f1f5f9"
-#' @param linestretch Line height multiplier. Default: 1.5
-#' @param backgroundcolor Page background color. Default: "#ffffff"
-#' @param max_width Maximum content width. Default: "1400px"
-#' @param margin_left Left margin. Default: "2rem"
-#' @param margin_right Right margin. Default: "2rem"
-#' @param margin_top Top margin. Default: "1rem"
-#' @param margin_bottom Bottom margin. Default: "1rem"
-#' @param navbar_style Navbar style ("dark" or "light"). Defaults based on `style`
+#' @param ... Additional theme parameters to override defaults. Can include any styling parameter
+#'   like `navbar_bg_color`, `navbar_text_color`, `navbar_text_hover_color`, `mainfont`, `fontsize`, etc.
 #'
 #' @return A named list of theme parameters
 #' @export
@@ -327,150 +268,127 @@ theme_academic <- function(accent_color = "#2563eb",
 #'   apply_theme(theme_modern(style = "white")) %>%
 #'   add_page("Home", text = "# Welcome")
 #' }
-theme_modern <- function(style = c("blue", "purple", "green", "orange", "white"),
-                        navbar_bg_color = NULL,
-                        navbar_text_color = "#ffffff",
-                        mainfont = "Roboto",
-                        fontsize = "16px",
-                        fontcolor = "#1f2937",
-                        linkcolor = NULL,
-                        monofont = "JetBrains Mono",
-                        monobackgroundcolor = "#f1f5f9",
-                        linestretch = 1.5,
-                        backgroundcolor = "#ffffff",
-                        max_width = "1400px",
-                        margin_left = "2rem",
-                        margin_right = "2rem",
-                        margin_top = "1rem",
-                        margin_bottom = "1rem",
-                        navbar_style = NULL) {
+theme_modern <- function(style = c("blue", "purple", "green", "orange", "white"), ...) {
   style <- match.arg(style)
   
   # Define style-specific defaults
   style_defaults <- list(
-    blue = list(navbar = "#1e40af", link = "#2563eb", navbar_style = "dark"),
-    purple = list(navbar = "#7c3aed", link = "#8b5cf6", navbar_style = "dark"),
-    green = list(navbar = "#059669", link = "#10b981", navbar_style = "dark"),
-    orange = list(navbar = "#ea580c", link = "#f97316", navbar_style = "dark"),
-    white = list(navbar = "#ffffff", link = "#2563eb", navbar_style = "light")
+    blue = list(
+      navbar = "#1e40af", link = "#2563eb", navbar_style = "dark",
+      navbar_text = "#ffffff", navbar_text_hover = "#e0e0e0"
+    ),
+    purple = list(
+      navbar = "#7c3aed", link = "#8b5cf6", navbar_style = "dark",
+      navbar_text = "#ffffff", navbar_text_hover = "#e0e0e0"
+    ),
+    green = list(
+      navbar = "#059669", link = "#10b981", navbar_style = "dark",
+      navbar_text = "#ffffff", navbar_text_hover = "#e0e0e0"
+    ),
+    orange = list(
+      navbar = "#ea580c", link = "#f97316", navbar_style = "dark",
+      navbar_text = "#ffffff", navbar_text_hover = "#e0e0e0"
+    ),
+    white = list(
+      navbar = "#ffffff", link = "#2563eb", navbar_style = "light",
+      navbar_text = "#1f2937", navbar_text_hover = "#374151"
+    )
   )
   
   selected_defaults <- style_defaults[[style]]
   
-  # Use provided values or fall back to style defaults
-  if (is.null(navbar_bg_color)) navbar_bg_color <- selected_defaults$navbar
-  if (is.null(linkcolor)) linkcolor <- selected_defaults$link
-  if (is.null(navbar_style)) navbar_style <- selected_defaults$navbar_style
-  
-  list(
+  # Default modern theme settings
+  defaults <- list(
     # Colors
-    navbar_bg_color = navbar_bg_color,
-    navbar_text_color = navbar_text_color,
-    linkcolor = linkcolor,
-    backgroundcolor = backgroundcolor,
+    navbar_bg_color = selected_defaults$navbar,
+    navbar_text_color = selected_defaults$navbar_text,
+    navbar_text_hover_color = selected_defaults$navbar_text_hover,
+    linkcolor = selected_defaults$link,
+    backgroundcolor = "#ffffff",
     
-    # Typography
-    mainfont = mainfont,
-    fontsize = fontsize,
-    fontcolor = fontcolor,
-    monofont = monofont,
-    monobackgroundcolor = monobackgroundcolor,
-    linestretch = linestretch,
+    # Typography - tech feel
+    mainfont = "Roboto",
+    fontsize = "16px",
+    fontcolor = "#1f2937",
+    monofont = "JetBrains Mono",
+    monobackgroundcolor = "#f1f5f9",
+    linestretch = 1.5,
     
     # Layout
-    max_width = max_width,
-    margin_left = margin_left,
-    margin_right = margin_right,
-    margin_top = margin_top,
-    margin_bottom = margin_bottom,
+    max_width = "1400px",                  # Wider for data dashboards
+    margin_left = "2rem",
+    margin_right = "2rem",
+    margin_top = "1rem",
+    margin_bottom = "1rem",
     
     # Navbar
-    navbar_style = navbar_style
+    navbar_style = selected_defaults$navbar_style
   )
+  
+  # Merge with any custom overrides from ...
+  overrides <- list(...)
+  modifyList(defaults, overrides)
 }
 
 
-#' Apply a Minimal Clean Theme to Dashboard
+#' Apply a Clean Theme to Dashboard
 #'
 #' Returns an ultra-clean, minimalist theme with maximum focus on content.
 #' Perfect for portfolios, reports, and clean presentations.
 #' All parameters can be overridden to customize the theme.
 #'
-#' @param navbar_bg_color Navbar background color. Default: "#ffffff"
-#' @param navbar_text_color Navbar text color. Default: "#1f2937" (dark gray)
-#' @param mainfont Main body font. Default: "Source Sans Pro"
-#' @param fontsize Base font size. Default: "17px"
-#' @param fontcolor Main text color. Default: "#374151"
-#' @param linkcolor Hyperlink color. Default: "#3b82f6"
-#' @param monofont Code font family. Default: "IBM Plex Mono"
-#' @param monobackgroundcolor Code block background. Default: "#f9fafb"
-#' @param linestretch Line height multiplier. Default: 1.7
-#' @param backgroundcolor Page background color. Default: "#ffffff"
-#' @param max_width Maximum content width. Default: "900px"
-#' @param margin_left Left margin. Default: "3rem"
-#' @param margin_right Right margin. Default: "3rem"
-#' @param margin_top Top margin. Default: "2rem"
-#' @param margin_bottom Bottom margin. Default: "2rem"
-#' @param navbar_style Navbar style. Default: "light"
+#' @param ... Additional theme parameters to override defaults. Can include any styling parameter
+#'   like `navbar_bg_color`, `navbar_text_color`, `navbar_text_hover_color`, `mainfont`, `fontsize`, etc.
 #'
 #' @return A named list of theme parameters
 #' @export
 #'
 #' @examples
 #' \dontrun{
-#' # Use default minimal theme
-#' dashboard <- create_dashboard("minimal_dashboard", "Clean Report") %>%
-#'   apply_theme(theme_minimal()) %>%
+#' # Use default clean theme
+#' dashboard <- create_dashboard("clean_dashboard", "Clean Report") %>%
+#'   apply_theme(theme_clean()) %>%
 #'   add_page("Report", text = "# Executive Summary")
 #' 
 #' # Customize with wider layout and different font
-#' dashboard <- create_dashboard("custom_minimal", "Custom Report") %>%
-#'   apply_theme(theme_minimal(
+#' dashboard <- create_dashboard("custom_clean", "Custom Report") %>%
+#'   apply_theme(theme_clean(
 #'     mainfont = "Inter",
 #'     max_width = "1200px",
 #'     fontsize = "18px"
 #'   ))
 #' }
-theme_minimal <- function(navbar_bg_color = "#ffffff",
-                         navbar_text_color = "#1f2937",
-                         mainfont = "Source Sans Pro",
-                         fontsize = "17px",
-                         fontcolor = "#374151",
-                         linkcolor = "#3b82f6",
-                         monofont = "IBM Plex Mono",
-                         monobackgroundcolor = "#f9fafb",
-                         linestretch = 1.7,
-                         backgroundcolor = "#ffffff",
-                         max_width = "900px",
-                         margin_left = "3rem",
-                         margin_right = "3rem",
-                         margin_top = "2rem",
-                         margin_bottom = "2rem",
-                         navbar_style = "light") {
-  list(
-    # Colors
-    navbar_bg_color = navbar_bg_color,
-    navbar_text_color = navbar_text_color,
-    linkcolor = linkcolor,
-    backgroundcolor = backgroundcolor,
+theme_clean <- function(...) {
+  # Default minimal theme settings
+  defaults <- list(
+    # Colors - subtle and minimal
+    navbar_bg_color = "#ffffff",
+    navbar_text_color = "#1f2937",
+    navbar_text_hover_color = "#374151",
+    linkcolor = "#3b82f6",
+    backgroundcolor = "#ffffff",
     
-    # Typography
-    mainfont = mainfont,
-    fontsize = fontsize,
-    fontcolor = fontcolor,
-    monofont = monofont,
-    monobackgroundcolor = monobackgroundcolor,
-    linestretch = linestretch,
+    # Typography - clean and simple
+    mainfont = "Source Sans Pro",
+    fontsize = "17px",
+    fontcolor = "#374151",
+    monofont = "IBM Plex Mono",
+    monobackgroundcolor = "#f9fafb",
+    linestretch = 1.7,
     
-    # Layout
-    max_width = max_width,
-    margin_left = margin_left,
-    margin_right = margin_right,
-    margin_top = margin_top,
-    margin_bottom = margin_bottom,
+    # Layout - airy and spacious
+    max_width = "900px",                   # Narrower for better readability
+    margin_left = "3rem",
+    margin_right = "3rem",
+    margin_top = "2rem",
+    margin_bottom = "2rem",
     
     # Navbar
-    navbar_style = navbar_style
+    navbar_style = "light"
   )
+  
+  # Merge with any custom overrides from ...
+  overrides <- list(...)
+  modifyList(defaults, overrides)
 }
 

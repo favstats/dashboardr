@@ -623,6 +623,7 @@
     "",
     "format:",
     "  html:",
+    "    prefer-html: true",
     "    theme:"
   )
   
@@ -641,7 +642,7 @@
   }
   
   # Add theme customization SCSS if navbar_bg_color or other custom theme options are set
-  if (!is.null(proj$navbar_bg_color) || !is.null(proj$navbar_text_color)) {
+  if (!is.null(proj$navbar_bg_color) || !is.null(proj$navbar_text_color) || !is.null(proj$navbar_text_hover_color)) {
     yaml_lines <- c(yaml_lines, "      - _theme_custom.scss")
   }
   
@@ -1255,6 +1256,23 @@
       "/* Navbar search button */",
       ".navbar .aa-DetachedSearchButton, .navbar button {",
       paste0("  color: ", proj$navbar_text_color, " !important;"),
+      "}",
+      ""
+    )
+  }
+  
+  # Navbar text hover color
+  if (!is.null(proj$navbar_text_hover_color)) {
+    scss_lines <- c(scss_lines,
+      "/* Custom navbar text hover color */",
+      ".navbar a:hover, .navbar .navbar-brand:hover, .navbar .navbar-nav .nav-link:hover {",
+      paste0("  color: ", proj$navbar_text_hover_color, " !important;"),
+      "}",
+      "",
+      "/* Navbar icons and SVG hover */",
+      ".navbar a:hover svg, .navbar .aa-DetachedSearchButton:hover svg, .navbar button:hover svg {",
+      paste0("  fill: ", proj$navbar_text_hover_color, " !important;"),
+      paste0("  stroke: ", proj$navbar_text_hover_color, " !important;"),
       "}",
       ""
     )

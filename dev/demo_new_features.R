@@ -265,7 +265,7 @@ demo3d_dashboard <- create_dashboard(
   output_dir = "demo3d_minimal_theme",
   title = "Demo: Minimal Theme"
 ) %>%
-  apply_theme(theme_minimal()) %>%
+  apply_theme(theme_clean()) %>%
   add_page(
     "Home",
     text = md_text(
@@ -274,7 +274,7 @@ demo3d_dashboard <- create_dashboard(
       "Ultra-clean, content-focused design.",
       "",
       "```r",
-      "apply_theme(theme_minimal())",
+      "apply_theme(theme_clean())",
       "```"
     ),
     is_landing_page = TRUE
@@ -371,7 +371,7 @@ cat("  ✓ navbar_color parameter\n")
 cat("  ✓ HTML format options (fonts, colors, margins, etc.)\n")
 cat("  ✓ Pipeable theme system\n")
 cat("  ✓ theme_ascor(), theme_uva(), theme_academic()\n")
-cat("  ✓ theme_modern(), theme_minimal()\n")
+cat("  ✓ theme_modern(), theme_clean()\n")
 cat("  ✓ apply_theme() function\n")
 cat("  ✓ Full ASCoR/UvA branded dashboard\n")
 

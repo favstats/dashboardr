@@ -41,7 +41,9 @@ create_dashboard(
   repo_url = NULL,
   repo_actions = NULL,
   navbar_style = NULL,
-  navbar_color = NULL,
+  navbar_bg_color = NULL,
+  navbar_text_color = NULL,
+  navbar_text_hover_color = NULL,
   navbar_brand = NULL,
   navbar_toggle = NULL,
   max_width = NULL,
@@ -128,7 +130,11 @@ create_dashboard(
 
 \item{navbar_style}{Navbar style (default, dark, light) (optional)}
 
-\item{navbar_color}{Navbar background color (CSS color value, e.g., "#2563eb", "rgb(37, 99, 235)") (optional)}
+\item{navbar_bg_color}{Navbar background color (CSS color value, e.g., "#2563eb", "rgb(37, 99, 235)") (optional)}
+
+\item{navbar_text_color}{Navbar text color (CSS color value, e.g., "#ffffff", "rgb(255, 255, 255)") (optional)}
+
+\item{navbar_text_hover_color}{Navbar text color on hover (CSS color value, e.g., "#f0f0f0") (optional)}
 
 \item{navbar_brand}{Custom brand text (optional)}
 
@@ -256,7 +262,7 @@ dashboard <- create_dashboard(
 dashboard <- create_dashboard(
   "styled_dashboard",
   "Beautifully Styled Dashboard",
-  navbar_color = "#1e40af",        # Deep blue navbar
+  navbar_bg_color = "#1e40af",     # Deep blue navbar
   mainfont = "Fira Sans",           # Smooth, modern (default choice) ⭐
   fontsize = "16px",
   fontcolor = "#1f2937",            # Dark gray for readability

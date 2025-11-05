@@ -4,13 +4,18 @@
 \alias{apply_theme}
 \title{Apply Theme to Dashboard}
 \usage{
-apply_theme(proj = NULL, theme)
+apply_theme(proj = NULL, theme, ...)
 }
 \arguments{
 \item{proj}{Optional. A dashboard_project object to apply the theme to.
 If NULL, returns the theme parameters as a list.}
 
 \item{theme}{A theme list (e.g., from \code{theme_ascor()}, \code{theme_academic()}, etc.)}
+
+\item{...}{Additional parameters to override theme defaults. Can include any of:
+\code{navbar_bg_color}, \code{navbar_text_color}, \code{navbar_text_hover_color}, \code{mainfont}, \code{fontsize}, \code{fontcolor}, \code{linkcolor}, \code{monofont},
+\code{monobackgroundcolor}, \code{linestretch}, \code{backgroundcolor}, \code{max_width},
+\code{margin_left}, \code{margin_right}, \code{margin_top}, \code{margin_bottom}}
 }
 \value{
 If proj is provided, returns the modified dashboard_project object.
@@ -19,6 +24,7 @@ If proj is NULL, returns the theme list.
 \description{
 Applies a theme to an existing dashboard_project object or returns theme parameters
 for use in \code{create_dashboard()}. Supports piping for easy theme application.
+You can override any theme parameter by passing it as an additional argument.
 }
 \examples{
 \dontrun{
@@ -27,12 +33,22 @@ dashboard <- create_dashboard("my_dashboard", "My Research") \%>\%
   apply_theme(theme_ascor()) \%>\%
   add_page("Home", text = "# Welcome", is_landing_page = TRUE)
 
-# Method 2: Apply different themes
+# Method 2: Override specific theme parameters
 dashboard <- create_dashboard("tech_dash", "Tech Dashboard") \%>\%
-  apply_theme(theme_modern("purple")) \%>\%
+  apply_theme(theme_modern("purple"), mainfont = "Roboto", fontsize = "18px") \%>\%
   add_page("Data", visualizations = my_viz)
 
 # Method 3: Get theme parameters only
 ascor_params <- apply_theme(theme = theme_ascor())
+
+# Method 4: Customize multiple parameters
+dashboard <- create_dashboard("custom", "Custom Dashboard") \%>\%
+  apply_theme(
+    theme_clean(),
+    mainfont = "Inter",
+    fontsize = "18px",
+    linkcolor = "#8B0000",
+    max_width = "1400px"
+  )
 }
 }

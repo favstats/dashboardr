@@ -4,12 +4,15 @@
 \alias{theme_academic}
 \title{Apply a Professional Academic Theme to Dashboard}
 \usage{
-theme_academic(accent_color = "#2563eb", navbar_style = "dark")
+theme_academic(accent_color = "#2563eb", navbar_style = "dark", ...)
 }
 \arguments{
 \item{accent_color}{Primary accent color (hex code). Default: "#2563eb" (blue)}
 
 \item{navbar_style}{Style of the navbar. Options: "dark" (default), "light"}
+
+\item{...}{Additional theme parameters to override defaults. Can include any styling parameter
+like \code{navbar_bg_color}, \code{navbar_text_color}, \code{navbar_text_hover_color}, \code{mainfont}, \code{fontsize}, etc.}
 }
 \value{
 A named list of theme parameters that can be unpacked into \code{create_dashboard()}
@@ -17,26 +20,30 @@ A named list of theme parameters that can be unpacked into \code{create_dashboar
 \description{
 Returns a clean, professional theme suitable for academic and research dashboards.
 Uses neutral colors and excellent typography for maximum readability.
+All parameters can be overridden to customize the theme.
 }
 \details{
 The academic theme provides:
 \itemize{
 \item Clean, neutral color scheme
-\item Professional typography (Inter + Source Code Pro)
+\item Professional typography (Fira Sans + Source Code Pro)
 \item High readability settings
 \item Suitable for any academic institution
 }
 }
 \examples{
 \dontrun{
-# Pipe academic theme into dashboard
+# Use default academic theme
 dashboard <- create_dashboard("academic_dashboard", "Research Dashboard") \%>\%
   apply_theme(theme_academic()) \%>\%
   add_page("Home", text = "# Welcome")
 
-# Custom accent color (e.g., your university color)
+# Custom accent color and font
 dashboard <- create_dashboard("my_university", "University Research") \%>\%
-  apply_theme(theme_academic(accent_color = "#8B0000")) \%>\%  # Crimson
-  add_page("Research", data = my_data)
+  apply_theme(theme_academic(
+    accent_color = "#8B0000",
+    mainfont = "Roboto",
+    fontsize = "17px"
+  ))
 }
 }

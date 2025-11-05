@@ -46,7 +46,7 @@ cat("─────────────────────────
 
 dashboard2 <- create_dashboard("test_apply_theme_overrides", "Override Test") %>%
   apply_theme(
-    theme_minimal(),
+    theme_clean(),
     mainfont = "Roboto",
     fontsize = "19px",
     linkcolor = "#8B0000",
@@ -185,7 +185,7 @@ cat("╚════════════════════════
 cat("✨ FEATURES VERIFIED:\n\n")
 cat("1. theme_*() functions accept all 14 typography/layout parameters\n")
 cat("2. apply_theme() can override any parameter with ...\n")
-cat("3. theme_ascor(), theme_academic(), theme_modern(), theme_minimal() all customizable\n")
+cat("3. theme_ascor(), theme_academic(), theme_modern(), theme_clean() all customizable\n")
 cat("4. All parameters correctly written to _quarto.yml\n")
 cat("5. Mix and match: use theme defaults + custom overrides\n\n")
 
@@ -195,7 +195,7 @@ cat('dashboard %>% apply_theme(theme_modern(mainfont = "Inter", fontsize = "18px
 cat('# Option 2: Override in apply_theme\n')
 cat('dashboard %>% apply_theme(theme_modern(), mainfont = "Inter", fontsize = "18px")\n\n')
 cat('# Option 3: Full customization\n')
-cat('dashboard %>% apply_theme(theme_minimal(), \n')
+cat('dashboard %>% apply_theme(theme_clean(), \n')
 cat('  mainfont = "Inter", fontsize = "18px", max_width = "1400px")\n\n')
 
 # Cleanup
