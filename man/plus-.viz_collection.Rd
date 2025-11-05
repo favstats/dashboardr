@@ -17,7 +17,8 @@ with merged tabgroup labels and renumbered insertion indices.
 }
 \description{
 S3 method that allows combining two viz_collection objects using the \code{+} operator.
-This is a convenient shorthand for \code{\link{combine_viz}}.
+This is a convenient shorthand for \code{\link{combine_content}}.
+Preserves all attributes including lazy loading settings.
 }
 \details{
 The \code{+} operator provides an intuitive way to combine visualization collections:
@@ -25,6 +26,7 @@ The \code{+} operator provides an intuitive way to combine visualization collect
 \item All visualizations from both collections are merged
 \item Tabgroup labels are combined (e2 labels take precedence for duplicates)
 \item Insertion indices are renumbered to maintain proper ordering
+\item All attributes (lazy loading, etc.) are preserved
 }
 }
 \examples{
@@ -40,9 +42,9 @@ viz2 <- create_viz() \%>\%
 combined <- viz1 + viz2
 
 # Equivalent to:
-combined <- combine_viz(viz1, viz2)
+combined <- combine_content(viz1, viz2)
 }
 }
 \seealso{
-\code{\link{combine_viz}} for the underlying function.
+\code{\link{combine_content}} for the underlying function.
 }

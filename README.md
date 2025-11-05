@@ -194,11 +194,9 @@ dashboard <- create_dashboard(
     visualizations = my_viz,    # The viz you created above
     icon = "ph:chart-line"      # Optional icon
   )
+#> Dashboard project initialized at: my_first_dashboard
 #> Detected package repo at: /Users/favstats/Dropbox/postdoc/dashboardr
 #> Writing output outside the package at: /Users/favstats/Dropbox/postdoc/my_first_dashboard (set allow_inside_pkg = TRUE to disable relocation)
-#> Output directory already exists: /Users/favstats/Dropbox/postdoc/my_first_dashboard
-#> Files may be overwritten when generate_dashboard() is called.
-#> Dashboard project initialized at: /Users/favstats/Dropbox/postdoc/my_first_dashboard
 
 # See the dashboard structure
 print(dashboard)
@@ -207,6 +205,8 @@ print(dashboard)
 #> ║ 🎨 DASHBOARD PROJECT
 #> ╠══════════════════════════════════════════════════════════════════════════
 #> ║ 📝 Title: Employee Survey Dashboard
+#> Detected package repo at: /Users/favstats/Dropbox/postdoc/dashboardr
+#> Writing output outside the package at: /Users/favstats/Dropbox/postdoc/my_first_dashboard (set allow_inside_pkg = TRUE to disable relocation)
 #> ║ 📁 Output: /Users/favstats/Dropbox/postdoc/my_first_dashboard
 #> ║
 #> ║ ⚙️  FEATURES:

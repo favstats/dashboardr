@@ -22,7 +22,12 @@ add_dashboard_page(
   overlay = FALSE,
   overlay_theme = c("light", "glass", "dark", "accent"),
   overlay_text = "Loading",
-  overlay_duration = 2200
+  overlay_duration = 2200,
+  lazy_load_charts = NULL,
+  lazy_load_margin = NULL,
+  lazy_load_tabs = NULL,
+  lazy_debug = NULL,
+  pagination_separator = NULL
 )
 }
 \arguments{
@@ -41,6 +46,8 @@ list of file paths for multiple datasets}
 \item{params}{Parameters for template substitution}
 
 \item{visualizations}{viz_collection or list of visualization specs}
+
+\item{content}{Alternative to visualizations - supports content_collection or viz_collection}
 
 \item{text}{Optional markdown text content for the page}
 
@@ -61,6 +68,16 @@ list of file paths for multiple datasets}
 \item{overlay_text}{Text to display in loading overlay (default: "Loading")}
 
 \item{overlay_duration}{Duration in milliseconds for how long overlay stays visible (default: 2200)}
+
+\item{lazy_load_charts}{Override dashboard-level lazy loading setting for this page (default: NULL = inherit from dashboard)}
+
+\item{lazy_load_margin}{Override viewport margin for lazy loading on this page (default: NULL = inherit from dashboard)}
+
+\item{lazy_load_tabs}{Override tab-aware lazy loading for this page (default: NULL = inherit from dashboard)}
+
+\item{lazy_debug}{Override debug mode for lazy loading on this page (default: NULL = inherit from dashboard)}
+
+\item{pagination_separator}{Text to show in pagination navigation (e.g., "of" → "1 of 3"), default: NULL = inherit from dashboard}
 }
 \value{
 The updated dashboard_project object

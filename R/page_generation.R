@@ -61,6 +61,22 @@
     
     content <- c(content, .generate_loading_overlay_chunk(overlay_theme, overlay_text, overlay_duration))
   }
+  
+  # Add lazy loading script if enabled
+  if (!is.null(page$lazy_load_charts) && page$lazy_load_charts) {
+    lazy_load_margin <- page$lazy_load_margin %||% "200px"
+    lazy_load_tabs <- page$lazy_load_tabs %||% TRUE
+    lazy_debug <- page$lazy_debug %||% FALSE
+    
+    # Get theme from overlay if enabled, otherwise default to "light"
+    lazy_load_theme <- if (!is.null(page$overlay) && page$overlay) {
+      page$overlay_theme %||% "light"
+    } else {
+      "light"
+    }
+    
+    content <- c(content, .generate_lazy_load_script(lazy_load_margin, lazy_load_tabs, lazy_load_theme, lazy_debug))
+  }
 
   # Add content blocks (text, images, and other content types) before visualizations
   if (!is.null(page$content_blocks)) {
@@ -100,7 +116,10 @@
 
   # Add visualizations
   if (!is.null(page$visualizations)) {
-    viz_content <- .generate_viz_from_specs(page$visualizations)
+    # Get lazy load settings
+    lazy_load_charts <- page$lazy_load_charts %||% FALSE
+    lazy_load_tabs <- page$lazy_load_tabs %||% FALSE
+    viz_content <- .generate_viz_from_specs(page$visualizations, lazy_load_charts, lazy_load_tabs)
     content <- c(content, viz_content)
   } else if (is.null(page$text) || !nzchar(page$text)) {
     if (is.null(page$content_blocks) || length(page$content_blocks) == 0) {

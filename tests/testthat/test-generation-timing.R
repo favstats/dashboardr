@@ -32,7 +32,6 @@ test_that("generate_dashboard tracks and reports timing", {
   # Should have time in readable format (seconds or ms)
   expect_true(grepl("seconds|ms|minutes", output_text))
   
-  unlink(dashboard$output_dir, recursive = TRUE)
 })
 
 test_that("timing output shows appropriate units", {
@@ -67,7 +66,6 @@ test_that("timing output shows appropriate units", {
     expect_true(grepl("ms|milliseconds", output_text))
   }
   
-  unlink(dashboard$output_dir, recursive = TRUE)
 })
 
 test_that("generation output is visually enhanced", {
@@ -106,7 +104,6 @@ test_that("generation output is visually enhanced", {
   # Should have structured sections
   expect_true(grepl("FILES|NEXT STEPS|SUMMARY", output_text))
   
-  unlink(dashboard$output_dir, recursive = TRUE)
 })
 
 test_that("timing is included in final summary section", {
@@ -146,6 +143,5 @@ test_that("timing is included in final summary section", {
     expect_true(time_line_idx[1] > generated_idx %||% 0)
   }
   
-  unlink(dashboard$output_dir, recursive = TRUE)
 })
 

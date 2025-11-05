@@ -4,18 +4,18 @@
 \alias{add_video}
 \title{Add video}
 \usage{
-add_video(content, url, caption = NULL, width = NULL, height = NULL)
+add_video(content, src, caption = NULL, width = NULL, height = NULL)
 }
 \arguments{
 \item{content}{A content_collection object}
+
+\item{src}{Video source URL or path}
 
 \item{caption}{Optional caption}
 
 \item{width}{Optional width}
 
 \item{height}{Optional height}
-
-\item{src}{Video source URL or path}
 }
 \value{
 Updated content_collection

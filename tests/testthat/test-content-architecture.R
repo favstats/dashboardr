@@ -154,7 +154,7 @@ test_that("add_reactable creates reactable table block", {
 
 test_that("add_video creates video block", {
   content <- create_content() %>%
-    add_video(url = "demo.mp4", caption = "Demo video")
+    add_video(src = "demo.mp4", caption = "Demo video")
   
   expect_s3_class(content, "content_collection")
   expect_equal(length(content$items), 1)
@@ -164,7 +164,7 @@ test_that("add_video creates video block", {
 
 test_that("add_iframe creates iframe block", {
   content <- create_content() %>%
-    add_iframe(url = "https://example.com", height = "500px")
+    add_iframe(src = "https://example.com", height = "500px")
   
   expect_s3_class(content, "content_collection")
   expect_equal(length(content$items), 1)

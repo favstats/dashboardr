@@ -299,21 +299,6 @@ md_text <- function(...) {
 #' text_content <- text_lines(lines)
 #' add_page("Page", text = text_content)
 #' }
-
-
-#' Create text content from a character vector
-#'
-#' Alternative helper for creating text content from existing character vectors.
-#'
-#' @param lines Character vector of text lines
-#' @return Single character string with proper line breaks
-#' @export
-#' @examples
-#' \dontrun{
-#' lines <- c("# Title", "", "Content here")
-#' text_content <- text_lines(lines)
-#' add_page("Page", text = text_content)
-#' }
 text_lines <- function(lines) {
   paste(lines, collapse = "\n")
 }

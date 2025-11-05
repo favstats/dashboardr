@@ -2,11 +2,62 @@
 # viz_generation
 # =================================================================
 
-.generate_viz_from_specs <- function(viz_specs) {
+#' Split visualization specs by pagination markers
+#'
+#' Internal function that splits a collection of visualization specifications
+#' into sections based on pagination_break markers.
+#'
+#' @param viz_specs List of visualization specifications
+#' @return List of sections, where each section is a list of viz specs
+#' @keywords internal
+.split_by_pagination <- function(viz_specs) {
+  sections <- list()
+  current_section <- list()
+  
+  for (i in seq_along(viz_specs)) {
+    spec <- viz_specs[[i]]
+    
+    # Check if this is a pagination marker
+    if (!is.null(spec$pagination_break) && isTRUE(spec$pagination_break)) {
+      # Store pagination config in the marker
+      pagination_marker <- spec
+      
+      # End current section if it has content
+      if (length(current_section) > 0) {
+        sections <- c(sections, list(list(
+          items = current_section,
+          pagination_after = pagination_marker
+        )))
+        current_section <- list()
+      }
+    } else {
+      # Add regular viz to current section
+      current_section <- c(current_section, list(spec))
+    }
+  }
+  
+  # Don't forget last section
+  if (length(current_section) > 0) {
+    sections <- c(sections, list(list(
+      items = current_section,
+      pagination_after = NULL  # No pagination after last section
+    )))
+  }
+  
+  sections
+}
+
+.generate_viz_from_specs <- function(viz_specs, lazy_load_charts = FALSE, lazy_load_tabs = FALSE) {
   lines <- character(0)
 
   for (i in seq_along(viz_specs)) {
     spec <- viz_specs[[i]]
+    
+    # Skip pagination markers - they're handled at page generation level
+    if (!is.null(spec$pagination_break) && isTRUE(spec$pagination_break)) {
+      next
+    }
+    
     spec_name <- if (!is.null(names(viz_specs)[i]) && names(viz_specs)[i] != "") {
       names(viz_specs)[i]
     } else {
@@ -15,17 +66,17 @@
 
     # Generate either single viz or tab group
     if (is.null(spec$type) || spec$type != "tabgroup") {
-    lines <- c(lines, .generate_single_viz(spec_name, spec))
+      # For top-level single charts, apply lazy loading if enabled
+      lines <- c(lines, .generate_single_viz(spec_name, spec, lazy_load = lazy_load_charts))
     } else {
-      lines <- c(lines, .generate_tabgroup_viz(spec))
+      lines <- c(lines, .generate_tabgroup_viz(spec, lazy_load_tabs = lazy_load_tabs))
     }
   }
 
   lines
 }
 
-
-.generate_single_viz <- function(spec_name, spec, skip_header = FALSE) {
+.generate_single_viz <- function(spec_name, spec, skip_header = FALSE, lazy_load = FALSE, is_first_tab = TRUE) {
   lines <- character(0)
 
   # Remove nested_children from spec - it's only for structure, not for visualization generation
@@ -71,6 +122,18 @@
   # Generate meaningful chunk label
   chunk_label <- .generate_chunk_label(spec, spec_name)
   
+  # Generate unique ID for lazy loading
+  chart_id <- paste0("chart-", gsub("[^a-z0-9]", "-", tolower(chunk_label)))
+  
+  # If lazy loading is enabled, wrap chart in Quarto div container
+  if (lazy_load) {
+    lines <- c(lines,
+      "",
+      paste0("::: {#", chart_id, " .chart-lazy data-loaded='false'}"),
+      ""
+    )
+  }
+  
   # Simple R chunk - caching enabled for performance
   lines <- c(lines,
     paste0("```{r ", chunk_label, "}"),
@@ -87,6 +150,15 @@
   }
 
   lines <- c(lines, "```")
+  
+  # Close lazy load container if enabled
+  if (lazy_load) {
+    lines <- c(lines,
+      "",
+      ":::",
+      ""
+    )
+  }
 
   # Add text_below_graphs if provided
   if (!is.null(spec$text_below_graphs) && nzchar(spec$text_below_graphs)) {
@@ -419,7 +491,7 @@
 }
 
 
-.generate_tabgroup_viz <- function(tabgroup_spec) {
+.generate_tabgroup_viz <- function(tabgroup_spec, lazy_load_tabs = FALSE) {
   lines <- character(0)
 
   # Add section header if a label is provided
@@ -447,6 +519,7 @@
   
   for (i in seq_along(tabgroup_spec$visualizations)) {
     viz <- tabgroup_spec$visualizations[[i]]
+    is_first_tab <- (i == 1)
 
     # Check if this is a nested tabgroup
     # Skip if this tabgroup is already rendered as a nested_child (to avoid duplicate headers)
@@ -468,6 +541,18 @@
       
       lines <- c(lines, paste0("### ", tab_title), "")
       
+      # Apply lazy loading to nested tabgroups if this is not the first tab
+      should_lazy_load_nested <- lazy_load_tabs && !is_first_tab
+      if (should_lazy_load_nested) {
+        # Generate unique ID for this nested tabgroup
+        chart_id <- paste0("chart-nested-", gsub("[^a-z0-9]", "-", tolower(viz$name %||% paste0("tab-", i))))
+        lines <- c(lines,
+          "",
+          paste0("::: {#", chart_id, " .chart-lazy data-loaded='false'}"),
+          ""
+        )
+      }
+      
       # Recursively generate nested tabset (without the ## header, since we have ### tab)
       # Temporarily remove label so it doesn't add ## header
       nested_spec <- viz
@@ -475,8 +560,17 @@
       nested_spec$name <- NULL
       
       # Generate nested content
-      nested_lines <- .generate_tabgroup_viz_content(nested_spec, depth = 1)
+      nested_lines <- .generate_tabgroup_viz_content(nested_spec, depth = 1, lazy_load_tabs = lazy_load_tabs)
       lines <- c(lines, nested_lines)
+      
+      # Close lazy load container if enabled
+      if (should_lazy_load_nested) {
+        lines <- c(lines,
+          "",
+          ":::",
+          ""
+        )
+      }
       
     } else {
       # Regular visualization
@@ -508,7 +602,9 @@
       # 1. It's not a placeholder type, AND
       # 2. It doesn't have nested children (if it has nested children, it's just a container tab)
       if (!has_nested && (is.null(viz$type) || viz$type != "placeholder")) {
-        viz_lines <- .generate_single_viz(paste0("tab_", i), viz, skip_header = TRUE)
+        # Apply lazy loading to non-first tabs if enabled
+        should_lazy_load <- lazy_load_tabs && !is_first_tab
+        viz_lines <- .generate_single_viz(paste0("tab_", i), viz, skip_header = TRUE, lazy_load = should_lazy_load, is_first_tab = is_first_tab)
         lines <- c(lines, viz_lines)
       }
       
@@ -524,6 +620,7 @@
           
           for (j in seq_along(nested_tabgroups)) {
             nested_tabgroup <- nested_tabgroups[[j]]
+            is_first_nested_tab <- (j == 1)
             
             # Tab title for the nested tabgroup (e.g., "Age", "Gender")
             tab_title <- if (!is.null(nested_tabgroup$label) && nzchar(nested_tabgroup$label)) {
@@ -549,10 +646,30 @@
             # Create the tab
             lines <- c(lines, paste0("#### ", tab_title), "")
             
+            # Apply lazy loading to nested tabs if this is not the first nested tab
+            should_lazy_load_nested_child <- lazy_load_tabs && !is_first_nested_tab
+            if (should_lazy_load_nested_child) {
+              chart_id <- paste0("chart-nested-child-", gsub("[^a-z0-9]", "-", tolower(nested_tabgroup$name %||% paste0("tab-", j))))
+              lines <- c(lines,
+                "",
+                paste0("::: {#", chart_id, " .chart-lazy data-loaded='false'}"),
+                ""
+              )
+            }
+            
             # Generate the content of this nested tabgroup (this will contain the Question tabs)
             # Don't add header since we already have the tab header
-            nested_content <- .generate_tabgroup_viz_content(nested_tabgroup, depth = 1, skip_header = TRUE)
+            nested_content <- .generate_tabgroup_viz_content(nested_tabgroup, depth = 1, skip_header = TRUE, lazy_load_tabs = lazy_load_tabs)
             lines <- c(lines, nested_content)
+            
+            # Close lazy load container if enabled
+            if (should_lazy_load_nested_child) {
+              lines <- c(lines,
+                "",
+                ":::",
+                ""
+              )
+            }
             
             if (j < length(nested_tabgroups)) {
               lines <- c(lines, "")
@@ -578,7 +695,7 @@
 
 # Helper function to generate tabset content without the ## header
 
-.generate_tabgroup_viz_content <- function(tabgroup_spec, depth = 0, skip_header = FALSE) {
+.generate_tabgroup_viz_content <- function(tabgroup_spec, depth = 0, skip_header = FALSE, lazy_load_tabs = FALSE) {
   lines <- character(0)
   
   # Add header for this tabgroup if it has a label (for nested tabgroups like "Age")
@@ -600,7 +717,8 @@
   if (single_viz_only) {
     # Single visualization - render it directly without tabset wrapper
     viz <- tabgroup_spec$visualizations[[1]]
-    viz_lines <- .generate_single_viz(paste0("viz_", depth), viz, skip_header = TRUE)
+    # First (and only) viz in tabgroup, no lazy load needed
+    viz_lines <- .generate_single_viz(paste0("viz_", depth), viz, skip_header = TRUE, lazy_load = FALSE, is_first_tab = TRUE)
     lines <- c(lines, "", viz_lines)
     return(lines)
   }
@@ -611,6 +729,7 @@
   # Generate each tab
   for (i in seq_along(tabgroup_spec$visualizations)) {
     viz <- tabgroup_spec$visualizations[[i]]
+    is_first_tab <- (i == 1)
 
     # Check if this is a nested tabgroup
     if (!is.null(viz$type) && viz$type == "tabgroup") {
@@ -632,7 +751,7 @@
       nested_spec$label <- NULL
       nested_spec$name <- NULL
       
-      nested_lines <- .generate_tabgroup_viz_content(nested_spec, depth = depth + 1)
+      nested_lines <- .generate_tabgroup_viz_content(nested_spec, depth = depth + 1, lazy_load_tabs = lazy_load_tabs)
       lines <- c(lines, nested_lines)
       
     } else {
@@ -671,7 +790,9 @@
       }
 
       # Generate visualization code
-      viz_lines <- .generate_single_viz(paste0("tab_", depth, "_", i), viz, skip_header = TRUE)
+      # Apply lazy loading to non-first tabs if enabled
+      should_lazy_load <- lazy_load_tabs && !is_first_tab
+      viz_lines <- .generate_single_viz(paste0("tab_", depth, "_", i), viz, skip_header = TRUE, lazy_load = should_lazy_load, is_first_tab = is_first_tab)
       lines <- c(lines, viz_lines)
     }
 

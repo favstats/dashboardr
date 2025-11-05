@@ -118,7 +118,6 @@ test_that("navbar_menu YAML generation works", {
   expect_true(grepl("iconify ph chart-line", yaml_text, fixed = TRUE))
   
   # Clean up
-  unlink(dashboard$output_dir, recursive = TRUE)
 })
 
 test_that("navbar_menu generates correct YAML indentation", {
@@ -155,7 +154,6 @@ test_that("navbar_menu generates correct YAML indentation", {
     expect_true(grepl("^          - href:", first_item))
   }
   
-  unlink(dashboard$output_dir, recursive = TRUE)
 })
 
 test_that("navbar_menu works with multiple menus", {
@@ -196,7 +194,6 @@ test_that("navbar_menu works with multiple menus", {
   menu_count <- length(grep("menu:", yaml_content, fixed = TRUE))
   expect_equal(menu_count, 2)
   
-  unlink(dashboard$output_dir, recursive = TRUE)
 })
 
 test_that("navbar_menu preserves page icons in dropdown", {
@@ -224,7 +221,6 @@ test_that("navbar_menu preserves page icons in dropdown", {
   expect_true(grepl("iconify ph star", yaml_text))
   expect_true(grepl("iconify ph heart", yaml_text))
   
-  unlink(dashboard$output_dir, recursive = TRUE)
 })
 
 test_that("navbar_menu works alongside regular pages", {
@@ -261,7 +257,6 @@ test_that("navbar_menu works alongside regular pages", {
   expect_true(grepl("left:", yaml_text))
   expect_true(grepl("right:", yaml_text))
   
-  unlink(dashboard$output_dir, recursive = TRUE)
 })
 
 test_that("navbar_menu handles missing pages gracefully", {
@@ -294,7 +289,6 @@ test_that("navbar_menu handles missing pages gracefully", {
   # Missing page should not cause issues (just skipped)
   # DoesNotExist might not appear, or might appear without href
   
-  unlink(dashboard$output_dir, recursive = TRUE)
 })
 
 test_that("navbar_menu can be mixed with navbar_section (hybrid)", {
@@ -337,7 +331,6 @@ test_that("navbar_menu can be mixed with navbar_section (hybrid)", {
   expect_true(grepl("menu:", yaml_text))
   expect_true(grepl("sidebar:", yaml_text))
   
-  unlink(dashboard$output_dir, recursive = TRUE)
 })
 
 test_that("navbar_menu uses correct QMD filenames", {
@@ -366,6 +359,5 @@ test_that("navbar_menu uses correct QMD filenames", {
   expect_true(grepl("my_page_with_spaces\\.qmd", yaml_text))
   expect_true(grepl("another_page\\.qmd", yaml_text))  # "Another-Page" -> "another_page.qmd"
   
-  unlink(dashboard$output_dir, recursive = TRUE)
 })
 

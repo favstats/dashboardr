@@ -87,7 +87,6 @@ test_that("timeline binning generates correct code", {
   expect_true(grepl("response_breaks", qmd_content))
   expect_true(grepl("response_bin_labels", qmd_content))
   
-  unlink(dashboard$output_dir, recursive = TRUE)
 })
 
 test_that("timeline filtering generates correct code", {
@@ -124,7 +123,6 @@ test_that("timeline filtering generates correct code", {
   expect_true(grepl("response_filter", qmd_content))
   expect_true(grepl("response_filter_combine", qmd_content))
   
-  unlink(dashboard$output_dir, recursive = TRUE)
 })
 
 test_that("binning and filtering can be combined", {

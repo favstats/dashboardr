@@ -481,14 +481,14 @@ add_DT <- function(content, table_data, options = NULL, ...) {
 #' @param height Optional height
 #' @return Updated content_collection
 #' @export
-add_video <- function(content, url, caption = NULL, width = NULL, height = NULL) {
+add_video <- function(content, src, caption = NULL, width = NULL, height = NULL) {
   if (!inherits(content, "content_collection")) {
     stop("First argument must be a content_collection object")
   }
   
   video_block <- structure(list(
     type = "video",
-    url = url,
+    url = src,
     caption = caption,
     width = width,
     height = height
@@ -505,14 +505,14 @@ add_video <- function(content, url, caption = NULL, width = NULL, height = NULL)
 #' @param width iframe width (default: "100%")
 #' @return Updated content_collection
 #' @export
-add_iframe <- function(content, url, height = "500px", width = "100%") {
+add_iframe <- function(content, src, height = "500px", width = "100%") {
   if (!inherits(content, "content_collection")) {
     stop("First argument must be a content_collection object")
   }
   
   iframe_block <- structure(list(
     type = "iframe",
-    url = url,
+    url = src,
     height = height,
     width = width
   ), class = "content_block")

@@ -63,7 +63,6 @@ test_that("filter generates correct code in dashboard", {
   # Visualization should use filtered data
   expect_true(grepl("data = data_filtered", qmd_content))
   
-  unlink(dashboard$output_dir, recursive = TRUE)
 })
 
 test_that("multiple visualizations with same filter reuse filtered dataset", {
@@ -98,7 +97,6 @@ test_that("multiple visualizations with same filter reuse filtered dataset", {
   filtered_data_usage <- sum(grepl("data_filtered", qmd_content))
   expect_true(filtered_data_usage >= 2)  # Used in both viz calls
   
-  unlink(dashboard$output_dir, recursive = TRUE)
 })
 
 test_that("different filters create separate filtered datasets", {
@@ -131,7 +129,6 @@ test_that("different filters create separate filtered datasets", {
   expect_true(grepl("wave == 2", qmd_content))
   expect_true(grepl("wave == 3", qmd_content))
   
-  unlink(dashboard$output_dir, recursive = TRUE)
 })
 
 test_that("filter works with non-filtered visualizations", {
@@ -165,7 +162,6 @@ test_that("filter works with non-filtered visualizations", {
   # Second viz should use filtered data
   expect_true(grepl("category == \"A\"", qmd_content))
   
-  unlink(dashboard$output_dir, recursive = TRUE)
 })
 
 test_that("filter works with combine_viz", {
@@ -226,7 +222,6 @@ test_that("filter with nested tabgroups", {
   # Tabgroups should be rendered
   expect_true(grepl("demographics", qmd_content, ignore.case = TRUE))
   
-  unlink(dashboard$output_dir, recursive = TRUE)
 })
 
 test_that("filter with multi-dataset support", {
@@ -272,7 +267,6 @@ test_that("filter with multi-dataset support", {
   expect_true(grepl("category == \"A\"", qmd_content))
   expect_true(grepl("category == \"B\"", qmd_content))
   
-  unlink(dashboard$output_dir, recursive = TRUE)
 })
 
 test_that("filter hash generation is consistent", {
@@ -303,7 +297,6 @@ test_that("filter hash generation is consistent", {
   # Should have consistent hash for same filter
   expect_true(length(filtered_refs) > 0)
   
-  unlink(dashboard$output_dir, recursive = TRUE)
 })
 
 test_that("filter with %in% operator", {

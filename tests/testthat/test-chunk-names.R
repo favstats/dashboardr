@@ -31,7 +31,6 @@ test_that("chunk names use tabgroup as highest priority", {
   # Should have chunk named after tabgroup (sanitized)
   expect_true(grepl("```{r demographics-age-trend}", qmd_text, fixed = TRUE))
   
-  unlink(dashboard$output_dir, recursive = TRUE)
 })
 
 test_that("chunk names extract relevant variables for each viz type", {
@@ -105,7 +104,6 @@ test_that("chunk names extract relevant variables for each viz type", {
   expect_true(grepl("```{r histogram-score}", qmd_text, fixed = TRUE))
   expect_true(grepl("```\\{r heatmap-(country|year|population)", qmd_text))
   
-  unlink(dashboard$output_dir, recursive = TRUE)
 })
 
 test_that("chunk names sanitize special characters", {
@@ -138,7 +136,6 @@ test_that("chunk names sanitize special characters", {
   # Should sanitize: underscores, dots, hashes → dashes
   expect_true(grepl("```{r section-a-sub-section-item-1}", qmd_text, fixed = TRUE))
   
-  unlink(dashboard$output_dir, recursive = TRUE)
 })
 
 test_that("chunk names are unique and disambiguate duplicates", {
@@ -178,7 +175,6 @@ test_that("chunk names are unique and disambiguate duplicates", {
   expect_true(grepl("```{r histogram-value-2}", qmd_text, fixed = TRUE))
   expect_true(grepl("```{r histogram-value-3}", qmd_text, fixed = TRUE))
   
-  unlink(dashboard$output_dir, recursive = TRUE)
 })
 
 test_that("chunk names are limited to reasonable length", {
@@ -216,7 +212,6 @@ test_that("chunk names are limited to reasonable length", {
   # Should be truncated to 50 characters
   expect_true(nchar(chunk_label) <= 50)
   
-  unlink(dashboard$output_dir, recursive = TRUE)
 })
 
 test_that("chunk names work correctly in complex nested dashboards", {
@@ -270,5 +265,4 @@ test_that("chunk names work correctly in complex nested dashboards", {
   qmd2 <- paste(readLines(file.path(dashboard$output_dir, "page2.qmd"), warn = FALSE), collapse = "\n")
   expect_true(grepl("```{r trends-overall}", qmd2, fixed = TRUE))
   
-  unlink(dashboard$output_dir, recursive = TRUE)
 })

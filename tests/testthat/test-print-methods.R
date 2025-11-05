@@ -45,7 +45,6 @@ test_that("print.dashboard_project doesn't error", {
   
   expect_no_error(print(dashboard))
   
-  unlink(dashboard$output_dir, recursive = TRUE)
 })
 
 test_that("print.dashboard_project works with visualizations", {
@@ -65,5 +64,4 @@ test_that("print.dashboard_project works with visualizations", {
   
   expect_no_error(print(dashboard))
   
-  unlink(dashboard$output_dir, recursive = TRUE)
 })

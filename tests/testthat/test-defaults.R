@@ -192,7 +192,6 @@ test_that("defaults work in dashboard generation", {
   expect_true(grepl("create_histogram", qmd_content))
   expect_true(grepl("bins = 25", qmd_content))
   
-  unlink(dashboard$output_dir, recursive = TRUE)
 })
 
 test_that("defaults with data parameter", {

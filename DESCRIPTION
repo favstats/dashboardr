@@ -12,14 +12,26 @@ RoxygenNote: 7.3.2
 Imports: 
     magrittr,
     dplyr,
+    forcats,
+    gert,
+    glue,
     highcharter,
+    htmltools,
+    htmlwidgets,
+    httr,
+    jsonlite,
+    quarto,
     rlang,
+    tibble,
     tidyr,
-    gssr,
+    tidyselect,
+    usethis,
     digest
 Suggests:
+  gssr,
   haven,
-  testthat (>= 3.0.0)
+  testthat (>= 3.0.0),
+  withr
 Config/testthat/edition: 3
 Remotes: 
     kjhealy/gssr

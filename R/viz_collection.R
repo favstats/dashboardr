@@ -46,7 +46,8 @@ create_viz <- function(tabgroup_labels = NULL, ...) {
 #' Combine Visualization Collections with + Operator
 #'
 #' S3 method that allows combining two viz_collection objects using the `+` operator.
-#' This is a convenient shorthand for \code{\link{combine_viz}}.
+#' This is a convenient shorthand for \code{\link{combine_content}}.
+#' Preserves all attributes including lazy loading settings.
 #'
 #' @param e1 First viz_collection object (left operand).
 #' @param e2 Second viz_collection object (right operand).
@@ -60,9 +61,10 @@ create_viz <- function(tabgroup_labels = NULL, ...) {
 #'   \item All visualizations from both collections are merged
 #'   \item Tabgroup labels are combined (e2 labels take precedence for duplicates)
 #'   \item Insertion indices are renumbered to maintain proper ordering
+#'   \item All attributes (lazy loading, etc.) are preserved
 #' }
 #'
-#' @seealso \code{\link{combine_viz}} for the underlying function.
+#' @seealso \code{\link{combine_content}} for the underlying function.
 #'
 #' @method + viz_collection
 #' @export
@@ -80,7 +82,7 @@ create_viz <- function(tabgroup_labels = NULL, ...) {
 #' combined <- viz1 + viz2
 #'
 #' # Equivalent to:
-#' combined <- combine_viz(viz1, viz2)
+#' combined <- combine_content(viz1, viz2)
 #' }
 `+.viz_collection` <- function(e1, e2) {
   # Validate inputs
@@ -91,61 +93,136 @@ create_viz <- function(tabgroup_labels = NULL, ...) {
     stop("Right operand must be a viz_collection object")
   }
   
-  # Combine visualizations and renumber insertion indices to preserve order
-  combined_viz <- list()
-  
-  # Add e1's visualizations first
-  for (i in seq_along(e1$items)) {
-    viz <- e1$items[[i]]
-    # Remove old index and set new one
-    viz[[".insertion_index"]] <- NULL
-    viz[[".insertion_index"]] <- i
-    combined_viz[[length(combined_viz) + 1]] <- viz
+  # Delegate to combine_content() which handles all attribute preservation
+  combine_content(e1, e2)
+}
+
+#' Combine Content Collections with + Operator
+#'
+#' S3 method for combining content_collection objects using `+`.
+#' Preserves all attributes including lazy loading settings.
+#'
+#' @param e1 First content_collection
+#' @param e2 Second content_collection
+#' @return Combined content_collection
+#' @method + content_collection
+#' @export
+`+.content_collection` <- function(e1, e2) {
+  if (!inherits(e1, "content_collection")) {
+    stop("Left operand must be a content_collection object")
+  }
+  if (missing(e2) || !inherits(e2, "content_collection")) {
+    stop("Right operand must be a content_collection object")
   }
   
-  # Renumber e2's visualizations to come after e1's
-  offset <- length(e1$items)
-  for (i in seq_along(e2$items)) {
-    viz <- e2$items[[i]]
-    # Remove old index and set new one
-    viz[[".insertion_index"]] <- NULL
-    viz[[".insertion_index"]] <- offset + i
-    combined_viz[[length(combined_viz) + 1]] <- viz
+  combine_content(e1, e2)
+}
+#' Combine content collections (universal combiner)
+#'
+#' Universal function to combine content_collection or viz_collection objects.
+#' Preserves all content types (visualizations, pagination markers, text blocks)
+#' and collection-level attributes (lazy loading, etc.).
+#' 
+#' @param ... One or more content_collection or viz_collection objects
+#' @return Combined content_collection
+#' @export
+#' @examples
+#' \dontrun{
+#' # Combine multiple collections
+#' all_viz <- demo_viz %>%
+#'   combine_content(analysis_viz) %>%
+#'   combine_content(summary_viz)
+#' 
+#' # With pagination
+#' paginated <- section1_viz %>%
+#'   combine_content(section2_viz) %>%
+#'   add_pagination() %>%
+#'   combine_content(section3_viz)
+#' 
+#' # Using + operator
+#' combined <- viz1 + viz2 + viz3
+#' }
+combine_content <- function(...) {
+  collections <- list(...)
+  
+  if (length(collections) == 0) {
+    return(create_viz())
   }
   
-  # Merge tabgroup labels (e2 takes precedence for conflicts)
+  # Validate all are content_collection or viz_collection
+  for (i in seq_along(collections)) {
+    if (!inherits(collections[[i]], "content_collection") && 
+        !inherits(collections[[i]], "viz_collection")) {
+      stop("All arguments must be content_collection or viz_collection objects")
+    }
+  }
+  
+  # Combine all items and renumber insertion indices
+  combined_items <- list()
   combined_labels <- list()
-  if (!is.null(e1$tabgroup_labels)) {
-    combined_labels <- e1$tabgroup_labels
-  }
-  if (!is.null(e2$tabgroup_labels)) {
-    for (label_name in names(e2$tabgroup_labels)) {
-      combined_labels[[label_name]] <- e2$tabgroup_labels[[label_name]]
-    }
-  }
-  
-  # Combine defaults (e2 takes precedence)
   combined_defaults <- list()
-  if (!is.null(e1$defaults) && length(e1$defaults) > 0) {
-    combined_defaults <- e1$defaults
-  }
-  if (!is.null(e2$defaults) && length(e2$defaults) > 0) {
-    for (default_name in names(e2$defaults)) {
-      combined_defaults[[default_name]] <- e2$defaults[[default_name]]
+  combined_attrs <- list()  # For extra attributes like lazy loading
+  
+  for (col in collections) {
+    # Renumber indices to maintain global order
+    offset <- length(combined_items)
+    for (i in seq_along(col$items)) {
+      item <- col$items[[i]]
+      # Remove old insertion index and add new one
+      item[[".insertion_index"]] <- NULL
+      item[[".insertion_index"]] <- offset + i
+      combined_items[[length(combined_items) + 1]] <- item
+    }
+    
+    # Merge labels (later collections override)
+    if (!is.null(col$tabgroup_labels)) {
+      for (label_name in names(col$tabgroup_labels)) {
+        combined_labels[[label_name]] <- col$tabgroup_labels[[label_name]]
+      }
+    }
+    
+    # Merge defaults (later collections override)
+    if (!is.null(col$defaults) && length(col$defaults) > 0) {
+      for (default_name in names(col$defaults)) {
+        combined_defaults[[default_name]] <- col$defaults[[default_name]]
+      }
+    }
+    
+    # Merge any extra attributes (lazy loading, etc.) - later collections override
+    standard_names <- c("items", "tabgroup_labels", "defaults", "class")
+    extra_attrs <- setdiff(names(col), standard_names)
+    for (attr_name in extra_attrs) {
+      combined_attrs[[attr_name]] <- col[[attr_name]]
     }
   }
   
-  # Return new combined collection
-  structure(list(
-    items = combined_viz,
+  # Sort by insertion index to maintain order
+  if (length(combined_items) > 0) {
+    sort_order <- order(sapply(combined_items, function(x) x$.insertion_index %||% Inf))
+    combined_items <- combined_items[sort_order]
+  }
+  
+  # Build result with all attributes
+  result <- list(
+    items = combined_items,
     tabgroup_labels = if (length(combined_labels) > 0) combined_labels else NULL,
     defaults = if (length(combined_defaults) > 0) combined_defaults else list()
-  ), class = c("content_collection", "viz_collection"))
+  )
+  
+  # Add extra attributes
+  for (attr_name in names(combined_attrs)) {
+    result[[attr_name]] <- combined_attrs[[attr_name]]
+  }
+  
+  structure(result, class = c("content_collection", "viz_collection"))
 }
+
 #' Combine visualization collections
 #'
-#' Alternative function to combine viz_collection objects.
-
+#' @description 
+#' This function has been superseded by [combine_content()]. It still works
+#' but we recommend using `combine_content()` for new code as it handles
+#' all content types and attributes more reliably.
 #'
 #' @param ... One or more viz_collection objects to combine
 #' @return A combined viz_collection
@@ -157,58 +234,7 @@ create_viz <- function(tabgroup_labels = NULL, ...) {
 #' combined <- combine_viz(viz1, viz2)  # Combines both
 #' }
 combine_viz <- function(...) {
-  collections <- list(...)
-  
-  if (length(collections) == 0) {
-    return(create_viz())
-  }
-  
-  # Validate all are viz_collection
-  for (i in seq_along(collections)) {
-    if (!inherits(collections[[i]], "viz_collection")) {
-      stop("All arguments must be viz_collection objects")
-    }
-  }
-  
-  # Combine all visualizations and renumber insertion indices
-  combined_viz <- list()
-  combined_labels <- list()
-  combined_defaults <- list()
-  
-  for (col in collections) {
-    # Renumber indices to maintain global order
-    offset <- length(combined_viz)
-    for (i in seq_along(col$items)) {
-      item <- col$items[[i]]
-      # Items ARE the specs with type="viz" mixed in, not wrapped
-      # Remove old insertion index and add new one
-      item[[".insertion_index"]] <- NULL
-      item[[".insertion_index"]] <- offset + i
-      combined_viz[[length(combined_viz) + 1]] <- item
-    }
-    
-    if (!is.null(col$tabgroup_labels)) {
-      for (label_name in names(col$tabgroup_labels)) {
-        combined_labels[[label_name]] <- col$tabgroup_labels[[label_name]]
-      }
-    }
-    
-    if (!is.null(col$defaults) && length(col$defaults) > 0) {
-      for (default_name in names(col$defaults)) {
-        combined_defaults[[default_name]] <- col$defaults[[default_name]]
-      }
-    }
-  }
-  
-  # Sort visualizations by tabgroup hierarchy so nested tabs appear after their parent tabs
-  # This ensures the order is intuitive (parent, then nested children with matching filter)
-  combined_viz <- .sort_viz_by_tabgroup_hierarchy(combined_viz)
-  
-  structure(list(
-    items = combined_viz,
-    tabgroup_labels = if (length(combined_labels) > 0) combined_labels else NULL,
-    defaults = if (length(combined_defaults) > 0) combined_defaults else list()
-  ), class = c("content_collection", "viz_collection"))
+  combine_content(...)
 }
 
 #' Sort visualizations by tabgroup hierarchy
@@ -1236,39 +1262,48 @@ print.viz_collection <- function(x, ...) {
           is_last_item <- (j == length(items)) && !has_children
           
           # Get visualization details
-          type_icon <- switch(v$viz_type,
-            "timeline" = "📈",
-            "stackedbar" = "📊",
-            "stackedbars" = "📊",
-            "heatmap" = "🗺️",
-            "histogram" = "📉",
-            "bar" = "📊",
-            "📊"
-          )
-          
-          type_label <- toupper(v$viz_type)
-          title_text <- if (!is.null(v$title)) paste0(": ", v$title) else ""
-          filter_text <- if (!is.null(v$filter)) " [filtered]" else ""
-          
-          # Add badges for text positioning
-          text_badges <- c()
-          if (!is.null(v$text_above_title) && nzchar(v$text_above_title)) {
-            text_badges <- c(text_badges, "text-above-title")
-          }
-          if (!is.null(v$text_above_tabs) && nzchar(v$text_above_tabs)) {
-            text_badges <- c(text_badges, "text-above-tabs")
-          }
-          if (!is.null(v$text_above_graphs) && nzchar(v$text_above_graphs)) {
-            text_badges <- c(text_badges, "text-above")
-          }
-          if (!is.null(v$text_below_graphs) && nzchar(v$text_below_graphs)) {
-            text_badges <- c(text_badges, "text-below")
-          }
-          
-          badge_text <- if (length(text_badges) > 0) {
-            paste0(" [", paste(text_badges, collapse = ", "), "]")
+          # Handle pagination markers and other content types
+          if (!is.null(v$type) && v$type == "pagination") {
+            type_icon <- "📄"
+            type_label <- "PAGINATION"
+            title_text <- ""
+            filter_text <- ""
+            badge_text <- ""
           } else {
-            ""
+            type_icon <- switch(v$viz_type,
+              "timeline" = "📈",
+              "stackedbar" = "📊",
+              "stackedbars" = "📊",
+              "heatmap" = "🗺️",
+              "histogram" = "📉",
+              "bar" = "📊",
+              "📊"
+            )
+            
+            type_label <- toupper(v$viz_type)
+            title_text <- if (!is.null(v$title)) paste0(": ", v$title) else ""
+            filter_text <- if (!is.null(v$filter)) " [filtered]" else ""
+            
+            # Add badges for text positioning
+            text_badges <- c()
+            if (!is.null(v$text_above_title) && nzchar(v$text_above_title)) {
+              text_badges <- c(text_badges, "text-above-title")
+            }
+            if (!is.null(v$text_above_tabs) && nzchar(v$text_above_tabs)) {
+              text_badges <- c(text_badges, "text-above-tabs")
+            }
+            if (!is.null(v$text_above_graphs) && nzchar(v$text_above_graphs)) {
+              text_badges <- c(text_badges, "text-above")
+            }
+            if (!is.null(v$text_below_graphs) && nzchar(v$text_below_graphs)) {
+              text_badges <- c(text_badges, "text-below")
+            }
+            
+            badge_text <- if (length(text_badges) > 0) {
+              paste0(" [", paste(text_badges, collapse = ", "), "]")
+            } else {
+              ""
+            }
           }
           
           if (is_last_item) {
@@ -1328,4 +1363,62 @@ print.viz_collection <- function(x, ...) {
 #'   background = "light"
 #' )
 #' }
+
+# ===================================================================
+# Pagination
+# ===================================================================
+
+#' Add pagination break to visualization collection
+#'
+#' Insert a pagination marker that splits the visualization collection into
+#' separate HTML pages. Each section will be rendered as its own page file
+#' (e.g., analysis.html, analysis_p2.html, analysis_p3.html) with automatic
+#' Previous/Next navigation between them.
+#'
+#' This provides TRUE performance benefits - each page loads independently,
+#' dramatically reducing initial render time and file size for large dashboards.
+#'
+#' @param viz_collection A viz_collection object
+#' @return Updated viz_collection object
+#' @export
+#' @examples
+#' \dontrun{
+#' # Split 150 charts into 3 pages of 50 each
+#' vizzes <- create_viz()
+#' 
+#' # Page 1: Charts 1-50
+#' for (i in 1:50) vizzes <- vizzes %>% add_viz(type = "bar", x_var = "cyl")
+#' 
+#' vizzes <- vizzes %>% add_pagination()  # Split here
+#' 
+#' # Page 2: Charts 51-100
+#' for (i in 51:100) vizzes <- vizzes %>% add_viz(type = "bar", x_var = "gear")
+#' 
+#' vizzes <- vizzes %>% add_pagination()  # Split here
+#' 
+#' # Page 3: Charts 101-150
+#' for (i in 101:150) vizzes <- vizzes %>% add_viz(type = "bar", x_var = "hp")
+#' 
+#' # Use in dashboard
+#' dashboard %>%
+#'   add_page("Analysis", visualizations = vizzes)
+#' }
+add_pagination <- function(viz_collection) {
+  
+  # Validate first argument
+  if (!inherits(viz_collection, "content_collection") && !inherits(viz_collection, "viz_collection")) {
+    stop("First argument must be a viz_collection or content_collection object", call. = FALSE)
+  }
+  
+  # Add pagination marker to collection
+  pagination_item <- list(
+    type = "pagination",
+    pagination_break = TRUE
+  )
+  
+  # Add to items
+  viz_collection$items <- c(viz_collection$items, list(pagination_item))
+  
+  viz_collection
+}
 

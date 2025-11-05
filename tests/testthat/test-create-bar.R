@@ -188,7 +188,6 @@ test_that("create_bar in dashboard generation", {
   expect_true(grepl("create_bar", qmd_content))
   expect_true(grepl("x_var", qmd_content))
   
-  unlink(dashboard$output_dir, recursive = TRUE)
 })
 
 test_that("create_bar with all parameters", {

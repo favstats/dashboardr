@@ -29,7 +29,6 @@ test_that("publish_dashboard requires generated dashboard", {
     "generate_dashboard|not been generated"
   )
   
-  unlink(dashboard$output_dir, recursive = TRUE)
 })
 
 test_that("publish_dashboard accepts valid methods", {
@@ -49,7 +48,6 @@ test_that("publish_dashboard accepts valid methods", {
     )
   )
   
-  unlink(dashboard$output_dir, recursive = TRUE)
 })
 
 test_that("publish_dashboard with netlify method", {
@@ -68,7 +66,6 @@ test_that("publish_dashboard with netlify method", {
     )
   )
   
-  unlink(dashboard$output_dir, recursive = TRUE)
 })
 
 # ===================================================================
@@ -83,7 +80,6 @@ test_that("tutorial_dashboard creates project", {
   expect_s3_class(result, "dashboard_project")
   expect_true(dir.exists(output_dir))
   
-  unlink(output_dir, recursive = TRUE)
 })
 
 test_that("tutorial_dashboard has expected structure", {
@@ -98,7 +94,6 @@ test_that("tutorial_dashboard has expected structure", {
   expect_true(!is.null(result$title))
   expect_true(nchar(result$title) > 0)
   
-  unlink(output_dir, recursive = TRUE)
 })
 
 test_that("tutorial_dashboard can be generated", {
@@ -113,7 +108,6 @@ test_that("tutorial_dashboard can be generated", {
   qmd_files <- list.files(output_dir, pattern = "\\.qmd$")
   expect_true(length(qmd_files) > 0)
   
-  unlink(output_dir, recursive = TRUE)
 })
 
 test_that("tutorial_dashboard with custom title", {
@@ -126,6 +120,5 @@ test_that("tutorial_dashboard with custom title", {
   
   expect_equal(result$title, "My Custom Tutorial")
   
-  unlink(output_dir, recursive = TRUE)
 })
 

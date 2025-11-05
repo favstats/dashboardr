@@ -4,16 +4,16 @@
 \alias{add_iframe}
 \title{Add iframe}
 \usage{
-add_iframe(content, url, height = "500px", width = "100\%")
+add_iframe(content, src, height = "500px", width = "100\%")
 }
 \arguments{
 \item{content}{A content_collection object}
 
+\item{src}{iframe source URL}
+
 \item{height}{iframe height (default: "500px")}
 
 \item{width}{iframe width (default: "100\%")}
-
-\item{src}{iframe source URL}
 }
 \value{
 Updated content_collection

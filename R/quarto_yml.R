@@ -745,158 +745,315 @@
 
 # Generate default page content when no custom template is used
 
+#' Generate lazy loading script for charts
+#'
+#' Creates JavaScript code for Intersection Observer-based lazy loading
+#' and tab-aware rendering of charts
+#'
+#' @param lazy_load_margin Viewport margin for intersection observer
+#' @param lazy_load_tabs Whether to enable tab-aware lazy loading
+#' @return Character vector of script lines
+#' @keywords internal
+.generate_lazy_load_script <- function(lazy_load_margin = "200px", lazy_load_tabs = TRUE, theme = "light", debug = FALSE) {
+  # Build theme-aware skeleton styles
+  skeleton_css <- paste0("
+<style>
+/* Chart Lazy Loading Styles */
+.chart-lazy {
+  position: relative;
+  min-height: 400px;
+  margin: 1rem 0;
+}
+
+.chart-skeleton {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 1rem;
+  transition: opacity 0.3s ease;
+}
+
+.chart-spinner {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.chart-loading-text {
+  font-size: 0.9rem;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+
+/* Theme: Light */
+.chart-skeleton.theme-light {
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.chart-skeleton.theme-light .chart-spinner {
+  border: 3px solid rgba(148, 163, 184, 0.2);
+  border-top-color: rgba(15, 23, 42, 0.8);
+}
+
+.chart-skeleton.theme-light .chart-loading-text {
+  color: rgba(15, 23, 42, 0.7);
+}
+
+/* Theme: Glass */
+.chart-skeleton.theme-glass {
+  background: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+}
+
+.chart-skeleton.theme-glass .chart-spinner {
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-top-color: rgba(15, 23, 42, 0.7);
+}
+
+.chart-skeleton.theme-glass .chart-loading-text {
+  color: rgba(15, 23, 42, 0.8);
+}
+
+/* Theme: Dark */
+.chart-skeleton.theme-dark {
+  background: rgba(15, 23, 42, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.chart-skeleton.theme-dark .chart-spinner {
+  border: 3px solid rgba(148, 163, 184, 0.3);
+  border-top-color: rgba(255, 255, 255, 0.9);
+}
+
+.chart-skeleton.theme-dark .chart-loading-text {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* Theme: Accent */
+.chart-skeleton.theme-accent {
+  background: rgba(255, 255, 255, 0.98);
+  border: 1px solid rgba(59, 130, 246, 0.15);
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(59, 130, 246, 0.15);
+}
+
+.chart-skeleton.theme-accent .chart-spinner {
+  border: 3px solid rgba(59, 130, 246, 0.2);
+  border-top-color: rgba(59, 130, 246, 0.9);
+}
+
+.chart-skeleton.theme-accent .chart-loading-text {
+  color: rgba(15, 23, 42, 0.8);
+}
+</style>
+
+<script>
+// Chart Lazy Loading System
+(function() {
+  const THEME = '", theme, "';
+  const DEBUG = ", tolower(as.character(debug)), ";
+  
+  // Track which charts have been initialized
+  const initializedCharts = new Set();
+  
+  // Queue of charts waiting to be initialized
+  const chartQueue = [];
+  let isProcessingQueue = false;
+  
+  // Performance tracking
+  let totalChartsLoaded = 0;
+  let totalLoadTime = 0;
+  const chartTimings = [];
+  
+  // Create skeleton loader dynamically
+  function createSkeleton(container) {
+    const skeleton = document.createElement('div');
+    skeleton.className = 'chart-skeleton theme-' + THEME;
+    skeleton.innerHTML = `
+      <div class=\"chart-spinner\"></div>
+      <div class=\"chart-loading-text\">Loading visualization...</div>
+    `;
+    container.appendChild(skeleton);
+    return skeleton;
+  }
+  
+  // Initialize a single chart
+  function initChart(container) {
+    const chartId = container.id;
+    if (initializedCharts.has(chartId)) return;
+    
+    const startTime = DEBUG ? performance.now() : 0;
+    
+    initializedCharts.add(chartId);
+    container.dataset.loaded = 'true';
+    
+    // Remove skeleton loader
+    const skeleton = container.querySelector('.chart-skeleton');
+    if (skeleton) {
+      skeleton.style.opacity = '0';
+      setTimeout(() => skeleton.remove(), 300);
+    }
+    
+    // Trigger Highcharts reflow if present
+    setTimeout(() => {
+      if (window.Highcharts) {
+        Highcharts.charts.forEach(chart => {
+          if (chart && chart.reflow) chart.reflow();
+        });
+      }
+      
+      // Debug logging
+      if (DEBUG) {
+        const loadTime = performance.now() - startTime;
+        totalChartsLoaded++;
+        totalLoadTime += loadTime;
+        chartTimings.push({ id: chartId, time: loadTime });
+        
+        console.log(`📊 Chart loaded: ${chartId} (${loadTime.toFixed(2)}ms)`);
+        console.log(`   Total: ${totalChartsLoaded} charts, Avg: ${(totalLoadTime/totalChartsLoaded).toFixed(2)}ms`);
+      }
+    }, 50);
+  }
+  
+  // Process chart queue in batches
+  function processQueue() {
+    if (isProcessingQueue || chartQueue.length === 0) return;
+    
+    isProcessingQueue = true;
+    const batchSize = 3;
+    const batch = chartQueue.splice(0, batchSize);
+    
+    if (DEBUG) {
+      console.log(`⚡ Processing batch of ${batch.length} charts (${chartQueue.length} remaining)`);
+    }
+    
+    batch.forEach(container => initChart(container));
+    
+    if (chartQueue.length > 0) {
+      requestIdleCallback(() => {
+        isProcessingQueue = false;
+        processQueue();
+      }, { timeout: 2000 });
+    } else {
+      isProcessingQueue = false;
+      
+      if (DEBUG && totalChartsLoaded > 0) {
+        console.log(`✅ All charts loaded! Summary:`);
+        console.log(`   Total charts: ${totalChartsLoaded}`);
+        console.log(`   Total time: ${totalLoadTime.toFixed(2)}ms`);
+        console.log(`   Average time per chart: ${(totalLoadTime/totalChartsLoaded).toFixed(2)}ms`);
+        console.log(`   Slowest chart: ${Math.max(...chartTimings.map(t => t.time)).toFixed(2)}ms`);
+        console.log(`   Fastest chart: ${Math.min(...chartTimings.map(t => t.time)).toFixed(2)}ms`);
+      }
+    }
+  }
+  
+  // Intersection Observer for scroll-based lazy loading
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting && entry.target.dataset.loaded === 'false') {
+        chartQueue.push(entry.target);
+        observer.unobserve(entry.target);
+        processQueue();
+      }
+    });
+  }, { rootMargin: '", lazy_load_margin, "' });
+  
+  // Initialize observers when DOM is ready
+  function initLazyLoading() {
+    document.querySelectorAll('.chart-lazy[data-loaded=\"false\"]').forEach(container => {
+      // Create skeleton for each lazy chart
+      createSkeleton(container);
+      // Start observing
+      observer.observe(container);
+    });
+  }
+  ", 
+  if (lazy_load_tabs) {
+    "
+  // Tab-aware rendering: load charts when tab becomes visible
+  function initTabAwareLoading() {
+    document.querySelectorAll('.panel-tabset').forEach(tabset => {
+      const tabs = tabset.querySelectorAll('[role=\"tab\"]');
+      
+      tabs.forEach(tab => {
+        tab.addEventListener('click', function() {
+          setTimeout(() => {
+            const targetId = this.getAttribute('aria-controls');
+            if (!targetId) return;
+            
+            const targetPanel = document.getElementById(targetId);
+            if (!targetPanel) return;
+            
+            // Initialize any lazy charts in this tab
+            const lazyCharts = targetPanel.querySelectorAll('.chart-lazy[data-loaded=\"false\"]');
+            lazyCharts.forEach(chart => {
+              chartQueue.push(chart);
+              observer.unobserve(chart);
+            });
+            processQueue();
+          }, 50);
+        });
+      });
+    });
+  }
+  "
+  } else {
+    ""
+  },
+  "
+  // Start lazy loading when document is ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function() {
+      initLazyLoading();",
+      if (lazy_load_tabs) "
+      initTabAwareLoading();" else "",
+      "
+    });
+  } else {
+    initLazyLoading();",
+    if (lazy_load_tabs) "
+    initTabAwareLoading();" else "",
+    "
+  }
+})();
+</script>
+")
+  
+  c(
+    "",
+    "```{=html}",
+    skeleton_css,
+    "```",
+    ""
+  )
+}
+
 .generate_loading_overlay_chunk <- function(theme = "light", text = "Loading", duration_ms = 2200) {
   c(
     "",
     "```{r, echo=FALSE, message=FALSE, warning=FALSE, results='asis'}",
-    "library(htmltools)",
-    "",
-    "add_loading_overlay <- function(",
-    "  text,",
-    "  timeout_ms,",
-    "  theme = c(\"light\", \"glass\", \"dark\", \"accent\")",
-    ") {",
-    "  theme <- match.arg(theme)",
-    "  css <- switch(",
-    "    theme,",
-    "    light = \"",
-    "      #page-loading-overlay {",
-    "        position: fixed; inset: 0; z-index: 9999;",
-    "        display: flex; align-items: center; justify-content: center;",
-    "        background: rgba(255,255,255,0.98);",
-    "        backdrop-filter: blur(10px);",
-    "        transition: opacity .35s ease, visibility .35s ease;",
-    "      }",
-    "      #page-loading-overlay.hide { opacity: 0; visibility: hidden; }",
-    "      .plo-card {",
-    "        background: rgba(255,255,255,0.85);",
-    "        border: 1px solid rgba(0,0,0,0.03);",
-    "        border-radius: 18px;",
-    "        padding: 1rem 1.2rem .9rem 1.2rem;",
-    "        display: flex; flex-direction: column; gap: .5rem; align-items: center;",
-    "        box-shadow: 0 14px 38px rgba(15,23,42,0.05);",
-    "        min-width: 185px;",
-    "      }",
-    "      .plo-spinner {",
-    "        width: 38px; height: 38px; border-radius: 9999px;",
-    "        border: 3px solid rgba(148,163,184,0.32);",
-    "        border-top-color: rgba(15,23,42,0.9);",
-    "        animation: plo-spin 1s linear infinite;",
-    "      }",
-    "      @keyframes plo-spin { to { transform: rotate(360deg); } }",
-    "      .plo-title { font-size: .8rem; font-weight: 500; color: rgba(15,23,42,0.85); }",
-    "      .plo-sub { font-size: .68rem; color: rgba(15,23,42,0.4); }",
-    "    \",",
-    "    glass = \"",
-    "      #page-loading-overlay {",
-    "        position: fixed; inset: 0; z-index: 9999;",
-    "        display: flex; align-items: center; justify-content: center;",
-    "        background: rgba(255,255,255,0.45);",
-    "        backdrop-filter: blur(16px);",
-    "        transition: opacity .35s ease, visibility .35s ease;",
-    "      }",
-    "      #page-loading-overlay.hide { opacity: 0; visibility: hidden; }",
-    "      .plo-card {",
-    "        background: rgba(255,255,255,0.25);",
-    "        border: 1px solid rgba(255,255,255,0.55);",
-    "        border-radius: 20px;",
-    "        padding: 1.1rem 1.3rem 1rem 1.3rem;",
-    "        display: flex; flex-direction: column; gap: .5rem; align-items: center;",
-    "        box-shadow: 0 18px 45px rgba(15,23,42,0.08);",
-    "        min-width: 190px;",
-    "      }",
-    "      .plo-spinner {",
-    "        width: 40px; height: 40px;",
-    "        border-radius: 9999px;",
-    "        border: 3px solid rgba(255,255,255,0.4);",
-    "        border-top-color: rgba(15,23,42,0.75);",
-    "        animation: plo-spin 1s linear infinite;",
-    "      }",
-    "      @keyframes plo-spin { to { transform: rotate(360deg); } }",
-    "      .plo-title { font-size: .78rem; font-weight: 500; color: rgba(15,23,42,0.88); }",
-    "      .plo-sub { font-size: .65rem; color: rgba(15,23,42,0.5); }",
-    "    \",",
-    "    dark = \"",
-    "      #page-loading-overlay {",
-    "        position: fixed; inset: 0; z-index: 9999;",
-    "        display: flex; align-items: center; justify-content: center;",
-    "        background: radial-gradient(circle at top, #0f172a 0%, #020617 45%, #000 100%);",
-    "        backdrop-filter: blur(10px);",
-    "        transition: opacity .35s ease, visibility .35s ease;",
-    "      }",
-    "      #page-loading-overlay.hide { opacity: 0; visibility: hidden; }",
-    "      .plo-card {",
-    "        background: rgba(15,23,42,0.2);",
-    "        border: 1px solid rgba(255,255,255,0.06);",
-    "        border-radius: 18px;",
-    "        padding: 1rem 1.1rem .85rem 1.1rem;",
-    "        display: flex; flex-direction: column; gap: .45rem; align-items: center;",
-    "        box-shadow: 0 18px 45px rgba(0,0,0,0.3);",
-    "        min-width: 180px;",
-    "      }",
-    "      .plo-spinner {",
-    "        width: 36px; height: 36px;",
-    "        border-radius: 9999px;",
-    "        border: 3px solid rgba(15,23,42,0.45);",
-    "        border-top-color: rgba(255,255,255,0.85);",
-    "        animation: plo-spin 1s linear infinite;",
-    "      }",
-    "      @keyframes plo-spin { to { transform: rotate(360deg); } }",
-    "      .plo-title { font-size: .78rem; font-weight: 500; color: #fff; }",
-    "      .plo-sub { font-size: .64rem; color: rgba(255,255,255,0.4); }",
-    "    \",",
-    "    accent = \"",
-    "      #page-loading-overlay {",
-    "        position: fixed; inset: 0; z-index: 9999;",
-    "        display: flex; align-items: center; justify-content: center;",
-    "        background: radial-gradient(circle, rgba(255,255,255,0.98) 0%, rgba(245,248,255,0.95) 60%);",
-    "        backdrop-filter: blur(10px);",
-    "        transition: opacity .35s ease, visibility .35s ease;",
-    "      }",
-    "      #page-loading-overlay.hide { opacity: 0; visibility: hidden; }",
-    "      .plo-card {",
-    "        background: #fff;",
-    "        border: 1px solid rgba(59,130,246,0.12);",
-    "        border-radius: 16px;",
-    "        padding: .95rem 1.25rem .75rem 1.25rem;",
-    "        display: flex; flex-direction: column; gap: .45rem; align-items: center;",
-    "        box-shadow: 0 14px 30px rgba(59,130,246,0.12);",
-    "        min-width: 180px;",
-    "      }",
-    "      .plo-spinner {",
-    "        width: 34px; height: 34px;",
-    "        border-radius: 9999px;",
-    "        border: 3px solid rgba(59,130,246,0.15);",
-    "        border-top-color: rgba(59,130,246,0.9);",
-    "        animation: plo-spin .85s linear infinite;",
-    "      }",
-    "      @keyframes plo-spin { to { transform: rotate(360deg); } }",
-    "      .plo-title { font-size: .78rem; font-weight: 500; color: rgba(15,23,42,0.88); }",
-    "      .plo-sub { font-size: .64rem; color: rgba(15,23,42,0.35); }",
-    "    \"",
-    "  )",
-    "  tags$div(",
-    "    tags$style(HTML(css)),",
-    "    tags$div(",
-    "      id = \"page-loading-overlay\",",
-    "      tags$div(",
-    "        class = \"plo-card\",",
-    "        tags$div(class = \"plo-spinner\"),",
-    "        tags$div(class = \"plo-title\", text)",
-    "      )",
-    "    ),",
-    "    tags$script(HTML(sprintf(\"",
-    "      window.addEventListener('load', function() {",
-    "        setTimeout(function() {",
-    "          var el = document.getElementById('page-loading-overlay');",
-    "          if (el) el.classList.add('hide');",
-    "        }, %d);",
-    "      });",
-    "    \", timeout_ms)))",
-    "  )",
-    "}",
-    "",
-    paste0("add_loading_overlay(\"", text, "\", ", duration_ms, ", theme = \"", theme, "\")"),
+    "# Use dashboardr's loading overlay function",
+    paste0("dashboardr::add_loading_overlay(\"", text, "\", ", duration_ms, ", theme = \"", theme, "\")"),
     "```",
     ""
   )
@@ -1126,4 +1283,5 @@
 #' @param proj A dashboard_project object
 #' @param output_dir Path to the output directory
 #' @return Invisible NULL
+
 

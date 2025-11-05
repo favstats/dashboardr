@@ -22,7 +22,12 @@ add_page(
   overlay = FALSE,
   overlay_theme = c("light", "glass", "dark", "accent"),
   overlay_text = "Loading",
-  overlay_duration = 2200
+  overlay_duration = 2200,
+  lazy_load_charts = NULL,
+  lazy_load_margin = NULL,
+  lazy_load_tabs = NULL,
+  lazy_debug = NULL,
+  pagination_separator = NULL
 )
 }
 \arguments{

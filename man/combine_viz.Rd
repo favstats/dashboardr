@@ -13,7 +13,9 @@ combine_viz(...)
 A combined viz_collection
 }
 \description{
-Alternative function to combine viz_collection objects.
+This function has been superseded by \code{\link[=combine_content]{combine_content()}}. It still works
+but we recommend using \code{combine_content()} for new code as it handles
+all content types and attributes more reliably.
 }
 \examples{
 \dontrun{

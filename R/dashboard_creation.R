@@ -51,6 +51,11 @@
 #' @param warn_before_overwrite Warn before overwriting existing files (default TRUE)
 #' @param sidebar_groups List of sidebar groups for hybrid navigation (optional)
 #' @param navbar_sections List of navbar sections that link to sidebar groups (optional)
+#' @param lazy_load_charts Enable lazy loading for charts (default: FALSE). When TRUE, charts only render when they scroll into view, dramatically improving initial page load time for pages with many visualizations.
+#' @param lazy_load_margin Distance from viewport to start loading charts (default: "200px"). Larger values mean charts start loading earlier.
+#' @param lazy_load_tabs Only render charts in the active tab (default: TRUE when lazy_load_charts is TRUE). Charts in hidden tabs load when the tab is clicked.
+#' @param lazy_debug Enable debug logging to browser console for lazy loading (default: FALSE). When TRUE, prints timing information for each chart load.
+#' @param pagination_separator Text to show in pagination navigation (e.g., "of" → "1 of 3"), default: "of". Applies to all paginated pages unless overridden at page level.
 #' @return A dashboard_project object
 #' @export
 #' @examples
@@ -74,6 +79,15 @@
 #'   google_analytics = "GA-XXXXXXXXX",
 #'   value_boxes = TRUE,
 #'   shiny = TRUE
+#' )
+#' 
+#' # Dashboard with lazy loading for better performance
+#' dashboard <- create_dashboard(
+#'   "fast_dashboard",
+#'   "High Performance Dashboard",
+#'   lazy_load_charts = TRUE,
+#'   lazy_load_margin = "300px",
+#'   lazy_load_tabs = TRUE
 #' )
 #' }
 create_dashboard <- function(output_dir = "site",
@@ -134,9 +148,19 @@ create_dashboard <- function(output_dir = "site",
                              allow_inside_pkg = FALSE,
                              warn_before_overwrite = TRUE,
                              sidebar_groups = NULL,
-                             navbar_sections = NULL) {
+                             navbar_sections = NULL,
+                             lazy_load_charts = FALSE,
+                             lazy_load_margin = "200px",
+                             lazy_load_tabs = NULL,
+                             lazy_debug = FALSE,
+                             pagination_separator = "of") {
 
   output_dir <- .resolve_output_dir(output_dir, allow_inside_pkg)
+
+  # Default lazy_load_tabs to TRUE if lazy_load_charts is enabled
+  if (is.null(lazy_load_tabs)) {
+    lazy_load_tabs <- lazy_load_charts
+  }
 
   # Validate tabset_theme
   valid_themes <- c("modern", "minimal", "pills", "classic", "underline", "segmented", "none")
@@ -230,6 +254,11 @@ create_dashboard <- function(output_dir = "site",
     warn_before_overwrite = warn_before_overwrite,
     sidebar_groups = sidebar_groups,
     navbar_sections = navbar_sections,
+    lazy_load_charts = lazy_load_charts,
+    lazy_load_margin = lazy_load_margin,
+    lazy_load_tabs = lazy_load_tabs,
+    lazy_debug = lazy_debug,
+    pagination_separator = pagination_separator,
     pages = list(),
     data_files = NULL
   ), class = "dashboard_project")
@@ -298,6 +327,7 @@ create_dashboard <- function(output_dir = "site",
 #' @param template Optional custom template file path
 #' @param params Parameters for template substitution
 #' @param visualizations viz_collection or list of visualization specs
+#' @param content Alternative to visualizations - supports content_collection or viz_collection
 #' @param text Optional markdown text content for the page
 #' @param icon Optional iconify icon shortcode (e.g., "ph:users-three")
 #' @param is_landing_page Whether this should be the landing page (default: FALSE)
@@ -308,6 +338,11 @@ create_dashboard <- function(output_dir = "site",
 #' @param overlay_theme Theme for loading overlay: "light", "glass", "dark", or "accent" (default: "light")
 #' @param overlay_text Text to display in loading overlay (default: "Loading")
 #' @param overlay_duration Duration in milliseconds for how long overlay stays visible (default: 2200)
+#' @param lazy_load_charts Override dashboard-level lazy loading setting for this page (default: NULL = inherit from dashboard)
+#' @param lazy_load_margin Override viewport margin for lazy loading on this page (default: NULL = inherit from dashboard)
+#' @param lazy_load_tabs Override tab-aware lazy loading for this page (default: NULL = inherit from dashboard)
+#' @param lazy_debug Override debug mode for lazy loading on this page (default: NULL = inherit from dashboard)
+#' @param pagination_separator Text to show in pagination navigation (e.g., "of" → "1 of 3"), default: NULL = inherit from dashboard
 #' @return The updated dashboard_project object
 #' @export
 #' @examples
@@ -338,7 +373,12 @@ add_dashboard_page <- function(proj, name, data = NULL, data_path = NULL,
                                overlay = FALSE,
                                overlay_theme = c("light", "glass", "dark", "accent"),
                                overlay_text = "Loading",
-                               overlay_duration = 2200) {
+                               overlay_duration = 2200,
+                               lazy_load_charts = NULL,
+                               lazy_load_margin = NULL,
+                               lazy_load_tabs = NULL,
+                               lazy_debug = NULL,
+                               pagination_separator = NULL) {
   if (!inherits(proj, "dashboard_project")) {
     stop("proj must be a dashboard_project object")
   }
@@ -355,8 +395,8 @@ add_dashboard_page <- function(proj, name, data = NULL, data_path = NULL,
       content_list <- list()
       
       for (item in content$items) {
-        if (!is.null(item$type) && item$type == "viz") {
-          # This is a viz item
+        if (!is.null(item$type) && (item$type == "viz" || item$type == "pagination")) {
+          # This is a viz item OR pagination marker - both go to viz_specs
           viz_specs <- c(viz_specs, list(item))
         } else if (inherits(item, "content_block")) {
           # This is other content (text, image, etc)
@@ -392,8 +432,8 @@ add_dashboard_page <- function(proj, name, data = NULL, data_path = NULL,
         if (inherits(item, "content_collection")) {
           # Process content_collection - extract viz and content separately
           for (sub_item in item$items) {
-            if (!is.null(sub_item$type) && sub_item$type == "viz") {
-              # Add to viz_list
+            if (!is.null(sub_item$type) && (sub_item$type == "viz" || sub_item$type == "pagination")) {
+              # Add viz items AND pagination markers to viz_list
               if (is.null(viz_list)) {
                 viz_list <- create_viz()
                 viz_list$items <- list(sub_item)
@@ -581,7 +621,12 @@ add_dashboard_page <- function(proj, name, data = NULL, data_path = NULL,
     overlay = overlay,
     overlay_theme = if(overlay) overlay_theme else NULL,
     overlay_text = if(overlay) overlay_text else NULL,
-    overlay_duration = if(overlay) overlay_duration else NULL
+    overlay_duration = if(overlay) overlay_duration else NULL,
+    lazy_load_charts = lazy_load_charts %||% proj$lazy_load_charts,
+    lazy_load_margin = lazy_load_margin %||% proj$lazy_load_margin,
+    lazy_load_tabs = lazy_load_tabs %||% proj$lazy_load_tabs,
+    lazy_debug = lazy_debug %||% proj$lazy_debug,
+    pagination_separator = pagination_separator %||% proj$pagination_separator %||% "of"
   )
 
   proj$pages[[name]] <- page

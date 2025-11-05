@@ -15,3 +15,7 @@ dashboard_template
 ^single_dashboard$
 ^docs$
 ^\.quarto$
+^tests/testthat/.*/.quarto$
+^tests/testthat/.*/docs$
+^tests/testthat/test_.*$
+^tests/testthat/test[0-9]+$

@@ -81,7 +81,6 @@ test_that("set_tabgroup_labels generates correct YAML", {
   expect_true(grepl("Data Analysis", qmd_content))
   expect_true(grepl("Deep Dive", qmd_content))
   
-  unlink(dashboard$output_dir, recursive = TRUE)
 })
 
 test_that("set_tabgroup_labels overrides default labels", {
@@ -274,7 +273,6 @@ test_that("set_tabgroup_labels with nested structure", {
   expect_true(grepl("Level Three", qmd_content))
   expect_true(grepl("Item One", qmd_content))
   
-  unlink(dashboard$output_dir, recursive = TRUE)
 })
 
 test_that("set_tabgroup_labels with add_vizzes", {

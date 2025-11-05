@@ -16,7 +16,6 @@ test_that("default theme is applied", {
   # Should have default theme (modern)
   expect_true(grepl("_tabset_modern.scss", yaml_content))
   
-  unlink(dashboard$output_dir, recursive = TRUE)
 })
 
 test_that("modern theme generates correct SCSS file", {
@@ -35,7 +34,6 @@ test_that("modern theme generates correct SCSS file", {
   scss_content <- paste(readLines(scss_file, warn = FALSE), collapse = "\n")
   expect_true(grepl("panel-tabset", scss_content))
   
-  unlink(dashboard$output_dir, recursive = TRUE)
 })
 
 test_that("minimal theme generates correct SCSS file", {
@@ -55,7 +53,6 @@ test_that("minimal theme generates correct SCSS file", {
   yaml_content <- paste(readLines(yaml_file, warn = FALSE), collapse = "\n")
   expect_true(grepl("_tabset_minimal.scss", yaml_content))
   
-  unlink(dashboard$output_dir, recursive = TRUE)
 })
 
 test_that("pills theme generates correct SCSS file", {
@@ -71,7 +68,6 @@ test_that("pills theme generates correct SCSS file", {
   scss_file <- file.path(dashboard$output_dir, "_tabset_pills.scss")
   expect_true(file.exists(scss_file))
   
-  unlink(dashboard$output_dir, recursive = TRUE)
 })
 
 test_that("classic theme generates correct SCSS file", {
@@ -87,7 +83,6 @@ test_that("classic theme generates correct SCSS file", {
   scss_file <- file.path(dashboard$output_dir, "_tabset_classic.scss")
   expect_true(file.exists(scss_file))
   
-  unlink(dashboard$output_dir, recursive = TRUE)
 })
 
 test_that("underline theme generates correct SCSS file", {
@@ -103,7 +98,6 @@ test_that("underline theme generates correct SCSS file", {
   scss_file <- file.path(dashboard$output_dir, "_tabset_underline.scss")
   expect_true(file.exists(scss_file))
   
-  unlink(dashboard$output_dir, recursive = TRUE)
 })
 
 test_that("segmented theme generates correct SCSS file", {
@@ -119,7 +113,6 @@ test_that("segmented theme generates correct SCSS file", {
   scss_file <- file.path(dashboard$output_dir, "_tabset_segmented.scss")
   expect_true(file.exists(scss_file))
   
-  unlink(dashboard$output_dir, recursive = TRUE)
 })
 
 test_that("none theme does not generate SCSS file", {
@@ -136,7 +129,6 @@ test_that("none theme does not generate SCSS file", {
   scss_files <- list.files(dashboard$output_dir, pattern = "_tabset_.*\\.scss")
   expect_length(scss_files, 0)
   
-  unlink(dashboard$output_dir, recursive = TRUE)
 })
 
 test_that("invalid theme causes error", {
@@ -166,7 +158,6 @@ test_that("custom colors are applied", {
     add_page("Home", text = "Test", is_landing_page = TRUE)
   
   generate_dashboard(dashboard, render = FALSE)
-  unlink(dashboard$output_dir, recursive = TRUE)
 })
 
 test_that("invalid tabset_colors structure causes error", {
@@ -196,7 +187,6 @@ test_that("per-page theme overrides dashboard theme", {
   # Page should use pills theme
   expect_equal(dashboard$pages$Home$tabset_theme, "pills")
   
-  unlink(dashboard$output_dir, recursive = TRUE)
 })
 
 test_that("per-page custom colors override dashboard colors", {
@@ -216,7 +206,6 @@ test_that("per-page custom colors override dashboard colors", {
   # Page should have its own colors
   expect_equal(dashboard$pages$Home$tabset_colors$active_bg, "#FF0000")
   
-  unlink(dashboard$output_dir, recursive = TRUE)
 })
 
 test_that("custom SCSS file can be provided", {
@@ -233,7 +222,6 @@ test_that("custom SCSS file can be provided", {
     add_page("Home", text = "Test", is_landing_page = TRUE)
   
   generate_dashboard(dashboard, render = FALSE)
-  unlink(dashboard$output_dir, recursive = TRUE)
   unlink(custom_scss)
 })
 
@@ -259,7 +247,6 @@ test_that("theme works with visualizations", {
   scss_file <- file.path(dashboard$output_dir, "_tabset_pills.scss")
   expect_true(file.exists(scss_file))
   
-  unlink(dashboard$output_dir, recursive = TRUE)
 })
 
 test_that("all themes remove borders as expected", {
@@ -283,7 +270,6 @@ test_that("all themes remove borders as expected", {
                 grepl("border:.*0", scss_content, ignore.case = TRUE),
                 info = paste("Theme", theme, "should remove borders"))
     
-    unlink(dashboard$output_dir, recursive = TRUE)
   }
 })
 
@@ -302,7 +288,6 @@ test_that("theme persistence across pages", {
   expect_equal(dashboard$pages$Analysis$tabset_theme, "modern")
   expect_equal(dashboard$pages$About$tabset_theme, "modern")
   
-  unlink(dashboard$output_dir, recursive = TRUE)
 })
 
 test_that("warning for unknown custom color keys", {

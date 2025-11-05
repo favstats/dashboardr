@@ -290,12 +290,20 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
         if (!is.null(page$visualizations)) {
           content <- .process_viz_specs(content, page$visualizations)
         }
+        writeLines(content, page_file)
       } else {
-        # Default page generation
-        content <- .generate_default_page_content(page)
+        # Default page generation - check for pagination
+        has_pagination <- .has_pagination_markers(page)
+        
+        if (has_pagination) {
+          # Generate multiple QMD files for paginated page
+          .generate_paginated_page_files(page, page_name, page_file, output_dir, proj$theme)
+        } else {
+          # Single page generation
+          content <- .generate_default_page_content(page)
+          writeLines(content, page_file)
+        }
       }
-
-      writeLines(content, page_file)
       
       # Store hash in new manifest
       new_manifest$pages[[page_name]] <- list(hash = .compute_hash(page))
@@ -432,7 +440,7 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
       } else {
         .progress_section("🎨 Rendering Dashboard", show_progress)
         render_start <- Sys.time()
-        render_success <- .render_dashboard(output_dir, open, quiet, show_progress)
+        render_success <- .render_dashboard(output_dir, open, quiet, show_progress, proj$publish_dir)
         render_elapsed <- as.numeric(difftime(Sys.time(), render_start, units = "secs"))
         
         if (render_success) {
@@ -453,7 +461,14 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
     # Open browser if rendering was skipped but user requested it
     if (render_was_skipped && open == "browser") {
       output_dir_abs <- normalizePath(output_dir, mustWork = FALSE)
-      index_file <- file.path(output_dir_abs, "docs", "index.html")
+      publish_dir <- proj$publish_dir %||% "docs"
+      # Resolve publish_dir relative to output_dir if it's a relative path
+      if (!grepl("^(/|[A-Za-z]:)", publish_dir)) {
+        publish_dir_abs <- normalizePath(file.path(output_dir_abs, publish_dir), mustWork = FALSE)
+      } else {
+        publish_dir_abs <- normalizePath(publish_dir, mustWork = FALSE)
+      }
+      index_file <- file.path(publish_dir_abs, "index.html")
       if (file.exists(index_file)) {
         if (!quiet) message("Opening existing dashboard in browser...")
         utils::browseURL(index_file)
@@ -476,14 +491,15 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
     stop("Failed to generate dashboard: ", e$message)
   })
 
-  # Return project with build info
+  # Return project with build info and output directory
   result <- proj
   result$build_info <- build_info
+  result$output_dir <- output_dir
   invisible(result)
 }
 
 
-.render_dashboard <- function(output_dir, open = FALSE, quiet = FALSE, show_progress = TRUE) {
+.render_dashboard <- function(output_dir, open = FALSE, quiet = FALSE, show_progress = TRUE, publish_dir = NULL) {
   if (!requireNamespace("quarto", quietly = TRUE)) {
     if (!quiet) {
       message("quarto package not available. Skipping render.")
@@ -492,11 +508,23 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
     return(FALSE)
   }
 
-  # Create docs folder even if rendering fails
-  docs_dir <- file.path(output_dir, "docs")
-  if (!dir.exists(docs_dir)) {
-    dir.create(docs_dir, recursive = TRUE)
-    if (!quiet) message("Created docs folder.")
+  # Use provided publish_dir or default to "docs"
+  publish_dir <- publish_dir %||% "docs"
+  
+  # Resolve publish_dir relative to output_dir if it's a relative path
+  output_dir_abs <- normalizePath(output_dir, mustWork = FALSE)
+  if (!grepl("^(/|[A-Za-z]:)", publish_dir)) {
+    # Relative path - resolve relative to output_dir
+    publish_dir_abs <- normalizePath(file.path(output_dir_abs, publish_dir), mustWork = FALSE)
+  } else {
+    # Absolute path - use as is
+    publish_dir_abs <- normalizePath(publish_dir, mustWork = FALSE)
+  }
+  
+  # Create publish folder even if rendering fails
+  if (!dir.exists(publish_dir_abs)) {
+    dir.create(publish_dir_abs, recursive = TRUE)
+    if (!quiet) message("Created publish folder: ", publish_dir)
   }
 
   owd <- setwd(normalizePath(output_dir))
@@ -532,28 +560,26 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
 
     # Open in browser if requested and render succeeded
     if (open == "browser") {
-      # Normalize output_dir to absolute path to handle relative paths like "../docs"
-      output_dir_abs <- normalizePath(output_dir, mustWork = FALSE)
-      index_file <- file.path(output_dir_abs, "docs", "index.html")
+      # Use the resolved publish_dir_abs from earlier
+      index_file <- file.path(publish_dir_abs, "index.html")
       
       if (file.exists(index_file)) {
         if (!quiet) message("Opening dashboard in browser...")
         utils::browseURL(index_file)
       } else {
-        # Check what files exist in docs/ for helpful error message
-        docs_dir <- file.path(output_dir_abs, "docs")
-        if (dir.exists(docs_dir)) {
-          docs_files <- list.files(docs_dir, pattern = "\\.html$", full.names = FALSE)
+        # Check what files exist in publish_dir for helpful error message
+        if (dir.exists(publish_dir_abs)) {
+          html_files <- list.files(publish_dir_abs, pattern = "\\.html$", full.names = FALSE)
         } else {
-          docs_files <- character(0)
+          html_files <- character(0)
         }
         
         if (!quiet) {
           warning(
             "Could not find index.html to open in browser\n",
             "  Expected: ", index_file, "\n",
-            "  docs/ exists: ", dir.exists(docs_dir), "\n",
-            "  HTML files in docs/: ", if (length(docs_files) > 0) paste(docs_files, collapse = ", ") else "(none)", "\n",
+            "  publish_dir (", publish_dir, ") exists: ", dir.exists(publish_dir_abs), "\n",
+            "  HTML files in publish_dir: ", if (length(html_files) > 0) paste(html_files, collapse = ", ") else "(none)", "\n",
             "\n",
             "  Possible reasons:\n",
             "  1. Rendering failed (check error messages above)\n",
@@ -562,7 +588,7 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
             "\n",
             "  Try:\n",
             "  • Check for errors in Quarto output above\n",
-            "  • Look in: ", docs_dir
+            "  • Look in: ", publish_dir_abs
           )
         }
       }
@@ -796,6 +822,87 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
   cat(paste(rep("═", 50), collapse = ""), "\n")
   cat("\n")
 
+  invisible(NULL)
+}
+
+# ===================================================================
+# Pagination Helper Functions
+# ===================================================================
+
+#' Check if page has pagination markers
+#'
+#' Internal function to detect if a page contains pagination markers
+#'
+#' @param page Page object
+#' @return Logical indicating if page has pagination
+#' @keywords internal
+.has_pagination_markers <- function(page) {
+  if (is.null(page$visualizations) || length(page$visualizations) == 0) {
+    return(FALSE)
+  }
+  
+  any(sapply(page$visualizations, function(x) {
+    !is.null(x$pagination_break) && isTRUE(x$pagination_break)
+  }))
+}
+
+#' Generate multiple QMD files for a paginated page
+#'
+#' Internal function that splits a paginated page into multiple QMD files
+#' and writes them with appropriate navigation controls.
+#'
+#' @param page Page object
+#' @param page_name Name of the page
+#' @param base_page_file Path to the main page file (e.g., "analysis.qmd")
+#' @param output_dir Output directory
+#' @param theme Quarto theme name
+#' @return Invisible NULL
+#' @keywords internal
+.generate_paginated_page_files <- function(page, page_name, base_page_file, output_dir, theme) {
+  # Split visualizations by pagination markers
+  sections <- .split_by_pagination(page$visualizations)
+  
+  if (length(sections) == 0) {
+    stop("Page marked for pagination but no sections found")
+  }
+  
+  # Get base name for files (without .qmd extension)
+  base_name <- sub("\\.qmd$", "", basename(base_page_file))
+  
+  # Generate each page
+  for (i in seq_along(sections)) {
+    section <- sections[[i]]
+    
+    # Determine file name
+    page_file <- if (i == 1) {
+      base_page_file  # First section uses main page name
+    } else {
+      file.path(output_dir, paste0(base_name, "_p", i, ".qmd"))
+    }
+    
+    # Create modified page object for this section
+    section_page <- page
+    section_page$visualizations <- section$items  # Only include this section's visualizations
+    
+    # Generate base content
+    content <- .generate_default_page_content(section_page)
+    
+    # Add pagination navigation at the end
+    nav_content <- .generate_pagination_nav(
+      page_num = i,
+      total_pages = length(sections),
+      base_name = base_name,
+      theme = theme,
+      separator_text = page$pagination_separator %||% "of"
+    )
+    
+    # Combine content with navigation
+    full_content <- c(content, "", nav_content)
+    
+    # Write file
+    writeLines(full_content, page_file)
+  }
+  
   invisible(NULL)
 }
 

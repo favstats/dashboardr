@@ -43,6 +43,25 @@
     }
   }
 
+  # IMPORTANT: Extract pagination markers BEFORE processing hierarchy
+  # They need to preserve their original sequential position
+  pagination_positions <- list()  # Store position and marker for each pagination
+  viz_only_list <- list()  # Visualizations without pagination markers
+  
+  for (i in seq_along(viz_list)) {
+    viz <- viz_list[[i]]
+    if (!is.null(viz$type) && viz$type == "pagination") {
+      # Store pagination marker with its original position
+      pagination_positions[[length(pagination_positions) + 1]] <- list(
+        position = i,
+        marker = viz
+      )
+    } else {
+      # Regular viz - add to processing list
+      viz_only_list <- c(viz_only_list, list(viz))
+    }
+  }
+  
   # SMART APPROACH: Only use filter grouping when needed
   # Detect if we have multiple parent tabs with same root but different filters
   
@@ -50,7 +69,7 @@
   root_parents <- list()  # Track parent tabs by root name
   root_nested <- list()   # Track nested tabs by root name
   
-  for (viz in viz_list) {
+  for (viz in viz_only_list) {
     if (!is.null(viz$tabgroup) && length(viz$tabgroup) > 0) {
       root_name <- viz$tabgroup[1]
       
@@ -116,7 +135,7 @@
     # Group by root+filter for roots that need it
     root_groups <- list()
     
-    for (viz in viz_list) {
+    for (viz in viz_only_list) {
       if (is.null(viz$tabgroup)) {
         # No tabgroup - add to root level
         tree$visualizations <- c(tree$visualizations, list(viz))
@@ -183,20 +202,110 @@
     # Merge standard result with filter-grouped results
     filter_result <- .merge_filtered_trees(filter_grouped_trees, tabgroup_labels)
     result <- c(standard_result, filter_result)
+    
+    # IMPORTANT: Sort combined results by minimum insertion index to preserve sequential order
+    # This ensures items appear in the order they were added, not grouped by filter vs non-filter
+    if (length(result) > 0) {
+      result_min_indices <- sapply(result, function(item) {
+        indices <- .extract_all_insertion_indices(item)
+        if (length(indices) > 0) min(indices, na.rm = TRUE) else Inf
+      })
+      result <- result[order(result_min_indices)]
+    }
   } else {
     # Standard approach - no filter grouping needed
     tree <- list(visualizations = list(), children = list())
     
-    for (viz in viz_list) {
+    for (viz in viz_only_list) {
       tree <- .insert_into_hierarchy(tree, viz$tabgroup, viz)
     }
     
     result <- .tree_to_viz_list(tree, tabgroup_labels)
   }
   
+  # IMPORTANT: Re-insert pagination markers at their original sequential positions
+  # Use insertion indices to determine correct position in transformed result
+  if (length(pagination_positions) > 0) {
+    for (pag_info in pagination_positions) {
+      marker <- pag_info$marker
+      
+      # Get the pagination marker's insertion index (set by combine_content)
+      pag_insertion_idx <- marker$.insertion_index
+      
+      if (is.null(pag_insertion_idx)) {
+        # Fallback: use position if no insertion index
+        # (shouldn't happen but be defensive)
+        warning("Pagination marker missing .insertion_index, using position as fallback")
+        pag_insertion_idx <- pag_info$position
+      }
+      
+      # Find where to insert this pagination marker based on insertion indices
+      # It should go AFTER all items whose max insertion index is < pagination's index
+      insert_after_idx <- 0
+      
+      for (i in seq_along(result)) {
+        result_item <- result[[i]]
+        
+        # Get all insertion indices from this result item (could be tabgroup with nested items)
+        item_indices <- .extract_all_insertion_indices(result_item)
+        
+        if (length(item_indices) > 0) {
+          max_item_index <- max(item_indices, na.rm = TRUE)
+          # If this result item contains visualizations with indices < pagination index,
+          # the pagination should go after this result item
+          if (max_item_index < pag_insertion_idx) {
+            insert_after_idx <- i
+          }
+        }
+      }
+      
+      # Insert pagination marker at the determined position
+      if (insert_after_idx == 0) {
+        # Insert at the beginning
+        result <- c(list(marker), result)
+      } else if (insert_after_idx >= length(result)) {
+        # Insert at the end
+        result <- c(result, list(marker))
+      } else {
+        # Insert in the middle
+        result <- append(result, list(marker), after = insert_after_idx)
+      }
+    }
+  }
+  
   result
 }
 
+#' Extract all insertion indices from a viz item (including nested items)
+#' @param item A viz item, which could be a tabgroup with nested visualizations
+#' @return Vector of all insertion indices found in this item and its children
+#' @keywords internal
+.extract_all_insertion_indices <- function(item) {
+  indices <- c()
+  
+  # Get this item's insertion index if it exists
+  if (!is.null(item$.insertion_index)) {
+    indices <- c(indices, item$.insertion_index)
+  }
+  
+  # Recursively get indices from nested visualizations (tabgroups use 'visualizations' field)
+  if (!is.null(item$visualizations) && length(item$visualizations) > 0) {
+    for (child in item$visualizations) {
+      child_indices <- .extract_all_insertion_indices(child)
+      indices <- c(indices, child_indices)
+    }
+  }
+  
+  # Also check nested_children for backwards compatibility
+  if (!is.null(item$nested_children) && length(item$nested_children) > 0) {
+    for (child in item$nested_children) {
+      child_indices <- .extract_all_insertion_indices(child)
+      indices <- c(indices, child_indices)
+    }
+  }
+  
+  indices
+}
 
 
 

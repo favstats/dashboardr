@@ -20,7 +20,6 @@ test_that("named list of datasets is detected", {
   expect_type(dashboard$pages$Analysis$data_path, "list")
   expect_length(dashboard$pages$Analysis$data_path, 2)
   
-  unlink(dashboard$output_dir, recursive = TRUE)
 })
 
 test_that("single dataset is not treated as multi-dataset", {
@@ -40,7 +39,6 @@ test_that("single dataset is not treated as multi-dataset", {
   expect_false(dashboard$pages$Analysis$is_multi_dataset %||% FALSE)
   expect_type(dashboard$pages$Analysis$data_path, "character")
   
-  unlink(dashboard$output_dir, recursive = TRUE)
 })
 
 test_that("viz can specify which dataset to use", {
@@ -81,7 +79,6 @@ test_that("multi-dataset generates correct setup code", {
   expect_true(grepl("data2", qmd_content))
   expect_true(grepl("readRDS", qmd_content))
   
-  unlink(dashboard$output_dir, recursive = TRUE)
 })
 
 test_that("multi-dataset with filters", {
@@ -124,7 +121,6 @@ test_that("multi-dataset with filters", {
   expect_true(grepl("category == \"A\"", qmd_content))
   expect_true(grepl("category == \"B\"", qmd_content))
   
-  unlink(dashboard$output_dir, recursive = TRUE)
 })
 
 test_that("dataset deduplication works", {
@@ -151,7 +147,6 @@ test_that("dataset deduplication works", {
   rds_files <- list.files(dashboard$output_dir, pattern = "\\.rds$", recursive = TRUE)
   expect_length(rds_files, 1)
   
-  unlink(dashboard$output_dir, recursive = TRUE)
 })
 
 test_that("multi-dataset saves files with correct names", {
@@ -178,7 +173,6 @@ test_that("multi-dataset saves files with correct names", {
   expect_true(any(grepl("customer_data", rds_files)))
   expect_true(any(grepl("product_data", rds_files)))
   
-  unlink(dashboard$output_dir, recursive = TRUE)
 })
 
 test_that("missing dataset name in viz causes error or warning", {
@@ -202,7 +196,6 @@ test_that("missing dataset name in viz causes error or warning", {
   # (Implementation detail - just ensure it doesn't crash silently)
   expect_no_error(generate_dashboard(dashboard, render = FALSE))
   
-  unlink(dashboard$output_dir, recursive = TRUE)
 })
 
 test_that("viz without data parameter uses default dataset", {
@@ -231,7 +224,6 @@ test_that("viz without data parameter uses default dataset", {
   # Should use "data" as fallback (first dataset or explicitly named "data")
   expect_true(grepl("data", qmd_content))
   
-  unlink(dashboard$output_dir, recursive = TRUE)
 })
 
 test_that("multi-dataset works with different viz types", {
@@ -293,7 +285,6 @@ test_that("multi-dataset works with different viz types", {
   expect_true(grepl("create_timeline", qmd_content))
   expect_true(grepl("create_stackedbar", qmd_content))
   
-  unlink(dashboard$output_dir, recursive = TRUE)
 })
 
 test_that("multi-dataset with combine_viz preserves dataset references", {
@@ -334,6 +325,5 @@ test_that("multi-dataset summary output shows all datasets", {
   # Summary should mention data files
   expect_true(grepl("Data files|💾", output_text))
   
-  unlink(dashboard$output_dir, recursive = TRUE)
 })
 

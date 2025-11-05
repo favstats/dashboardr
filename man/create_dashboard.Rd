@@ -63,7 +63,12 @@ create_dashboard(
   allow_inside_pkg = FALSE,
   warn_before_overwrite = TRUE,
   sidebar_groups = NULL,
-  navbar_sections = NULL
+  navbar_sections = NULL,
+  lazy_load_charts = FALSE,
+  lazy_load_margin = "200px",
+  lazy_load_tabs = NULL,
+  lazy_debug = FALSE,
+  pagination_separator = "of"
 )
 }
 \arguments{
@@ -152,6 +157,16 @@ create_dashboard(
 \item{sidebar_groups}{List of sidebar groups for hybrid navigation (optional)}
 
 \item{navbar_sections}{List of navbar sections that link to sidebar groups (optional)}
+
+\item{lazy_load_charts}{Enable lazy loading for charts (default: FALSE). When TRUE, charts only render when they scroll into view, dramatically improving initial page load time for pages with many visualizations.}
+
+\item{lazy_load_margin}{Distance from viewport to start loading charts (default: "200px"). Larger values mean charts start loading earlier.}
+
+\item{lazy_load_tabs}{Only render charts in the active tab (default: TRUE when lazy_load_charts is TRUE). Charts in hidden tabs load when the tab is clicked.}
+
+\item{lazy_debug}{Enable debug logging to browser console for lazy loading (default: FALSE). When TRUE, prints timing information for each chart load.}
+
+\item{pagination_separator}{Text to show in pagination navigation (e.g., "of" → "1 of 3"), default: "of". Applies to all paginated pages unless overridden at page level.}
 }
 \value{
 A dashboard_project object
@@ -181,6 +196,15 @@ dashboard <- create_dashboard(
   google_analytics = "GA-XXXXXXXXX",
   value_boxes = TRUE,
   shiny = TRUE
+)
+
+# Dashboard with lazy loading for better performance
+dashboard <- create_dashboard(
+  "fast_dashboard",
+  "High Performance Dashboard",
+  lazy_load_charts = TRUE,
+  lazy_load_margin = "300px",
+  lazy_load_tabs = TRUE
 )
 }
 }
