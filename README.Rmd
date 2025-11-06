@@ -84,6 +84,28 @@ generate_dashboard(dashboard)
 
 This creates a complete Quarto dashboard with interactive visualizations!
 
+### The Six Layers in Detail
+
+Each layer has specific functions:
+
+**1. Data** - Pass to pages via `add_page(data = ..., weight_var = ..., filter = ...)`
+
+**2. Content** - Unified system  
+   Functions: `create_viz()`, `add_viz()`, `add_text()`, `add_image()`, `add_callout()`, `add_accordion()`, `add_card()`, `add_divider()`, `add_code()`, `add_spacer()`
+
+**3. Layout** - Organize content  
+   Functions: `add_pagination()`, `set_tabgroup_labels()`, `combine_viz()` (or `+`)
+
+**4. Navigation** - Move between pages  
+   Functions: `add_page()`, `navbar_menu()`, `sidebar_group()`
+
+**5. Styling** - Control appearance  
+   Functions: `apply_theme()`, `theme_ascor()`, `theme_academic()`, `theme_modern()`, `theme_clean()`  
+   (Styling can also be set via parameters in `create_dashboard()`, `add_page()`, `create_viz()`)
+
+**6. Assembly** - Generate output  
+   Functions: `create_dashboard()`, `add_page()`, `generate_dashboard()`, `md_text()`
+
 
 ## ✨ Features
 

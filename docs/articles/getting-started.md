@@ -32,9 +32,12 @@ A grammar provides:
 1.  **Data** - What you’re working with
 
     ``` r
-    data = survey_data
-    weight_var = "survey_weight"  # Optional weighting
-    filter = ~ wave == 1           # Filter subsets
+    # Pass data to pages
+    add_page("Analysis", 
+      data = survey_data,
+      weight_var = "survey_weight",  # Optional weighting
+      filter = ~ wave == 1            # Filter subsets
+    )
     ```
 
 2.  **Content** - Unified system for visualizations, text, images, and
@@ -47,52 +50,124 @@ A grammar provides:
       add_text("## Analysis Results", "", "Key findings from the data...") %>%
       add_callout("Important: Sample size is 1000 respondents", type = "note") %>%
       add_viz(x_var = "income", title = "Income", tabgroup = "overview") %>%
-      add_image("charts/trend.png", caption = "Quarterly trends")
+      add_image("charts/trend.png", caption = "Quarterly trends") %>%
+      add_accordion("Methodology", text = "Details about our approach...")
     ```
+
+    **Functions:**
+    [`create_viz()`](https://favstats.github.io/dashboardr/reference/create_viz.md),
+    [`add_viz()`](https://favstats.github.io/dashboardr/reference/add_viz.md),
+    [`add_text()`](https://favstats.github.io/dashboardr/reference/add_text.md),
+    [`add_image()`](https://favstats.github.io/dashboardr/reference/add_image.md),
+    [`add_callout()`](https://favstats.github.io/dashboardr/reference/add_callout.md),
+    [`add_accordion()`](https://favstats.github.io/dashboardr/reference/add_accordion.md),
+    [`add_card()`](https://favstats.github.io/dashboardr/reference/add_card.md),
+    [`add_divider()`](https://favstats.github.io/dashboardr/reference/add_divider.md),
+    [`add_code()`](https://favstats.github.io/dashboardr/reference/add_code.md),
+    [`add_spacer()`](https://favstats.github.io/dashboardr/reference/add_spacer.md)
 
 3.  **Layout** - How you organize content
 
     ``` r
     # Nested hierarchies with tabgroups
-    tabgroup = "analysis/demographics/age"  # Creates nested tabs
+    add_viz(x_var = "age", tabgroup = "analysis/demographics/age")  # Creates nested tabs
 
     # Pagination for large dashboards
     content %>% add_pagination()  # Splits into multiple pages
 
-    # Cards, accordions, and more
-    content %>% add_card("Summary", text = "...") %>% add_accordion("Details", text = "...")
+    # Custom tab labels with icons
+    content %>% set_tabgroup_labels(
+      overview = "{{< iconify ph:chart-bar-fill >}} Overview",
+      demographics = "{{< iconify ph:users-fill >}} Demographics"
+    )
     ```
+
+    **Functions:**
+    [`add_pagination()`](https://favstats.github.io/dashboardr/reference/add_pagination.md),
+    [`set_tabgroup_labels()`](https://favstats.github.io/dashboardr/reference/set_tabgroup_labels.md),
+    [`combine_viz()`](https://favstats.github.io/dashboardr/reference/combine_viz.md)
+    (or `+` operator)
 
 4.  **Navigation** - How users move between pages
 
     ``` r
     # Top navbar with pages
-    add_page("Home") %>% add_page("Analysis") %>% add_page("About", navbar_align = "right")
+    create_dashboard(...) %>%
+      add_page("Home", is_landing_page = TRUE) %>%
+      add_page("Analysis") %>%
+      add_page("About", navbar_align = "right")
 
     # Dropdown menus for related pages
-    navbar_menu("Reports", pages = c("Monthly", "Quarterly"), icon = "ph:file-text")
+    create_dashboard(...) %>%
+      navbar_menu("Reports", pages = c("Monthly", "Quarterly"), icon = "ph:file-text")
 
     # Sidebar navigation for many pages
-    sidebar_group(id = "analysis", pages = c("Overview", "Details", "Trends"))
+    create_dashboard(...) %>%
+      sidebar_group(id = "analysis", pages = c("Overview", "Details", "Trends"))
     ```
+
+    **Functions:**
+    [`add_page()`](https://favstats.github.io/dashboardr/reference/add_page.md),
+    [`navbar_menu()`](https://favstats.github.io/dashboardr/reference/navbar_menu.md),
+    [`sidebar_group()`](https://favstats.github.io/dashboardr/reference/sidebar_group.md)
 
 5.  **Styling** - How it looks
 
     ``` r
-    theme = "flatly"                    # 25+ Bootswatch themes
-    tabset_theme = "modern"             # 6 custom tab styles
-    icon = "ph:chart-line"              # 200,000+ Iconify icons
-    color_palette = c("#3498DB")        # Custom colors
+    # Apply complete themes (PRIMARY styling method)
+    dashboard <- create_dashboard("My Dashboard", "output") %>%
+      apply_theme(theme_academic(accent_color = "#8B0000")) %>%
+      add_page("Analysis", data = data, content = content)
+
+    # Available themes
+    apply_theme(theme_ascor())       # UvA/ASCoR branding (also: theme_uva())
+    apply_theme(theme_academic())    # Academic/research style
+    apply_theme(theme_modern())      # Modern tech style
+    apply_theme(theme_clean())       # Minimal clean style
+
+    # Override ANY theme parameter
+    dashboard %>% apply_theme(
+      theme_modern("purple"),
+      navbar_bg_color = "#8B0000",      # Custom navbar color
+      navbar_text_color = "#FFFFFF",    # Navbar text color
+      mainfont = "Inter",               # Font family
+      fontsize = "18px",                # Base font size
+      linkcolor = "#0066CC",            # Link color
+      max_width = "1400px"              # Page width
+    )
+    # Supports: navbar_bg_color, navbar_text_color, navbar_text_hover_color,
+    #           mainfont, fontsize, fontcolor, linkcolor, monofont,
+    #           monobackgroundcolor, linestretch, backgroundcolor, max_width,
+    #           margin_left, margin_right, margin_top, margin_bottom
+
+    # Styling can also be applied at:
+    # - Dashboard level: create_dashboard(theme = "flatly", tabset_theme = "modern")
+    # - Page level: add_page(icon = "ph:chart-line", overlay = TRUE)
+    # - Content level: create_viz(color_palette = c("#3498DB"), icon = "ph:chart-bar")
     ```
+
+    **Functions:**
+    [`apply_theme()`](https://favstats.github.io/dashboardr/reference/apply_theme.md),
+    [`theme_ascor()`](https://favstats.github.io/dashboardr/reference/theme_ascor.md),
+    [`theme_academic()`](https://favstats.github.io/dashboardr/reference/theme_academic.md),
+    [`theme_modern()`](https://favstats.github.io/dashboardr/reference/theme_modern.md),
+    [`theme_clean()`](https://favstats.github.io/dashboardr/reference/theme_clean.md)
 
 6.  **Assembly** - Putting it all together
 
     ``` r
-    # create_dashboard() + add_page() with content
-    create_dashboard(title = "My Dashboard", output_dir = "output") %>%
-      add_page("Analysis", data = survey_data, content = content)
-      # Note: 'content' and 'visualizations' parameters are interchangeable!
+    # The complete pipeline
+    dashboard <- create_dashboard(title = "My Dashboard", output_dir = "output") %>%
+      add_page("Home", text = md_text("# Welcome!"), is_landing_page = TRUE) %>%
+      add_page("Analysis", data = survey_data, content = content) %>%
+      generate_dashboard(render = TRUE, open = "browser")
     ```
+
+    **Functions:**
+    [`create_dashboard()`](https://favstats.github.io/dashboardr/reference/create_dashboard.md),
+    [`add_page()`](https://favstats.github.io/dashboardr/reference/add_page.md),
+    [`generate_dashboard()`](https://favstats.github.io/dashboardr/reference/generate_dashboard.md),
+    [`md_text()`](https://favstats.github.io/dashboardr/reference/md_text.md)
 
 By combining these through a **fluent piping interface** (`%>%`), you
 build complex dashboards from simple, composable parts.
