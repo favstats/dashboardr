@@ -86,11 +86,11 @@ create_viz <- function(tabgroup_labels = NULL, ...) {
 #' }
 `+.viz_collection` <- function(e1, e2) {
   # Validate inputs
-  if (!inherits(e1, "viz_collection")) {
-    stop("Left operand must be a viz_collection object")
+  if (!is_content(e1)) {
+    stop("Left operand must be a content collection")
   }
-  if (missing(e2) || !inherits(e2, "viz_collection")) {
-    stop("Right operand must be a viz_collection object")
+  if (missing(e2) || !is_content(e2)) {
+    stop("Right operand must be a content collection")
   }
   
   # Delegate to combine_content() which handles all attribute preservation
@@ -108,11 +108,11 @@ create_viz <- function(tabgroup_labels = NULL, ...) {
 #' @method + content_collection
 #' @export
 `+.content_collection` <- function(e1, e2) {
-  if (!inherits(e1, "content_collection")) {
-    stop("Left operand must be a content_collection object")
+  if (!is_content(e1)) {
+    stop("Left operand must be a content collection")
   }
-  if (missing(e2) || !inherits(e2, "content_collection")) {
-    stop("Right operand must be a content_collection object")
+  if (missing(e2) || !is_content(e2)) {
+    stop("Right operand must be a content collection")
   }
   
   combine_content(e1, e2)
@@ -149,11 +149,10 @@ combine_content <- function(...) {
     return(create_viz())
   }
   
-  # Validate all are content_collection or viz_collection
+  # Validate all are content collections
   for (i in seq_along(collections)) {
-    if (!inherits(collections[[i]], "content_collection") && 
-        !inherits(collections[[i]], "viz_collection")) {
-      stop("All arguments must be content_collection or viz_collection objects")
+    if (!is_content(collections[[i]])) {
+      stop("All arguments must be content collections")
     }
   }
   
@@ -491,9 +490,9 @@ combine_viz <- function(...) {
 #'   )
 #' }
 add_viz <- function(viz_collection, type = NULL, ..., tabgroup = NULL, title = NULL, title_tabset = NULL, text = NULL, icon = NULL, text_position = NULL, text_above_title = NULL, text_above_tabs = NULL, text_above_graphs = NULL, text_below_graphs = NULL, height = NULL, filter = NULL, data = NULL, drop_na_vars = FALSE) {
-  # Validate first argument - accept both content_collection and viz_collection
-  if (!inherits(viz_collection, "content_collection") && !inherits(viz_collection, "viz_collection")) {
-    stop("First argument must be a viz_collection or content_collection object")
+  # Validate first argument
+  if (!is_content(viz_collection)) {
+    stop("First argument must be a content collection")
   }
 
   # Get explicitly provided arguments (not defaults)
@@ -684,6 +683,7 @@ add_viz <- function(viz_collection, type = NULL, ..., tabgroup = NULL, title = N
       tabgroup = tabgroup_parsed,
       title = title,
       title_tabset = title_tabset,
+      text = text,  # Store original text parameter for backward compatibility
       icon = icon,
       text_position = text_position,
       text_above_title = text_above_title,
@@ -867,8 +867,8 @@ add_vizzes <- function(viz_collection, ...,
                        .title_template = NULL) {
   
   # Validate first argument
-  if (!inherits(viz_collection, "viz_collection")) {
-    stop("First argument must be a viz_collection object", call. = FALSE)
+  if (!is_content(viz_collection)) {
+    stop("First argument must be a content collection", call. = FALSE)
   }
   
   # Get parameters
@@ -972,8 +972,8 @@ add_vizzes <- function(viz_collection, ...,
 #'   set_tabgroup_labels(list(demo = "Demographic Breakdowns"))
 #' }
 set_tabgroup_labels <- function(viz_collection, labels = NULL, ...) {
-  if (!inherits(viz_collection, "viz_collection")) {
-    stop("First argument must be a viz_collection object")
+  if (!is_content(viz_collection)) {
+    stop("First argument must be a content collection")
   }
   
   # Get key-value pairs from ...
@@ -1411,8 +1411,8 @@ print.viz_collection <- function(x, ...) {
 add_pagination <- function(viz_collection) {
   
   # Validate first argument
-  if (!inherits(viz_collection, "content_collection") && !inherits(viz_collection, "viz_collection")) {
-    stop("First argument must be a viz_collection or content_collection object", call. = FALSE)
+  if (!is_content(viz_collection)) {
+    stop("First argument must be a content collection", call. = FALSE)
   }
   
   # Add pagination marker to collection

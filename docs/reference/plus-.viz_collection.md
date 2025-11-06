@@ -2,7 +2,8 @@
 
 S3 method that allows combining two viz_collection objects using the `+`
 operator. This is a convenient shorthand for
-[`combine_viz`](https://favstats.github.io/dashboardr/reference/combine_viz.md).
+[`combine_content`](https://favstats.github.io/dashboardr/reference/combine_content.md).
+Preserves all attributes including lazy loading settings.
 
 ## Usage
 
@@ -39,9 +40,11 @@ collections:
 
 - Insertion indices are renumbered to maintain proper ordering
 
+- All attributes (lazy loading, etc.) are preserved
+
 ## See also
 
-[`combine_viz`](https://favstats.github.io/dashboardr/reference/combine_viz.md)
+[`combine_content`](https://favstats.github.io/dashboardr/reference/combine_content.md)
 for the underlying function.
 
 ## Examples
@@ -59,6 +62,6 @@ viz2 <- create_viz() %>%
 combined <- viz1 + viz2
 
 # Equivalent to:
-combined <- combine_viz(viz1, viz2)
+combined <- combine_content(viz1, viz2)
 } # }
 ```

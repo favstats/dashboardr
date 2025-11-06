@@ -13,7 +13,7 @@
 #' @keywords internal
 .process_visualizations <- function(viz_input, data_path, tabgroup_labels = NULL) {
   # Handle different input types
-  if (inherits(viz_input, "viz_collection") || inherits(viz_input, "content_collection")) {
+  if (is_content(viz_input)) {
     if (is.null(viz_input) || length(viz_input$items) == 0) {
       return(NULL)
     }

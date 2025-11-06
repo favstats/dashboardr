@@ -34,9 +34,6 @@ library(gssr)
 
     ## Warning: package 'gssr' was built under R version 4.4.3
 
-    ## Error in get(paste0(generic, ".", class), envir = get_method_env()) : 
-    ##   object 'type_sum.accel' not found
-
     ## Package loaded. To attach the GSS data, type data(gss_all) at the console.
     ## For the panel data and documentation, type e.g. data(gss_panel08_long) and data(gss_panel_doc).
     ## For help on a specific GSS variable, type ?varname at the console.

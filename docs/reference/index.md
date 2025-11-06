@@ -14,6 +14,8 @@ Functions for creating and managing dashboards
   : Generate all dashboard files
 - [`publish_dashboard()`](https://favstats.github.io/dashboardr/reference/publish_dashboard.md)
   : Publish dashboard to GitHub Pages or GitLab Pages
+- [`add_loading_overlay()`](https://favstats.github.io/dashboardr/reference/add_loading_overlay.md)
+  : Add a loading overlay to a dashboard page
 
 ## Demo Dashboards
 
@@ -23,6 +25,8 @@ Built-in demo dashboards showcasing package features
   : Generate a tutorial dashboard.
 - [`showcase_dashboard()`](https://favstats.github.io/dashboardr/reference/showcase_dashboard.md)
   : Generate a showcase dashboard demonstrating all dashboardr features.
+- [`ascor_dashboard()`](https://favstats.github.io/dashboardr/reference/ascor_dashboard.md)
+  : Generate an ASCoR-themed dashboard for the University of Amsterdam
 
 ## Visualization Creation
 
@@ -38,6 +42,10 @@ Functions for creating visualizations
   : Add Multiple Visualizations at Once
 - [`combine_viz()`](https://favstats.github.io/dashboardr/reference/combine_viz.md)
   : Combine visualization collections
+- [`combine_content()`](https://favstats.github.io/dashboardr/reference/combine_content.md)
+  : Combine content collections (universal combiner)
+- [`add_pagination()`](https://favstats.github.io/dashboardr/reference/add_pagination.md)
+  : Create a sidebar group for hybrid navigation
 - [`set_tabgroup_labels()`](https://favstats.github.io/dashboardr/reference/set_tabgroup_labels.md)
   : Set or update tabgroup display labels
 
@@ -150,6 +158,23 @@ Functions for adding tables to pages
 - [`add_DT()`](https://favstats.github.io/dashboardr/reference/add_DT.md)
   : Add DT datatable
 
+## Themes & Styling
+
+Functions for customizing dashboard appearance
+
+- [`apply_theme()`](https://favstats.github.io/dashboardr/reference/apply_theme.md)
+  : Apply Theme to Dashboard
+- [`theme_modern()`](https://favstats.github.io/dashboardr/reference/theme_modern.md)
+  : Apply a Modern Tech Theme to Dashboard
+- [`theme_clean()`](https://favstats.github.io/dashboardr/reference/theme_clean.md)
+  : Apply a Clean Theme to Dashboard
+- [`theme_academic()`](https://favstats.github.io/dashboardr/reference/theme_academic.md)
+  : Apply a Professional Academic Theme to Dashboard
+- [`theme_ascor()`](https://favstats.github.io/dashboardr/reference/theme_ascor.md)
+  : Apply ASCoR/UvA Theme to Dashboard
+- [`theme_uva()`](https://favstats.github.io/dashboardr/reference/theme_uva.md)
+  : Apply UvA Theme to Dashboard (Alias)
+
 ## Print Methods
 
 S3 methods for displaying objects
@@ -160,3 +185,5 @@ S3 methods for displaying objects
   : Create iconify icon shortcode
 - [`` `+`( ``*`<viz_collection>`*`)`](https://favstats.github.io/dashboardr/reference/plus-.viz_collection.md)
   : Combine Visualization Collections with + Operator
+- [`` `+`( ``*`<content_collection>`*`)`](https://favstats.github.io/dashboardr/reference/plus-.content_collection.md)
+  : Combine Content Collections with + Operator

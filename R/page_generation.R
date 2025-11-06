@@ -81,10 +81,35 @@
   # Add content blocks (text, images, and other content types) before visualizations
   if (!is.null(page$content_blocks)) {
     for (block in page$content_blocks) {
-      if (!inherits(block, "content_block")) next
+      # Skip NULL blocks
+      if (is.null(block)) next
+      
+      # Skip non-list blocks
+      if (!is.list(block)) next
+      
+      # Check for content collection first (may contain visualizations)
+      is_coll <- is_content(block)
+      is_block <- is_content_block(block)
+      
+      # Skip if neither
+      if (!is_coll && !is_block) next
+      
+      # If it's a content collection, handle it differently
+      if (is_coll) {
+        # Generate viz content for this collection
+        viz_content <- .generate_viz_from_specs(block, 
+                                                  page$lazy_load_charts %||% FALSE, 
+                                                  page$lazy_load_tabs %||% FALSE)
+        content <- c(content, viz_content)
+        next
+      }
+      
+      # Get block type safely
+      block_type <- if (!is.null(block$type)) as.character(block$type)[1] else NULL
+      if (is.null(block_type)) next
       
       # Dispatch to appropriate generator based on type
-      block_content <- switch(block$type,
+      block_content <- switch(block_type,
         "text" = c("", block$content, ""),
         "image" = .generate_image_block(block),
         "callout" = .generate_callout_block(block),

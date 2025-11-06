@@ -25,7 +25,12 @@ add_dashboard_page(
   overlay = FALSE,
   overlay_theme = c("light", "glass", "dark", "accent"),
   overlay_text = "Loading",
-  overlay_duration = 2200
+  overlay_duration = 2200,
+  lazy_load_charts = NULL,
+  lazy_load_margin = NULL,
+  lazy_load_tabs = NULL,
+  lazy_debug = NULL,
+  pagination_separator = NULL
 )
 ```
 
@@ -61,6 +66,11 @@ add_dashboard_page(
 - visualizations:
 
   viz_collection or list of visualization specs
+
+- content:
+
+  Alternative to visualizations - supports content_collection or
+  viz_collection
 
 - text:
 
@@ -104,6 +114,31 @@ add_dashboard_page(
 
   Duration in milliseconds for how long overlay stays visible (default:
   2200)
+
+- lazy_load_charts:
+
+  Override dashboard-level lazy loading setting for this page (default:
+  NULL = inherit from dashboard)
+
+- lazy_load_margin:
+
+  Override viewport margin for lazy loading on this page (default: NULL
+  = inherit from dashboard)
+
+- lazy_load_tabs:
+
+  Override tab-aware lazy loading for this page (default: NULL = inherit
+  from dashboard)
+
+- lazy_debug:
+
+  Override debug mode for lazy loading on this page (default: NULL =
+  inherit from dashboard)
+
+- pagination_separator:
+
+  Text to show in pagination navigation (e.g., "of" → "1 of 3"),
+  default: NULL = inherit from dashboard
 
 ## Value
 

@@ -13,8 +13,8 @@
 <link rel="manifest" href="../site.webmanifest">
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/Inter-0.4.9/font.css" rel="stylesheet">
-<link href="../deps/Fira_Code-0.4.9/font.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/Inter-0.4.10/font.css" rel="stylesheet">
+<link href="../deps/Fira_Code-0.4.10/font.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
@@ -121,12 +121,10 @@ demonstration, we will be using the 2020 wave from the GSS dataset.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/kjhealy/gssr" class="external-link">gssr</a></span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Warning: package 'gssr' was built under R version 4.4.3</span></span></code></pre>
-<pre><code><span><span class="co">## Error in get(paste0(generic, ".", class), envir = get_method_env()) : </span></span>
-<span><span class="co">##   object 'type_sum.accel' not found</span></span></code></pre>
 <pre><code><span><span class="co">## Package loaded. To attach the GSS data, type data(gss_all) at the console.</span></span>
 <span><span class="co">## For the panel data and documentation, type e.g. data(gss_panel08_long) and data(gss_panel_doc).</span></span>
 <span><span class="co">## For help on a specific GSS variable, type ?varname at the console.</span></span></code></pre>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## </span></span>
 <span><span class="co">## Attaching package: 'dplyr'</span></span></code></pre>
@@ -136,14 +134,14 @@ demonstration, we will be using the 2020 wave from the GSS dataset.</p>
 <pre><code><span><span class="co">## The following objects are masked from 'package:base':</span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">##     intersect, setdiff, setequal, union</span></span></code></pre>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://jkunst.com/highcharter/" class="external-link">highcharter</a></span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Registered S3 method overwritten by 'quantmod':</span></span>
 <span><span class="co">##   method            from</span></span>
 <span><span class="co">##   as.zoo.data.frame zoo</span></span></code></pre>
 <pre><code><span><span class="co">## Highcharts (www.highcharts.com) is a Highsoft software product which is</span></span></code></pre>
 <pre><code><span><span class="co">## not free for commercial and Governmental use</span></span></code></pre>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyr.tidyverse.org" class="external-link">tidyr</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://favstats.github.io/dashboardr/">dashboardr</a></span><span class="op">)</span></span>
 <span></span>
@@ -155,12 +153,12 @@ demonstration, we will be using the 2020 wave from the GSS dataset.</p>
 </h3>
 <p>Let’s identify and prepare Likert-type questions from the 2016 wave
 (<code>_1a</code> variables) for ease of use in this practical.</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Look for confidence-related questions (common Likert-type questions in GSS)</span></span>
 <span><span class="va">confidence_vars</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">gss_panel20</span><span class="op">)</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">"^con.*_1a$"</span>, <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">gss_panel20</span><span class="op">)</span><span class="op">)</span><span class="op">]</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"Confidence variables found:\n"</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Confidence variables found:</span></span></code></pre>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">confidence_vars</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##  [1] "conarmy_1a"  "conbus_1a"   "conclerg_1a" "condom_1a"   "condrift_1a"</span></span>
 <span><span class="co">##  [6] "coneduc_1a"  "confed_1a"   "confinan_1a" "coninc_1a"   "conjudge_1a"</span></span>
@@ -168,18 +166,18 @@ demonstration, we will be using the 2020 wave from the GSS dataset.</p>
 <span><span class="co">## [16] "consci_1a"   "consent_1a"  "contv_1a"    "conbiz_1a"   "conchurh_1a"</span></span>
 <span><span class="co">## [21] "concong_1a"  "concourt_1a" "condemnd_1a" "conf2f_1a"   "conschls_1a"</span></span>
 <span><span class="co">## [26] "conwkday_1a"</span></span></code></pre>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Look for other attitude/satisfaction variables</span></span>
 <span><span class="va">attitude_vars</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">gss_panel20</span><span class="op">)</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">"(trust|fair|helpful|happy).*_1a$"</span>, <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">gss_panel20</span><span class="op">)</span><span class="op">)</span><span class="op">]</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"\nAttitude variables found:\n"</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## </span></span>
 <span><span class="co">## Attitude variables found:</span></span></code></pre>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">attitude_vars</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##  [1] "fair_1a"      "happy_1a"     "helpful_1a"   "trust_1a"     "befair_1a"   </span></span>
 <span><span class="co">##  [6] "cantrust_1a"  "fairearn_1a"  "spvtrfair_1a" "trustman_1a"  "trustsci_1a" </span></span>
 <span><span class="co">## [11] "unhappy_1a"</span></span></code></pre>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Create a working dataset with key Likert-type variables</span></span>
 <span><span class="va">gss_likert</span> <span class="op">&lt;-</span> <span class="va">gss_panel20</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span></span>
@@ -196,34 +194,34 @@ demonstration, we will be using the 2020 wave from the GSS dataset.</p>
 <span><span class="co"># Examine the response patterns for key variables</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"Trust responses:\n"</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Trust responses:</span></span></code></pre>
-<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">gss_likert</span><span class="op">$</span><span class="va">trust_1a</span>, useNA <span class="op">=</span> <span class="st">"always"</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## </span></span>
 <span><span class="co">##    1    2    3 &lt;NA&gt; </span></span>
 <span><span class="co">##  623 1244   79  921</span></span></code></pre>
-<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"\nFair responses:\n"</span><span class="op">)</span> </span></code></pre></div>
 <pre><code><span><span class="co">## </span></span>
 <span><span class="co">## Fair responses:</span></span></code></pre>
-<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">gss_likert</span><span class="op">$</span><span class="va">fair_1a</span>, useNA <span class="op">=</span> <span class="st">"always"</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## </span></span>
 <span><span class="co">##    1    2    3 &lt;NA&gt; </span></span>
 <span><span class="co">##  797 1028  114  928</span></span></code></pre>
-<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"\nHelpful responses:\n"</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## </span></span>
 <span><span class="co">## Helpful responses:</span></span></code></pre>
-<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">gss_likert</span><span class="op">$</span><span class="va">helpful_1a</span>, useNA <span class="op">=</span> <span class="st">"always"</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## </span></span>
 <span><span class="co">##    1    2    3 &lt;NA&gt; </span></span>
 <span><span class="co">##  917  892  137  921</span></span></code></pre>
-<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"\nHappy responses:\n"</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## </span></span>
 <span><span class="co">## Happy responses:</span></span></code></pre>
-<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">gss_likert</span><span class="op">$</span><span class="va">happy_1a</span>, useNA <span class="op">=</span> <span class="st">"always"</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## </span></span>
 <span><span class="co">##    1    2    3 &lt;NA&gt; </span></span>
@@ -237,7 +235,7 @@ demonstration, we will be using the 2020 wave from the GSS dataset.</p>
 </h3>
 <p>Now that we have our simplified data set, let’s create our first
 multi-question chart using social attitude variables.</p>
-<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Define our questions and labels</span></span>
 <span><span class="va">social_questions</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"trust_1a"</span>, <span class="st">"fair_1a"</span>, <span class="st">"helpful_1a"</span><span class="op">)</span></span>
 <span><span class="va">social_labels</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
@@ -264,7 +262,7 @@ multi-question chart using social attitude variables.</p>
 <span><span class="co">## <span style="color: #00BBBB;">ℹ</span> Labels for these values will be taken from `trust_1a`.</span></span>
 <span><span class="co">## <span style="color: #BB0000;">✖</span> Values: <span style="color: #0000BB;">1</span> and <span style="color: #0000BB;">2</span></span></span></code></pre>
 <pre><code><span><span class="co">## Note: Column 'response' was 'haven_labelled' and converted to factor (levels = values).</span></span></code></pre>
-<div class="sourceCode" id="cb42"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb41"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">plot1</span></span></code></pre></div>
 <div class="highchart html-widget html-fill-item" id="htmlwidget-ac96cb3ee4656e2e9ec3" style="width:700px;height:432.632880098888px;"></div>
 <script type="application/json" data-for="htmlwidget-ac96cb3ee4656e2e9ec3">{"x":{"hc_opts":{"chart":{"reflow":true},"title":{"text":"Social Attitudes and Trust"},"yAxis":{"title":{"text":"Number of Respondents"},"type":"linear"},"credits":{"enabled":false},"exporting":{"enabled":false},"boost":{"enabled":false},"plotOptions":{"series":{"label":{"enabled":false},"turboThreshold":0,"showInLegend":true},"treemap":{"layoutAlgorithm":"squarified"},"scatter":{"marker":{"symbol":"circle"}},"column":{"stacking":"counts","dataLabels":{"enabled":true,"format":"{point.y}","style":{"textOutline":"none","fontSize":"10px"}}}},"series":[{"name":"can't trust","data":[{".x_var_col":"Interpersonal Trust",".stack_var_col":"can't trust","n":623,"y":623,"name":"Interpersonal Trust"},{".x_var_col":"Fairness of Others",".stack_var_col":"can't trust","n":797,"y":797,"name":"Fairness of Others"},{".x_var_col":"Helpfulness of Others",".stack_var_col":"can't trust","n":917,"y":917,"name":"Helpfulness of Others"}],"type":"column"},{"name":"can't be too careful","data":[{".x_var_col":"Interpersonal Trust",".stack_var_col":"can't be too careful","n":1244,"y":1244,"name":"Interpersonal Trust"},{".x_var_col":"Fairness of Others",".stack_var_col":"can't be too careful","n":1028,"y":1028,"name":"Fairness of Others"},{".x_var_col":"Helpfulness of Others",".stack_var_col":"can't be too careful","n":892,"y":892,"name":"Helpfulness of Others"}],"type":"column"},{"name":"depends","data":[{".x_var_col":"Interpersonal Trust",".stack_var_col":"depends","n":79,"y":79,"name":"Interpersonal Trust"},{".x_var_col":"Fairness of Others",".stack_var_col":"depends","n":114,"y":114,"name":"Fairness of Others"},{".x_var_col":"Helpfulness of Others",".stack_var_col":"depends","n":137,"y":137,"name":"Helpfulness of Others"}],"type":"column"},{"name":null,"data":[{".x_var_col":"Interpersonal Trust",".stack_var_col":null,"n":921,"y":921,"name":"Interpersonal Trust"},{".x_var_col":"Fairness of Others",".stack_var_col":null,"n":928,"y":928,"name":"Fairness of Others"},{".x_var_col":"Helpfulness of Others",".stack_var_col":null,"n":921,"y":921,"name":"Helpfulness of Others"}],"type":"column"}],"xAxis":{"type":"category","title":{"text":"Social Attitude Dimension"},"categories":["Interpersonal Trust","Fairness of Others","Helpfulness of Others"]},"subtitle":{"text":"GSS Panel 2016 - Distribution of responses across social attitude questions"},"legend":{"title":{"text":"Response Level"}},"tooltip":{"useHTML":true,"formatter":"\n        function() {\n          // pull the question label from the axis categories array\n          var q = this.series.chart.xAxis[0].categories[this.point.x];\n          // the response (series name)\n          var r = this.series.name;\n          // format as percentage if percent‐stacked, else point.y\n          var v = (this.point.percentage !== undefined)\n                  ? Highcharts.numberFormat(this.point.percentage,1) + '%'\n                  : this.point.y;\n          return '<b>' + q + '<\/b><br/>' +\n                 r + ': <b>' + v + '<\/b>';\n        }\n      "}},"theme":{"chart":{"backgroundColor":"transparent"},"colors":["#7cb5ec","#434348","#90ed7d","#f7a35c","#8085e9","#f15c80","#e4d354","#2b908f","#f45b5b","#91e8e1"]},"conf_opts":{"global":{"Date":null,"VMLRadialGradientURL":"http =//code.highcharts.com/list(version)/gfx/vml-radial-gradient.png","canvasToolsURL":"http =//code.highcharts.com/list(version)/modules/canvas-tools.js","getTimezoneOffset":null,"timezoneOffset":0,"useUTC":true},"lang":{"contextButtonTitle":"Chart context menu","decimalPoint":".","downloadCSV":"Download CSV","downloadJPEG":"Download JPEG image","downloadPDF":"Download PDF document","downloadPNG":"Download PNG image","downloadSVG":"Download SVG vector image","downloadXLS":"Download XLS","drillUpText":"◁ Back to {series.name}","exitFullscreen":"Exit from full screen","exportData":{"annotationHeader":"Annotations","categoryDatetimeHeader":"DateTime","categoryHeader":"Category"},"hideData":"Hide data table","invalidDate":null,"loading":"Loading...","months":["January","February","March","April","May","June","July","August","September","October","November","December"],"noData":"No data to display","numericSymbolMagnitude":1000,"numericSymbols":["k","M","G","T","P","E"],"printChart":"Print chart","resetZoom":"Reset zoom","resetZoomTitle":"Reset zoom level 1:1","shortMonths":["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],"shortWeekdays":["Sat","Sun","Mon","Tue","Wed","Thu","Fri"],"thousandsSep":" ","viewData":"View data table","viewFullscreen":"View in full screen","weekdays":["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]}},"type":"chart","fonts":[],"debug":false},"evals":["hc_opts.tooltip.formatter"],"jsHooks":[]}</script>
@@ -274,7 +272,7 @@ multi-question chart using social attitude variables.</p>
 </h3>
 <p>Now let’s create a percentage-based chart to better compare response
 patterns across questions.</p>
-<div class="sourceCode" id="cb43"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb42"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Create percentage-based chart with custom colors</span></span>
 <span><span class="va">plot2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_stackedbars.html">create_stackedbars</a></span><span class="op">(</span></span>
 <span>  data <span class="op">=</span> <span class="va">gss_likert</span>,</span>
@@ -295,7 +293,7 @@ patterns across questions.</p>
 <span><span class="co">## <span style="color: #00BBBB;">ℹ</span> Labels for these values will be taken from `trust_1a`.</span></span>
 <span><span class="co">## <span style="color: #BB0000;">✖</span> Values: <span style="color: #0000BB;">1</span> and <span style="color: #0000BB;">2</span></span></span></code></pre>
 <pre><code><span><span class="co">## Note: Column 'response' was 'haven_labelled' and converted to factor (levels = values).</span></span></code></pre>
-<div class="sourceCode" id="cb47"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb46"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">plot2</span></span></code></pre></div>
 <div class="highchart html-widget html-fill-item" id="htmlwidget-e5c8c404fe174e4c81bd" style="width:700px;height:432.632880098888px;"></div>
 <script type="application/json" data-for="htmlwidget-e5c8c404fe174e4c81bd">{"x":{"hc_opts":{"chart":{"reflow":true},"title":{"text":"Social Attitudes - Response Distribution"},"yAxis":{"title":{"text":"Percentage of Respondents"},"type":"linear"},"credits":{"enabled":false},"exporting":{"enabled":false},"boost":{"enabled":false},"plotOptions":{"series":{"label":{"enabled":false},"turboThreshold":0,"showInLegend":true},"treemap":{"layoutAlgorithm":"squarified"},"scatter":{"marker":{"symbol":"circle"}},"column":{"stacking":"percent","dataLabels":{"enabled":true,"format":"{point.percentage:.1f}%","style":{"textOutline":"none","fontSize":"10px"}}}},"series":[{"name":"can't trust","data":[{".x_var_col":"Interpersonal Trust",".stack_var_col":"can't trust","n":623,"y":623,"name":"Interpersonal Trust"},{".x_var_col":"Fairness of Others",".stack_var_col":"can't trust","n":797,"y":797,"name":"Fairness of Others"},{".x_var_col":"Helpfulness of Others",".stack_var_col":"can't trust","n":917,"y":917,"name":"Helpfulness of Others"}],"type":"column"},{"name":"can't be too careful","data":[{".x_var_col":"Interpersonal Trust",".stack_var_col":"can't be too careful","n":1244,"y":1244,"name":"Interpersonal Trust"},{".x_var_col":"Fairness of Others",".stack_var_col":"can't be too careful","n":1028,"y":1028,"name":"Fairness of Others"},{".x_var_col":"Helpfulness of Others",".stack_var_col":"can't be too careful","n":892,"y":892,"name":"Helpfulness of Others"}],"type":"column"},{"name":"depends","data":[{".x_var_col":"Interpersonal Trust",".stack_var_col":"depends","n":79,"y":79,"name":"Interpersonal Trust"},{".x_var_col":"Fairness of Others",".stack_var_col":"depends","n":114,"y":114,"name":"Fairness of Others"},{".x_var_col":"Helpfulness of Others",".stack_var_col":"depends","n":137,"y":137,"name":"Helpfulness of Others"}],"type":"column"},{"name":null,"data":[{".x_var_col":"Interpersonal Trust",".stack_var_col":null,"n":921,"y":921,"name":"Interpersonal Trust"},{".x_var_col":"Fairness of Others",".stack_var_col":null,"n":928,"y":928,"name":"Fairness of Others"},{".x_var_col":"Helpfulness of Others",".stack_var_col":null,"n":921,"y":921,"name":"Helpfulness of Others"}],"type":"column"}],"xAxis":{"type":"category","title":{"text":"Social Attitude Dimension"},"categories":["Interpersonal Trust","Fairness of Others","Helpfulness of Others"]},"subtitle":{"text":"Percentage breakdown showing response patterns across questions"},"legend":{"title":{"text":"Response Category"}},"tooltip":{"useHTML":true,"formatter":"\n        function() {\n          // pull the question label from the axis categories array\n          var q = this.series.chart.xAxis[0].categories[this.point.x];\n          // the response (series name)\n          var r = this.series.name;\n          // format as percentage if percent‐stacked, else point.y\n          var v = (this.point.percentage !== undefined)\n                  ? Highcharts.numberFormat(this.point.percentage,1) + '%'\n                  : this.point.y;\n          return '<b>' + q + '<\/b><br/>' +\n                 r + ': <b>' + v + '<\/b>';\n        }\n      "},"colors":["#d7191c","#fdae61","#ffffbf","#abdda4","#2b83ba"]},"theme":{"chart":{"backgroundColor":"transparent"},"colors":["#7cb5ec","#434348","#90ed7d","#f7a35c","#8085e9","#f15c80","#e4d354","#2b908f","#f45b5b","#91e8e1"]},"conf_opts":{"global":{"Date":null,"VMLRadialGradientURL":"http =//code.highcharts.com/list(version)/gfx/vml-radial-gradient.png","canvasToolsURL":"http =//code.highcharts.com/list(version)/modules/canvas-tools.js","getTimezoneOffset":null,"timezoneOffset":0,"useUTC":true},"lang":{"contextButtonTitle":"Chart context menu","decimalPoint":".","downloadCSV":"Download CSV","downloadJPEG":"Download JPEG image","downloadPDF":"Download PDF document","downloadPNG":"Download PNG image","downloadSVG":"Download SVG vector image","downloadXLS":"Download XLS","drillUpText":"◁ Back to {series.name}","exitFullscreen":"Exit from full screen","exportData":{"annotationHeader":"Annotations","categoryDatetimeHeader":"DateTime","categoryHeader":"Category"},"hideData":"Hide data table","invalidDate":null,"loading":"Loading...","months":["January","February","March","April","May","June","July","August","September","October","November","December"],"noData":"No data to display","numericSymbolMagnitude":1000,"numericSymbols":["k","M","G","T","P","E"],"printChart":"Print chart","resetZoom":"Reset zoom","resetZoomTitle":"Reset zoom level 1:1","shortMonths":["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],"shortWeekdays":["Sat","Sun","Mon","Tue","Wed","Thu","Fri"],"thousandsSep":" ","viewData":"View data table","viewFullscreen":"View in full screen","weekdays":["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]}},"type":"chart","fonts":[],"debug":false},"evals":["hc_opts.tooltip.formatter"],"jsHooks":[]}</script>
@@ -309,21 +307,21 @@ patterns across questions.</p>
 </h3>
 <p>Let’s create a more sophisticated chart with custom response ordering
 and cleaner labels.</p>
-<div class="sourceCode" id="cb48"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb47"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># First, let's examine what the actual response values are</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"Unique trust responses:\n"</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Unique trust responses:</span></span></code></pre>
-<div class="sourceCode" id="cb50"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb49"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="va">gss_likert</span><span class="op">$</span><span class="va">trust_1a</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## [1] NA  "3" "1" "2"</span></span></code></pre>
-<div class="sourceCode" id="cb52"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb51"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"\nUnique fair responses:\n"</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## </span></span>
 <span><span class="co">## Unique fair responses:</span></span></code></pre>
-<div class="sourceCode" id="cb54"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb53"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="va">gss_likert</span><span class="op">$</span><span class="va">fair_1a</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## [1] NA  "1" "2" "3"</span></span></code></pre>
-<div class="sourceCode" id="cb56"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb55"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#TODO: There is a "Series 4" I think for NA values, that needs to be dealt with, i.e. ideally that has its own value?</span></span>
 <span><span class="co"># Create response mapping for cleaner labels</span></span>
 <span><span class="va">response_map</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
@@ -365,7 +363,7 @@ and cleaner labels.</p>
 <pre><code><span><span class="co">## Note: Column 'response' was 'haven_labelled' and converted to factor (levels = values).</span></span></code></pre>
 <pre><code><span><span class="co">## Warning: stack_order provided with stack_map_values. Ensure stack_order refers</span></span>
 <span><span class="co">## to the *new* mapped labels.</span></span></code></pre>
-<div class="sourceCode" id="cb61"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb60"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">plot3</span></span></code></pre></div>
 <div class="highchart html-widget html-fill-item" id="htmlwidget-36aa3d2a04d42bbc2145" style="width:700px;height:432.632880098888px;"></div>
 <script type="application/json" data-for="htmlwidget-36aa3d2a04d42bbc2145">{"x":{"hc_opts":{"chart":{"reflow":true},"title":{"text":"Social Trust Dimensions with Standardized Responses"},"yAxis":{"title":{"text":"Percentage of Respondents"},"type":"linear"},"credits":{"enabled":false},"exporting":{"enabled":false},"boost":{"enabled":false},"plotOptions":{"series":{"label":{"enabled":false},"turboThreshold":0,"showInLegend":true},"treemap":{"layoutAlgorithm":"squarified"},"scatter":{"marker":{"symbol":"circle"}},"column":{"stacking":"percent","dataLabels":{"enabled":true,"format":"{point.percentage:.1f}%","style":{"textOutline":"none","fontSize":"10px"}}}},"series":[{"name":"Low Trust/Negative","data":[{".x_var_col":"Interpersonal Trust",".stack_var_col":"Low Trust/Negative","n":1244,"y":1244,"name":"Interpersonal Trust"},{".x_var_col":"Fairness of Others",".stack_var_col":"Low Trust/Negative","n":1028,"y":1028,"name":"Fairness of Others"},{".x_var_col":"Helpfulness of Others",".stack_var_col":"Low Trust/Negative","n":892,"y":892,"name":"Helpfulness of Others"}],"type":"column"},{"name":"Situational/Neutral","data":[{".x_var_col":"Interpersonal Trust",".stack_var_col":"Situational/Neutral","n":79,"y":79,"name":"Interpersonal Trust"},{".x_var_col":"Fairness of Others",".stack_var_col":"Situational/Neutral","n":114,"y":114,"name":"Fairness of Others"},{".x_var_col":"Helpfulness of Others",".stack_var_col":"Situational/Neutral","n":137,"y":137,"name":"Helpfulness of Others"}],"type":"column"},{"name":"High Trust/Positive","data":[{".x_var_col":"Interpersonal Trust",".stack_var_col":"High Trust/Positive","n":623,"y":623,"name":"Interpersonal Trust"},{".x_var_col":"Fairness of Others",".stack_var_col":"High Trust/Positive","n":797,"y":797,"name":"Fairness of Others"},{".x_var_col":"Helpfulness of Others",".stack_var_col":"High Trust/Positive","n":917,"y":917,"name":"Helpfulness of Others"}],"type":"column"},{"name":null,"data":[{".x_var_col":"Interpersonal Trust",".stack_var_col":null,"n":921,"y":921,"name":"Interpersonal Trust"},{".x_var_col":"Fairness of Others",".stack_var_col":null,"n":928,"y":928,"name":"Fairness of Others"},{".x_var_col":"Helpfulness of Others",".stack_var_col":null,"n":921,"y":921,"name":"Helpfulness of Others"}],"type":"column"}],"xAxis":{"type":"category","title":{"text":"Trust Dimension"},"categories":["Interpersonal Trust","Fairness of Others","Helpfulness of Others"]},"subtitle":{"text":"Responses mapped to consistent positive/negative categories"},"legend":{"title":{"text":"Trust Level"}},"tooltip":{"useHTML":true,"formatter":"\n        function() {\n          // pull the question label from the axis categories array\n          var q = this.series.chart.xAxis[0].categories[this.point.x];\n          // the response (series name)\n          var r = this.series.name;\n          // format as percentage if percent‐stacked, else point.y\n          var v = (this.point.percentage !== undefined)\n                  ? Highcharts.numberFormat(this.point.percentage,1) + '%'\n                  : this.point.y;\n          return '<b>' + q + '<\/b><br/>' +\n                 r + ': <b>' + v + '<\/b>';\n        }\n      "},"colors":["#d62728","#ffbb78","#2ca02c","grey"]},"theme":{"chart":{"backgroundColor":"transparent"},"colors":["#7cb5ec","#434348","#90ed7d","#f7a35c","#8085e9","#f15c80","#e4d354","#2b908f","#f45b5b","#91e8e1"]},"conf_opts":{"global":{"Date":null,"VMLRadialGradientURL":"http =//code.highcharts.com/list(version)/gfx/vml-radial-gradient.png","canvasToolsURL":"http =//code.highcharts.com/list(version)/modules/canvas-tools.js","getTimezoneOffset":null,"timezoneOffset":0,"useUTC":true},"lang":{"contextButtonTitle":"Chart context menu","decimalPoint":".","downloadCSV":"Download CSV","downloadJPEG":"Download JPEG image","downloadPDF":"Download PDF document","downloadPNG":"Download PNG image","downloadSVG":"Download SVG vector image","downloadXLS":"Download XLS","drillUpText":"◁ Back to {series.name}","exitFullscreen":"Exit from full screen","exportData":{"annotationHeader":"Annotations","categoryDatetimeHeader":"DateTime","categoryHeader":"Category"},"hideData":"Hide data table","invalidDate":null,"loading":"Loading...","months":["January","February","March","April","May","June","July","August","September","October","November","December"],"noData":"No data to display","numericSymbolMagnitude":1000,"numericSymbols":["k","M","G","T","P","E"],"printChart":"Print chart","resetZoom":"Reset zoom","resetZoomTitle":"Reset zoom level 1:1","shortMonths":["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],"shortWeekdays":["Sat","Sun","Mon","Tue","Wed","Thu","Fri"],"thousandsSep":" ","viewData":"View data table","viewFullscreen":"View in full screen","weekdays":["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]}},"type":"chart","fonts":[],"debug":false},"evals":["hc_opts.tooltip.formatter"],"jsHooks":[]}</script>
@@ -374,7 +372,7 @@ and cleaner labels.</p>
 <h3 id="example-4-including-missing-values">Example 4: Including Missing Values<a class="anchor" aria-label="anchor" href="#example-4-including-missing-values"></a>
 </h3>
 <p>Let’s create a chart that explicitly shows missing data patterns.</p>
-<div class="sourceCode" id="cb62"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb61"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Create chart including NA values</span></span>
 <span><span class="va">plot4</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_stackedbars.html">create_stackedbars</a></span><span class="op">(</span></span>
 <span>  data <span class="op">=</span> <span class="va">gss_likert</span>,</span>
@@ -398,7 +396,7 @@ and cleaner labels.</p>
 <span><span class="co">## <span style="color: #00BBBB;">ℹ</span> Labels for these values will be taken from `trust_1a`.</span></span>
 <span><span class="co">## <span style="color: #BB0000;">✖</span> Values: <span style="color: #0000BB;">1</span> and <span style="color: #0000BB;">2</span></span></span></code></pre>
 <pre><code><span><span class="co">## Note: Column 'response' was 'haven_labelled' and converted to factor (levels = values).</span></span></code></pre>
-<div class="sourceCode" id="cb66"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb65"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">plot4</span></span></code></pre></div>
 <div class="highchart html-widget html-fill-item" id="htmlwidget-febe03efa1a2d8d52a86" style="width:700px;height:432.632880098888px;"></div>
 <script type="application/json" data-for="htmlwidget-febe03efa1a2d8d52a86">{"x":{"hc_opts":{"chart":{"reflow":true},"title":{"text":"Social Attitudes Including Non-Responses"},"yAxis":{"title":{"text":"Percentage of Respondents"},"type":"linear"},"credits":{"enabled":false},"exporting":{"enabled":false},"boost":{"enabled":false},"plotOptions":{"series":{"label":{"enabled":false},"turboThreshold":0,"showInLegend":true},"treemap":{"layoutAlgorithm":"squarified"},"scatter":{"marker":{"symbol":"circle"}},"column":{"stacking":"percent","dataLabels":{"enabled":true,"format":"{point.percentage:.1f}%","style":{"textOutline":"none","fontSize":"10px"}}}},"series":[{"name":"High Trust/Positive","data":[{".x_var_col":"Fairness of Others",".stack_var_col":"High Trust/Positive","n":797,"y":797,"name":"Fairness of Others"},{".x_var_col":"Helpfulness of Others",".stack_var_col":"High Trust/Positive","n":917,"y":917,"name":"Helpfulness of Others"},{".x_var_col":"Interpersonal Trust",".stack_var_col":"High Trust/Positive","n":623,"y":623,"name":"Interpersonal Trust"}],"type":"column"},{"name":"Low Trust/Negative","data":[{".x_var_col":"Fairness of Others",".stack_var_col":"Low Trust/Negative","n":1028,"y":1028,"name":"Fairness of Others"},{".x_var_col":"Helpfulness of Others",".stack_var_col":"Low Trust/Negative","n":892,"y":892,"name":"Helpfulness of Others"},{".x_var_col":"Interpersonal Trust",".stack_var_col":"Low Trust/Negative","n":1244,"y":1244,"name":"Interpersonal Trust"}],"type":"column"},{"name":"No Answer/Not Asked","data":[{".x_var_col":"Fairness of Others",".stack_var_col":"No Answer/Not Asked","n":928,"y":928,"name":"Fairness of Others"},{".x_var_col":"Helpfulness of Others",".stack_var_col":"No Answer/Not Asked","n":921,"y":921,"name":"Helpfulness of Others"},{".x_var_col":"Interpersonal Trust",".stack_var_col":"No Answer/Not Asked","n":921,"y":921,"name":"Interpersonal Trust"}],"type":"column"},{"name":"Situational/Neutral","data":[{".x_var_col":"Fairness of Others",".stack_var_col":"Situational/Neutral","n":114,"y":114,"name":"Fairness of Others"},{".x_var_col":"Helpfulness of Others",".stack_var_col":"Situational/Neutral","n":137,"y":137,"name":"Helpfulness of Others"},{".x_var_col":"Interpersonal Trust",".stack_var_col":"Situational/Neutral","n":79,"y":79,"name":"Interpersonal Trust"}],"type":"column"}],"xAxis":{"type":"category","title":{"text":"Social Attitude Question"},"categories":["Interpersonal Trust","Fairness of Others","Helpfulness of Others"]},"subtitle":{"text":"Showing missing data patterns explicitly"},"legend":{"title":{"text":"Response"}},"tooltip":{"useHTML":true,"formatter":"\n        function() {\n          // pull the question label from the axis categories array\n          var q = this.series.chart.xAxis[0].categories[this.point.x];\n          // the response (series name)\n          var r = this.series.name;\n          // format as percentage if percent‐stacked, else point.y\n          var v = (this.point.percentage !== undefined)\n                  ? Highcharts.numberFormat(this.point.percentage,1) + '%'\n                  : this.point.y;\n          return '<b>' + q + '<\/b><br/>' +\n                 r + ': <b>' + v + '<\/b>';\n        }\n      "},"colors":["forestgreen","darkred","grey","yellow"]},"theme":{"chart":{"backgroundColor":"transparent"},"colors":["#7cb5ec","#434348","#90ed7d","#f7a35c","#8085e9","#f15c80","#e4d354","#2b908f","#f45b5b","#91e8e1"]},"conf_opts":{"global":{"Date":null,"VMLRadialGradientURL":"http =//code.highcharts.com/list(version)/gfx/vml-radial-gradient.png","canvasToolsURL":"http =//code.highcharts.com/list(version)/modules/canvas-tools.js","getTimezoneOffset":null,"timezoneOffset":0,"useUTC":true},"lang":{"contextButtonTitle":"Chart context menu","decimalPoint":".","downloadCSV":"Download CSV","downloadJPEG":"Download JPEG image","downloadPDF":"Download PDF document","downloadPNG":"Download PNG image","downloadSVG":"Download SVG vector image","downloadXLS":"Download XLS","drillUpText":"◁ Back to {series.name}","exitFullscreen":"Exit from full screen","exportData":{"annotationHeader":"Annotations","categoryDatetimeHeader":"DateTime","categoryHeader":"Category"},"hideData":"Hide data table","invalidDate":null,"loading":"Loading...","months":["January","February","March","April","May","June","July","August","September","October","November","December"],"noData":"No data to display","numericSymbolMagnitude":1000,"numericSymbols":["k","M","G","T","P","E"],"printChart":"Print chart","resetZoom":"Reset zoom","resetZoomTitle":"Reset zoom level 1:1","shortMonths":["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],"shortWeekdays":["Sat","Sun","Mon","Tue","Wed","Thu","Fri"],"thousandsSep":" ","viewData":"View data table","viewFullscreen":"View in full screen","weekdays":["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]}},"type":"chart","fonts":[],"debug":false},"evals":["hc_opts.tooltip.formatter"],"jsHooks":[]}</script>
@@ -411,7 +409,7 @@ and cleaner labels.</p>
 <h3 id="example-5-happiness-and-life-satisfaction">Example 5: Happiness and Life Satisfaction<a class="anchor" aria-label="anchor" href="#example-5-happiness-and-life-satisfaction"></a>
 </h3>
 <p>Let’s work with happiness as a different type of Likert scale.</p>
-<div class="sourceCode" id="cb67"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb66"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Create a happiness-focused analysis</span></span>
 <span><span class="va">happiness_questions</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"happy_1a"</span><span class="op">)</span></span>
 <span><span class="va">happiness_labels</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"General Happiness"</span><span class="op">)</span></span>
@@ -419,12 +417,12 @@ and cleaner labels.</p>
 <span><span class="co"># Check happiness response values</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"Happiness responses:\n"</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Happiness responses:</span></span></code></pre>
-<div class="sourceCode" id="cb69"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb68"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">gss_likert</span><span class="op">$</span><span class="va">happy_1a</span>, useNA <span class="op">=</span> <span class="st">"always"</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## </span></span>
 <span><span class="co">##    1    2    3 &lt;NA&gt; </span></span>
 <span><span class="co">##  806 1601  452    8</span></span></code></pre>
-<div class="sourceCode" id="cb71"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb70"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Create happiness chart</span></span>
 <span><span class="va">plot5</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_stackedbars.html">create_stackedbars</a></span><span class="op">(</span></span>
 <span>  data <span class="op">=</span> <span class="va">gss_likert</span>,</span>
@@ -437,7 +435,7 @@ and cleaner labels.</p>
 <span>  color_palette <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"#2E8B57"</span>, <span class="st">"#FFD700"</span>, <span class="st">"#CD5C5C"</span>, <span class="st">"grey"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Note: Column 'response' was 'haven_labelled' and converted to factor (levels = values).</span></span></code></pre>
-<div class="sourceCode" id="cb73"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb72"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">plot5</span></span></code></pre></div>
 <div class="highchart html-widget html-fill-item" id="htmlwidget-1fb4450895fe099f74a1" style="width:700px;height:432.632880098888px;"></div>
 <script type="application/json" data-for="htmlwidget-1fb4450895fe099f74a1">{"x":{"hc_opts":{"chart":{"reflow":true},"title":{"text":"General Happiness Distribution"},"yAxis":{"title":{"text":"Percentage of Respondents"},"type":"linear"},"credits":{"enabled":false},"exporting":{"enabled":false},"boost":{"enabled":false},"plotOptions":{"series":{"label":{"enabled":false},"turboThreshold":0,"showInLegend":true},"treemap":{"layoutAlgorithm":"squarified"},"scatter":{"marker":{"symbol":"circle"}},"column":{"stacking":"percent","dataLabels":{"enabled":true,"format":"{point.percentage:.1f}%","style":{"textOutline":"none","fontSize":"10px"}}}},"series":[{"name":"very happy","data":[{".x_var_col":"happy_1a",".stack_var_col":"very happy","n":806,"y":806,"name":"happy_1a"}],"type":"column"},{"name":"pretty happy","data":[{".x_var_col":"happy_1a",".stack_var_col":"pretty happy","n":1601,"y":1601,"name":"happy_1a"}],"type":"column"},{"name":"not too happy","data":[{".x_var_col":"happy_1a",".stack_var_col":"not too happy","n":452,"y":452,"name":"happy_1a"}],"type":"column"},{"name":null,"data":[{".x_var_col":"happy_1a",".stack_var_col":null,"n":8,"y":8,"name":"happy_1a"}],"type":"column"}],"xAxis":{"type":"category","title":{"text":"Well-being Measure"},"categories":"happy_1a"},"legend":{"title":{"text":"Happiness Level"}},"tooltip":{"useHTML":true,"formatter":"\n        function() {\n          // pull the question label from the axis categories array\n          var q = this.series.chart.xAxis[0].categories[this.point.x];\n          // the response (series name)\n          var r = this.series.name;\n          // format as percentage if percent‐stacked, else point.y\n          var v = (this.point.percentage !== undefined)\n                  ? Highcharts.numberFormat(this.point.percentage,1) + '%'\n                  : this.point.y;\n          return '<b>' + q + '<\/b><br/>' +\n                 r + ': <b>' + v + '<\/b>';\n        }\n      "},"colors":["#2E8B57","#FFD700","#CD5C5C","grey"]},"theme":{"chart":{"backgroundColor":"transparent"},"colors":["#7cb5ec","#434348","#90ed7d","#f7a35c","#8085e9","#f15c80","#e4d354","#2b908f","#f45b5b","#91e8e1"]},"conf_opts":{"global":{"Date":null,"VMLRadialGradientURL":"http =//code.highcharts.com/list(version)/gfx/vml-radial-gradient.png","canvasToolsURL":"http =//code.highcharts.com/list(version)/modules/canvas-tools.js","getTimezoneOffset":null,"timezoneOffset":0,"useUTC":true},"lang":{"contextButtonTitle":"Chart context menu","decimalPoint":".","downloadCSV":"Download CSV","downloadJPEG":"Download JPEG image","downloadPDF":"Download PDF document","downloadPNG":"Download PNG image","downloadSVG":"Download SVG vector image","downloadXLS":"Download XLS","drillUpText":"◁ Back to {series.name}","exitFullscreen":"Exit from full screen","exportData":{"annotationHeader":"Annotations","categoryDatetimeHeader":"DateTime","categoryHeader":"Category"},"hideData":"Hide data table","invalidDate":null,"loading":"Loading...","months":["January","February","March","April","May","June","July","August","September","October","November","December"],"noData":"No data to display","numericSymbolMagnitude":1000,"numericSymbols":["k","M","G","T","P","E"],"printChart":"Print chart","resetZoom":"Reset zoom","resetZoomTitle":"Reset zoom level 1:1","shortMonths":["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],"shortWeekdays":["Sat","Sun","Mon","Tue","Wed","Thu","Fri"],"thousandsSep":" ","viewData":"View data table","viewFullscreen":"View in full screen","weekdays":["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]}},"type":"chart","fonts":[],"debug":false},"evals":["hc_opts.tooltip.formatter"],"jsHooks":[]}</script>
@@ -450,7 +448,7 @@ attitude questions. In general, we recommend to have one battery per
 chart. But, if you really want to have different responses in the same
 chart, then you’ll need to standardize the response labels before
 charting, especially if using SPSS data.</p>
-<div class="sourceCode" id="cb74"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb73"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#TODO: this chart I dont get it has so many different scales, I think ideally should only be used with same scale?</span></span>
 <span><span class="co"># Standardize responses before charting</span></span>
 <span><span class="va">gss_standardized</span> <span class="op">&lt;-</span> <span class="va">gss_likert</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
@@ -487,49 +485,49 @@ charting, especially if using SPSS data.</p>
 <span>      <span class="cn">TRUE</span> <span class="op">~</span> <span class="va">happy_1a_char</span></span>
 <span>    <span class="op">)</span></span>
 <span>  <span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb75"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb74"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Check what the actual labels are after conversion</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"Trust labels:\n"</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Trust labels:</span></span></code></pre>
-<div class="sourceCode" id="cb77"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb76"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">gss_standardized</span><span class="op">$</span><span class="va">trust_1a_char</span>, useNA <span class="op">=</span> <span class="st">"always"</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## </span></span>
 <span><span class="co">## can't be too careful          can't trust              depends </span></span>
 <span><span class="co">##                 1244                  623                   79 </span></span>
 <span><span class="co">##                 &lt;NA&gt; </span></span>
 <span><span class="co">##                  921</span></span></code></pre>
-<div class="sourceCode" id="cb79"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb78"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"\nFair labels:\n"</span><span class="op">)</span> </span></code></pre></div>
 <pre><code><span><span class="co">## </span></span>
 <span><span class="co">## Fair labels:</span></span></code></pre>
-<div class="sourceCode" id="cb81"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb80"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">gss_standardized</span><span class="op">$</span><span class="va">fair_1a_char</span>, useNA <span class="op">=</span> <span class="st">"always"</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## </span></span>
 <span><span class="co">##                     depends would take advantage of you </span></span>
 <span><span class="co">##                         114                         797 </span></span>
 <span><span class="co">##        would try to be fair                        &lt;NA&gt; </span></span>
 <span><span class="co">##                        1028                         928</span></span></code></pre>
-<div class="sourceCode" id="cb83"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb82"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"\nHelpful labels:\n"</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## </span></span>
 <span><span class="co">## Helpful labels:</span></span></code></pre>
-<div class="sourceCode" id="cb85"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb84"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">gss_standardized</span><span class="op">$</span><span class="va">helpful_1a_char</span>, useNA <span class="op">=</span> <span class="st">"always"</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## </span></span>
 <span><span class="co">##                    depends looking out for themselves </span></span>
 <span><span class="co">##                        137                        892 </span></span>
 <span><span class="co">##          try to be helpful                       &lt;NA&gt; </span></span>
 <span><span class="co">##                        917                        921</span></span></code></pre>
-<div class="sourceCode" id="cb87"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb86"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"\nHappy labels:\n"</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## </span></span>
 <span><span class="co">## Happy labels:</span></span></code></pre>
-<div class="sourceCode" id="cb89"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb88"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">gss_standardized</span><span class="op">$</span><span class="va">happy_1a_char</span>, useNA <span class="op">=</span> <span class="st">"always"</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## </span></span>
 <span><span class="co">## not too happy  pretty happy    very happy          &lt;NA&gt; </span></span>
 <span><span class="co">##           452          1601           806             8</span></span></code></pre>
-<div class="sourceCode" id="cb91"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb90"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Then use the standardized versions</span></span>
 <span><span class="va">standardized_questions</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"trust_1a_std"</span>, <span class="st">"fair_1a_std"</span>, <span class="st">"helpful_1a_std"</span>, <span class="st">"happy_1a_std"</span><span class="op">)</span></span>
 <span></span>
@@ -568,7 +566,7 @@ charting, especially if using SPSS data.</p>
 <h3 id="example-7-demographic-subgroup-analysis">Example 7: Demographic Subgroup Analysis<a class="anchor" aria-label="anchor" href="#example-7-demographic-subgroup-analysis"></a>
 </h3>
 <p>Let’s create separate charts for different demographic groups.</p>
-<div class="sourceCode" id="cb92"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb91"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## TODO: maybe we dont need the if logic here? I think is confusing for the tutorial.</span></span>
 <span><span class="co"># You probably noticed one of the response labels is incorrect. Let's fix that first. We can do this easily using mapping in the `create_barcharts` function.</span></span>
 <span><span class="va">trust_fix_map</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
@@ -579,25 +577,25 @@ charting, especially if using SPSS data.</p>
 <span><span class="co"># Next, let's examine what degree values actually exist</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"Degree values in data:\n"</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Degree values in data:</span></span></code></pre>
-<div class="sourceCode" id="cb94"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb93"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">gss_likert</span><span class="op">$</span><span class="va">degree_1a</span>, useNA <span class="op">=</span> <span class="st">"always"</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## </span></span>
 <span><span class="co">##    0    1    2    3    4 &lt;NA&gt; </span></span>
 <span><span class="co">##  328 1461  216  536  318    8</span></span></code></pre>
-<div class="sourceCode" id="cb96"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb95"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Convert degree to factor with labels to see what we're working with</span></span>
 <span><span class="va">degree_labels</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="fu">haven</span><span class="fu">::</span><span class="fu"><a href="https://forcats.tidyverse.org/reference/as_factor.html" class="external-link">as_factor</a></span><span class="op">(</span><span class="va">gss_likert</span><span class="op">$</span><span class="va">degree_1a</span>, levels <span class="op">=</span> <span class="st">"labels"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"\nDegree labels:\n"</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## </span></span>
 <span><span class="co">## Degree labels:</span></span></code></pre>
-<div class="sourceCode" id="cb98"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb97"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">degree_labels</span>, useNA <span class="op">=</span> <span class="st">"always"</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## degree_labels</span></span>
 <span><span class="co">## associate/junior college               bachelor's                 graduate </span></span>
 <span><span class="co">##                      216                      536                      318 </span></span>
 <span><span class="co">##              high school    less than high school                     &lt;NA&gt; </span></span>
 <span><span class="co">##                     1461                      328                        8</span></span></code></pre>
-<div class="sourceCode" id="cb100"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb99"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Create education groups based on actual data</span></span>
 <span><span class="va">gss_education</span> <span class="op">&lt;-</span> <span class="va">gss_likert</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
@@ -614,12 +612,12 @@ charting, especially if using SPSS data.</p>
 <span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"\nEducation groups:\n"</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## </span></span>
 <span><span class="co">## Education groups:</span></span></code></pre>
-<div class="sourceCode" id="cb102"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb101"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">gss_education</span><span class="op">$</span><span class="va">education_group</span>, useNA <span class="op">=</span> <span class="st">"always"</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## </span></span>
 <span><span class="co">##     College or More High School or Less                &lt;NA&gt; </span></span>
 <span><span class="co">##                1070                1789                   0</span></span></code></pre>
-<div class="sourceCode" id="cb104"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb103"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Filter for college or more</span></span>
 <span><span class="va">college_data</span> <span class="op">&lt;-</span> <span class="va">gss_education</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">education_group</span> <span class="op">==</span> <span class="st">"College or More"</span><span class="op">)</span></span>
@@ -627,14 +625,14 @@ charting, especially if using SPSS data.</p>
 <span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"\nCollege data rows:"</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">college_data</span><span class="op">)</span>, <span class="st">"\n"</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## </span></span>
 <span><span class="co">## College data rows: 1070</span></span></code></pre>
-<div class="sourceCode" id="cb106"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb105"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Filter for high school or less  </span></span>
 <span><span class="va">high_school_data</span> <span class="op">&lt;-</span> <span class="va">gss_education</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">education_group</span> <span class="op">==</span> <span class="st">"High School or Less"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"High school data rows:"</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">high_school_data</span><span class="op">)</span>, <span class="st">"\n"</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## High school data rows: 1789</span></span></code></pre>
-<div class="sourceCode" id="cb108"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb107"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Only create charts if we have sufficient data</span></span>
 <span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">college_data</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">50</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="va">plot8a</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_stackedbars.html">create_stackedbars</a></span><span class="op">(</span></span>
@@ -666,7 +664,7 @@ charting, especially if using SPSS data.</p>
 <span><span class="co">## <span style="color: #BB0000;">✖</span> Values: <span style="color: #0000BB;">1</span> and <span style="color: #0000BB;">2</span></span></span></code></pre>
 <pre><code><span><span class="co">## Note: Column 'response' was 'haven_labelled' and converted to factor (levels = values).</span></span></code></pre>
 <pre><code><span><span class="co">## [1] "College-educated chart:"</span></span></code></pre>
-<div class="sourceCode" id="cb113"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb112"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">high_school_data</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">50</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="va">plot8b</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_stackedbars.html">create_stackedbars</a></span><span class="op">(</span></span>
 <span>    data <span class="op">=</span> <span class="va">high_school_data</span>,</span>
@@ -707,7 +705,7 @@ charting, especially if using SPSS data.</p>
 </h3>
 <p>Let’s demonstrate how to work with related sets of questions (survey
 batteries).</p>
-<div class="sourceCode" id="cb117"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb116"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Create a social trust battery</span></span>
 <span><span class="va">trust_battery</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"trust_1a"</span>, <span class="st">"fair_1a"</span>, <span class="st">"helpful_1a"</span><span class="op">)</span></span>
 <span><span class="va">trust_battery_labels</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
@@ -740,7 +738,7 @@ batteries).</p>
 <span><span class="co">## <span style="color: #00BBBB;">ℹ</span> Labels for these values will be taken from `trust_1a`.</span></span>
 <span><span class="co">## <span style="color: #BB0000;">✖</span> Values: <span style="color: #0000BB;">1</span> and <span style="color: #0000BB;">2</span></span></span></code></pre>
 <pre><code><span><span class="co">## Note: Column 'response' was 'haven_labelled' and converted to factor (levels = values).</span></span></code></pre>
-<div class="sourceCode" id="cb121"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb120"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">plot9</span></span></code></pre></div>
 <div class="highchart html-widget html-fill-item" id="htmlwidget-25c3e940e6859592f801" style="width:700px;height:432.632880098888px;"></div>
 <script type="application/json" data-for="htmlwidget-25c3e940e6859592f801">{"x":{"hc_opts":{"chart":{"reflow":true},"title":{"text":"Social Trust Battery - Complete Analysis"},"yAxis":{"title":{"text":"Percentage of Respondents"},"type":"linear"},"credits":{"enabled":false},"exporting":{"enabled":false},"boost":{"enabled":false},"plotOptions":{"series":{"label":{"enabled":false},"turboThreshold":0,"showInLegend":true},"treemap":{"layoutAlgorithm":"squarified"},"scatter":{"marker":{"symbol":"circle"}},"column":{"stacking":"percent","dataLabels":{"enabled":true,"format":"{point.percentage:.1f}%","style":{"textOutline":"none","fontSize":"10px"}}}},"series":[{"name":"can't be too careful","data":[{".x_var_col":"Interpersonal Trust",".stack_var_col":"can't be too careful","n":1244,"y":1244,"name":"Interpersonal Trust"},{".x_var_col":"Perceived Fairness",".stack_var_col":"can't be too careful","n":1028,"y":1028,"name":"Perceived Fairness"},{".x_var_col":"Perceived Helpfulness",".stack_var_col":"can't be too careful","n":892,"y":892,"name":"Perceived Helpfulness"}],"type":"column"},{"name":"can't trust","data":[{".x_var_col":"Interpersonal Trust",".stack_var_col":"can't trust","n":623,"y":623,"name":"Interpersonal Trust"},{".x_var_col":"Perceived Fairness",".stack_var_col":"can't trust","n":797,"y":797,"name":"Perceived Fairness"},{".x_var_col":"Perceived Helpfulness",".stack_var_col":"can't trust","n":917,"y":917,"name":"Perceived Helpfulness"}],"type":"column"},{"name":"depends","data":[{".x_var_col":"Interpersonal Trust",".stack_var_col":"depends","n":79,"y":79,"name":"Interpersonal Trust"},{".x_var_col":"Perceived Fairness",".stack_var_col":"depends","n":114,"y":114,"name":"Perceived Fairness"},{".x_var_col":"Perceived Helpfulness",".stack_var_col":"depends","n":137,"y":137,"name":"Perceived Helpfulness"}],"type":"column"},{"name":"No answer","data":[{".x_var_col":"Interpersonal Trust",".stack_var_col":"No answer","n":921,"y":921,"name":"Interpersonal Trust"},{".x_var_col":"Perceived Fairness",".stack_var_col":"No answer","n":928,"y":928,"name":"Perceived Fairness"},{".x_var_col":"Perceived Helpfulness",".stack_var_col":"No answer","n":921,"y":921,"name":"Perceived Helpfulness"}],"type":"column"}],"xAxis":{"type":"category","title":{"text":"Trust Dimension"},"categories":["Interpersonal Trust","Perceived Fairness","Perceived Helpfulness"]},"subtitle":{"text":"Comprehensive view of social trust dimensions with enhanced tooltips"},"legend":{"title":{"text":"Response Category"}},"tooltip":{"useHTML":true,"formatter":"\n        function() {\n          // pull the question label from the axis categories array\n          var q = this.series.chart.xAxis[0].categories[this.point.x];\n          // the response (series name)\n          var r = this.series.name;\n          // format as percentage if percent‐stacked, else point.y\n          var v = (this.point.percentage !== undefined)\n                  ? Highcharts.numberFormat(this.point.percentage,1) + '%'\n                  : this.point.y;\n          return '<b>' + q + '<\/b><br/>' +\n                 r + ': <b>' + v + '<\/b>';\n        }\n      "},"colors":["#8c510a","#d8b365","#f6e8c3","darkgrey"]},"theme":{"chart":{"backgroundColor":"transparent"},"colors":["#7cb5ec","#434348","#90ed7d","#f7a35c","#8085e9","#f15c80","#e4d354","#2b908f","#f45b5b","#91e8e1"]},"conf_opts":{"global":{"Date":null,"VMLRadialGradientURL":"http =//code.highcharts.com/list(version)/gfx/vml-radial-gradient.png","canvasToolsURL":"http =//code.highcharts.com/list(version)/modules/canvas-tools.js","getTimezoneOffset":null,"timezoneOffset":0,"useUTC":true},"lang":{"contextButtonTitle":"Chart context menu","decimalPoint":".","downloadCSV":"Download CSV","downloadJPEG":"Download JPEG image","downloadPDF":"Download PDF document","downloadPNG":"Download PNG image","downloadSVG":"Download SVG vector image","downloadXLS":"Download XLS","drillUpText":"◁ Back to {series.name}","exitFullscreen":"Exit from full screen","exportData":{"annotationHeader":"Annotations","categoryDatetimeHeader":"DateTime","categoryHeader":"Category"},"hideData":"Hide data table","invalidDate":null,"loading":"Loading...","months":["January","February","March","April","May","June","July","August","September","October","November","December"],"noData":"No data to display","numericSymbolMagnitude":1000,"numericSymbols":["k","M","G","T","P","E"],"printChart":"Print chart","resetZoom":"Reset zoom","resetZoomTitle":"Reset zoom level 1:1","shortMonths":["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],"shortWeekdays":["Sat","Sun","Mon","Tue","Wed","Thu","Fri"],"thousandsSep":" ","viewData":"View data table","viewFullscreen":"View in full screen","weekdays":["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]}},"type":"chart","fonts":[],"debug":false},"evals":["hc_opts.tooltip.formatter"],"jsHooks":[]}</script>
@@ -753,7 +751,7 @@ batteries).</p>
 <h3 id="example-10-publication-ready-chart">Example 10: Publication-Ready Chart<a class="anchor" aria-label="anchor" href="#example-10-publication-ready-chart"></a>
 </h3>
 <p>Let’s create a fully customized, publication-ready chart.</p>
-<div class="sourceCode" id="cb122"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb121"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Create the most polished example</span></span>
 <span><span class="va">plot10</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_stackedbars.html">create_stackedbars</a></span><span class="op">(</span></span>
 <span>  data <span class="op">=</span> <span class="va">gss_likert</span>,</span>
@@ -783,7 +781,7 @@ batteries).</p>
 <span><span class="co">## <span style="color: #00BBBB;">ℹ</span> Labels for these values will be taken from `trust_1a`.</span></span>
 <span><span class="co">## <span style="color: #BB0000;">✖</span> Values: <span style="color: #0000BB;">1</span> and <span style="color: #0000BB;">2</span></span></span></code></pre>
 <pre><code><span><span class="co">## Note: Column 'response' was 'haven_labelled' and converted to factor (levels = values).</span></span></code></pre>
-<div class="sourceCode" id="cb126"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb125"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">plot10</span></span></code></pre></div>
 <div class="highchart html-widget html-fill-item" id="htmlwidget-3f27c09be0c60bb52829" style="width:700px;height:432.632880098888px;"></div>
 <script type="application/json" data-for="htmlwidget-3f27c09be0c60bb52829">{"x":{"hc_opts":{"chart":{"reflow":true},"title":{"text":"Social Capital Dimensions in American Society"},"yAxis":{"title":{"text":"Percentage of Respondents"},"type":"linear"},"credits":{"enabled":false},"exporting":{"enabled":false},"boost":{"enabled":false},"plotOptions":{"series":{"label":{"enabled":false},"turboThreshold":0,"showInLegend":true},"treemap":{"layoutAlgorithm":"squarified"},"scatter":{"marker":{"symbol":"circle"}},"column":{"stacking":"percent","dataLabels":{"enabled":true,"format":"{point.percentage:.1f}%","style":{"textOutline":"none","fontSize":"10px"}}}},"series":[{"name":"can't be too careful","data":[{".x_var_col":"Interpersonal Trust\n('Can most people be trusted?')",".stack_var_col":"can't be too careful","n":1244,"y":1244,"name":"Interpersonal Trust\n('Can most people be trusted?')"},{".x_var_col":"Perceived Fairness\n('Do people try to be fair?')",".stack_var_col":"can't be too careful","n":1028,"y":1028,"name":"Perceived Fairness\n('Do people try to be fair?')"},{".x_var_col":"Perceived Helpfulness\n('Are people helpful?')",".stack_var_col":"can't be too careful","n":892,"y":892,"name":"Perceived Helpfulness\n('Are people helpful?')"}],"type":"column"},{"name":"can't trust","data":[{".x_var_col":"Interpersonal Trust\n('Can most people be trusted?')",".stack_var_col":"can't trust","n":623,"y":623,"name":"Interpersonal Trust\n('Can most people be trusted?')"},{".x_var_col":"Perceived Fairness\n('Do people try to be fair?')",".stack_var_col":"can't trust","n":797,"y":797,"name":"Perceived Fairness\n('Do people try to be fair?')"},{".x_var_col":"Perceived Helpfulness\n('Are people helpful?')",".stack_var_col":"can't trust","n":917,"y":917,"name":"Perceived Helpfulness\n('Are people helpful?')"}],"type":"column"},{"name":"depends","data":[{".x_var_col":"Interpersonal Trust\n('Can most people be trusted?')",".stack_var_col":"depends","n":79,"y":79,"name":"Interpersonal Trust\n('Can most people be trusted?')"},{".x_var_col":"Perceived Fairness\n('Do people try to be fair?')",".stack_var_col":"depends","n":114,"y":114,"name":"Perceived Fairness\n('Do people try to be fair?')"},{".x_var_col":"Perceived Helpfulness\n('Are people helpful?')",".stack_var_col":"depends","n":137,"y":137,"name":"Perceived Helpfulness\n('Are people helpful?')"}],"type":"column"},{"name":"No response","data":[{".x_var_col":"Interpersonal Trust\n('Can most people be trusted?')",".stack_var_col":"No response","n":921,"y":921,"name":"Interpersonal Trust\n('Can most people be trusted?')"},{".x_var_col":"Perceived Fairness\n('Do people try to be fair?')",".stack_var_col":"No response","n":928,"y":928,"name":"Perceived Fairness\n('Do people try to be fair?')"},{".x_var_col":"Perceived Helpfulness\n('Are people helpful?')",".stack_var_col":"No response","n":921,"y":921,"name":"Perceived Helpfulness\n('Are people helpful?')"}],"type":"column"}],"xAxis":{"type":"category","title":{"text":"Social Trust Dimension"},"categories":["Interpersonal Trust\n('Can most people be trusted?')","Perceived Fairness\n('Do people try to be fair?')","Perceived Helpfulness\n('Are people helpful?')"]},"subtitle":{"text":"General Social Survey Panel 2016 (N = 2,867 respondents)\nPercentage distribution of responses across social trust measures"},"legend":{"title":{"text":"Response Category"}},"tooltip":{"useHTML":true,"formatter":"\n        function() {\n          // pull the question label from the axis categories array\n          var q = this.series.chart.xAxis[0].categories[this.point.x];\n          // the response (series name)\n          var r = this.series.name;\n          // format as percentage if percent‐stacked, else point.y\n          var v = (this.point.percentage !== undefined)\n                  ? Highcharts.numberFormat(this.point.percentage,1) + '%'\n                  : this.point.y;\n          return '<b>' + q + '<\/b><br/>' +\n                 r + ': <b>' + v + '<\/b>';\n        }\n      "},"colors":["#b2182b","#ef8a62","#fddbc7","darkgrey"]},"theme":{"chart":{"backgroundColor":"transparent"},"colors":["#7cb5ec","#434348","#90ed7d","#f7a35c","#8085e9","#f15c80","#e4d354","#2b908f","#f45b5b","#91e8e1"]},"conf_opts":{"global":{"Date":null,"VMLRadialGradientURL":"http =//code.highcharts.com/list(version)/gfx/vml-radial-gradient.png","canvasToolsURL":"http =//code.highcharts.com/list(version)/modules/canvas-tools.js","getTimezoneOffset":null,"timezoneOffset":0,"useUTC":true},"lang":{"contextButtonTitle":"Chart context menu","decimalPoint":".","downloadCSV":"Download CSV","downloadJPEG":"Download JPEG image","downloadPDF":"Download PDF document","downloadPNG":"Download PNG image","downloadSVG":"Download SVG vector image","downloadXLS":"Download XLS","drillUpText":"◁ Back to {series.name}","exitFullscreen":"Exit from full screen","exportData":{"annotationHeader":"Annotations","categoryDatetimeHeader":"DateTime","categoryHeader":"Category"},"hideData":"Hide data table","invalidDate":null,"loading":"Loading...","months":["January","February","March","April","May","June","July","August","September","October","November","December"],"noData":"No data to display","numericSymbolMagnitude":1000,"numericSymbols":["k","M","G","T","P","E"],"printChart":"Print chart","resetZoom":"Reset zoom","resetZoomTitle":"Reset zoom level 1:1","shortMonths":["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],"shortWeekdays":["Sat","Sun","Mon","Tue","Wed","Thu","Fri"],"thousandsSep":" ","viewData":"View data table","viewFullscreen":"View in full screen","weekdays":["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]}},"type":"chart","fonts":[],"debug":false},"evals":["hc_opts.tooltip.formatter"],"jsHooks":[]}</script>

@@ -71,23 +71,17 @@ add_text <- function(content_collection = NULL, text, ...) {
   if (is.null(content_collection)) {
     # Standalone mode - will return content_block
     was_null <- TRUE
-  } else if (inherits(content_collection, "content_collection")) {
+  } else if (is_content(content_collection)) {
     # Pipeable mode - will return content_collection
     is_pipeable <- TRUE
-  } else if (inherits(content_collection, "viz_collection")) {
-    # Convert viz_collection to content_collection
-    new_collection <- create_content()
-    new_collection$items <- list(content_collection)
-    content_collection <- new_collection
-    is_pipeable <- TRUE
-  } else if (inherits(content_collection, "content_block")) {
+  } else if (is_content_block(content_collection)) {
     # If it's a content block, wrap it in a collection
     old_block <- content_collection
     content_collection <- create_content()
     content_collection$items <- list(old_block)
     is_pipeable <- TRUE
   } else {
-    stop("First argument must be a content_collection, viz_collection, content_block, character string, or NULL")
+    stop("First argument must be a content collection, content_block, character string, or NULL")
   }
   
   # Combine all text arguments
@@ -166,23 +160,17 @@ add_image <- function(content_collection = NULL, src, alt = NULL, caption = NULL
   # If content_collection is NULL, we're in standalone mode
   if (is.null(content_collection)) {
     was_null <- TRUE
-  } else if (inherits(content_collection, "content_collection")) {
+  } else if (is_content(content_collection)) {
     # Pipeable mode
     is_pipeable <- TRUE
-  } else if (inherits(content_collection, "viz_collection")) {
-    # Convert viz_collection to content_collection
-    new_collection <- create_content()
-    new_collection$items <- list(content_collection)
-    content_collection <- new_collection
-    is_pipeable <- TRUE
-  } else if (inherits(content_collection, "content_block")) {
+  } else if (is_content_block(content_collection)) {
     # If it's a content block, wrap it in a collection
     old_block <- content_collection
     content_collection <- create_content()
     content_collection$items <- list(old_block)
     is_pipeable <- TRUE
-  } else if (!inherits(content_collection, "content_collection")) {
-    stop("First argument must be a content_collection, viz_collection, content_block, or NULL")
+  } else {
+    stop("First argument must be a content collection, content_block, or NULL")
   }
   
   # Validate src
@@ -241,7 +229,7 @@ add_image <- function(content_collection = NULL, src, alt = NULL, caption = NULL
 }
 
 #' Add callout box
-#' @param content A content_collection object
+#' @param content A content_collection or viz_collection object
 #' @param text Callout content
 #' @param type Callout type (note/tip/warning/caution/important)
 #' @param title Optional title
@@ -251,8 +239,8 @@ add_image <- function(content_collection = NULL, src, alt = NULL, caption = NULL
 #' @export
 add_callout <- function(content, text, type = c("note", "tip", "warning", "caution", "important"),
                         title = NULL, icon = NULL, collapse = FALSE) {
-  if (!inherits(content, "content_collection")) {
-    stop("First argument must be a content_collection object")
+  if (!is_content(content)) {
+    stop("First argument must be a content collection")
   }
   
   type <- match.arg(type)
@@ -271,13 +259,13 @@ add_callout <- function(content, text, type = c("note", "tip", "warning", "cauti
 }
 
 #' Add horizontal divider
-#' @param content A content_collection object
+#' @param content A content_collection or viz_collection object
 #' @param style Divider style ("default", "thick", "dashed", "dotted")
 #' @return Updated content_collection
 #' @export
 add_divider <- function(content, style = "default") {
-  if (!inherits(content, "content_collection")) {
-    stop("First argument must be a content_collection object")
+  if (!is_content(content)) {
+    stop("First argument must be a content collection")
   }
   
   divider_block <- structure(list(
@@ -290,7 +278,7 @@ add_divider <- function(content, style = "default") {
 }
 
 #' Add code block
-#' @param content A content_collection object
+#' @param content A content_collection or viz_collection object
 #' @param code Code content
 #' @param language Programming language for syntax highlighting
 #' @param caption Optional caption
@@ -298,8 +286,8 @@ add_divider <- function(content, style = "default") {
 #' @return Updated content_collection
 #' @export
 add_code <- function(content, code, language = "r", caption = NULL, filename = NULL) {
-  if (!inherits(content, "content_collection")) {
-    stop("First argument must be a content_collection object")
+  if (!is_content(content)) {
+    stop("First argument must be a content collection")
   }
   
   code_block <- structure(list(
@@ -315,13 +303,13 @@ add_code <- function(content, code, language = "r", caption = NULL, filename = N
 }
 
 #' Add vertical spacer
-#' @param content A content_collection object
+#' @param content A content_collection or viz_collection object
 #' @param height Height (CSS unit, e.g. "2rem", "50px")
 #' @return Updated content_collection
 #' @export
 add_spacer <- function(content, height = "2rem") {
-  if (!inherits(content, "content_collection")) {
-    stop("First argument must be a content_collection object")
+  if (!is_content(content)) {
+    stop("First argument must be a content collection")
   }
   
   spacer_block <- structure(list(
@@ -354,8 +342,8 @@ add_spacer <- function(content, height = "2rem") {
 #'   add_gt(mtcars, caption = "Motor Trend Cars")
 #' }
 add_gt <- function(content, gt_object, caption = NULL) {
-  if (!inherits(content, "content_collection")) {
-    stop("First argument must be a content_collection object")
+  if (!is_content(content)) {
+    stop("First argument must be a content collection")
   }
   
   # Accept both gt tables and data frames
@@ -395,8 +383,8 @@ add_gt <- function(content, gt_object, caption = NULL) {
 #'   add_reactable(mtcars)
 #' }
 add_reactable <- function(content, reactable_object) {
-  if (!inherits(content, "content_collection")) {
-    stop("First argument must be a content_collection object")
+  if (!is_content(content)) {
+    stop("First argument must be a content collection")
   }
   
   # Accept both reactable tables and data frames
@@ -419,8 +407,8 @@ add_reactable <- function(content, reactable_object) {
 #' @return Updated content_collection
 #' @export
 add_table <- function(content, table_object, caption = NULL) {
-  if (!inherits(content, "content_collection")) {
-    stop("First argument must be a content_collection object")
+  if (!is_content(content)) {
+    stop("First argument must be a content collection")
   }
   
   table_block <- structure(list(
@@ -458,8 +446,8 @@ add_table <- function(content, table_object, caption = NULL) {
 #'   add_DT(mtcars, options = list(pageLength = 5, scrollX = TRUE))
 #' }
 add_DT <- function(content, table_data, options = NULL, ...) {
-  if (!inherits(content, "content_collection")) {
-    stop("First argument must be a content_collection object")
+  if (!is_content(content)) {
+    stop("First argument must be a content collection")
   }
   
   dt_block <- structure(list(
@@ -482,8 +470,8 @@ add_DT <- function(content, table_data, options = NULL, ...) {
 #' @return Updated content_collection
 #' @export
 add_video <- function(content, src, caption = NULL, width = NULL, height = NULL) {
-  if (!inherits(content, "content_collection")) {
-    stop("First argument must be a content_collection object")
+  if (!is_content(content)) {
+    stop("First argument must be a content collection")
   }
   
   video_block <- structure(list(
@@ -506,8 +494,8 @@ add_video <- function(content, src, caption = NULL, width = NULL, height = NULL)
 #' @return Updated content_collection
 #' @export
 add_iframe <- function(content, src, height = "500px", width = "100%") {
-  if (!inherits(content, "content_collection")) {
-    stop("First argument must be a content_collection object")
+  if (!is_content(content)) {
+    stop("First argument must be a content collection")
   }
   
   iframe_block <- structure(list(
@@ -522,15 +510,15 @@ add_iframe <- function(content, src, height = "500px", width = "100%") {
 }
 
 #' Add collapsible accordion/details section
-#' @param content A content_collection object
+#' @param content A content_collection or viz_collection object
 #' @param title Section title
 #' @param text Section content
 #' @param open Whether section starts open (default: FALSE)
 #' @return Updated content_collection
 #' @export
 add_accordion <- function(content, title, text, open = FALSE) {
-  if (!inherits(content, "content_collection")) {
-    stop("First argument must be a content_collection object")
+  if (!is_content(content)) {
+    stop("First argument must be a content collection")
   }
   
   accordion_block <- structure(list(
@@ -545,15 +533,15 @@ add_accordion <- function(content, title, text, open = FALSE) {
 }
 
 #' Add card
-#' @param content A content_collection object
+#' @param content A content_collection or viz_collection object
 #' @param title Card title
 #' @param text Card content
 #' @param footer Optional card footer
 #' @return Updated content_collection
 #' @export
 add_card <- function(content, text, title = NULL, footer = NULL) {
-  if (!inherits(content, "content_collection")) {
-    stop("First argument must be a content_collection object")
+  if (!is_content(content)) {
+    stop("First argument must be a content collection")
   }
   
   card_block <- structure(list(
@@ -573,8 +561,8 @@ add_card <- function(content, text, title = NULL, footer = NULL) {
 #' @param html Raw HTML string
 #' @export
 add_html <- function(content, html) {
-  if (!inherits(content, "content_collection")) {
-    stop("First argument must be a content_collection object")
+  if (!is_content(content)) {
+    stop("First argument must be a content collection")
   }
   html_block <- structure(list(
     type = "html",
@@ -592,8 +580,8 @@ add_html <- function(content, html) {
 #' @param cite Optional citation URL
 #' @export
 add_quote <- function(content, quote, attribution = NULL, cite = NULL) {
-  if (!inherits(content, "content_collection")) {
-    stop("First argument must be a content_collection object")
+  if (!is_content(content)) {
+    stop("First argument must be a content collection")
   }
   quote_block <- structure(list(
     type = "quote",
@@ -612,8 +600,8 @@ add_quote <- function(content, quote, attribution = NULL, cite = NULL) {
 #' @param color Badge color (success, warning, danger, info, primary, secondary)
 #' @export
 add_badge <- function(content, text, color = "primary") {
-  if (!inherits(content, "content_collection")) {
-    stop("First argument must be a content_collection object")
+  if (!is_content(content)) {
+    stop("First argument must be a content collection")
   }
   badge_block <- structure(list(
     type = "badge",
@@ -634,8 +622,8 @@ add_badge <- function(content, text, color = "primary") {
 #' @param subtitle Optional subtitle text
 #' @export
 add_metric <- function(content, value, title, icon = NULL, color = NULL, subtitle = NULL) {
-  if (!inherits(content, "content_collection")) {
-    stop("First argument must be a content_collection object")
+  if (!is_content(content)) {
+    stop("First argument must be a content collection")
   }
   metric_block <- structure(list(
     type = "metric",
@@ -735,8 +723,8 @@ add_value_box <- function(content, title, value, logo_url = NULL, logo_text = NU
 #'   end_value_box_row()
 #' }
 add_value_box_row <- function(content) {
-  if (!inherits(content, "content_collection")) {
-    stop("First argument must be a content_collection object")
+  if (!is_content(content)) {
+    stop("First argument must be a content collection")
   }
   
   # Create a special row container that add_value_box will detect

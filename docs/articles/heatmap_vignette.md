@@ -40,8 +40,6 @@ First, let’s load the necessary libraries and the `gss_2020` dataset.
 
 ``` r
 library(gssr)
-#> Error in get(paste0(generic, ".", class), envir = get_method_env()) : 
-#>   object 'type_sum.accel' not found
 library(dplyr)
 library(highcharter)
 library(tidyr)

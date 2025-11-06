@@ -37,7 +37,7 @@ test_that("add_viz backward compatibility: text parameter maps correctly", {
   
   spec1 <- viz1$items[[1]]
   expect_equal(spec1$text_above_graphs, "Old way - above")
-  expect_null(spec1$text)
+  expect_equal(spec1$text, "Old way - above")  # Text is stored for backward compatibility
   
   # Test text = with text_position = "below"
   viz2 <- create_viz() %>%
@@ -50,7 +50,7 @@ test_that("add_viz backward compatibility: text parameter maps correctly", {
   
   spec2 <- viz2$items[[1]]
   expect_equal(spec2$text_below_graphs, "Old way - below")
-  expect_null(spec2$text)
+  expect_equal(spec2$text, "Old way - below")  # Text is stored for backward compatibility
 })
 
 test_that("add_viz text parameters work with tabgroups", {

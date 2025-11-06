@@ -44,41 +44,37 @@ Both dashboards use real data from the General Social Survey (GSS) and can be ge
 
 ## The Grammar of Dashboards
 
-Just as ggplot2 gave us a **grammar of graphics**, dashboardr has the ambitious goal of providing a **grammar of dashboards**. Instead of wrestling with configuration files and layout code, you compose dashboards from five intuitive building blocks:
+Just as ggplot2 gave us a **grammar of graphics**, dashboardr provides a **grammar of dashboards**. Instead of wrestling with configuration files and layout code, you compose dashboards from six intuitive building blocks:
 
-**Data** + **Visualizations** + **Layout** + **Navigation** + **Styling** = Dashboard
+**Data** + **Content** + **Visualizations** + **Layout** + **Navigation** + **Styling** = Dashboard
 
 ```{r quickstart}
 library(dashboardr)
 
-# Prepare Data
+# 1. Data - What you're working with
 data <- mtcars %>%
   mutate(
     cyl_label = paste(cyl, "cylinders"),
     am_label = ifelse(am == 0, "Automatic", "Manual")
   )
 
-# Create Visualizations + # Layout (e.g. via tabgroups)
-viz <- create_viz(
-  type = "histogram",
-  x_var = "mpg"
-) %>%
-  add_viz(
-    x_var = "hp",
-    title = "Horsepower",
-    tabgroup = "overview"
-  )
+# 2. Content - Visualizations + text + images (unified system)
+content <- create_viz(type = "histogram") %>%
+  add_viz(x_var = "mpg", title = "MPG Distribution", tabgroup = "overview") %>%
+  add_viz(x_var = "hp", title = "Horsepower", tabgroup = "overview") %>%
+  add_text("## Key Insights", "", "The data shows interesting patterns...") %>%
+  add_callout("Note: All visualizations are interactive!", type = "tip")
 
-# Create dashboard + Styling (tabset_theme) + Navigation (pages)
+# 3. Dashboard - Layout + Navigation + Styling
 dashboard <- create_dashboard(
   title = "Car Analysis Dashboard",
   output_dir = "my_dashboard",
-  tabset_theme = "modern"           
+  tabset_theme = "modern"  # Styling
 ) %>%
-  add_page(
+  add_page(  # Navigation
     "Analysis",
     data = data,
-    visualizations = viz,
+    content = content,  # Can use 'content' or 'visualizations' - they're interchangeable!
     is_landing_page = TRUE
   )
 

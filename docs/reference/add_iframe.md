@@ -5,7 +5,7 @@ Add iframe
 ## Usage
 
 ``` r
-add_iframe(content, url, height = "500px", width = "100%")
+add_iframe(content, src, height = "500px", width = "100%")
 ```
 
 ## Arguments
@@ -14,6 +14,10 @@ add_iframe(content, url, height = "500px", width = "100%")
 
   A content_collection object
 
+- src:
+
+  iframe source URL
+
 - height:
 
   iframe height (default: "500px")
@@ -21,10 +25,6 @@ add_iframe(content, url, height = "500px", width = "100%")
 - width:
 
   iframe width (default: "100%")
-
-- src:
-
-  iframe source URL
 
 ## Value
 

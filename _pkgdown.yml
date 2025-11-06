@@ -89,12 +89,14 @@ reference:
   - add_page
   - generate_dashboard
   - publish_dashboard
+  - add_loading_overlay
 
 - title: Demo Dashboards
   desc: Built-in demo dashboards showcasing package features
   contents:
   - tutorial_dashboard
   - showcase_dashboard
+  - ascor_dashboard
   
 - title: Visualization Creation
   desc: Functions for creating visualizations
@@ -104,6 +106,8 @@ reference:
   - add_viz
   - add_vizzes
   - combine_viz
+  - combine_content
+  - add_pagination
   - set_tabgroup_labels
   
 - title: Visualization Types
@@ -171,10 +175,21 @@ reference:
   - add_reactable
   - add_DT
   
+- title: Themes & Styling
+  desc: Functions for customizing dashboard appearance
+  contents:
+  - apply_theme
+  - theme_modern
+  - theme_clean
+  - theme_academic
+  - theme_ascor
+  - theme_uva
+  
 - title: Print Methods
   desc: S3 methods for displaying objects
   contents:
   - print.viz_collection
   - print.dashboard_project
   - "+.viz_collection"
+  - "+.content_collection"
 

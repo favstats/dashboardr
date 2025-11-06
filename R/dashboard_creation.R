@@ -35,13 +35,13 @@
 #' @param navbar_brand Custom brand text (optional)
 #' @param navbar_toggle Mobile menu toggle behavior (optional)
 #' @param max_width Maximum width for page content (e.g., "1400px", "90%") (optional)
-#' @param mainfont Font family for document text. Recommended: "Fira Sans" (smooth, modern), 
-#'   "Lato" (warm), "Source Sans Pro" (elegant), or "Roboto" (technical). 
+#' @param mainfont Font family for document text. Recommended: "Fira Sans" (smooth, modern),
+#'   "Lato" (warm), "Source Sans Pro" (elegant), or "Roboto" (technical).
 #'   Default is "Fira Sans" for a smooth, professional look.
 #' @param fontsize Base font size for document (default: "16px" for optimal readability)
 #' @param fontcolor Default text color (e.g., "#1f2937" for readable dark gray) (optional)
 #' @param linkcolor Default hyperlink color (e.g., "#2563eb" for vibrant blue) (optional)
-#' @param monofont Font family for code elements. Recommended: "Fira Code" (with ligatures), 
+#' @param monofont Font family for code elements. Recommended: "Fira Code" (with ligatures),
 #'   "JetBrains Mono", "Source Code Pro", or "IBM Plex Mono". Default: "Fira Code".
 #' @param monobackgroundcolor Background color for code elements (e.g., "#f8fafc" for subtle gray) (optional)
 #' @param linestretch Line height for text (default: 1.5) (optional)
@@ -99,7 +99,7 @@
 #'   value_boxes = TRUE,
 #'   shiny = TRUE
 #' )
-#' 
+#'
 #' # Dashboard with lazy loading for better performance
 #' dashboard <- create_dashboard(
 #'   "fast_dashboard",
@@ -108,7 +108,7 @@
 #'   lazy_load_margin = "300px",
 #'   lazy_load_tabs = TRUE
 #' )
-#' 
+#'
 #' # Professional styling with modern fonts (Google Fonts work great!)
 #' dashboard <- create_dashboard(
 #'   "styled_dashboard",
@@ -123,7 +123,7 @@
 #'   linestretch = 1.6,                # Comfortable line spacing
 #'   backgroundcolor = "#ffffff"
 #' )
-#' 
+#'
 #' # Alternative professional font combinations:
 #' # Option 1: Warm & Friendly
 #' dashboard <- create_dashboard(
@@ -132,19 +132,19 @@
 #'   mainfont = "Lato",                # Warm, approachable
 #'   monofont = "JetBrains Mono"       # Excellent for code
 #' )
-#' 
+#'
 #' # Option 2: Elegant & Refined
 #' dashboard <- create_dashboard(
-#'   "elegant_dashboard", 
+#'   "elegant_dashboard",
 #'   title = "Elegant Dashboard",
 #'   mainfont = "Source Sans Pro",     # Elegant, highly readable
 #'   monofont = "Source Code Pro"      # Matching code font
 #' )
-#' 
+#'
 #' # Option 3: Technical Feel
 #' dashboard <- create_dashboard(
 #'   "tech_dashboard",
-#'   title = "Tech Dashboard", 
+#'   title = "Tech Dashboard",
 #'   mainfont = "Roboto",              # Technical, clean
 #'   monofont = "JetBrains Mono"       # Excellent for code
 #' )
@@ -162,7 +162,7 @@ create_dashboard <- function(output_dir = "site",
                             theme = NULL,
                             custom_css = NULL,
                             custom_scss = NULL,
-                            tabset_theme = "modern",
+                            tabset_theme = "minimal",
                             tabset_colors = NULL,
                             author = NULL,
                             description = NULL,
@@ -369,7 +369,7 @@ create_dashboard <- function(output_dir = "site",
 #'   list of file paths for multiple datasets
 #' @param template Optional custom template file path
 #' @param params Parameters for template substitution
-#' @param visualizations viz_collection or list of visualization specs
+#' @param visualizations Content collection or list of visualization specs
 #' @param text Optional markdown text content for the page
 #' @param icon Optional iconify icon shortcode (e.g., "ph:users-three")
 #' @param is_landing_page Whether this should be the landing page (default: FALSE)
@@ -417,8 +417,8 @@ create_dashboard <- function(output_dir = "site",
 #'   list of file paths for multiple datasets
 #' @param template Optional custom template file path
 #' @param params Parameters for template substitution
-#' @param visualizations viz_collection or list of visualization specs
-#' @param content Alternative to visualizations - supports content_collection or viz_collection
+#' @param visualizations Content collection or list of visualization specs
+#' @param content Alternative to visualizations - supports content collections
 #' @param text Optional markdown text content for the page
 #' @param icon Optional iconify icon shortcode (e.g., "ph:users-three")
 #' @param is_landing_page Whether this should be the landing page (default: FALSE)
@@ -474,92 +474,136 @@ add_dashboard_page <- function(proj, name, data = NULL, data_path = NULL,
     stop("proj must be a dashboard_project object")
   }
 
-  # Handle content parameter (alias for visualizations, but supports mixed content)
-  # If both are provided, content takes precedence
+  # Handle content and visualizations parameters - make them completely interchangeable
+  # Both can accept viz_collection, content_collection, content_block, or list
   content_blocks <- NULL
-  
-  if (!is.null(content)) {
-    # content can be: content_collection, viz_collection, content_block, or list of mixed content
-    if (inherits(content, "content_collection")) {
-      # New unified content collection system
+
+  # Merge content and visualizations - if both provided, combine them
+  # If one is provided, use it as the primary source
+  combined_input <- NULL
+  if (!is.null(content) && !is.null(visualizations)) {
+    # Both provided - combine them
+    combined_input <- list(visualizations, content)
+  } else if (!is.null(content)) {
+    combined_input <- content
+  } else if (!is.null(visualizations)) {
+    combined_input <- visualizations
+  }
+
+  if (!is.null(combined_input)) {
+    # Process the combined input (can be content collection, content_block, or list)
+    if (is_content(combined_input)) {
+      # Unified content collection system
       viz_specs <- list()
       content_list <- list()
-      
-      for (item in content$items) {
-        if (!is.null(item$type) && (item$type == "viz" || item$type == "pagination")) {
-          # This is a viz item OR pagination marker - both go to viz_specs
-          viz_specs <- c(viz_specs, list(item))
-        } else if (inherits(item, "content_block")) {
+
+      for (item in combined_input$items) {
+        # Skip NULL items
+        if (is.null(item)) next
+
+        # Check class membership safely
+        is_coll <- is_content(item)
+        is_block <- is_content_block(item)
+
+        if (is_coll) {
+          # Nested content collection - extract its items
+          if (!is.null(item$items) && length(item$items) > 0) {
+            for (sub_item in item$items) {
+              # Skip NULL sub_items
+              if (is.null(sub_item)) next
+
+              # Check if it's a viz or pagination item
+              item_type <- if (is.list(sub_item) && !is.null(sub_item$type)) as.character(sub_item$type)[1] else NULL
+              if (!is.null(item_type) && length(item_type) == 1 && (item_type == "viz" || item_type == "pagination")) {
+                viz_specs <- c(viz_specs, list(sub_item))
+              } else if (is_content_block(sub_item)) {
+                content_list <- c(content_list, list(sub_item))
+              }
+            }
+          }
+        } else if (is_block) {
           # This is other content (text, image, etc)
           content_list <- c(content_list, list(item))
+        } else {
+          # Check if it's a viz or pagination item
+          item_type <- if (is.list(item) && !is.null(item$type)) as.character(item$type)[1] else NULL
+          if (!is.null(item_type) && length(item_type) == 1 && (item_type == "viz" || item_type == "pagination")) {
+            # This is a viz item OR pagination marker - both go to viz_specs
+            viz_specs <- c(viz_specs, list(item))
+          }
         }
       }
-      
+
       # Create a viz_collection from the viz specs if we found any
       if (length(viz_specs) > 0) {
         viz_list <- create_viz()
         viz_list$items <- viz_specs
         visualizations <- viz_list
+      } else {
+        # No viz items found - set visualizations to NULL
+        visualizations <- NULL
       }
-      
+
       # Store content blocks
       if (length(content_list) > 0) {
         content_blocks <- content_list
       }
-    } else if (inherits(content, "viz_collection")) {
-      # Backward compatibility: treat viz_collection as visualizations
-      if (is.null(visualizations)) {
-        visualizations <- content
-      }
-    } else if (inherits(content, "content_block")) {
+    } else if (is_content_block(combined_input)) {
       # Single content block
-      content_blocks <- list(content)
-    } else if (is.list(content)) {
+      content_blocks <- list(combined_input)
+    } else if (is.list(combined_input)) {
       # List of mixed content - extract viz_collections and content blocks
       viz_list <- NULL
       content_list <- list()
-      
-      for (item in content) {
-        if (inherits(item, "content_collection")) {
-          # Process content_collection - extract viz and content separately
-          for (sub_item in item$items) {
-            if (!is.null(sub_item$type) && (sub_item$type == "viz" || sub_item$type == "pagination")) {
-              # Add viz items AND pagination markers to viz_list
-              if (is.null(viz_list)) {
-                viz_list <- create_viz()
-                viz_list$items <- list(sub_item)
-              } else {
-                viz_list$items <- c(viz_list$items, list(sub_item))
+
+      for (item in combined_input) {
+        # Skip NULL items
+        if (is.null(item)) next
+
+        # Check class membership safely
+        is_coll <- is_content(item)
+        is_block <- is_content_block(item)
+
+        if (is_coll) {
+          # Process content collection - extract viz and content separately
+          if (!is.null(item$items) && length(item$items) > 0) {
+            for (sub_item in item$items) {
+              # Skip NULL sub_items
+              if (is.null(sub_item)) next
+
+              # Check if it's a viz or pagination item
+              item_type <- if (is.list(sub_item) && !is.null(sub_item$type)) as.character(sub_item$type)[1] else NULL
+              if (!is.null(item_type) && length(item_type) == 1 && (item_type == "viz" || item_type == "pagination")) {
+                # Add viz items AND pagination markers to viz_list
+                if (is.null(viz_list)) {
+                  viz_list <- create_viz()
+                  viz_list$items <- list(sub_item)
+                } else {
+                  viz_list$items <- c(viz_list$items, list(sub_item))
+                }
+              } else if (is_content_block(sub_item)) {
+                content_list <- c(content_list, list(sub_item))
               }
-            } else if (inherits(sub_item, "content_block")) {
-              content_list <- c(content_list, list(sub_item))
             }
           }
-        } else if (inherits(item, "viz_collection")) {
-          # Combine all viz_collections
-          if (is.null(viz_list)) {
-            viz_list <- item
-          } else {
-            viz_list <- combine_viz(viz_list, item)
-          }
-        } else if (inherits(item, "content_block")) {
+        } else if (is_block) {
           content_list <- c(content_list, list(item))
         } else {
-          stop("Content items must be viz_collection, content_collection, content_block, or list of these")
+          stop("content/visualizations items must be content collection, content_block, or list of these")
         }
       }
-      
+
       # Set visualizations if we found any
       if (!is.null(viz_list) && length(viz_list$items) > 0) {
         visualizations <- viz_list
       }
-      
+
       # Store content blocks
       if (length(content_list) > 0) {
         content_blocks <- content_list
       }
     } else {
-      stop("content must be a content_collection, viz_collection, content_block, or list of these")
+      stop("content/visualizations must be a content collection, content_block, or list of these")
     }
   }
 
@@ -687,9 +731,9 @@ add_dashboard_page <- function(proj, name, data = NULL, data_path = NULL,
 
   # Process visualization specifications
   viz_specs <- NULL
-  
+
   if (!is.null(visualizations)) {
-    if (inherits(visualizations, "viz_collection")) {
+    if (is_content(visualizations)) {
       viz_specs <- .process_visualizations(visualizations, data_path)
     }
   }
@@ -1080,7 +1124,7 @@ print.dashboard_project <- function(x, ...) {
 #' Displays a formatted summary of a visualization collection, including hierarchical
 #' tabgroup structure, visualization types, titles, filters, and defaults.
 #'
-#' @param x A viz_collection object created by \code{\link{create_viz}}.
+#' @param x A content collection created by \code{\link{create_viz}}.
 #' @param ... Additional arguments (currently ignored).
 #'
 #' @return Invisibly returns the input object \code{x}.

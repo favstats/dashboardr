@@ -5,7 +5,7 @@ Add video
 ## Usage
 
 ``` r
-add_video(content, url, caption = NULL, width = NULL, height = NULL)
+add_video(content, src, caption = NULL, width = NULL, height = NULL)
 ```
 
 ## Arguments
@@ -13,6 +13,10 @@ add_video(content, url, caption = NULL, width = NULL, height = NULL)
 - content:
 
   A content_collection object
+
+- src:
+
+  Video source URL or path
 
 - caption:
 
@@ -25,10 +29,6 @@ add_video(content, url, caption = NULL, width = NULL, height = NULL)
 - height:
 
   Optional height
-
-- src:
-
-  Video source URL or path
 
 ## Value
 

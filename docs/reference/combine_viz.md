@@ -1,6 +1,11 @@
 # Combine visualization collections
 
-Alternative function to combine viz_collection objects.
+This function has been superseded by
+[`combine_content()`](https://favstats.github.io/dashboardr/reference/combine_content.md).
+It still works but we recommend using
+[`combine_content()`](https://favstats.github.io/dashboardr/reference/combine_content.md)
+for new code as it handles all content types and attributes more
+reliably.
 
 ## Usage
 

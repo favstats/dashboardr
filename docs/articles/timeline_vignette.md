@@ -21,8 +21,6 @@ First, let’s load the required packages and define the function:
 
 ``` r
 library(dplyr)
-#> Error in get(paste0(generic, ".", class), envir = get_method_env()) : 
-#>   object 'type_sum.accel' not found
 library(highcharter)
 library(stringr)
 library(haven)

@@ -43,8 +43,24 @@ create_dashboard(
   repo_url = NULL,
   repo_actions = NULL,
   navbar_style = NULL,
+  navbar_bg_color = NULL,
+  navbar_text_color = NULL,
+  navbar_text_hover_color = NULL,
   navbar_brand = NULL,
   navbar_toggle = NULL,
+  max_width = NULL,
+  mainfont = "Fira Sans",
+  fontsize = "16px",
+  fontcolor = NULL,
+  linkcolor = NULL,
+  monofont = "Fira Code",
+  monobackgroundcolor = NULL,
+  linestretch = NULL,
+  backgroundcolor = NULL,
+  margin_left = NULL,
+  margin_right = NULL,
+  margin_top = NULL,
+  margin_bottom = NULL,
   math = NULL,
   code_folding = NULL,
   code_tools = NULL,
@@ -65,7 +81,12 @@ create_dashboard(
   allow_inside_pkg = FALSE,
   warn_before_overwrite = TRUE,
   sidebar_groups = NULL,
-  navbar_sections = NULL
+  navbar_sections = NULL,
+  lazy_load_charts = FALSE,
+  lazy_load_margin = "200px",
+  lazy_load_tabs = NULL,
+  lazy_debug = FALSE,
+  pagination_separator = "of"
 )
 ```
 
@@ -155,6 +176,21 @@ create_dashboard(
 
   Navbar style (default, dark, light) (optional)
 
+- navbar_bg_color:
+
+  Navbar background color (CSS color value, e.g., "#2563eb", "rgb(37,
+  99, 235)") (optional)
+
+- navbar_text_color:
+
+  Navbar text color (CSS color value, e.g., "#ffffff", "rgb(255, 255,
+  255)") (optional)
+
+- navbar_text_hover_color:
+
+  Navbar text color on hover (CSS color value, e.g., "#f0f0f0")
+  (optional)
+
 - navbar_brand:
 
   Custom brand text (optional)
@@ -162,6 +198,63 @@ create_dashboard(
 - navbar_toggle:
 
   Mobile menu toggle behavior (optional)
+
+- max_width:
+
+  Maximum width for page content (e.g., "1400px", "90%") (optional)
+
+- mainfont:
+
+  Font family for document text. Recommended: "Fira Sans" (smooth,
+  modern), "Lato" (warm), "Source Sans Pro" (elegant), or "Roboto"
+  (technical). Default is "Fira Sans" for a smooth, professional look.
+
+- fontsize:
+
+  Base font size for document (default: "16px" for optimal readability)
+
+- fontcolor:
+
+  Default text color (e.g., "#1f2937" for readable dark gray) (optional)
+
+- linkcolor:
+
+  Default hyperlink color (e.g., "#2563eb" for vibrant blue) (optional)
+
+- monofont:
+
+  Font family for code elements. Recommended: "Fira Code" (with
+  ligatures), "JetBrains Mono", "Source Code Pro", or "IBM Plex Mono".
+  Default: "Fira Code".
+
+- monobackgroundcolor:
+
+  Background color for code elements (e.g., "#f8fafc" for subtle gray)
+  (optional)
+
+- linestretch:
+
+  Line height for text (default: 1.5) (optional)
+
+- backgroundcolor:
+
+  Background color for document (optional)
+
+- margin_left:
+
+  Left margin for document body (optional)
+
+- margin_right:
+
+  Right margin for document body (optional)
+
+- margin_top:
+
+  Top margin for document body (optional)
+
+- margin_bottom:
+
+  Bottom margin for document body (optional)
 
 - math:
 
@@ -243,6 +336,34 @@ create_dashboard(
 
   List of navbar sections that link to sidebar groups (optional)
 
+- lazy_load_charts:
+
+  Enable lazy loading for charts (default: FALSE). When TRUE, charts
+  only render when they scroll into view, dramatically improving initial
+  page load time for pages with many visualizations.
+
+- lazy_load_margin:
+
+  Distance from viewport to start loading charts (default: "200px").
+  Larger values mean charts start loading earlier.
+
+- lazy_load_tabs:
+
+  Only render charts in the active tab (default: TRUE when
+  lazy_load_charts is TRUE). Charts in hidden tabs load when the tab is
+  clicked.
+
+- lazy_debug:
+
+  Enable debug logging to browser console for lazy loading (default:
+  FALSE). When TRUE, prints timing information for each chart load.
+
+- pagination_separator:
+
+  Text to show in pagination navigation (e.g., "of" → "1 of 3"),
+  default: "of". Applies to all paginated pages unless overridden at
+  page level.
+
 ## Value
 
 A dashboard_project object
@@ -270,6 +391,55 @@ dashboard <- create_dashboard(
   google_analytics = "GA-XXXXXXXXX",
   value_boxes = TRUE,
   shiny = TRUE
+)
+
+# Dashboard with lazy loading for better performance
+dashboard <- create_dashboard(
+  "fast_dashboard",
+  "High Performance Dashboard",
+  lazy_load_charts = TRUE,
+  lazy_load_margin = "300px",
+  lazy_load_tabs = TRUE
+)
+
+# Professional styling with modern fonts (Google Fonts work great!)
+dashboard <- create_dashboard(
+  "styled_dashboard",
+  "Beautifully Styled Dashboard",
+  navbar_bg_color = "#1e40af",     # Deep blue navbar
+  mainfont = "Fira Sans",           # Smooth, modern (default choice) ⭐
+  fontsize = "16px",
+  fontcolor = "#1f2937",            # Dark gray for readability
+  linkcolor = "#2563eb",            # Vibrant blue links
+  monofont = "Fira Code",           # Code font with ligatures
+  monobackgroundcolor = "#f8fafc",  # Light gray code background
+  linestretch = 1.6,                # Comfortable line spacing
+  backgroundcolor = "#ffffff"
+)
+
+# Alternative professional font combinations:
+# Option 1: Warm & Friendly
+dashboard <- create_dashboard(
+  "friendly_dashboard",
+  title = "Friendly Dashboard",
+  mainfont = "Lato",                # Warm, approachable
+  monofont = "JetBrains Mono"       # Excellent for code
+)
+
+# Option 2: Elegant & Refined
+dashboard <- create_dashboard(
+  "elegant_dashboard", 
+  title = "Elegant Dashboard",
+  mainfont = "Source Sans Pro",     # Elegant, highly readable
+  monofont = "Source Code Pro"      # Matching code font
+)
+
+# Option 3: Technical Feel
+dashboard <- create_dashboard(
+  "tech_dashboard",
+  title = "Tech Dashboard", 
+  mainfont = "Roboto",              # Technical, clean
+  monofont = "JetBrains Mono"       # Excellent for code
 )
 } # }
 ```

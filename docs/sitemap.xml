@@ -56,8 +56,10 @@
 <url><loc>https://favstats.github.io/dashboardr/reference/add_html.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/add_iframe.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/add_image.html</loc></url>
+<url><loc>https://favstats.github.io/dashboardr/reference/add_loading_overlay.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/add_metric.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/add_page.html</loc></url>
+<url><loc>https://favstats.github.io/dashboardr/reference/add_pagination.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/add_quote.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/add_reactable.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/add_spacer.html</loc></url>
@@ -68,8 +70,11 @@
 <url><loc>https://favstats.github.io/dashboardr/reference/add_video.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/add_viz.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/add_vizzes.html</loc></url>
+<url><loc>https://favstats.github.io/dashboardr/reference/apply_theme.html</loc></url>
+<url><loc>https://favstats.github.io/dashboardr/reference/ascor_dashboard.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/card.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/card_row.html</loc></url>
+<url><loc>https://favstats.github.io/dashboardr/reference/combine_content.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/combine_viz.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/create_bar.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/create_blockquote.html</loc></url>
@@ -83,6 +88,7 @@
 <url><loc>https://favstats.github.io/dashboardr/reference/create_timeline.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/create_viz.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/dot-check_for_icons.html</loc></url>
+<url><loc>https://favstats.github.io/dashboardr/reference/dot-extract_all_insertion_indices.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/dot-generate_DT_block.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/dot-generate_accordion_block.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/dot-generate_badge_block.html</loc></url>
@@ -96,7 +102,11 @@
 <url><loc>https://favstats.github.io/dashboardr/reference/dot-generate_html_block.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/dot-generate_iframe_block.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/dot-generate_image_block.html</loc></url>
+<url><loc>https://favstats.github.io/dashboardr/reference/dot-generate_lazy_load_script.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/dot-generate_metric_block.html</loc></url>
+<url><loc>https://favstats.github.io/dashboardr/reference/dot-generate_paginated_page_files.html</loc></url>
+<url><loc>https://favstats.github.io/dashboardr/reference/dot-generate_pagination_css.html</loc></url>
+<url><loc>https://favstats.github.io/dashboardr/reference/dot-generate_pagination_nav.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/dot-generate_quarto_yml.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/dot-generate_quote_block.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/dot-generate_reactable_block.html</loc></url>
@@ -106,6 +116,7 @@
 <url><loc>https://favstats.github.io/dashboardr/reference/dot-generate_value_box_block.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/dot-generate_value_box_row_block.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/dot-generate_video_block.html</loc></url>
+<url><loc>https://favstats.github.io/dashboardr/reference/dot-has_pagination_markers.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/dot-install_iconify_extension.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/dot-process_template.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/dot-process_visualizations.html</loc></url>
@@ -116,6 +127,7 @@
 <url><loc>https://favstats.github.io/dashboardr/reference/dot-progress_step.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/dot-serialize_arg.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/dot-show_dashboard_summary.html</loc></url>
+<url><loc>https://favstats.github.io/dashboardr/reference/dot-split_by_pagination.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/end_value_box_row.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/generate_dashboard.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/icon.html</loc></url>
@@ -124,6 +136,7 @@
 <url><loc>https://favstats.github.io/dashboardr/reference/navbar_menu.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/navbar_section.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/pipe.html</loc></url>
+<url><loc>https://favstats.github.io/dashboardr/reference/plus-.content_collection.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/plus-.viz_collection.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/print.dashboard_project.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/print.viz_collection.html</loc></url>
@@ -133,6 +146,11 @@
 <url><loc>https://favstats.github.io/dashboardr/reference/sidebar_group.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/spec_viz.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/text_lines.html</loc></url>
+<url><loc>https://favstats.github.io/dashboardr/reference/theme_academic.html</loc></url>
+<url><loc>https://favstats.github.io/dashboardr/reference/theme_ascor.html</loc></url>
+<url><loc>https://favstats.github.io/dashboardr/reference/theme_clean.html</loc></url>
+<url><loc>https://favstats.github.io/dashboardr/reference/theme_modern.html</loc></url>
+<url><loc>https://favstats.github.io/dashboardr/reference/theme_uva.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/tutorial_dashboard.html</loc></url>
 </urlset>
 
