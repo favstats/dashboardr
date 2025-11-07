@@ -14,7 +14,7 @@ add_callout(
 )
 }
 \arguments{
-\item{content}{A content_collection object}
+\item{content}{A content_collection or viz_collection object}
 
 \item{text}{Callout content}
 

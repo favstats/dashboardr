@@ -7,7 +7,7 @@
 add_spacer(content, height = "2rem")
 }
 \arguments{
-\item{content}{A content_collection object}
+\item{content}{A content_collection or viz_collection object}
 
 \item{height}{Height (CSS unit, e.g. "2rem", "50px")}
 }

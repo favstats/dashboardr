@@ -7,7 +7,7 @@
 add_accordion(content, title, text, open = FALSE)
 }
 \arguments{
-\item{content}{A content_collection object}
+\item{content}{A content_collection or viz_collection object}
 
 \item{title}{Section title}
 

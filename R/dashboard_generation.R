@@ -155,6 +155,22 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
     if (!is.null(proj$favicon) && file.exists(proj$favicon)) {
       file.copy(proj$favicon, file.path(output_dir, basename(proj$favicon)), overwrite = TRUE)
     }
+    
+    # Copy modal assets (CSS and JS) to assets directory
+    assets_dir <- file.path(output_dir, "assets")
+    if (!dir.exists(assets_dir)) {
+      dir.create(assets_dir, recursive = TRUE)
+    }
+    
+    modal_css <- system.file("assets", "modal.css", package = "dashboardr")
+    modal_js <- system.file("assets", "modal.js", package = "dashboardr")
+    
+    if (file.exists(modal_css)) {
+      file.copy(modal_css, file.path(assets_dir, "modal.css"), overwrite = TRUE)
+    }
+    if (file.exists(modal_js)) {
+      file.copy(modal_js, file.path(assets_dir, "modal.js"), overwrite = TRUE)
+    }
 
     # Copy tabset theme SCSS file if using a built-in theme
     if (!is.null(proj$tabset_theme) && proj$tabset_theme != "none") {

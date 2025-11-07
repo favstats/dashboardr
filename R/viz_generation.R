@@ -82,11 +82,6 @@
   # Remove nested_children from spec - it's only for structure, not for visualization generation
   spec <- spec[names(spec) != "nested_children"]
 
-  # Add text_above_title if provided (before the title/header)
-  if (!is.null(spec$text_above_title) && nzchar(spec$text_above_title)) {
-    lines <- c(lines, "", spec$text_above_title, "")
-  }
-
   # Add section header with icon if provided (skip if in tabgroup)
   if (!skip_header && !is.null(spec$title)) {
     header_text <- spec$title
@@ -101,20 +96,15 @@
     lines <- c(lines, paste0("## ", header_text), "")
   }
 
-  # Add text_above_tabs if provided (only applies when there's a tabgroup)
-  if (!is.null(spec$text_above_tabs) && nzchar(spec$text_above_tabs) && !is.null(spec$tabgroup)) {
-    lines <- c(lines, "", spec$text_above_tabs, "")
-  }
-
-  # Add text_above_graphs if provided
-  if (!is.null(spec$text_above_graphs) && nzchar(spec$text_above_graphs)) {
-    lines <- c(lines, "", spec$text_above_graphs, "")
+  # Add text_before_viz if provided
+  if (!is.null(spec$text_before_viz) && nzchar(spec$text_before_viz)) {
+    lines <- c(lines, "", spec$text_before_viz, "")
   }
   
   # Backward compatibility: handle old text parameter
   if (!is.null(spec$text) && nzchar(spec$text)) {
     text_position <- spec$text_position %||% "above"
-    if (text_position == "above" && is.null(spec$text_above_graphs)) {
+    if (text_position == "above" && is.null(spec$text_before_viz)) {
       lines <- c(lines, "", spec$text, "")
     }
   }
@@ -160,15 +150,15 @@
     )
   }
 
-  # Add text_below_graphs if provided
-  if (!is.null(spec$text_below_graphs) && nzchar(spec$text_below_graphs)) {
-    lines <- c(lines, "", spec$text_below_graphs, "")
+  # Add text_after_viz if provided
+  if (!is.null(spec$text_after_viz) && nzchar(spec$text_after_viz)) {
+    lines <- c(lines, "", spec$text_after_viz, "")
   }
   
   # Backward compatibility: handle old text parameter with text_position = "below"
   if (!is.null(spec$text) && nzchar(spec$text)) {
     text_position <- spec$text_position %||% "above"
-    if (text_position == "below" && is.null(spec$text_below_graphs)) {
+    if (text_position == "below" && is.null(spec$text_after_viz)) {
       lines <- c(lines, "", spec$text, "")
     }
   }
@@ -283,7 +273,7 @@
   }
 
   for (param in names(spec)) {
-    if (!param %in% c("type", "viz_type", "data_path", "tabgroup", "text", "icon", "text_position", "text_above_title", "text_above_tabs", "text_above_graphs", "text_below_graphs", "height", "filter", "data", "has_data", "multi_dataset", "title_tabset", "nested_children", "drop_na_vars", ".insertion_index", ".min_index")) { # Exclude internal parameters
+    if (!param %in% c("type", "viz_type", "data_path", "tabgroup", "text", "icon", "text_position", "text_before_tabset", "text_after_tabset", "text_before_viz", "text_after_viz", "height", "filter", "data", "has_data", "multi_dataset", "title_tabset", "nested_children", "drop_na_vars", ".insertion_index", ".min_index")) { # Exclude internal parameters
       args[[param]] <- .serialize_arg(spec[[param]])
     }
   }
@@ -501,6 +491,40 @@
     lines <- c(lines, paste0("## ", tabgroup_spec$name), "")
   }
 
+  # Check if any viz in this tabgroup has text_before_tabset
+  # This should appear right after the section header, before the tabset opens
+  # Need to search recursively through nested tabgroups
+  text_before_tabset <- NULL
+  text_after_tabset <- NULL
+  
+  # Helper function to recursively find text in nested structures
+  find_text_recursive <- function(items) {
+    for (item in items) {
+      # Check the item itself
+      if (!is.null(item$text_before_tabset) && nzchar(item$text_before_tabset)) {
+        return(list(before = item$text_before_tabset, after = item$text_after_tabset))
+      }
+      # If it's a nested tabgroup, search its visualizations
+      if (!is.null(item$visualizations) && length(item$visualizations) > 0) {
+        result <- find_text_recursive(item$visualizations)
+        if (!is.null(result$before)) {
+          return(result)
+        }
+      }
+    }
+    return(list(before = NULL, after = NULL))
+  }
+  
+  # Search for text recursively
+  text_result <- find_text_recursive(tabgroup_spec$visualizations)
+  text_before_tabset <- text_result$before
+  text_after_tabset <- text_result$after
+
+  # Add text_before_tabset if provided (RIGHT after header, BEFORE tabset opens)
+  if (!is.null(text_before_tabset)) {
+    lines <- c(lines, "", text_before_tabset, "")
+  }
+
   # Start tabset (only shows tabs if >1 viz)
   lines <- c(lines, "", "::: {.panel-tabset}", "")
 
@@ -690,6 +714,11 @@
   # Close tabset
   lines <- c(lines, "", ":::", "")
 
+  # Add text_after_tabset if provided
+  if (!is.null(text_after_tabset)) {
+    lines <- c(lines, "", text_after_tabset, "")
+  }
+
   lines
 }
 
@@ -723,6 +752,30 @@
     return(lines)
   }
   
+  # Check if any viz in this tabgroup has text_before_tabset or text_after_tabset
+  # NOTE: For nested tabgroups, text_before_tabset should be handled by the parent
+  # Only add it here if we're at the root level (depth == 0)
+  text_before_tabset <- NULL
+  text_after_tabset <- NULL
+  
+  # Only check for text positioning at root level to avoid duplication
+  if (depth == 0) {
+    for (viz_item in tabgroup_spec$visualizations) {
+      if (!is.null(viz_item$text_before_tabset) && nzchar(viz_item$text_before_tabset)) {
+        text_before_tabset <- viz_item$text_before_tabset
+        break  # Use the first one found
+      }
+      if (!is.null(viz_item$text_after_tabset) && nzchar(viz_item$text_after_tabset)) {
+        text_after_tabset <- viz_item$text_after_tabset
+      }
+    }
+  
+    # Add text_before_tabset if provided
+    if (!is.null(text_before_tabset)) {
+      lines <- c(lines, "", text_before_tabset, "")
+    }
+  }
+
   # Multiple items or contains nested tabgroups - create tabset
   lines <- c(lines, "", "::: {.panel-tabset}", "")
 
@@ -756,38 +809,30 @@
       
     } else {
       # Regular visualization
-      # When inside nested tabgroups (depth > 0), don't create an extra header
-      # The tab name (from title_tabset or tabgroup label) is sufficient
-      # Only create a header if explicitly requested via title_tabset or if at root level
+      # Inside a tabset, ALWAYS add tab headers for each visualization
+      # Otherwise Quarto won't render them as separate tabs
       
-      # Check if this should have a header
-      # Skip header if: we're nested (depth > 0) AND no title_tabset specified
-      # This prevents "Strategic Information Skills" from appearing as an extra tab level
-      should_add_header <- depth == 0 || !is.null(viz$title_tabset)
-      
-      if (should_add_header) {
-        viz_title <- if (!is.null(viz$title_tabset) && nzchar(viz$title_tabset)) {
-          viz$title_tabset
-        } else if (is.null(viz$title) || length(viz$title) == 0 || viz$title == "") {
-          paste0("Chart ", i)
-        } else {
-          viz$title
-        }
-
-        # Add icon to tab header if provided
-        if (!is.null(viz$icon)) {
-          icon_shortcode <- if (grepl("{{< iconify", viz$icon, fixed = TRUE)) {
-            viz$icon
-          } else {
-            icon(viz$icon)
-          }
-          viz_title <- paste0(icon_shortcode, " ", viz_title)
-        }
-
-        # Use appropriate header level based on depth
-        header_level <- paste0(rep("#", 4 + depth), collapse = "")
-        lines <- c(lines, paste0(header_level, " ", viz_title), "")
+      viz_title <- if (!is.null(viz$title_tabset) && nzchar(viz$title_tabset)) {
+        viz$title_tabset
+      } else if (!is.null(viz$title) && length(viz$title) > 0 && nzchar(viz$title)) {
+        viz$title
+      } else {
+        paste0("Chart ", i)
       }
+
+      # Add icon to tab header if provided
+      if (!is.null(viz$icon)) {
+        icon_shortcode <- if (grepl("{{< iconify", viz$icon, fixed = TRUE)) {
+          viz$icon
+        } else {
+          icon(viz$icon)
+        }
+        viz_title <- paste0(icon_shortcode, " ", viz_title)
+      }
+
+      # Use appropriate header level based on depth
+      header_level <- paste0(rep("#", 4 + depth), collapse = "")
+      lines <- c(lines, paste0(header_level, " ", viz_title), "")
 
       # Generate visualization code
       # Apply lazy loading to non-first tabs if enabled
@@ -803,6 +848,11 @@
 
   # Close tabset
   lines <- c(lines, "", ":::", "")
+
+  # Add text_after_tabset if provided (only at root level to avoid duplication)
+  if (depth == 0 && !is.null(text_after_tabset)) {
+    lines <- c(lines, "", text_after_tabset, "")
+  }
 
   lines
 }

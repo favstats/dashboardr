@@ -538,6 +538,13 @@ add_dashboard_page <- function(proj, name, data = NULL, data_path = NULL,
       if (length(viz_specs) > 0) {
         viz_list <- create_viz()
         viz_list$items <- viz_specs
+        # Preserve tabgroup_labels and defaults from original collection
+        if (!is.null(combined_input$tabgroup_labels)) {
+          viz_list$tabgroup_labels <- combined_input$tabgroup_labels
+        }
+        if (!is.null(combined_input$defaults)) {
+          viz_list$defaults <- combined_input$defaults
+        }
         visualizations <- viz_list
       } else {
         # No viz items found - set visualizations to NULL
@@ -555,6 +562,8 @@ add_dashboard_page <- function(proj, name, data = NULL, data_path = NULL,
       # List of mixed content - extract viz_collections and content blocks
       viz_list <- NULL
       content_list <- list()
+      combined_labels <- list()
+      combined_defaults <- list()
 
       for (item in combined_input) {
         # Skip NULL items
@@ -565,6 +574,20 @@ add_dashboard_page <- function(proj, name, data = NULL, data_path = NULL,
         is_block <- is_content_block(item)
 
         if (is_coll) {
+          # Preserve tabgroup_labels from this collection
+          if (!is.null(item$tabgroup_labels)) {
+            for (label_name in names(item$tabgroup_labels)) {
+              combined_labels[[label_name]] <- item$tabgroup_labels[[label_name]]
+            }
+          }
+          
+          # Preserve defaults from this collection
+          if (!is.null(item$defaults) && length(item$defaults) > 0) {
+            for (default_name in names(item$defaults)) {
+              combined_defaults[[default_name]] <- item$defaults[[default_name]]
+            }
+          }
+          
           # Process content collection - extract viz and content separately
           if (!is.null(item$items) && length(item$items) > 0) {
             for (sub_item in item$items) {
@@ -590,6 +613,16 @@ add_dashboard_page <- function(proj, name, data = NULL, data_path = NULL,
           content_list <- c(content_list, list(item))
         } else {
           stop("content/visualizations items must be content collection, content_block, or list of these")
+        }
+      }
+      
+      # Add collected tabgroup_labels and defaults to viz_list
+      if (!is.null(viz_list)) {
+        if (length(combined_labels) > 0) {
+          viz_list$tabgroup_labels <- combined_labels
+        }
+        if (length(combined_defaults) > 0) {
+          viz_list$defaults <- combined_defaults
         }
       }
 
@@ -738,6 +771,15 @@ add_dashboard_page <- function(proj, name, data = NULL, data_path = NULL,
     }
   }
 
+  # Check if modals are needed
+  needs_modals <- FALSE
+  if (!is.null(visualizations) && isTRUE(visualizations$needs_modals)) {
+    needs_modals <- TRUE
+  }
+  if (!is.null(combined_input) && isTRUE(combined_input$needs_modals)) {
+    needs_modals <- TRUE
+  }
+  
   # Create page record
   page <- list(
     name = name,
@@ -747,6 +789,7 @@ add_dashboard_page <- function(proj, name, data = NULL, data_path = NULL,
     params = params,
     visualizations = viz_specs,
     content_blocks = content_blocks,
+    needs_modals = needs_modals,
     text = text,
     icon = icon,
     is_landing_page = is_landing_page,

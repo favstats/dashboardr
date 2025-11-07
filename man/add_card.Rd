@@ -7,7 +7,7 @@
 add_card(content, text, title = NULL, footer = NULL)
 }
 \arguments{
-\item{content}{A content_collection object}
+\item{content}{A content_collection or viz_collection object}
 
 \item{text}{Card content}
 

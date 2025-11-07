@@ -18,7 +18,7 @@ create_dashboard(
   theme = NULL,
   custom_css = NULL,
   custom_scss = NULL,
-  tabset_theme = "modern",
+  tabset_theme = "minimal",
   tabset_colors = NULL,
   author = NULL,
   description = NULL,
@@ -284,7 +284,7 @@ dashboard <- create_dashboard(
 
 # Option 2: Elegant & Refined
 dashboard <- create_dashboard(
-  "elegant_dashboard", 
+  "elegant_dashboard",
   title = "Elegant Dashboard",
   mainfont = "Source Sans Pro",     # Elegant, highly readable
   monofont = "Source Code Pro"      # Matching code font
@@ -293,7 +293,7 @@ dashboard <- create_dashboard(
 # Option 3: Technical Feel
 dashboard <- create_dashboard(
   "tech_dashboard",
-  title = "Tech Dashboard", 
+  title = "Tech Dashboard",
   mainfont = "Roboto",              # Technical, clean
   monofont = "JetBrains Mono"       # Excellent for code
 )

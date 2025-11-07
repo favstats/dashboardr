@@ -204,3 +204,40 @@ test_that("text parameters in add_viz are preserved", {
   expect_equal(viz$items[[1]]$text, "Line 1\nLine 2")
   expect_equal(viz$items[[1]]$text_position, "below")
 })
+
+# Test that tabgroup_labels are preserved in unified content system
+test_that("set_tabgroup_labels works with unified content system", {
+  viz <- create_viz(type = "histogram") %>%
+    add_viz(x_var = "mpg", tabgroup = "demographics") %>%
+    add_viz(x_var = "hp", tabgroup = "performance") %>%
+    add_text("## Analysis") %>%
+    set_tabgroup_labels(
+      demographics = "{{< iconify ph:users-fill >}} Demographics",
+      performance = "{{< iconify ph:gauge-fill >}} Performance"
+    )
+  
+  # Labels should be stored in the collection
+  expect_equal(viz$tabgroup_labels$demographics, "{{< iconify ph:users-fill >}} Demographics")
+  expect_equal(viz$tabgroup_labels$performance, "{{< iconify ph:gauge-fill >}} Performance")
+  
+  # Create dashboard and check labels are preserved
+  temp_dir <- tempdir()
+  dashboard <- create_dashboard("test_labels", temp_dir, allow_inside_pkg = TRUE) %>%
+    add_page("Analysis", data = mtcars, content = viz)
+  
+  # Generate dashboard
+  suppressMessages(generate_dashboard(dashboard, render = FALSE, quiet = TRUE))
+  
+  # Check QMD file contains the icon shortcodes
+  qmd_file <- file.path(dashboard$output_dir, "analysis.qmd")
+  expect_true(file.exists(qmd_file))
+  
+  qmd_content <- readLines(qmd_file)
+  expect_true(any(grepl("ph:users-fill", qmd_content)))
+  expect_true(any(grepl("ph:gauge-fill", qmd_content)))
+  expect_true(any(grepl("Demographics", qmd_content)))
+  expect_true(any(grepl("Performance", qmd_content)))
+  
+  # Clean up
+  unlink(dashboard$output_dir, recursive = TRUE)
+})

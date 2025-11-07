@@ -1,0 +1,285 @@
+#' Enable Modal Functionality
+#'
+#' Adds modal CSS and JavaScript to enable clickable links that open content
+#' in a centered modal overlay instead of navigating to a new page.
+#'
+#' @return HTML tags to include modal functionality
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' # In your dashboard page content:
+#' enable_modals()
+#' }
+enable_modals <- function() {
+  htmltools::tagList(
+    htmltools::tags$link(
+      rel = "stylesheet",
+      href = "assets/modal.css"
+    ),
+    htmltools::tags$script(
+      src = "assets/modal.js"
+    )
+  )
+}
+
+#' Create Modal Link
+#'
+#' Creates a hyperlink that opens content in a modal dialog instead of
+#' navigating to a new page. You can also use regular markdown syntax:
+#' `[Link Text](#modal-id)` and it will automatically open as a modal.
+#'
+#' @param text Link text to display
+#' @param modal_id ID of the modal content div
+#' @param class Additional CSS classes for the link
+#'
+#' @return HTML link element
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' modal_link("View Details", "details-modal")
+#' modal_link("See Chart", "chart1", class = "btn btn-primary")
+#' 
+#' # Or in markdown:
+#' # [View Details](#details-modal)
+#' }
+modal_link <- function(text, modal_id, class = NULL) {
+  htmltools::tags$a(
+    href = paste0("#", modal_id),
+    class = class,
+    text
+  )
+}
+
+#' Create Modal Content Container
+#'
+#' Creates a hidden div that contains the content to be displayed in a modal.
+#' The content will be shown when a link with matching modal_id is clicked.
+#'
+#' @param modal_id Unique ID for this modal content
+#' @param ... Content to display in modal (images, text, HTML)
+#' @param title Optional title to display at top of modal
+#' @param image Optional image path or URL to display
+#' @param text Optional text/HTML content to display below image
+#'
+#' @return HTML div element
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' # Simple text modal
+#' modal_content(
+#'   modal_id = "info",
+#'   title = "Information",
+#'   text = "This is some important information."
+#' )
+#' 
+#' # Modal with image and text
+#' modal_content(
+#'   modal_id = "chart1",
+#'   title = "Sales Chart",
+#'   image = "charts/sales.png",
+#'   text = "This chart shows sales trends over the past year."
+#' )
+#' 
+#' # Custom content
+#' modal_content(
+#'   modal_id = "custom",
+#'   htmltools::tags$h2("Custom Title"),
+#'   htmltools::tags$img(src = "image.jpg"),
+#'   htmltools::tags$p("Description text"),
+#'   htmltools::tags$ul(
+#'     htmltools::tags$li("Point 1"),
+#'     htmltools::tags$li("Point 2")
+#'   )
+#' )
+#' }
+modal_content <- function(modal_id, ..., title = NULL, image = NULL, text = NULL) {
+  
+  # Build content from provided arguments
+  content_parts <- list()
+  
+  # Add title if provided
+  if (!is.null(title)) {
+    content_parts <- c(content_parts, list(htmltools::tags$h2(title)))
+  }
+  
+  # Add image if provided
+  if (!is.null(image)) {
+    content_parts <- c(content_parts, list(htmltools::tags$img(src = image, alt = title %||% "")))
+  }
+  
+  # Add text if provided (can be HTML or plain text)
+  if (!is.null(text)) {
+    if (is.character(text)) {
+      content_parts <- c(content_parts, list(htmltools::HTML(text)))
+    } else {
+      content_parts <- c(content_parts, list(text))
+    }
+  }
+  
+  # Add any additional content from ...
+  dots <- list(...)
+  if (length(dots) > 0) {
+    content_parts <- c(content_parts, dots)
+  }
+  
+  htmltools::tags$div(
+    id = modal_id,
+    class = "modal-content",
+    style = "display:none;",
+    content_parts
+  )
+}
+
+
+
+
+#' Add Modal to Content Collection (Pipeable)
+#'
+#' Adds a modal definition to your content collection. Use markdown links
+#' with {.modal-link} class to trigger the modal.
+#'
+#' @param content_collection A content_collection or viz_collection to add modal to
+#' @param modal_id Unique ID for this modal (used in markdown link)
+#' @param title Modal title (optional)
+#' @param modal_content Text content - can be plain text, HTML, or data.frame
+#' @param image Optional image URL or path
+#' @param ... Additional content (data.frames will be converted to tables)
+#'
+#' @return Updated content_collection with modal added
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' # Pipeable syntax (RECOMMENDED)
+#' content <- create_content() %>%
+#'   add_text("## Results") %>%
+#'   add_text("[View details](#details){.modal-link}") %>%
+#'   add_modal(
+#'     modal_id = "details",
+#'     title = "Full Results",
+#'     modal_content = "Detailed analysis here..."
+#'   )
+#' 
+#' # With image
+#' content <- create_viz() %>%
+#'   add_viz(type = "column", x_var = "x", y_var = "y") %>%
+#'   add_modal(
+#'     modal_id = "chart-details",
+#'     title = "Chart Details",
+#'     image = "chart.png",
+#'     modal_content = "This chart shows..."
+#'   )
+#' 
+#' # With data.frame (auto-converts to table)
+#' content <- create_content() %>%
+#'   add_text("[View data](#data){.modal-link}") %>%
+#'   add_modal(
+#'     modal_id = "data",
+#'     title = "Raw Data",
+#'     modal_content = head(mtcars, 10)
+#'   )
+#' }
+add_modal <- function(content_collection, modal_id, title = NULL, 
+                      modal_content = NULL, image = NULL, ...) {
+  
+  # Convert viz_collection to content_collection if needed
+  if (inherits(content_collection, "viz_collection") && 
+      !inherits(content_collection, "content_collection")) {
+    class(content_collection) <- c("content_collection", "viz_collection")
+  }
+  
+  # Mark that this collection needs modals enabled
+  content_collection$needs_modals <- TRUE
+  
+  # Build HTML content
+  html_parts <- c()
+  
+  # Add title
+  if (!is.null(title)) {
+    html_parts <- c(html_parts, paste0("<h2>", title, "</h2>"))
+  }
+  
+  # Add image
+  if (!is.null(image)) {
+    html_parts <- c(html_parts, paste0('<img src="', image, '" style="max-width:100%; height:auto;">'))
+  }
+  
+  # Add content
+  if (!is.null(modal_content)) {
+    if (is.data.frame(modal_content)) {
+      # Convert data.frame to HTML table
+      html_parts <- c(html_parts, .df_to_html_table(modal_content))
+    } else if (is.character(modal_content)) {
+      # Wrap in paragraph if it doesn't contain HTML tags
+      if (!grepl("<[^>]+>", modal_content)) {
+        html_parts <- c(html_parts, paste0("<p>", modal_content, "</p>"))
+      } else {
+        html_parts <- c(html_parts, modal_content)
+      }
+    }
+  }
+  
+  # Add any additional content from ...
+  dots <- list(...)
+  for (item in dots) {
+    if (is.data.frame(item)) {
+      html_parts <- c(html_parts, .df_to_html_table(item))
+    } else if (is.character(item)) {
+      html_parts <- c(html_parts, item)
+    }
+  }
+  
+  html_content <- paste(html_parts, collapse = "\n")
+  
+  # Create md_text with modal content
+  modal_text <- md_text(
+    "```{r, echo=FALSE, results='asis'}",
+    paste0("cat(as.character(dashboardr::modal_content("),
+    paste0("  modal_id = '", modal_id, "',"),
+    paste0("  text = '", gsub("'", "\\\\'", html_content), "'"),
+    ")))",
+    "```"
+  )
+  
+  # Add modal text to the collection
+  add_text(content_collection, modal_text)
+}
+
+# Helper to convert data.frame to HTML table
+.df_to_html_table <- function(df, max_rows = 100) {
+  if (nrow(df) > max_rows) {
+    df <- head(df, max_rows)
+    truncated <- TRUE
+  } else {
+    truncated <- FALSE
+  }
+  
+  html <- '<table style="width:100%; border-collapse:collapse; margin:10px 0;">\n'
+  
+  # Header
+  html <- paste0(html, '<thead><tr style="background:#f0f0f0;">\n')
+  for (col in names(df)) {
+    html <- paste0(html, '<th style="border:1px solid #ddd; padding:8px; text-align:left;">', col, '</th>\n')
+  }
+  html <- paste0(html, '</tr></thead>\n<tbody>\n')
+  
+  # Rows
+  for (i in seq_len(nrow(df))) {
+    html <- paste0(html, '<tr>\n')
+    for (col in names(df)) {
+      html <- paste0(html, '<td style="border:1px solid #ddd; padding:8px;">', df[i, col], '</td>\n')
+    }
+    html <- paste0(html, '</tr>\n')
+  }
+  html <- paste0(html, '</tbody></table>\n')
+  
+  if (truncated) {
+    html <- paste0(html, '<p style="color:#666; font-style:italic;">Showing first ', max_rows, ' rows</p>')
+  }
+  
+  html
+}
+

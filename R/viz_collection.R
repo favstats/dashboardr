@@ -489,7 +489,7 @@ combine_viz <- function(...) {
 #'     title = "Age Distribution of Survey Respondents by Gender and Region"  # Long viz title
 #'   )
 #' }
-add_viz <- function(viz_collection, type = NULL, ..., tabgroup = NULL, title = NULL, title_tabset = NULL, text = NULL, icon = NULL, text_position = NULL, text_above_title = NULL, text_above_tabs = NULL, text_above_graphs = NULL, text_below_graphs = NULL, height = NULL, filter = NULL, data = NULL, drop_na_vars = FALSE) {
+add_viz <- function(viz_collection, type = NULL, ..., tabgroup = NULL, title = NULL, title_tabset = NULL, text = NULL, icon = NULL, text_position = NULL, text_before_tabset = NULL, text_after_tabset = NULL, text_before_viz = NULL, text_after_viz = NULL, height = NULL, filter = NULL, data = NULL, drop_na_vars = FALSE) {
   # Validate first argument
   if (!is_content(viz_collection)) {
     stop("First argument must be a content collection")
@@ -527,10 +527,10 @@ add_viz <- function(viz_collection, type = NULL, ..., tabgroup = NULL, title = N
   if ("text" %in% names(call_args)) merged_params$text <- text
   if ("icon" %in% names(call_args)) merged_params$icon <- icon
   if ("text_position" %in% names(call_args)) merged_params$text_position <- text_position
-  if ("text_above_title" %in% names(call_args)) merged_params$text_above_title <- text_above_title
-  if ("text_above_tabs" %in% names(call_args)) merged_params$text_above_tabs <- text_above_tabs
-  if ("text_above_graphs" %in% names(call_args)) merged_params$text_above_graphs <- text_above_graphs
-  if ("text_below_graphs" %in% names(call_args)) merged_params$text_below_graphs <- text_below_graphs
+  if ("text_before_tabset" %in% names(call_args)) merged_params$text_before_tabset <- text_before_tabset
+  if ("text_after_tabset" %in% names(call_args)) merged_params$text_after_tabset <- text_after_tabset
+  if ("text_before_viz" %in% names(call_args)) merged_params$text_before_viz <- text_before_viz
+  if ("text_after_viz" %in% names(call_args)) merged_params$text_after_viz <- text_after_viz
   if ("height" %in% names(call_args)) merged_params$height <- height
   if ("filter" %in% names(call_args)) merged_params$filter <- filter
   if ("data" %in% names(call_args)) merged_params$data <- data
@@ -539,40 +539,41 @@ add_viz <- function(viz_collection, type = NULL, ..., tabgroup = NULL, title = N
   }
   
   # Extract final values from merged_params
-  type <- merged_params$type
-  tabgroup <- merged_params$tabgroup
-  title <- merged_params$title
-  title_tabset <- merged_params$title_tabset
-  text <- merged_params$text
-  icon <- merged_params$icon
-  text_position <- merged_params$text_position %||% "above"
-  text_above_title <- merged_params$text_above_title
-  text_above_tabs <- merged_params$text_above_tabs
-  text_above_graphs <- merged_params$text_above_graphs
-  text_below_graphs <- merged_params$text_below_graphs
-  height <- merged_params$height
-  filter <- merged_params$filter
-  data <- merged_params$data
+  # NOTE: Use [[]] instead of $ to avoid partial matching (text_before_viz would match $text!)
+  type <- merged_params[["type"]]
+  tabgroup <- merged_params[["tabgroup"]]
+  title <- merged_params[["title"]]
+  title_tabset <- merged_params[["title_tabset"]]
+  text <- merged_params[["text"]]
+  icon <- merged_params[["icon"]]
+  text_position <- merged_params[["text_position"]] %||% "above"
+  text_before_tabset <- merged_params[["text_before_tabset"]]
+  text_after_tabset <- merged_params[["text_after_tabset"]]
+  text_before_viz <- merged_params[["text_before_viz"]]
+  text_after_viz <- merged_params[["text_after_viz"]]
+  height <- merged_params[["height"]]
+  filter <- merged_params[["filter"]]
+  data <- merged_params[["data"]]
   # Note: Using if/else instead of %||% due to unexpected behavior with FALSE values
-  drop_na_vars <- if (is.null(merged_params$drop_na_vars)) FALSE else merged_params$drop_na_vars
+  drop_na_vars <- if (is.null(merged_params[["drop_na_vars"]])) FALSE else merged_params[["drop_na_vars"]]
   
-  # Backward compatibility: map text parameter to text_above_graphs or text_below_graphs
+  # Backward compatibility: map text parameter to text_before_viz or text_after_viz
   if (!is.null(text) && nzchar(text)) {
     if (text_position == "above") {
-      # If text_above_graphs not explicitly set, use text
-      if (is.null(text_above_graphs)) {
-        text_above_graphs <- text
+      # If text_before_viz not explicitly set, use text
+      if (is.null(text_before_viz)) {
+        text_before_viz <- text
       }
     } else {
       # text_position == "below"
-      if (is.null(text_below_graphs)) {
-        text_below_graphs <- text
+      if (is.null(text_after_viz)) {
+        text_after_viz <- text
       }
     }
   }
   
   # Now apply merged_params from dots to the ... parameters
-  dot_args <- merged_params[!names(merged_params) %in% c("type", "tabgroup", "title", "title_tabset", "text", "icon", "text_position", "text_above_title", "text_above_tabs", "text_above_graphs", "text_below_graphs", "height", "filter", "data", "drop_na_vars")]
+  dot_args <- merged_params[!names(merged_params) %in% c("type", "tabgroup", "title", "title_tabset", "text", "icon", "text_position", "text_before_tabset", "text_after_tabset", "text_before_viz", "text_after_viz", "height", "filter", "data", "drop_na_vars")]
 
   # Validate supported visualization types
   supported_types <- c("stackedbar", "stackedbars", "heatmap", "histogram", "timeline", "bar")
@@ -612,24 +613,24 @@ add_viz <- function(viz_collection, type = NULL, ..., tabgroup = NULL, title = N
   }
   
   # Validate new text positioning parameters
-  if (!is.null(text_above_title)) {
-    if (!is.character(text_above_title) || length(text_above_title) != 1) {
-      stop("text_above_title must be a character string or NULL")
+  if (!is.null(text_before_tabset)) {
+    if (!is.character(text_before_tabset) || length(text_before_tabset) != 1) {
+      stop("text_before_tabset must be a character string or NULL")
     }
   }
-  if (!is.null(text_above_tabs)) {
-    if (!is.character(text_above_tabs) || length(text_above_tabs) != 1) {
-      stop("text_above_tabs must be a character string or NULL")
+  if (!is.null(text_after_tabset)) {
+    if (!is.character(text_after_tabset) || length(text_after_tabset) != 1) {
+      stop("text_after_tabset must be a character string or NULL")
     }
   }
-  if (!is.null(text_above_graphs)) {
-    if (!is.character(text_above_graphs) || length(text_above_graphs) != 1) {
-      stop("text_above_graphs must be a character string or NULL")
+  if (!is.null(text_before_viz)) {
+    if (!is.character(text_before_viz) || length(text_before_viz) != 1) {
+      stop("text_before_viz must be a character string or NULL")
     }
   }
-  if (!is.null(text_below_graphs)) {
-    if (!is.character(text_below_graphs) || length(text_below_graphs) != 1) {
-      stop("text_below_graphs must be a character string or NULL")
+  if (!is.null(text_after_viz)) {
+    if (!is.character(text_after_viz) || length(text_after_viz) != 1) {
+      stop("text_after_viz must be a character string or NULL")
     }
   }
 
@@ -686,10 +687,10 @@ add_viz <- function(viz_collection, type = NULL, ..., tabgroup = NULL, title = N
       text = text,  # Store original text parameter for backward compatibility
       icon = icon,
       text_position = text_position,
-      text_above_title = text_above_title,
-      text_above_tabs = text_above_tabs,
-      text_above_graphs = text_above_graphs,
-      text_below_graphs = text_below_graphs,
+      text_before_tabset = text_before_tabset,
+      text_after_tabset = text_after_tabset,
+      text_before_viz = text_before_viz,
+      text_after_viz = text_after_viz,
       height = height,
       filter = filter,
       data = data,
@@ -1291,17 +1292,17 @@ print.viz_collection <- function(x, ...) {
             
             # Add badges for text positioning
             text_badges <- c()
-            if (!is.null(v$text_above_title) && nzchar(v$text_above_title)) {
-              text_badges <- c(text_badges, "text-above-title")
+            if (!is.null(v$text_before_tabset) && nzchar(v$text_before_tabset)) {
+              text_badges <- c(text_badges, "text-before-tabset")
             }
-            if (!is.null(v$text_above_tabs) && nzchar(v$text_above_tabs)) {
-              text_badges <- c(text_badges, "text-above-tabs")
+            if (!is.null(v$text_after_tabset) && nzchar(v$text_after_tabset)) {
+              text_badges <- c(text_badges, "text-after-tabset")
             }
-            if (!is.null(v$text_above_graphs) && nzchar(v$text_above_graphs)) {
-              text_badges <- c(text_badges, "text-above")
+            if (!is.null(v$text_before_viz) && nzchar(v$text_before_viz)) {
+              text_badges <- c(text_badges, "text-before-viz")
             }
-            if (!is.null(v$text_below_graphs) && nzchar(v$text_below_graphs)) {
-              text_badges <- c(text_badges, "text-below")
+            if (!is.null(v$text_after_viz) && nzchar(v$text_after_viz)) {
+              text_badges <- c(text_badges, "text-after-viz")
             }
             
             badge_text <- if (length(text_badges) > 0) {

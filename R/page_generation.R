@@ -32,6 +32,16 @@
   if (!is.null(page$text) && nzchar(page$text)) {
     content <- c(content, page$text, "")
   }
+  
+  # Auto-enable modals if needed (flag set by add_modal())
+  if (isTRUE(page$needs_modals)) {
+    content <- c(content,
+      "```{r, echo=FALSE}",
+      "dashboardr::enable_modals()",
+      "```",
+      ""
+    )
+  }
 
   # Add global setup chunk with libraries, data, and settings
   if (!is.null(page$data_path) || !is.null(page$visualizations) || !is.null(page$content_blocks)) {

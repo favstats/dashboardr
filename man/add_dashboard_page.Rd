@@ -45,9 +45,9 @@ list of file paths for multiple datasets}
 
 \item{params}{Parameters for template substitution}
 
-\item{visualizations}{viz_collection or list of visualization specs}
+\item{visualizations}{Content collection or list of visualization specs}
 
-\item{content}{Alternative to visualizations - supports content_collection or viz_collection}
+\item{content}{Alternative to visualizations - supports content collections}
 
 \item{text}{Optional markdown text content for the page}
 

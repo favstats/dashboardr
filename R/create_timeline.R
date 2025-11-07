@@ -15,12 +15,19 @@
 #'   (e.g., "gender", "education"). Creates separate lines/areas for each group.
 #' @param chart_type Character string. Type of chart: "stacked_area" or "line".
 #' @param title Optional main title for the chart.
+#' @param subtitle Optional subtitle for the chart.
+#' @param x_label Optional character string. Label for the x-axis. Defaults to time_var name.
+#' @param y_label Optional character string. Label for the y-axis. Defaults to "Percentage".
 #' @param y_max Optional numeric value. Maximum value for the Y-axis.
+#' @param y_min Optional numeric value. Minimum value for the Y-axis.
+#' @param color_palette Optional character vector of color hex codes for the series.
 #' @param response_levels Optional character vector specifying order of response categories.
 #' @param response_breaks Optional numeric vector for binning numeric response values
 #'   (e.g., `c(0, 2.5, 5, 7)` to create bins 0-2.5, 2.5-5, 5-7).
 #' @param response_bin_labels Optional character vector of labels for response bins
 #'   (e.g., `c("Low (1-2)", "Medium (3-5)", "High (6-7)")`).
+#' @param response_map_values Optional named list to rename response values for display
+#'   (e.g., `list("1" = "Correct", "0" = "Incorrect")`). Applied to legend labels and data.
 #' @param response_filter Optional numeric or character vector specifying which response values to include.
 #'   For numeric responses, use a range like `5:7` to show only values 5, 6, and 7.
 #'   For categorical responses, use category names like `c("Agree", "Strongly Agree")`.
@@ -100,6 +107,40 @@
 #' )
 #' plot5
 #'
+#' # Custom styling with colors and labels
+#' plot6 <- create_timeline(
+#'    data = survey_data,
+#'    time_var = "wave_time_label",
+#'    response_var = "agreement",
+#'    group_var = "age_group",
+#'    chart_type = "line",
+#'    response_filter = 4:5,
+#'    title = "High Agreement Over Time",
+#'    subtitle = "By Age Group",
+#'    x_label = "Survey Wave",
+#'    y_label = "% High Agreement",
+#'    y_min = 0,
+#'    y_max = 100,
+#'    color_palette = c("#E41A1C", "#377EB8", "#4DAF4A", "#984EA3")
+#' )
+#' plot6
+#'
+#' # Custom legend labels with response_map_values
+#' plot7 <- create_timeline(
+#'    data = survey_data,
+#'    time_var = "wave_time_label",
+#'    response_var = "knowledge_item",
+#'    chart_type = "line",
+#'    response_filter = 1,
+#'    response_map_values = list("1" = "Correct", "0" = "Incorrect"),
+#'    title = "Knowledge Score Over Time",
+#'    x_label = "Survey Wave",
+#'    y_label = "% Correct",
+#'    y_min = 0,
+#'    y_max = 100
+#' )
+#' plot7
+#'
 #' @export
 
 
@@ -109,10 +150,16 @@ create_timeline <- function(data,
                             group_var = NULL,
                             chart_type = "stacked_area",
                             title = NULL,
+                            subtitle = NULL,
+                            x_label = NULL,
+                            y_label = NULL,
                             y_max = NULL,
+                            y_min = NULL,
+                            color_palette = NULL,
                             response_levels = NULL,
                             response_breaks = NULL,
                             response_bin_labels = NULL,
+                            response_map_values = NULL,
                             response_filter = NULL,
                             response_filter_combine = TRUE,
                             response_filter_label = NULL,
@@ -178,6 +225,18 @@ create_timeline <- function(data,
     }
   }
 
+  # Apply response value mapping if provided (e.g., "1" -> "Correct")
+  if (!is.null(response_map_values)) {
+    # Convert factor to character to ensure recode works
+    if (is.factor(plot_data[[response_var]])) {
+      plot_data <- plot_data %>%
+        mutate(!!sym(response_var) := as.character(!!sym(response_var)))
+    }
+    # Apply the mapping
+    plot_data <- plot_data %>%
+      mutate(!!sym(response_var) := dplyr::recode(as.character(!!sym(response_var)), !!!response_map_values))
+  }
+  
   # Handle response filtering - mark filtered values before aggregation
   # This ensures percentages are calculated correctly (out of ALL responses, not just filtered ones)
   filter_applied <- !is.null(response_filter)
@@ -296,12 +355,59 @@ create_timeline <- function(data,
     }
   }
 
+  # Determine if time_var is categorical
+  is_time_categorical <- is.factor(plot_data[[time_var_plot]]) || is.character(plot_data[[time_var_plot]])
+  
+  # Get unique time categories if categorical (for proper x-axis ordering)
+  if (is_time_categorical) {
+    if (is.factor(plot_data[[time_var_plot]])) {
+      time_categories <- levels(plot_data[[time_var_plot]])
+    } else {
+      time_categories <- unique(plot_data[[time_var_plot]])
+    }
+  }
+  
+  # Determine axis labels (use custom or defaults)
+  x_axis_title <- if (!is.null(x_label)) {
+    x_label
+  } else if (is_time_categorical) {
+    time_var
+  } else if (!is.null(time_breaks)) {
+    "Time Period"
+  } else {
+    time_var
+  }
+  
+  y_axis_title <- if (!is.null(y_label)) y_label else "Percentage"
+  
   # Create base chart
   hc <- highchart() %>%
     hc_title(text = title) %>%
-    hc_yAxis(title = list(text = "Percentage"), max = y_max) %>%
-    hc_xAxis(title = list(text = if(!is.null(time_breaks)) "Time Period" else "Year"))
+    hc_yAxis(title = list(text = y_axis_title), max = y_max, min = y_min)
+  
+  # Add subtitle if provided
+  if (!is.null(subtitle)) {
+    hc <- hc %>% hc_subtitle(text = subtitle)
+  }
+  
+  # Configure x-axis based on whether time is categorical or numeric
+  if (is_time_categorical) {
+    hc <- hc %>%
+      hc_xAxis(
+        title = list(text = x_axis_title),
+        categories = time_categories,
+        type = "category"
+      )
+  } else {
+    hc <- hc %>%
+      hc_xAxis(title = list(text = x_axis_title))
+  }
 
+  # Apply color palette if provided
+  if (!is.null(color_palette)) {
+    hc <- hc %>% hc_colors(color_palette)
+  }
+  
   # Create chart based on type
   if (chart_type == "stacked_area") {
     hc <- hc %>%
@@ -313,8 +419,17 @@ create_timeline <- function(data,
       for(level in response_levels_to_use) {
         series_data <- agg_data %>%
           filter(!!sym(response_var) == level) %>%
-          arrange(!!sym(time_var_plot)) %>%
-          select(x = !!sym(time_var_plot), y = percentage)
+          arrange(!!sym(time_var_plot))
+        
+        # For categorical time, use category names; for numeric, use values
+        if (is_time_categorical) {
+          series_data <- series_data %>%
+            mutate(x = as.character(!!sym(time_var_plot))) %>%
+            select(x, y = percentage)
+        } else {
+          series_data <- series_data %>%
+            select(x = !!sym(time_var_plot), y = percentage)
+        }
 
         hc <- hc %>%
           hc_add_series(
@@ -333,8 +448,17 @@ create_timeline <- function(data,
       for(level in response_levels_to_use) {
         series_data <- agg_data %>%
           filter(!!sym(response_var) == level) %>%
-          arrange(!!sym(time_var_plot)) %>%
-          select(x = !!sym(time_var_plot), y = percentage)
+          arrange(!!sym(time_var_plot))
+        
+        # For categorical time, use category names; for numeric, use values
+        if (is_time_categorical) {
+          series_data <- series_data %>%
+            mutate(x = as.character(!!sym(time_var_plot))) %>%
+            select(x, y = percentage)
+        } else {
+          series_data <- series_data %>%
+            select(x = !!sym(time_var_plot), y = percentage)
+        }
 
         hc <- hc %>%
           hc_add_series(
@@ -351,10 +475,19 @@ create_timeline <- function(data,
         for(group_level in group_levels) {
           series_data <- agg_data %>%
             filter(!!sym(response_var) == resp_level, !!sym(group_var) == group_level) %>%
-            arrange(!!sym(time_var_plot)) %>%
-            select(x = !!sym(time_var_plot), y = percentage)
-
+            arrange(!!sym(time_var_plot))
+          
           if(nrow(series_data) > 0) {
+            # For categorical time, use category names; for numeric, use values
+            if (is_time_categorical) {
+              series_data <- series_data %>%
+                mutate(x = as.character(!!sym(time_var_plot))) %>%
+                select(x, y = percentage)
+            } else {
+              series_data <- series_data %>%
+                select(x = !!sym(time_var_plot), y = percentage)
+            }
+            
             # Determine series name
             # If response_filter_label is NULL/NA/empty AND there's only one response level (e.g., from response_filter),
             # show only the group name. Otherwise, show "response - group".

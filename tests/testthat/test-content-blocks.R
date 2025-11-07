@@ -1,6 +1,6 @@
 # Tests for enhanced content blocks: add_viz text positioning, add_text, add_image
 
-test_that("add_viz supports text_above_title, text_above_tabs, text_above_graphs, text_below_graphs", {
+test_that("add_viz supports text_before_tabset, text_after_tabset, text_before_viz, text_after_viz", {
   # Create a simple viz collection
   viz <- create_viz() %>%
     add_viz(
@@ -8,10 +8,10 @@ test_that("add_viz supports text_above_title, text_above_tabs, text_above_graphs
       x_var = "age",
       title = "Age Distribution",
       tabgroup = "demo",
-      text_above_title = "Before everything - even the title",
-      text_above_tabs = "## Introduction\n\nThis is above the tabs.",
-      text_above_graphs = "This appears above the graph.",
-      text_below_graphs = "This appears below the graph."
+      text_before_tabset = "## Introduction\n\nThis is before the tabset.",
+      text_after_tabset = "## Conclusion\n\nThis is after the tabset.",
+      text_before_viz = "This appears before the graph.",
+      text_after_viz = "This appears after the graph."
     )
   
   # Verify the viz collection has the spec
@@ -19,10 +19,10 @@ test_that("add_viz supports text_above_title, text_above_tabs, text_above_graphs
   spec <- viz$items[[1]]
   
   # Check that new text parameters are stored
-  expect_equal(spec$text_above_title, "Before everything - even the title")
-  expect_equal(spec$text_above_tabs, "## Introduction\n\nThis is above the tabs.")
-  expect_equal(spec$text_above_graphs, "This appears above the graph.")
-  expect_equal(spec$text_below_graphs, "This appears below the graph.")
+  expect_equal(spec$text_before_tabset, "## Introduction\n\nThis is before the tabset.")
+  expect_equal(spec$text_after_tabset, "## Conclusion\n\nThis is after the tabset.")
+  expect_equal(spec$text_before_viz, "This appears before the graph.")
+  expect_equal(spec$text_after_viz, "This appears after the graph.")
 })
 
 test_that("add_viz backward compatibility: text parameter maps correctly", {
@@ -36,7 +36,7 @@ test_that("add_viz backward compatibility: text parameter maps correctly", {
     )
   
   spec1 <- viz1$items[[1]]
-  expect_equal(spec1$text_above_graphs, "Old way - above")
+  expect_equal(spec1$text_before_viz, "Old way - above")
   expect_equal(spec1$text, "Old way - above")  # Text is stored for backward compatibility
   
   # Test text = with text_position = "below"
@@ -49,7 +49,7 @@ test_that("add_viz backward compatibility: text parameter maps correctly", {
     )
   
   spec2 <- viz2$items[[1]]
-  expect_equal(spec2$text_below_graphs, "Old way - below")
+  expect_equal(spec2$text_after_viz, "Old way - below")
   expect_equal(spec2$text, "Old way - below")  # Text is stored for backward compatibility
 })
 
@@ -60,15 +60,17 @@ test_that("add_viz text parameters work with tabgroups", {
       x_var = "age",
       title = "Age",
       tabgroup = "demo",
-      text_above_tabs = "Before tabs",
-      text_above_graphs = "Above graph in tab",
-      text_below_graphs = "Below graph in tab"
+      text_before_tabset = "Before tabset opens",
+      text_after_tabset = "After tabset closes",
+      text_before_viz = "Before graph in tab",
+      text_after_viz = "After graph in tab"
     )
   
   spec <- viz$items[[1]]
-  expect_equal(spec$text_above_tabs, "Before tabs")
-  expect_equal(spec$text_above_graphs, "Above graph in tab")
-  expect_equal(spec$text_below_graphs, "Below graph in tab")
+  expect_equal(spec$text_before_tabset, "Before tabset opens")
+  expect_equal(spec$text_after_tabset, "After tabset closes")
+  expect_equal(spec$text_before_viz, "Before graph in tab")
+  expect_equal(spec$text_after_viz, "After graph in tab")
 })
 
 test_that("add_text creates text content block", {
@@ -249,16 +251,17 @@ test_that("text positioning in QMD generation works correctly", {
       type = "histogram",
       x_var = "age",
       title = "Test",
-      text_above_tabs = "## Above Tabs",
-      text_above_graphs = "Above graphs",
-      text_below_graphs = "Below graphs"
+      text_before_viz = "Before the graph",
+      text_after_viz = "After the graph"
     )
   
   df <- data.frame(age = rnorm(100))
   
   dashboard <- create_dashboard(temp_dir, "Test") %>%
-    add_page("Test", data = df, visualizations = viz) %>%
-    generate_dashboard()
+    add_page("Test", data = df, visualizations = viz)
+  
+  # Generate without rendering (just create QMD files)
+  generate_dashboard(dashboard, render = FALSE)
   
   # Read generated QMD
   qmd_file <- file.path(temp_dir, "test.qmd")
@@ -266,10 +269,12 @@ test_that("text positioning in QMD generation works correctly", {
   
   qmd_content <- readLines(qmd_file)
   
-  # Check that text appears in correct order
-  # Find the section with our viz
-  viz_section_start <- grep("## Test", qmd_content)
-  expect_true(length(viz_section_start) > 0)
+  # Check that both text strings appear in the QMD
+  before_text_line <- grep("Before the graph", qmd_content, fixed = TRUE)
+  after_text_line <- grep("After the graph", qmd_content, fixed = TRUE)
+  
+  expect_true(length(before_text_line) > 0, "text_before_viz should appear in QMD")
+  expect_true(length(after_text_line) > 0, "text_after_viz should appear in QMD")
   
   # Cleanup
   unlink(temp_dir, recursive = TRUE)

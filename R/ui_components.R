@@ -247,11 +247,12 @@ card_row <- function(..., cols = 2, class = NULL) {
 #' Automatically handles line breaks and formatting for better readability.
 #'
 #' @param ... Text content as separate arguments or character vectors
+#' @param sep Separator to use when joining text (default: "\n" for newlines). Use "" for no separator.
 #' @return Single character string with proper line breaks
 #' @export
 #' @examples
 #' \dontrun{
-#' # Method 1: Separate arguments
+#' # Method 1: Separate arguments (default: newlines between)
 #' text_content <- md_text(
 #'   "# Welcome",
 #'   "",
@@ -266,10 +267,13 @@ card_row <- function(..., cols = 2, class = NULL) {
 #' lines <- c("# About", "", "This is about our study.")
 #' text_content <- md_text(lines)
 #'
+#' # Method 3: Combine without newlines
+#' combined <- md_text(text1, text2, text3, sep = "")
+#'
 #' # Use in add_page
 #' add_page("About", text = text_content)
 #' }
-md_text <- function(...) {
+md_text <- function(..., sep = "\n") {
   # Combine all arguments into a single character vector
   args <- list(...)
   content <- character(0)
@@ -282,8 +286,8 @@ md_text <- function(...) {
     }
   }
 
-  # Join with newlines
-  paste(content, collapse = "\n")
+  # Join with specified separator (default: newlines)
+  paste(content, collapse = sep)
 }
 
 #' Create text content from a character vector

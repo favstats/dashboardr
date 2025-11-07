@@ -1,0 +1,127 @@
+/**
+ * Modal Styles for dashboardr
+ */
+
+.dashboardr-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.dashboardr-modal-container {
+  position: relative;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  max-width: 90vw;
+  max-height: 90vh;
+  overflow: auto;
+  animation: modalFadeIn 0.3s ease-out;
+}
+
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.dashboardr-modal-close {
+  position: sticky;
+  top: 10px;
+  right: 10px;
+  float: right;
+  background: #333;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  font-size: 28px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.2s;
+  z-index: 1;
+  margin: 10px;
+}
+
+.dashboardr-modal-close:hover {
+  background: #555;
+  transform: scale(1.1);
+}
+
+.dashboardr-modal-close:active {
+  transform: scale(0.95);
+}
+
+.dashboardr-modal-body {
+  padding: 20px;
+  clear: both;
+}
+
+/* Style content within modal */
+.dashboardr-modal-body img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 0 auto 20px;
+  border-radius: 4px;
+}
+
+.dashboardr-modal-body p {
+  margin: 10px 0;
+  line-height: 1.6;
+}
+
+.dashboardr-modal-body h1,
+.dashboardr-modal-body h2,
+.dashboardr-modal-body h3,
+.dashboardr-modal-body h4,
+.dashboardr-modal-body h5,
+.dashboardr-modal-body h6 {
+  margin-top: 20px;
+  margin-bottom: 10px;
+}
+
+.dashboardr-modal-body h1:first-child,
+.dashboardr-modal-body h2:first-child,
+.dashboardr-modal-body h3:first-child {
+  margin-top: 0;
+}
+
+/* Hidden content that will be shown in modal */
+.modal-content {
+  display: none;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .dashboardr-modal-container {
+    max-width: 95vw;
+    max-height: 95vh;
+  }
+  
+  .dashboardr-modal-body {
+    padding: 15px;
+  }
+  
+  .dashboardr-modal-close {
+    width: 35px;
+    height: 35px;
+    font-size: 24px;
+  }
+}
+

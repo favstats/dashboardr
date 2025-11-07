@@ -239,7 +239,13 @@ create_stackedbars <- function(data,
   )
 
   # 2. apply question_labels or default to raw names
-  if (is.null(question_labels)) {
+  # Special case: when there's only one question and horizontal = TRUE,
+  # blank the category label to avoid truncation (use title instead)
+  if (length(questions) == 1 && horizontal && !is.null(question_labels)) {
+    # Force blank label for single question in horizontal mode
+    data_long$question <- factor(data_long$question, levels = questions, labels = "")
+    axis_categories <- ""
+  } else if (is.null(question_labels)) {
     data_long$question <- factor(data_long$question, levels = questions)
     # we will use the raw questions as axis‐categories
     axis_categories <- questions

@@ -489,12 +489,12 @@
               label = display_label,
               visualizations = child_result
             )))
-          } else if (length(child_result) == 1 && !is_nested_context) {
-            # Single visualization, no nested children, and we're at root level
-            # Can flatten only if not in nested context
+          } else if (length(child_result) == 1 && !is_nested_context && is.null(display_label)) {
+            # Single visualization, no nested children, at root level, AND no custom label
+            # Can flatten only when there's no custom label to preserve
             single_viz <- child_result[[1]]
             if (is.null(single_viz$title) || single_viz$title == "") {
-              single_viz$title <- display_label %||% child_name
+              single_viz$title <- child_name
             }
             result <- c(result, list(single_viz))
           } else {
