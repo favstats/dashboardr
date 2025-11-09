@@ -27,7 +27,7 @@
 #'   Must be length `length(breaks)-1`.
 #' @param include_na Logical. If TRUE, treats NA as explicit "(NA)" bin.
 #' @param na_label Optional string. Custom label for NA values. Defaults to "(Missing)".
-#' @param color Optional string or vector of colors for the bars.
+#' @param color_palette Optional string or vector of colors for the bars.
 #' @param x_map_values Optional named list to recode raw `x_var` values
 #'   before binning.
 #' @param x_order Optional character vector to order the factor levels
@@ -59,7 +59,7 @@
 #'   x_label = "Age (years)",
 #'   y_label = "Number of Respondents",
 #'   bins = 15,
-#'   color = "hotpink"
+#'   color_palette = "hotpink"
 #' )
 #' plot1
 #'
@@ -119,7 +119,7 @@
 #'   bin_labels = age_labels,
 #'   tooltip_prefix = "Count: ",
 #'   x_tooltip_suffix = " years old",
-#'   color = "seagreen1"
+#'   color_palette = "seagreen1"
 #' )
 #' plot4
 #'
@@ -195,7 +195,7 @@ create_histogram <- function(data,
                              bin_labels = NULL,
                              include_na = FALSE,
                              na_label = "(Missing)",
-                             color = NULL,
+                             color_palette = NULL,
                              x_map_values = NULL,
                              x_order = NULL,
                              weight_var = NULL) {
@@ -411,7 +411,7 @@ create_histogram <- function(data,
   hc <- hc %>% highcharter::hc_tooltip(formatter = highcharter::JS(tooltip_fn))
 
   # Color palette (applied to the series)
-  if (!is.null(color)) hc <- hc %>% highcharter::hc_colors(color)
+  if (!is.null(color_palette)) hc <- hc %>% highcharter::hc_colors(color_palette)
 
   return(hc)
 }

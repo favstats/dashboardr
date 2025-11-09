@@ -21,7 +21,7 @@ create_histogram(
   bin_labels = NULL,
   include_na = FALSE,
   na_label = "(Missing)",
-  color = NULL,
+  color_palette = NULL,
   x_map_values = NULL,
   x_order = NULL,
   weight_var = NULL
@@ -63,7 +63,7 @@ Must be length \code{length(breaks)-1}.}
 
 \item{na_label}{Optional string. Custom label for NA values. Defaults to "(Missing)".}
 
-\item{color}{Optional string or vector of colors for the bars.}
+\item{color_palette}{Optional string or vector of colors for the bars.}
 
 \item{x_map_values}{Optional named list to recode raw \code{x_var} values
 before binning.}
@@ -142,7 +142,7 @@ plot1 <- create_histogram(
   x_label = "Age (years)",
   y_label = "Number of Respondents",
   bins = 15,
-  color = "hotpink"
+  color_palette = "hotpink"
 )
 plot1
 
@@ -202,7 +202,7 @@ plot4 <- create_histogram(
   bin_labels = age_labels,
   tooltip_prefix = "Count: ",
   x_tooltip_suffix = " years old",
-  color = "seagreen1"
+  color_palette = "seagreen1"
 )
 plot4
 
