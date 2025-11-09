@@ -9,7 +9,7 @@ md_text(..., sep = "\\n")
 \arguments{
 \item{...}{Text content as separate arguments or character vectors}
 
-\item{sep}{Separator to use when joining text (default: "\n" for newlines). Use "" for no separator.}
+\item{sep}{Separator to use when joining text (default: "\\n" for newlines). Use "" for no separator.}
 }
 \value{
 Single character string with proper line breaks

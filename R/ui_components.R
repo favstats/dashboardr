@@ -247,7 +247,7 @@ card_row <- function(..., cols = 2, class = NULL) {
 #' Automatically handles line breaks and formatting for better readability.
 #'
 #' @param ... Text content as separate arguments or character vectors
-#' @param sep Separator to use when joining text (default: "\n" for newlines). Use "" for no separator.
+#' @param sep Separator to use when joining text (default: "\\n" for newlines). Use "" for no separator.
 #' @return Single character string with proper line breaks
 #' @export
 #' @examples
