@@ -58,9 +58,12 @@ If supplied, the function skips counting and uses this column as y.}
 \item{bin_labels}{Optional character vector of labels for the bins.
 Must be length \code{length(breaks)-1}.}
 
-\item{include_na}{Logical. If TRUE, treats NA as explicit category.}
+\item{include_na}{Logical. If TRUE, NA values are shown as explicit
+categories in the visualization. If FALSE (default), rows with NA
+in key variables are excluded. Default FALSE.}
 
-\item{na_label}{Optional string. Custom label for NA values. Defaults to "(Missing)".}
+\item{na_label}{String. Label to display for NA values when
+\code{include_na = TRUE}. Default "(Missing)".}
 
 \item{color}{Optional string or vector of colors for the bars.}
 
@@ -116,14 +119,25 @@ vs. the factor levels.
 \item Applies custom \code{color} if provided.
 }
 }
+
+\strong{NA Handling:}
+
+By default (\code{include_na = FALSE}), rows with NA values in categorical
+variables are excluded from the visualization. Set \code{include_na = TRUE}
+to display NAs as an explicit category with a custom label.
+
+When \code{include_na = TRUE}:
+\itemize{
+\item NAs are converted to the label specified in \code{na_label}
+\item NA categories appear at the end of the axis unless explicitly ordered
+}
 }
 \examples{
 
-#We will work with data from the GSS. The GSS dataset (`gssr`) is a dependency of
-#our `dashboardr` package.
+# We will work with data from the GSS. The GSS dataset (`gssr`) is a dependency of
+# our `dashboardr` package.
 
-#Filter to recent years and select relevant variables
-#TODO: some of the examples look off for example plot 4 and 5
+# Filter to recent years and select relevant variables
 gss_recent <- gss_all \%>\%
   filter(year >= 2010) \%>\%
   select(age, degree, happy, sex, race, year)
@@ -142,9 +156,6 @@ plot1 <- create_histogram(
 plot1
 
 # Example 2: Education levels with custom mapping and ordering
-# First check the unique values
-# unique(gss_recent$degree) # "Lt High School", "High School", "Junior College", "Bachelor", "Graduate"
-
 education_order <- c("Lt High School", "High School", "Junior College", "Bachelor", "Graduate")
 
 plot2 <- create_histogram(
@@ -202,7 +213,6 @@ plot4 <- create_histogram(
 plot4
 
 # Example 5: Using pre-aggregated data
-# Create aggregated data first
 race_counts <- gss_recent \%>\%
   count(race, name = "respondent_count") \%>\%
   filter(!is.na(race))
@@ -217,6 +227,5 @@ plot5 <- create_histogram(
   y_label = "Number of Respondents",
 )
 plot5
-
 
 }

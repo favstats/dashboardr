@@ -1,3 +1,11 @@
+# Load dependencies
+library(highcharter)
+library(tidyverse)
+library(dplyr)
+library(rlang)
+library(roxygen2)
+library(gssr)
+
 # --------------------------------------------------------------------------
 # Function: create_histogram
 # --------------------------------------------------------------------------
@@ -25,24 +33,25 @@
 #' @param bin_breaks Optional numeric vector of cut points.
 #' @param bin_labels Optional character vector of labels for the bins.
 #'   Must be length `length(breaks)-1`.
-#' @param include_na Logical. If TRUE, treats NA as explicit "(NA)" bin.
-#' @param na_label Optional string. Custom label for NA values. Defaults to "(Missing)".
+#' @param include_na Logical. If TRUE, NA values are shown as explicit
+#'   categories in the visualization. If FALSE (default), rows with NA
+#'   in key variables are excluded. Default FALSE.
+#' @param na_label String. Label to display for NA values when
+#'   `include_na = TRUE`. Default "(Missing)".
 #' @param color Optional string or vector of colors for the bars.
 #' @param x_map_values Optional named list to recode raw `x_var` values
 #'   before binning.
 #' @param x_order Optional character vector to order the factor levels
 #'   of the binned variable.
-#' @param include_na Logical. If TRUE, treats NA as explicit category.
 #'
 #' @return A `highcharter` histogram (column) plot object.
 #'
 #' @examples
 #'
-#' #We will work with data from the GSS. The GSS dataset (`gssr`) is a dependency of
-#' #our `dashboardr` package.
+#' # We will work with data from the GSS. The GSS dataset (`gssr`) is a dependency of
+#' # our `dashboardr` package.
 #'
-#' #Filter to recent years and select relevant variables
-#' #TODO: some of the examples look off for example plot 4 and 5
+#' # Filter to recent years and select relevant variables
 #' gss_recent <- gss_all %>%
 #'   filter(year >= 2010) %>%
 #'   select(age, degree, happy, sex, race, year)
@@ -61,9 +70,6 @@
 #' plot1
 #'
 #' # Example 2: Education levels with custom mapping and ordering
-#' # First check the unique values
-#' # unique(gss_recent$degree) # "Lt High School", "High School", "Junior College", "Bachelor", "Graduate"
-#'
 #' education_order <- c("Lt High School", "High School", "Junior College", "Bachelor", "Graduate")
 #'
 #' plot2 <- create_histogram(
@@ -121,7 +127,6 @@
 #' plot4
 #'
 #' # Example 5: Using pre-aggregated data
-#' # Create aggregated data first
 #' race_counts <- gss_recent %>%
 #'   count(race, name = "respondent_count") %>%
 #'   filter(!is.na(race))
@@ -136,7 +141,6 @@
 #'   y_label = "Number of Respondents",
 #' )
 #' plot5
-#'
 #'
 #' @details
 #' This function performs the following steps:
@@ -175,7 +179,18 @@
 #'        }
 #'    }
 #'
+#' **NA Handling:**
+#'
+#' By default (`include_na = FALSE`), rows with NA values in categorical
+#' variables are excluded from the visualization. Set `include_na = TRUE`
+#' to display NAs as an explicit category with a custom label.
+#'
+#' When `include_na = TRUE`:
+#' - NAs are converted to the label specified in `na_label`
+#' - NA categories appear at the end of the axis unless explicitly ordered
+#'
 #' @export
+
 create_histogram <- function(data,
                              x_var,
                              y_var = NULL,
@@ -207,6 +222,7 @@ create_histogram <- function(data,
 
   # DATA PREP
   df <- tibble::as_tibble(data)
+
   # Recode haven_labelled if present
   if (inherits(df[[x_var]], "haven_labelled")) {
     df <- df |>
@@ -215,6 +231,7 @@ create_histogram <- function(data,
         !!rlang::sym(x_var) := as.numeric(unclass(!!rlang::sym(x_var)))
       )
   }
+
   # Map raw values if requested (before binning)
   if (!is.null(x_map_values)) {
     if (!is.list(x_map_values) || is.null(names(x_map_values))) {
@@ -229,6 +246,7 @@ create_histogram <- function(data,
       )
     warning("Applied x_map_values before binning.", call. = FALSE)
   }
+
   # BINNING
   # Compute breaks if only bins provided
   if (is.null(bin_breaks) && !is.null(bins)) {
@@ -241,6 +259,7 @@ create_histogram <- function(data,
       breaks = bins
     )$breaks
   }
+
   # Use cut() if breaks available
   if (!is.null(bin_breaks)) {
     if (!is.numeric(df[[x_var]])) {
@@ -269,31 +288,15 @@ create_histogram <- function(data,
   } else {
     x_plot_var <- x_var
   }
+
   # Factor & explicit NA handling
-  df <- df |>
-    dplyr::mutate(
-      .x_factor = if (include_na) {
-        # Convert to character first to handle NAs explicitly
-        temp_var <- as.character(!!rlang::sym(x_plot_var))
-        # Replace NA with custom label
-        temp_var[is.na(temp_var)] <- na_label
-        # Convert to factor
-        factor(temp_var)
-      } else {
-        # Standard factor conversion, NAs will be dropped during counting
-        factor(!!rlang::sym(x_plot_var))
-      }
-    )
-  # Apply custom ordering
-  if (!is.null(x_order)) {
-    levs <- levels(df$.x_factor)
-    kept <- x_order[x_order %in% levs]
-    other <- setdiff(levs, kept)
-    df <- df |>
-      dplyr::mutate(
-        .x_factor = factor(.x_factor, levels = c(kept, other))
-      )
-  }
+  df$.x_factor <- handle_na_for_plotting(
+    data = df,
+    var_name = x_plot_var,
+    include_na = include_na,
+    na_label = na_label,
+    custom_order = x_order
+  )
 
   # Store the levels of the factor BEFORE aggregation for later use in complete()
   # This ensures all potential categories are present
@@ -303,28 +306,18 @@ create_histogram <- function(data,
   if (is.null(y_var)) {
     df <- df |>
       dplyr::count(.x_factor, name = "n") |>
-      # IMPORTANT: Use complete to ensure all factor levels are present, even with 0 count
-      tidyr::complete(.x_factor = factor(factor_levels_for_completion,
-                                         levels = factor_levels_for_completion),
-                      fill = list(n = 0))
+      # Complete based on existing factor levels
+      tidyr::complete(.x_factor, fill = list(n = 0))
   } else {
     if (!y_var %in% names(df)) {
       stop("`y_var` not found in data.", call. = FALSE)
     }
     df <- df |>
       dplyr::rename(n = !!rlang::sym(y_var)) |>
-      # Ensure all factor levels are present even when using pre-computed y_var
-      tidyr::complete(.x_factor = factor(factor_levels_for_completion,
-                                         levels = factor_levels_for_completion),
-                      fill = list(n = 0))
+      tidyr::complete(.x_factor, fill = list(n = 0))
   }
 
-  # Re-apply factor levels after complete() to maintain order and structure
-  df <- df |>
-    dplyr::mutate(.x_factor = factor(.x_factor, levels = factor_levels_for_completion))
-
   # Extract data for direct series addition
-  # This creates a named vector or list where names are categories and values are counts
   series_data <- setNames(df$n, as.character(df$.x_factor))
 
   # HIGHCHARTER
@@ -407,4 +400,9 @@ create_histogram <- function(data,
   if (!is.null(color)) hc <- hc %>% highcharter::hc_colors(color)
 
   return(hc)
+}
+
+# Helper function for %||%
+`%||%` <- function(x, y) {
+  if (is.null(x)) y else x
 }
