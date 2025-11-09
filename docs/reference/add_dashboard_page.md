@@ -65,12 +65,11 @@ add_dashboard_page(
 
 - visualizations:
 
-  viz_collection or list of visualization specs
+  Content collection or list of visualization specs
 
 - content:
 
-  Alternative to visualizations - supports content_collection or
-  viz_collection
+  Alternative to visualizations - supports content collections
 
 - text:
 

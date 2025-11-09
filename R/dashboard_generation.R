@@ -156,7 +156,7 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
       file.copy(proj$favicon, file.path(output_dir, basename(proj$favicon)), overwrite = TRUE)
     }
     
-    # Copy modal assets (CSS and JS) to assets directory
+    # Copy modal and pagination assets (CSS and JS) to assets directory
     assets_dir <- file.path(output_dir, "assets")
     if (!dir.exists(assets_dir)) {
       dir.create(assets_dir, recursive = TRUE)
@@ -164,12 +164,16 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
     
     modal_css <- system.file("assets", "modal.css", package = "dashboardr")
     modal_js <- system.file("assets", "modal.js", package = "dashboardr")
+    pagination_css <- system.file("assets", "pagination.css", package = "dashboardr")
     
     if (file.exists(modal_css)) {
       file.copy(modal_css, file.path(assets_dir, "modal.css"), overwrite = TRUE)
     }
     if (file.exists(modal_js)) {
       file.copy(modal_js, file.path(assets_dir, "modal.js"), overwrite = TRUE)
+    }
+    if (file.exists(pagination_css)) {
+      file.copy(pagination_css, file.path(assets_dir, "pagination.css"), overwrite = TRUE)
     }
 
     # Copy tabset theme SCSS file if using a built-in theme
@@ -324,7 +328,7 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
         
         if (has_pagination) {
           # Generate multiple QMD files for paginated page
-          .generate_paginated_page_files(page, page_name, page_file, output_dir, proj$theme)
+          .generate_paginated_page_files(page, page_name, page_file, output_dir, proj$theme, proj$pagination_position)
         } else {
           # Single page generation
           content <- .generate_default_page_content(page)
@@ -883,9 +887,10 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
 #' @param base_page_file Path to the main page file (e.g., "analysis.qmd")
 #' @param output_dir Output directory
 #' @param theme Quarto theme name
+#' @param default_position Default pagination position from dashboard config (default: "bottom")
 #' @return Invisible NULL
 #' @keywords internal
-.generate_paginated_page_files <- function(page, page_name, base_page_file, output_dir, theme) {
+.generate_paginated_page_files <- function(page, page_name, base_page_file, output_dir, theme, default_position = "bottom") {
   # Split visualizations by pagination markers
   sections <- .split_by_pagination(page$visualizations)
   
@@ -895,6 +900,15 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
   
   # Get base name for files (without .qmd extension)
   base_name <- sub("\\.qmd$", "", basename(base_page_file))
+  
+  # Determine pagination position - use per-page setting if specified, otherwise use dashboard default
+  pagination_position <- default_position  # Start with dashboard default
+  for (sect in sections) {
+    if (!is.null(sect$pagination_after$pagination_position)) {
+      pagination_position <- sect$pagination_after$pagination_position
+      break  # Use first per-page override found
+    }
+  }
   
   # Generate each page
   for (i in seq_along(sections)) {
@@ -914,17 +928,56 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
     # Generate base content
     content <- .generate_default_page_content(section_page)
     
-    # Add pagination navigation at the end
-    nav_content <- .generate_pagination_nav(
-      page_num = i,
-      total_pages = length(sections),
-      base_name = base_name,
-      theme = theme,
-      separator_text = page$pagination_separator %||% "of"
-    )
+    # Generate pagination navigation (position determined above for all pages)
+    nav_content_bottom <- NULL
+    nav_content_top <- NULL
     
-    # Combine content with navigation
-    full_content <- c(content, "", nav_content)
+    if (pagination_position %in% c("bottom", "both")) {
+      nav_content_bottom <- .generate_pagination_nav(
+        page_num = i,
+        total_pages = length(sections),
+        base_name = base_name,
+        theme = theme,
+        position = "bottom",
+        separator_text = page$pagination_separator %||% "/"
+      )
+    }
+    
+    if (pagination_position %in% c("top", "both")) {
+      nav_content_top <- .generate_pagination_nav(
+        page_num = i,
+        total_pages = length(sections),
+        base_name = base_name,
+        theme = theme,
+        position = "top",
+        separator_text = page$pagination_separator %||% "/"
+      )
+    }
+    
+    # Combine content with navigation(s)
+    # Need to insert top nav AFTER YAML frontmatter, not before
+    if (!is.null(nav_content_top)) {
+      # Find where YAML ends (second "---")
+      yaml_end <- which(content == "---")[2]
+      if (!is.na(yaml_end) && yaml_end > 0) {
+        # Insert top nav after YAML
+        full_content <- c(
+          content[1:yaml_end],  # YAML frontmatter
+          "",
+          nav_content_top,      # Top navigation
+          "",
+          content[(yaml_end+1):length(content)],  # Rest of content
+          "",
+          nav_content_bottom    # Bottom navigation
+        )
+      } else {
+        # No YAML found, prepend as before
+        full_content <- c(nav_content_top, "", content, "", nav_content_bottom)
+      }
+    } else {
+      # No top nav, just append bottom nav
+      full_content <- c(content, "", nav_content_bottom)
+    }
     
     # Write file
     writeLines(full_content, page_file)

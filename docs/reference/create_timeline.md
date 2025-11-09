@@ -14,10 +14,16 @@ create_timeline(
   group_var = NULL,
   chart_type = "stacked_area",
   title = NULL,
+  subtitle = NULL,
+  x_label = NULL,
+  y_label = NULL,
   y_max = NULL,
+  y_min = NULL,
+  color_palette = NULL,
   response_levels = NULL,
   response_breaks = NULL,
   response_bin_labels = NULL,
+  response_map_values = NULL,
   response_filter = NULL,
   response_filter_combine = TRUE,
   response_filter_label = NULL,
@@ -56,9 +62,31 @@ create_timeline(
 
   Optional main title for the chart.
 
+- subtitle:
+
+  Optional subtitle for the chart.
+
+- x_label:
+
+  Optional character string. Label for the x-axis. Defaults to time_var
+  name.
+
+- y_label:
+
+  Optional character string. Label for the y-axis. Defaults to
+  "Percentage".
+
 - y_max:
 
   Optional numeric value. Maximum value for the Y-axis.
+
+- y_min:
+
+  Optional numeric value. Minimum value for the Y-axis.
+
+- color_palette:
+
+  Optional character vector of color hex codes for the series.
 
 - response_levels:
 
@@ -73,6 +101,12 @@ create_timeline(
 
   Optional character vector of labels for response bins (e.g.,
   `c("Low (1-2)", "Medium (3-5)", "High (6-7)")`).
+
+- response_map_values:
+
+  Optional named list to rename response values for display (e.g.,
+  `list("1" = "Correct", "0" = "Incorrect")`). Applied to legend labels
+  and data.
 
 - response_filter:
 
@@ -115,7 +149,7 @@ A highcharter plot object.
 ``` r
 # Load GSS data
 data(gss_all)
-#> Warning: data set ‘gss_all’ not found
+#> Warning: data set 'gss_all' not found
 
 # Basic timeline - confidence in institutions over time
 plot1 <- create_timeline(
@@ -185,4 +219,42 @@ plot5 <- create_timeline(
 #> Error: object 'survey_data' not found
 plot5
 #> Error: object 'plot5' not found
+
+# Custom styling with colors and labels
+plot6 <- create_timeline(
+   data = survey_data,
+   time_var = "wave_time_label",
+   response_var = "agreement",
+   group_var = "age_group",
+   chart_type = "line",
+   response_filter = 4:5,
+   title = "High Agreement Over Time",
+   subtitle = "By Age Group",
+   x_label = "Survey Wave",
+   y_label = "% High Agreement",
+   y_min = 0,
+   y_max = 100,
+   color_palette = c("#E41A1C", "#377EB8", "#4DAF4A", "#984EA3")
+)
+#> Error: object 'survey_data' not found
+plot6
+#> Error: object 'plot6' not found
+
+# Custom legend labels with response_map_values
+plot7 <- create_timeline(
+   data = survey_data,
+   time_var = "wave_time_label",
+   response_var = "knowledge_item",
+   chart_type = "line",
+   response_filter = 1,
+   response_map_values = list("1" = "Correct", "0" = "Incorrect"),
+   title = "Knowledge Score Over Time",
+   x_label = "Survey Wave",
+   y_label = "% Correct",
+   y_min = 0,
+   y_max = 100
+)
+#> Error: object 'survey_data' not found
+plot7
+#> Error: object 'plot7' not found
 ```

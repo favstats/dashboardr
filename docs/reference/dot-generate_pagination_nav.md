@@ -11,7 +11,8 @@ Includes Previous/Next buttons and page indicator.
   total_pages,
   base_name,
   theme = NULL,
-  separator_text = "of"
+  position = "bottom",
+  separator_text = "/"
 )
 ```
 
@@ -33,9 +34,14 @@ Includes Previous/Next buttons and page indicator.
 
   Quarto theme name (for styling)
 
+- position:
+
+  Position of navigation: "top", "bottom" (default: "bottom")
+
 - separator_text:
 
-  Text to show between page number and total (default: "of")
+  Text to show between page number and total (default: "/", kept for
+  backward compatibility)
 
 ## Value
 

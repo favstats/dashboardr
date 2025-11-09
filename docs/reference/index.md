@@ -16,6 +16,8 @@ Functions for creating and managing dashboards
   : Publish dashboard to GitHub Pages or GitLab Pages
 - [`add_loading_overlay()`](https://favstats.github.io/dashboardr/reference/add_loading_overlay.md)
   : Add a loading overlay to a dashboard page
+- [`add_powered_by_dashboardr()`](https://favstats.github.io/dashboardr/reference/add_powered_by_dashboardr.md)
+  : Add "Powered by dashboardr" branding to footer
 
 ## Demo Dashboards
 
@@ -122,6 +124,19 @@ Functions for adding rich content blocks to pages
   : Add a blockquote
 - [`add_badge()`](https://favstats.github.io/dashboardr/reference/add_badge.md)
   : Add a status badge
+
+## Modals
+
+Functions for adding interactive modal dialogs
+
+- [`add_modal()`](https://favstats.github.io/dashboardr/reference/add_modal.md)
+  : Add Modal to Content Collection (Pipeable)
+- [`enable_modals()`](https://favstats.github.io/dashboardr/reference/enable_modals.md)
+  : Enable Modal Functionality
+- [`modal_content()`](https://favstats.github.io/dashboardr/reference/modal_content.md)
+  : Create Modal Content Container
+- [`modal_link()`](https://favstats.github.io/dashboardr/reference/modal_link.md)
+  : Create Modal Link
 
 ## Metrics & Value Boxes
 

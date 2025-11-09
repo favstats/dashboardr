@@ -12,7 +12,7 @@ add_spacer(content, height = "2rem")
 
 - content:
 
-  A content_collection object
+  A content_collection or viz_collection object
 
 - height:
 

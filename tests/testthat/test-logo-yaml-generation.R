@@ -175,3 +175,5 @@ test_that("logo with navbar sections generates valid YAML structure", {
 })
 
 
+
+

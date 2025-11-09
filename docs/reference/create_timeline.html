@@ -68,10 +68,16 @@ line charts, and diverging bar charts.</p>
 <span>  group_var <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  chart_type <span class="op">=</span> <span class="st">"stacked_area"</span>,</span>
 <span>  title <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  subtitle <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  x_label <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  y_label <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  y_max <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  y_min <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  color_palette <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  response_levels <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  response_breaks <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  response_bin_labels <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  response_map_values <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  response_filter <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  response_filter_combine <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  response_filter_label <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -110,8 +116,28 @@ line charts, and diverging bar charts.</p>
 <dd><p>Optional main title for the chart.</p></dd>
 
 
+<dt id="arg-subtitle">subtitle<a class="anchor" aria-label="anchor" href="#arg-subtitle"></a></dt>
+<dd><p>Optional subtitle for the chart.</p></dd>
+
+
+<dt id="arg-x-label">x_label<a class="anchor" aria-label="anchor" href="#arg-x-label"></a></dt>
+<dd><p>Optional character string. Label for the x-axis. Defaults to time_var name.</p></dd>
+
+
+<dt id="arg-y-label">y_label<a class="anchor" aria-label="anchor" href="#arg-y-label"></a></dt>
+<dd><p>Optional character string. Label for the y-axis. Defaults to "Percentage".</p></dd>
+
+
 <dt id="arg-y-max">y_max<a class="anchor" aria-label="anchor" href="#arg-y-max"></a></dt>
 <dd><p>Optional numeric value. Maximum value for the Y-axis.</p></dd>
+
+
+<dt id="arg-y-min">y_min<a class="anchor" aria-label="anchor" href="#arg-y-min"></a></dt>
+<dd><p>Optional numeric value. Minimum value for the Y-axis.</p></dd>
+
+
+<dt id="arg-color-palette">color_palette<a class="anchor" aria-label="anchor" href="#arg-color-palette"></a></dt>
+<dd><p>Optional character vector of color hex codes for the series.</p></dd>
 
 
 <dt id="arg-response-levels">response_levels<a class="anchor" aria-label="anchor" href="#arg-response-levels"></a></dt>
@@ -126,6 +152,11 @@ line charts, and diverging bar charts.</p>
 <dt id="arg-response-bin-labels">response_bin_labels<a class="anchor" aria-label="anchor" href="#arg-response-bin-labels"></a></dt>
 <dd><p>Optional character vector of labels for response bins
 (e.g., <code>c("Low (1-2)", "Medium (3-5)", "High (6-7)")</code>).</p></dd>
+
+
+<dt id="arg-response-map-values">response_map_values<a class="anchor" aria-label="anchor" href="#arg-response-map-values"></a></dt>
+<dd><p>Optional named list to rename response values for display
+(e.g., <code>list("1" = "Correct", "0" = "Incorrect")</code>). Applied to legend labels and data.</p></dd>
 
 
 <dt id="arg-response-filter">response_filter<a class="anchor" aria-label="anchor" href="#arg-response-filter"></a></dt>
@@ -165,7 +196,7 @@ If <code>NULL</code> and no <code>group_var</code>, uses auto-generated label (e
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Load GSS data</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">gss_all</span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>data set ‘gss_all’ not found</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>data set 'gss_all' not found</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Basic timeline - confidence in institutions over time</span></span></span>
 <span class="r-in"><span><span class="va">plot1</span> <span class="op">&lt;-</span> <span class="fu">create_timeline</span><span class="op">(</span></span></span>
@@ -235,6 +266,44 @@ If <code>NULL</code> and no <code>group_var</code>, uses auto-generated label (e
 <span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'survey_data' not found</span>
 <span class="r-in"><span><span class="va">plot5</span></span></span>
 <span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'plot5' not found</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Custom styling with colors and labels</span></span></span>
+<span class="r-in"><span><span class="va">plot6</span> <span class="op">&lt;-</span> <span class="fu">create_timeline</span><span class="op">(</span></span></span>
+<span class="r-in"><span>   data <span class="op">=</span> <span class="va">survey_data</span>,</span></span>
+<span class="r-in"><span>   time_var <span class="op">=</span> <span class="st">"wave_time_label"</span>,</span></span>
+<span class="r-in"><span>   response_var <span class="op">=</span> <span class="st">"agreement"</span>,</span></span>
+<span class="r-in"><span>   group_var <span class="op">=</span> <span class="st">"age_group"</span>,</span></span>
+<span class="r-in"><span>   chart_type <span class="op">=</span> <span class="st">"line"</span>,</span></span>
+<span class="r-in"><span>   response_filter <span class="op">=</span> <span class="fl">4</span><span class="op">:</span><span class="fl">5</span>,</span></span>
+<span class="r-in"><span>   title <span class="op">=</span> <span class="st">"High Agreement Over Time"</span>,</span></span>
+<span class="r-in"><span>   subtitle <span class="op">=</span> <span class="st">"By Age Group"</span>,</span></span>
+<span class="r-in"><span>   x_label <span class="op">=</span> <span class="st">"Survey Wave"</span>,</span></span>
+<span class="r-in"><span>   y_label <span class="op">=</span> <span class="st">"% High Agreement"</span>,</span></span>
+<span class="r-in"><span>   y_min <span class="op">=</span> <span class="fl">0</span>,</span></span>
+<span class="r-in"><span>   y_max <span class="op">=</span> <span class="fl">100</span>,</span></span>
+<span class="r-in"><span>   color_palette <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"#E41A1C"</span>, <span class="st">"#377EB8"</span>, <span class="st">"#4DAF4A"</span>, <span class="st">"#984EA3"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'survey_data' not found</span>
+<span class="r-in"><span><span class="va">plot6</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'plot6' not found</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Custom legend labels with response_map_values</span></span></span>
+<span class="r-in"><span><span class="va">plot7</span> <span class="op">&lt;-</span> <span class="fu">create_timeline</span><span class="op">(</span></span></span>
+<span class="r-in"><span>   data <span class="op">=</span> <span class="va">survey_data</span>,</span></span>
+<span class="r-in"><span>   time_var <span class="op">=</span> <span class="st">"wave_time_label"</span>,</span></span>
+<span class="r-in"><span>   response_var <span class="op">=</span> <span class="st">"knowledge_item"</span>,</span></span>
+<span class="r-in"><span>   chart_type <span class="op">=</span> <span class="st">"line"</span>,</span></span>
+<span class="r-in"><span>   response_filter <span class="op">=</span> <span class="fl">1</span>,</span></span>
+<span class="r-in"><span>   response_map_values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"1"</span> <span class="op">=</span> <span class="st">"Correct"</span>, <span class="st">"0"</span> <span class="op">=</span> <span class="st">"Incorrect"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>   title <span class="op">=</span> <span class="st">"Knowledge Score Over Time"</span>,</span></span>
+<span class="r-in"><span>   x_label <span class="op">=</span> <span class="st">"Survey Wave"</span>,</span></span>
+<span class="r-in"><span>   y_label <span class="op">=</span> <span class="st">"% Correct"</span>,</span></span>
+<span class="r-in"><span>   y_min <span class="op">=</span> <span class="fl">0</span>,</span></span>
+<span class="r-in"><span>   y_max <span class="op">=</span> <span class="fl">100</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'survey_data' not found</span>
+<span class="r-in"><span><span class="va">plot7</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'plot7' not found</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

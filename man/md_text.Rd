@@ -4,10 +4,12 @@
 \alias{md_text}
 \title{Create multi-line markdown text content}
 \usage{
-md_text(...)
+md_text(..., sep = "\\n")
 }
 \arguments{
 \item{...}{Text content as separate arguments or character vectors}
+
+\item{sep}{Separator to use when joining text (default: "\n" for newlines). Use "" for no separator.}
 }
 \value{
 Single character string with proper line breaks
@@ -44,7 +46,7 @@ Helper function to create readable multi-line markdown text content for pages.
 Automatically handles line breaks and formatting for better readability.
 
 \dontrun{
-# Method 1: Separate arguments
+# Method 1: Separate arguments (default: newlines between)
 text_content <- md_text(
   "# Welcome",
   "",
@@ -58,6 +60,9 @@ text_content <- md_text(
 # Method 2: Character vectors
 lines <- c("# About", "", "This is about our study.")
 text_content <- md_text(lines)
+
+# Method 3: Combine without newlines
+combined <- md_text(text1, text2, text3, sep = "")
 
 # Use in add_page
 add_page("About", text = text_content)

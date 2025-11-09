@@ -7,7 +7,7 @@ list of pages.
 ## Usage
 
 ``` r
-add_pagination(viz_collection)
+add_pagination(viz_collection, position = NULL)
 ```
 
 ## Arguments
@@ -15,6 +15,13 @@ add_pagination(viz_collection)
 - viz_collection:
 
   A viz_collection object
+
+- position:
+
+  Position for pagination controls: "bottom" (sticky at bottom), "top"
+  (inline with page title), "both" (top and bottom), or NULL (default -
+  uses dashboard-level setting from create_dashboard). Per-page override
+  of the dashboard default.
 
 - id:
 

@@ -20,7 +20,7 @@
 #' # Create viz collection with custom group labels
 #' vizzes <- create_viz(tabgroup_labels = c("demo" = "Demographics",
 #'                                           "pol" = "Political Views"))
-#'                                           
+#'
 #' # Create viz collection with shared defaults
 #' vizzes <- create_viz(
 #'   type = "stackedbars",
@@ -34,7 +34,7 @@
 #' }
 create_viz <- function(tabgroup_labels = NULL, ...) {
   defaults <- list(...)
-  
+
   structure(list(
     items = list(),  # Unified storage for all content
     tabgroup_labels = tabgroup_labels,
@@ -92,7 +92,7 @@ create_viz <- function(tabgroup_labels = NULL, ...) {
   if (missing(e2) || !is_content(e2)) {
     stop("Right operand must be a content collection")
   }
-  
+
   # Delegate to combine_content() which handles all attribute preservation
   combine_content(e1, e2)
 }
@@ -114,7 +114,7 @@ create_viz <- function(tabgroup_labels = NULL, ...) {
   if (missing(e2) || !is_content(e2)) {
     stop("Right operand must be a content collection")
   }
-  
+
   combine_content(e1, e2)
 }
 #' Combine content collections (universal combiner)
@@ -122,7 +122,7 @@ create_viz <- function(tabgroup_labels = NULL, ...) {
 #' Universal function to combine content_collection or viz_collection objects.
 #' Preserves all content types (visualizations, pagination markers, text blocks)
 #' and collection-level attributes (lazy loading, etc.).
-#' 
+#'
 #' @param ... One or more content_collection or viz_collection objects
 #' @return Combined content_collection
 #' @export
@@ -132,36 +132,36 @@ create_viz <- function(tabgroup_labels = NULL, ...) {
 #' all_viz <- demo_viz %>%
 #'   combine_content(analysis_viz) %>%
 #'   combine_content(summary_viz)
-#' 
+#'
 #' # With pagination
 #' paginated <- section1_viz %>%
 #'   combine_content(section2_viz) %>%
 #'   add_pagination() %>%
 #'   combine_content(section3_viz)
-#' 
+#'
 #' # Using + operator
 #' combined <- viz1 + viz2 + viz3
 #' }
 combine_content <- function(...) {
   collections <- list(...)
-  
+
   if (length(collections) == 0) {
     return(create_viz())
   }
-  
+
   # Validate all are content collections
   for (i in seq_along(collections)) {
     if (!is_content(collections[[i]])) {
       stop("All arguments must be content collections")
     }
   }
-  
+
   # Combine all items and renumber insertion indices
   combined_items <- list()
   combined_labels <- list()
   combined_defaults <- list()
   combined_attrs <- list()  # For extra attributes like lazy loading
-  
+
   for (col in collections) {
     # Renumber indices to maintain global order
     offset <- length(combined_items)
@@ -172,21 +172,21 @@ combine_content <- function(...) {
       item[[".insertion_index"]] <- offset + i
       combined_items[[length(combined_items) + 1]] <- item
     }
-    
+
     # Merge labels (later collections override)
     if (!is.null(col$tabgroup_labels)) {
       for (label_name in names(col$tabgroup_labels)) {
         combined_labels[[label_name]] <- col$tabgroup_labels[[label_name]]
       }
     }
-    
+
     # Merge defaults (later collections override)
     if (!is.null(col$defaults) && length(col$defaults) > 0) {
       for (default_name in names(col$defaults)) {
         combined_defaults[[default_name]] <- col$defaults[[default_name]]
       }
     }
-    
+
     # Merge any extra attributes (lazy loading, etc.) - later collections override
     standard_names <- c("items", "tabgroup_labels", "defaults", "class")
     extra_attrs <- setdiff(names(col), standard_names)
@@ -194,31 +194,31 @@ combine_content <- function(...) {
       combined_attrs[[attr_name]] <- col[[attr_name]]
     }
   }
-  
+
   # Sort by insertion index to maintain order
   if (length(combined_items) > 0) {
     sort_order <- order(sapply(combined_items, function(x) x$.insertion_index %||% Inf))
     combined_items <- combined_items[sort_order]
   }
-  
+
   # Build result with all attributes
   result <- list(
     items = combined_items,
     tabgroup_labels = if (length(combined_labels) > 0) combined_labels else NULL,
     defaults = if (length(combined_defaults) > 0) combined_defaults else list()
   )
-  
+
   # Add extra attributes
   for (attr_name in names(combined_attrs)) {
     result[[attr_name]] <- combined_attrs[[attr_name]]
   }
-  
+
   structure(result, class = c("content_collection", "viz_collection"))
 }
 
 #' Combine visualization collections
 #'
-#' @description 
+#' @description
 #' This function has been superseded by [combine_content()]. It still works
 #' but we recommend using `combine_content()` for new code as it handles
 #' all content types and attributes more reliably.
@@ -265,7 +265,7 @@ combine_viz <- function(...) {
   if (is.null(tabgroup)) {
     return(NULL)
   }
-  
+
   # Case 1: Character string - check for slash notation
   if (is.character(tabgroup)) {
     if (length(tabgroup) == 1) {
@@ -298,7 +298,7 @@ combine_viz <- function(...) {
       return(as.character(tabgroup))
     }
   }
-  
+
   stop("tabgroup must be either:\n",
        "  - A string: 'demographics' or 'demographics/details/regional'\n",
        "  - A named numeric vector: c('1' = 'demographics', '2' = 'details')")
@@ -318,7 +318,7 @@ combine_viz <- function(...) {
 #'   - Slash notation: `"demographics/details"` or `"demographics/details/regional"` for nested tabs
 #'   - Named numeric vector: `c("1" = "demographics", "2" = "details", "3" = "regional")` for explicit hierarchy
 #' @param title Display title for the visualization (shown above the chart)
-#' @param title_tabset Optional tab label. If NULL, uses `title` for the tab label. 
+#' @param title_tabset Optional tab label. If NULL, uses `title` for the tab label.
 #'   Use this when you want a short tab name but a longer, descriptive visualization title.
 #' @param text Optional markdown text to display above the visualization
 #' @param icon Optional iconify icon shortcode for the visualization
@@ -337,34 +337,34 @@ combine_viz <- function(...) {
 #' page1_viz <- create_viz() %>%
 #'   add_viz(type = "stackedbar", x_var = "education", stack_var = "gender",
 #'           title = "Education by Gender", tabgroup = "demographics")
-#'           
+#'
 #' # Nested tabgroups using slash notation
 #' page2_viz <- create_viz() %>%
-#'   add_viz(type = "stackedbar", title = "Overview", 
+#'   add_viz(type = "stackedbar", title = "Overview",
 #'           tabgroup = "demographics") %>%
 #'   add_viz(type = "stackedbar", title = "Details",
 #'           tabgroup = "demographics/details")
-#'           
+#'
 #' # Nested tabgroups using named numeric vector
 #' page3_viz <- create_viz() %>%
 #'   add_viz(type = "stackedbar", title = "Regional Details",
 #'           tabgroup = c("1" = "demographics", "2" = "details", "3" = "regional"))
-#'           
+#'
 #' # Filter data per visualization
 #' page4_viz <- create_viz() %>%
-#'   add_viz(type = "histogram", x_var = "response", 
+#'   add_viz(type = "histogram", x_var = "response",
 #'           title = "Wave 1", filter = ~ wave == 1) %>%
 #'   add_viz(type = "histogram", x_var = "response",
 #'           title = "Wave 2", filter = ~ wave == 2) %>%
 #'   add_viz(type = "histogram", x_var = "response",
 #'           title = "All Waves", filter = ~ wave %in% c(1, 2, 3))
-#'           
+#'
 #' # Multiple datasets
 #' page5_viz <- create_viz() %>%
 #'   add_viz(type = "histogram", x_var = "age", data = "demographics") %>%
 #'   add_viz(type = "histogram", x_var = "response", data = "survey") %>%
 #'   add_viz(type = "histogram", x_var = "outcome", data = "outcomes")
-#'   
+#'
 #' # Separate tab label from visualization title
 #' page6_viz <- create_viz() %>%
 #'   add_viz(
@@ -394,14 +394,14 @@ combine_viz <- function(...) {
   if (length(viz_list) == 0) {
     return(viz_list)
   }
-  
+
   # SIMPLIFIED APPROACH: Just sort by insertion_index!
   # The hierarchy builder will handle grouping and nesting correctly.
   # We don't need to pre-sort by tabgroup hierarchy here.
-  
+
   # Extract insertion indices (items ARE the specs with type="viz" mixed in)
   sort_order <- order(sapply(viz_list, function(v) v$.insertion_index %||% Inf))
-  
+
   # Return sorted by insertion index
   viz_list[sort_order]
 }
@@ -432,7 +432,7 @@ combine_viz <- function(...) {
 #'   - Slash notation: `"demographics/details"` or `"demographics/details/regional"` for nested tabs
 #'   - Named numeric vector: `c("1" = "demographics", "2" = "details", "3" = "regional")` for explicit hierarchy
 #' @param title Display title for the visualization (shown above the chart)
-#' @param title_tabset Optional tab label. If NULL, uses `title` for the tab label. 
+#' @param title_tabset Optional tab label. If NULL, uses `title` for the tab label.
 #'   Use this when you want a short tab name but a longer, descriptive visualization title.
 #' @param text Optional markdown text to display above the visualization
 #' @param icon Optional iconify icon shortcode for the visualization
@@ -451,34 +451,34 @@ combine_viz <- function(...) {
 #' page1_viz <- create_viz() %>%
 #'   add_viz(type = "stackedbar", x_var = "education", stack_var = "gender",
 #'           title = "Education by Gender", tabgroup = "demographics")
-#'           
+#'
 #' # Nested tabgroups using slash notation
 #' page2_viz <- create_viz() %>%
-#'   add_viz(type = "stackedbar", title = "Overview", 
+#'   add_viz(type = "stackedbar", title = "Overview",
 #'           tabgroup = "demographics") %>%
 #'   add_viz(type = "stackedbar", title = "Details",
 #'           tabgroup = "demographics/details")
-#'           
+#'
 #' # Nested tabgroups using named numeric vector
 #' page3_viz <- create_viz() %>%
 #'   add_viz(type = "stackedbar", title = "Regional Details",
 #'           tabgroup = c("1" = "demographics", "2" = "details", "3" = "regional"))
-#'           
+#'
 #' # Filter data per visualization
 #' page4_viz <- create_viz() %>%
-#'   add_viz(type = "histogram", x_var = "response", 
+#'   add_viz(type = "histogram", x_var = "response",
 #'           title = "Wave 1", filter = ~ wave == 1) %>%
 #'   add_viz(type = "histogram", x_var = "response",
 #'           title = "Wave 2", filter = ~ wave == 2) %>%
 #'   add_viz(type = "histogram", x_var = "response",
 #'           title = "All Waves", filter = ~ wave %in% c(1, 2, 3))
-#'           
+#'
 #' # Multiple datasets
 #' page5_viz <- create_viz() %>%
 #'   add_viz(type = "histogram", x_var = "age", data = "demographics") %>%
 #'   add_viz(type = "histogram", x_var = "response", data = "survey") %>%
 #'   add_viz(type = "histogram", x_var = "outcome", data = "outcomes")
-#'   
+#'
 #' # Separate tab label from visualization title
 #' page6_viz <- create_viz() %>%
 #'   add_viz(
@@ -498,7 +498,7 @@ add_viz <- function(viz_collection, type = NULL, ..., tabgroup = NULL, title = N
   # Get explicitly provided arguments (not defaults)
   call_args <- as.list(match.call())[-1]  # Remove function name
   call_args$viz_collection <- NULL  # Remove viz_collection from the list
-  
+
   # Get defaults from viz_collection
   # Note: Don't use %||% as it may have unexpected behavior with lists
   if (is.null(viz_collection$defaults)) {
@@ -506,19 +506,19 @@ add_viz <- function(viz_collection, type = NULL, ..., tabgroup = NULL, title = N
   } else {
     defaults <- viz_collection$defaults
   }
-  
+
   # Get additional parameters from ...
   dot_args <- list(...)
-  
+
   # Merge parameters: explicitly provided > dots > defaults
   # Start with defaults
   merged_params <- defaults
-  
+
   # Override with dot args
   for (name in names(dot_args)) {
     merged_params[[name]] <- dot_args[[name]]
   }
-  
+
   # Override with explicitly provided named parameters
   if ("type" %in% names(call_args)) merged_params$type <- type
   if ("tabgroup" %in% names(call_args)) merged_params$tabgroup <- tabgroup
@@ -537,7 +537,7 @@ add_viz <- function(viz_collection, type = NULL, ..., tabgroup = NULL, title = N
   if ("drop_na_vars" %in% names(call_args)) {
     merged_params$drop_na_vars <- drop_na_vars
   }
-  
+
   # Extract final values from merged_params
   # NOTE: Use [[]] instead of $ to avoid partial matching (text_before_viz would match $text!)
   type <- merged_params[["type"]]
@@ -556,7 +556,7 @@ add_viz <- function(viz_collection, type = NULL, ..., tabgroup = NULL, title = N
   data <- merged_params[["data"]]
   # Note: Using if/else instead of %||% due to unexpected behavior with FALSE values
   drop_na_vars <- if (is.null(merged_params[["drop_na_vars"]])) FALSE else merged_params[["drop_na_vars"]]
-  
+
   # Backward compatibility: map text parameter to text_before_viz or text_after_viz
   if (!is.null(text) && nzchar(text)) {
     if (text_position == "above") {
@@ -571,18 +571,18 @@ add_viz <- function(viz_collection, type = NULL, ..., tabgroup = NULL, title = N
       }
     }
   }
-  
+
   # Now apply merged_params from dots to the ... parameters
   dot_args <- merged_params[!names(merged_params) %in% c("type", "tabgroup", "title", "title_tabset", "text", "icon", "text_position", "text_before_tabset", "text_after_tabset", "text_before_viz", "text_after_viz", "height", "filter", "data", "drop_na_vars")]
 
   # Validate supported visualization types
   supported_types <- c("stackedbar", "stackedbars", "heatmap", "histogram", "timeline", "bar")
-  
+
   # Validate type parameter
   if (is.null(type) || !is.character(type) || length(type) != 1 || nchar(type) == 0) {
     .stop_with_hint("type", supported_types, "add_viz(type = \"histogram\", x_var = \"age\")")
   }
-  
+
   if (!type %in% supported_types) {
     .stop_with_suggestion("type", type, supported_types)
   }
@@ -611,7 +611,7 @@ add_viz <- function(viz_collection, type = NULL, ..., tabgroup = NULL, title = N
       stop("text must be a character string or NULL")
     }
   }
-  
+
   # Validate new text positioning parameters
   if (!is.null(text_before_tabset)) {
     if (!is.character(text_before_tabset) || length(text_before_tabset) != 1) {
@@ -702,7 +702,7 @@ add_viz <- function(viz_collection, type = NULL, ..., tabgroup = NULL, title = N
   # Add insertion index to preserve order
   insertion_idx <- length(viz_collection$items) + 1
   viz_spec$.insertion_index <- insertion_idx
-  
+
   # Append to the collection using unified $items
   viz_collection$items <- c(viz_collection$items, list(viz_spec))
 
@@ -863,26 +863,26 @@ add_viz <- function(viz_collection, type = NULL, ..., tabgroup = NULL, title = N
 #'     wave = "Over Time"
 #'   )
 #' }
-add_vizzes <- function(viz_collection, ..., 
+add_vizzes <- function(viz_collection, ...,
                        .tabgroup_template = NULL,
                        .title_template = NULL) {
-  
+
   # Validate first argument
   if (!is_content(viz_collection)) {
     stop("First argument must be a content collection", call. = FALSE)
   }
-  
+
   # Get parameters
   params <- list(...)
-  
+
   # Define which parameters trigger expansion (primary viz parameters)
-  EXPANDABLE_PARAMS <- c("response_var", "x_var", "y_var", "stack_var", 
+  EXPANDABLE_PARAMS <- c("response_var", "x_var", "y_var", "stack_var",
                          "questions", "group_var", "title")
-  
+
   # Find expandable params that have vectors (length > 1)
   expandable <- intersect(names(params), EXPANDABLE_PARAMS)
   vector_params <- expandable[sapply(params[expandable], length) > 1]
-  
+
   # Check if we have anything to expand
   if (length(vector_params) == 0) {
     stop("No expandable parameters found with length > 1. ",
@@ -890,17 +890,17 @@ add_vizzes <- function(viz_collection, ...,
          "Expandable parameters: ", paste(EXPANDABLE_PARAMS, collapse = ", "),
          call. = FALSE)
   }
-  
+
   # Get number of iterations from first expandable param
   n <- length(params[[vector_params[1]]])
-  
+
   # Validate all vector params have same length
   lengths <- sapply(params[vector_params], length)
   if (!all(lengths == n)) {
     stop("All expandable vector parameters must have the same length. Found: ",
          paste(names(lengths), "=", lengths, collapse = ", "), call. = FALSE)
   }
-  
+
   # Special handling for tabgroup if provided as vector
   if ("tabgroup" %in% names(params) && length(params$tabgroup) == n) {
     # Tabgroup is a vector matching expansion length - treat specially
@@ -909,7 +909,7 @@ add_vizzes <- function(viz_collection, ...,
   } else {
     tabgroup_vector <- NULL
   }
-  
+
   # Loop and call add_viz() for each iteration
   for (i in seq_len(n)) {
     # Build params for this iteration
@@ -922,7 +922,7 @@ add_vizzes <- function(viz_collection, ...,
       }
     })
     names(iter_params) <- names(params)
-    
+
     # Handle tabgroup template or vector
     if (!is.null(.tabgroup_template)) {
       # Use template with glue - convert list to environment for glue
@@ -934,19 +934,19 @@ add_vizzes <- function(viz_collection, ...,
       iter_params$tabgroup <- tabgroup_vector[[i]]
     }
     # else: tabgroup might be in iter_params already as a single value
-    
+
     # Handle title template
     if (!is.null(.title_template)) {
       template_data <- c(list(i = i), iter_params)
       template_env <- list2env(template_data, parent = emptyenv())
       iter_params$title <- as.character(glue::glue(.title_template, .envir = template_env))
     }
-    
+
     # Call the existing add_viz() function!
     # Use do.call to pass all params including ...
     viz_collection <- do.call(add_viz, c(list(viz_collection), iter_params))
   }
-  
+
   viz_collection
 }
 
@@ -976,10 +976,10 @@ set_tabgroup_labels <- function(viz_collection, labels = NULL, ...) {
   if (!is_content(viz_collection)) {
     stop("First argument must be a content collection")
   }
-  
+
   # Get key-value pairs from ...
   dots <- list(...)
-  
+
   # Backwards compatibility: if labels is provided (not NULL), use it
   # Otherwise, use the ... arguments
   if (!is.null(labels)) {
@@ -991,7 +991,7 @@ set_tabgroup_labels <- function(viz_collection, labels = NULL, ...) {
   } else {
     stop("Either provide 'labels' argument or key-value pairs via ...")
   }
-  
+
   viz_collection
 }
 
@@ -1147,7 +1147,7 @@ print.viz_collection <- function(x, ...) {
   cat("║ 📊 VISUALIZATION COLLECTION\n")
   cat("╠══════════════════════════════════════════════════════════════════════════\n")
   cat("║ Total visualizations: ", total, "\n", sep = "")
-  
+
   if (total == 0) {
     cat("║ (empty collection)\n")
     cat("╚══════════════════════════════════════════════════════════════════════════\n\n")
@@ -1165,7 +1165,7 @@ print.viz_collection <- function(x, ...) {
     } else {
       c("(no tabgroup)")
     }
-    
+
     # Build path string for direct access
     if (length(path) == 1) {
       # Single level
@@ -1179,7 +1179,7 @@ print.viz_collection <- function(x, ...) {
       # First ensure all intermediate levels exist
       for (j in seq_len(length(path) - 1)) {
         level_path <- path[1:j]
-        
+
         # Navigate to this level and ensure it exists
         if (j == 1) {
           if (is.null(tree[[level_path[1]]])) {
@@ -1196,7 +1196,7 @@ print.viz_collection <- function(x, ...) {
           }
         }
       }
-      
+
       # Now add the item at the final level
       if (length(path) == 2) {
         # Two levels: tree[[path[1]]]$.children[[path[2]]]
@@ -1221,13 +1221,13 @@ print.viz_collection <- function(x, ...) {
           eval_str <- paste0(eval_str, "$.children[[\"", path[j], "\"]]")
         }
         eval_str_items <- paste0(eval_str, "$.items")
-        
+
         # Ensure path exists
         if (is.null(eval(parse(text = eval_str)))) {
           assign_str <- paste0(eval_str, " <- list(.items = list(), .children = list())")
           eval(parse(text = assign_str))
         }
-        
+
         # Add item
         current_items <- eval(parse(text = eval_str_items))
         current_items[[length(current_items) + 1]] <- v
@@ -1236,17 +1236,17 @@ print.viz_collection <- function(x, ...) {
       }
     }
   }
-  
+
   # Print tree recursively
   .print_tree_level <- function(node, prefix = "║ ", is_last_sibling = TRUE, parent_prefix = "║ ") {
     if (length(node) == 0) return()
-    
+
     node_names <- setdiff(names(node), c(".items", ".children"))
-    
+
     for (i in seq_along(node_names)) {
       name <- node_names[i]
       is_last <- (i == length(node_names))
-      
+
       # Draw branch
       if (is_last) {
         cat(prefix, "└─ 📁 ", name, "\n", sep = "")
@@ -1255,18 +1255,18 @@ print.viz_collection <- function(x, ...) {
         cat(prefix, "├─ 📁 ", name, "\n", sep = "")
         new_prefix <- paste0(prefix, "│  ")
       }
-      
+
       # Print items at this level
       items <- node[[name]]$.items
       children <- node[[name]]$.children
-      
+
       has_children <- length(children) > 0
-      
+
       if (length(items) > 0) {
         for (j in seq_along(items)) {
           v <- items[[j]]
           is_last_item <- (j == length(items)) && !has_children
-          
+
           # Get visualization details
           # Handle pagination markers and other content types
           if (!is.null(v$type) && v$type == "pagination") {
@@ -1285,11 +1285,11 @@ print.viz_collection <- function(x, ...) {
               "bar" = "📊",
               "📊"
             )
-            
+
             type_label <- toupper(v$viz_type)
             title_text <- if (!is.null(v$title)) paste0(": ", v$title) else ""
             filter_text <- if (!is.null(v$filter)) " [filtered]" else ""
-            
+
             # Add badges for text positioning
             text_badges <- c()
             if (!is.null(v$text_before_tabset) && nzchar(v$text_before_tabset)) {
@@ -1304,14 +1304,14 @@ print.viz_collection <- function(x, ...) {
             if (!is.null(v$text_after_viz) && nzchar(v$text_after_viz)) {
               text_badges <- c(text_badges, "text-after-viz")
             }
-            
+
             badge_text <- if (length(text_badges) > 0) {
               paste0(" [", paste(text_badges, collapse = ", "), "]")
             } else {
               ""
             }
           }
-          
+
           if (is_last_item) {
             cat(new_prefix, "└─ ", type_icon, " ", type_label, title_text, filter_text, badge_text, "\n", sep = "")
           } else {
@@ -1319,18 +1319,18 @@ print.viz_collection <- function(x, ...) {
           }
         }
       }
-      
+
       # Recursively print children
       if (has_children) {
         .print_tree_level(children, new_prefix, TRUE, new_prefix)
       }
     }
   }
-  
+
   cat("║\n")
   cat("║ STRUCTURE:\n")
   .print_tree_level(tree, "║ ")
-  
+
   cat("╚══════════════════════════════════════════════════════════════════════════\n\n")
   invisible(x)
 }
@@ -1385,46 +1385,192 @@ print.viz_collection <- function(x, ...) {
 #' dramatically reducing initial render time and file size for large dashboards.
 #'
 #' @param viz_collection A viz_collection object
+#' @param position Position for pagination controls: "bottom" (sticky at bottom),
+#'   "top" (inline with page title), "both" (top and bottom), or NULL (default - uses
+#'   dashboard-level setting from create_dashboard). Per-page override of the dashboard default.
 #' @return Updated viz_collection object
 #' @export
 #' @examples
 #' \dontrun{
 #' # Split 150 charts into 3 pages of 50 each
 #' vizzes <- create_viz()
-#' 
+#'
 #' # Page 1: Charts 1-50
 #' for (i in 1:50) vizzes <- vizzes %>% add_viz(type = "bar", x_var = "cyl")
-#' 
+#'
 #' vizzes <- vizzes %>% add_pagination()  # Split here
-#' 
+#'
 #' # Page 2: Charts 51-100
 #' for (i in 51:100) vizzes <- vizzes %>% add_viz(type = "bar", x_var = "gear")
-#' 
+#'
 #' vizzes <- vizzes %>% add_pagination()  # Split here
-#' 
+#'
 #' # Page 3: Charts 101-150
 #' for (i in 101:150) vizzes <- vizzes %>% add_viz(type = "bar", x_var = "hp")
-#' 
+#'
 #' # Use in dashboard
 #' dashboard %>%
 #'   add_page("Analysis", visualizations = vizzes)
 #' }
-add_pagination <- function(viz_collection) {
-  
+add_pagination <- function(viz_collection, position = NULL) {
+
   # Validate first argument
   if (!is_content(viz_collection)) {
     stop("First argument must be a content collection", call. = FALSE)
   }
-  
+
+  # Validate position if provided (NULL means use dashboard default)
+  if (!is.null(position)) {
+    position <- match.arg(position, c("bottom", "top", "both"))
+  }
+
   # Add pagination marker to collection
+  # If position is NULL, the dashboard default will be used during generation
   pagination_item <- list(
     type = "pagination",
-    pagination_break = TRUE
+    pagination_break = TRUE,
+    pagination_position = position  # Can be NULL - means use dashboard default
   )
-  
+
   # Add to items
   viz_collection$items <- c(viz_collection$items, list(pagination_item))
-  
+
   viz_collection
+}
+
+
+#' Add "Powered by dashboardr" branding to footer
+#'
+#' Adds a subtle, sleek "Powered by dashboardr" badge with logo to the bottom-right
+#' of the page footer. Integrates seamlessly with existing footer content.
+#'
+#' @param dashboard A dashboard project created with \code{create_dashboard}
+#' @param size Size of the branding: "small" (default), "medium", or "large"
+#' @param style Style variant: "default", "minimal", or "badge"
+#'
+#' @return Updated dashboard project with dashboardr branding in footer
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' dashboard <- create_dashboard("my_dash", "My Dashboard") %>%
+#'   add_page(name = "Home", text = "Welcome!") %>%
+#'   add_powered_by_dashboardr()
+#'
+#' # With custom size
+#' dashboard <- create_dashboard("my_dash") %>%
+#'   add_powered_by_dashboardr(size = "medium", style = "badge")
+#' }
+add_powered_by_dashboardr <- function(dashboard, size = "small", style = "default") {
+  if (!inherits(dashboard, "dashboard_project")) {
+    stop("First argument must be a dashboard project created with create_dashboard()")
+  }
+
+  # Validate inputs
+  size <- match.arg(size, c("small", "medium", "large"))
+  style <- match.arg(style, c("default", "minimal", "badge"))
+
+  # Define size parameters
+  sizes <- list(
+    small = list(font_size = "0.75rem", logo_size = "16px", opacity = "0.6"),
+    medium = list(font_size = "0.875rem", logo_size = "20px", opacity = "0.7"),
+    large = list(font_size = "1rem", logo_size = "24px", opacity = "0.8")
+  )
+
+  size_params <- sizes[[size]]
+
+  # Logo URL - use the actual dashboardr logo from GitHub
+  logo_url <- "https://raw.githubusercontent.com/favstats/dashboardr/refs/heads/main/man/figures/logo.svg"
+
+  # Create the dashboardr badge HTML based on style
+  if (style == "minimal") {
+    branding_html <- paste0(
+      '<span style="font-size: ', size_params$font_size, '; ',
+      'opacity: ', size_params$opacity, '; ',
+      'color: inherit; ',
+      'font-weight: 400;">',
+      'Built with <a href="https://favstats.github.io/dashboardr/" ',
+      'style="color: inherit; text-decoration: none; font-weight: 500;" ',
+      'target="_blank" rel="noopener">dashboardr</a>',
+      '</span>'
+    )
+  } else if (style == "badge") {
+    branding_html <- paste0(
+      '<a href="https://favstats.github.io/dashboardr/" ',
+      'target="_blank" rel="noopener" ',
+      'style="display: inline-flex; align-items: center; gap: 0.35rem; ',
+      'padding: 0.25rem 0.5rem; ',
+      'background: rgba(0, 0, 0, 0.05); ',
+      'border-radius: 4px; ',
+      'font-size: ', size_params$font_size, '; ',
+      'color: inherit; ',
+      'text-decoration: none; ',
+      'opacity: ', size_params$opacity, '; ',
+      'transition: opacity 0.2s ease, background 0.2s ease;" ',
+      'onmouseover="this.style.opacity=\'1\'; this.style.background=\'rgba(0, 0, 0, 0.08)\';" ',
+      'onmouseout="this.style.opacity=\'', size_params$opacity, '\'; this.style.background=\'rgba(0, 0, 0, 0.05)\';">',
+      '<img src="', logo_url, '" ',
+      'alt="dashboardr logo" ',
+      'style="width: ', size_params$logo_size, '; height: ', size_params$logo_size, '; ',
+      'object-fit: contain;" />',
+      '<span style="font-weight: 500;">Powered by dashboardr</span>',
+      '</a>'
+    )
+  } else { # default style
+    branding_html <- paste0(
+      '<span style="display: inline-flex; align-items: center; gap: 0.35rem; ',
+      'font-size: ', size_params$font_size, '; ',
+      'opacity: ', size_params$opacity, '; ',
+      'color: inherit;">',
+      'Powered by ',
+      '<a href="https://favstats.github.io/dashboardr/" ',
+      'style="display: inline-flex; align-items: center; gap: 0.25rem; ',
+      'color: inherit; text-decoration: none; font-weight: 500; ',
+      'transition: opacity 0.2s ease;" ',
+      'target="_blank" rel="noopener" ',
+      'onmouseover="this.style.opacity=\'1\';" ',
+      'onmouseout="this.style.opacity=\'', size_params$opacity, '\';">',
+      '<img src="', logo_url, '" ',
+      'alt="dashboardr logo" ',
+      'style="width: ', size_params$logo_size, '; height: ', size_params$logo_size, '; ',
+      'object-fit: contain;" />',
+      'dashboardr',
+      '</a>',
+      '</span>'
+    )
+  }
+
+  # Handle existing footer
+  if (is.null(dashboard$page_footer)) {
+    # No existing footer - just add branding to right
+    dashboard$page_footer <- list(
+      structure = "structured",
+      right = branding_html
+    )
+  } else if (is.character(dashboard$page_footer)) {
+    # Simple text footer - convert to structured with text on left, branding on right
+    dashboard$page_footer <- list(
+      structure = "structured",
+      left = dashboard$page_footer,
+      right = branding_html
+    )
+  } else if (is.list(dashboard$page_footer) &&
+             !is.null(dashboard$page_footer$structure) &&
+             dashboard$page_footer$structure == "structured") {
+    # Already structured - only add branding if right is empty
+    if (is.null(dashboard$page_footer$right) || dashboard$page_footer$right == "") {
+      dashboard$page_footer$right <- branding_html
+    } else {
+      message("Footer right section already occupied. Dashboardr branding not added.")
+    }
+  } else {
+    # Unknown structure - play it safe and just add to right
+    dashboard$page_footer <- list(
+      structure = "structured",
+      right = branding_html
+    )
+  }
+
+  dashboard
 }
 

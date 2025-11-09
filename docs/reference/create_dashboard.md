@@ -20,7 +20,7 @@ create_dashboard(
   theme = NULL,
   custom_css = NULL,
   custom_scss = NULL,
-  tabset_theme = "modern",
+  tabset_theme = "minimal",
   tabset_colors = NULL,
   author = NULL,
   description = NULL,
@@ -71,7 +71,14 @@ create_dashboard(
   gtag = NULL,
   value_boxes = FALSE,
   metrics_style = NULL,
-  page_layout = NULL,
+  page_layout = "full",
+  mobile_toc = FALSE,
+  viewport_width = NULL,
+  viewport_scale = NULL,
+  viewport_user_scalable = TRUE,
+  self_contained = FALSE,
+  code_overflow = NULL,
+  html_math_method = NULL,
   shiny = FALSE,
   observable = FALSE,
   jupyter = FALSE,
@@ -86,7 +93,8 @@ create_dashboard(
   lazy_load_margin = "200px",
   lazy_load_tabs = NULL,
   lazy_debug = FALSE,
-  pagination_separator = "of"
+  pagination_separator = "of",
+  pagination_position = "bottom"
 )
 ```
 
@@ -296,6 +304,56 @@ create_dashboard(
 
   Metrics display style (optional)
 
+- page_layout:
+
+  Quarto page layout mode. Default is "full" for better mobile
+  responsiveness. Other options: "article" (constrained width),
+  "custom". See Quarto docs for details.
+
+- mobile_toc:
+
+  Logical. If TRUE, adds a collapsible mobile-friendly TOC button (📑
+  icon) that appears in the top-right corner. Useful for mobile/tablet
+  viewing. Default: FALSE.
+
+- viewport_width:
+
+  Numeric or character. Controls mobile viewport behavior. Default is
+  NULL (standard responsive behavior). Set to a number (e.g., 1200) to
+  force desktop rendering width on mobile devices. Useful if charts look
+  squished on mobile. Can also be a full viewport string like
+  "width=1400, minimum-scale=0.5" for advanced control.
+
+- viewport_scale:
+
+  Numeric. Initial zoom scale for mobile devices (e.g., 0.3 to zoom out,
+  1.0 for no zoom). Only used if viewport_width is set. Default: NULL
+  (no scale specified).
+
+- viewport_user_scalable:
+
+  Logical. Allow users to pinch-zoom on mobile? Default: TRUE. Only
+  relevant if viewport_width is set.
+
+- self_contained:
+
+  Logical. If TRUE, produces a standalone HTML file with all
+  dependencies embedded. Makes files larger but more portable and can
+  improve mobile rendering consistency. Default: FALSE.
+
+- code_overflow:
+
+  Character. Controls code block overflow behavior. Options: "wrap"
+  (wrap long lines), "scroll" (horizontal scrollbar). Default: NULL
+  (Quarto default). Set to "wrap" to prevent horizontal scrolling issues
+  on mobile.
+
+- html_math_method:
+
+  Character. Method for rendering math equations. Options: "mathjax",
+  "katex", "webtex", "gladtex", "mathml". Default: NULL (Quarto
+  default).
+
 - shiny:
 
   Enable Shiny interactivity (default: FALSE)
@@ -364,6 +422,13 @@ create_dashboard(
   default: "of". Applies to all paginated pages unless overridden at
   page level.
 
+- pagination_position:
+
+  Default position for pagination controls: "bottom" (default, sticky at
+  bottom), "top" (inline with page title), or "both" (top and bottom).
+  This sets the default for all paginated pages. Individual pages can
+  override this by passing position to add_pagination().
+
 ## Value
 
 A dashboard_project object
@@ -428,7 +493,7 @@ dashboard <- create_dashboard(
 
 # Option 2: Elegant & Refined
 dashboard <- create_dashboard(
-  "elegant_dashboard", 
+  "elegant_dashboard",
   title = "Elegant Dashboard",
   mainfont = "Source Sans Pro",     # Elegant, highly readable
   monofont = "Source Code Pro"      # Matching code font
@@ -437,7 +502,7 @@ dashboard <- create_dashboard(
 # Option 3: Technical Feel
 dashboard <- create_dashboard(
   "tech_dashboard",
-  title = "Tech Dashboard", 
+  title = "Tech Dashboard",
   mainfont = "Roboto",              # Technical, clean
   monofont = "JetBrains Mono"       # Excellent for code
 )

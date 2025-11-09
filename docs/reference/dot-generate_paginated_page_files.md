@@ -11,7 +11,8 @@ and writes them with appropriate navigation controls.
   page_name,
   base_page_file,
   output_dir,
-  theme
+  theme,
+  default_position = "bottom"
 )
 ```
 
@@ -36,6 +37,10 @@ and writes them with appropriate navigation controls.
 - theme:
 
   Quarto theme name
+
+- default_position:
+
+  Default pagination position from dashboard config (default: "bottom")
 
 ## Value
 

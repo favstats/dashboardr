@@ -1,7 +1,7 @@
 # Demo: Iconify Icons in Tab Titles
 # Shows that prefer-html: true enables iconify in tab names
 
-library(dashboardr)
+# library(dashboardr)
 devtools::load_all()
 
 cat("\n╔══════════════════════════════════════════════════════════════╗\n")
@@ -64,7 +64,10 @@ icon_showcase_viz <- create_viz(
 
 # Combine visualizations
 all_viz <- bar_viz %>%
-  combine_viz(timeline_viz) %>%
+  combine_viz(timeline_viz)  %>%
+  add_pagination() %>%
+  combine_viz(timeline_viz)  %>%
+  add_pagination() %>%
   combine_viz(icon_showcase_viz) %>%
   set_tabgroup_labels(
     charts = "{{< iconify ph:chart-bar-fill >}} Charts",
@@ -81,12 +84,18 @@ all_viz <- bar_viz %>%
 # Create dashboard
 dashboard <- create_dashboard(
   output_dir = "iconify_tabs_demo",
-  title = "Iconify in Tabs Demo"
+  title = "Iconify in Tabs Demo",
+  mobile_toc = T,
+  pagination_separator = "/",
+  pagination_position = "bottom",
+  viewport_width = 1200,
+  viewport_scale = 0.3  # Zoom out to fit whole page
 ) %>%
   apply_theme(theme_modern(style = "purple")) %>%
 
   # Landing page
   add_page(
+    overlay = T, overlay_duration = 1,
     name = "Home",
     icon = "ph:house-fill",
     text = md_text(
@@ -127,6 +136,7 @@ dashboard <- create_dashboard(
 
   # Analysis page with iconified tabs
   add_page(
+    overlay = T, overlay_duration = 1,
     name = "Analysis",
     icon = "ph:chart-bar-fill",
     data = sample_data,
@@ -134,11 +144,13 @@ dashboard <- create_dashboard(
     text = md_text(
       "# Data Analysis with Iconified Tabs",
       "",
-      "Check out the tabs below - they all have icons! ✨",
+      "Check out the tabs below -x they all have icons! ✨",
       "",
       "The icons appear directly in the tab titles, making navigation more intuitive and visually appealing."
     )
-  )
+  ) %>%
+  add_powered_by_dashboardr(style = "badge", size = "large")
+
 
 # Generate the dashboard
 generate_dashboard(dashboard, render = TRUE, open = "browser")

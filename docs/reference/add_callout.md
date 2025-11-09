@@ -19,7 +19,7 @@ add_callout(
 
 - content:
 
-  A content_collection object
+  A content_collection or viz_collection object
 
 - text:
 

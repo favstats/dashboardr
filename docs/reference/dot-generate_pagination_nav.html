@@ -63,7 +63,8 @@ Includes Previous/Next buttons and page indicator.</p>
 <span>  <span class="va">total_pages</span>,</span>
 <span>  <span class="va">base_name</span>,</span>
 <span>  theme <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  separator_text <span class="op">=</span> <span class="st">"of"</span></span>
+<span>  position <span class="op">=</span> <span class="st">"bottom"</span>,</span>
+<span>  separator_text <span class="op">=</span> <span class="st">"/"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -87,8 +88,12 @@ Includes Previous/Next buttons and page indicator.</p>
 <dd><p>Quarto theme name (for styling)</p></dd>
 
 
+<dt id="arg-position">position<a class="anchor" aria-label="anchor" href="#arg-position"></a></dt>
+<dd><p>Position of navigation: "top", "bottom" (default: "bottom")</p></dd>
+
+
 <dt id="arg-separator-text">separator_text<a class="anchor" aria-label="anchor" href="#arg-separator-text"></a></dt>
-<dd><p>Text to show between page number and total (default: "of")</p></dd>
+<dd><p>Text to show between page number and total (default: "/", kept for backward compatibility)</p></dd>
 
 </dl></div>
     <div class="section level2">

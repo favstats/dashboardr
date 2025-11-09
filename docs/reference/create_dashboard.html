@@ -72,7 +72,7 @@ the piping workflow with add_landingpage() and add_page().</p>
 <span>  theme <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  custom_css <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  custom_scss <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  tabset_theme <span class="op">=</span> <span class="st">"modern"</span>,</span>
+<span>  tabset_theme <span class="op">=</span> <span class="st">"minimal"</span>,</span>
 <span>  tabset_colors <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  author <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  description <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -123,7 +123,14 @@ the piping workflow with add_landingpage() and add_page().</p>
 <span>  gtag <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  value_boxes <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  metrics_style <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  page_layout <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  page_layout <span class="op">=</span> <span class="st">"full"</span>,</span>
+<span>  mobile_toc <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  viewport_width <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  viewport_scale <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  viewport_user_scalable <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  self_contained <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  code_overflow <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  html_math_method <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  shiny <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  observable <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  jupyter <span class="op">=</span> <span class="cn">FALSE</span>,</span>
@@ -138,7 +145,8 @@ the piping workflow with add_landingpage() and add_page().</p>
 <span>  lazy_load_margin <span class="op">=</span> <span class="st">"200px"</span>,</span>
 <span>  lazy_load_tabs <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  lazy_debug <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  pagination_separator <span class="op">=</span> <span class="st">"of"</span></span>
+<span>  pagination_separator <span class="op">=</span> <span class="st">"of"</span>,</span>
+<span>  pagination_position <span class="op">=</span> <span class="st">"bottom"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -345,6 +353,50 @@ Default is "Fira Sans" for a smooth, professional look.</p></dd>
 <dd><p>Metrics display style (optional)</p></dd>
 
 
+<dt id="arg-page-layout">page_layout<a class="anchor" aria-label="anchor" href="#arg-page-layout"></a></dt>
+<dd><p>Quarto page layout mode. Default is "full" for better mobile responsiveness.
+Other options: "article" (constrained width), "custom". See Quarto docs for details.</p></dd>
+
+
+<dt id="arg-mobile-toc">mobile_toc<a class="anchor" aria-label="anchor" href="#arg-mobile-toc"></a></dt>
+<dd><p>Logical. If TRUE, adds a collapsible mobile-friendly TOC button (📑 icon)
+that appears in the top-right corner. Useful for mobile/tablet viewing. Default: FALSE.</p></dd>
+
+
+<dt id="arg-viewport-width">viewport_width<a class="anchor" aria-label="anchor" href="#arg-viewport-width"></a></dt>
+<dd><p>Numeric or character. Controls mobile viewport behavior. Default is NULL
+(standard responsive behavior). Set to a number (e.g., 1200) to force desktop rendering width
+on mobile devices. Useful if charts look squished on mobile. Can also be a full viewport string
+like "width=1400, minimum-scale=0.5" for advanced control.</p></dd>
+
+
+<dt id="arg-viewport-scale">viewport_scale<a class="anchor" aria-label="anchor" href="#arg-viewport-scale"></a></dt>
+<dd><p>Numeric. Initial zoom scale for mobile devices (e.g., 0.3 to zoom out,
+1.0 for no zoom). Only used if viewport_width is set. Default: NULL (no scale specified).</p></dd>
+
+
+<dt id="arg-viewport-user-scalable">viewport_user_scalable<a class="anchor" aria-label="anchor" href="#arg-viewport-user-scalable"></a></dt>
+<dd><p>Logical. Allow users to pinch-zoom on mobile? Default: TRUE.
+Only relevant if viewport_width is set.</p></dd>
+
+
+<dt id="arg-self-contained">self_contained<a class="anchor" aria-label="anchor" href="#arg-self-contained"></a></dt>
+<dd><p>Logical. If TRUE, produces a standalone HTML file with all dependencies
+embedded. Makes files larger but more portable and can improve mobile rendering consistency.
+Default: FALSE.</p></dd>
+
+
+<dt id="arg-code-overflow">code_overflow<a class="anchor" aria-label="anchor" href="#arg-code-overflow"></a></dt>
+<dd><p>Character. Controls code block overflow behavior. Options: "wrap" (wrap long lines),
+"scroll" (horizontal scrollbar). Default: NULL (Quarto default). Set to "wrap" to prevent
+horizontal scrolling issues on mobile.</p></dd>
+
+
+<dt id="arg-html-math-method">html_math_method<a class="anchor" aria-label="anchor" href="#arg-html-math-method"></a></dt>
+<dd><p>Character. Method for rendering math equations. Options: "mathjax", "katex",
+"webtex", "gladtex", "mathml". Default: NULL (Quarto default).</p></dd>
+
+
 <dt id="arg-shiny">shiny<a class="anchor" aria-label="anchor" href="#arg-shiny"></a></dt>
 <dd><p>Enable Shiny interactivity (default: FALSE)</p></dd>
 
@@ -403,6 +455,10 @@ Default is "Fira Sans" for a smooth, professional look.</p></dd>
 
 <dt id="arg-pagination-separator">pagination_separator<a class="anchor" aria-label="anchor" href="#arg-pagination-separator"></a></dt>
 <dd><p>Text to show in pagination navigation (e.g., "of" → "1 of 3"), default: "of". Applies to all paginated pages unless overridden at page level.</p></dd>
+
+
+<dt id="arg-pagination-position">pagination_position<a class="anchor" aria-label="anchor" href="#arg-pagination-position"></a></dt>
+<dd><p>Default position for pagination controls: "bottom" (default, sticky at bottom), "top" (inline with page title), or "both" (top and bottom). This sets the default for all paginated pages. Individual pages can override this by passing position to add_pagination().</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -469,7 +525,7 @@ Default is "Fira Sans" for a smooth, professional look.</p></dd>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Option 2: Elegant &amp; Refined</span></span></span>
 <span class="r-in"><span><span class="va">dashboard</span> <span class="op">&lt;-</span> <span class="fu">create_dashboard</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="st">"elegant_dashboard"</span>, </span></span>
+<span class="r-in"><span>  <span class="st">"elegant_dashboard"</span>,</span></span>
 <span class="r-in"><span>  title <span class="op">=</span> <span class="st">"Elegant Dashboard"</span>,</span></span>
 <span class="r-in"><span>  mainfont <span class="op">=</span> <span class="st">"Source Sans Pro"</span>,     <span class="co"># Elegant, highly readable</span></span></span>
 <span class="r-in"><span>  monofont <span class="op">=</span> <span class="st">"Source Code Pro"</span>      <span class="co"># Matching code font</span></span></span>
@@ -478,7 +534,7 @@ Default is "Fira Sans" for a smooth, professional look.</p></dd>
 <span class="r-in"><span><span class="co"># Option 3: Technical Feel</span></span></span>
 <span class="r-in"><span><span class="va">dashboard</span> <span class="op">&lt;-</span> <span class="fu">create_dashboard</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="st">"tech_dashboard"</span>,</span></span>
-<span class="r-in"><span>  title <span class="op">=</span> <span class="st">"Tech Dashboard"</span>, </span></span>
+<span class="r-in"><span>  title <span class="op">=</span> <span class="st">"Tech Dashboard"</span>,</span></span>
 <span class="r-in"><span>  mainfont <span class="op">=</span> <span class="st">"Roboto"</span>,              <span class="co"># Technical, clean</span></span></span>
 <span class="r-in"><span>  monofont <span class="op">=</span> <span class="st">"JetBrains Mono"</span>       <span class="co"># Excellent for code</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>

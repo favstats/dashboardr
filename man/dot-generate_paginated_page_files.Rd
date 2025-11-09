@@ -9,7 +9,8 @@
   page_name,
   base_page_file,
   output_dir,
-  theme
+  theme,
+  default_position = "bottom"
 )
 }
 \arguments{
@@ -22,6 +23,8 @@
 \item{output_dir}{Output directory}
 
 \item{theme}{Quarto theme name}
+
+\item{default_position}{Default pagination position from dashboard config (default: "bottom")}
 }
 \value{
 Invisible NULL

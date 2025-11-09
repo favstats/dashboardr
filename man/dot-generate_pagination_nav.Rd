@@ -9,7 +9,8 @@
   total_pages,
   base_name,
   theme = NULL,
-  separator_text = "of"
+  position = "bottom",
+  separator_text = "/"
 )
 }
 \arguments{
@@ -21,7 +22,9 @@
 
 \item{theme}{Quarto theme name (for styling)}
 
-\item{separator_text}{Text to show between page number and total (default: "of")}
+\item{position}{Position of navigation: "top", "bottom" (default: "bottom")}
+
+\item{separator_text}{Text to show between page number and total (default: "/", kept for backward compatibility)}
 }
 \value{
 Character vector of HTML/CSS lines

@@ -11,10 +11,16 @@ create_timeline(
   group_var = NULL,
   chart_type = "stacked_area",
   title = NULL,
+  subtitle = NULL,
+  x_label = NULL,
+  y_label = NULL,
   y_max = NULL,
+  y_min = NULL,
+  color_palette = NULL,
   response_levels = NULL,
   response_breaks = NULL,
   response_bin_labels = NULL,
+  response_map_values = NULL,
   response_filter = NULL,
   response_filter_combine = TRUE,
   response_filter_label = NULL,
@@ -37,7 +43,17 @@ create_timeline(
 
 \item{title}{Optional main title for the chart.}
 
+\item{subtitle}{Optional subtitle for the chart.}
+
+\item{x_label}{Optional character string. Label for the x-axis. Defaults to time_var name.}
+
+\item{y_label}{Optional character string. Label for the y-axis. Defaults to "Percentage".}
+
 \item{y_max}{Optional numeric value. Maximum value for the Y-axis.}
+
+\item{y_min}{Optional numeric value. Minimum value for the Y-axis.}
+
+\item{color_palette}{Optional character vector of color hex codes for the series.}
 
 \item{response_levels}{Optional character vector specifying order of response categories.}
 
@@ -46,6 +62,9 @@ create_timeline(
 
 \item{response_bin_labels}{Optional character vector of labels for response bins
 (e.g., \code{c("Low (1-2)", "Medium (3-5)", "High (6-7)")}).}
+
+\item{response_map_values}{Optional named list to rename response values for display
+(e.g., \code{list("1" = "Correct", "0" = "Incorrect")}). Applied to legend labels and data.}
 
 \item{response_filter}{Optional numeric or character vector specifying which response values to include.
 For numeric responses, use a range like \code{5:7} to show only values 5, 6, and 7.
@@ -135,5 +154,39 @@ plot5 <- create_timeline(
    title = "Individual High Responses"
 )
 plot5
+
+# Custom styling with colors and labels
+plot6 <- create_timeline(
+   data = survey_data,
+   time_var = "wave_time_label",
+   response_var = "agreement",
+   group_var = "age_group",
+   chart_type = "line",
+   response_filter = 4:5,
+   title = "High Agreement Over Time",
+   subtitle = "By Age Group",
+   x_label = "Survey Wave",
+   y_label = "\% High Agreement",
+   y_min = 0,
+   y_max = 100,
+   color_palette = c("#E41A1C", "#377EB8", "#4DAF4A", "#984EA3")
+)
+plot6
+
+# Custom legend labels with response_map_values
+plot7 <- create_timeline(
+   data = survey_data,
+   time_var = "wave_time_label",
+   response_var = "knowledge_item",
+   chart_type = "line",
+   response_filter = 1,
+   response_map_values = list("1" = "Correct", "0" = "Incorrect"),
+   title = "Knowledge Score Over Time",
+   x_label = "Survey Wave",
+   y_label = "\% Correct",
+   y_min = 0,
+   y_max = 100
+)
+plot7
 
 }

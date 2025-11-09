@@ -69,7 +69,14 @@ create_dashboard(
   gtag = NULL,
   value_boxes = FALSE,
   metrics_style = NULL,
-  page_layout = NULL,
+  page_layout = "full",
+  mobile_toc = FALSE,
+  viewport_width = NULL,
+  viewport_scale = NULL,
+  viewport_user_scalable = TRUE,
+  self_contained = FALSE,
+  code_overflow = NULL,
+  html_math_method = NULL,
   shiny = FALSE,
   observable = FALSE,
   jupyter = FALSE,
@@ -84,7 +91,8 @@ create_dashboard(
   lazy_load_margin = "200px",
   lazy_load_tabs = NULL,
   lazy_debug = FALSE,
-  pagination_separator = "of"
+  pagination_separator = "of",
+  pagination_position = "bottom"
 )
 }
 \arguments{
@@ -189,6 +197,34 @@ Default is "Fira Sans" for a smooth, professional look.}
 
 \item{metrics_style}{Metrics display style (optional)}
 
+\item{page_layout}{Quarto page layout mode. Default is "full" for better mobile responsiveness.
+Other options: "article" (constrained width), "custom". See Quarto docs for details.}
+
+\item{mobile_toc}{Logical. If TRUE, adds a collapsible mobile-friendly TOC button (📑 icon)
+that appears in the top-right corner. Useful for mobile/tablet viewing. Default: FALSE.}
+
+\item{viewport_width}{Numeric or character. Controls mobile viewport behavior. Default is NULL
+(standard responsive behavior). Set to a number (e.g., 1200) to force desktop rendering width
+on mobile devices. Useful if charts look squished on mobile. Can also be a full viewport string
+like "width=1400, minimum-scale=0.5" for advanced control.}
+
+\item{viewport_scale}{Numeric. Initial zoom scale for mobile devices (e.g., 0.3 to zoom out,
+1.0 for no zoom). Only used if viewport_width is set. Default: NULL (no scale specified).}
+
+\item{viewport_user_scalable}{Logical. Allow users to pinch-zoom on mobile? Default: TRUE.
+Only relevant if viewport_width is set.}
+
+\item{self_contained}{Logical. If TRUE, produces a standalone HTML file with all dependencies
+embedded. Makes files larger but more portable and can improve mobile rendering consistency.
+Default: FALSE.}
+
+\item{code_overflow}{Character. Controls code block overflow behavior. Options: "wrap" (wrap long lines),
+"scroll" (horizontal scrollbar). Default: NULL (Quarto default). Set to "wrap" to prevent
+horizontal scrolling issues on mobile.}
+
+\item{html_math_method}{Character. Method for rendering math equations. Options: "mathjax", "katex",
+"webtex", "gladtex", "mathml". Default: NULL (Quarto default).}
+
 \item{shiny}{Enable Shiny interactivity (default: FALSE)}
 
 \item{observable}{Enable Observable JS (default: FALSE)}
@@ -218,6 +254,8 @@ Default is "Fira Sans" for a smooth, professional look.}
 \item{lazy_debug}{Enable debug logging to browser console for lazy loading (default: FALSE). When TRUE, prints timing information for each chart load.}
 
 \item{pagination_separator}{Text to show in pagination navigation (e.g., "of" → "1 of 3"), default: "of". Applies to all paginated pages unless overridden at page level.}
+
+\item{pagination_position}{Default position for pagination controls: "bottom" (default, sticky at bottom), "top" (inline with page title), or "both" (top and bottom). This sets the default for all paginated pages. Individual pages can override this by passing position to add_pagination().}
 }
 \value{
 A dashboard_project object

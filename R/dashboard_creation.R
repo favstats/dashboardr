@@ -55,6 +55,26 @@
 #' @param code_tools Code tools (copy, download, etc.) (optional)
 #' @param toc Table of contents (floating, left, right) (optional)
 #' @param toc_depth TOC depth level (default: 3)
+#' @param page_layout Quarto page layout mode. Default is "full" for better mobile responsiveness.
+#'   Other options: "article" (constrained width), "custom". See Quarto docs for details.
+#' @param mobile_toc Logical. If TRUE, adds a collapsible mobile-friendly TOC button (📑 icon)
+#'   that appears in the top-right corner. Useful for mobile/tablet viewing. Default: FALSE.
+#' @param viewport_width Numeric or character. Controls mobile viewport behavior. Default is NULL
+#'   (standard responsive behavior). Set to a number (e.g., 1200) to force desktop rendering width
+#'   on mobile devices. Useful if charts look squished on mobile. Can also be a full viewport string
+#'   like "width=1400, minimum-scale=0.5" for advanced control.
+#' @param viewport_scale Numeric. Initial zoom scale for mobile devices (e.g., 0.3 to zoom out,
+#'   1.0 for no zoom). Only used if viewport_width is set. Default: NULL (no scale specified).
+#' @param viewport_user_scalable Logical. Allow users to pinch-zoom on mobile? Default: TRUE.
+#'   Only relevant if viewport_width is set.
+#' @param self_contained Logical. If TRUE, produces a standalone HTML file with all dependencies
+#'   embedded. Makes files larger but more portable and can improve mobile rendering consistency.
+#'   Default: FALSE.
+#' @param code_overflow Character. Controls code block overflow behavior. Options: "wrap" (wrap long lines),
+#'   "scroll" (horizontal scrollbar). Default: NULL (Quarto default). Set to "wrap" to prevent
+#'   horizontal scrolling issues on mobile.
+#' @param html_math_method Character. Method for rendering math equations. Options: "mathjax", "katex",
+#'   "webtex", "gladtex", "mathml". Default: NULL (Quarto default).
 #' @param google_analytics Google Analytics ID (optional)
 #' @param plausible Plausible analytics domain (optional)
 #' @param gtag Google Tag Manager ID (optional)
@@ -75,6 +95,7 @@
 #' @param lazy_load_tabs Only render charts in the active tab (default: TRUE when lazy_load_charts is TRUE). Charts in hidden tabs load when the tab is clicked.
 #' @param lazy_debug Enable debug logging to browser console for lazy loading (default: FALSE). When TRUE, prints timing information for each chart load.
 #' @param pagination_separator Text to show in pagination navigation (e.g., "of" → "1 of 3"), default: "of". Applies to all paginated pages unless overridden at page level.
+#' @param pagination_position Default position for pagination controls: "bottom" (default, sticky at bottom), "top" (inline with page title), or "both" (top and bottom). This sets the default for all paginated pages. Individual pages can override this by passing position to add_pagination().
 #' @return A dashboard_project object
 #' @export
 #' @examples
@@ -213,7 +234,14 @@ create_dashboard <- function(output_dir = "site",
                             gtag = NULL,
                             value_boxes = FALSE,
                             metrics_style = NULL,
-                            page_layout = NULL,
+                            page_layout = "full",
+                            mobile_toc = FALSE,
+                            viewport_width = NULL,
+                            viewport_scale = NULL,
+                            viewport_user_scalable = TRUE,
+                            self_contained = FALSE,
+                            code_overflow = NULL,
+                            html_math_method = NULL,
                             shiny = FALSE,
                             observable = FALSE,
                             jupyter = FALSE,
@@ -228,7 +256,8 @@ create_dashboard <- function(output_dir = "site",
                              lazy_load_margin = "200px",
                              lazy_load_tabs = NULL,
                              lazy_debug = FALSE,
-                             pagination_separator = "of") {
+                             pagination_separator = "of",
+                             pagination_position = "bottom") {
 
   output_dir <- .resolve_output_dir(output_dir, allow_inside_pkg)
 
@@ -241,6 +270,11 @@ create_dashboard <- function(output_dir = "site",
   valid_themes <- c("modern", "minimal", "pills", "classic", "underline", "segmented", "none")
   if (!is.null(tabset_theme) && !tabset_theme %in% valid_themes) {
     .stop_with_suggestion("tabset_theme", tabset_theme, valid_themes)
+  }
+  
+  # Validate pagination_position
+  if (!pagination_position %in% c("bottom", "top", "both")) {
+    stop("pagination_position must be one of: 'bottom', 'top', 'both'", call. = FALSE)
   }
 
   # Validate tabset_colors if provided
@@ -335,6 +369,13 @@ create_dashboard <- function(output_dir = "site",
     value_boxes = value_boxes,
     metrics_style = metrics_style,
     page_layout = page_layout,
+    mobile_toc = mobile_toc,
+    viewport_width = viewport_width,
+    viewport_scale = viewport_scale,
+    viewport_user_scalable = viewport_user_scalable,
+    self_contained = self_contained,
+    code_overflow = code_overflow,
+    html_math_method = html_math_method,
     shiny = shiny,
     observable = observable,
     jupyter = jupyter,
@@ -350,6 +391,7 @@ create_dashboard <- function(output_dir = "site",
     lazy_load_tabs = lazy_load_tabs,
     lazy_debug = lazy_debug,
     pagination_separator = pagination_separator,
+    pagination_position = pagination_position,
     pages = list(),
     data_files = NULL
   ), class = "dashboard_project")

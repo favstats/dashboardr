@@ -18,7 +18,7 @@
 #' \dontrun{
 #' # Run the tutorial dashboard (requires Quarto CLI and 'gssr' package)
 #' tutorial_dashboard()
-#' 
+#'
 #' # Specify custom directory
 #' tutorial_dashboard(directory = "my_tutorial")
 #' }
@@ -302,7 +302,8 @@ tutorial_dashboard <- function(directory = "tutorial_dashboard") {
     text = md_text(
       "This is a placeholder for a link to the showcase dashboard."
     )
-  )
+  )  %>%
+  add_powered_by_dashboardr(style = "badge", size = "large")
 
   # Generate the dashboard
   cat("\n=== Generating Dashboard ===\n")
@@ -346,13 +347,13 @@ tutorial_dashboard <- function(directory = "tutorial_dashboard") {
 #' \dontrun{
 #' # Run the showcase dashboard (requires Quarto CLI and 'gssr' package)
 #' showcase_dashboard()
-#' 
+#'
 #' # Specify custom directory
 #' showcase_dashboard(directory = "my_showcase")
 #' }
 showcase_dashboard <- function(directory = "showcase_dashboard") {
   qmds_dir <- directory  # Use directory parameter for QMD files location
-  
+
 # Load GSS data for realistic examples
 data(gss_panel20, package = "gssr")
 gss_clean <- gss_panel20 %>%
@@ -706,7 +707,8 @@ dashboard <- create_dashboard(
       "and plots, even when the user is inexperienced with programming.",
       "In a variety of contexts, this means that you can get quick, beautiful insights to present findings to wider audiences."
     )
-  )
+  ) %>%
+  add_powered_by_dashboardr(style = "badge", size = "large")
 
 # Test the print methods
 cat("=== Dashboard Project Summary ===\n")

@@ -90,6 +90,7 @@ reference:
   - generate_dashboard
   - publish_dashboard
   - add_loading_overlay
+  - add_powered_by_dashboardr
 
 - title: Demo Dashboards
   desc: Built-in demo dashboards showcasing package features
@@ -152,6 +153,14 @@ reference:
   - add_html
   - add_quote
   - add_badge
+
+- title: Modals
+  desc: Functions for adding interactive modal dialogs
+  contents:
+  - add_modal
+  - enable_modals
+  - modal_content
+  - modal_link
 
 - title: Metrics & Value Boxes
   desc: Functions for displaying KPIs and metrics

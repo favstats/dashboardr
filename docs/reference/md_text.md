@@ -7,7 +7,7 @@ readability.
 ## Usage
 
 ``` r
-md_text(...)
+md_text(..., sep = "\n")
 ```
 
 ## Arguments
@@ -15,6 +15,11 @@ md_text(...)
 - ...:
 
   Text content as separate arguments or character vectors
+
+- sep:
+
+  Separator to use when joining text (default: "" for newlines). Use ""
+  for no separator.
 
 ## Value
 

@@ -51,13 +51,3 @@ Links need the `{.modal-link}` class:
 [Link Text](#modal-id){.modal-link}
 [{{< iconify ph:chart >}} View Chart](#chart-modal){.modal-link}
 ```
-
-## Documentation
-
-See:
-- `/inst/doc/MODAL_FIX.md` - Quick fix guide
-- `/inst/doc/MODAL_QUICK_START.md` - Quick start guide
-- `/inst/examples/YOUR_USE_CASE.R` - Your exact use case
-- `/inst/examples/modal_r_first.R` - R-first approach
-- `?add_modal` - R help documentation
-

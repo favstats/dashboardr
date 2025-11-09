@@ -12,7 +12,7 @@ add_divider(content, style = "default")
 
 - content:
 
-  A content_collection object
+  A content_collection or viz_collection object
 
 - style:
 

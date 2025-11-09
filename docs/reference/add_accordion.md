@@ -12,7 +12,7 @@ add_accordion(content, title, text, open = FALSE)
 
 - content:
 
-  A content_collection object
+  A content_collection or viz_collection object
 
 - title:
 

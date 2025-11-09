@@ -4,10 +4,14 @@
 \alias{add_pagination}
 \title{Create a sidebar group for hybrid navigation}
 \usage{
-add_pagination(viz_collection)
+add_pagination(viz_collection, position = NULL)
 }
 \arguments{
 \item{viz_collection}{A viz_collection object}
+
+\item{position}{Position for pagination controls: "bottom" (sticky at bottom),
+"top" (inline with page title), "both" (top and bottom), or NULL (default - uses
+dashboard-level setting from create_dashboard). Per-page override of the dashboard default.}
 
 \item{id}{Unique identifier for the sidebar group}
 

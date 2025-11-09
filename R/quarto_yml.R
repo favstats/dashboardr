@@ -615,7 +615,53 @@
 
   # Add page footer if provided
   if (!is.null(proj$page_footer)) {
-    yaml_lines <- c(yaml_lines, paste0("  page-footer: \"", proj$page_footer, "\""))
+    if (is.list(proj$page_footer) && 
+        !is.null(proj$page_footer$structure) && 
+        proj$page_footer$structure == "structured") {
+      # Structured footer with left/center/right
+      yaml_lines <- c(yaml_lines, "  page-footer:")
+      
+      # Helper function to properly escape or format footer content
+      format_footer_content <- function(content) {
+        # If content contains HTML (has < and > characters), use literal block scalar
+        if (grepl("<.*>", content)) {
+          return(paste0("|", "\n      ", content))
+        } else {
+          # Simple text - escape quotes and use quoted string
+          escaped <- gsub('"', '\\"', content, fixed = TRUE)
+          return(paste0('"', escaped, '"'))
+        }
+      }
+      
+      if (!is.null(proj$page_footer$left) && proj$page_footer$left != "") {
+        formatted <- format_footer_content(proj$page_footer$left)
+        if (startsWith(formatted, "|")) {
+          yaml_lines <- c(yaml_lines, paste0("    left: ", formatted))
+        } else {
+          yaml_lines <- c(yaml_lines, paste0("    left: ", formatted))
+        }
+      }
+      if (!is.null(proj$page_footer$center) && proj$page_footer$center != "") {
+        formatted <- format_footer_content(proj$page_footer$center)
+        if (startsWith(formatted, "|")) {
+          yaml_lines <- c(yaml_lines, paste0("    center: ", formatted))
+        } else {
+          yaml_lines <- c(yaml_lines, paste0("    center: ", formatted))
+        }
+      }
+      if (!is.null(proj$page_footer$right) && proj$page_footer$right != "") {
+        formatted <- format_footer_content(proj$page_footer$right)
+        if (startsWith(formatted, "|")) {
+          yaml_lines <- c(yaml_lines, paste0("    right: ", formatted))
+        } else {
+          yaml_lines <- c(yaml_lines, paste0("    right: ", formatted))
+        }
+      }
+    } else if (is.character(proj$page_footer)) {
+      # Simple string footer - escape quotes
+      escaped <- gsub('"', '\\"', proj$page_footer, fixed = TRUE)
+      yaml_lines <- c(yaml_lines, paste0("  page-footer: \"", escaped, "\""))
+    }
   }
 
   # Add format section with theme and SCSS
@@ -653,10 +699,21 @@
   
   yaml_lines <- c(yaml_lines, "")
 
+  # Add CSS files (assets + custom)
+  # Always include modal.css and pagination.css from assets
+  css_files <- c("assets/modal.css", "assets/pagination.css")
+  
   # Add custom CSS if provided
   if (!is.null(proj$custom_css)) {
+    css_files <- c(css_files, proj$custom_css)
+  }
+  
+  # Write CSS section
+  if (length(css_files) > 0) {
     yaml_lines <- c(yaml_lines, "    css:")
-    yaml_lines <- c(yaml_lines, paste0("      - ", proj$custom_css))
+    for (css_file in css_files) {
+      yaml_lines <- c(yaml_lines, paste0("      - ", css_file))
+    }
   }
 
   # Add HTML format options
@@ -766,6 +823,57 @@
   if (!is.null(proj$page_layout)) {
     yaml_lines <- c(yaml_lines, paste0("    page-layout: ", proj$page_layout))
   }
+  
+  # Add self-contained option
+  if (!is.null(proj$self_contained) && proj$self_contained) {
+    yaml_lines <- c(yaml_lines, "    self-contained: true")
+  }
+  
+  # Add code-overflow option
+  if (!is.null(proj$code_overflow)) {
+    yaml_lines <- c(yaml_lines, paste0("    code-overflow: ", proj$code_overflow))
+  }
+  
+  # Add html-math-method option
+  if (!is.null(proj$html_math_method)) {
+    yaml_lines <- c(yaml_lines, paste0("    html-math-method: ", proj$html_math_method))
+  }
+  
+  # Add viewport meta tag if specified
+  if (!is.null(proj$viewport_width)) {
+    yaml_lines <- c(yaml_lines, "    html-meta:")
+    
+    # Check if viewport_width is already a full string (advanced usage)
+    if (is.character(proj$viewport_width) && grepl("width=", proj$viewport_width)) {
+      # User provided full viewport string
+      viewport_value <- proj$viewport_width
+    } else {
+      # Build viewport string from components
+      viewport_parts <- c()
+      
+      # Add width
+      if (is.numeric(proj$viewport_width)) {
+        viewport_parts <- c(viewport_parts, paste0("width=", proj$viewport_width))
+      } else if (is.character(proj$viewport_width)) {
+        viewport_parts <- c(viewport_parts, paste0("width=", proj$viewport_width))
+      }
+      
+      # Add initial scale if specified
+      if (!is.null(proj$viewport_scale)) {
+        viewport_parts <- c(viewport_parts, paste0("initial-scale=", proj$viewport_scale))
+      }
+      
+      # Add user-scalable
+      if (!is.null(proj$viewport_user_scalable)) {
+        scalable_value <- if (proj$viewport_user_scalable) "yes" else "no"
+        viewport_parts <- c(viewport_parts, paste0("user-scalable=", scalable_value))
+      }
+      
+      viewport_value <- paste(viewport_parts, collapse=", ")
+    }
+    
+    yaml_lines <- c(yaml_lines, paste0("      viewport: \"", viewport_value, "\""))
+  }
 
   # Add Shiny
   if (proj$shiny) {
@@ -818,6 +926,80 @@
         yaml_lines <- c(yaml_lines, paste0("      ", key, ": ", proj$netlify[[key]]))
       }
     }
+  }
+
+  # Add mobile TOC if enabled
+  if (!is.null(proj$mobile_toc) && proj$mobile_toc) {
+    yaml_lines <- c(yaml_lines, "    include-after-body:")
+    yaml_lines <- c(yaml_lines, "      text: |")
+    yaml_lines <- c(yaml_lines, "        <script>")
+    yaml_lines <- c(yaml_lines, "          document.addEventListener(\"DOMContentLoaded\", function () {")
+    yaml_lines <- c(yaml_lines, "              var toc = document.createElement(\"div\");")
+    yaml_lines <- c(yaml_lines, "              toc.id = \"custom-toc\";")
+    yaml_lines <- c(yaml_lines, "              toc.style.position = \"fixed\";")
+    yaml_lines <- c(yaml_lines, "              toc.style.top = \"0\";")
+    yaml_lines <- c(yaml_lines, "              toc.style.right = \"-300px\";")
+    yaml_lines <- c(yaml_lines, "              toc.style.width = \"260px\";")
+    yaml_lines <- c(yaml_lines, "              toc.style.height = \"100%\";")
+    yaml_lines <- c(yaml_lines, "              toc.style.background = \"white\";")
+    yaml_lines <- c(yaml_lines, "              toc.style.padding = \"10px\";")
+    yaml_lines <- c(yaml_lines, "              toc.style.boxShadow = \"0px 2px 5px rgba(0, 0, 0, 0.2)\";")
+    yaml_lines <- c(yaml_lines, "              toc.style.transition = \"right 0.3s ease-in-out\";")
+    yaml_lines <- c(yaml_lines, "              toc.style.overflowY = \"auto\";")
+    yaml_lines <- c(yaml_lines, "              toc.style.zIndex = \"999\";")
+    yaml_lines <- c(yaml_lines, "          ")
+    yaml_lines <- c(yaml_lines, "              var tocTitle = document.createElement(\"h3\");")
+    yaml_lines <- c(yaml_lines, "              tocTitle.innerText = \"Navigation\";")
+    yaml_lines <- c(yaml_lines, "              toc.appendChild(tocTitle);")
+    yaml_lines <- c(yaml_lines, "          ")
+    yaml_lines <- c(yaml_lines, "              var headers = document.querySelectorAll(\"h2, h3, h4\");")
+    yaml_lines <- c(yaml_lines, "              headers.forEach(function (header, index) {")
+    yaml_lines <- c(yaml_lines, "                  if (!header.id) {")
+    yaml_lines <- c(yaml_lines, "                      header.id = \"section-\" + index;")
+    yaml_lines <- c(yaml_lines, "                  }")
+    yaml_lines <- c(yaml_lines, "          ")
+    yaml_lines <- c(yaml_lines, "                  var link = document.createElement(\"a\");")
+    yaml_lines <- c(yaml_lines, "                  link.innerText = header.innerText;")
+    yaml_lines <- c(yaml_lines, "                  link.href = \"#\" + header.id;")
+    yaml_lines <- c(yaml_lines, "                  link.style.display = \"block\";")
+    yaml_lines <- c(yaml_lines, "                  link.style.padding = \"5px 0\";")
+    yaml_lines <- c(yaml_lines, "                  link.style.color = \"#007bff\";")
+    yaml_lines <- c(yaml_lines, "                  link.style.textDecoration = \"none\";")
+    yaml_lines <- c(yaml_lines, "          ")
+    yaml_lines <- c(yaml_lines, "                  toc.appendChild(link);")
+    yaml_lines <- c(yaml_lines, "              });")
+    yaml_lines <- c(yaml_lines, "          ")
+    yaml_lines <- c(yaml_lines, "              document.body.appendChild(toc);")
+    yaml_lines <- c(yaml_lines, "          ")
+    yaml_lines <- c(yaml_lines, "              var button = document.createElement(\"button\");")
+    yaml_lines <- c(yaml_lines, "              button.id = \"toggle-toc\";")
+    yaml_lines <- c(yaml_lines, "              button.innerHTML = \"📑\";")
+    yaml_lines <- c(yaml_lines, "              button.style.position = \"fixed\";")
+    yaml_lines <- c(yaml_lines, "              button.style.top = \"15px\";")
+    yaml_lines <- c(yaml_lines, "              button.style.right = \"15px\";")
+    yaml_lines <- c(yaml_lines, "              button.style.backgroundColor = \"white\";")
+    yaml_lines <- c(yaml_lines, "              button.style.color = \"#333\";")
+    yaml_lines <- c(yaml_lines, "              button.style.border = \"2px solid #ccc\";")
+    yaml_lines <- c(yaml_lines, "              button.style.padding = \"10px 12px\";")
+    yaml_lines <- c(yaml_lines, "              button.style.cursor = \"pointer\";")
+    yaml_lines <- c(yaml_lines, "              button.style.borderRadius = \"8px\";")
+    yaml_lines <- c(yaml_lines, "              button.style.fontSize = \"22px\";")
+    yaml_lines <- c(yaml_lines, "              button.style.zIndex = \"1000\";")
+    yaml_lines <- c(yaml_lines, "              button.style.boxShadow = \"0px 3px 6px rgba(0, 0, 0, 0.2)\";")
+    yaml_lines <- c(yaml_lines, "              button.style.width = \"50px\";")
+    yaml_lines <- c(yaml_lines, "              button.style.height = \"50px\";")
+    yaml_lines <- c(yaml_lines, "          ")
+    yaml_lines <- c(yaml_lines, "              document.body.appendChild(button);")
+    yaml_lines <- c(yaml_lines, "          ")
+    yaml_lines <- c(yaml_lines, "              button.addEventListener(\"click\", function () {")
+    yaml_lines <- c(yaml_lines, "                  if (toc.style.right === \"0px\") {")
+    yaml_lines <- c(yaml_lines, "                      toc.style.right = \"-300px\";")
+    yaml_lines <- c(yaml_lines, "                  } else {")
+    yaml_lines <- c(yaml_lines, "                      toc.style.right = \"0px\";")
+    yaml_lines <- c(yaml_lines, "                  }")
+    yaml_lines <- c(yaml_lines, "              });")
+    yaml_lines <- c(yaml_lines, "          });")
+    yaml_lines <- c(yaml_lines, "        </script>")
   }
 
   # Note: iconify extension is installed as a shortcode extension, not a filter
