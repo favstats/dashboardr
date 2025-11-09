@@ -4,11 +4,14 @@
 \alias{showcase_dashboard}
 \title{Generate a showcase dashboard demonstrating all dashboardr features.}
 \usage{
-showcase_dashboard(directory = "showcase_dashboard")
+showcase_dashboard(directory = "showcase_dashboard", open = "browser")
 }
 \arguments{
 \item{directory}{Character string. Directory where the dashboard files will be created.
 Defaults to "showcase_dashboard". Quarto will render HTML to directory/docs/.}
+
+\item{open}{Logical or character. Whether to open the dashboard after rendering.
+Use TRUE or "browser" to open in browser (default), FALSE to not open. Default is "browser".}
 }
 \value{
 Invisibly returns the dashboard_project object.
@@ -41,5 +44,8 @@ showcase_dashboard()
 
 # Specify custom directory
 showcase_dashboard(directory = "my_showcase")
+
+# Don't open browser
+showcase_dashboard(open = FALSE)
 }
 }

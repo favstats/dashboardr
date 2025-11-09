@@ -6,6 +6,8 @@
 #'
 #' @param directory Character string. Directory where the dashboard files will be created.
 #'   Defaults to "tutorial_dashboard". Quarto will render HTML to directory/docs/.
+#' @param open Logical or character. Whether to open the dashboard after rendering.
+#'   Use TRUE or "browser" to open in browser (default), FALSE to not open. Default is "browser".
 #'
 #' @details
 #' The dashboard uses data from the General Social Survey (GSS) to
@@ -21,8 +23,11 @@
 #'
 #' # Specify custom directory
 #' tutorial_dashboard(directory = "my_tutorial")
+#' 
+#' # Don't open browser
+#' tutorial_dashboard(open = FALSE)
 #' }
-tutorial_dashboard <- function(directory = "tutorial_dashboard") {
+tutorial_dashboard <- function(directory = "tutorial_dashboard", open = "browser") {
   qmds_dir <- directory  # Use directory parameter for QMD files location
 
   # Load GSS data for realistic examples
@@ -289,7 +294,7 @@ tutorial_dashboard <- function(directory = "tutorial_dashboard") {
 
   # Generate the dashboard
   cat("\n=== Generating Dashboard ===\n")
-  generate_dashboard(dashboard, render = TRUE, open = "browser")
+  generate_dashboard(dashboard, render = TRUE, open = open)
 
   invisible(dashboard) # Return the dashboard object invisibly
 }
@@ -321,6 +326,8 @@ tutorial_dashboard <- function(directory = "tutorial_dashboard") {
 #'
 #' @param directory Character string. Directory where the dashboard files will be created.
 #'   Defaults to "showcase_dashboard". Quarto will render HTML to directory/docs/.
+#' @param open Logical or character. Whether to open the dashboard after rendering.
+#'   Use TRUE or "browser" to open in browser (default), FALSE to not open. Default is "browser".
 #'
 #' @return Invisibly returns the dashboard_project object.
 #' @export
@@ -332,8 +339,11 @@ tutorial_dashboard <- function(directory = "tutorial_dashboard") {
 #'
 #' # Specify custom directory
 #' showcase_dashboard(directory = "my_showcase")
+#' 
+#' # Don't open browser
+#' showcase_dashboard(open = FALSE)
 #' }
-showcase_dashboard <- function(directory = "showcase_dashboard") {
+showcase_dashboard <- function(directory = "showcase_dashboard", open = "browser") {
   qmds_dir <- directory  # Use directory parameter for QMD files location
 
 # Load GSS data for realistic examples
@@ -714,7 +724,7 @@ cat(test_text, "\n")
 
 # Generate the dashboard
 cat("\n=== Generating Dashboard ===\n")
-generate_dashboard(dashboard, render = TRUE, open = "browser")
+generate_dashboard(dashboard, render = TRUE, open = open)
 
 invisible(dashboard) # Return the dashboard object invisibly
 }

@@ -26,11 +26,11 @@ if (!dir.exists(demo_dir)) {
 
 cat("📊 Generating Tutorial Dashboard...\n")
 # QMD files go to live-demos/tutorial, Quarto renders HTML to live-demos/tutorial/docs
-tutorial_dashboard(directory = "../docs/live-demos/tutorial/docs")
+tutorial_dashboard(directory = "../docs/live-demos/tutorial/docs", open = FALSE)
 
 cat("📊 Generating Showcase Dashboard...\n")
 # QMD files go to live-demos/showcase, Quarto renders HTML to live-demos/showcase/docs
-showcase_dashboard(directory = "../docs/live-demos/showcase/docs")
+showcase_dashboard(directory = "../docs/live-demos/showcase/docs", open = FALSE)
 
 cat("✨ Demo dashboard generation complete!\n")
 cat("   Tutorial: docs/live-demos/tutorial/docs/index.html\n")

@@ -4,11 +4,14 @@
 \alias{tutorial_dashboard}
 \title{Generate a tutorial dashboard.}
 \usage{
-tutorial_dashboard(directory = "tutorial_dashboard")
+tutorial_dashboard(directory = "tutorial_dashboard", open = "browser")
 }
 \arguments{
 \item{directory}{Character string. Directory where the dashboard files will be created.
 Defaults to "tutorial_dashboard". Quarto will render HTML to directory/docs/.}
+
+\item{open}{Logical or character. Whether to open the dashboard after rendering.
+Use TRUE or "browser" to open in browser (default), FALSE to not open. Default is "browser".}
 }
 \value{
 Invisibly returns the dashboard_project object.
@@ -29,5 +32,8 @@ tutorial_dashboard()
 
 # Specify custom directory
 tutorial_dashboard(directory = "my_tutorial")
+
+# Don't open browser
+tutorial_dashboard(open = FALSE)
 }
 }
