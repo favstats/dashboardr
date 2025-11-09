@@ -2,6 +2,10 @@ url: https://favstats.github.io/dashboardr/
 
 favicon: false
 
+# Build live demos after building the site
+after_build:
+  - Rscript pkgdown/build-demos.R
+
 template:
   bootstrap: 5
   bslib:
