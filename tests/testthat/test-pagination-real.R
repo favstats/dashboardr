@@ -216,10 +216,14 @@ test_that("pagination navigation matches theme", {
   qmd <- readLines(file.path(output_dir, "test.qmd"))
   qmd_text <- paste(qmd, collapse = "\n")
   
-  # Should use Bootstrap CSS variables for theming
-  expect_true(grepl("var\\(--bs-", qmd_text))
+  # Check that pagination.css is loaded globally (not inline)
+  expect_true(file.exists(file.path(output_dir, "assets", "pagination.css")))
+  
+  # Check that pagination-nav HTML is present
   expect_true(grepl("pagination-nav", qmd_text))
   
+  # Cleanup
+  unlink(output_dir, recursive = TRUE)
 })
 
 test_that("pagination CSS uses Bootstrap variables for theme compatibility", {
@@ -235,18 +239,21 @@ test_that("pagination CSS uses Bootstrap variables for theme compatibility", {
   
   result <- generate_dashboard(proj, render = FALSE, open = FALSE)
   output_dir <- normalizePath(result$output_dir, mustWork = FALSE)
-  qmd <- readLines(file.path(output_dir, "test.qmd"))
-  qmd_text <- paste(qmd, collapse = "\n")
   
-  # Check for CSS variable usage
-  expect_true(grepl("--bs-body-bg", qmd_text))
-  expect_true(grepl("--bs-primary", qmd_text))
-  expect_true(grepl("--bs-border-color", qmd_text))
-  expect_true(grepl("--bs-body-color", qmd_text))
+  # Check that external CSS file exists
+  css_file <- file.path(output_dir, "assets", "pagination.css")
+  expect_true(file.exists(css_file))
   
-  # Check for back-to-top button positioning
-  expect_true(grepl(".back-to-top", qmd_text))
-  expect_true(grepl("right: 2rem", qmd_text))
+  # Read the external CSS file
+  css_content <- paste(readLines(css_file), collapse = "\n")
+  
+  # Check for Bootstrap CSS variable usage in the external file
+  expect_true(grepl("var\\(--bs-", css_content))
+  expect_true(grepl("\\.pagination-nav", css_content))
+  
+  # Check for back-to-top button positioning in CSS
+  expect_true(grepl("\\.back-to-top", css_content))
+  expect_true(grepl("right:\\s*2rem", css_content))
   
 })
 

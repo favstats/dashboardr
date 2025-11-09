@@ -26,7 +26,7 @@ tab groups and default parameters that apply to all visualizations.
 # Create viz collection with custom group labels
 vizzes <- create_viz(tabgroup_labels = c("demo" = "Demographics",
                                           "pol" = "Political Views"))
-                                          
+
 # Create viz collection with shared defaults
 vizzes <- create_viz(
   type = "stackedbars",

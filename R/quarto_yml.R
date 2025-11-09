@@ -805,12 +805,12 @@
   }
 
   # Add code folding
-  if (!is.null(proj$code_folding)) {
+  if (!is.null(proj$code_folding) && isTRUE(proj$code_folding)) {
     yaml_lines <- c(yaml_lines, "    code-fold: true")
   }
 
   # Add code tools
-  if (!is.null(proj$code_tools)) {
+  if (!is.null(proj$code_tools) && isTRUE(proj$code_tools)) {
     yaml_lines <- c(yaml_lines, "    code-tools: true")
   }
 
