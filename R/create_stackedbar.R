@@ -402,68 +402,42 @@ create_stackedbar <- function(data,
     }
   }
 
-  # DATA AGGREGATION WITH EXPLICIT NA HANDLING
-  # Use x_var_for_plot and stack_var_for_plot after all mutations (mapping, binning)
+  # FILTER OUT NAs if include_na = FALSE
+  if (!include_na) {
+    plot_data_temp <- plot_data_temp |>
+      dplyr::filter(
+        !is.na(!!rlang::sym(x_var_for_plot)) &
+          !is.na(!!rlang::sym(stack_var_for_plot))
+      )
+  }
+
+  # CREATE FACTORS using helper function
   plot_data <- plot_data_temp |>
     dplyr::mutate(
-      .x_var_col = if (include_na) {
-        # Convert to character first to handle NAs explicitly
-        temp_var <- as.character(!!rlang::sym(x_var_for_plot))
-        # Replace NA with custom label
-        temp_var[is.na(temp_var)] <- na_label_x
-        # Convert to factor
-        factor(temp_var)
-      } else {
-        # Standard factor conversion, NAs will be dropped during counting
-        factor(!!rlang::sym(x_var_for_plot))
-      },
-      .stack_var_col = if (include_na) {
-        # Convert to character first to handle NAs explicitly
-        temp_var <- as.character(!!rlang::sym(stack_var_for_plot))
-        # Replace NA with custom label
-        temp_var[is.na(temp_var)] <- na_label_stack
-        # Convert to factor
-        factor(temp_var)
-      } else {
-        # Standard factor conversion, NAs will be dropped during counting
-        factor(!!rlang::sym(stack_var_for_plot))
-      }
+      .x_var_col = handle_na_for_plotting(
+        data = plot_data_temp,
+        var_name = x_var_for_plot,
+        include_na = include_na,
+        na_label = na_label_x,
+        custom_order = x_order
+      ),
+      .stack_var_col = handle_na_for_plotting(
+        data = plot_data_temp,
+        var_name = stack_var_for_plot,
+        include_na = include_na,
+        na_label = na_label_stack,
+        custom_order = stack_order
+      )
     )
 
-  # Apply custom ordering for stack_var
-  if (!is.null(stack_order)) {
-    actual_stack_levels <- levels(plot_data$.stack_var_col)
-    filtered_stack_order <- stack_order[stack_order %in% actual_stack_levels]
-    remaining_levels <- setdiff(actual_stack_levels, filtered_stack_order)
-    final_stack_order <- c(filtered_stack_order, remaining_levels)
-
-    plot_data <- plot_data |>
-      dplyr::mutate(
-        .stack_var_col = factor(.stack_var_col, levels = final_stack_order, ordered = TRUE)
-      )
-  }
-
-  # Apply custom ordering for x_var
-  if (!is.null(x_order)) {
-    actual_x_levels <- levels(plot_data$.x_var_col)
-    filtered_x_order <- x_order[x_order %in% actual_x_levels]
-    remaining_x_levels <- setdiff(actual_x_levels, filtered_x_order)
-    final_x_order <- c(filtered_x_order, remaining_x_levels)
-
-    plot_data <- plot_data |>
-      dplyr::mutate(
-        .x_var_col = factor(.x_var_col, levels = final_x_order, ordered = TRUE) # Simplified to always be ordered = TRUE if a custom order is applied
-      )
-  }
-
+  # AGGREGATION
   if (is.null(y_var)) {
-    # Perform the aggregation
     plot_data <- plot_data |>
       dplyr::count(.x_var_col, .stack_var_col, name = "n") |>
       dplyr::ungroup()
   } else {
     plot_data <- plot_data |>
-      dplyr::rename(n := !!rlang::sym(y_var))
+      dplyr::rename(n = !!rlang::sym(y_var))
   }
 
   # HIGHCHARTER
