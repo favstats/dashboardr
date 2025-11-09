@@ -290,6 +290,13 @@ create_histogram <- function(data,
   }
 
   # Factor & explicit NA handling
+  if (!include_na) {
+    # Remove rows with NA in x_plot_var BEFORE factor creation
+    df <- df |>
+      dplyr::filter(!is.na(!!rlang::sym(x_plot_var)))
+  }
+
+  # Create factor using helper
   df$.x_factor <- handle_na_for_plotting(
     data = df,
     var_name = x_plot_var,
@@ -298,8 +305,7 @@ create_histogram <- function(data,
     custom_order = x_order
   )
 
-  # Store the levels of the factor BEFORE aggregation for later use in complete()
-  # This ensures all potential categories are present
+  # Store the levels
   factor_levels_for_completion <- levels(df$.x_factor)
 
   # AGGREGATION
