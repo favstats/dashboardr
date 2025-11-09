@@ -270,7 +270,7 @@ This function performs the following steps:
 # We will be using data from GSS for these examples.
 # Make sure you have the data loaded:
 data(gss_all)
-#> Warning: data set 'gss_all' not found
+#> Warning: data set ‘gss_all’ not found
 
 # Filter to recent years and select relevant variables
 gss_recent <- gss_all %>%

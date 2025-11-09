@@ -18,8 +18,8 @@ md_text(..., sep = "\n")
 
 - sep:
 
-  Separator to use when joining text (default: "" for newlines). Use ""
-  for no separator.
+  Separator to use when joining text (default: "\n" for newlines). Use
+  "" for no separator.
 
 ## Value
 

@@ -8,7 +8,7 @@ charts, and various page layouts.
 ## Usage
 
 ``` r
-showcase_dashboard(directory = "showcase_dashboard")
+showcase_dashboard(directory = "showcase_dashboard", open = "browser")
 ```
 
 ## Arguments
@@ -18,6 +18,12 @@ showcase_dashboard(directory = "showcase_dashboard")
   Character string. Directory where the dashboard files will be created.
   Defaults to "showcase_dashboard". Quarto will render HTML to
   directory/docs/.
+
+- open:
+
+  Logical or character. Whether to open the dashboard after rendering.
+  Use TRUE or "browser" to open in browser (default), FALSE to not open.
+  Default is "browser".
 
 ## Value
 
@@ -57,5 +63,8 @@ showcase_dashboard()
 
 # Specify custom directory
 showcase_dashboard(directory = "my_showcase")
+
+# Don't open browser
+showcase_dashboard(open = FALSE)
 } # }
 ```

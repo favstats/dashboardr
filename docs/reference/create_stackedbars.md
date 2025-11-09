@@ -174,7 +174,7 @@ A `highcharter` stacked bar chart object.
 ``` r
 # Load GSS data
 data(gss_all)
-#> Warning: data set 'gss_all' not found
+#> Warning: data set ‘gss_all’ not found
 
 # Filter to recent years and select Likert-style questions
 gss_recent <- gss_all %>%
