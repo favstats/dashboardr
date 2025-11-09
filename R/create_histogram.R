@@ -276,31 +276,16 @@ create_histogram <- function(data,
   } else {
     x_plot_var <- x_var
   }
-  # Factor & explicit NA handling
-  df <- df |>
-    dplyr::mutate(
-      .x_factor = if (include_na) {
-        # Convert to character first to handle NAs explicitly
-        temp_var <- as.character(!!rlang::sym(x_plot_var))
-        # Replace NA with custom label
-        temp_var[is.na(temp_var)] <- na_label
-        # Convert to factor
-        factor(temp_var)
-      } else {
-        # Standard factor conversion, NAs will be dropped during counting
-        factor(!!rlang::sym(x_plot_var))
-      }
-    )
-  # Apply custom ordering
-  if (!is.null(x_order)) {
-    levs <- levels(df$.x_factor)
-    kept <- x_order[x_order %in% levs]
-    other <- setdiff(levs, kept)
-    df <- df |>
-      dplyr::mutate(
-        .x_factor = factor(.x_factor, levels = c(kept, other))
-      )
-  }
+  # Factor & explicit NA handling using helper
+  na_label <- validate_na_params(include_na, na_label, "na_label")
+  
+  df$.x_factor <- handle_na_for_plotting(
+    data = df,
+    var_name = x_plot_var,
+    include_na = include_na,
+    na_label = na_label,
+    custom_order = x_order
+  )
 
   # Store the levels of the factor BEFORE aggregation for later use in complete()
   # This ensures all potential categories are present
