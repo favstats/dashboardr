@@ -11,204 +11,138 @@
 #'              enables renaming of categorical values for display. It can also
 #'              handle SPSS (.sav) columns automatically.
 #'
-#' @param data A data frame containing the raw survey data (e.g., one row per respondent).
-#' @param x_var The name of the column to be plotted on the X-axis (as a string).
-#'              This typically represents a demographic variable or a question.
-#' @param y_var Optional. The name of the column that already contains the counts
-#'              or values for the y-axis (as a string). If `NULL` (default),
-#'              the function will internally count the occurrences of `x_var` and `stack_var`.
-#'              Only provide this if your `data` is already aggregated.
-#' @param stack_var The name of the column whose unique values will define the
-#'                stacks within each bar (as a string). This is often a
-#'                Likert scale, an agreement level, or another categorical response.
-#' @param title Optional. The main title of the chart (as a string).
-#' @param subtitle Optional. A subtitle for the chart (as a string).
-#' @param x_label Optional. The label for the X-axis (as a string). Defaults
-#'                to `x_var` or `x_var (Binned)`.
-#' @param y_label Optional. The label for the Y-axis (as a string). Defaults
-#'                to "Number of Respondents" or "Percentage of Respondents".
-#' @param stack_label Optional. The title for the stack legend (as a string).
-#'                   Set to NULL, NA, FALSE, or "" to hide the legend title completely.
-#'                   If not provided, no title is shown.
-#' @param stacked_type Optional. The type of stacking. Can be "counts" (counts)
-#'                   or "percent" (100% stacked). Defaults to "counts".
-#' @param tooltip_prefix Optional. A string to prepend to values in tooltips.
-#' @param tooltip_suffix Optional. A string to append to values in tooltips.
-#' @param x_tooltip_suffix Optional. A string to append to values in tooltips.
-#' @param color_palette Optional. A character vector of colors to use for the
-#'                    stacks. If NULL, highcharter's default palette is used.
-#'                    Consider ordering colors to match `stack_order`.
-#' @param stack_order Optional. A character vector specifying the desired order
-#'                    of the `stack_var` levels. This is crucial for ordinal
-#'                    scales (e.g., Likert 1-7). If NULL, default factor order
-#'                    or alphabetical will be used. Levels not found in data
-#'                    will be ignored.
-#' @param x_order Optional. A character vector specifying the desired order
-#'                    of the `x_var` levels. If NULL, default factor order
-#'                    or alphabetical will be used.
-#' @param include_na Logical. If TRUE, explicit NA categories will be shown
-#'                   in counts for `x_var` and `stack_var`. If FALSE (default),
-#'                   rows with NA in `x_var` or `stack_var` are dropped.
-#' @param na_label_x Optional string. Custom label for NA values in x_var. Defaults to "(Missing)".
-#' @param na_label_stack Optional string. Custom label for NA values in stack_var. Defaults to "(Missing)".
-#' @param x_breaks Optional. A numeric vector of cut points for `x_var` if
-#'                 it is a continuous variable and you want to bin it.
-#'                 e.g., `c(16, 24, 33, 42, 51, 60, Inf)`.
-#' @param x_bin_labels Optional. A character vector of labels for the bins
-#'                     created by `x_breaks`. Must be one less than the number
-#'                     of breaks (or same if Inf is last break).
-#' @param x_map_values Optional. A named list (e.g., `list("1" = "Female", "2" = "Male")`)
-#'                     to rename values within `x_var` for display. Original values
-#'                     should be names, new labels should be values.
-#' @param stack_breaks Optional. A numeric vector of cut points for `stack_var` if
-#'                     it is a continuous variable and you want to bin it.
-#' @param stack_bin_labels Optional. A character vector of labels for the bins
-#'                         created by `stack_breaks`. Must be one less than the number
-#'                         of breaks (or same if Inf is last break).
-#' @param stack_map_values Optional. A named list (e.g., `list("1" = "Strongly Disagree", "7" = "Strongly Agree")`)
-#'                         to rename values within `stack_var` for display.
-#' @param x_tooltip_suffix Optional. A string to append to x-axis values in tooltips.
-#' @param na_label_x Optional string. Custom label for NA values in x_var. Defaults to "(Missing)".
-#' @param na_label_stack Optional string. Custom label for NA values in stack_var. Defaults to "(Missing)".
-#' @param horizontal Logical. If `TRUE`, creates a horizontal bar chart (bars extend from left to right).
-#'                   If `FALSE` (default), creates a vertical column chart (bars extend from bottom to top).
-#'                   Note: When horizontal = TRUE, the stack order is automatically reversed so that
-#'                   the visual order of the stacks matches the legend order.
+#' @param data A data frame containing the raw survey data (one row per respondent).
+#' @param x_var String. Name of the column for the X-axis categories.
+#' @param y_var Optional string. Name of a pre-computed count column. If NULL (default),
+#'   the function counts occurrences.
+#' @param stack_var String. Name of the column whose values define the stacks.
+#' @param title Optional string. Main chart title.
+#' @param subtitle Optional string. Chart subtitle.
+#' @param x_label Optional string. X-axis label. Defaults to `x_var`.
+#' @param y_label Optional string. Y-axis label. Defaults to "Number of Respondents"
+#'   or "Percentage of Respondents".
+#' @param stack_label Optional string. Title for the stack legend. Defaults to `stack_var`.
+#' @param stacked_type One of "normal" (counts) or "percent" (100% stacked). Default "normal".
+#' @param tooltip_prefix Optional string prepended to tooltip values.
+#' @param tooltip_suffix Optional string appended to tooltip values.
+#' @param x_tooltip_suffix Optional string appended to x-axis values in tooltips.
+#' @param color_palette Optional character vector of colors for the stacks.
+#' @param stack_order Optional character vector specifying order of `stack_var` levels.
+#' @param x_order Optional character vector specifying order of `x_var` levels.
+#' @param include_na Logical. If TRUE, NA values in both `x_var` and `stack_var` are
+#'   shown as explicit categories. If FALSE (default), rows with NA in either variable
+#'   are excluded. Default FALSE.
+#' @param na_label_x String. Label for NA values in `x_var` when `include_na = TRUE`.
+#'   Default "(Missing)".
+#' @param na_label_stack String. Label for NA values in `stack_var` when `include_na = TRUE`.
+#'   Default "(Missing)".
+#' @param x_breaks Optional numeric vector of cut points for binning `x_var`.
+#' @param x_bin_labels Optional character vector of labels for `x_breaks` bins.
+#' @param x_map_values Optional named list to remap `x_var` values for display.
+#' @param stack_breaks Optional numeric vector of cut points for binning `stack_var`.
+#' @param stack_bin_labels Optional character vector of labels for `stack_breaks` bins.
+#' @param stack_map_values Optional named list to remap `stack_var` values for display.
 #'
 #' @return An interactive `highcharter` bar chart plot object.
 #'
 #' @examples
-#' # We will be using data from GSS for these examples.
-#' # Make sure you have the data loaded:
-#' data(gss_all)
+#' # Load GSS data
+#' library(gssr)
+#' data(gss_panel20)
 #'
-#' # Filter to recent years and select relevant variables
-#' gss_recent <- gss_all %>%
+#' gss_recent <- gss_panel20 %>%
 #'   filter(year >= 2010) %>%
 #'   select(age, degree, happy, sex, race, year, polviews, attend)
 #'
-#' # Example 1: Basic stacked bar - Education by Gender
-#' education_order <- c("Lt High School", "High School", "Junior College", "Bachelor", "Graduate")
-#'
+#' # Example 1: Basic stacked bar (excluding NAs)
 #' plot1 <- create_stackedbar(
-#'   data = gss_recent,
-#'   x_var = "degree",
-#'   stack_var = "sex",
+#'   data = gss_panel20,
+#'   x_var = "degree_1a",
+#'   stack_var = "sex_1a",
 #'   title = "Educational Attainment by Gender",
-#'   subtitle = "GSS respondents 2010-present",
+#'   subtitle = "GSS respondents 2010-present (NAs excluded)",
 #'   x_label = "Highest Degree Completed",
 #'   y_label = "Number of Respondents",
 #'   stack_label = "Gender",
-#'   x_order = education_order,
+#'   include_na = FALSE  # Exclude missing values
 #' )
 #' plot1
 #'
-#' # Example 2: Percentage stacked - Happiness by Education Level
+#' # Example 2: Including NA values with custom labels
 #' plot2 <- create_stackedbar(
-#'   data = gss_recent,
+#'   data = gss_panel20,
+#'   x_var = "degree_1a",
+#'   x_label = "Degree"
+#'   stack_var = "sex_1a",
+#'   title = "Educational Attainment by Gender (Including Missing Data)",
+#'   subtitle = "GSS respondents 2010-present",
+#'   x_order = education_order,
+#'   include_na = TRUE,
+#'   na_label_x = "Education Not Reported",
+#'   na_label_stack = "Gender Not Reported"
+#' )
+#' plot2
+#'
+#' # Example 3: Percentage stacked with NA handling
+#' plot3 <- create_stackedbar(
+#'   data = gss_panel20,
 #'   x_var = "degree",
 #'   stack_var = "happy",
-#'   title = "Happiness Distribution Across Education Levels",
-#'   subtitle = "Percentage breakdown within each education category",
+#'   title = "Happiness Distribution by Education Level",
+#'   subtitle = "Percentage within each education category",
 #'   x_label = "Education Level",
-#'   y_label = "Percentage of Respondents",
+#'   y_label = "Percentage",
 #'   stack_label = "Happiness Level",
 #'   stacked_type = "percent",
 #'   x_order = education_order,
 #'   stack_order = c("Very Happy", "Pretty Happy", "Not Too Happy"),
 #'   tooltip_suffix = "%",
-#'   color_palette = c("turquoise", "slateblue", "steelblue")
+#'   color_palette = c("#2E8B57", "#FFD700", "#CD5C5C"),
+#'   include_na = TRUE,
+#'   na_label_x = "Missing",
+#'   na_label_stack = "No Answer"
 #' )
-#' plot2
+#' plot3
 #'
-#' # Example 3: Age binning with political views
+#' # Example 4: Age binning with political views
 #' age_breaks <- c(18, 30, 45, 60, 75, Inf)
 #' age_labels <- c("18-29", "30-44", "45-59", "60-74", "75+")
+#' gss_panel20$age_1a_numeric <- as.numeric(gss_panel20$age_1a)
 #'
-#' # Map political views to shorter labels
-#' polviews_map <- list(
-#'   "Extremely Liberal" = "Ext Liberal",
-#'   "Liberal" = "Liberal",
-#'   "Slightly Liberal" = "Sl Liberal",
-#'   "Moderate" = "Moderate",
-#'   "Slightly Conservative" = "Sl Conservative",
-#'   "Conservative" = "Conservative",
-#'   "Extremely Conservative" = "Ext Conservative"
-#' )
-#'
-#' plot3 <- create_stackedbar(
-#'   data = gss_recent,
-#'   x_var = "age",
-#'   stack_var = "polviews",
+#' plot4 <- create_stackedbar(
+#'   data = gss_panel20,
+#'   x_var = "age_1a_numeric",
+#'   stack_var = "polviews_1a",
 #'   title = "Political Views by Age Group",
-#'   subtitle = "Distribution of political ideology across age cohorts",
+#'   subtitle = "Distribution across age cohorts",
 #'   x_label = "Age Group",
 #'   stack_label = "Political Views",
 #'   x_breaks = age_breaks,
 #'   x_bin_labels = age_labels,
-#'   stack_map_values = polviews_map,
 #'   stacked_type = "percent",
 #'   tooltip_suffix = "%",
-#'   x_tooltip_suffix = " years",
-#' )
-#' plot3
-#'
-#' # Example 4: Including NA values with custom labels
-#' plot4 <- create_stackedbar(
-#'   data = gss_recent,
-#'   x_var = "race",
-#'   stack_var = "attend",
-#'   title = "Religious Attendance by Race/Ethnicity",
-#'   subtitle = "Including non-responses as explicit category",
-#'   x_label = "Race/Ethnicity",
-#'   stack_label = "Religious Attendance",
-#'   include_na = TRUE,
-#'   na_label_x = "Not Specified",
-#'   na_label_stack = "No Answer",
-#'   stacked_type = "percent",
-#'   tooltip_suffix = "%"
+#'   include_na = FALSE  # Exclude NAs for cleaner visualization
 #' )
 #' plot4
 #'
-#' # Example 5: Using pre-aggregated data
-#' # Create aggregated data first
-#' education_gender_counts <- gss_recent %>%
-#'   filter(!is.na(degree) & !is.na(sex)) %>%
-#'   count(degree, sex, name = "respondent_count") %>%
-#'   mutate(degree = factor(degree, levels = education_order))
-#'
-#' plot5 <- create_stackedbar(
-#'   data = education_gender_counts,
-#'   x_var = "degree",
-#'   y_var = "respondent_count",  # Use pre-computed counts
-#'   stack_var = "sex",
-#'   title = "Education by Gender (Pre-aggregated Data)",
-#'   subtitle = "Using pre-computed counts",
-#'   x_label = "Education Level",
-#'   y_label = "Number of Respondents",
-#'   stack_label = "Gender",
-#' )
-#' plot5
-#'
-#' # Example 6: Complex mapping with custom ordering
-#' # Map sex to more descriptive labels
+#' # Example 5: Custom value mapping with NA inclusion
 #' sex_map <- list("Male" = "Men", "Female" = "Women")
 #'
-#' plot6 <- create_stackedbar(
+#' plot5 <- create_stackedbar(
 #'   data = gss_recent,
 #'   x_var = "happy",
 #'   stack_var = "sex",
 #'   title = "Gender Distribution Across Happiness Levels",
-#'   subtitle = "With custom gender labels and happiness ordering",
-#'   x_label = "Self-Reported Happiness",
-#'   stack_label = "Gender",
 #'   x_order = c("Very Happy", "Pretty Happy", "Not Too Happy"),
 #'   stack_map_values = sex_map,
 #'   stack_order = c("Women", "Men"),
-#'   stacked_type = "counts",
+#'   stacked_type = "normal",
 #'   tooltip_prefix = "Count: ",
+#'   include_na = TRUE,
+#'   na_label_x = "Happiness Not Reported",
+#'   na_label_stack = "Gender Not Specified"
 #' )
-#' plot6
+#' plot5
 #'
 #'
 #' @details This function performs the following steps:

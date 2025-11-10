@@ -26,7 +26,10 @@ create_timeline(
   response_filter_label = NULL,
   time_breaks = NULL,
   time_bin_labels = NULL,
-  weight_var = NULL
+  weight_var = NULL,
+  include_na = FALSE,
+  na_label_response = "(Missing)",
+  na_label_group = "(Missing)"
 )
 }
 \arguments{

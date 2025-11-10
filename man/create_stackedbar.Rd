@@ -35,91 +35,61 @@ create_stackedbar(
 )
 }
 \arguments{
-\item{data}{A data frame containing the raw survey data (e.g., one row per respondent).}
+\item{data}{A data frame containing the raw survey data (one row per respondent).}
 
-\item{x_var}{The name of the column to be plotted on the X-axis (as a string).
-This typically represents a demographic variable or a question.}
+\item{x_var}{String. Name of the column for the X-axis categories.}
 
-\item{y_var}{Optional. The name of the column that already contains the counts
-or values for the y-axis (as a string). If \code{NULL} (default),
-the function will internally count the occurrences of \code{x_var} and \code{stack_var}.
-Only provide this if your \code{data} is already aggregated.}
+\item{y_var}{Optional string. Name of a pre-computed count column. If NULL (default),
+the function counts occurrences.}
 
-\item{stack_var}{The name of the column whose unique values will define the
-stacks within each bar (as a string). This is often a
-Likert scale, an agreement level, or another categorical response.}
+\item{stack_var}{String. Name of the column whose values define the stacks.}
 
-\item{title}{Optional. The main title of the chart (as a string).}
+\item{title}{Optional string. Main chart title.}
 
-\item{subtitle}{Optional. A subtitle for the chart (as a string).}
+\item{subtitle}{Optional string. Chart subtitle.}
 
-\item{x_label}{Optional. The label for the X-axis (as a string). Defaults
-to \code{x_var} or \code{x_var (Binned)}.}
+\item{x_label}{Optional string. X-axis label. Defaults to \code{x_var}.}
 
-\item{y_label}{Optional. The label for the Y-axis (as a string). Defaults
-to "Number of Respondents" or "Percentage of Respondents".}
+\item{y_label}{Optional string. Y-axis label. Defaults to "Number of Respondents"
+or "Percentage of Respondents".}
 
-\item{stack_label}{Optional. The title for the stack legend (as a string).
-Set to NULL, NA, FALSE, or "" to hide the legend title completely.
-If not provided, no title is shown.}
+\item{stack_label}{Optional string. Title for the stack legend. Defaults to \code{stack_var}.}
 
-\item{stacked_type}{Optional. The type of stacking. Can be "counts" (counts)
-or "percent" (100\% stacked). Defaults to "counts".}
+\item{stacked_type}{One of "normal" (counts) or "percent" (100\% stacked). Default "normal".}
 
-\item{tooltip_prefix}{Optional. A string to prepend to values in tooltips.}
+\item{tooltip_prefix}{Optional string prepended to tooltip values.}
 
-\item{tooltip_suffix}{Optional. A string to append to values in tooltips.}
+\item{tooltip_suffix}{Optional string appended to tooltip values.}
 
-\item{x_tooltip_suffix}{Optional. A string to append to x-axis values in tooltips.}
+\item{x_tooltip_suffix}{Optional string appended to x-axis values in tooltips.}
 
-\item{color_palette}{Optional. A character vector of colors to use for the
-stacks. If NULL, highcharter's default palette is used.
-Consider ordering colors to match \code{stack_order}.}
+\item{color_palette}{Optional character vector of colors for the stacks.}
 
-\item{stack_order}{Optional. A character vector specifying the desired order
-of the \code{stack_var} levels. This is crucial for ordinal
-scales (e.g., Likert 1-7). If NULL, default factor order
-or alphabetical will be used. Levels not found in data
-will be ignored.}
+\item{stack_order}{Optional character vector specifying order of \code{stack_var} levels.}
 
-\item{x_order}{Optional. A character vector specifying the desired order
-of the \code{x_var} levels. If NULL, default factor order
-or alphabetical will be used.}
+\item{x_order}{Optional character vector specifying order of \code{x_var} levels.}
 
-\item{include_na}{Logical. If TRUE, explicit NA categories will be shown
-in counts for \code{x_var} and \code{stack_var}. If FALSE (default),
-rows with NA in \code{x_var} or \code{stack_var} are dropped.}
+\item{include_na}{Logical. If TRUE, NA values in both \code{x_var} and \code{stack_var} are
+shown as explicit categories. If FALSE (default), rows with NA in either variable
+are excluded. Default FALSE.}
 
-\item{na_label_x}{Optional string. Custom label for NA values in x_var. Defaults to "(Missing)".}
+\item{na_label_x}{String. Label for NA values in \code{x_var} when \code{include_na = TRUE}.
+Default "(Missing)".}
 
-\item{na_label_stack}{Optional string. Custom label for NA values in stack_var. Defaults to "(Missing)".}
+\item{na_label_stack}{String. Label for NA values in \code{stack_var} when \code{include_na = TRUE}.
+Default "(Missing)".}
 
-\item{x_breaks}{Optional. A numeric vector of cut points for \code{x_var} if
-it is a continuous variable and you want to bin it.
-e.g., \code{c(16, 24, 33, 42, 51, 60, Inf)}.}
+\item{x_breaks}{Optional numeric vector of cut points for binning \code{x_var}.}
 
-\item{x_bin_labels}{Optional. A character vector of labels for the bins
-created by \code{x_breaks}. Must be one less than the number
-of breaks (or same if Inf is last break).}
+\item{x_bin_labels}{Optional character vector of labels for \code{x_breaks} bins.}
 
-\item{x_map_values}{Optional. A named list (e.g., \code{list("1" = "Female", "2" = "Male")})
-to rename values within \code{x_var} for display. Original values
-should be names, new labels should be values.}
+\item{x_map_values}{Optional named list to remap \code{x_var} values for display.}
 
-\item{stack_breaks}{Optional. A numeric vector of cut points for \code{stack_var} if
-it is a continuous variable and you want to bin it.}
+\item{stack_breaks}{Optional numeric vector of cut points for binning \code{stack_var}.}
 
-\item{stack_bin_labels}{Optional. A character vector of labels for the bins
-created by \code{stack_breaks}. Must be one less than the number
-of breaks (or same if Inf is last break).}
+\item{stack_bin_labels}{Optional character vector of labels for \code{stack_breaks} bins.}
 
-\item{stack_map_values}{Optional. A named list (e.g., \code{list("1" = "Strongly Disagree", "7" = "Strongly Agree")})
-to rename values within \code{stack_var} for display.}
-
-\item{horizontal}{Logical. If \code{TRUE}, creates a horizontal bar chart (bars extend from left to right).
-If \code{FALSE} (default), creates a vertical column chart (bars extend from bottom to top).
-Note: When horizontal = TRUE, the stack order is automatically reversed so that
-the visual order of the stacks matches the legend order.}
+\item{stack_map_values}{Optional named list to remap \code{stack_var} values for display.}
 }
 \value{
 An interactive \code{highcharter} bar chart plot object.
@@ -157,137 +127,105 @@ This function performs the following steps:
 }
 }
 \examples{
-# We will be using data from GSS for these examples.
-# Make sure you have the data loaded:
-data(gss_all)
+# Load GSS data
+library(gssr)
+data(gss_panel20)
 
-# Filter to recent years and select relevant variables
-gss_recent <- gss_all \%>\%
+gss_recent <- gss_panel20 \%>\%
   filter(year >= 2010) \%>\%
   select(age, degree, happy, sex, race, year, polviews, attend)
 
-# Example 1: Basic stacked bar - Education by Gender
-education_order <- c("Lt High School", "High School", "Junior College", "Bachelor", "Graduate")
+# Example 1: Basic stacked bar (excluding NAs)
+education_order <- c("Lt High School", "High School", "Junior College",
+                     "Bachelor", "Graduate")
 
 plot1 <- create_stackedbar(
   data = gss_recent,
   x_var = "degree",
   stack_var = "sex",
   title = "Educational Attainment by Gender",
-  subtitle = "GSS respondents 2010-present",
+  subtitle = "GSS respondents 2010-present (NAs excluded)",
   x_label = "Highest Degree Completed",
   y_label = "Number of Respondents",
   stack_label = "Gender",
   x_order = education_order,
+  include_na = FALSE  # Exclude missing values
 )
 plot1
 
-# Example 2: Percentage stacked - Happiness by Education Level
+# Example 2: Including NA values with custom labels
 plot2 <- create_stackedbar(
   data = gss_recent,
   x_var = "degree",
+  stack_var = "sex",
+  title = "Educational Attainment by Gender (Including Missing Data)",
+  subtitle = "GSS respondents 2010-present",
+  x_order = education_order,
+  include_na = TRUE,
+  na_label_x = "Education Not Reported",
+  na_label_stack = "Gender Not Reported"
+)
+plot2
+
+# Example 3: Percentage stacked with NA handling
+plot3 <- create_stackedbar(
+  data = gss_recent,
+  x_var = "degree",
   stack_var = "happy",
-  title = "Happiness Distribution Across Education Levels",
-  subtitle = "Percentage breakdown within each education category",
+  title = "Happiness Distribution by Education Level",
+  subtitle = "Percentage within each education category",
   x_label = "Education Level",
-  y_label = "Percentage of Respondents",
+  y_label = "Percentage",
   stack_label = "Happiness Level",
   stacked_type = "percent",
   x_order = education_order,
   stack_order = c("Very Happy", "Pretty Happy", "Not Too Happy"),
   tooltip_suffix = "\%",
-  color_palette = c("turquoise", "slateblue", "steelblue")
+  color_palette = c("#2E8B57", "#FFD700", "#CD5C5C"),
+  include_na = TRUE,
+  na_label_x = "Missing",
+  na_label_stack = "No Answer"
 )
-plot2
+plot3
 
-# Example 3: Age binning with political views
+# Example 4: Age binning with political views
 age_breaks <- c(18, 30, 45, 60, 75, Inf)
 age_labels <- c("18-29", "30-44", "45-59", "60-74", "75+")
 
-# Map political views to shorter labels
-polviews_map <- list(
-  "Extremely Liberal" = "Ext Liberal",
-  "Liberal" = "Liberal",
-  "Slightly Liberal" = "Sl Liberal",
-  "Moderate" = "Moderate",
-  "Slightly Conservative" = "Sl Conservative",
-  "Conservative" = "Conservative",
-  "Extremely Conservative" = "Ext Conservative"
-)
-
-plot3 <- create_stackedbar(
+plot4 <- create_stackedbar(
   data = gss_recent,
   x_var = "age",
   stack_var = "polviews",
   title = "Political Views by Age Group",
-  subtitle = "Distribution of political ideology across age cohorts",
+  subtitle = "Distribution across age cohorts",
   x_label = "Age Group",
   stack_label = "Political Views",
   x_breaks = age_breaks,
   x_bin_labels = age_labels,
-  stack_map_values = polviews_map,
   stacked_type = "percent",
   tooltip_suffix = "\%",
-  x_tooltip_suffix = " years",
-)
-plot3
-
-# Example 4: Including NA values with custom labels
-plot4 <- create_stackedbar(
-  data = gss_recent,
-  x_var = "race",
-  stack_var = "attend",
-  title = "Religious Attendance by Race/Ethnicity",
-  subtitle = "Including non-responses as explicit category",
-  x_label = "Race/Ethnicity",
-  stack_label = "Religious Attendance",
-  include_na = TRUE,
-  na_label_x = "Not Specified",
-  na_label_stack = "No Answer",
-  stacked_type = "percent",
-  tooltip_suffix = "\%"
+  include_na = FALSE  # Exclude NAs for cleaner visualization
 )
 plot4
 
-# Example 5: Using pre-aggregated data
-# Create aggregated data first
-education_gender_counts <- gss_recent \%>\%
-  filter(!is.na(degree) & !is.na(sex)) \%>\%
-  count(degree, sex, name = "respondent_count") \%>\%
-  mutate(degree = factor(degree, levels = education_order))
-
-plot5 <- create_stackedbar(
-  data = education_gender_counts,
-  x_var = "degree",
-  y_var = "respondent_count",  # Use pre-computed counts
-  stack_var = "sex",
-  title = "Education by Gender (Pre-aggregated Data)",
-  subtitle = "Using pre-computed counts",
-  x_label = "Education Level",
-  y_label = "Number of Respondents",
-  stack_label = "Gender",
-)
-plot5
-
-# Example 6: Complex mapping with custom ordering
-# Map sex to more descriptive labels
+# Example 5: Custom value mapping with NA inclusion
 sex_map <- list("Male" = "Men", "Female" = "Women")
 
-plot6 <- create_stackedbar(
+plot5 <- create_stackedbar(
   data = gss_recent,
   x_var = "happy",
   stack_var = "sex",
   title = "Gender Distribution Across Happiness Levels",
-  subtitle = "With custom gender labels and happiness ordering",
-  x_label = "Self-Reported Happiness",
-  stack_label = "Gender",
   x_order = c("Very Happy", "Pretty Happy", "Not Too Happy"),
   stack_map_values = sex_map,
   stack_order = c("Women", "Men"),
-  stacked_type = "counts",
+  stacked_type = "normal",
   tooltip_prefix = "Count: ",
+  include_na = TRUE,
+  na_label_x = "Happiness Not Reported",
+  na_label_stack = "Gender Not Specified"
 )
-plot6
+plot5
 
 
 }
