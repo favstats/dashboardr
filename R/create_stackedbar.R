@@ -404,12 +404,16 @@ create_stackedbar <- function(data,
     }
   }
 
-  # DATA AGGREGATION WITH EXPLICIT NA HANDLING using helper
-  # Validate NA parameters
-  na_label_x <- validate_na_params(include_na, na_label_x, "na_label_x")
-  na_label_stack <- validate_na_params(include_na, na_label_stack, "na_label_stack")
-  
-  # Use x_var_for_plot and stack_var_for_plot after all mutations (mapping, binning)
+  # FILTER OUT NAs if include_na = FALSE
+  if (!include_na) {
+    plot_data_temp <- plot_data_temp |>
+      dplyr::filter(
+        !is.na(!!rlang::sym(x_var_for_plot)) &
+          !is.na(!!rlang::sym(stack_var_for_plot))
+      )
+  }
+
+  # CREATE FACTORS using helper function
   plot_data <- plot_data_temp |>
     dplyr::mutate(
       .x_var_col = handle_na_for_plotting(
@@ -427,42 +431,21 @@ create_stackedbar <- function(data,
         custom_order = stack_order
       )
     )
-  
-  # When horizontal = TRUE, reverse the stack order so the visual order matches the legend
-  # In horizontal bar charts, stacks are reversed visually, so we need to reverse the factor levels
-  if (horizontal) {
-    current_levels <- levels(plot_data$.stack_var_col)
-    plot_data <- plot_data |>
-      dplyr::mutate(
-        .stack_var_col = factor(.stack_var_col, levels = rev(current_levels), ordered = TRUE)
-      )
-  }
 
-  # Note: x_order and stack_order are already handled by handle_na_for_plotting() above
-  
+  # AGGREGATION
   if (is.null(y_var)) {
-    # Perform the aggregation
-    if (!is.null(weight_var)) {
-      if (!weight_var %in% names(plot_data)) {
-        stop("`weight_var` '", weight_var, "' not found in data.", call. = FALSE)
-      }
-      plot_data <- plot_data |>
-        dplyr::group_by(.x_var_col, .stack_var_col) |>
-        dplyr::summarise(n = sum(!!rlang::sym(weight_var), na.rm = TRUE), .groups = "drop")
-    } else {
-      plot_data <- plot_data |>
-        dplyr::count(.x_var_col, .stack_var_col, name = "n") |>
-        dplyr::ungroup()
-    }
+    plot_data <- plot_data |>
+      dplyr::count(.x_var_col, .stack_var_col, name = "n") |>
+      dplyr::ungroup()
   } else {
     plot_data <- plot_data |>
-      dplyr::rename(n := !!rlang::sym(y_var))
+      dplyr::rename(n = !!rlang::sym(y_var))
   }
 
   # HIGHCHARTER
   # Determine chart type based on horizontal parameter
   chart_type <- if (horizontal) "bar" else "column"
-  
+
   hchart_obj <- highcharter::hchart(
     object = plot_data,
     type = chart_type,
@@ -508,7 +491,7 @@ create_stackedbar <- function(data,
 
   # Use appropriate series type for plotOptions (bar or column)
   series_type <- if (horizontal) "bar" else "column"
-  
+
   plot_options <- list()
   plot_options[[series_type]] <- list(
       stacking = stacking_type_hc,
@@ -518,7 +501,7 @@ create_stackedbar <- function(data,
         style = list(textOutline = "none", fontSize = "10px")
     )
   )
-  
+
   hchart_obj <- do.call(highcharter::hc_plotOptions, c(list(hchart_obj), plot_options))
 
   # Legend
@@ -531,7 +514,7 @@ create_stackedbar <- function(data,
     # Use custom label
     hchart_obj <- highcharter::hc_legend(hchart_obj, title = list(text = stack_label))
     }
-  
+
   # Reverse legend order for horizontal charts to match visual stacking order
   if (horizontal) {
     hchart_obj <- highcharter::hc_legend(hchart_obj, reversed = TRUE)

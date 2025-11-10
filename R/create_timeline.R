@@ -236,7 +236,7 @@ create_timeline <- function(data,
     plot_data <- plot_data %>%
       mutate(!!sym(response_var) := dplyr::recode(as.character(!!sym(response_var)), !!!response_map_values))
   }
-  
+
   # Handle response filtering - mark filtered values before aggregation
   # This ensures percentages are calculated correctly (out of ALL responses, not just filtered ones)
   filter_applied <- !is.null(response_filter)
@@ -357,7 +357,7 @@ create_timeline <- function(data,
 
   # Determine if time_var is categorical
   is_time_categorical <- is.factor(plot_data[[time_var_plot]]) || is.character(plot_data[[time_var_plot]])
-  
+
   # Get unique time categories if categorical (for proper x-axis ordering)
   if (is_time_categorical) {
     if (is.factor(plot_data[[time_var_plot]])) {
@@ -366,7 +366,7 @@ create_timeline <- function(data,
       time_categories <- unique(plot_data[[time_var_plot]])
     }
   }
-  
+
   # Determine axis labels (use custom or defaults)
   x_axis_title <- if (!is.null(x_label)) {
     x_label
@@ -377,19 +377,56 @@ create_timeline <- function(data,
   } else {
     time_var
   }
-  
+
   y_axis_title <- if (!is.null(y_label)) y_label else "Percentage"
-  
+
+  # NA HANDLING - Apply AFTER mapping/filtering/binning
+  if (!include_na) {
+    # Filter out NAs
+    plot_data <- plot_data %>%
+      filter(!is.na(!!sym(response_var)))
+
+    if (!is.null(group_var)) {
+      plot_data <- plot_data %>%
+        filter(!is.na(!!sym(group_var)))
+    }
+  } else {
+    # Use helper function for explicit NA handling
+    plot_data <- plot_data %>%
+      mutate(
+        !!sym(response_var) := handle_na_for_plotting(
+          data = plot_data,
+          var_name = response_var,
+          include_na = TRUE,
+          na_label = na_label_response,
+          custom_order = response_levels
+        )
+      )
+
+    if (!is.null(group_var)) {
+      plot_data <- plot_data %>%
+        mutate(
+          !!sym(group_var) := handle_na_for_plotting(
+            data = plot_data,
+            var_name = group_var,
+            include_na = TRUE,
+            na_label = na_label_group,
+            custom_order = NULL
+          )
+        )
+    }
+  }
+
   # Create base chart
   hc <- highchart() %>%
     hc_title(text = title) %>%
     hc_yAxis(title = list(text = y_axis_title), max = y_max, min = y_min)
-  
+
   # Add subtitle if provided
   if (!is.null(subtitle)) {
     hc <- hc %>% hc_subtitle(text = subtitle)
   }
-  
+
   # Configure x-axis based on whether time is categorical or numeric
   if (is_time_categorical) {
     hc <- hc %>%
@@ -407,7 +444,7 @@ create_timeline <- function(data,
   if (!is.null(color_palette)) {
     hc <- hc %>% hc_colors(color_palette)
   }
-  
+
   # Create chart based on type
   if (chart_type == "stacked_area") {
     hc <- hc %>%
@@ -420,7 +457,7 @@ create_timeline <- function(data,
         series_data <- agg_data %>%
           filter(!!sym(response_var) == level) %>%
           arrange(!!sym(time_var_plot))
-        
+
         # For categorical time, use category names; for numeric, use values
         if (is_time_categorical) {
           series_data <- series_data %>%
@@ -449,7 +486,7 @@ create_timeline <- function(data,
         series_data <- agg_data %>%
           filter(!!sym(response_var) == level) %>%
           arrange(!!sym(time_var_plot))
-        
+
         # For categorical time, use category names; for numeric, use values
         if (is_time_categorical) {
           series_data <- series_data %>%
@@ -476,7 +513,7 @@ create_timeline <- function(data,
           series_data <- agg_data %>%
             filter(!!sym(response_var) == resp_level, !!sym(group_var) == group_level) %>%
             arrange(!!sym(time_var_plot))
-          
+
           if(nrow(series_data) > 0) {
             # For categorical time, use category names; for numeric, use values
             if (is_time_categorical) {
@@ -487,7 +524,7 @@ create_timeline <- function(data,
               series_data <- series_data %>%
                 select(x = !!sym(time_var_plot), y = percentage)
             }
-            
+
             # Determine series name
             # If response_filter_label is NULL/NA/empty AND there's only one response level (e.g., from response_filter),
             # show only the group name. Otherwise, show "response - group".

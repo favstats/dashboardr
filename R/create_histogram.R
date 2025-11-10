@@ -276,9 +276,14 @@ create_histogram <- function(data,
   } else {
     x_plot_var <- x_var
   }
-  # Factor & explicit NA handling using helper
-  na_label <- validate_na_params(include_na, na_label, "na_label")
-  
+  # Factor & explicit NA handling
+  if (!include_na) {
+    # Remove rows with NA in x_plot_var BEFORE factor creation
+    df <- df |>
+      dplyr::filter(!is.na(!!rlang::sym(x_plot_var)))
+  }
+
+  # Create factor using helper
   df$.x_factor <- handle_na_for_plotting(
     data = df,
     var_name = x_plot_var,
@@ -287,8 +292,7 @@ create_histogram <- function(data,
     custom_order = x_order
   )
 
-  # Store the levels of the factor BEFORE aggregation for later use in complete()
-  # This ensures all potential categories are present
+  # Store the levels
   factor_levels_for_completion <- levels(df$.x_factor)
 
   # AGGREGATION
@@ -301,18 +305,12 @@ create_histogram <- function(data,
       df <- df |>
         dplyr::group_by(.x_factor, .drop = FALSE) |>
         dplyr::summarise(n = sum(!!rlang::sym(weight_var), na.rm = TRUE), .groups = "drop") |>
-        # IMPORTANT: Use complete to ensure all factor levels are present, even with 0 count
-        tidyr::complete(.x_factor = factor(factor_levels_for_completion,
-                                           levels = factor_levels_for_completion),
-                        fill = list(n = 0))
+        tidyr::complete(.x_factor, fill = list(n = 0))
     } else {
       # Standard counting without weights
       df <- df |>
         dplyr::count(.x_factor, name = "n") |>
-        # IMPORTANT: Use complete to ensure all factor levels are present, even with 0 count
-        tidyr::complete(.x_factor = factor(factor_levels_for_completion,
-                                           levels = factor_levels_for_completion),
-                        fill = list(n = 0))
+        tidyr::complete(.x_factor, fill = list(n = 0))
     }
   } else {
     if (!y_var %in% names(df)) {
@@ -320,18 +318,10 @@ create_histogram <- function(data,
     }
     df <- df |>
       dplyr::rename(n = !!rlang::sym(y_var)) |>
-      # Ensure all factor levels are present even when using pre-computed y_var
-      tidyr::complete(.x_factor = factor(factor_levels_for_completion,
-                                         levels = factor_levels_for_completion),
-                      fill = list(n = 0))
+      tidyr::complete(.x_factor, fill = list(n = 0))
   }
 
-  # Re-apply factor levels after complete() to maintain order and structure
-  df <- df |>
-    dplyr::mutate(.x_factor = factor(.x_factor, levels = factor_levels_for_completion))
-
   # Extract data for direct series addition
-  # This creates a named vector or list where names are categories and values are counts
   series_data <- setNames(df$n, as.character(df$.x_factor))
 
   # HIGHCHARTER
