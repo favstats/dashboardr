@@ -136,28 +136,25 @@ gss_recent <- gss_panel20 \%>\%
   select(age, degree, happy, sex, race, year, polviews, attend)
 
 # Example 1: Basic stacked bar (excluding NAs)
-education_order <- c("Lt High School", "High School", "Junior College",
-                     "Bachelor", "Graduate")
-
 plot1 <- create_stackedbar(
-  data = gss_recent,
-  x_var = "degree",
-  stack_var = "sex",
+  data = gss_panel20,
+  x_var = "degree_1a",
+  stack_var = "sex_1a",
   title = "Educational Attainment by Gender",
   subtitle = "GSS respondents 2010-present (NAs excluded)",
   x_label = "Highest Degree Completed",
   y_label = "Number of Respondents",
   stack_label = "Gender",
-  x_order = education_order,
   include_na = FALSE  # Exclude missing values
 )
 plot1
 
 # Example 2: Including NA values with custom labels
 plot2 <- create_stackedbar(
-  data = gss_recent,
-  x_var = "degree",
-  stack_var = "sex",
+  data = gss_panel20,
+  x_var = "degree_1a",
+  x_label = "Degree"
+  stack_var = "sex_1a",
   title = "Educational Attainment by Gender (Including Missing Data)",
   subtitle = "GSS respondents 2010-present",
   x_order = education_order,
@@ -169,7 +166,7 @@ plot2
 
 # Example 3: Percentage stacked with NA handling
 plot3 <- create_stackedbar(
-  data = gss_recent,
+  data = gss_panel20,
   x_var = "degree",
   stack_var = "happy",
   title = "Happiness Distribution by Education Level",
@@ -191,11 +188,12 @@ plot3
 # Example 4: Age binning with political views
 age_breaks <- c(18, 30, 45, 60, 75, Inf)
 age_labels <- c("18-29", "30-44", "45-59", "60-74", "75+")
+gss_panel20$age_1a_numeric <- as.numeric(gss_panel20$age_1a)
 
 plot4 <- create_stackedbar(
-  data = gss_recent,
-  x_var = "age",
-  stack_var = "polviews",
+  data = gss_panel20,
+  x_var = "age_1a_numeric",
+  stack_var = "polviews_1a",
   title = "Political Views by Age Group",
   subtitle = "Distribution across age cohorts",
   x_label = "Age Group",

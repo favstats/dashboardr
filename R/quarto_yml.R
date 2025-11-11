@@ -281,8 +281,52 @@
     tools <- c(tools, list(list(icon = "globe", href = proj$website)))
   }
 
-  # Add right section if we have right-aligned pages OR tools
-  if (has_right_pages || length(tools) > 0) {
+  # Check if we have custom navbar elements
+  custom_navbar_right <- list()
+  custom_navbar_left <- list()
+  if (!is.null(proj$navbar_elements) && length(proj$navbar_elements) > 0) {
+    for (elem in proj$navbar_elements) {
+      if (!is.null(elem$align) && elem$align == "left") {
+        custom_navbar_left <- c(custom_navbar_left, list(elem))
+      } else {
+        custom_navbar_right <- c(custom_navbar_right, list(elem))
+      }
+    }
+  }
+  
+  # Add left section for custom navbar elements if any
+  if (length(custom_navbar_left) > 0) {
+    for (elem in custom_navbar_left) {
+      # Build text with icon if provided
+      if (!is.null(elem$text) && !is.null(elem$icon)) {
+        # Both text and icon
+        icon_shortcode <- if (grepl("{{< iconify", elem$icon, fixed = TRUE)) {
+          elem$icon
+        } else {
+          icon(elem$icon)
+        }
+        yaml_lines <- c(yaml_lines,
+          paste0("      - text: \"", icon_shortcode, " ", elem$text, "\""),
+          paste0("        href: ", elem$href)
+        )
+      } else if (!is.null(elem$text)) {
+        # Text only
+        yaml_lines <- c(yaml_lines,
+          paste0("      - text: \"", elem$text, "\""),
+          paste0("        href: ", elem$href)
+        )
+      } else if (!is.null(elem$icon)) {
+        # Icon only
+        yaml_lines <- c(yaml_lines,
+          paste0("      - icon: ", elem$icon),
+          paste0("        href: ", elem$href)
+        )
+      }
+    }
+  }
+  
+  # Add right section if we have right-aligned pages OR tools OR custom elements
+  if (has_right_pages || length(tools) > 0 || length(custom_navbar_right) > 0) {
     yaml_lines <- c(yaml_lines, "    right:")
     
     # First, add right-aligned pages
@@ -312,7 +356,36 @@
       }
     }
     
-    # Then, add tools
+    # Then, add custom navbar elements (right-aligned)
+    for (elem in custom_navbar_right) {
+      # Build text with icon if provided
+      if (!is.null(elem$text) && !is.null(elem$icon)) {
+        # Both text and icon
+        icon_shortcode <- if (grepl("{{< iconify", elem$icon, fixed = TRUE)) {
+          elem$icon
+        } else {
+          icon(elem$icon)
+        }
+        yaml_lines <- c(yaml_lines,
+          paste0("      - text: \"", icon_shortcode, " ", elem$text, "\""),
+          paste0("        href: ", elem$href)
+        )
+      } else if (!is.null(elem$text)) {
+        # Text only
+        yaml_lines <- c(yaml_lines,
+          paste0("      - text: \"", elem$text, "\""),
+          paste0("        href: ", elem$href)
+        )
+      } else if (!is.null(elem$icon)) {
+        # Icon only
+        yaml_lines <- c(yaml_lines,
+          paste0("      - icon: ", elem$icon),
+          paste0("        href: ", elem$href)
+        )
+      }
+    }
+    
+    # Finally, add tools (github, twitter, etc.)
     for (tool in tools) {
       yaml_lines <- c(yaml_lines,
         paste0("      - icon: ", tool$icon),

@@ -129,15 +129,11 @@ vs. the factor levels.
 #We will work with data from the GSS. The GSS dataset (`gssr`) is a dependency of
 #our `dashboardr` package.
 
-# Filter to recent years
-data("gss_panel20")
-gss_recent <- gss_panel20 \%>\%
-  filter(year >= 2010) \%>\%
-  select(age, degree, happy, sex, race, year)
+data(gss_panel20)
 
 # Example 1: Basic histogram of age distribution
 plot1 <- create_histogram(
-  data = gss_recent,
+  data = gss_panel20,
   x_var = "age",
   title = "Age Distribution in GSS Data (2010+)",
   subtitle = "General Social Survey respondents",
@@ -157,7 +153,7 @@ education_map <- list("0" = "Less than High School",
                      )
 
 plot2 <- create_histogram(
- data = gss_recent,
+ data = gss_panel20,
  x_var = "degree",
  title = "Educational Attainment Distribution",
  subtitle = "GSS respondents 2010-present (NAs excluded)",
@@ -172,7 +168,7 @@ plot2
 
 # Example 3: Including NA values with custom label
 plot3 <- create_histogram(
-  data = gss_recent,
+  data = gss_panel20,
   x_var = "degree",
   title = "Educational Attainment Distribution (Including Missing Data)",
   subtitle = "GSS respondents 2010-present",
@@ -188,7 +184,7 @@ age_breaks <- c(18, 30, 45, 60, 75, Inf)
 age_labels <- c("18-29", "30-44", "45-59", "60-74", "75+")
 
 plot5 <- create_histogram(
-  data = gss_recent,
+  data = gss_panel20,
   x_var = "age",
   title = "Age Groups in GSS Sample",
   subtitle = "Custom age categories",

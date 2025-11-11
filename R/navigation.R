@@ -199,5 +199,89 @@ navbar_menu <- function(text, pages, icon = NULL) {
   
   menu
 }
+
+
+#' Add a custom navbar element to dashboard
+#'
+#' Adds a custom link or element to the navbar. Can include text, icons, and external links.
+#' Elements are added to the right side of the navbar by default but can be positioned left.
+#'
+#' @param proj Dashboard project object from create_dashboard()
+#' @param text Display text for the element (optional if icon provided)
+#' @param icon Iconify icon (e.g., "ph:lightning-fill") (optional)
+#' @param href Hyperlink URL (required)
+#' @param align Position in navbar: "left" or "right" (default: "right")
+#'
+#' @return Modified dashboard project object
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' # Add a "Powered by X" link with icon
+#' dashboard <- create_dashboard("my_dashboard", "My Dashboard") %>%
+#'   add_page("Home", text = "# Welcome", is_landing_page = TRUE) %>%
+#'   add_navbar_element(
+#'     text = "Powered by X",
+#'     icon = "ph:lightning-fill",
+#'     href = "https://example.com",
+#'     align = "right"
+#'   )
+#'
+#' # Add multiple elements
+#' dashboard <- create_dashboard("my_dashboard", "Dashboard") %>%
+#'   add_page("Home", ...) %>%
+#'   add_navbar_element(
+#'     text = "Documentation",
+#'     icon = "ph:book-open",
+#'     href = "https://docs.example.com"
+#'   ) %>%
+#'   add_navbar_element(
+#'     text = "Sponsor",
+#'     icon = "ph:star-fill",
+#'     href = "https://sponsor.com"
+#'   )
+#'
+#' # Icon only (no text)
+#' dashboard %>%
+#'   add_navbar_element(
+#'     icon = "ph:github-logo",
+#'     href = "https://github.com/user/repo"
+#'   )
+#' }
+add_navbar_element <- function(proj, text = NULL, icon = NULL, href, 
+                               align = c("right", "left")) {
+  if (!inherits(proj, "dashboard_project")) {
+    stop("proj must be a dashboard_project object from create_dashboard()")
+  }
+  
+  if (is.null(text) && is.null(icon)) {
+    stop("Either text or icon (or both) must be provided")
+  }
+  
+  if (missing(href) || is.null(href) || !is.character(href) || length(href) != 1 || nchar(href) == 0) {
+    stop("href must be a non-empty URL string")
+  }
+  
+  align <- match.arg(align)
+  
+  # Create element
+  element <- list(
+    type = "custom_link",
+    text = text,
+    icon = icon,
+    href = href,
+    align = align
+  )
+  
+  # Initialize list if needed
+  if (is.null(proj$navbar_elements)) {
+    proj$navbar_elements <- list()
+  }
+  
+  # Add element
+  proj$navbar_elements <- c(proj$navbar_elements, list(element))
+  
+  proj
+}
 NA
 
