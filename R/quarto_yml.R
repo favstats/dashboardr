@@ -316,9 +316,14 @@
           paste0("        href: ", elem$href)
         )
       } else if (!is.null(elem$icon)) {
-        # Icon only
+        # Icon only - use empty text with icon
+        icon_shortcode <- if (grepl("{{< iconify", elem$icon, fixed = TRUE)) {
+          elem$icon
+        } else {
+          icon(elem$icon)
+        }
         yaml_lines <- c(yaml_lines,
-          paste0("      - icon: ", elem$icon),
+          paste0("      - text: \"", icon_shortcode, "\""),
           paste0("        href: ", elem$href)
         )
       }
@@ -377,9 +382,14 @@
           paste0("        href: ", elem$href)
         )
       } else if (!is.null(elem$icon)) {
-        # Icon only
+        # Icon only - use empty text with icon
+        icon_shortcode <- if (grepl("{{< iconify", elem$icon, fixed = TRUE)) {
+          elem$icon
+        } else {
+          icon(elem$icon)
+        }
         yaml_lines <- c(yaml_lines,
-          paste0("      - icon: ", elem$icon),
+          paste0("      - text: \"", icon_shortcode, "\""),
           paste0("        href: ", elem$href)
         )
       }
