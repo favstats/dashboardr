@@ -20,8 +20,12 @@
 (function() {
   'use strict';
   
-  // Create modal container on page load
-  document.addEventListener('DOMContentLoaded', function() {
+  // Initialize modals
+  function initializeModals() {
+    // Prevent duplicate initialization
+    if (document.getElementById('dashboardr-modal-overlay')) {
+      return;
+    }
     
     // Create modal overlay and container
     const modalOverlay = document.createElement('div');
@@ -116,8 +120,17 @@
         }
       }
     });
-    
-  });
+  }
+  
+  // Run initialization when DOM is ready
+  // Handle both cases: DOM already loaded or still loading
+  if (document.readyState === 'loading') {
+    // DOM is still loading, wait for it
+    document.addEventListener('DOMContentLoaded', initializeModals);
+  } else {
+    // DOM is already loaded, initialize immediately
+    initializeModals();
+  }
   
 })();
 
