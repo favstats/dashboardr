@@ -34,6 +34,10 @@
   } else {
     yaml_lines <- c(yaml_lines, "  output-dir: docs")
   }
+  
+  # Add resources to copy assets directory to output
+  yaml_lines <- c(yaml_lines, "  resources:")
+  yaml_lines <- c(yaml_lines, "    - assets/")
 
   yaml_lines <- c(yaml_lines, "")
 
@@ -804,6 +808,9 @@
     yaml_lines <- c(yaml_lines, paste0("    max-width: ", proj$max_width))
   }
   
+  # Collect all content that needs to go in include-in-header
+  header_content <- c()
+  
   # Add Google Fonts import in header if needed
   if (!is.null(proj$mainfont) || !is.null(proj$monofont)) {
     fonts_to_import <- c()
@@ -820,7 +827,7 @@
       fonts_to_import <- c(fonts_to_import, proj$monofont)
     }
     
-    # Add font imports
+    # Add font imports to header content
     if (length(fonts_to_import) > 0) {
       # Convert font names to Google Fonts format (replace spaces with +)
       font_params <- sapply(unique(fonts_to_import), function(f) {
@@ -831,11 +838,10 @@
                           paste(font_params, collapse = "&"), 
                           "&display=swap")
       
-      yaml_lines <- c(yaml_lines, "    include-in-header:")
-      yaml_lines <- c(yaml_lines, "      text: |")
-      yaml_lines <- c(yaml_lines, paste0("        <link rel=\"preconnect\" href=\"https://fonts.googleapis.com\">"))
-      yaml_lines <- c(yaml_lines, paste0("        <link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin>"))
-      yaml_lines <- c(yaml_lines, paste0("        <link href=\"", import_url, "\" rel=\"stylesheet\">"))
+      header_content <- c(header_content,
+                         paste0("        <link rel=\"preconnect\" href=\"https://fonts.googleapis.com\">"),
+                         paste0("        <link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin>"),
+                         paste0("        <link href=\"", import_url, "\" rel=\"stylesheet\">"))
     }
   }
   
@@ -980,8 +986,25 @@
   }
 
   if (!is.null(proj$plausible)) {
-    yaml_lines <- c(yaml_lines, "    plausible:")
-    yaml_lines <- c(yaml_lines, paste0("      domain: \"", proj$plausible, "\""))
+    # Plausible script hash (e.g., "pa-XXXXX")
+    # Add to header content for ad-blocker bypass - no domain needed!
+    if (is.character(proj$plausible)) {
+      header_content <- c(header_content,
+                         "        <!-- Privacy-friendly analytics by Plausible -->",
+                         paste0("        <script async src=\"https://plausible.io/js/", 
+                                proj$plausible, ".js\"></script>"),
+                         "        <script>",
+                         "          window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};",
+                         "          plausible.init()",
+                         "        </script>")
+    }
+  }
+  
+  # Write the collected header content once
+  if (length(header_content) > 0) {
+    yaml_lines <- c(yaml_lines, "    include-in-header:")
+    yaml_lines <- c(yaml_lines, "      text: |")
+    yaml_lines <- c(yaml_lines, header_content)
   }
 
   if (!is.null(proj$gtag)) {

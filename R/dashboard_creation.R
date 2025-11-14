@@ -76,7 +76,9 @@
 #' @param html_math_method Character. Method for rendering math equations. Options: "mathjax", "katex",
 #'   "webtex", "gladtex", "mathml". Default: NULL (Quarto default).
 #' @param google_analytics Google Analytics ID (optional)
-#' @param plausible Plausible analytics domain (optional)
+#' @param plausible Plausible analytics script hash (e.g., "pa-UnPiJwxFi8TS").
+#'   Find your script hash in Plausible Settings > Tracking Code (Script Installation tab).
+#'   This format includes ad-blocker bypass and doesn't require specifying your domain.
 #' @param gtag Google Tag Manager ID (optional)
 #' @param value_boxes Enable value box styling (default: FALSE)
 #' @param metrics_style Metrics display style (optional)
