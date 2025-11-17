@@ -18,6 +18,10 @@ content <- create_viz(
 # Create dashboard with custom navbar elements
 dashboard <- create_dashboard(
   output_dir = "test_navbar_element",
+  github = "https://github.com/favstats/dashboardr",
+  linkedin = "https://linkedin.com/in/username",
+  email = "user@example.com",
+  website = "https://www.dedigiq.nl/",
   title = "Dashboard with Custom Navbar Links"
 ) %>%
   add_page(
@@ -25,26 +29,13 @@ dashboard <- create_dashboard(
     content = content,
     data = mtcars_data,
     is_landing_page = TRUE,
-    icon = "ph:house-fill"
+    icon = "ph:house-fill",
   ) %>%
   # Add a "Powered by" link with icon and text
   add_navbar_element(
-    text = "Powered by Acme Corp",
-    icon = "ph:lightning-fill",
+    text = "nl",
+    icon = "circle-flags:lang-nl",
     href = "https://example.com",
-    align = "right"
-  ) %>%
-  # Add a documentation link
-  add_navbar_element(
-    text = "Documentation",
-    icon = "ph:book-open-fill",
-    href = "https://docs.example.com",
-    align = "right"
-  ) %>%
-  # Add an icon-only GitHub link
-  add_navbar_element(
-    icon = "ph:github-logo",
-    href = "https://github.com",
     align = "right"
   )
 

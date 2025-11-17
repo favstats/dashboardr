@@ -34,6 +34,8 @@ navbar:
       menu:
       - text: Getting Started
         href: articles/getting-started.html
+      - text: Publishing Dashboards
+        href: articles/publishing_dashboards.html
       - text: Advanced Features
         href: articles/advanced-features.html
       - text: -------
@@ -64,6 +66,7 @@ articles:
   navbar: ~
   contents:
   - getting-started
+  - publishing_dashboards
   
 - title: Advanced Features
   navbar: ~
@@ -93,6 +96,7 @@ reference:
   - add_page
   - generate_dashboard
   - publish_dashboard
+  - update_dashboard
   - add_loading_overlay
   - add_powered_by_dashboardr
 

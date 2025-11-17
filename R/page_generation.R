@@ -36,7 +36,7 @@
   # Auto-enable modals if needed (flag set by add_modal())
   if (isTRUE(page$needs_modals)) {
     content <- c(content,
-      "```{r, echo=FALSE}",
+      "```{r, echo=FALSE, results='asis'}",
       "dashboardr::enable_modals()",
       "```",
       ""

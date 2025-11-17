@@ -12,13 +12,16 @@
 #' enable_modals()
 #' }
 enable_modals <- function() {
+  # Add version parameter to bust cache
+  version <- format(Sys.time(), "%Y%m%d%H%M%S")
+  
   htmltools::tagList(
     htmltools::tags$link(
       rel = "stylesheet",
-      href = "assets/modal.css"
+      href = paste0("assets/modal.css?v=", version)
     ),
     htmltools::tags$script(
-      src = "assets/modal.js"
+      src = paste0("assets/modal.js?v=", version)
     )
   )
 }
@@ -237,10 +240,10 @@ add_modal <- function(content_collection, modal_id, title = NULL,
   # Create md_text with modal content
   modal_text <- md_text(
     "```{r, echo=FALSE, results='asis'}",
-    paste0("cat(as.character(dashboardr::modal_content("),
+    paste0("dashboardr::modal_content("),
     paste0("  modal_id = '", modal_id, "',"),
     paste0("  text = '", gsub("'", "\\\\'", html_content), "'"),
-    ")))",
+    ")",
     "```"
   )
   

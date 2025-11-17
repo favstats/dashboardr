@@ -278,8 +278,7 @@ create_histogram <- function(data,
         stop("`weight_var` '", weight_var, "' not found in data.", call. = FALSE)
       }
       df <- df |>
-        dplyr::group_by(.x_factor, .drop = FALSE) |>
-        dplyr::summarise(n = sum(!!rlang::sym(weight_var), na.rm = TRUE), .groups = "drop") |>
+        dplyr::count(.x_factor, wt = !!rlang::sym(weight_var), name = "n", .drop = FALSE) |>
         tidyr::complete(.x_factor, fill = list(n = 0))
     } else {
       # Standard counting without weights

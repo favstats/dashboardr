@@ -308,8 +308,7 @@ create_timeline <- function(data,
         stop("`weight_var` '", weight_var, "' not found in data.", call. = FALSE)
       }
       agg_data <- plot_data %>%
-        group_by(!!sym(time_var_plot), !!sym(response_var)) %>%
-        summarise(count = sum(!!sym(weight_var), na.rm = TRUE), .groups = "drop") %>%
+        count(!!sym(time_var_plot), !!sym(response_var), wt = !!sym(weight_var), name = "count") %>%
         group_by(!!sym(time_var_plot)) %>%
         mutate(percentage = round(count / sum(count) * 100, 1)) %>%
         ungroup()
@@ -326,8 +325,7 @@ create_timeline <- function(data,
         stop("`weight_var` '", weight_var, "' not found in data.", call. = FALSE)
       }
       agg_data <- plot_data %>%
-        group_by(!!sym(time_var_plot), !!sym(response_var), !!sym(group_var)) %>%
-        summarise(count = sum(!!sym(weight_var), na.rm = TRUE), .groups = "drop") %>%
+        count(!!sym(time_var_plot), !!sym(response_var), !!sym(group_var), wt = !!sym(weight_var), name = "count") %>%
         group_by(!!sym(time_var_plot), !!sym(group_var)) %>%
         mutate(percentage = round(count / sum(count) * 100, 1)) %>%
         ungroup()

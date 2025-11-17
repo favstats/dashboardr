@@ -173,8 +173,7 @@ create_bar <- function(data,
         stop("`weight_var` '", weight_var, "' not found in data.", call. = FALSE)
       }
       agg_data <- plot_data %>%
-        dplyr::group_by(!!rlang::sym(x_var_plot)) %>%
-        dplyr::summarise(count = sum(!!rlang::sym(weight_var), na.rm = TRUE), .groups = "drop")
+        dplyr::count(!!rlang::sym(x_var_plot), wt = !!rlang::sym(weight_var), name = "count")
     } else {
       agg_data <- plot_data %>%
         dplyr::count(!!rlang::sym(x_var_plot), name = "count")
@@ -194,8 +193,7 @@ create_bar <- function(data,
         stop("`weight_var` '", weight_var, "' not found in data.", call. = FALSE)
       }
       agg_data <- plot_data %>%
-        dplyr::group_by(!!rlang::sym(x_var_plot), !!rlang::sym(group_var)) %>%
-        dplyr::summarise(count = sum(!!rlang::sym(weight_var), na.rm = TRUE), .groups = "drop")
+        dplyr::count(!!rlang::sym(x_var_plot), !!rlang::sym(group_var), wt = !!rlang::sym(weight_var), name = "count")
     } else {
       agg_data <- plot_data %>%
         dplyr::count(!!rlang::sym(x_var_plot), !!rlang::sym(group_var), name = "count")

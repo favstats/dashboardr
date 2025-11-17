@@ -42,35 +42,38 @@
 #' @param x_map_values Optional named list to recode x_var values for display.
 #' @param y_map_values Optional named list to recode y_var values for display.
 #' @param agg_fun Function to aggregate duplicate x/y combinations. Default is `mean`.
+#'   Note: If `weight_var` is provided, weighted mean is used instead and this parameter is ignored.
+#' @param weight_var Optional string. Name of a weight variable to use for weighted mean aggregation.
+#'   When provided, the function uses `weighted.mean()` instead of the `agg_fun` parameter.
 #'
 #' @return A `highcharter` heatmap object.
 #'
 #' @examples
-#' #TODO: something is off here so will comment out for now
-#' # Example 1: Average Age by Education and Gender
-#' # Let's create a heatmap showing the average age across education levels and gender.
-#' # We will use the GSS dataset from 2020
-#'
-#' # Step 1: Prepare data for heatmap
-#' #age_education_data <- gss_clean %>%
-#' #   filter(!is.na(degree_3), !is.na(sex_3), !is.na(age_3)) %>%
-#' #   group_by(degree_3, sex_3) %>%
-#' #   summarise(avg_age = mean(age_3, na.rm = TRUE), .groups = 'drop')
-#'
-#' # Step 2: Create basic heatmap
-#' # plot1 <- create_heatmap(
-#' #   data = age_education_data,
-#' #   x_var = "degree_3",
-#' #   y_var = "sex_3",
-#' #   value_var = "avg_age",
-#' #   title = "Average Age by Education Level and Gender",
-#' #   subtitle = "GSS Panel 2020 - Wave 3",
-#' #   x_label = "Education Level",
-#' #   y_label = "Gender",
-#' #   value_label = "Average Age",
-#' #   color_palette = c("#ffffff", "#2E86AB")
-#' # )
-#'
+#' \dontrun{
+#' # Example 1: Basic heatmap with average values
+#' plot1 <- create_heatmap(
+#'   data = survey_data,
+#'   x_var = "education",
+#'   y_var = "gender",
+#'   value_var = "age",
+#'   title = "Average Age by Education and Gender",
+#'   x_label = "Education Level",
+#'   y_label = "Gender",
+#'   value_label = "Average Age"
+#' )
+#' 
+#' # Example 2: Weighted heatmap using survey weights
+#' plot2 <- create_heatmap(
+#'   data = survey_data,
+#'   x_var = "region",
+#'   y_var = "income_bracket",
+#'   value_var = "satisfaction_score",
+#'   weight_var = "survey_weight",  # Use survey weights for accurate representation
+#'   title = "Weighted Average Satisfaction by Region and Income",
+#'   subtitle = "Using survey weights for population representation"
+#' )
+#' }
+#' 
 #' plot1
 #'
 #' @details
@@ -83,6 +86,7 @@
 #'        \item Applies value mapping if `x_map_values` or `y_map_values` (new parameter) are provided.
 #'        \item Processes NA values in `x_var` and `y_var`: if `include_na = TRUE`, NAs are converted to a specified label; otherwise, rows with NAs in these variables are filtered out.
 #'        \item Converts `x_var` and `y_var` to factors and applies `x_order` and `y_order`.
+#'        \item If `weight_var` is provided, uses `weighted.mean()` for aggregation; otherwise uses `agg_fun` (default `mean()`).
 #'        \item Uses `tidyr::complete` to ensure all `x_var`/`y_var` combinations are present,
 #'              filling missing `value_var` with `NA_real_` (which will appear as `na_color` in the heatmap).
 #'      }
@@ -155,13 +159,28 @@ create_heatmap <- function(data,
     stop(paste0("`value_var` (", value_var, ") must be numeric."), call. = FALSE)
   }
 
+  # Select columns including weight_var if provided
+  vars_to_select <- c(x_var, y_var, value_var)
+  if (!is.null(weight_var)) {
+    if (!weight_var %in% names(data)) {
+      stop("`weight_var` '", weight_var, "' not found in data.", call. = FALSE)
+    }
+    vars_to_select <- c(vars_to_select, weight_var)
+  }
+  
   df_plot <- tibble::as_tibble(data) |>
-    dplyr::select(!!rlang::sym(x_var), !!rlang::sym(y_var), !!rlang::sym(value_var)) |>
+    dplyr::select(dplyr::all_of(vars_to_select)) |>
     dplyr::rename(
       .x_raw = !!rlang::sym(x_var), # Use _raw to differentiate before processing
       .y_raw = !!rlang::sym(y_var), # Use _raw to differentiate before processing
       .value_plot = !!rlang::sym(value_var)
     )
+  
+  # Rename weight_var if provided
+  if (!is.null(weight_var)) {
+    df_plot <- df_plot |>
+      dplyr::rename(.weight = !!rlang::sym(weight_var))
+  }
 
   # Helper function for handling factor levels
   apply_factor_ordering <- function(values, custom_order = NULL, na_label = NULL, include_na = FALSE) {
@@ -280,11 +299,24 @@ create_heatmap <- function(data,
   final_y_levels <- levels(df_processed$.y_plot)
 
   # AGGREGATION with complete
-  df_plot_complete <- df_processed |>
-    dplyr::group_by(.x_plot, .y_plot) |>
-    dplyr::summarise(.value_plot = agg_fun(.value_plot, na.rm = TRUE), .groups = 'drop') |>
-    tidyr::complete(.x_plot, .y_plot, fill = list(.value_plot = NA_real_)) |>
-    dplyr::arrange(.x_plot, .y_plot)
+  if (!is.null(weight_var)) {
+    # Weighted aggregation using weighted mean
+    df_plot_complete <- df_processed |>
+      dplyr::group_by(.x_plot, .y_plot) |>
+      dplyr::summarise(
+        .value_plot = stats::weighted.mean(.value_plot, w = .weight, na.rm = TRUE),
+        .groups = 'drop'
+      ) |>
+      tidyr::complete(.x_plot, .y_plot, fill = list(.value_plot = NA_real_)) |>
+      dplyr::arrange(.x_plot, .y_plot)
+  } else {
+    # Standard aggregation without weights
+    df_plot_complete <- df_processed |>
+      dplyr::group_by(.x_plot, .y_plot) |>
+      dplyr::summarise(.value_plot = agg_fun(.value_plot, na.rm = TRUE), .groups = 'drop') |>
+      tidyr::complete(.x_plot, .y_plot, fill = list(.value_plot = NA_real_)) |>
+      dplyr::arrange(.x_plot, .y_plot)
+  }
 
 
   # Chart construction

@@ -12,8 +12,14 @@ handle_na_for_plotting <- function(data, var_name, include_na = FALSE,
                                    na_label = "(Missing)",
                                    custom_order = NULL) {
 
-  # Get the column data and convert to character
+  # Get the column data
   col_data <- data[[var_name]]
+  
+  # Check if it's already a factor and preserve its levels if no custom_order
+  is_factor <- is.factor(col_data)
+  existing_levels <- if (is_factor) levels(col_data) else NULL
+  
+  # Convert to character for manipulation
   temp_var <- as.character(col_data)
 
   if (include_na) {
@@ -26,13 +32,25 @@ handle_na_for_plotting <- function(data, var_name, include_na = FALSE,
     unique_vals <- unique(temp_var)
 
     if (!is.null(custom_order)) {
-      # Use custom order if provided
+      # Use custom order if provided (overrides existing factor levels)
       if (!na_label %in% custom_order && na_label %in% unique_vals) {
         custom_order <- c(custom_order, na_label)
       }
       valid_order <- custom_order[custom_order %in% unique_vals]
       remaining <- setdiff(unique_vals, valid_order)
       levels <- c(valid_order, remaining)
+    } else if (!is.null(existing_levels)) {
+      # Preserve existing factor levels and add NA label at end if needed
+      if (na_label %in% unique_vals && !na_label %in% existing_levels) {
+        levels <- c(existing_levels, na_label)
+      } else {
+        levels <- existing_levels
+      }
+      # Add any new values not in original levels
+      remaining <- setdiff(unique_vals, levels)
+      if (length(remaining) > 0) {
+        levels <- c(levels, remaining)
+      }
     } else {
       # Auto-order with NA label at end
       unique_vals_no_na <- setdiff(unique_vals, na_label)
@@ -59,8 +77,13 @@ handle_na_for_plotting <- function(data, var_name, include_na = FALSE,
   } else {
     # Standard factor conversion
     if (!is.null(custom_order)) {
+      # Use custom order if explicitly provided
       result <- factor(temp_var, levels = custom_order)
+    } else if (!is.null(existing_levels)) {
+      # Preserve existing factor levels
+      result <- factor(temp_var, levels = existing_levels)
     } else {
+      # Create factor with default ordering
       result <- factor(temp_var)
     }
   }
