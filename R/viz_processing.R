@@ -512,6 +512,22 @@
     }
   }
   
+  # IMPORTANT: Sort result by insertion order to preserve original sequence
+  # This ensures items without tabgroups and items with tabgroups are interleaved correctly
+  if (length(result) > 0 && !is_nested_context) {
+    result_indices <- sapply(result, function(item) {
+      if (!is.null(item$type) && item$type == "tabgroup") {
+        # For tabgroups, use the minimum insertion index of all items within
+        indices <- .extract_all_insertion_indices(item)
+        if (length(indices) > 0) min(indices, na.rm = TRUE) else Inf
+      } else {
+        # For standalone items, use their insertion index
+        item$.insertion_index %||% Inf
+      }
+    })
+    result <- result[order(result_indices)]
+  }
+  
   result
 }
 
