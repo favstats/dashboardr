@@ -183,10 +183,19 @@ generate_dashboard(dashboard, render = TRUE)
 
 ## Step 2: Publish!
 
-Now for the magic command:
+Now for the magic command with the key arguments shown explicitly:
 
 ```{r publish}
-publish_dashboard()
+publish_dashboard(
+  message = "Initial commit",  # Your commit message
+  path = "/docs"               # Folder with your dashboard (default)
+)
+```
+
+Or simply:
+
+```{r publish-simple}
+publish_dashboard()  # Uses defaults above
 ```
 
 ### Key Arguments
@@ -208,8 +217,9 @@ publish_dashboard()
   - Use this if your dashboard contains sensitive information
 
 - **`path`** - Which folder contains your site files (default: `"/docs"`)
+  - The `/docs` (with leading slash) tells GitHub Pages to serve from the `docs/` folder in your repository root
+  - This is where `generate_dashboard()` creates your HTML files
   - Usually you don't need to change this
-  - The dashboard must be in a `/docs` folder for GitHub Pages to work
 
 ### What happens:
 
