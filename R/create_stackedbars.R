@@ -311,6 +311,10 @@ create_stackedbars <- function(data,
         function() {
           // pull the question label from the axis categories array
           var q = this.series.chart.xAxis[0].categories[this.point.x];
+          // If category is empty/undefined (single question case), use chart title instead
+          if (!q || q === '') {
+            q = this.series.chart.title ? this.series.chart.title.textStr : '';
+          }
           // the response (series name)
           var r = this.series.name;
           // format as percentage if percent‐stacked, else point.y

@@ -42,6 +42,9 @@
 #' @param stack_breaks Optional numeric vector of cut points for binning `stack_var`.
 #' @param stack_bin_labels Optional character vector of labels for `stack_breaks` bins.
 #' @param stack_map_values Optional named list to remap `stack_var` values for display.
+#' @param horizontal Logical. If TRUE, creates horizontal bars. Default FALSE.
+#' @param weight_var Optional string. Name of a weight variable to use for weighted aggregation.
+#'   When provided, counts are replaced with weighted sums using this variable.
 #'
 #' @return An interactive `highcharter` bar chart plot object.
 #'
@@ -144,6 +147,19 @@
 #' )
 #' plot5
 #'
+#' # Example 6: Using weighted data
+#' # Assuming your data has a weight column
+#' plot6 <- create_stackedbar(
+#'   data = survey_data,
+#'   x_var = "education",
+#'   stack_var = "satisfaction",
+#'   weight_var = "survey_weight",  # Use this column for weighting
+#'   title = "Weighted Satisfaction by Education Level",
+#'   subtitle = "Using survey weights for accurate representation",
+#'   stacked_type = "percent"
+#' )
+#' plot6
+#'
 #'
 #' @details This function performs the following steps:
 #' \enumerate{
@@ -160,7 +176,7 @@
 #'   \item **Data Aggregation and Final Factor Handling:**
 #'     \itemize{
 #'       \item The data is transformed using `dplyr::mutate` to ensure `x_var` and `stack_var` (or their binned versions) are treated as factors. If `include_na = TRUE`, missing values are converted into an explicit "(NA)" factor level.
-#'       \item `dplyr::count()` is then used to aggregate the data, counting occurrences for each unique combination of `x_var` and `stack_var`. This creates the `n` column required for `highcharter`.
+#'       \item If `weight_var` is provided, weighted sums are calculated for each combination of `x_var` and `stack_var` using `sum(weight_var, na.rm = TRUE)`. Otherwise, `dplyr::count()` is used to count occurrences for each unique combination. This creates the `n` column required for `highcharter`.
 #'     }
 #'   \item **Apply Custom Ordering (`x_order`, `stack_order`):** If provided, `x_order` and `stack_order` are used to set the display order of the factor levels for the X-axis and stack categories, respectively. This is essential for ordinal scales (e.g., Likert scales) or custom desired sorting. Levels not found in the order vector are appended at the end.
 #'   \item **Highcharter Chart Generation:** The aggregated `plot_data` is passed to `highcharter::hchart()` to create the base stacked column chart.
@@ -368,9 +384,17 @@ create_stackedbar <- function(data,
 
   # AGGREGATION
   if (is.null(y_var)) {
-    plot_data <- plot_data |>
-      dplyr::count(.x_var_col, .stack_var_col, name = "n") |>
-      dplyr::ungroup()
+    # Handle weighting if weight_var is provided
+    if (!is.null(weight_var)) {
+      if (!weight_var %in% names(plot_data)) {
+        stop("`weight_var` '", weight_var, "' not found in data.", call. = FALSE)
+      }
+      plot_data <- plot_data |>
+        dplyr::count(.x_var_col, .stack_var_col, wt = !!rlang::sym(weight_var), name = "n")
+    } else {
+      plot_data <- plot_data |>
+        dplyr::count(.x_var_col, .stack_var_col, name = "n")
+    }
   } else {
     plot_data <- plot_data |>
       dplyr::rename(n = !!rlang::sym(y_var))
@@ -415,8 +439,11 @@ create_stackedbar <- function(data,
     }
   }
 
-  # Apply axis titles
-  hchart_obj <- highcharter::hc_xAxis(hchart_obj, title = list(text = final_x_label))
+  # Apply axis titles and set x-axis categories explicitly for tooltips
+  x_categories <- levels(plot_data$.x_var_col)
+  hchart_obj <- highcharter::hc_xAxis(hchart_obj, 
+                                       title = list(text = final_x_label),
+                                       categories = x_categories)
   hchart_obj <- highcharter::hc_yAxis(hchart_obj, title = list(text = final_y_label))
 
   # Stacking and data labels
@@ -468,7 +495,8 @@ create_stackedbar <- function(data,
       paste0(
         "function() {
         var value = ", if(stacked_type == "percent") "this.percentage.toFixed(1)" else "this.y", ";
-        return '<b>' + this.x + '", x_tooltip_suffix_js, "</b><br/>' +
+        var categoryLabel = this.point.category || this.series.chart.xAxis[0].categories[this.point.x] || this.x;
+        return '<b>' + categoryLabel + '", x_tooltip_suffix_js, "</b><br/>' +
                this.series.name + ': ", tooltip_prefix_js, "' + value + '", tooltip_suffix_js, "<br/>' +
                'Total: ' + ", if(stacked_type == "percent") "100" else "this.point.stackTotal", ";
       }"
