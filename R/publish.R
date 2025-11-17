@@ -96,13 +96,14 @@ publish_dashboard <- function(message = "Initial commit",
 #'     \item A glob pattern (e.g., "*.R", "docs/*")
 #'   }
 #' @param message Commit message (default: "Update dashboard")
+#' @param ask Whether to ask for confirmation before pushing (default: TRUE)
 #'
 #' @return Invisibly returns TRUE
 #' @export
 #'
 #' @examples
 #' \dontrun{
-#' # Update all changes
+#' # Update all changes (will ask for confirmation)
 #' update_dashboard()
 #'
 #' # Update with custom message
@@ -111,10 +112,10 @@ publish_dashboard <- function(message = "Initial commit",
 #' # Update specific files
 #' update_dashboard(files = c("docs/index.html", "docs/styles.css"))
 #'
-#' # Update all R files
-#' update_dashboard(files = "*.R")
+#' # Skip confirmation prompt
+#' update_dashboard(ask = FALSE)
 #' }
-update_dashboard <- function(files = ".", message = "Update dashboard") {
+update_dashboard <- function(files = ".", message = "Update dashboard", ask = TRUE) {
   
   cat("\n")
   cat("╔══════════════════════════════════════════════════════════════╗\n")
@@ -134,6 +135,32 @@ update_dashboard <- function(files = ".", message = "Update dashboard") {
   cat("💾 Committing changes...\n")
   gert::git_commit(message)
   cat("   ✓ Committed with message:", shQuote(message), "\n\n")
+  
+  # Ask for confirmation before pushing
+  if (ask) {
+    cat("❓ Ready to push changes to GitHub?\n\n")
+    
+    # Show what will be pushed
+    if (nrow(added_files) > 0) {
+      cat("   Files to be pushed:\n")
+      for (i in seq_len(min(10, nrow(added_files)))) {
+        cat("   •", added_files$file[i], "\n")
+      }
+      if (nrow(added_files) > 10) {
+        cat("   ... and", nrow(added_files) - 10, "more file(s)\n")
+      }
+      cat("\n")
+    }
+    
+    response <- readline("   Push to GitHub? (yes/no): ")
+    
+    if (!tolower(trimws(response)) %in% c("yes", "y")) {
+      cat("\n❌ Push cancelled. Your changes are committed locally but not pushed.\n")
+      cat("   Run update_dashboard() again when ready to push.\n\n")
+      return(invisible(FALSE))
+    }
+    cat("\n")
+  }
   
   # Push to remote
   cat("🚀 Pushing to GitHub...\n")

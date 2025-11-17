@@ -261,7 +261,10 @@ update_dashboard()
 
 1. All your changed files are staged
 2. Changes are committed with your message
-3. Changes are pushed to GitHub
+3. **You'll be asked to confirm** before pushing (shows list of files)
+4. Changes are pushed to GitHub
+
+**Safety feature:** By default, `update_dashboard()` will show you what files will be pushed and ask for confirmation. Type `yes` or `y` to proceed.
 
 **That's it!** Your changes will be live in 1-2 minutes. The function will display your dashboard URL - just refresh the page to see your updates.
 
@@ -282,6 +285,9 @@ update_dashboard(
   files = "docs/*.html",
   message = "Regenerated all pages"
 )
+
+# Skip confirmation prompt (not recommended)
+update_dashboard(ask = FALSE)
 ```
 
 # Complete Workflow Example

@@ -352,8 +352,15 @@ version.</p>
 <ol style="list-style-type: decimal">
 <li>All your changed files are staged</li>
 <li>Changes are committed with your message</li>
+<li>
+<strong>You’ll be asked to confirm</strong> before pushing (shows
+list of files)</li>
 <li>Changes are pushed to GitHub</li>
 </ol>
+<p><strong>Safety feature:</strong> By default,
+<code>update_dashboard()</code> will show you what files will be pushed
+and ask for confirmation. Type <code>yes</code> or <code>y</code> to
+proceed.</p>
 <p><strong>That’s it!</strong> Your changes will be live in 1-2 minutes.
 The function will display your dashboard URL - just refresh the page to
 see your updates.</p>
@@ -374,7 +381,10 @@ see your updates.</p>
 <span><span class="fu">update_dashboard</span><span class="op">(</span></span>
 <span>  files <span class="op">=</span> <span class="st">"docs/*.html"</span>,</span>
 <span>  message <span class="op">=</span> <span class="st">"Regenerated all pages"</span></span>
-<span><span class="op">)</span></span></code></pre></div>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Skip confirmation prompt (not recommended)</span></span>
+<span><span class="fu">update_dashboard</span><span class="op">(</span>ask <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>
 </div>
