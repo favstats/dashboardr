@@ -189,7 +189,9 @@ Default is "Fira Sans" for a smooth, professional look.}
 
 \item{google_analytics}{Google Analytics ID (optional)}
 
-\item{plausible}{Plausible analytics domain (optional)}
+\item{plausible}{Plausible analytics script hash (e.g., "pa-UnPiJwxFi8TS").
+Find your script hash in Plausible Settings > Tracking Code (Script Installation tab).
+This format includes ad-blocker bypass and doesn't require specifying your domain.}
 
 \item{gtag}{Google Tag Manager ID (optional)}
 

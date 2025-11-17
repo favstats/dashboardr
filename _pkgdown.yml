@@ -134,6 +134,7 @@ reference:
   contents:
   - navbar_section
   - navbar_menu
+  - add_navbar_element
   - sidebar_group
   - icon
   

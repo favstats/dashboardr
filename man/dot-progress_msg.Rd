@@ -4,7 +4,7 @@
 \alias{.progress_msg}
 \title{Show custom progress message}
 \usage{
-.progress_msg(msg, icon = "<U+25AA>", show_progress = TRUE)
+.progress_msg(msg, icon = "▪", show_progress = TRUE)
 }
 \arguments{
 \item{msg}{Message to display}

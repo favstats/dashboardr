@@ -347,7 +347,7 @@ version.</p>
 <h3 id="step-2-push-your-updates">Step 2: Push Your Updates<a class="anchor" aria-label="anchor" href="#step-2-push-your-updates"></a>
 </h3>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">update_dashboard</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/update_dashboard.html">update_dashboard</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p><strong>What happens:</strong></p>
 <ol style="list-style-type: decimal">
 <li>All your changed files are staged</li>
@@ -358,7 +358,7 @@ list of files)</li>
 <li>Changes are pushed to GitHub</li>
 </ol>
 <p><strong>Safety feature:</strong> By default,
-<code>update_dashboard()</code> will show you what files will be pushed
+<code><a href="../reference/update_dashboard.html">update_dashboard()</a></code> will show you what files will be pushed
 and ask for confirmation. Type <code>yes</code> or <code>y</code> to
 proceed.</p>
 <p><strong>That’s it!</strong> Your changes will be live in 1-2 minutes.
@@ -369,22 +369,22 @@ see your updates.</p>
 </h4>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Custom commit message</span></span>
-<span><span class="fu">update_dashboard</span><span class="op">(</span>message <span class="op">=</span> <span class="st">"Added new visualizations"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/update_dashboard.html">update_dashboard</a></span><span class="op">(</span>message <span class="op">=</span> <span class="st">"Added new visualizations"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Update specific files only</span></span>
-<span><span class="fu">update_dashboard</span><span class="op">(</span></span>
+<span><span class="fu"><a href="../reference/update_dashboard.html">update_dashboard</a></span><span class="op">(</span></span>
 <span>  files <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"docs/index.html"</span>, <span class="st">"docs/analysis.html"</span><span class="op">)</span>,</span>
 <span>  message <span class="op">=</span> <span class="st">"Updated main pages"</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Update all HTML files</span></span>
-<span><span class="fu">update_dashboard</span><span class="op">(</span></span>
+<span><span class="fu"><a href="../reference/update_dashboard.html">update_dashboard</a></span><span class="op">(</span></span>
 <span>  files <span class="op">=</span> <span class="st">"docs/*.html"</span>,</span>
 <span>  message <span class="op">=</span> <span class="st">"Regenerated all pages"</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Skip confirmation prompt (not recommended)</span></span>
-<span><span class="fu">update_dashboard</span><span class="op">(</span>ask <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="../reference/update_dashboard.html">update_dashboard</a></span><span class="op">(</span>ask <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>
 </div>
@@ -423,7 +423,7 @@ see your updates.</p>
 <span><span class="fu"><a href="../reference/generate_dashboard.html">generate_dashboard</a></span><span class="op">(</span><span class="va">dashboard</span>, render <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># 5. Push updates</span></span>
-<span><span class="fu">update_dashboard</span><span class="op">(</span>message <span class="op">=</span> <span class="st">"Updated car analysis"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="../reference/update_dashboard.html">update_dashboard</a></span><span class="op">(</span>message <span class="op">=</span> <span class="st">"Updated car analysis"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="troubleshooting">Troubleshooting<a class="anchor" aria-label="anchor" href="#troubleshooting"></a>
@@ -446,7 +446,7 @@ RStudio 3. Run <code><a href="https://usethis.r-lib.org/reference/git_sitrep.htm
 <h3 id="repository-already-exists">“Repository already exists”<a class="anchor" aria-label="anchor" href="#repository-already-exists"></a>
 </h3>
 <p><strong>Problem:</strong> You’re trying to publish a second time.</p>
-<p><strong>Solution:</strong> Use <code>update_dashboard()</code>
+<p><strong>Solution:</strong> Use <code><a href="../reference/update_dashboard.html">update_dashboard()</a></code>
 instead of <code><a href="../reference/publish_dashboard.html">publish_dashboard()</a></code>.</p>
 </div>
 <div class="section level3">
@@ -496,10 +496,10 @@ directories</p>
 </h3>
 <p>Instead of:</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">update_dashboard</span><span class="op">(</span>message <span class="op">=</span> <span class="st">"update"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/update_dashboard.html">update_dashboard</a></span><span class="op">(</span>message <span class="op">=</span> <span class="st">"update"</span><span class="op">)</span></span></code></pre></div>
 <p>Do this:</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">update_dashboard</span><span class="op">(</span>message <span class="op">=</span> <span class="st">"Added new bar chart for regional analysis"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/update_dashboard.html">update_dashboard</a></span><span class="op">(</span>message <span class="op">=</span> <span class="st">"Added new bar chart for regional analysis"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="test-locally-first">3. Test Locally First<a class="anchor" aria-label="anchor" href="#test-locally-first"></a>

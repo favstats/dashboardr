@@ -26,7 +26,7 @@ create_histogram(
   bin_labels = NULL,
   include_na = FALSE,
   na_label = "(Missing)",
-  color = NULL,
+  color_palette = NULL,
   x_map_values = NULL,
   x_order = NULL,
   weight_var = NULL
@@ -41,7 +41,7 @@ create_histogram(
 
 - x_var:
 
-  String. Name of the numeric column to histogram.
+  String. Name of the column to histogram (numeric or categorical).
 
 - y_var:
 
@@ -96,19 +96,23 @@ create_histogram(
 
 - include_na:
 
-  Logical. If TRUE, treats NA as explicit category.
+  Logical. If TRUE, NA values are shown as explicit categories in the
+  visualization. If FALSE (default), rows with NA in the x variable are
+  excluded. Default FALSE.
 
 - na_label:
 
-  Optional string. Custom label for NA values. Defaults to "(Missing)".
+  String. Label to display for NA values when `include_na = TRUE`.
+  Default "(Missing)".
 
-- color:
+- color_palette:
 
   Optional string or vector of colors for the bars.
 
 - x_map_values:
 
-  Optional named list to recode raw `x_var` values before binning.
+  Optional named list to recode raw `x_var` values before binning (e.g.,
+  `list("1" = "Male", "2" = "Female")`).
 
 - x_order:
 
@@ -178,79 +182,69 @@ This function performs the following steps:
 #We will work with data from the GSS. The GSS dataset (`gssr`) is a dependency of
 #our `dashboardr` package.
 
-#Filter to recent years and select relevant variables
-#TODO: some of the examples look off for example plot 4 and 5
-gss_recent <- gss_all %>%
-  filter(year >= 2010) %>%
-  select(age, degree, happy, sex, race, year)
-#> Error in select(., age, degree, happy, sex, race, year): could not find function "select"
+data(gss_panel20)
+#> Warning: data set ‘gss_panel20’ not found
 
 # Example 1: Basic histogram of age distribution
 plot1 <- create_histogram(
-  data = gss_recent,
+  data = gss_panel20,
   x_var = "age",
   title = "Age Distribution in GSS Data (2010+)",
   subtitle = "General Social Survey respondents",
   x_label = "Age (years)",
   y_label = "Number of Respondents",
   bins = 15,
-  color = "hotpink"
+  color_palette = "steelblue"
 )
-#> Error: object 'gss_recent' not found
+#> Error: object 'gss_panel20' not found
 plot1
 #> Error: object 'plot1' not found
 
-# Example 2: Education levels with custom mapping and ordering
-# First check the unique values
-# unique(gss_recent$degree) # "Lt High School", "High School", "Junior College", "Bachelor", "Graduate"
-
-education_order <- c("Lt High School", "High School", "Junior College", "Bachelor", "Graduate")
+# Example 2: Education levels with custom labels (excluding NAs)
+education_map <- list("0" = "Less than High School",
+                     "1" = "High School",
+                     "2" = "Associate/Junior College",
+                     "3" = "Bachelor's",
+                     "4" = "Graduate"
+                     )
 
 plot2 <- create_histogram(
-  data = gss_recent,
-  x_var = "degree",
-  title = "Educational Attainment Distribution",
-  subtitle = "GSS respondents 2010-present",
-  x_label = "Highest Degree Completed",
-  y_label = "Count",
-  histogram_type = "count",
-  x_order = education_order,
-  include_na = TRUE,
+ data = gss_panel20,
+ x_var = "degree",
+ title = "Educational Attainment Distribution",
+ subtitle = "GSS respondents 2010-present (NAs excluded)",
+ x_label = "Highest Degree Completed",
+ y_label = "Count",
+ histogram_type = "count",
+ x_map_values = education_map,
+ color_palette = "pink",
+ include_na = FALSE  # Exclude missing values
 )
-#> Error: object 'gss_recent' not found
+#> Error: object 'gss_panel20' not found
 plot2
 #> Error: object 'plot2' not found
 
-# Example 3: Happiness levels as percentages with custom labels
-happiness_map <- list(
-  "Very Happy" = "Very Happy!",
-  "Pretty Happy" = "Pretty Happy",
-  "Not Too Happy" = "Not Too Happy :|"
-)
-
+# Example 3: Including NA values with custom label
 plot3 <- create_histogram(
-  data = gss_recent,
-  x_var = "happy",
-  title = "Self-Reported Happiness Levels",
-  subtitle = "Percentage distribution among GSS respondents",
-  x_label = "Happiness Level",
-  y_label = "Percentage of Respondents",
-  histogram_type = "percent",
-  x_map_values = happiness_map,
-  tooltip_suffix = "%",
-  include_na = TRUE,
-  na_label = "No Response",
+  data = gss_panel20,
+  x_var = "degree",
+  title = "Educational Attainment Distribution (Including Missing Data)",
+  subtitle = "GSS respondents 2010-present",
+  x_label = "Highest Degree Completed",
+  x_order = education_order,
+  include_na = TRUE,  # Show NAs as explicit category
+  na_label = "Not Reported"  # Custom label for NAs
 )
-#> Error: object 'gss_recent' not found
+#> Error: object 'gss_panel20' not found
 plot3
 #> Error: object 'plot3' not found
 
-# Example 4: Age binning with custom breaks and labels
+# Example 4: Age binning with custom breaks
 age_breaks <- c(18, 30, 45, 60, 75, Inf)
 age_labels <- c("18-29", "30-44", "45-59", "60-74", "75+")
 
-plot4 <- create_histogram(
-  data = gss_recent,
+plot5 <- create_histogram(
+  data = gss_panel20,
   x_var = "age",
   title = "Age Groups in GSS Sample",
   subtitle = "Custom age categories",
@@ -260,30 +254,11 @@ plot4 <- create_histogram(
   bin_labels = age_labels,
   tooltip_prefix = "Count: ",
   x_tooltip_suffix = " years old",
-  color = "seagreen1"
+  color_palette = "seagreen"
 )
-#> Error: object 'gss_recent' not found
-plot4
-#> Error: object 'plot4' not found
-
-# Example 5: Using pre-aggregated data
-# Create aggregated data first
-race_counts <- gss_recent %>%
-  count(race, name = "respondent_count") %>%
-  filter(!is.na(race))
-#> Error in count(., race, name = "respondent_count"): could not find function "count"
-
-plot5 <- create_histogram(
-  data = race_counts,
-  x_var = "race",
-  y_var = "respondent_count",  # Use pre-computed counts
-  title = "Racial Distribution in GSS Sample",
-  subtitle = "Based on pre-aggregated data",
-  x_label = "Race/Ethnicity",
-  y_label = "Number of Respondents",
-)
-#> Error: object 'race_counts' not found
+#> Error: object 'gss_panel20' not found
 plot5
 #> Error: object 'plot5' not found
+
 
 ```

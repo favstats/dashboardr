@@ -29,6 +29,7 @@ as explicit categories."><meta property="og:image" content="https://favstats.git
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/getting-started.html">Getting Started</a></li>
+    <li><a class="dropdown-item" href="../articles/publishing_dashboards.html">Publishing Dashboards</a></li>
     <li><a class="dropdown-item" href="../articles/advanced-features.html">Advanced Features</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Visualization Types</h6></li>
@@ -225,7 +226,13 @@ rows with NA in <code>x_var</code> or <code>y_var</code> are excluded from aggre
 
 
 <dt id="arg-agg-fun">agg_fun<a class="anchor" aria-label="anchor" href="#arg-agg-fun"></a></dt>
-<dd><p>Function to aggregate duplicate x/y combinations. Default is <code>mean</code>.</p></dd>
+<dd><p>Function to aggregate duplicate x/y combinations. Default is <code>mean</code>.
+Note: If <code>weight_var</code> is provided, weighted mean is used instead and this parameter is ignored.</p></dd>
+
+
+<dt id="arg-weight-var">weight_var<a class="anchor" aria-label="anchor" href="#arg-weight-var"></a></dt>
+<dd><p>Optional string. Name of a weight variable to use for weighted mean aggregation.
+When provided, the function uses <code><a href="https://rdrr.io/r/stats/weighted.mean.html" class="external-link">weighted.mean()</a></code> instead of the <code>agg_fun</code> parameter.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -239,6 +246,7 @@ rows with NA in <code>x_var</code> or <code>y_var</code> are excluded from aggre
 <li><p>Applies value mapping if <code>x_map_values</code> or <code>y_map_values</code> (new parameter) are provided.</p></li>
 <li><p>Processes NA values in <code>x_var</code> and <code>y_var</code>: if <code>include_na = TRUE</code>, NAs are converted to a specified label; otherwise, rows with NAs in these variables are filtered out.</p></li>
 <li><p>Converts <code>x_var</code> and <code>y_var</code> to factors and applies <code>x_order</code> and <code>y_order</code>.</p></li>
+<li><p>If <code>weight_var</code> is provided, uses <code><a href="https://rdrr.io/r/stats/weighted.mean.html" class="external-link">weighted.mean()</a></code> for aggregation; otherwise uses <code>agg_fun</code> (default <code><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean()</a></code>).</p></li>
 <li><p>Uses <code><a href="https://tidyr.tidyverse.org/reference/complete.html" class="external-link">tidyr::complete</a></code> to ensure all <code>x_var</code>/<code>y_var</code> combinations are present,
 filling missing <code>value_var</code> with <code>NA_real_</code> (which will appear as <code>na_color</code> in the heatmap).</p></li>
 </ul></li>
@@ -253,30 +261,30 @@ filling missing <code>value_var</code> with <code>NA_real_</code> (which will ap
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co">#TODO: something is off here so will comment out for now</span></span></span>
-<span class="r-in"><span><span class="co"># Example 1: Average Age by Education and Gender</span></span></span>
-<span class="r-in"><span><span class="co"># Let's create a heatmap showing the average age across education levels and gender.</span></span></span>
-<span class="r-in"><span><span class="co"># We will use the GSS dataset from 2020</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
+<span class="r-in"><span><span class="co"># Example 1: Basic heatmap with average values</span></span></span>
+<span class="r-in"><span><span class="va">plot1</span> <span class="op">&lt;-</span> <span class="fu">create_heatmap</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  data <span class="op">=</span> <span class="va">survey_data</span>,</span></span>
+<span class="r-in"><span>  x_var <span class="op">=</span> <span class="st">"education"</span>,</span></span>
+<span class="r-in"><span>  y_var <span class="op">=</span> <span class="st">"gender"</span>,</span></span>
+<span class="r-in"><span>  value_var <span class="op">=</span> <span class="st">"age"</span>,</span></span>
+<span class="r-in"><span>  title <span class="op">=</span> <span class="st">"Average Age by Education and Gender"</span>,</span></span>
+<span class="r-in"><span>  x_label <span class="op">=</span> <span class="st">"Education Level"</span>,</span></span>
+<span class="r-in"><span>  y_label <span class="op">=</span> <span class="st">"Gender"</span>,</span></span>
+<span class="r-in"><span>  value_label <span class="op">=</span> <span class="st">"Average Age"</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Step 1: Prepare data for heatmap</span></span></span>
-<span class="r-in"><span><span class="co">#age_education_data &lt;- gss_clean %&gt;%</span></span></span>
-<span class="r-in"><span><span class="co">#   filter(!is.na(degree_3), !is.na(sex_3), !is.na(age_3)) %&gt;%</span></span></span>
-<span class="r-in"><span><span class="co">#   group_by(degree_3, sex_3) %&gt;%</span></span></span>
-<span class="r-in"><span><span class="co">#   summarise(avg_age = mean(age_3, na.rm = TRUE), .groups = 'drop')</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Step 2: Create basic heatmap</span></span></span>
-<span class="r-in"><span><span class="co"># plot1 &lt;- create_heatmap(</span></span></span>
-<span class="r-in"><span><span class="co">#   data = age_education_data,</span></span></span>
-<span class="r-in"><span><span class="co">#   x_var = "degree_3",</span></span></span>
-<span class="r-in"><span><span class="co">#   y_var = "sex_3",</span></span></span>
-<span class="r-in"><span><span class="co">#   value_var = "avg_age",</span></span></span>
-<span class="r-in"><span><span class="co">#   title = "Average Age by Education Level and Gender",</span></span></span>
-<span class="r-in"><span><span class="co">#   subtitle = "GSS Panel 2020 - Wave 3",</span></span></span>
-<span class="r-in"><span><span class="co">#   x_label = "Education Level",</span></span></span>
-<span class="r-in"><span><span class="co">#   y_label = "Gender",</span></span></span>
-<span class="r-in"><span><span class="co">#   value_label = "Average Age",</span></span></span>
-<span class="r-in"><span><span class="co">#   color_palette = c("#ffffff", "#2E86AB")</span></span></span>
-<span class="r-in"><span><span class="co"># )</span></span></span>
+<span class="r-in"><span><span class="co"># Example 2: Weighted heatmap using survey weights</span></span></span>
+<span class="r-in"><span><span class="va">plot2</span> <span class="op">&lt;-</span> <span class="fu">create_heatmap</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  data <span class="op">=</span> <span class="va">survey_data</span>,</span></span>
+<span class="r-in"><span>  x_var <span class="op">=</span> <span class="st">"region"</span>,</span></span>
+<span class="r-in"><span>  y_var <span class="op">=</span> <span class="st">"income_bracket"</span>,</span></span>
+<span class="r-in"><span>  value_var <span class="op">=</span> <span class="st">"satisfaction_score"</span>,</span></span>
+<span class="r-in"><span>  weight_var <span class="op">=</span> <span class="st">"survey_weight"</span>,  <span class="co"># Use survey weights for accurate representation</span></span></span>
+<span class="r-in"><span>  title <span class="op">=</span> <span class="st">"Weighted Average Satisfaction by Region and Income"</span>,</span></span>
+<span class="r-in"><span>  subtitle <span class="op">=</span> <span class="st">"Using survey weights for population representation"</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">plot1</span></span></span>
 <span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'plot1' not found</span>

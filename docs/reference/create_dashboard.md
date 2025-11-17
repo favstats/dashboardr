@@ -290,7 +290,10 @@ create_dashboard(
 
 - plausible:
 
-  Plausible analytics domain (optional)
+  Plausible analytics script hash (e.g., "pa-UnPiJwxFi8TS"). Find your
+  script hash in Plausible Settings \> Tracking Code (Script
+  Installation tab). This format includes ad-blocker bypass and doesn't
+  require specifying your domain.
 
 - gtag:
 

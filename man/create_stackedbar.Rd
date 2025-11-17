@@ -90,6 +90,11 @@ Default "(Missing)".}
 \item{stack_bin_labels}{Optional character vector of labels for \code{stack_breaks} bins.}
 
 \item{stack_map_values}{Optional named list to remap \code{stack_var} values for display.}
+
+\item{horizontal}{Logical. If TRUE, creates horizontal bars. Default FALSE.}
+
+\item{weight_var}{Optional string. Name of a weight variable to use for weighted aggregation.
+When provided, counts are replaced with weighted sums using this variable.}
 }
 \value{
 An interactive \code{highcharter} bar chart plot object.
@@ -118,7 +123,7 @@ This function performs the following steps:
 \item \strong{Data Aggregation and Final Factor Handling:}
 \itemize{
 \item The data is transformed using \code{dplyr::mutate} to ensure \code{x_var} and \code{stack_var} (or their binned versions) are treated as factors. If \code{include_na = TRUE}, missing values are converted into an explicit "(NA)" factor level.
-\item \code{dplyr::count()} is then used to aggregate the data, counting occurrences for each unique combination of \code{x_var} and \code{stack_var}. This creates the \code{n} column required for \code{highcharter}.
+\item If \code{weight_var} is provided, weighted sums are calculated for each combination of \code{x_var} and \code{stack_var} using \code{sum(weight_var, na.rm = TRUE)}. Otherwise, \code{dplyr::count()} is used to count occurrences for each unique combination. This creates the \code{n} column required for \code{highcharter}.
 }
 \item \strong{Apply Custom Ordering (\code{x_order}, \code{stack_order}):} If provided, \code{x_order} and \code{stack_order} are used to set the display order of the factor levels for the X-axis and stack categories, respectively. This is essential for ordinal scales (e.g., Likert scales) or custom desired sorting. Levels not found in the order vector are appended at the end.
 \item \strong{Highcharter Chart Generation:} The aggregated \code{plot_data} is passed to \code{highcharter::hchart()} to create the base stacked column chart.
@@ -224,6 +229,19 @@ plot5 <- create_stackedbar(
   na_label_stack = "Gender Not Specified"
 )
 plot5
+
+# Example 6: Using weighted data
+# Assuming your data has a weight column
+plot6 <- create_stackedbar(
+  data = survey_data,
+  x_var = "education",
+  stack_var = "satisfaction",
+  weight_var = "survey_weight",  # Use this column for weighting
+  title = "Weighted Satisfaction by Education Level",
+  subtitle = "Using survey weights for accurate representation",
+  stacked_type = "percent"
+)
+plot6
 
 
 }

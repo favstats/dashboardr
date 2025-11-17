@@ -9,10 +9,12 @@
 <url><loc>https://favstats.github.io/dashboardr/articles/getting-started.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/articles/heatmap_vignette.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/articles/index.html</loc></url>
+<url><loc>https://favstats.github.io/dashboardr/articles/publishing_dashboards.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/articles/stackedbar_vignette.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/articles/stackedbars_vignette.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/articles/timeline_vignette.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/authors.html</loc></url>
+<url><loc>https://favstats.github.io/dashboardr/digiq.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/index.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/live-demos/docs/showcase/about.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/live-demos/docs/showcase/gss_data_analysis.html</loc></url>
@@ -59,6 +61,7 @@
 <url><loc>https://favstats.github.io/dashboardr/reference/add_loading_overlay.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/add_metric.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/add_modal.html</loc></url>
+<url><loc>https://favstats.github.io/dashboardr/reference/add_navbar_element.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/add_page.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/add_pagination.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/add_powered_by_dashboardr.html</loc></url>
@@ -161,6 +164,7 @@
 <url><loc>https://favstats.github.io/dashboardr/reference/theme_modern.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/theme_uva.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/tutorial_dashboard.html</loc></url>
+<url><loc>https://favstats.github.io/dashboardr/reference/update_dashboard.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/validate_na_params.html</loc></url>
 </urlset>
 

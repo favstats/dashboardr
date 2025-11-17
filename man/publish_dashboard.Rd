@@ -2,92 +2,55 @@
 % Please edit documentation in R/publish.R
 \name{publish_dashboard}
 \alias{publish_dashboard}
-\title{Publish dashboard to GitHub Pages or GitLab Pages}
+\title{Publish dashboard to GitHub Pages}
 \usage{
 publish_dashboard(
-  dashboard_path,
-  platform = c("github", "gitlab"),
-  repo_name = NULL,
-  username = NULL,
+  message = "Initial commit",
+  restart = FALSE,
+  organisation = NULL,
   private = FALSE,
-  open_browser = FALSE,
-  commit_message = "Deploy dashboard",
-  branch = "main",
-  docs_subdir = "docs",
-  include_data = FALSE
-)
-
-publish_dashboard(
-  dashboard_path,
-  platform = c("github", "gitlab"),
-  repo_name = NULL,
-  username = NULL,
-  private = FALSE,
-  open_browser = FALSE,
-  commit_message = "Deploy dashboard",
-  branch = "main",
-  docs_subdir = "docs",
-  include_data = FALSE
+  protocol = c("https", "ssh"),
+  branch = usethis::git_default_branch(),
+  path = "/docs",
+  ...
 )
 }
 \arguments{
-\item{dashboard_path}{Path to the generated dashboard directory}
+\item{message}{Initial commit message (default: "Initial commit")}
 
-\item{platform}{Platform to publish to: "github" or "gitlab"}
+\item{restart}{Whether to restart RStudio after git initialization (default: FALSE)}
 
-\item{repo_name}{Name for the repository (defaults to dashboard directory name)}
-
-\item{username}{GitHub/GitLab username (optional, will prompt if not provided)}
+\item{organisation}{GitHub organisation name (optional, for org repositories)}
 
 \item{private}{Whether to create a private repository (default: FALSE)}
 
-\item{open_browser}{Whether to open the published dashboard in browser (default: TRUE)}
+\item{protocol}{Transfer protocol: "https" or "ssh" (default: "https")}
 
-\item{commit_message}{Git commit message (default: "Deploy dashboard")}
+\item{branch}{Branch to deploy from (default: uses git default branch)}
 
-\item{branch}{Branch to deploy from (default: "main")}
+\item{path}{Path containing the site files (default: "/docs")}
 
-\item{docs_subdir}{Subdirectory containing the docs (default: "docs")}
-
-\item{include_data}{Whether to include data files in the repository (default: FALSE)}
+\item{...}{Additional arguments passed to \code{usethis::use_github()}}
 }
 \value{
-Invisibly returns the repository URL
-
-Invisibly returns the repository URL
+Invisibly returns TRUE
 }
 \description{
-This function automates the process of publishing a dashboard to GitHub Pages
-or GitLab Pages. It handles git initialization, remote setup, and deployment
-configuration.
-
-This function automates the process of publishing a dashboard to GitHub Pages
-or GitLab Pages. It handles git initialization, remote setup, and deployment
-configuration.
+This function automates the process of publishing a dashboard to GitHub Pages.
+It handles git initialization, .gitignore setup, GitHub repository creation,
+and GitHub Pages configuration using usethis functions.
 }
 \examples{
 \dontrun{
-# After generating a dashboard
-dashboard <- create_dashboard("my_dashboard") \%>\%
-  add_page("Analysis", data = my_data, visualizations = my_viz) \%>\%
-  generate_dashboard()
+# After generating a dashboard, navigate to the dashboard directory
+# and publish it:
+setwd("my_dashboard")
+publish_dashboard()
 
-# Publish to GitHub Pages
-publish_dashboard("my_dashboard", platform = "github", username = "myusername")
+# Publish to an organization
+publish_dashboard(organisation = "my-org")
 
-# Publish to GitLab Pages
-publish_dashboard("my_dashboard", platform = "gitlab", username = "myusername")
-}
-\dontrun{
-# After generating a dashboard
-dashboard <- create_dashboard("my_dashboard") \%>\%
-  add_page("Analysis", data = my_data, visualizations = my_viz) \%>\%
-  generate_dashboard()
-
-# Publish to GitHub Pages
-publish_dashboard("my_dashboard", platform = "github", username = "myusername")
-
-# Publish to GitLab Pages
-publish_dashboard("my_dashboard", platform = "gitlab", username = "myusername")
+# Create a private repository
+publish_dashboard(private = TRUE)
 }
 }

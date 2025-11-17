@@ -98,7 +98,11 @@ rows with NA in \code{x_var} or \code{y_var} are excluded from aggregation.}
 
 \item{y_map_values}{Optional named list to recode y_var values for display.}
 
-\item{agg_fun}{Function to aggregate duplicate x/y combinations. Default is \code{mean}.}
+\item{agg_fun}{Function to aggregate duplicate x/y combinations. Default is \code{mean}.
+Note: If \code{weight_var} is provided, weighted mean is used instead and this parameter is ignored.}
+
+\item{weight_var}{Optional string. Name of a weight variable to use for weighted mean aggregation.
+When provided, the function uses \code{weighted.mean()} instead of the \code{agg_fun} parameter.}
 }
 \value{
 A \code{highcharter} heatmap object.
@@ -121,6 +125,7 @@ This function performs the following steps:
 \item Applies value mapping if \code{x_map_values} or \code{y_map_values} (new parameter) are provided.
 \item Processes NA values in \code{x_var} and \code{y_var}: if \code{include_na = TRUE}, NAs are converted to a specified label; otherwise, rows with NAs in these variables are filtered out.
 \item Converts \code{x_var} and \code{y_var} to factors and applies \code{x_order} and \code{y_order}.
+\item If \code{weight_var} is provided, uses \code{weighted.mean()} for aggregation; otherwise uses \code{agg_fun} (default \code{mean()}).
 \item Uses \code{tidyr::complete} to ensure all \code{x_var}/\code{y_var} combinations are present,
 filling missing \code{value_var} with \code{NA_real_} (which will appear as \code{na_color} in the heatmap).
 }
@@ -136,30 +141,30 @@ filling missing \code{value_var} with \code{NA_real_} (which will appear as \cod
 }
 }
 \examples{
-#TODO: something is off here so will comment out for now
-# Example 1: Average Age by Education and Gender
-# Let's create a heatmap showing the average age across education levels and gender.
-# We will use the GSS dataset from 2020
+\dontrun{
+# Example 1: Basic heatmap with average values
+plot1 <- create_heatmap(
+  data = survey_data,
+  x_var = "education",
+  y_var = "gender",
+  value_var = "age",
+  title = "Average Age by Education and Gender",
+  x_label = "Education Level",
+  y_label = "Gender",
+  value_label = "Average Age"
+)
 
-# Step 1: Prepare data for heatmap
-#age_education_data <- gss_clean \%>\%
-#   filter(!is.na(degree_3), !is.na(sex_3), !is.na(age_3)) \%>\%
-#   group_by(degree_3, sex_3) \%>\%
-#   summarise(avg_age = mean(age_3, na.rm = TRUE), .groups = 'drop')
-
-# Step 2: Create basic heatmap
-# plot1 <- create_heatmap(
-#   data = age_education_data,
-#   x_var = "degree_3",
-#   y_var = "sex_3",
-#   value_var = "avg_age",
-#   title = "Average Age by Education Level and Gender",
-#   subtitle = "GSS Panel 2020 - Wave 3",
-#   x_label = "Education Level",
-#   y_label = "Gender",
-#   value_label = "Average Age",
-#   color_palette = c("#ffffff", "#2E86AB")
-# )
+# Example 2: Weighted heatmap using survey weights
+plot2 <- create_heatmap(
+  data = survey_data,
+  x_var = "region",
+  y_var = "income_bracket",
+  value_var = "satisfaction_score",
+  weight_var = "survey_weight",  # Use survey weights for accurate representation
+  title = "Weighted Average Satisfaction by Region and Income",
+  subtitle = "Using survey weights for population representation"
+)
+}
 
 plot1
 

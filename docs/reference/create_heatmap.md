@@ -171,6 +171,15 @@ create_heatmap(
 - agg_fun:
 
   Function to aggregate duplicate x/y combinations. Default is `mean`.
+  Note: If `weight_var` is provided, weighted mean is used instead and
+  this parameter is ignored.
+
+- weight_var:
+
+  Optional string. Name of a weight variable to use for weighted mean
+  aggregation. When provided, the function uses
+  [`weighted.mean()`](https://rdrr.io/r/stats/weighted.mean.html)
+  instead of the `agg_fun` parameter.
 
 ## Value
 
@@ -196,6 +205,11 @@ This function performs the following steps:
 
     - Converts `x_var` and `y_var` to factors and applies `x_order` and
       `y_order`.
+
+    - If `weight_var` is provided, uses
+      [`weighted.mean()`](https://rdrr.io/r/stats/weighted.mean.html)
+      for aggregation; otherwise uses `agg_fun` (default
+      [`mean()`](https://rdrr.io/r/base/mean.html)).
 
     - Uses
       [`tidyr::complete`](https://tidyr.tidyverse.org/reference/complete.html)
@@ -224,30 +238,30 @@ This function performs the following steps:
 ## Examples
 
 ``` r
-#TODO: something is off here so will comment out for now
-# Example 1: Average Age by Education and Gender
-# Let's create a heatmap showing the average age across education levels and gender.
-# We will use the GSS dataset from 2020
+if (FALSE) { # \dontrun{
+# Example 1: Basic heatmap with average values
+plot1 <- create_heatmap(
+  data = survey_data,
+  x_var = "education",
+  y_var = "gender",
+  value_var = "age",
+  title = "Average Age by Education and Gender",
+  x_label = "Education Level",
+  y_label = "Gender",
+  value_label = "Average Age"
+)
 
-# Step 1: Prepare data for heatmap
-#age_education_data <- gss_clean %>%
-#   filter(!is.na(degree_3), !is.na(sex_3), !is.na(age_3)) %>%
-#   group_by(degree_3, sex_3) %>%
-#   summarise(avg_age = mean(age_3, na.rm = TRUE), .groups = 'drop')
-
-# Step 2: Create basic heatmap
-# plot1 <- create_heatmap(
-#   data = age_education_data,
-#   x_var = "degree_3",
-#   y_var = "sex_3",
-#   value_var = "avg_age",
-#   title = "Average Age by Education Level and Gender",
-#   subtitle = "GSS Panel 2020 - Wave 3",
-#   x_label = "Education Level",
-#   y_label = "Gender",
-#   value_label = "Average Age",
-#   color_palette = c("#ffffff", "#2E86AB")
-# )
+# Example 2: Weighted heatmap using survey weights
+plot2 <- create_heatmap(
+  data = survey_data,
+  x_var = "region",
+  y_var = "income_bracket",
+  value_var = "satisfaction_score",
+  weight_var = "survey_weight",  # Use survey weights for accurate representation
+  title = "Weighted Average Satisfaction by Region and Income",
+  subtitle = "Using survey weights for population representation"
+)
+} # }
 
 plot1
 #> Error: object 'plot1' not found

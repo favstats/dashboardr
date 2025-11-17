@@ -4,6 +4,8 @@
 
 - [Getting Started with
   dashboardr](https://favstats.github.io/dashboardr/articles/getting-started.md):
+- [Publishing Dashboards to GitHub
+  Pages](https://favstats.github.io/dashboardr/articles/publishing_dashboards.md):
 
 ### Advanced Features
 

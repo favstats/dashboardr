@@ -27,6 +27,7 @@ display. It can also handle SPSS (.sav) columns automatically."><meta property="
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/getting-started.html">Getting Started</a></li>
+    <li><a class="dropdown-item" href="../articles/publishing_dashboards.html">Publishing Dashboards</a></li>
     <li><a class="dropdown-item" href="../articles/advanced-features.html">Advanced Features</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Visualization Types</h6></li>
@@ -84,7 +85,7 @@ display. It can also handle SPSS (.sav) columns automatically.</p>
 <span>  bin_labels <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  include_na <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  na_label <span class="op">=</span> <span class="st">"(Missing)"</span>,</span>
-<span>  color <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  color_palette <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  x_map_values <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  x_order <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  weight_var <span class="op">=</span> <span class="cn">NULL</span></span>
@@ -100,7 +101,7 @@ display. It can also handle SPSS (.sav) columns automatically.</p>
 
 
 <dt id="arg-x-var">x_var<a class="anchor" aria-label="anchor" href="#arg-x-var"></a></dt>
-<dd><p>String. Name of the numeric column to histogram.</p></dd>
+<dd><p>String. Name of the column to histogram (numeric or categorical).</p></dd>
 
 
 <dt id="arg-y-var">y_var<a class="anchor" aria-label="anchor" href="#arg-y-var"></a></dt>
@@ -121,8 +122,7 @@ If supplied, the function skips counting and uses this column as y.</p></dd>
 
 
 <dt id="arg-y-label">y_label<a class="anchor" aria-label="anchor" href="#arg-y-label"></a></dt>
-<dd><p>Optional string. Y-axis label. Defaults to "Count" or
-"Percentage".</p></dd>
+<dd><p>Optional string. Y-axis label. Defaults to "Count" or "Percentage".</p></dd>
 
 
 <dt id="arg-histogram-type">histogram_type<a class="anchor" aria-label="anchor" href="#arg-histogram-type"></a></dt>
@@ -155,20 +155,23 @@ Must be length <code>length(breaks)-1</code>.</p></dd>
 
 
 <dt id="arg-include-na">include_na<a class="anchor" aria-label="anchor" href="#arg-include-na"></a></dt>
-<dd><p>Logical. If TRUE, treats NA as explicit category.</p></dd>
+<dd><p>Logical. If TRUE, NA values are shown as explicit
+categories in the visualization. If FALSE (default), rows with NA
+in the x variable are excluded. Default FALSE.</p></dd>
 
 
 <dt id="arg-na-label">na_label<a class="anchor" aria-label="anchor" href="#arg-na-label"></a></dt>
-<dd><p>Optional string. Custom label for NA values. Defaults to "(Missing)".</p></dd>
+<dd><p>String. Label to display for NA values when
+<code>include_na = TRUE</code>. Default "(Missing)".</p></dd>
 
 
-<dt id="arg-color">color<a class="anchor" aria-label="anchor" href="#arg-color"></a></dt>
+<dt id="arg-color-palette">color_palette<a class="anchor" aria-label="anchor" href="#arg-color-palette"></a></dt>
 <dd><p>Optional string or vector of colors for the bars.</p></dd>
 
 
 <dt id="arg-x-map-values">x_map_values<a class="anchor" aria-label="anchor" href="#arg-x-map-values"></a></dt>
 <dd><p>Optional named list to recode raw <code>x_var</code> values
-before binning.</p></dd>
+before binning (e.g., <code>list("1" = "Male", "2" = "Female")</code>).</p></dd>
 
 
 <dt id="arg-x-order">x_order<a class="anchor" aria-label="anchor" href="#arg-x-order"></a></dt>
@@ -222,79 +225,69 @@ vs. the factor levels.</p></li>
 <span class="r-in"><span><span class="co">#We will work with data from the GSS. The GSS dataset (`gssr`) is a dependency of</span></span></span>
 <span class="r-in"><span><span class="co">#our `dashboardr` package.</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co">#Filter to recent years and select relevant variables</span></span></span>
-<span class="r-in"><span><span class="co">#TODO: some of the examples look off for example plot 4 and 5</span></span></span>
-<span class="r-in"><span><span class="va">gss_recent</span> <span class="op">&lt;-</span> <span class="va">gss_all</span> <span class="op"><a href="pipe.html">%&gt;%</a></span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">year</span> <span class="op">&gt;=</span> <span class="fl">2010</span><span class="op">)</span> <span class="op"><a href="pipe.html">%&gt;%</a></span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">age</span>, <span class="va">degree</span>, <span class="va">happy</span>, <span class="va">sex</span>, <span class="va">race</span>, <span class="va">year</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in select(., age, degree, happy, sex, race, year):</span> could not find function "select"</span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">gss_panel20</span><span class="op">)</span></span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>data set ‘gss_panel20’ not found</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Example 1: Basic histogram of age distribution</span></span></span>
 <span class="r-in"><span><span class="va">plot1</span> <span class="op">&lt;-</span> <span class="fu">create_histogram</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  data <span class="op">=</span> <span class="va">gss_recent</span>,</span></span>
+<span class="r-in"><span>  data <span class="op">=</span> <span class="va">gss_panel20</span>,</span></span>
 <span class="r-in"><span>  x_var <span class="op">=</span> <span class="st">"age"</span>,</span></span>
 <span class="r-in"><span>  title <span class="op">=</span> <span class="st">"Age Distribution in GSS Data (2010+)"</span>,</span></span>
 <span class="r-in"><span>  subtitle <span class="op">=</span> <span class="st">"General Social Survey respondents"</span>,</span></span>
 <span class="r-in"><span>  x_label <span class="op">=</span> <span class="st">"Age (years)"</span>,</span></span>
 <span class="r-in"><span>  y_label <span class="op">=</span> <span class="st">"Number of Respondents"</span>,</span></span>
 <span class="r-in"><span>  bins <span class="op">=</span> <span class="fl">15</span>,</span></span>
-<span class="r-in"><span>  color <span class="op">=</span> <span class="st">"hotpink"</span></span></span>
+<span class="r-in"><span>  color_palette <span class="op">=</span> <span class="st">"steelblue"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'gss_recent' not found</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'gss_panel20' not found</span>
 <span class="r-in"><span><span class="va">plot1</span></span></span>
 <span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'plot1' not found</span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Example 2: Education levels with custom mapping and ordering</span></span></span>
-<span class="r-in"><span><span class="co"># First check the unique values</span></span></span>
-<span class="r-in"><span><span class="co"># unique(gss_recent$degree) # "Lt High School", "High School", "Junior College", "Bachelor", "Graduate"</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">education_order</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Lt High School"</span>, <span class="st">"High School"</span>, <span class="st">"Junior College"</span>, <span class="st">"Bachelor"</span>, <span class="st">"Graduate"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co"># Example 2: Education levels with custom labels (excluding NAs)</span></span></span>
+<span class="r-in"><span><span class="va">education_map</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"0"</span> <span class="op">=</span> <span class="st">"Less than High School"</span>,</span></span>
+<span class="r-in"><span>                     <span class="st">"1"</span> <span class="op">=</span> <span class="st">"High School"</span>,</span></span>
+<span class="r-in"><span>                     <span class="st">"2"</span> <span class="op">=</span> <span class="st">"Associate/Junior College"</span>,</span></span>
+<span class="r-in"><span>                     <span class="st">"3"</span> <span class="op">=</span> <span class="st">"Bachelor's"</span>,</span></span>
+<span class="r-in"><span>                     <span class="st">"4"</span> <span class="op">=</span> <span class="st">"Graduate"</span></span></span>
+<span class="r-in"><span>                     <span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">plot2</span> <span class="op">&lt;-</span> <span class="fu">create_histogram</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  data <span class="op">=</span> <span class="va">gss_recent</span>,</span></span>
-<span class="r-in"><span>  x_var <span class="op">=</span> <span class="st">"degree"</span>,</span></span>
-<span class="r-in"><span>  title <span class="op">=</span> <span class="st">"Educational Attainment Distribution"</span>,</span></span>
-<span class="r-in"><span>  subtitle <span class="op">=</span> <span class="st">"GSS respondents 2010-present"</span>,</span></span>
-<span class="r-in"><span>  x_label <span class="op">=</span> <span class="st">"Highest Degree Completed"</span>,</span></span>
-<span class="r-in"><span>  y_label <span class="op">=</span> <span class="st">"Count"</span>,</span></span>
-<span class="r-in"><span>  histogram_type <span class="op">=</span> <span class="st">"count"</span>,</span></span>
-<span class="r-in"><span>  x_order <span class="op">=</span> <span class="va">education_order</span>,</span></span>
-<span class="r-in"><span>  include_na <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
+<span class="r-in"><span> data <span class="op">=</span> <span class="va">gss_panel20</span>,</span></span>
+<span class="r-in"><span> x_var <span class="op">=</span> <span class="st">"degree"</span>,</span></span>
+<span class="r-in"><span> title <span class="op">=</span> <span class="st">"Educational Attainment Distribution"</span>,</span></span>
+<span class="r-in"><span> subtitle <span class="op">=</span> <span class="st">"GSS respondents 2010-present (NAs excluded)"</span>,</span></span>
+<span class="r-in"><span> x_label <span class="op">=</span> <span class="st">"Highest Degree Completed"</span>,</span></span>
+<span class="r-in"><span> y_label <span class="op">=</span> <span class="st">"Count"</span>,</span></span>
+<span class="r-in"><span> histogram_type <span class="op">=</span> <span class="st">"count"</span>,</span></span>
+<span class="r-in"><span> x_map_values <span class="op">=</span> <span class="va">education_map</span>,</span></span>
+<span class="r-in"><span> color_palette <span class="op">=</span> <span class="st">"pink"</span>,</span></span>
+<span class="r-in"><span> include_na <span class="op">=</span> <span class="cn">FALSE</span>  <span class="co"># Exclude missing values</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'gss_recent' not found</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'gss_panel20' not found</span>
 <span class="r-in"><span><span class="va">plot2</span></span></span>
 <span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'plot2' not found</span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Example 3: Happiness levels as percentages with custom labels</span></span></span>
-<span class="r-in"><span><span class="va">happiness_map</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="st">"Very Happy"</span> <span class="op">=</span> <span class="st">"Very Happy!"</span>,</span></span>
-<span class="r-in"><span>  <span class="st">"Pretty Happy"</span> <span class="op">=</span> <span class="st">"Pretty Happy"</span>,</span></span>
-<span class="r-in"><span>  <span class="st">"Not Too Happy"</span> <span class="op">=</span> <span class="st">"Not Too Happy :|"</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Example 3: Including NA values with custom label</span></span></span>
 <span class="r-in"><span><span class="va">plot3</span> <span class="op">&lt;-</span> <span class="fu">create_histogram</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  data <span class="op">=</span> <span class="va">gss_recent</span>,</span></span>
-<span class="r-in"><span>  x_var <span class="op">=</span> <span class="st">"happy"</span>,</span></span>
-<span class="r-in"><span>  title <span class="op">=</span> <span class="st">"Self-Reported Happiness Levels"</span>,</span></span>
-<span class="r-in"><span>  subtitle <span class="op">=</span> <span class="st">"Percentage distribution among GSS respondents"</span>,</span></span>
-<span class="r-in"><span>  x_label <span class="op">=</span> <span class="st">"Happiness Level"</span>,</span></span>
-<span class="r-in"><span>  y_label <span class="op">=</span> <span class="st">"Percentage of Respondents"</span>,</span></span>
-<span class="r-in"><span>  histogram_type <span class="op">=</span> <span class="st">"percent"</span>,</span></span>
-<span class="r-in"><span>  x_map_values <span class="op">=</span> <span class="va">happiness_map</span>,</span></span>
-<span class="r-in"><span>  tooltip_suffix <span class="op">=</span> <span class="st">"%"</span>,</span></span>
-<span class="r-in"><span>  include_na <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
-<span class="r-in"><span>  na_label <span class="op">=</span> <span class="st">"No Response"</span>,</span></span>
+<span class="r-in"><span>  data <span class="op">=</span> <span class="va">gss_panel20</span>,</span></span>
+<span class="r-in"><span>  x_var <span class="op">=</span> <span class="st">"degree"</span>,</span></span>
+<span class="r-in"><span>  title <span class="op">=</span> <span class="st">"Educational Attainment Distribution (Including Missing Data)"</span>,</span></span>
+<span class="r-in"><span>  subtitle <span class="op">=</span> <span class="st">"GSS respondents 2010-present"</span>,</span></span>
+<span class="r-in"><span>  x_label <span class="op">=</span> <span class="st">"Highest Degree Completed"</span>,</span></span>
+<span class="r-in"><span>  x_order <span class="op">=</span> <span class="va">education_order</span>,</span></span>
+<span class="r-in"><span>  include_na <span class="op">=</span> <span class="cn">TRUE</span>,  <span class="co"># Show NAs as explicit category</span></span></span>
+<span class="r-in"><span>  na_label <span class="op">=</span> <span class="st">"Not Reported"</span>  <span class="co"># Custom label for NAs</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'gss_recent' not found</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'gss_panel20' not found</span>
 <span class="r-in"><span><span class="va">plot3</span></span></span>
 <span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'plot3' not found</span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Example 4: Age binning with custom breaks and labels</span></span></span>
+<span class="r-in"><span><span class="co"># Example 4: Age binning with custom breaks</span></span></span>
 <span class="r-in"><span><span class="va">age_breaks</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">18</span>, <span class="fl">30</span>, <span class="fl">45</span>, <span class="fl">60</span>, <span class="fl">75</span>, <span class="cn">Inf</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">age_labels</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"18-29"</span>, <span class="st">"30-44"</span>, <span class="st">"45-59"</span>, <span class="st">"60-74"</span>, <span class="st">"75+"</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">plot4</span> <span class="op">&lt;-</span> <span class="fu">create_histogram</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  data <span class="op">=</span> <span class="va">gss_recent</span>,</span></span>
+<span class="r-in"><span><span class="va">plot5</span> <span class="op">&lt;-</span> <span class="fu">create_histogram</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  data <span class="op">=</span> <span class="va">gss_panel20</span>,</span></span>
 <span class="r-in"><span>  x_var <span class="op">=</span> <span class="st">"age"</span>,</span></span>
 <span class="r-in"><span>  title <span class="op">=</span> <span class="st">"Age Groups in GSS Sample"</span>,</span></span>
 <span class="r-in"><span>  subtitle <span class="op">=</span> <span class="st">"Custom age categories"</span>,</span></span>
@@ -304,31 +297,12 @@ vs. the factor levels.</p></li>
 <span class="r-in"><span>  bin_labels <span class="op">=</span> <span class="va">age_labels</span>,</span></span>
 <span class="r-in"><span>  tooltip_prefix <span class="op">=</span> <span class="st">"Count: "</span>,</span></span>
 <span class="r-in"><span>  x_tooltip_suffix <span class="op">=</span> <span class="st">" years old"</span>,</span></span>
-<span class="r-in"><span>  color <span class="op">=</span> <span class="st">"seagreen1"</span></span></span>
+<span class="r-in"><span>  color_palette <span class="op">=</span> <span class="st">"seagreen"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'gss_recent' not found</span>
-<span class="r-in"><span><span class="va">plot4</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'plot4' not found</span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Example 5: Using pre-aggregated data</span></span></span>
-<span class="r-in"><span><span class="co"># Create aggregated data first</span></span></span>
-<span class="r-in"><span><span class="va">race_counts</span> <span class="op">&lt;-</span> <span class="va">gss_recent</span> <span class="op"><a href="pipe.html">%&gt;%</a></span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/count.html" class="external-link">count</a></span><span class="op">(</span><span class="va">race</span>, name <span class="op">=</span> <span class="st">"respondent_count"</span><span class="op">)</span> <span class="op"><a href="pipe.html">%&gt;%</a></span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">race</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in count(., race, name = "respondent_count"):</span> could not find function "count"</span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">plot5</span> <span class="op">&lt;-</span> <span class="fu">create_histogram</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  data <span class="op">=</span> <span class="va">race_counts</span>,</span></span>
-<span class="r-in"><span>  x_var <span class="op">=</span> <span class="st">"race"</span>,</span></span>
-<span class="r-in"><span>  y_var <span class="op">=</span> <span class="st">"respondent_count"</span>,  <span class="co"># Use pre-computed counts</span></span></span>
-<span class="r-in"><span>  title <span class="op">=</span> <span class="st">"Racial Distribution in GSS Sample"</span>,</span></span>
-<span class="r-in"><span>  subtitle <span class="op">=</span> <span class="st">"Based on pre-aggregated data"</span>,</span></span>
-<span class="r-in"><span>  x_label <span class="op">=</span> <span class="st">"Race/Ethnicity"</span>,</span></span>
-<span class="r-in"><span>  y_label <span class="op">=</span> <span class="st">"Number of Respondents"</span>,</span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'race_counts' not found</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'gss_panel20' not found</span>
 <span class="r-in"><span><span class="va">plot5</span></span></span>
 <span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'plot5' not found</span>
+<span class="r-in"><span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
