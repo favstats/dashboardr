@@ -7,10 +7,11 @@ articles:
   demos: demos.html
   getting-started: getting-started.html
   heatmap_vignette: heatmap_vignette.html
+  publishing_dashboards: publishing_dashboards.html
   stackedbar_vignette: stackedbar_vignette.html
   stackedbars_vignette: stackedbars_vignette.html
   timeline_vignette: timeline_vignette.html
-last_built: 2025-11-09T17:32Z
+last_built: 2025-11-17T12:09Z
 urls:
   reference: https://favstats.github.io/dashboardr/reference
   article: https://favstats.github.io/dashboardr/articles
