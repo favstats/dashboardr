@@ -38,6 +38,7 @@ create_content <- function(tabgroup_labels = NULL, ...) {
 #'
 #' @param content_collection A content_collection, viz_collection, or NULL
 #' @param text Markdown text content (can be multi-line)
+#' @param tabgroup Optional tabgroup for organizing content (character vector for nested tabs)
 #' @param ... Additional text lines (will be combined with newlines)
 #' @return Updated content_collection object
 #' @export
@@ -50,12 +51,16 @@ create_content <- function(tabgroup_labels = NULL, ...) {
 #' content <- create_content() %>%
 #'   add_text("## Introduction")
 #'
+#' # With tabgroup
+#' content <- create_content() %>%
+#'   add_text("## Section 1", tabgroup = "Overview")
+#'
 #' # Pipe directly from viz
 #' content <- create_viz() %>%
 #'   add_viz(type = "histogram", x_var = "age") %>%
 #'   add_text("Analysis complete")
 #' }
-add_text <- function(content_collection = NULL, text, ...) {
+add_text <- function(content_collection = NULL, text, tabgroup = NULL, ...) {
   # Track if we're in pipeable mode or standalone mode
   is_pipeable <- FALSE
   was_null <- FALSE
@@ -84,11 +89,17 @@ add_text <- function(content_collection = NULL, text, ...) {
     stop("First argument must be a content collection, content_block, character string, or NULL")
   }
   
-  # Combine all text arguments
-  args <- list(text, ...)
+  # Combine all text arguments from ...
+  extra_args <- list(...)
   text_content <- character(0)
   
-  for (arg in args) {
+  if (length(extra_args) > 0) {
+    all_text <- c(text, unlist(extra_args))
+  } else {
+    all_text <- text
+  }
+  
+  for (arg in all_text) {
     if (is.character(arg)) {
       text_content <- c(text_content, arg)
     } else {
@@ -99,11 +110,15 @@ add_text <- function(content_collection = NULL, text, ...) {
   # Join with newlines
   final_content <- paste(text_content, collapse = "\n")
   
+  # Parse tabgroup (handles "hello/subtab" notation)
+  parsed_tabgroup <- .parse_tabgroup(tabgroup)
+  
   # Create text block
   text_block <- structure(
     list(
       type = "text",
-      content = final_content
+      content = final_content,
+      tabgroup = parsed_tabgroup
     ),
     class = "content_block"
   )
@@ -133,6 +148,7 @@ add_text <- function(content_collection = NULL, text, ...) {
 #' @param align Image alignment: "left", "center", "right" (default: "center")
 #' @param link Optional URL to link the image to
 #' @param class Optional CSS class for custom styling
+#' @param tabgroup Optional tabgroup for organizing content (character vector for nested tabs)
 #' @return Updated content_collection object
 #' @export
 #' @examples
@@ -145,6 +161,10 @@ add_text <- function(content_collection = NULL, text, ...) {
 #'   add_text("Welcome!") %>%
 #'   add_image(src = "chart.png", alt = "Chart")
 #'
+#' # With tabgroup
+#' content <- create_content() %>%
+#'   add_image(src = "chart.png", alt = "Chart", tabgroup = "Gallery")
+#'
 #' # Pipe directly from viz
 #' content <- create_viz() %>%
 #'   add_viz(type = "bar", x_var = "category") %>%
@@ -152,7 +172,7 @@ add_text <- function(content_collection = NULL, text, ...) {
 #' }
 add_image <- function(content_collection = NULL, src, alt = NULL, caption = NULL, 
                       width = NULL, height = NULL, align = c("center", "left", "right"), 
-                      link = NULL, class = NULL) {
+                      link = NULL, class = NULL, tabgroup = NULL) {
   # Track if we're in pipeable mode or standalone mode
   is_pipeable <- FALSE
   was_null <- FALSE
@@ -212,7 +232,8 @@ add_image <- function(content_collection = NULL, src, alt = NULL, caption = NULL
       height = height,
       align = align,
       link = link,
-      class = class
+      class = class,
+      tabgroup = .parse_tabgroup(tabgroup)
     ),
     class = "content_block"
   )
@@ -235,10 +256,11 @@ add_image <- function(content_collection = NULL, src, alt = NULL, caption = NULL
 #' @param title Optional title
 #' @param icon Optional icon
 #' @param collapse Whether callout is collapsible
+#' @param tabgroup Optional tabgroup for organizing content (character vector for nested tabs)
 #' @return Updated content_collection
 #' @export
 add_callout <- function(content, text, type = c("note", "tip", "warning", "caution", "important"),
-                        title = NULL, icon = NULL, collapse = FALSE) {
+                        title = NULL, icon = NULL, collapse = FALSE, tabgroup = NULL) {
   if (!is_content(content)) {
     stop("First argument must be a content collection")
   }
@@ -251,7 +273,8 @@ add_callout <- function(content, text, type = c("note", "tip", "warning", "cauti
     content = text,
     title = title,
     icon = icon,
-    collapse = collapse
+    collapse = collapse,
+    tabgroup = .parse_tabgroup(tabgroup)
   ), class = "content_block")
   
   content$items <- c(content$items, list(callout_block))
@@ -261,16 +284,18 @@ add_callout <- function(content, text, type = c("note", "tip", "warning", "cauti
 #' Add horizontal divider
 #' @param content A content_collection or viz_collection object
 #' @param style Divider style ("default", "thick", "dashed", "dotted")
+#' @param tabgroup Optional tabgroup for organizing content (character vector for nested tabs)
 #' @return Updated content_collection
 #' @export
-add_divider <- function(content, style = "default") {
+add_divider <- function(content, style = "default", tabgroup = NULL) {
   if (!is_content(content)) {
     stop("First argument must be a content collection")
   }
   
   divider_block <- structure(list(
     type = "divider",
-    style = style
+    style = style,
+    tabgroup = .parse_tabgroup(tabgroup)
   ), class = "content_block")
   
   content$items <- c(content$items, list(divider_block))
@@ -283,9 +308,10 @@ add_divider <- function(content, style = "default") {
 #' @param language Programming language for syntax highlighting
 #' @param caption Optional caption
 #' @param filename Optional filename to display
+#' @param tabgroup Optional tabgroup for organizing content (character vector for nested tabs)
 #' @return Updated content_collection
 #' @export
-add_code <- function(content, code, language = "r", caption = NULL, filename = NULL) {
+add_code <- function(content, code, language = "r", caption = NULL, filename = NULL, tabgroup = NULL) {
   if (!is_content(content)) {
     stop("First argument must be a content collection")
   }
@@ -295,7 +321,8 @@ add_code <- function(content, code, language = "r", caption = NULL, filename = N
     code = code,
     language = language,
     caption = caption,
-    filename = filename
+    filename = filename,
+    tabgroup = .parse_tabgroup(tabgroup)
   ), class = "content_block")
   
   content$items <- c(content$items, list(code_block))
@@ -305,16 +332,18 @@ add_code <- function(content, code, language = "r", caption = NULL, filename = N
 #' Add vertical spacer
 #' @param content A content_collection or viz_collection object
 #' @param height Height (CSS unit, e.g. "2rem", "50px")
+#' @param tabgroup Optional tabgroup for organizing content (character vector for nested tabs)
 #' @return Updated content_collection
 #' @export
-add_spacer <- function(content, height = "2rem") {
+add_spacer <- function(content, height = "2rem", tabgroup = NULL) {
   if (!is_content(content)) {
     stop("First argument must be a content collection")
   }
   
   spacer_block <- structure(list(
     type = "spacer",
-    height = height
+    height = height,
+    tabgroup = .parse_tabgroup(tabgroup)
   ), class = "content_block")
   
   content$items <- c(content$items, list(spacer_block))
@@ -325,6 +354,7 @@ add_spacer <- function(content, height = "2rem") {
 #' @param content A content_collection object
 #' @param gt_object A gt table object (from gt::gt()) OR a data frame (will be auto-converted)
 #' @param caption Optional caption
+#' @param tabgroup Optional tabgroup for organizing content (character vector for nested tabs)
 #' @return Updated content_collection
 #' @export
 #' @examples
@@ -341,7 +371,7 @@ add_spacer <- function(content, height = "2rem") {
 #' content <- create_content() %>%
 #'   add_gt(mtcars, caption = "Motor Trend Cars")
 #' }
-add_gt <- function(content, gt_object, caption = NULL) {
+add_gt <- function(content, gt_object, caption = NULL, tabgroup = NULL) {
   if (!is_content(content)) {
     stop("First argument must be a content collection")
   }
@@ -353,7 +383,8 @@ add_gt <- function(content, gt_object, caption = NULL) {
     type = "gt",
     gt_object = gt_object,
     caption = caption,
-    is_dataframe = is.data.frame(gt_object)
+    is_dataframe = is.data.frame(gt_object),
+    tabgroup = .parse_tabgroup(tabgroup)
   ), class = "content_block")
   
   content$items <- c(content$items, list(gt_block))
@@ -363,6 +394,7 @@ add_gt <- function(content, gt_object, caption = NULL) {
 #' Add reactable table
 #' @param content A content_collection object
 #' @param reactable_object A reactable object (from reactable::reactable()) OR a data frame (will be auto-converted)
+#' @param tabgroup Optional tabgroup for organizing content (character vector for nested tabs)
 #' @return Updated content_collection
 #' @export
 #' @examples
@@ -382,7 +414,7 @@ add_gt <- function(content, gt_object, caption = NULL) {
 #' content <- create_content() %>%
 #'   add_reactable(mtcars)
 #' }
-add_reactable <- function(content, reactable_object) {
+add_reactable <- function(content, reactable_object, tabgroup = NULL) {
   if (!is_content(content)) {
     stop("First argument must be a content collection")
   }
@@ -393,7 +425,8 @@ add_reactable <- function(content, reactable_object) {
   reactable_block <- structure(list(
     type = "reactable",
     reactable_object = reactable_object,
-    is_dataframe = is.data.frame(reactable_object)
+    is_dataframe = is.data.frame(reactable_object),
+    tabgroup = .parse_tabgroup(tabgroup)
   ), class = "content_block")
   
   content$items <- c(content$items, list(reactable_block))
@@ -404,9 +437,10 @@ add_reactable <- function(content, reactable_object) {
 #' @param content A content_collection object
 #' @param table_object A data frame or tibble
 #' @param caption Optional caption
+#' @param tabgroup Optional tabgroup for organizing content (character vector for nested tabs)
 #' @return Updated content_collection
 #' @export
-add_table <- function(content, table_object, caption = NULL) {
+add_table <- function(content, table_object, caption = NULL, tabgroup = NULL) {
   if (!is_content(content)) {
     stop("First argument must be a content collection")
   }
@@ -414,7 +448,8 @@ add_table <- function(content, table_object, caption = NULL) {
   table_block <- structure(list(
     type = "table",
     table_object = table_object,
-    caption = caption
+    caption = caption,
+    tabgroup = .parse_tabgroup(tabgroup)
   ), class = "content_block")
   
   content$items <- c(content$items, list(table_block))
@@ -425,6 +460,7 @@ add_table <- function(content, table_object, caption = NULL) {
 #' @param content A content_collection object
 #' @param table_data A DT datatable object (from DT::datatable()) OR a data frame/matrix (will be auto-converted)
 #' @param options List of DT options (only used if passing a data frame)
+#' @param tabgroup Optional tabgroup for organizing content (character vector for nested tabs)
 #' @param ... Additional arguments passed to DT::datatable() (only used if passing a data frame)
 #' @return Updated content_collection
 #' @export
@@ -445,7 +481,7 @@ add_table <- function(content, table_object, caption = NULL) {
 #' content <- create_content() %>%
 #'   add_DT(mtcars, options = list(pageLength = 5, scrollX = TRUE))
 #' }
-add_DT <- function(content, table_data, options = NULL, ...) {
+add_DT <- function(content, table_data, options = NULL, tabgroup = NULL, ...) {
   if (!is_content(content)) {
     stop("First argument must be a content collection")
   }
@@ -454,7 +490,8 @@ add_DT <- function(content, table_data, options = NULL, ...) {
     type = "DT",
     table_data = table_data,
     options = options,
-    extra_args = list(...)
+    extra_args = list(...),
+    tabgroup = .parse_tabgroup(tabgroup)
   ), class = "content_block")
   
   content$items <- c(content$items, list(dt_block))
@@ -467,9 +504,10 @@ add_DT <- function(content, table_data, options = NULL, ...) {
 #' @param caption Optional caption
 #' @param width Optional width
 #' @param height Optional height
+#' @param tabgroup Optional tabgroup for organizing content (character vector for nested tabs)
 #' @return Updated content_collection
 #' @export
-add_video <- function(content, src, caption = NULL, width = NULL, height = NULL) {
+add_video <- function(content, src, caption = NULL, width = NULL, height = NULL, tabgroup = NULL) {
   if (!is_content(content)) {
     stop("First argument must be a content collection")
   }
@@ -479,7 +517,8 @@ add_video <- function(content, src, caption = NULL, width = NULL, height = NULL)
     url = src,
     caption = caption,
     width = width,
-    height = height
+    height = height,
+    tabgroup = .parse_tabgroup(tabgroup)
   ), class = "content_block")
   
   content$items <- c(content$items, list(video_block))
@@ -491,9 +530,10 @@ add_video <- function(content, src, caption = NULL, width = NULL, height = NULL)
 #' @param src iframe source URL
 #' @param height iframe height (default: "500px")
 #' @param width iframe width (default: "100%")
+#' @param tabgroup Optional tabgroup for organizing content (character vector for nested tabs)
 #' @return Updated content_collection
 #' @export
-add_iframe <- function(content, src, height = "500px", width = "100%") {
+add_iframe <- function(content, src, height = "500px", width = "100%", tabgroup = NULL) {
   if (!is_content(content)) {
     stop("First argument must be a content collection")
   }
@@ -502,7 +542,8 @@ add_iframe <- function(content, src, height = "500px", width = "100%") {
     type = "iframe",
     url = src,
     height = height,
-    width = width
+    width = width,
+    tabgroup = .parse_tabgroup(tabgroup)
   ), class = "content_block")
   
   content$items <- c(content$items, list(iframe_block))
@@ -514,9 +555,10 @@ add_iframe <- function(content, src, height = "500px", width = "100%") {
 #' @param title Section title
 #' @param text Section content
 #' @param open Whether section starts open (default: FALSE)
+#' @param tabgroup Optional tabgroup for organizing content (character vector for nested tabs)
 #' @return Updated content_collection
 #' @export
-add_accordion <- function(content, title, text, open = FALSE) {
+add_accordion <- function(content, title, text, open = FALSE, tabgroup = NULL) {
   if (!is_content(content)) {
     stop("First argument must be a content collection")
   }
@@ -525,7 +567,8 @@ add_accordion <- function(content, title, text, open = FALSE) {
     type = "accordion",
     title = title,
     text = text,
-    open = open
+    open = open,
+    tabgroup = .parse_tabgroup(tabgroup)
   ), class = "content_block")
   
   content$items <- c(content$items, list(accordion_block))
@@ -537,9 +580,10 @@ add_accordion <- function(content, title, text, open = FALSE) {
 #' @param title Card title
 #' @param text Card content
 #' @param footer Optional card footer
+#' @param tabgroup Optional tabgroup for organizing content (character vector for nested tabs)
 #' @return Updated content_collection
 #' @export
-add_card <- function(content, text, title = NULL, footer = NULL) {
+add_card <- function(content, text, title = NULL, footer = NULL, tabgroup = NULL) {
   if (!is_content(content)) {
     stop("First argument must be a content collection")
   }
@@ -548,7 +592,8 @@ add_card <- function(content, text, title = NULL, footer = NULL) {
     type = "card",
     title = title,
     text = text,
-    footer = footer
+    footer = footer,
+    tabgroup = .parse_tabgroup(tabgroup)
   ), class = "content_block")
   
   content$items <- c(content$items, list(card_block))
@@ -559,14 +604,16 @@ add_card <- function(content, text, title = NULL, footer = NULL) {
 #'
 #' @param content Content collection object
 #' @param html Raw HTML string
+#' @param tabgroup Optional tabgroup for organizing content (character vector for nested tabs)
 #' @export
-add_html <- function(content, html) {
+add_html <- function(content, html, tabgroup = NULL) {
   if (!is_content(content)) {
     stop("First argument must be a content collection")
   }
   html_block <- structure(list(
     type = "html",
-    html = html
+    html = html,
+    tabgroup = .parse_tabgroup(tabgroup)
   ), class = "content_block")
   content$items <- c(content$items, list(html_block))
   content
@@ -578,8 +625,9 @@ add_html <- function(content, html) {
 #' @param quote Quote text
 #' @param attribution Optional attribution/source
 #' @param cite Optional citation URL
+#' @param tabgroup Optional tabgroup for organizing content (character vector for nested tabs)
 #' @export
-add_quote <- function(content, quote, attribution = NULL, cite = NULL) {
+add_quote <- function(content, quote, attribution = NULL, cite = NULL, tabgroup = NULL) {
   if (!is_content(content)) {
     stop("First argument must be a content collection")
   }
@@ -587,7 +635,8 @@ add_quote <- function(content, quote, attribution = NULL, cite = NULL) {
     type = "quote",
     quote = quote,
     attribution = attribution,
-    cite = cite
+    cite = cite,
+    tabgroup = .parse_tabgroup(tabgroup)
   ), class = "content_block")
   content$items <- c(content$items, list(quote_block))
   content
@@ -598,15 +647,17 @@ add_quote <- function(content, quote, attribution = NULL, cite = NULL) {
 #' @param content Content collection object
 #' @param text Badge text
 #' @param color Badge color (success, warning, danger, info, primary, secondary)
+#' @param tabgroup Optional tabgroup for organizing content (character vector for nested tabs)
 #' @export
-add_badge <- function(content, text, color = "primary") {
+add_badge <- function(content, text, color = "primary", tabgroup = NULL) {
   if (!is_content(content)) {
     stop("First argument must be a content collection")
   }
   badge_block <- structure(list(
     type = "badge",
     text = text,
-    color = color
+    color = color,
+    tabgroup = .parse_tabgroup(tabgroup)
   ), class = "content_block")
   content$items <- c(content$items, list(badge_block))
   content
@@ -620,8 +671,9 @@ add_badge <- function(content, text, color = "primary") {
 #' @param icon Optional icon
 #' @param color Optional color theme
 #' @param subtitle Optional subtitle text
+#' @param tabgroup Optional tabgroup for organizing content (character vector for nested tabs)
 #' @export
-add_metric <- function(content, value, title, icon = NULL, color = NULL, subtitle = NULL) {
+add_metric <- function(content, value, title, icon = NULL, color = NULL, subtitle = NULL, tabgroup = NULL) {
   if (!is_content(content)) {
     stop("First argument must be a content collection")
   }
@@ -631,7 +683,8 @@ add_metric <- function(content, value, title, icon = NULL, color = NULL, subtitl
     title = title,
     icon = icon,
     color = color,
-    subtitle = subtitle
+    subtitle = subtitle,
+    tabgroup = .parse_tabgroup(tabgroup)
   ), class = "content_block")
   content$items <- c(content$items, list(metric_block))
   content
@@ -655,6 +708,7 @@ add_metric <- function(content, value, title, icon = NULL, color = NULL, subtitl
 #' @param bg_color Background color (hex code), default "#2c3e50"
 #' @param description Optional collapsible description text (markdown supported)
 #' @param description_title Title for collapsible section, default "About this source"
+#' @param tabgroup Optional tabgroup for organizing content (character vector for nested tabs)
 #' @export
 #' @examples
 #' \dontrun{
@@ -675,7 +729,7 @@ add_metric <- function(content, value, title, icon = NULL, color = NULL, subtitl
 #' }
 add_value_box <- function(content, title, value, logo_url = NULL, logo_text = NULL, 
                           bg_color = "#2c3e50", description = NULL, 
-                          description_title = "About this source") {
+                          description_title = "About this source", tabgroup = NULL) {
   
   # Create the box specification
   box_spec <- list(
@@ -700,7 +754,7 @@ add_value_box <- function(content, title, value, logo_url = NULL, logo_text = NU
     stop("First argument must be a content_collection object or value_box_row_container")
   }
   
-  value_box_block <- structure(c(list(type = "value_box"), box_spec), class = "content_block")
+  value_box_block <- structure(c(list(type = "value_box", tabgroup = tabgroup), box_spec), class = "content_block")
   
   content$items <- c(content$items, list(value_box_block))
   content
@@ -712,6 +766,7 @@ add_value_box <- function(content, title, value, logo_url = NULL, logo_text = NU
 #' The boxes will wrap responsively on smaller screens. Use pipeable syntax with end_value_box_row():
 #'
 #' @param content Content collection object
+#' @param tabgroup Optional tabgroup for organizing content (character vector for nested tabs)
 #' @export
 #' @examples
 #' \dontrun{
@@ -722,7 +777,7 @@ add_value_box <- function(content, title, value, logo_url = NULL, logo_text = NU
 #'     add_value_box(title = "Growth", value = "+23%", bg_color = "#A23B72") %>%
 #'   end_value_box_row()
 #' }
-add_value_box_row <- function(content) {
+add_value_box_row <- function(content, tabgroup = NULL) {
   if (!is_content(content)) {
     stop("First argument must be a content collection")
   }
@@ -731,7 +786,8 @@ add_value_box_row <- function(content) {
   row_container <- structure(list(
     type = "value_box_row",
     boxes = list(),
-    parent_content = content
+    parent_content = content,
+    tabgroup = .parse_tabgroup(tabgroup)
   ), class = c("value_box_row_container", "content_block"))
   
   row_container
@@ -764,7 +820,8 @@ end_value_box_row <- function(row_container) {
   # Create the final value_box_row block with all collected boxes
   value_box_row_block <- structure(list(
     type = "value_box_row",
-    boxes = row_container$boxes
+    boxes = row_container$boxes,
+    tabgroup = row_container$tabgroup
   ), class = "content_block")
   
   # Add it to the parent content collection

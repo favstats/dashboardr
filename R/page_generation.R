@@ -29,7 +29,7 @@
   )
 
   # Add custom text content if provided
-  if (!is.null(page$text) && nzchar(page$text)) {
+  if (isTRUE(!is.null(page$text) && nzchar(page$text))) {
     content <- c(content, page$text, "")
   }
   
@@ -49,7 +49,7 @@
   }
   
   # Add loading overlay chunk if enabled
-  if (!is.null(page$overlay) && page$overlay) {
+  if (isTRUE(!is.null(page$overlay) && page$overlay)) {
     # Get overlay settings with explicit defaults
     if (is.null(page$overlay_theme)) {
       overlay_theme <- "light"
@@ -73,13 +73,13 @@
   }
   
   # Add lazy loading script if enabled
-  if (!is.null(page$lazy_load_charts) && page$lazy_load_charts) {
+  if (isTRUE(!is.null(page$lazy_load_charts) && page$lazy_load_charts)) {
     lazy_load_margin <- page$lazy_load_margin %||% "200px"
     lazy_load_tabs <- page$lazy_load_tabs %||% TRUE
     lazy_debug <- page$lazy_debug %||% FALSE
     
     # Get theme from overlay if enabled, otherwise default to "light"
-    lazy_load_theme <- if (!is.null(page$overlay) && page$overlay) {
+    lazy_load_theme <- if (isTRUE(!is.null(page$overlay) && page$overlay)) {
       page$overlay_theme %||% "light"
     } else {
       "light"
@@ -156,8 +156,8 @@
     lazy_load_tabs <- page$lazy_load_tabs %||% FALSE
     viz_content <- .generate_viz_from_specs(page$visualizations, lazy_load_charts, lazy_load_tabs)
     content <- c(content, viz_content)
-  } else if (is.null(page$text) || !nzchar(page$text)) {
-    if (is.null(page$content_blocks) || length(page$content_blocks) == 0) {
+  } else if (isTRUE(is.null(page$text) || !nzchar(page$text))) {
+    if (isTRUE(is.null(page$content_blocks) || length(page$content_blocks) == 0)) {
       content <- c(content, "This page was generated without a template.")
     }
   }
@@ -222,7 +222,7 @@
   lines <- c(lines, "", img_tag, "")
   
   # Add caption if provided
-  if (!is.null(block$caption) && nzchar(block$caption)) {
+  if (isTRUE(!is.null(block$caption) && nzchar(block$caption))) {
     lines <- c(lines, paste0("*", block$caption, "*"), "")
   }
   
@@ -244,7 +244,7 @@
   lines <- c("", paste0("::: {.callout-", type, "}"))
   
   # Add title if provided
-  if (!is.null(block$title) && nzchar(block$title)) {
+  if (isTRUE(!is.null(block$title) && nzchar(block$title))) {
     lines <- c(lines, paste0("## ", block$title))
   }
   
@@ -305,7 +305,7 @@
   # Use Bootstrap card or custom div
   lines <- c("", "<div class='card'>")
   
-  if (!is.null(block$title) && nzchar(block$title)) {
+  if (isTRUE(!is.null(block$title) && nzchar(block$title))) {
     lines <- c(lines, paste0("<div class='card-header'>", block$title, "</div>"))
   }
   
@@ -409,7 +409,7 @@
     "#| echo: false"
   )
   
-  if (!is.null(block$caption) && nzchar(block$caption)) {
+  if (isTRUE(!is.null(block$caption) && nzchar(block$caption))) {
     lines <- c(lines, paste0("#| tbl-cap: \"", block$caption, "\""))
   }
   
@@ -442,7 +442,7 @@
     "#| results: asis"
   )
   
-  if (!is.null(block$caption) && nzchar(block$caption)) {
+  if (isTRUE(!is.null(block$caption) && nzchar(block$caption))) {
     lines <- c(lines, paste0("#| tbl-cap: \"", block$caption, "\""))
   }
   
@@ -676,7 +676,7 @@
   lines <- c("", "```{=html}", value_box_html, "```")
   
   # Add collapsible description if provided
-  if (!is.null(block$description) && nzchar(block$description)) {
+  if (isTRUE(!is.null(block$description) && nzchar(block$description))) {
     # Convert markdown to HTML using pandoc via commonmark
     description_text <- block$description
     
@@ -761,7 +761,7 @@
     lines <- c(lines, value_box_html)
     
     # Add collapsible description if provided
-    if (!is.null(box$description) && nzchar(box$description)) {
+    if (isTRUE(!is.null(box$description) && nzchar(box$description))) {
       # Convert markdown to HTML
       description_text <- box$description
       # Convert [text](url) to <a href="url">text</a>
@@ -867,7 +867,7 @@
   }
 
   # Collect and create all filtered datasets
-  if (!is.null(page$visualizations) && !is.null(page$data_path)) {
+  if (isTRUE(!is.null(page$visualizations) && !is.null(page$data_path))) {
     filter_map <- .collect_unique_filters(page$visualizations)
     
     if (length(filter_map) > 0) {
@@ -881,7 +881,7 @@
         filter_expr <- paste(filter_info$expr, collapse = " ")
         
         # Get source dataset - default to "data" if not specified
-        if (!is.null(filter_info$source_dataset) && nzchar(filter_info$source_dataset)) {
+        if (isTRUE(!is.null(filter_info$source_dataset) && nzchar(filter_info$source_dataset))) {
           source_dataset <- filter_info$source_dataset
         } else {
           source_dataset <- "data"
@@ -898,11 +898,11 @@
   
   # Load table objects from content blocks
   if (!is.null(page$content_blocks)) {
-    table_blocks <- Filter(function(b) b$type %in% c("table", "gt", "reactable", "DT") && !is.null(b$table_file), page$content_blocks)
+    table_blocks <- Filter(function(b) isTRUE(b$type %in% c("table", "gt", "reactable", "DT")) && !is.null(b$table_file), page$content_blocks)
     if (length(table_blocks) > 0) {
       lines <- c(lines, "# Load styled table objects", "")
       for (block in table_blocks) {
-        if (!is.null(block$table_var) && !is.null(block$table_file)) {
+        if (isTRUE(!is.null(block$table_var) && !is.null(block$table_file))) {
           lines <- c(lines, paste0(block$table_var, " <- readRDS('", block$table_file, "')"))
         }
       }

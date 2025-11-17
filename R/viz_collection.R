@@ -1142,11 +1142,23 @@ spec_viz <- function(type, ..., tabgroup = NULL, title = NULL) {
 #' @export
 print.viz_collection <- function(x, ...) {
   total <- length(x$items)
+  
+  # Check if this is a content collection or viz collection
+  is_content_collection <- inherits(x, "content_collection")
+  
   cat("\n")
   cat("╔══════════════════════════════════════════════════════════════════════════\n")
-  cat("║ 📊 VISUALIZATION COLLECTION\n")
+  if (is_content_collection) {
+    cat("║ 📦 CONTENT COLLECTION\n")
+  } else {
+    cat("║ 📊 VISUALIZATION COLLECTION\n")
+  }
   cat("╠══════════════════════════════════════════════════════════════════════════\n")
-  cat("║ Total visualizations: ", total, "\n", sep = "")
+  if (is_content_collection) {
+    cat("║ Total items: ", total, "\n", sep = "")
+  } else {
+    cat("║ Total visualizations: ", total, "\n", sep = "")
+  }
 
   if (total == 0) {
     cat("║ (empty collection)\n")
@@ -1267,15 +1279,41 @@ print.viz_collection <- function(x, ...) {
           v <- items[[j]]
           is_last_item <- (j == length(items)) && !has_children
 
-          # Get visualization details
-          # Handle pagination markers and other content types
-          if (!is.null(v$type) && v$type == "pagination") {
-            type_icon <- "📄"
-            type_label <- "PAGINATION"
-            title_text <- ""
+          # Get visualization/content details
+          # Check if this is a content block (has type field) or a visualization (has viz_type field)
+          if (!is.null(v$type)) {
+            # This is a content block or special marker
+            type_icon <- switch(v$type,
+              "pagination" = "📄",
+              "text" = "📝",
+              "image" = "🖼️",
+              "video" = "🎥",
+              "callout" = "💬",
+              "divider" = "➖",
+              "code" = "💻",
+              "spacer" = "⬜",
+              "gt" = "📋",
+              "reactable" = "📋",
+              "table" = "📋",
+              "DT" = "📋",
+              "iframe" = "🌐",
+              "accordion" = "📂",
+              "card" = "🗂️",
+              "html" = "🔧",
+              "quote" = "💭",
+              "badge" = "🏷️",
+              "metric" = "📊",
+              "value_box" = "📦",
+              "value_box_row" = "📦",
+              "📄"  # default icon
+            )
+            
+            type_label <- toupper(v$type)
+            title_text <- if (!is.null(v$title)) paste0(": ", v$title) else ""
             filter_text <- ""
             badge_text <- ""
-          } else {
+          } else if (!is.null(v$viz_type)) {
+            # This is a visualization
             type_icon <- switch(v$viz_type,
               "timeline" = "📈",
               "stackedbar" = "📊",
@@ -1310,6 +1348,13 @@ print.viz_collection <- function(x, ...) {
             } else {
               ""
             }
+          } else {
+            # Unknown item type
+            type_icon <- "❓"
+            type_label <- "UNKNOWN"
+            title_text <- ""
+            filter_text <- ""
+            badge_text <- ""
           }
 
           if (is_last_item) {

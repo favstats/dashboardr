@@ -986,17 +986,35 @@
   }
 
   if (!is.null(proj$plausible)) {
-    # Plausible script hash (e.g., "pa-XXXXX")
-    # Add to header content for ad-blocker bypass - no domain needed!
-    if (is.character(proj$plausible)) {
+    # Plausible analytics - supports two formats:
+    # 1. Simple domain string: "example.com" → uses Quarto's built-in plausible integration
+    # 2. List with script_hash: list(domain = "example.com", script_hash = "pa-XXX") → uses custom proxy script
+    
+    if (is.list(proj$plausible) && !is.null(proj$plausible$script_hash)) {
+      # Proxy script format with custom hash (for ad-blocker bypass)
+      script_hash <- proj$plausible$script_hash
+      domain <- proj$plausible$domain %||% ""
+      
       header_content <- c(header_content,
                          "        <!-- Privacy-friendly analytics by Plausible -->",
                          paste0("        <script async src=\"https://plausible.io/js/", 
-                                proj$plausible, ".js\"></script>"),
+                                script_hash, ".js\"></script>"),
                          "        <script>",
                          "          window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};",
                          "          plausible.init()",
                          "        </script>")
+    } else {
+      # Standard format - use Quarto's built-in plausible support
+      domain <- if (is.list(proj$plausible)) {
+        proj$plausible$domain
+      } else {
+        proj$plausible
+      }
+      
+      if (!is.null(domain) && nzchar(domain)) {
+        yaml_lines <- c(yaml_lines, "    plausible:")
+        yaml_lines <- c(yaml_lines, paste0("      domain: \"", domain, "\""))
+      }
     }
   }
   

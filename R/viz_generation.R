@@ -18,7 +18,7 @@
     spec <- viz_specs[[i]]
     
     # Check if this is a pagination marker
-    if (!is.null(spec$pagination_break) && isTRUE(spec$pagination_break)) {
+    if (isTRUE(!is.null(spec$pagination_break) && isTRUE(spec$pagination_break))) {
       # Store pagination config in the marker
       pagination_marker <- spec
       
@@ -54,26 +54,71 @@
     spec <- viz_specs[[i]]
     
     # Skip pagination markers - they're handled at page generation level
-    if (!is.null(spec$pagination_break) && isTRUE(spec$pagination_break)) {
+    if (isTRUE(!is.null(spec$pagination_break) && isTRUE(spec$pagination_break))) {
       next
     }
     
-    spec_name <- if (!is.null(names(viz_specs)[i]) && names(viz_specs)[i] != "") {
+    spec_name <- if (isTRUE(!is.null(names(viz_specs)[i]) && names(viz_specs)[i] != "")) {
       names(viz_specs)[i]
     } else {
       paste0("viz_", i)
     }
 
-    # Generate either single viz or tab group
-    if (is.null(spec$type) || spec$type != "tabgroup") {
+    # Check if this is a content block (not a viz)
+    is_content_block <- isTRUE(!is.null(spec$type) && spec$type %in% c(
+      "text", "image", "video", "callout", "divider", "code", "spacer",
+      "gt", "reactable", "table", "DT", "iframe", "accordion", "card",
+      "html", "quote", "badge", "metric", "value_box", "value_box_row"
+    ))
+    
+    if (is_content_block) {
+      # Generate content block using page_generation helpers
+      block_content <- .generate_content_block_inline(spec)
+      if (!is.null(block_content)) {
+        lines <- c(lines, block_content)
+      }
+    } else if (isTRUE(is.null(spec$type) || !isTRUE(spec$type == "tabgroup"))) {
       # For top-level single charts, apply lazy loading if enabled
       lines <- c(lines, .generate_single_viz(spec_name, spec, lazy_load = lazy_load_charts))
     } else {
+      # Tabgroup
       lines <- c(lines, .generate_tabgroup_viz(spec, lazy_load_tabs = lazy_load_tabs))
     }
   }
 
   lines
+}
+
+# Helper to generate content blocks inline (when mixed with viz in tabgroups)
+.generate_content_block_inline <- function(block) {
+  block_type <- block$type
+  
+  # Dispatch to appropriate generator based on type
+  block_content <- switch(block_type,
+    "text" = c("", block$content, ""),
+    "image" = .generate_image_block(block),
+    "callout" = .generate_callout_block(block),
+    "divider" = .generate_divider_block(block),
+    "code" = .generate_code_block(block),
+    "card" = .generate_card_block(block),
+    "accordion" = .generate_accordion_block(block),
+    "iframe" = .generate_iframe_block(block),
+    "video" = .generate_video_block(block),
+    "table" = .generate_table_block(block),
+    "gt" = .generate_gt_block(block),
+    "reactable" = .generate_reactable_block(block),
+    "DT" = .generate_DT_block(block),
+    "spacer" = .generate_spacer_block(block),
+    "html" = .generate_html_block(block),
+    "quote" = .generate_quote_block(block),
+    "badge" = .generate_badge_block(block),
+    "metric" = .generate_metric_block(block),
+    "value_box" = .generate_value_box_block(block),
+    "value_box_row" = .generate_value_box_row_block(block),
+    NULL  # Unknown type - skip
+  )
+  
+  block_content
 }
 
 .generate_single_viz <- function(spec_name, spec, skip_header = FALSE, lazy_load = FALSE, is_first_tab = TRUE) {
@@ -83,7 +128,7 @@
   spec <- spec[names(spec) != "nested_children"]
 
   # Add section header with icon if provided (skip if in tabgroup)
-  if (!skip_header && !is.null(spec$title)) {
+  if (isTRUE(!skip_header && !is.null(spec$title))) {
     header_text <- spec$title
     if (!is.null(spec$icon)) {
       icon_shortcode <- if (grepl("{{< iconify", spec$icon, fixed = TRUE)) {
@@ -97,14 +142,14 @@
   }
 
   # Add text_before_viz if provided
-  if (!is.null(spec$text_before_viz) && nzchar(spec$text_before_viz)) {
+  if (isTRUE(!is.null(spec$text_before_viz) && nzchar(spec$text_before_viz))) {
     lines <- c(lines, "", spec$text_before_viz, "")
   }
   
   # Backward compatibility: handle old text parameter
-  if (!is.null(spec$text) && nzchar(spec$text)) {
+  if (isTRUE(!is.null(spec$text) && nzchar(spec$text))) {
     text_position <- spec$text_position %||% "above"
-    if (text_position == "above" && is.null(spec$text_before_viz)) {
+    if (isTRUE(text_position == "above" && is.null(spec$text_before_viz))) {
       lines <- c(lines, "", spec$text, "")
     }
   }
@@ -151,14 +196,14 @@
   }
 
   # Add text_after_viz if provided
-  if (!is.null(spec$text_after_viz) && nzchar(spec$text_after_viz)) {
+  if (isTRUE(!is.null(spec$text_after_viz) && nzchar(spec$text_after_viz))) {
     lines <- c(lines, "", spec$text_after_viz, "")
   }
   
   # Backward compatibility: handle old text parameter with text_position = "below"
-  if (!is.null(spec$text) && nzchar(spec$text)) {
+  if (isTRUE(!is.null(spec$text) && nzchar(spec$text))) {
     text_position <- spec$text_position %||% "above"
-    if (text_position == "below" && is.null(spec$text_after_viz)) {
+    if (isTRUE(text_position == "below" && is.null(spec$text_after_viz))) {
       lines <- c(lines, "", spec$text, "")
     }
   }
@@ -439,7 +484,7 @@
   args$title_tabset <- NULL
   
   # Remove the data argument if it's the source dataset name (internal param that was passed to add_viz)
-  if ("data" %in% names(args) && is.character(args[["data"]]) && args[["data"]] == spec[["data"]]) {
+  if ("data" %in% names(args) && is.character(args[["data"]]) && !is.null(spec[["data"]]) && args[["data"]] == spec[["data"]]) {
     # This was the source dataset name parameter, not actual data
     # It will be added back as data_var above
   }
@@ -485,9 +530,9 @@
   lines <- character(0)
 
   # Add section header if a label is provided
-  if (!is.null(tabgroup_spec$label) && nzchar(tabgroup_spec$label)) {
+  if (isTRUE(!is.null(tabgroup_spec$label) && nzchar(tabgroup_spec$label))) {
     lines <- c(lines, paste0("## ", tabgroup_spec$label), "")
-  } else if (!is.null(tabgroup_spec$name) && nzchar(tabgroup_spec$name)) {
+  } else if (isTRUE(!is.null(tabgroup_spec$name) && nzchar(tabgroup_spec$name))) {
     lines <- c(lines, paste0("## ", tabgroup_spec$name), "")
   }
 
@@ -501,11 +546,11 @@
   find_text_recursive <- function(items) {
     for (item in items) {
       # Check the item itself
-      if (!is.null(item$text_before_tabset) && nzchar(item$text_before_tabset)) {
+      if (isTRUE(!is.null(item$text_before_tabset) && nzchar(item$text_before_tabset))) {
         return(list(before = item$text_before_tabset, after = item$text_after_tabset))
       }
       # If it's a nested tabgroup, search its visualizations
-      if (!is.null(item$visualizations) && length(item$visualizations) > 0) {
+      if (isTRUE(!is.null(item$visualizations) && length(item$visualizations) > 0)) {
         result <- find_text_recursive(item$visualizations)
         if (!is.null(result$before)) {
           return(result)
@@ -532,9 +577,9 @@
   # First, collect all nested_children tabgroup names to avoid double-rendering
   nested_children_names <- character(0)
   for (viz_item in tabgroup_spec$visualizations) {
-    if (!is.null(viz_item$nested_children)) {
+    if (isTRUE(!is.null(viz_item$nested_children))) {
       for (nc in viz_item$nested_children) {
-        if (!is.null(nc$type) && nc$type == "tabgroup" && !is.null(nc$name)) {
+        if (isTRUE(!is.null(nc$type) && nc$type == "tabgroup" && !is.null(nc$name))) {
           nested_children_names <- c(nested_children_names, nc$name)
         }
       }
@@ -547,17 +592,17 @@
 
     # Check if this is a nested tabgroup
     # Skip if this tabgroup is already rendered as a nested_child (to avoid duplicate headers)
-    if (!is.null(viz$type) && viz$type == "tabgroup") {
-      if (!is.null(viz$name) && viz$name %in% nested_children_names) {
+    if (isTRUE(!is.null(viz$type) && viz$type == "tabgroup")) {
+      if (isTRUE(!is.null(viz$name) && viz$name %in% nested_children_names)) {
         # This tabgroup is already rendered as nested_child, skip it here
         next
       }
       
       # This is a nested tabgroup - recursively generate it
       # Tab header: use label or name
-      tab_title <- if (!is.null(viz$label) && nzchar(viz$label)) {
+      tab_title <- if (isTRUE(!is.null(viz$label) && nzchar(viz$label))) {
         viz$label
-      } else if (!is.null(viz$name) && nzchar(viz$name)) {
+      } else if (isTRUE(!is.null(viz$name) && nzchar(viz$name))) {
         viz$name
       } else {
         paste0("Section ", i)
@@ -566,8 +611,8 @@
       lines <- c(lines, paste0("### ", tab_title), "")
       
       # Apply lazy loading to nested tabgroups if this is not the first tab
-      should_lazy_load_nested <- lazy_load_tabs && !is_first_tab
-      if (should_lazy_load_nested) {
+      should_lazy_load_nested <- isTRUE(lazy_load_tabs && !is_first_tab)
+      if (isTRUE(should_lazy_load_nested)) {
         # Generate unique ID for this nested tabgroup
         chart_id <- paste0("chart-nested-", gsub("[^a-z0-9]", "-", tolower(viz$name %||% paste0("tab-", i))))
         lines <- c(lines,
@@ -588,7 +633,7 @@
       lines <- c(lines, nested_lines)
       
       # Close lazy load container if enabled
-      if (should_lazy_load_nested) {
+      if (isTRUE(should_lazy_load_nested)) {
         lines <- c(lines,
           "",
           ":::",
@@ -599,20 +644,31 @@
     } else {
       # Regular visualization
       # Tab header: use title_tabset if provided, otherwise fall back to title
-      viz_title <- if (!is.null(viz$title_tabset) && nzchar(viz$title_tabset)) {
-        viz$title_tabset
-      } else if (!is.null(viz$title) && length(viz$title) > 0 && nzchar(viz$title)) {
-        viz$title
-      } else {
-        paste0("Chart ", i)
+      # Safely determine viz_title
+      viz_title <- paste0("Chart ", i)  # Default
+      
+      # Check title
+      if (!is.null(viz$title)) {
+        title_char <- as.character(viz$title)[1]
+        if (!is.na(title_char) && nchar(title_char) > 0) {
+          viz_title <- title_char
+        }
+      }
+      
+      # Check title_tabset (takes precedence)
+      if (!is.null(viz$title_tabset)) {
+        title_tabset_char <- as.character(viz$title_tabset)[1]
+        if (!is.na(title_tabset_char) && nchar(title_tabset_char) > 0) {
+          viz_title <- title_tabset_char
+        }
       }
 
       # Add icon to tab header if provided
-      if (!is.null(viz$icon)) {
-        icon_shortcode <- if (grepl("{{< iconify", viz$icon, fixed = TRUE)) {
-          viz$icon
+      if (isTRUE(!is.null(viz$icon) && !is.na(viz$icon))) {
+        if (grepl("{{< iconify", as.character(viz$icon), fixed = TRUE)) {
+          icon_shortcode <- viz$icon
         } else {
-          icon(viz$icon)
+          icon_shortcode <- icon(viz$icon)
         }
         viz_title <- paste0(icon_shortcode, " ", viz_title)
       }
@@ -620,22 +676,41 @@
       lines <- c(lines, paste0("### ", viz_title), "")
 
       # Check if this visualization has nested children
-      has_nested <- !is.null(viz$nested_children) && length(viz$nested_children) > 0
+      has_nested <- isTRUE(!is.null(viz$nested_children) && length(viz$nested_children) > 0)
       
       # Generate visualization code ONLY if:
       # 1. It's not a placeholder type, AND
       # 2. It doesn't have nested children (if it has nested children, it's just a container tab)
-      if (!has_nested && (is.null(viz$type) || viz$type != "placeholder")) {
-        # Apply lazy loading to non-first tabs if enabled
-        should_lazy_load <- lazy_load_tabs && !is_first_tab
-        viz_lines <- .generate_single_viz(paste0("tab_", i), viz, skip_header = TRUE, lazy_load = should_lazy_load, is_first_tab = is_first_tab)
+      
+      # Safely check if should generate viz
+      should_generate <- FALSE
+      if (!has_nested) {
+        is_placeholder <- isTRUE(!is.null(viz$type) && viz$type == "placeholder")
+        if (!is_placeholder) {
+          should_generate <- TRUE
+        }
+      }
+      
+      if (should_generate) {
+        # Check if this is a content block or a visualization
+        is_content <- isTRUE(!is.null(viz$type) && viz$type %in% c("text", "image", "video", "callout", "code", "divider", "spacer", "gt", "reactable", "table", "DT", "iframe", "accordion", "card", "html", "quote", "badge", "metric", "value_box", "value_box_row"))
+        
+        if (is_content) {
+          # For content blocks, use the content block generator
+          viz_lines <- .generate_content_block_inline(viz)
+        } else {
+          # For visualizations, use the standard viz generator
+          should_lazy_load <- isTRUE(lazy_load_tabs && !is_first_tab)
+          viz_lines <- .generate_single_viz(paste0("tab_", i), viz, skip_header = TRUE, lazy_load = should_lazy_load, is_first_tab = is_first_tab)
+        }
+        
         lines <- c(lines, viz_lines)
       }
       
       # Check if this visualization has nested children (nested tabgroups that should appear inside this tab)
-      if (has_nested) {
+      if (isTRUE(has_nested)) {
         # Check if we have tabgroups as nested children - these should become tabs, not headers
-        nested_tabgroups <- Filter(function(x) !is.null(x$type) && x$type == "tabgroup", viz$nested_children)
+        nested_tabgroups <- Filter(function(x) isTRUE(!is.null(x$type) && x$type == "tabgroup"), viz$nested_children)
         
         if (length(nested_tabgroups) > 0) {
           # Create a tabset where each nested tabgroup becomes a TAB
@@ -647,16 +722,16 @@
             is_first_nested_tab <- (j == 1)
             
             # Tab title for the nested tabgroup (e.g., "Age", "Gender")
-            tab_title <- if (!is.null(nested_tabgroup$label) && nzchar(nested_tabgroup$label)) {
+            tab_title <- if (isTRUE(!is.null(nested_tabgroup$label) && nzchar(nested_tabgroup$label))) {
               nested_tabgroup$label
-            } else if (!is.null(nested_tabgroup$name) && nzchar(nested_tabgroup$name)) {
+            } else if (isTRUE(!is.null(nested_tabgroup$name) && nzchar(nested_tabgroup$name))) {
               nested_tabgroup$name
             } else {
               paste0("Section ", j)
             }
             
             # Add icon if provided in tabgroup label
-            if (!is.null(nested_tabgroup$label) && grepl("{{< iconify", nested_tabgroup$label, fixed = TRUE)) {
+            if (isTRUE(!is.null(nested_tabgroup$label) && grepl("{{< iconify", nested_tabgroup$label, fixed = TRUE))) {
               # Label already has icon
             } else if (!is.null(nested_tabgroup$icon)) {
               icon_shortcode <- if (grepl("{{< iconify", nested_tabgroup$icon, fixed = TRUE)) {
@@ -671,8 +746,8 @@
             lines <- c(lines, paste0("#### ", tab_title), "")
             
             # Apply lazy loading to nested tabs if this is not the first nested tab
-            should_lazy_load_nested_child <- lazy_load_tabs && !is_first_nested_tab
-            if (should_lazy_load_nested_child) {
+            should_lazy_load_nested_child <- isTRUE(lazy_load_tabs && !is_first_nested_tab)
+            if (isTRUE(should_lazy_load_nested_child)) {
               chart_id <- paste0("chart-nested-child-", gsub("[^a-z0-9]", "-", tolower(nested_tabgroup$name %||% paste0("tab-", j))))
               lines <- c(lines,
                 "",
@@ -687,7 +762,7 @@
             lines <- c(lines, nested_content)
             
             # Close lazy load container if enabled
-            if (should_lazy_load_nested_child) {
+            if (isTRUE(should_lazy_load_nested_child)) {
               lines <- c(lines,
                 "",
                 ":::",
@@ -730,7 +805,7 @@
   # Add header for this tabgroup if it has a label (for nested tabgroups like "Age")
   # This makes the tabgroup label visible before the tabs
   # Skip header if skip_header is TRUE (when we're creating this as a tab, not a header)
-  if (!skip_header && !is.null(tabgroup_spec$label) && nzchar(tabgroup_spec$label) && depth > 0) {
+  if (isTRUE(!skip_header && !is.null(tabgroup_spec$label) && nzchar(tabgroup_spec$label) && depth > 0)) {
     header_level <- paste0(rep("#", 4 + depth - 1), collapse = "")
     lines <- c(lines, "", paste0(header_level, " ", tabgroup_spec$label), "")
   }
@@ -738,17 +813,33 @@
   # Check if this tabgroup only contains a single visualization (no nested tabgroups)
   # If so, render the visualization directly without wrapping in a tabset
   has_nested_tabgroups <- any(sapply(tabgroup_spec$visualizations, function(v) {
-    !is.null(v$type) && v$type == "tabgroup"
+    isTRUE(!is.null(v$type) && v$type == "tabgroup")
   }))
   
-  single_viz_only <- length(tabgroup_spec$visualizations) == 1 && !has_nested_tabgroups
+  single_viz_only <- isTRUE(length(tabgroup_spec$visualizations) == 1 && !has_nested_tabgroups)
   
-  if (single_viz_only) {
-    # Single visualization - render it directly without tabset wrapper
+  if (isTRUE(single_viz_only)) {
+    # Single visualization or content block - render it directly without tabset wrapper
     viz <- tabgroup_spec$visualizations[[1]]
-    # First (and only) viz in tabgroup, no lazy load needed
-    viz_lines <- .generate_single_viz(paste0("viz_", depth), viz, skip_header = TRUE, lazy_load = FALSE, is_first_tab = TRUE)
-    lines <- c(lines, "", viz_lines)
+    
+    # Check if this is a content block
+    is_content_block <- isTRUE(!is.null(viz$type) && viz$type %in% c(
+      "text", "image", "video", "callout", "divider", "code", "spacer",
+      "gt", "reactable", "table", "DT", "iframe", "accordion", "card",
+      "html", "quote", "badge", "metric", "value_box", "value_box_row"
+    ))
+    
+    if (is_content_block) {
+      # Generate content block
+      block_content <- .generate_content_block_inline(viz)
+      if (!is.null(block_content)) {
+        lines <- c(lines, "", block_content)
+      }
+    } else {
+      # First (and only) viz in tabgroup, no lazy load needed
+      viz_lines <- .generate_single_viz(paste0("viz_", depth), viz, skip_header = TRUE, lazy_load = FALSE, is_first_tab = TRUE)
+      lines <- c(lines, "", viz_lines)
+    }
     return(lines)
   }
   
@@ -761,11 +852,11 @@
   # Only check for text positioning at root level to avoid duplication
   if (depth == 0) {
     for (viz_item in tabgroup_spec$visualizations) {
-      if (!is.null(viz_item$text_before_tabset) && nzchar(viz_item$text_before_tabset)) {
+      if (isTRUE(!is.null(viz_item$text_before_tabset) && nzchar(viz_item$text_before_tabset))) {
         text_before_tabset <- viz_item$text_before_tabset
         break  # Use the first one found
       }
-      if (!is.null(viz_item$text_after_tabset) && nzchar(viz_item$text_after_tabset)) {
+      if (isTRUE(!is.null(viz_item$text_after_tabset) && nzchar(viz_item$text_after_tabset))) {
         text_after_tabset <- viz_item$text_after_tabset
       }
     }
@@ -785,11 +876,11 @@
     is_first_tab <- (i == 1)
 
     # Check if this is a nested tabgroup
-    if (!is.null(viz$type) && viz$type == "tabgroup") {
+    if (isTRUE(!is.null(viz$type) && viz$type == "tabgroup")) {
       # This is a nested tabgroup - recursively generate it
-      tab_title <- if (!is.null(viz$label) && nzchar(viz$label)) {
+      tab_title <- if (isTRUE(!is.null(viz$label) && nzchar(viz$label))) {
         viz$label
-      } else if (!is.null(viz$name) && nzchar(viz$name)) {
+      } else if (isTRUE(!is.null(viz$name) && nzchar(viz$name))) {
         viz$name
       } else {
         paste0("Section ", i)
@@ -808,37 +899,66 @@
       lines <- c(lines, nested_lines)
       
     } else {
-      # Regular visualization
-      # Inside a tabset, ALWAYS add tab headers for each visualization
-      # Otherwise Quarto won't render them as separate tabs
+      # Check if this is a content block or a visualization
+      is_content_block <- isTRUE(!is.null(viz$type) && viz$type %in% c(
+        "text", "image", "video", "callout", "divider", "code", "spacer",
+        "gt", "reactable", "table", "DT", "iframe", "accordion", "card",
+        "html", "quote", "badge", "metric", "value_box", "value_box_row"
+      ))
       
-      viz_title <- if (!is.null(viz$title_tabset) && nzchar(viz$title_tabset)) {
-        viz$title_tabset
-      } else if (!is.null(viz$title) && length(viz$title) > 0 && nzchar(viz$title)) {
-        viz$title
-      } else {
-        paste0("Chart ", i)
-      }
-
-      # Add icon to tab header if provided
-      if (!is.null(viz$icon)) {
-        icon_shortcode <- if (grepl("{{< iconify", viz$icon, fixed = TRUE)) {
-          viz$icon
+      if (is_content_block) {
+        # Content block in a tab
+        # Get a display title for the tab
+        viz_title <- if (isTRUE(!is.null(viz$title) && nzchar(viz$title))) {
+          viz$title
+        } else if (isTRUE(viz$type == "text")) {
+          paste0("Content ", i)
         } else {
-          icon(viz$icon)
+          paste0(tools::toTitleCase(viz$type), " ", i)
         }
-        viz_title <- paste0(icon_shortcode, " ", viz_title)
+        
+        # Use appropriate header level based on depth
+        header_level <- paste0(rep("#", 4 + depth), collapse = "")
+        lines <- c(lines, paste0(header_level, " ", viz_title), "")
+        
+        # Generate content block
+        block_content <- .generate_content_block_inline(viz)
+        if (!is.null(block_content)) {
+          lines <- c(lines, block_content)
+        }
+      } else {
+        # Regular visualization
+        # Inside a tabset, ALWAYS add tab headers for each visualization
+        # Otherwise Quarto won't render them as separate tabs
+        
+        viz_title <- if (isTRUE(!is.null(viz$title_tabset) && nzchar(viz$title_tabset))) {
+          viz$title_tabset
+        } else if (isTRUE(!is.null(viz$title) && length(viz$title)) > 0 && nzchar(viz$title)) {
+          viz$title
+        } else {
+          paste0("Chart ", i)
+        }
+
+        # Add icon to tab header if provided
+        if (!is.null(viz$icon)) {
+          icon_shortcode <- if (grepl("{{< iconify", viz$icon, fixed = TRUE)) {
+            viz$icon
+          } else {
+            icon(viz$icon)
+          }
+          viz_title <- paste0(icon_shortcode, " ", viz_title)
+        }
+
+        # Use appropriate header level based on depth
+        header_level <- paste0(rep("#", 4 + depth), collapse = "")
+        lines <- c(lines, paste0(header_level, " ", viz_title), "")
+
+        # Generate visualization code
+        # Apply lazy loading to non-first tabs if enabled
+        should_lazy_load <- isTRUE(lazy_load_tabs && !is_first_tab)
+        viz_lines <- .generate_single_viz(paste0("tab_", depth, "_", i), viz, skip_header = TRUE, lazy_load = should_lazy_load, is_first_tab = is_first_tab)
+        lines <- c(lines, viz_lines)
       }
-
-      # Use appropriate header level based on depth
-      header_level <- paste0(rep("#", 4 + depth), collapse = "")
-      lines <- c(lines, paste0(header_level, " ", viz_title), "")
-
-      # Generate visualization code
-      # Apply lazy loading to non-first tabs if enabled
-      should_lazy_load <- lazy_load_tabs && !is_first_tab
-      viz_lines <- .generate_single_viz(paste0("tab_", depth, "_", i), viz, skip_header = TRUE, lazy_load = should_lazy_load, is_first_tab = is_first_tab)
-      lines <- c(lines, viz_lines)
     }
 
     if (i < length(tabgroup_spec$visualizations)) {
@@ -850,7 +970,7 @@
   lines <- c(lines, "", ":::", "")
 
   # Add text_after_tabset if provided (only at root level to avoid duplication)
-  if (depth == 0 && !is.null(text_after_tabset)) {
+  if (isTRUE(depth == 0 && !is.null(text_after_tabset))) {
     lines <- c(lines, "", text_after_tabset, "")
   }
 
@@ -894,7 +1014,7 @@
   label <- NULL
   
   # Priority 1: Use tabgroup (most specific context)
-  if (!is.null(spec$tabgroup) && length(spec$tabgroup) > 0) {
+  if (isTRUE(!is.null(spec$tabgroup) && length(spec$tabgroup)) > 0) {
     # Collapse tabgroup vector into single path
     tabgroup_path <- if (is.character(spec$tabgroup) && length(spec$tabgroup) > 1) {
       paste(spec$tabgroup, collapse = "/")
@@ -912,12 +1032,12 @@
     
     if (!is.null(viz_type)) {
       # Type-specific variable extraction
-      if (viz_type == "stackedbar" || viz_type == "bar") {
+      if (isTRUE(viz_type == "stackedbar" || viz_type == "bar")) {
         if (!is.null(spec$x_var)) vars <- c(vars, spec$x_var)
         if (!is.null(spec$stack_var)) vars <- c(vars, spec$stack_var)
         if (!is.null(spec$group_var)) vars <- c(vars, spec$group_var)
       } else if (viz_type == "stackedbars") {
-        if (!is.null(spec$questions) && length(spec$questions) > 0) {
+        if (isTRUE(!is.null(spec$questions) && length(spec$questions)) > 0) {
           vars <- c(vars, spec$questions[1])  # Use first question
         }
       } else if (viz_type == "timeline") {

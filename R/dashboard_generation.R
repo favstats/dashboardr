@@ -241,12 +241,13 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
     
     # Generate each page
     for (page_name in names(proj$pages)) {
-      page <- proj$pages[[page_name]]
+      tryCatch({
+        page <- proj$pages[[page_name]]
 
-      # Skip landing page in regular pages loop - it's handled separately
-      if (!is.null(proj$landing_page) && page_name == proj$landing_page) {
-        next
-      }
+        # Skip landing page in regular pages loop - it's handled separately
+        if (!is.null(proj$landing_page) && page_name == proj$landing_page) {
+          next
+        }
       
       # Skip if in preview mode and page is not in preview list
       if (!is.null(preview_pages) && !page_name %in% preview_pages) {
@@ -287,7 +288,7 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
         for (i in seq_along(page$content_blocks)) {
           block <- page$content_blocks[[i]]
           if (!inherits(block, "content_block")) next
-          if (!block$type %in% c("table", "gt", "reactable", "DT")) next
+          if (!isTRUE(block$type %in% c("table", "gt", "reactable", "DT"))) next
           
           table_counter <- table_counter + 1
           
@@ -371,6 +372,7 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
           }
         }
       }
+      })
     }
 
     # Generate landing page as index.qmd if specified
@@ -519,7 +521,15 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
     }
 
   }, error = function(e) {
-    stop("Failed to generate dashboard: ", e$message)
+    cat("\n=== DETAILED ERROR DEBUG ===\n")
+    cat("Error message:", e$message, "\n\n")
+    cat("Call stack with details:\n")
+    calls <- sys.calls()
+    for(i in seq_along(calls)) {
+      cat(sprintf("%d: %s\n", i, deparse(calls[[i]])[1]))
+    }
+    cat("\n=== END DEBUG ===\n\n")
+    stop("Failed to generate dashboard: ", e$message, call. = FALSE)
   })
 
   # Return project with build info and output directory

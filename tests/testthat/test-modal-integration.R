@@ -12,7 +12,7 @@ test_that("add_modal creates modal content in collection", {
   expect_true(viz$needs_modals)
   
   # Check that content blocks were added
-  expect_true(length(viz$content_blocks) > 0)
+  expect_true(length(viz$items) > 0)
 })
 
 test_that("add_modal works with viz_collection", {
@@ -37,7 +37,7 @@ test_that("add_modal with data.frame converts to table", {
   
   # Should have created content with HTML table
   expect_true(viz$needs_modals)
-  expect_true(length(viz$content_blocks) > 0)
+  expect_true(length(viz$items) > 0)
 })
 
 test_that("add_modal with image includes image tag", {
@@ -78,7 +78,7 @@ test_that("multiple modals can be added to same collection", {
   
   expect_true(viz$needs_modals)
   # Should have multiple content blocks
-  expect_true(length(viz$content_blocks) >= 2)
+  expect_true(length(viz$items) >= 2)
 })
 
 test_that("modal content is properly formatted", {

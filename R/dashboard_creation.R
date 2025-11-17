@@ -302,8 +302,6 @@ create_dashboard <- function(output_dir = "site",
     )
   }
 
-  message("Dashboard project initialized at: ", output_dir)
-
   # Return project object for piping
   structure(list(
     output_dir = output_dir,
@@ -537,67 +535,69 @@ add_dashboard_page <- function(proj, name, data = NULL, data_path = NULL,
   if (!is.null(combined_input)) {
     # Process the combined input (can be content collection, content_block, or list)
     if (is_content(combined_input)) {
-      # Unified content collection system
-      viz_specs <- list()
-      content_list <- list()
+      # Content/viz collection - check if items have tabgroups
+      has_tabgroups <- FALSE
+      if (!is.null(combined_input$items) && length(combined_input$items) > 0) {
+        has_tabgroups <- any(sapply(combined_input$items, function(item) {
+          if (is.null(item) || !is.list(item)) return(FALSE)
+          !is.null(item$tabgroup) && length(item$tabgroup) > 0
+        }))
+      }
+      
+      if (isTRUE(has_tabgroups)) {
+        # Items have tabgroups - pass entire collection as visualizations
+        # so .process_visualizations() can organize them by tabgroup
+        visualizations <- combined_input
+      } else {
+        # No tabgroups - use legacy behavior: separate viz and content blocks
+        viz_specs <- list()
+        content_list <- list()
 
-      for (item in combined_input$items) {
-        # Skip NULL items
-        if (is.null(item)) next
+        for (item in combined_input$items) {
+          if (is.null(item)) next
+          
+          is_coll <- is_content(item)
+          is_block <- is_content_block(item)
 
-        # Check class membership safely
-        is_coll <- is_content(item)
-        is_block <- is_content_block(item)
-
-        if (is_coll) {
-          # Nested content collection - extract its items
-          if (!is.null(item$items) && length(item$items) > 0) {
-            for (sub_item in item$items) {
-              # Skip NULL sub_items
-              if (is.null(sub_item)) next
-
-              # Check if it's a viz or pagination item
-              item_type <- if (is.list(sub_item) && !is.null(sub_item$type)) as.character(sub_item$type)[1] else NULL
-              if (!is.null(item_type) && length(item_type) == 1 && (item_type == "viz" || item_type == "pagination")) {
-                viz_specs <- c(viz_specs, list(sub_item))
-              } else if (is_content_block(sub_item)) {
-                content_list <- c(content_list, list(sub_item))
+          if (is_coll) {
+            if (!is.null(item$items) && length(item$items) > 0) {
+              for (sub_item in item$items) {
+                if (is.null(sub_item)) next
+                item_type <- if (is.list(sub_item) && !is.null(sub_item$type)) as.character(sub_item$type)[1] else NULL
+                if (!is.null(item_type) && length(item_type) == 1 && (item_type == "viz" || item_type == "pagination")) {
+                  viz_specs <- c(viz_specs, list(sub_item))
+                } else if (is_content_block(sub_item)) {
+                  content_list <- c(content_list, list(sub_item))
+                }
               }
             }
+          } else if (is_block) {
+            content_list <- c(content_list, list(item))
+          } else {
+            item_type <- if (is.list(item) && !is.null(item$type)) as.character(item$type)[1] else NULL
+            if (!is.null(item_type) && length(item_type) == 1 && (item_type == "viz" || item_type == "pagination")) {
+              viz_specs <- c(viz_specs, list(item))
+            }
           }
-        } else if (is_block) {
-          # This is other content (text, image, etc)
-          content_list <- c(content_list, list(item))
+        }
+
+        if (length(viz_specs) > 0) {
+          viz_list <- create_viz()
+          viz_list$items <- viz_specs
+          if (!is.null(combined_input$tabgroup_labels)) {
+            viz_list$tabgroup_labels <- combined_input$tabgroup_labels
+          }
+          if (!is.null(combined_input$defaults)) {
+            viz_list$defaults <- combined_input$defaults
+          }
+          visualizations <- viz_list
         } else {
-          # Check if it's a viz or pagination item
-          item_type <- if (is.list(item) && !is.null(item$type)) as.character(item$type)[1] else NULL
-          if (!is.null(item_type) && length(item_type) == 1 && (item_type == "viz" || item_type == "pagination")) {
-            # This is a viz item OR pagination marker - both go to viz_specs
-            viz_specs <- c(viz_specs, list(item))
-          }
+          visualizations <- NULL
         }
-      }
 
-      # Create a viz_collection from the viz specs if we found any
-      if (length(viz_specs) > 0) {
-        viz_list <- create_viz()
-        viz_list$items <- viz_specs
-        # Preserve tabgroup_labels and defaults from original collection
-        if (!is.null(combined_input$tabgroup_labels)) {
-          viz_list$tabgroup_labels <- combined_input$tabgroup_labels
+        if (length(content_list) > 0) {
+          content_blocks <- content_list
         }
-        if (!is.null(combined_input$defaults)) {
-          viz_list$defaults <- combined_input$defaults
-        }
-        visualizations <- viz_list
-      } else {
-        # No viz items found - set visualizations to NULL
-        visualizations <- NULL
-      }
-
-      # Store content blocks
-      if (length(content_list) > 0) {
-        content_blocks <- content_list
       }
     } else if (is_content_block(combined_input)) {
       # Single content block
