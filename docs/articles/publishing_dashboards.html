@@ -42,8 +42,8 @@
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><a class="dropdown-item" href="../articles/getting-started.html">Getting Started</a></li>
-    <li><a class="dropdown-item" href="../articles/publishing_dashboards.html">Publishing Dashboards</a></li>
     <li><a class="dropdown-item" href="../articles/advanced-features.html">Advanced Features</a></li>
+    <li><a class="dropdown-item" href="../articles/publishing_dashboards.html">Publishing Dashboards</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Visualization Types</h6></li>
     <li><a class="dropdown-item" href="../articles/bar_vignette.html">Bar Charts</a></li>
@@ -115,6 +115,12 @@ required!</p>
 <code class="sourceCode R"><span><span class="co"># Install packages if you don't have them</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"usethis"</span>, <span class="st">"gert"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://favstats.github.io/dashboardr/">dashboardr</a></span><span class="op">)</span></span></code></pre></div>
+<blockquote>
+<p><strong>⚡ Already have Git and GitHub set up?</strong></p>
+<p>If you already have Git installed, a GitHub account, and a Personal
+Access Token configured, you can skip directly to <a href="#part-2-publishing-your-dashboard">Part 2: Publishing Your
+Dashboard</a>.</p>
+</blockquote>
 </div>
 <div class="section level2">
 <h2 id="part-1-one-time-setup-do-this-once">Part 1: One-Time Setup (Do This Once)<a class="anchor" aria-label="anchor" href="#part-1-one-time-setup-do-this-once"></a>
@@ -273,7 +279,53 @@ never have to do these steps again.</p>
 <p>Now for the magic command:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/publish_dashboard.html">publish_dashboard</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p><strong>What happens:</strong></p>
+<div class="section level4">
+<h4 id="key-arguments">Key Arguments<a class="anchor" aria-label="anchor" href="#key-arguments"></a>
+</h4>
+<p><strong>Important:</strong> <code><a href="../reference/publish_dashboard.html">publish_dashboard()</a></code> works
+from <strong>your current working directory</strong>. It will:</p>
+<ul>
+<li>Look for your dashboard files in the current folder</li>
+<li>Create a git repository in that folder</li>
+<li>Publish the contents of the <code>/docs</code> folder to GitHub
+Pages</li>
+</ul>
+<p><strong>Main arguments you might want to customize:</strong></p>
+<ul>
+<li>
+<strong><code>message</code></strong> - Your initial commit message
+(default: <code>"Initial commit"</code>)
+<ul>
+<li>Example:
+<code>publish_dashboard(message = "Launch my analysis dashboard")</code>
+</li>
+<li>This appears in your git history and helps you track what was
+published</li>
+</ul>
+</li>
+<li>
+<strong><code>private</code></strong> - Create a private repository
+(default: <code>FALSE</code>)
+<ul>
+<li>Example: <code>publish_dashboard(private = TRUE)</code>
+</li>
+<li>Use this if your dashboard contains sensitive information</li>
+</ul>
+</li>
+<li>
+<strong><code>path</code></strong> - Which folder contains your site
+files (default: <code>"/docs"</code>)
+<ul>
+<li>Usually you don’t need to change this</li>
+<li>The dashboard must be in a <code>/docs</code> folder for GitHub
+Pages to work</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section level4">
+<h4 id="what-happens">What happens:<a class="anchor" aria-label="anchor" href="#what-happens"></a>
+</h4>
 <ol style="list-style-type: decimal">
 <li>Git is initialized in your dashboard folder</li>
 <li>A comprehensive <code>.gitignore</code> file is created
@@ -300,22 +352,20 @@ like:</strong></p>
 <p>Copy this URL and wait 2-5 minutes, then visit it to see your live
 dashboard!</p>
 </div>
+</div>
 <div class="section level3">
-<h3 id="publish-options">Publish Options<a class="anchor" aria-label="anchor" href="#publish-options"></a>
+<h3 id="additional-options">Additional Options<a class="anchor" aria-label="anchor" href="#additional-options"></a>
 </h3>
-<p>You can customize the publishing process:</p>
+<p>For more advanced scenarios:</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Create a private repository</span></span>
-<span><span class="fu"><a href="../reference/publish_dashboard.html">publish_dashboard</a></span><span class="op">(</span>private <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Publish to an organization</span></span>
+<code class="sourceCode R"><span><span class="co"># Publish to an organization instead of your personal account</span></span>
 <span><span class="fu"><a href="../reference/publish_dashboard.html">publish_dashboard</a></span><span class="op">(</span>organisation <span class="op">=</span> <span class="st">"my-organization"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Custom initial commit message</span></span>
-<span><span class="fu"><a href="../reference/publish_dashboard.html">publish_dashboard</a></span><span class="op">(</span>message <span class="op">=</span> <span class="st">"Launch my awesome dashboard!"</span><span class="op">)</span></span>
+<span><span class="co"># Use SSH instead of HTTPS (requires SSH keys set up)</span></span>
+<span><span class="fu"><a href="../reference/publish_dashboard.html">publish_dashboard</a></span><span class="op">(</span>protocol <span class="op">=</span> <span class="st">"ssh"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Use SSH instead of HTTPS</span></span>
-<span><span class="fu"><a href="../reference/publish_dashboard.html">publish_dashboard</a></span><span class="op">(</span>protocol <span class="op">=</span> <span class="st">"ssh"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="co"># Custom branch (advanced - usually not needed)</span></span>
+<span><span class="fu"><a href="../reference/publish_dashboard.html">publish_dashboard</a></span><span class="op">(</span>branch <span class="op">=</span> <span class="st">"gh-pages"</span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
