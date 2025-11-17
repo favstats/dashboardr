@@ -214,25 +214,24 @@ publish_dashboard()  # Uses defaults above
 
 - **`private`** - Create a private repository (default: `FALSE`)
   - Example: `publish_dashboard(private = TRUE)`
-  - Use this if your dashboard contains sensitive information
+  - Use this if your dashboard (code) contains sensitive information
 
 - **`path`** - Which folder contains your site files (default: `"/docs"`)
   - The `/docs` (with leading slash) tells GitHub Pages to serve from the `docs/` folder in your repository root
   - This is where `generate_dashboard()` creates your HTML files
-  - Usually you don't need to change this
 
 ### What happens:
 
 1. Git is initialized in your dashboard folder
 2. A comprehensive `.gitignore` file is created (automatically excludes data files, large files >10MB, and temporary files)
-3. You'll be asked to confirm committing your files (type `1` or `3` when prompted)
+3. You'll be asked to confirm committing your files
 4. A GitHub repository is created
 5. GitHub Pages is configured
 6. Your dashboard is pushed online
 
 **Important notes:**
 
-- You may see prompts asking for confirmation - just type the number to proceed
+- You will see prompts asking for confirmation - just type the number to proceed
 - Your browser may open showing your GitHub repository
 - The function will display your dashboard URL at the end
 - GitHub Pages takes **2-5 minutes** to build your site the first time
@@ -319,7 +318,7 @@ update_dashboard(
   message = "Regenerated all pages"
 )
 
-# Skip confirmation prompt (not recommended)
+# Skip confirmation prompt (not recommended!)
 update_dashboard(ask = FALSE)
 ```
 
