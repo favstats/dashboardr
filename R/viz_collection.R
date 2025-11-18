@@ -311,7 +311,7 @@ combine_viz <- function(...) {
 #' tabs on the generated page. Supports nested tabsets through hierarchy notation.
 #'
 #' @param viz_collection A viz_collection object
-#' @param type Visualization type: "stackedbar", "heatmap", "histogram", "timeline"
+#' @param type Visualization type: "stackedbar", "heatmap", "histogram", "timeline", "scatter", "bar"
 #' @param ... Additional parameters passed to the visualization function
 #' @param tabgroup Optional group ID for organizing related visualizations. Supports:
 #'   - Simple string: `"demographics"` for a single tab group
@@ -425,7 +425,7 @@ combine_viz <- function(...) {
 #' tabs on the generated page. Supports nested tabsets through hierarchy notation.
 #'
 #' @param viz_collection A viz_collection object
-#' @param type Visualization type: "stackedbar", "heatmap", "histogram", "timeline"
+#' @param type Visualization type: "stackedbar", "heatmap", "histogram", "timeline", "scatter", "bar"
 #' @param ... Additional parameters passed to the visualization function
 #' @param tabgroup Optional group ID for organizing related visualizations. Supports:
 #'   - Simple string: `"demographics"` for a single tab group
@@ -576,7 +576,7 @@ add_viz <- function(viz_collection, type = NULL, ..., tabgroup = NULL, title = N
   dot_args <- merged_params[!names(merged_params) %in% c("type", "tabgroup", "title", "title_tabset", "text", "icon", "text_position", "text_before_tabset", "text_after_tabset", "text_before_viz", "text_after_viz", "height", "filter", "data", "drop_na_vars")]
 
   # Validate supported visualization types
-  supported_types <- c("stackedbar", "stackedbars", "heatmap", "histogram", "timeline", "bar")
+  supported_types <- c("stackedbar", "stackedbars", "heatmap", "histogram", "timeline", "bar", "scatter")
 
   # Validate type parameter
   if (is.null(type) || !is.character(type) || length(type) != 1 || nchar(type) == 0) {
@@ -1321,6 +1321,7 @@ print.viz_collection <- function(x, ...) {
               "heatmap" = "🗺️",
               "histogram" = "📉",
               "bar" = "📊",
+              "scatter" = "📍",
               "📊"
             )
 

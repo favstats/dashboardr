@@ -215,7 +215,7 @@
 #' Generate R code for typed visualizations
 #'
 #' Internal function that generates R code for specific visualization types
-#' (stackedbar, heatmap, histogram, timeline) by mapping type names to
+#' (stackedbar, heatmap, histogram, timeline, scatter, bar) by mapping type names to
 #' function names and serializing parameters.
 #'
 #' @param spec Visualization specification list containing type and parameters
@@ -231,7 +231,7 @@
 #' Generate R code for typed visualizations
 #'
 #' Internal function that generates R code for specific visualization types
-#' (stackedbar, heatmap, histogram, timeline) by mapping type names to
+#' (stackedbar, heatmap, histogram, timeline, scatter, bar) by mapping type names to
 #' function names and serializing parameters.
 #'
 #' @param spec Visualization specification list containing type and parameters
@@ -255,6 +255,7 @@
                          "heatmap" = "create_heatmap",
                          "timeline" = "create_timeline",
                          "bar" = "create_bar",
+                         "scatter" = "create_scatter",
                          spec$viz_type
   )
 
@@ -303,6 +304,11 @@
         if (!is.null(spec$x_var)) vars_to_clean <- c(vars_to_clean, spec$x_var)
         if (!is.null(spec$y_var)) vars_to_clean <- c(vars_to_clean, spec$y_var)
         if (!is.null(spec$fill_var)) vars_to_clean <- c(vars_to_clean, spec$fill_var)
+      } else if (spec$viz_type == "scatter") {
+        if (!is.null(spec$x_var)) vars_to_clean <- c(vars_to_clean, spec$x_var)
+        if (!is.null(spec$y_var)) vars_to_clean <- c(vars_to_clean, spec$y_var)
+        if (!is.null(spec$color_var)) vars_to_clean <- c(vars_to_clean, spec$color_var)
+        if (!is.null(spec$size_var)) vars_to_clean <- c(vars_to_clean, spec$size_var)
       }
       
       # Build data pipeline with drop_na if we have variables
