@@ -128,7 +128,9 @@ add_text <- function(content_collection = NULL, text, tabgroup = NULL, ...) {
     # Standalone mode - return just the content block
     return(text_block)
   } else {
-    # Pipeable mode - add to collection and return it
+    # Pipeable mode - add insertion index and add to collection
+    insertion_idx <- length(content_collection$items) + 1
+    text_block$.insertion_index <- insertion_idx
     content_collection$items <- c(content_collection$items, list(text_block))
     return(content_collection)
   }
@@ -243,7 +245,9 @@ add_image <- function(content_collection = NULL, src, alt = NULL, caption = NULL
     # Standalone mode - return just the content block
     return(image_block)
   } else {
-    # Pipeable mode - add to collection and return it
+    # Pipeable mode - add insertion index and add to collection
+    insertion_idx <- length(content_collection$items) + 1
+    image_block$.insertion_index <- insertion_idx
     content_collection$items <- c(content_collection$items, list(image_block))
     return(content_collection)
   }
@@ -277,6 +281,8 @@ add_callout <- function(content, text, type = c("note", "tip", "warning", "cauti
     tabgroup = .parse_tabgroup(tabgroup)
   ), class = "content_block")
   
+  insertion_idx <- length(content$items) + 1
+  callout_block$.insertion_index <- insertion_idx
   content$items <- c(content$items, list(callout_block))
   content
 }
@@ -298,6 +304,8 @@ add_divider <- function(content, style = "default", tabgroup = NULL) {
     tabgroup = .parse_tabgroup(tabgroup)
   ), class = "content_block")
   
+  insertion_idx <- length(content$items) + 1
+  divider_block$.insertion_index <- insertion_idx
   content$items <- c(content$items, list(divider_block))
   content
 }
@@ -325,6 +333,8 @@ add_code <- function(content, code, language = "r", caption = NULL, filename = N
     tabgroup = .parse_tabgroup(tabgroup)
   ), class = "content_block")
   
+  insertion_idx <- length(content$items) + 1
+  code_block$.insertion_index <- insertion_idx
   content$items <- c(content$items, list(code_block))
   content
 }
@@ -346,6 +356,8 @@ add_spacer <- function(content, height = "2rem", tabgroup = NULL) {
     tabgroup = .parse_tabgroup(tabgroup)
   ), class = "content_block")
   
+  insertion_idx <- length(content$items) + 1
+  spacer_block$.insertion_index <- insertion_idx
   content$items <- c(content$items, list(spacer_block))
   content
 }
@@ -387,6 +399,8 @@ add_gt <- function(content, gt_object, caption = NULL, tabgroup = NULL) {
     tabgroup = .parse_tabgroup(tabgroup)
   ), class = "content_block")
   
+  insertion_idx <- length(content$items) + 1
+  gt_block$.insertion_index <- insertion_idx
   content$items <- c(content$items, list(gt_block))
   content
 }
@@ -429,6 +443,8 @@ add_reactable <- function(content, reactable_object, tabgroup = NULL) {
     tabgroup = .parse_tabgroup(tabgroup)
   ), class = "content_block")
   
+  insertion_idx <- length(content$items) + 1
+  reactable_block$.insertion_index <- insertion_idx
   content$items <- c(content$items, list(reactable_block))
   content
 }
@@ -452,6 +468,8 @@ add_table <- function(content, table_object, caption = NULL, tabgroup = NULL) {
     tabgroup = .parse_tabgroup(tabgroup)
   ), class = "content_block")
   
+  insertion_idx <- length(content$items) + 1
+  table_block$.insertion_index <- insertion_idx
   content$items <- c(content$items, list(table_block))
   content
 }
@@ -494,6 +512,8 @@ add_DT <- function(content, table_data, options = NULL, tabgroup = NULL, ...) {
     tabgroup = .parse_tabgroup(tabgroup)
   ), class = "content_block")
   
+  insertion_idx <- length(content$items) + 1
+  dt_block$.insertion_index <- insertion_idx
   content$items <- c(content$items, list(dt_block))
   content
 }
@@ -521,6 +541,8 @@ add_video <- function(content, src, caption = NULL, width = NULL, height = NULL,
     tabgroup = .parse_tabgroup(tabgroup)
   ), class = "content_block")
   
+  insertion_idx <- length(content$items) + 1
+  video_block$.insertion_index <- insertion_idx
   content$items <- c(content$items, list(video_block))
   content
 }
@@ -546,6 +568,8 @@ add_iframe <- function(content, src, height = "500px", width = "100%", tabgroup 
     tabgroup = .parse_tabgroup(tabgroup)
   ), class = "content_block")
   
+  insertion_idx <- length(content$items) + 1
+  iframe_block$.insertion_index <- insertion_idx
   content$items <- c(content$items, list(iframe_block))
   content
 }
@@ -571,6 +595,8 @@ add_accordion <- function(content, title, text, open = FALSE, tabgroup = NULL) {
     tabgroup = .parse_tabgroup(tabgroup)
   ), class = "content_block")
   
+  insertion_idx <- length(content$items) + 1
+  accordion_block$.insertion_index <- insertion_idx
   content$items <- c(content$items, list(accordion_block))
   content
 }
@@ -596,6 +622,8 @@ add_card <- function(content, text, title = NULL, footer = NULL, tabgroup = NULL
     tabgroup = .parse_tabgroup(tabgroup)
   ), class = "content_block")
   
+  insertion_idx <- length(content$items) + 1
+  card_block$.insertion_index <- insertion_idx
   content$items <- c(content$items, list(card_block))
   content
 }
@@ -615,6 +643,8 @@ add_html <- function(content, html, tabgroup = NULL) {
     html = html,
     tabgroup = .parse_tabgroup(tabgroup)
   ), class = "content_block")
+  insertion_idx <- length(content$items) + 1
+  html_block$.insertion_index <- insertion_idx
   content$items <- c(content$items, list(html_block))
   content
 }
@@ -638,6 +668,8 @@ add_quote <- function(content, quote, attribution = NULL, cite = NULL, tabgroup 
     cite = cite,
     tabgroup = .parse_tabgroup(tabgroup)
   ), class = "content_block")
+  insertion_idx <- length(content$items) + 1
+  quote_block$.insertion_index <- insertion_idx
   content$items <- c(content$items, list(quote_block))
   content
 }
@@ -659,6 +691,8 @@ add_badge <- function(content, text, color = "primary", tabgroup = NULL) {
     color = color,
     tabgroup = .parse_tabgroup(tabgroup)
   ), class = "content_block")
+  insertion_idx <- length(content$items) + 1
+  badge_block$.insertion_index <- insertion_idx
   content$items <- c(content$items, list(badge_block))
   content
 }
@@ -686,6 +720,8 @@ add_metric <- function(content, value, title, icon = NULL, color = NULL, subtitl
     subtitle = subtitle,
     tabgroup = .parse_tabgroup(tabgroup)
   ), class = "content_block")
+  insertion_idx <- length(content$items) + 1
+  metric_block$.insertion_index <- insertion_idx
   content$items <- c(content$items, list(metric_block))
   content
 }
@@ -756,6 +792,8 @@ add_value_box <- function(content, title, value, logo_url = NULL, logo_text = NU
   
   value_box_block <- structure(c(list(type = "value_box", tabgroup = tabgroup), box_spec), class = "content_block")
   
+  insertion_idx <- length(content$items) + 1
+  value_box_block$.insertion_index <- insertion_idx
   content$items <- c(content$items, list(value_box_block))
   content
 }
@@ -823,6 +861,10 @@ end_value_box_row <- function(row_container) {
     boxes = row_container$boxes,
     tabgroup = row_container$tabgroup
   ), class = "content_block")
+  
+  # Add insertion index to preserve order
+  insertion_idx <- length(parent_content$items) + 1
+  value_box_row_block$.insertion_index <- insertion_idx
   
   # Add it to the parent content collection
   parent_content$items <- c(parent_content$items, list(value_box_row_block))
