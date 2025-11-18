@@ -633,47 +633,21 @@
 #' @return Character vector of markdown lines
 #' @keywords internal
 .generate_value_box_block <- function(block) {
-  # Determine logo element
-  logo_html <- if (!is.null(block$logo_url)) {
-    paste0("<img src='", block$logo_url, "' style='width: 80px; height: 80px; object-fit: contain;' />")
-  } else if (!is.null(block$logo_text)) {
-    paste0("<div style='font-size: 3rem; font-weight: 700; opacity: 0.3;'>", block$logo_text, "</div>")
-  } else {
-    "<div style='font-size: 3rem; opacity: 0.3;'>📊</div>"
-  }
-  
-  # Build the value box HTML
-  value_box_html <- paste0(
-    "<div class='custom-value-box' style='",
-    "background: ", block$bg_color, "; ",
-    "border-radius: 12px; ",
-    "padding: 2rem; ",
-    "color: white; ",
-    "box-shadow: 0 4px 6px rgba(0,0,0,0.1); ",
-    "transition: transform 0.3s ease, box-shadow 0.3s ease; ",
-    "display: flex; ",
-    "align-items: center; ",
-    "gap: 1.5rem; ",
-    "min-width: 300px; ",
-    "position: relative; ",
-    "overflow: hidden;",
-    "'>",
-    "  <div style='flex-shrink: 0; display: flex; align-items: center; justify-content: center; width: 80px;'>",
-    "    ", logo_html, "  ",
-    "  </div>",
-    "  <div style='flex: 1;'>",
-    "    <div style='font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; opacity: 0.9; margin-bottom: 0.5rem; font-weight: 600;'>",
-    "      ", block$title,
-    "    </div>",
-    "    <div style='font-size: 1.75rem; font-weight: 800; letter-spacing: -0.02em; white-space: nowrap;'>",
-    "      ", block$value,
-    "    </div>",
-    "  </div>",
-    "</div>"
+  # Generate R chunk that calls the render function
+  lines <- c(
+    "",
+    "```{r}",
+    "#| echo: false",
+    "#| results: 'asis'",
+    paste0("dashboardr::render_value_box("),
+    paste0("  title = ", .serialize_arg(block$title), ","),
+    paste0("  value = ", .serialize_arg(block$value), ","),
+    paste0("  bg_color = ", .serialize_arg(block$bg_color), ","),
+    paste0("  logo_url = ", .serialize_arg(block$logo_url), ","),
+    paste0("  logo_text = ", .serialize_arg(block$logo_text)),
+    ")",
+    "```"
   )
-  
-  # Use Quarto raw HTML block to ensure proper rendering
-  lines <- c("", "```{=html}", value_box_html, "```")
   
   # Add collapsible description if provided
   if (isTRUE(!is.null(block$description) && nzchar(block$description))) {
@@ -715,83 +689,31 @@
 #' @return Character vector of markdown lines
 #' @keywords internal
 .generate_value_box_row_block <- function(block) {
-  # Start raw HTML block
-  lines <- c("", "```{=html}", "<div style='display: flex; gap: 1.5rem; flex-wrap: wrap; margin-bottom: 2rem;'>")
+  # Generate R chunk that calls the render function with a list of boxes
+  lines <- c(
+    "",
+    "```{r}",
+    "#| echo: false",
+    "#| results: 'asis'",
+    "dashboardr::render_value_box_row(list("
+  )
   
-  for (box in block$boxes) {
-    # Determine logo element
-    logo_html <- if (!is.null(box$logo_url)) {
-      paste0("<img src='", box$logo_url, "' style='width: 80px; height: 80px; object-fit: contain;' />")
-    } else if (!is.null(box$logo_text)) {
-      paste0("<div style='font-size: 3rem; font-weight: 700; opacity: 0.3;'>", box$logo_text, "</div>")
-    } else {
-      "<div style='font-size: 3rem; opacity: 0.3;'>📊</div>"
-    }
-    
-    # Build individual value box
-    value_box_html <- paste0(
-      "  <div style='flex: 1; min-width: 300px;'>",
-      "    <div class='custom-value-box' style='",
-      "    background: ", box$bg_color, "; ",
-      "    border-radius: 12px; ",
-      "    padding: 2rem; ",
-      "    color: white; ",
-      "    box-shadow: 0 4px 6px rgba(0,0,0,0.1); ",
-      "    transition: transform 0.3s ease, box-shadow 0.3s ease; ",
-      "    display: flex; ",
-      "    align-items: center; ",
-      "    gap: 1.5rem; ",
-      "    position: relative; ",
-      "    overflow: hidden;",
-      "    '>",
-      "      <div style='flex-shrink: 0; display: flex; align-items: center; justify-content: center; width: 80px;'>",
-      "        ", logo_html, "      ",
-      "      </div>",
-      "      <div style='flex: 1;'>",
-      "        <div style='font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; opacity: 0.9; margin-bottom: 0.5rem; font-weight: 600;'>",
-      "          ", box$title,
-      "        </div>",
-      "        <div style='font-size: 1.75rem; font-weight: 800; letter-spacing: -0.02em; white-space: nowrap;'>",
-      "          ", box$value,
-      "        </div>",
-      "      </div>",
-      "    </div>"
+  # Add each box as a list element
+  for (i in seq_along(block$boxes)) {
+    box <- block$boxes[[i]]
+    box_lines <- c(
+      "  list(",
+      paste0("    title = ", .serialize_arg(box$title), ","),
+      paste0("    value = ", .serialize_arg(box$value), ","),
+      paste0("    bg_color = ", .serialize_arg(box$bg_color), ","),
+      paste0("    logo_url = ", .serialize_arg(box$logo_url), ","),
+      paste0("    logo_text = ", .serialize_arg(box$logo_text)),
+      if (i < length(block$boxes)) "  )," else "  )"
     )
-    
-    lines <- c(lines, value_box_html)
-    
-    # Add collapsible description if provided
-    if (isTRUE(!is.null(box$description) && nzchar(box$description))) {
-      # Convert markdown to HTML
-      description_text <- box$description
-      # Convert [text](url) to <a href="url">text</a>
-      description_text <- gsub("\\[([^]]+)\\]\\(([^)]+)\\)", "<a href='\\2' target='_blank' rel='noopener'>\\1</a>", description_text)
-      # Convert **text** to <strong>text</strong>
-      description_text <- gsub("\\*\\*([^*]+)\\*\\*", "<strong>\\1</strong>", description_text)
-      # Convert *text* to <em>text</em>
-      description_text <- gsub("\\*([^*]+)\\*", "<em>\\1</em>", description_text)
-      # Convert line breaks to <br>
-      description_text <- gsub("\n", "<br>", description_text)
-      
-      description_html <- paste0(
-        "    <details style='background-color: #f8f9fa; border: 1px solid rgba(0, 0, 0, 0.08); border-radius: 8px; padding: 1rem; margin-top: 1rem;'>",
-        "      <summary style='cursor: pointer; font-weight: 600; font-size: 0.9rem; user-select: none; list-style: none; display: flex; justify-content: space-between; align-items: center;'>",
-        "        <span>", box$description_title, "</span>",
-        "        <span class='expand-icon' style='font-size: 0.8rem; opacity: 0.5; transition: transform 0.3s ease, opacity 0.3s ease; transform: rotate(0deg);'>▼</span>",
-        "      </summary>",
-        "      <div style='margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid rgba(0, 0, 0, 0.1); font-size: 0.85rem;'>",
-        "        ", description_text,
-        "      </div>",
-        "    </details>"
-      )
-      lines <- c(lines, description_html)
-    }
-    
-    lines <- c(lines, "  </div>")
+    lines <- c(lines, box_lines)
   }
   
-  # Close raw HTML block
-  lines <- c(lines, "</div>", "```", "")
+  lines <- c(lines, "))", "```", "")
   lines
 }
 
