@@ -4,12 +4,14 @@
 \alias{add_divider}
 \title{Add horizontal divider}
 \usage{
-add_divider(content, style = "default")
+add_divider(content, style = "default", tabgroup = NULL)
 }
 \arguments{
 \item{content}{A content_collection or viz_collection object}
 
 \item{style}{Divider style ("default", "thick", "dashed", "dotted")}
+
+\item{tabgroup}{Optional tabgroup for organizing content (character vector for nested tabs)}
 }
 \value{
 Updated content_collection

@@ -12,7 +12,8 @@ add_value_box(
   logo_text = NULL,
   bg_color = "#2c3e50",
   description = NULL,
-  description_title = "About this source"
+  description_title = "About this source",
+  tabgroup = NULL
 )
 }
 \arguments{
@@ -31,6 +32,8 @@ add_value_box(
 \item{description}{Optional collapsible description text (markdown supported)}
 
 \item{description_title}{Title for collapsible section, default "About this source"}
+
+\item{tabgroup}{Optional tabgroup for organizing content (character vector for nested tabs)}
 }
 \description{
 Creates a modern value box with optional logo, custom background color,

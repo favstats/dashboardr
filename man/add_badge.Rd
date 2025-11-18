@@ -4,7 +4,7 @@
 \alias{add_badge}
 \title{Add a status badge}
 \usage{
-add_badge(content, text, color = "primary")
+add_badge(content, text, color = "primary", tabgroup = NULL)
 }
 \arguments{
 \item{content}{Content collection object}
@@ -12,6 +12,8 @@ add_badge(content, text, color = "primary")
 \item{text}{Badge text}
 
 \item{color}{Badge color (success, warning, danger, info, primary, secondary)}
+
+\item{tabgroup}{Optional tabgroup for organizing content (character vector for nested tabs)}
 }
 \description{
 Add a status badge

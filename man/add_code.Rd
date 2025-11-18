@@ -4,7 +4,14 @@
 \alias{add_code}
 \title{Add code block}
 \usage{
-add_code(content, code, language = "r", caption = NULL, filename = NULL)
+add_code(
+  content,
+  code,
+  language = "r",
+  caption = NULL,
+  filename = NULL,
+  tabgroup = NULL
+)
 }
 \arguments{
 \item{content}{A content_collection or viz_collection object}
@@ -16,6 +23,8 @@ add_code(content, code, language = "r", caption = NULL, filename = NULL)
 \item{caption}{Optional caption}
 
 \item{filename}{Optional filename to display}
+
+\item{tabgroup}{Optional tabgroup for organizing content (character vector for nested tabs)}
 }
 \value{
 Updated content_collection

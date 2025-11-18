@@ -49,32 +49,103 @@
 #' @return A `highcharter` heatmap object.
 #'
 #' @examples
-#' \dontrun{
-#' # Example 1: Basic heatmap with average values
-#' plot1 <- create_heatmap(
-#'   data = survey_data,
-#'   x_var = "education",
-#'   y_var = "gender",
-#'   value_var = "age",
-#'   title = "Average Age by Education and Gender",
+#'
+#' # Load the dataset
+#' data(gss_panel20)
+#'
+#' # Example 1: Basic heatmap – no mapped values or other customization
+#' create_heatmap(
+#'   data = gss_panel20,
+#'   x_var = "degree_1a",
+#'   y_var = "sex_1a",
+#'   value_var = "age_1a",
+#'   title = "Average Age by Education and Sex",
 #'   x_label = "Education Level",
+#'   y_label = "Sex",
+#'   value_label = "Mean Age"
+#' )
+#'
+#'
+#' # Example 2: Heatmap With Custom Variable Mapping and Colors
+#'
+#' region_map <- list("1" = "New England",
+#' "2" = "Mid-Atlantic",
+#' "3" = "East North Central",
+#' "4" = "West North Central",
+#' "5" = "South Atlantic",
+#' "6" = "Deep South",
+#' "7" = "West South Central",
+#' "8" = "Mountain",
+#' "9" = "West Coast"
+#' )
+#' sex_map <- list("1" = "Male",
+#'                "2" = "Female")
+#'
+#' create_heatmap(
+#'   data = gss_panel20,
+#'   x_var = "region_1a",
+#'   y_var = "sex_1a",
+#'   value_var = "satfin_1a",
+#'   x_map_values = region_map,
+#'   y_map_values = sex_map,
+#'   value_label = "Satisfaction",
+#'   x_label = "U.S. Region",
 #'   y_label = "Gender",
-#'   value_label = "Average Age"
+#'   title = "Satisfaction with Financial Situation",
+#'   subtitle = "Per U.S. Region and Gender",
+#'   color_palette = c("#f7fbff", "darkgreen"),
+#'   color_min = 1,
+#'   color_max = 3
 #' )
-#' 
-#' # Example 2: Weighted heatmap using survey weights
-#' plot2 <- create_heatmap(
-#'   data = survey_data,
-#'   x_var = "region",
-#'   y_var = "income_bracket",
-#'   value_var = "satisfaction_score",
-#'   weight_var = "survey_weight",  # Use survey weights for accurate representation
-#'   title = "Weighted Average Satisfaction by Region and Income",
-#'   subtitle = "Using survey weights for population representation"
+#'
+#'
+#' # Example 3: Handling missing categories explicitly
+#'
+#' edu_map = list("0" = "less than high school",
+#' "1" =  "high school",
+#' "2" = "associate/junior college",
+#' "3" = "bachelor's",
+#' "4" = "graduate")
+#'
+#' create_heatmap(
+#' data = gss_panel20,
+#' x_var = "region_1a",
+#' y_var = "degree_1a",
+#' value_var = "income_1a",
+#' x_map_values = region_map,
+#' y_map_values = edu_map,
+#' color_min = 8,
+#' color_max = 12,
+#' value_label = "Income",
+#' x_label = "U.S. Region",
+#' y_label = "Education",
+#' include_na = TRUE,
+#' na_label_x = "Region Missing",
+#' na_label_y = "Degree Missing",
+#' na_color = "grey",
+#' title = "Average Income by Region and Education (Including Missing)"
 #' )
-#' }
-#' 
-#' plot1
+#'
+#'
+#' # Example 4: Custom order of education levels and relabeling of sex
+#' create_heatmap(
+#' data = gss_panel20,
+#' x_var = "degree_1a",
+#' y_var = "sex_1a",
+#' value_var = "income_1a",
+#' x_map_values = edu_map,
+#' x_order = c("less than high school", "high school", "associate/junior college",
+#' "bachelor's", "graduate"),
+#' y_map_values = sex_map,
+#' y_label = "Gender",
+#' x_label = "Education Level",
+#' value_label = "Income Level",
+#' title = "Average Income by Education Level and Sex",
+#' subtitle = "Custom order and relabeled categories",
+#' color_palette = c("#ffffe0", "#31a354")
+#' )
+#'
+#'
 #'
 #' @details
 #' This function performs the following steps:
@@ -167,7 +238,7 @@ create_heatmap <- function(data,
     }
     vars_to_select <- c(vars_to_select, weight_var)
   }
-  
+
   df_plot <- tibble::as_tibble(data) |>
     dplyr::select(dplyr::all_of(vars_to_select)) |>
     dplyr::rename(
@@ -175,7 +246,7 @@ create_heatmap <- function(data,
       .y_raw = !!rlang::sym(y_var), # Use _raw to differentiate before processing
       .value_plot = !!rlang::sym(value_var)
     )
-  
+
   # Rename weight_var if provided
   if (!is.null(weight_var)) {
     df_plot <- df_plot |>

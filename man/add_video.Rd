@@ -4,7 +4,14 @@
 \alias{add_video}
 \title{Add video}
 \usage{
-add_video(content, src, caption = NULL, width = NULL, height = NULL)
+add_video(
+  content,
+  src,
+  caption = NULL,
+  width = NULL,
+  height = NULL,
+  tabgroup = NULL
+)
 }
 \arguments{
 \item{content}{A content_collection object}
@@ -16,6 +23,8 @@ add_video(content, src, caption = NULL, width = NULL, height = NULL)
 \item{width}{Optional width}
 
 \item{height}{Optional height}
+
+\item{tabgroup}{Optional tabgroup for organizing content (character vector for nested tabs)}
 }
 \value{
 Updated content_collection

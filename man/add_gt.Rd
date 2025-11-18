@@ -4,7 +4,7 @@
 \alias{add_gt}
 \title{Add gt table}
 \usage{
-add_gt(content, gt_object, caption = NULL)
+add_gt(content, gt_object, caption = NULL, tabgroup = NULL)
 }
 \arguments{
 \item{content}{A content_collection object}
@@ -12,6 +12,8 @@ add_gt(content, gt_object, caption = NULL)
 \item{gt_object}{A gt table object (from gt::gt()) OR a data frame (will be auto-converted)}
 
 \item{caption}{Optional caption}
+
+\item{tabgroup}{Optional tabgroup for organizing content (character vector for nested tabs)}
 }
 \value{
 Updated content_collection

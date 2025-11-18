@@ -4,7 +4,7 @@
 \alias{add_iframe}
 \title{Add iframe}
 \usage{
-add_iframe(content, src, height = "500px", width = "100\%")
+add_iframe(content, src, height = "500px", width = "100\%", tabgroup = NULL)
 }
 \arguments{
 \item{content}{A content_collection object}
@@ -14,6 +14,8 @@ add_iframe(content, src, height = "500px", width = "100\%")
 \item{height}{iframe height (default: "500px")}
 
 \item{width}{iframe width (default: "100\%")}
+
+\item{tabgroup}{Optional tabgroup for organizing content (character vector for nested tabs)}
 }
 \value{
 Updated content_collection

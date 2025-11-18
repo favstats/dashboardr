@@ -4,7 +4,7 @@
 \alias{add_quote}
 \title{Add a blockquote}
 \usage{
-add_quote(content, quote, attribution = NULL, cite = NULL)
+add_quote(content, quote, attribution = NULL, cite = NULL, tabgroup = NULL)
 }
 \arguments{
 \item{content}{Content collection object}
@@ -14,6 +14,8 @@ add_quote(content, quote, attribution = NULL, cite = NULL)
 \item{attribution}{Optional attribution/source}
 
 \item{cite}{Optional citation URL}
+
+\item{tabgroup}{Optional tabgroup for organizing content (character vector for nested tabs)}
 }
 \description{
 Add a blockquote

@@ -4,7 +4,7 @@
 \alias{add_table}
 \title{Add generic table (data frame)}
 \usage{
-add_table(content, table_object, caption = NULL)
+add_table(content, table_object, caption = NULL, tabgroup = NULL)
 }
 \arguments{
 \item{content}{A content_collection object}
@@ -12,6 +12,8 @@ add_table(content, table_object, caption = NULL)
 \item{table_object}{A data frame or tibble}
 
 \item{caption}{Optional caption}
+
+\item{tabgroup}{Optional tabgroup for organizing content (character vector for nested tabs)}
 }
 \value{
 Updated content_collection
