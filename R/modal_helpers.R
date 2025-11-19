@@ -149,6 +149,7 @@ modal_content <- function(modal_id, ..., title = NULL, image = NULL, text = NULL
 #' @param title Modal title (optional)
 #' @param modal_content Text content - can be plain text, HTML, or data.frame
 #' @param image Optional image URL or path
+#' @param image_width Width of the image (default "100%"). Can be percentage ("70%") or pixels ("500px")
 #' @param ... Additional content (data.frames will be converted to tables)
 #'
 #' @return Updated content_collection with modal added
@@ -166,13 +167,14 @@ modal_content <- function(modal_id, ..., title = NULL, image = NULL, text = NULL
 #'     modal_content = "Detailed analysis here..."
 #'   )
 #' 
-#' # With image
+#' # With image (custom width)
 #' content <- create_viz() %>%
 #'   add_viz(type = "column", x_var = "x", y_var = "y") %>%
 #'   add_modal(
 #'     modal_id = "chart-details",
 #'     title = "Chart Details",
 #'     image = "chart.png",
+#'     image_width = "70%",  # Control image width
 #'     modal_content = "This chart shows..."
 #'   )
 #' 
@@ -186,7 +188,7 @@ modal_content <- function(modal_id, ..., title = NULL, image = NULL, text = NULL
 #'   )
 #' }
 add_modal <- function(content_collection, modal_id, title = NULL, 
-                      modal_content = NULL, image = NULL, ...) {
+                      modal_content = NULL, image = NULL, image_width = "100%", ...) {
   
   # Convert viz_collection to content_collection if needed
   if (inherits(content_collection, "viz_collection") && 
@@ -207,7 +209,7 @@ add_modal <- function(content_collection, modal_id, title = NULL,
   
   # Add image
   if (!is.null(image)) {
-    html_parts <- c(html_parts, paste0('<img src="', image, '" style="max-width:100%; height:auto;">'))
+    html_parts <- c(html_parts, paste0('<img src="', image, '" style="max-width:', image_width, '; height:auto;">'))
   }
   
   # Add content
