@@ -16,7 +16,7 @@ Character vector of R code lines for the visualization
 }
 \description{
 Internal function that generates R code for specific visualization types
-(stackedbar, heatmap, histogram, timeline) by mapping type names to
+(stackedbar, heatmap, histogram, timeline, scatter, bar) by mapping type names to
 function names and serializing parameters.
 }
 \details{
@@ -29,7 +29,7 @@ Generate R code for typed visualizations
 }
 
 Internal function that generates R code for specific visualization types
-(stackedbar, heatmap, histogram, timeline) by mapping type names to
+(stackedbar, heatmap, histogram, timeline, scatter, bar) by mapping type names to
 function names and serializing parameters.
 
 This function:

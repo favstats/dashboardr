@@ -10,7 +10,8 @@ add_callout(
   type = c("note", "tip", "warning", "caution", "important"),
   title = NULL,
   icon = NULL,
-  collapse = FALSE
+  collapse = FALSE,
+  tabgroup = NULL
 )
 }
 \arguments{
@@ -25,6 +26,8 @@ add_callout(
 \item{icon}{Optional icon}
 
 \item{collapse}{Whether callout is collapsible}
+
+\item{tabgroup}{Optional tabgroup for organizing content (character vector for nested tabs)}
 }
 \value{
 Updated content_collection

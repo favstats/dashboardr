@@ -55,7 +55,7 @@ or "Percentage of Respondents".}
 
 \item{stack_label}{Optional string. Title for the stack legend. Defaults to \code{stack_var}.}
 
-\item{stacked_type}{One of "normal" (counts) or "percent" (100\% stacked). Default "normal".}
+\item{stacked_type}{One of "counts" or "percent" (100\% stacked). Default "normal".}
 
 \item{tooltip_prefix}{Optional string prepended to tooltip values.}
 
@@ -136,10 +136,6 @@ This function performs the following steps:
 library(gssr)
 data(gss_panel20)
 
-gss_recent <- gss_panel20 \%>\%
-  filter(year >= 2010) \%>\%
-  select(age, degree, happy, sex, race, year, polviews, attend)
-
 # Example 1: Basic stacked bar (excluding NAs)
 plot1 <- create_stackedbar(
   data = gss_panel20,
@@ -153,6 +149,13 @@ plot1 <- create_stackedbar(
   include_na = FALSE  # Exclude missing values
 )
 plot1
+
+education_map = list("less than high school" = "High School or Less",
+                    "high school" = "High School",
+                    "associate/junior college" = "Associate or Junior College",
+                    "bachelor's" = "Bachelor's Degree",
+                    "graduate" = "Master's Degree or Higher"
+                   )
 
 # Example 2: Including NA values with custom labels
 plot2 <- create_stackedbar(
@@ -169,24 +172,38 @@ plot2 <- create_stackedbar(
 )
 plot2
 
-# Example 3: Percentage stacked with NA handling
+education_order = list("High School or Less",
+                      "High School",
+                      "Associate or Junior College",
+                      "Bachelor's Degree",
+                      "Master's Degree or Higher"
+)
+
+happiness_map = list("very happy" = "Very Happy",
+                    "pretty happy" = "Pretty Happy",
+                    "not too happy" = "Not Too Happy"
+)
+
+# Example 3: Percentage stacked with NA handling and custom ordering and stack labels
 plot3 <- create_stackedbar(
   data = gss_panel20,
-  x_var = "degree",
-  stack_var = "happy",
+  x_var = "degree_1a",
+  stack_var = "happy_1a",
   title = "Happiness Distribution by Education Level",
   subtitle = "Percentage within each education category",
   x_label = "Education Level",
   y_label = "Percentage",
-  stack_label = "Happiness Level",
+  stack_label = "Reported Happiness",
   stacked_type = "percent",
-  x_order = education_order,
+  stack_map_values = "happiness_map"
+  x_map_values = education_map,
   stack_order = c("Very Happy", "Pretty Happy", "Not Too Happy"),
   tooltip_suffix = "\%",
-  color_palette = c("#2E8B57", "#FFD700", "#CD5C5C"),
+  color_palette = c("#2E8B57", "#FFD700", "#CD5C5C", "grey"),
   include_na = TRUE,
   na_label_x = "Missing",
-  na_label_stack = "No Answer"
+  na_label_stack = "No Answer",
+  x_order = education_order
 )
 plot3
 
@@ -194,6 +211,9 @@ plot3
 age_breaks <- c(18, 30, 45, 60, 75, Inf)
 age_labels <- c("18-29", "30-44", "45-59", "60-74", "75+")
 gss_panel20$age_1a_numeric <- as.numeric(gss_panel20$age_1a)
+stack_order = list("extremely liberal", "liberal", "slightly liberal",
+                   "moderate, middle of the road", "slightly conservative",
+                   "conservative", "extremely conservative")
 
 plot4 <- create_stackedbar(
   data = gss_panel20,
@@ -207,41 +227,31 @@ plot4 <- create_stackedbar(
   x_bin_labels = age_labels,
   stacked_type = "percent",
   tooltip_suffix = "\%",
+  color_palette = c("darkblue", "blue", "lightblue", "purple", "tomato",  "red", "darkred"),
   include_na = FALSE  # Exclude NAs for cleaner visualization
 )
 plot4
 
 # Example 5: Custom value mapping with NA inclusion
-sex_map <- list("Male" = "Men", "Female" = "Women")
+sex_map <- list("male" = "Men", "female" = "Women")
 
 plot5 <- create_stackedbar(
-  data = gss_recent,
-  x_var = "happy",
-  stack_var = "sex",
+  data = gss_panel20,
+  x_var = "happy_1a",
+  stack_var = "sex_1a",
+  x_label = "Reported Happiness",
   title = "Gender Distribution Across Happiness Levels",
   x_order = c("Very Happy", "Pretty Happy", "Not Too Happy"),
   stack_map_values = sex_map,
+  x_map_values = happiness_map,
   stack_order = c("Women", "Men"),
-  stacked_type = "normal",
+  stacked_type = "counts",
   tooltip_prefix = "Count: ",
   include_na = TRUE,
   na_label_x = "Happiness Not Reported",
   na_label_stack = "Gender Not Specified"
 )
 plot5
-
-# Example 6: Using weighted data
-# Assuming your data has a weight column
-plot6 <- create_stackedbar(
-  data = survey_data,
-  x_var = "education",
-  stack_var = "satisfaction",
-  weight_var = "survey_weight",  # Use this column for weighting
-  title = "Weighted Satisfaction by Education Level",
-  subtitle = "Using survey weights for accurate representation",
-  stacked_type = "percent"
-)
-plot6
 
 
 }

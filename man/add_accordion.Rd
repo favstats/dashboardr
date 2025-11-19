@@ -4,7 +4,7 @@
 \alias{add_accordion}
 \title{Add collapsible accordion/details section}
 \usage{
-add_accordion(content, title, text, open = FALSE)
+add_accordion(content, title, text, open = FALSE, tabgroup = NULL)
 }
 \arguments{
 \item{content}{A content_collection or viz_collection object}
@@ -14,6 +14,8 @@ add_accordion(content, title, text, open = FALSE)
 \item{text}{Section content}
 
 \item{open}{Whether section starts open (default: FALSE)}
+
+\item{tabgroup}{Optional tabgroup for organizing content (character vector for nested tabs)}
 }
 \value{
 Updated content_collection

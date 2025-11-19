@@ -27,7 +27,7 @@ add_viz(
 \arguments{
 \item{viz_collection}{A viz_collection object}
 
-\item{type}{Visualization type: "stackedbar", "heatmap", "histogram", "timeline"}
+\item{type}{Visualization type: "stackedbar", "heatmap", "histogram", "timeline", "scatter", "bar"}
 
 \item{...}{Additional parameters passed to the visualization function}
 

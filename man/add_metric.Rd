@@ -4,7 +4,15 @@
 \alias{add_metric}
 \title{Add a metric/value box}
 \usage{
-add_metric(content, value, title, icon = NULL, color = NULL, subtitle = NULL)
+add_metric(
+  content,
+  value,
+  title,
+  icon = NULL,
+  color = NULL,
+  subtitle = NULL,
+  tabgroup = NULL
+)
 }
 \arguments{
 \item{content}{Content collection object}
@@ -18,6 +26,8 @@ add_metric(content, value, title, icon = NULL, color = NULL, subtitle = NULL)
 \item{color}{Optional color theme}
 
 \item{subtitle}{Optional subtitle text}
+
+\item{tabgroup}{Optional tabgroup for organizing content (character vector for nested tabs)}
 }
 \description{
 Add a metric/value box

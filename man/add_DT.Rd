@@ -4,7 +4,7 @@
 \alias{add_DT}
 \title{Add DT datatable}
 \usage{
-add_DT(content, table_data, options = NULL, ...)
+add_DT(content, table_data, options = NULL, tabgroup = NULL, ...)
 }
 \arguments{
 \item{content}{A content_collection object}
@@ -12,6 +12,8 @@ add_DT(content, table_data, options = NULL, ...)
 \item{table_data}{A DT datatable object (from DT::datatable()) OR a data frame/matrix (will be auto-converted)}
 
 \item{options}{List of DT options (only used if passing a data frame)}
+
+\item{tabgroup}{Optional tabgroup for organizing content (character vector for nested tabs)}
 
 \item{...}{Additional arguments passed to DT::datatable() (only used if passing a data frame)}
 }

@@ -4,12 +4,14 @@
 \alias{add_spacer}
 \title{Add vertical spacer}
 \usage{
-add_spacer(content, height = "2rem")
+add_spacer(content, height = "2rem", tabgroup = NULL)
 }
 \arguments{
 \item{content}{A content_collection or viz_collection object}
 
 \item{height}{Height (CSS unit, e.g. "2rem", "50px")}
+
+\item{tabgroup}{Optional tabgroup for organizing content (character vector for nested tabs)}
 }
 \value{
 Updated content_collection

@@ -4,12 +4,14 @@
 \alias{add_html}
 \title{Add raw HTML content}
 \usage{
-add_html(content, html)
+add_html(content, html, tabgroup = NULL)
 }
 \arguments{
 \item{content}{Content collection object}
 
 \item{html}{Raw HTML string}
+
+\item{tabgroup}{Optional tabgroup for organizing content (character vector for nested tabs)}
 }
 \description{
 Add raw HTML content

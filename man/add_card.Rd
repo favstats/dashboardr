@@ -4,7 +4,7 @@
 \alias{add_card}
 \title{Add card}
 \usage{
-add_card(content, text, title = NULL, footer = NULL)
+add_card(content, text, title = NULL, footer = NULL, tabgroup = NULL)
 }
 \arguments{
 \item{content}{A content_collection or viz_collection object}
@@ -14,6 +14,8 @@ add_card(content, text, title = NULL, footer = NULL)
 \item{title}{Card title}
 
 \item{footer}{Optional card footer}
+
+\item{tabgroup}{Optional tabgroup for organizing content (character vector for nested tabs)}
 }
 \value{
 Updated content_collection

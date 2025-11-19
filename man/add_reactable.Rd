@@ -4,12 +4,14 @@
 \alias{add_reactable}
 \title{Add reactable table}
 \usage{
-add_reactable(content, reactable_object)
+add_reactable(content, reactable_object, tabgroup = NULL)
 }
 \arguments{
 \item{content}{A content_collection object}
 
 \item{reactable_object}{A reactable object (from reactable::reactable()) OR a data frame (will be auto-converted)}
+
+\item{tabgroup}{Optional tabgroup for organizing content (character vector for nested tabs)}
 }
 \value{
 Updated content_collection
