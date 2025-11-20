@@ -101,7 +101,8 @@ reference:
   - generate_dashboard
   - publish_dashboard
   - update_dashboard
-  - add_loading_overlay
+  - create_loading_overlay
+  - create_pagination_nav
   - add_powered_by_dashboardr
 
 - title: Demo Dashboards
@@ -132,6 +133,7 @@ reference:
   - create_stackedbars
   - create_timeline
   - create_heatmap
+  - create_scatter
   
 - title: Navigation & Layout
   desc: Functions for dashboard navigation and structure
@@ -182,6 +184,8 @@ reference:
   - add_value_box
   - add_value_box_row
   - end_value_box_row
+  - render_value_box
+  - render_value_box_row
 
 - title: Embedded Content
   desc: Functions for embedding external content

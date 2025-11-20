@@ -68,7 +68,7 @@ test_that("overlay chunk is NOT generated when overlay = FALSE", {
   qmd_content <- readLines(file.path(tempdir(), "index.qmd"))
   qmd_text <- paste(qmd_content, collapse = "\n")
   
-  expect_false(grepl("add_loading_overlay", qmd_text, fixed = TRUE))
+  expect_false(grepl("create_loading_overlay", qmd_text, fixed = TRUE))
 })
 
 test_that("overlay chunk IS generated when overlay = TRUE", {
@@ -81,7 +81,7 @@ test_that("overlay chunk IS generated when overlay = TRUE", {
   qmd_content <- readLines(file.path(tempdir(), "index.qmd"))
   qmd_text <- paste(qmd_content, collapse = "\n")
   
-  expect_true(grepl("add_loading_overlay", qmd_text, fixed = TRUE))
+  expect_true(grepl("create_loading_overlay", qmd_text, fixed = TRUE))
   # Skip checking for specific library import - implementation detail
   skip_if(TRUE, "Test checks for specific library import which may change")
 })
@@ -96,7 +96,7 @@ test_that("overlay chunk appears in correct position", {
   qmd_content <- readLines(file.path(tempdir(), "index.qmd"))
   
   # Find overlay chunk - should appear after YAML and text
-  overlay_line <- which(grepl("add_loading_overlay", qmd_content))[1]
+  overlay_line <- which(grepl("create_loading_overlay", qmd_content))[1]
   yaml_end <- which(grepl("^---$", qmd_content))[2]  # Second --- marks end of YAML
   
   expect_true(!is.na(overlay_line))
@@ -147,7 +147,7 @@ test_that("overlay chunk contains complete function definition", {
   qmd_text <- paste(qmd_content, collapse = "\n")
   
   # Check that overlay function exists at all
-  expect_true(grepl("add_loading_overlay", qmd_text, fixed = TRUE))
+  expect_true(grepl("create_loading_overlay", qmd_text, fixed = TRUE))
 })
 
 test_that("overlay works with non-landing pages", {
@@ -161,7 +161,7 @@ test_that("overlay works with non-landing pages", {
   qmd_content <- readLines(file.path(tempdir(), "analysis.qmd"))
   qmd_text <- paste(qmd_content, collapse = "\n")
   
-  expect_true(grepl("add_loading_overlay", qmd_text, fixed = TRUE))
+  expect_true(grepl("create_loading_overlay", qmd_text, fixed = TRUE))
   expect_true(grepl('theme = "glass"', qmd_text, fixed = TRUE))
 })
 

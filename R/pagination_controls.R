@@ -2,7 +2,7 @@
 # Real Pagination Controls (Multi-Page Navigation)
 # =================================================================
 
-#' Add pagination navigation controls to a dashboard page
+#' Create pagination navigation controls for a dashboard page
 #'
 #' Creates navigation controls for multi-page dashboards with Previous/Next buttons
 #' and page indicator. Use this in your QMD file to add clean pagination without
@@ -18,14 +18,14 @@
 #' @examples
 #' \dontrun{
 #' # In a Quarto document R chunk with results='asis':
-#' dashboardr::add_pagination_nav(1, 3, "knowledge", "top")
+#' dashboardr::create_pagination_nav(1, 3, "knowledge", "top")
 #' 
 #' # For both top and bottom:
-#' dashboardr::add_pagination_nav(1, 3, "knowledge", "both")
+#' dashboardr::create_pagination_nav(1, 3, "knowledge", "both")
 #' }
 #'
 #' @export
-add_pagination_nav <- function(page_num, total_pages, base_name, position = "top") {
+create_pagination_nav <- function(page_num, total_pages, base_name, position = "top") {
   # Validate inputs
   if (total_pages <= 1) {
     return(htmltools::tags$div())  # Return empty div if only one page
@@ -184,12 +184,12 @@ add_pagination_nav <- function(page_num, total_pages, base_name, position = "top
     return(nav_code)
   }
   
-  # Generate R code chunk that calls add_pagination_nav()
+  # Generate R code chunk that calls create_pagination_nav()
   # This keeps the generated QMD files clean and maintainable
   nav_code <- c(
     "",
     "```{r, echo=FALSE, message=FALSE, warning=FALSE, results='asis'}",
-    sprintf("dashboardr::add_pagination_nav(%d, %d, \"%s\", \"%s\")", 
+    sprintf("dashboardr::create_pagination_nav(%d, %d, \"%s\", \"%s\")", 
             page_num, total_pages, base_name, position),
     "```",
     ""

@@ -2,7 +2,7 @@
 # Loading Overlay
 # =================================================================
 
-#' Add a loading overlay to a dashboard page
+#' Create a loading overlay for a dashboard page
 #'
 #' Creates an animated loading overlay that appears when the page loads
 #' and automatically fades out after a specified duration. Useful for
@@ -23,11 +23,11 @@
 #' @examples
 #' \dontrun{
 #' # In a Quarto document R chunk:
-#' dashboardr::add_loading_overlay("Loading Dashboard...", 2000, "glass")
+#' dashboardr::create_loading_overlay("Loading Dashboard...", 2000, "glass")
 #' }
 #'
 #' @export
-add_loading_overlay <- function(
+create_loading_overlay <- function(
   text = "Loading",
   timeout_ms = 2200,
   theme = c("light", "glass", "dark", "accent")

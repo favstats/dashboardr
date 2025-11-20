@@ -1444,7 +1444,7 @@
     "",
     "```{r, echo=FALSE, message=FALSE, warning=FALSE, results='asis'}",
     "# Use dashboardr's loading overlay function",
-    paste0("dashboardr::add_loading_overlay(\"", text, "\", ", duration_ms, ", theme = \"", theme, "\")"),
+    paste0("dashboardr::create_loading_overlay(\"", text, "\", ", duration_ms, ", theme = \"", theme, "\")"),
     "```",
     ""
   )
