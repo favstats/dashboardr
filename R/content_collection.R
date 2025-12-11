@@ -873,3 +873,459 @@ end_value_box_row <- function(row_container) {
   parent_content
 }
 
+# ============================================
+# INPUT FILTERING SYSTEM
+# ============================================
+
+#' Add an interactive input filter
+#'
+#' Adds an input widget that filters Highcharts visualizations on the page.
+#' Supports various input types: dropdowns, checkboxes, radio buttons, switches, 
+#' sliders, text search, number inputs, and button groups.
+#'
+#' @param content Content collection object or input_row_container
+#' @param input_id Unique ID for this input widget
+#' @param label Optional label displayed above the input
+#' @param type Input type: "select_multiple" (default), "select_single", 
+#'   "checkbox", "radio", "switch", "slider", "text", "number", or "button_group"
+#' @param filter_var The variable name to filter by (matches Highcharts series names).
+#'   This should match the `group_var` used in your visualization.
+#' @param options Character vector of options to display. If NULL, uses `options_from`.
+#'   Required for select, checkbox, radio, and button_group types.
+#'   Can also be a named list for grouped options in selects (e.g., 
+#'   `list("Europe" = c("Germany", "France"), "Asia" = c("China", "Japan"))`).
+#' @param options_from Column name in page data to auto-populate options from.
+#'   Only used if `options` is NULL.
+#' @param default_selected Character vector of initially selected values.
+#'   If NULL, all options are selected by default (for select/checkbox) or
+#'   first option (for radio/button_group).
+#' @param placeholder Placeholder text when nothing is selected (for selects/text)
+#' @param width CSS width for the input (default: "300px")
+#' @param min Minimum value (for slider/number types)
+#' @param max Maximum value (for slider/number types)
+#' @param step Step increment (for slider/number types)
+#' @param value Initial value (for slider/switch/text/number types)
+#' @param show_value Whether to show current value (for slider, default TRUE)
+#' @param inline Whether to display options inline (for checkbox/radio, default TRUE)
+#' @param toggle_series For switch type: name of the series to toggle visibility on/off
+#' @param override For switch type: if TRUE, the switch overrides other filters for this series
+#' @param labels Custom labels for slider ticks (character vector). The first and last
+#'   labels are shown at the min/max positions.
+#' @param size Size variant: "sm" (small), "md" (medium, default), or "lg" (large)
+#' @param help Help text displayed below the input
+#' @param disabled Whether the input is disabled (default FALSE)
+#' @param tabgroup Optional tabgroup for organizing content
+#' @return Updated content_collection or input_row_container
+#' @export
+#' @examples
+#' \dontrun{
+#' # Dropdown (multi-select)
+#' content <- create_content() %>%
+#'   add_input(
+#'     input_id = "country_filter",
+#'     label = "Select Countries:",
+#'     type = "select_multiple",
+#'     filter_var = "country",
+#'     options_from = "country",
+#'     help = "Select one or more countries to compare"
+#'   )
+#'
+#' # Grouped select options
+#' content <- create_content() %>%
+#'   add_input(
+#'     input_id = "country_filter",
+#'     label = "Select Countries:",
+#'     type = "select_multiple",
+#'     filter_var = "country",
+#'     options = list(
+#'       "Europe" = c("Germany", "France", "UK"),
+#'       "Asia" = c("China", "Japan", "India")
+#'     )
+#'   )
+#'
+#' # Checkbox group
+#' content <- create_content() %>%
+#'   add_input(
+#'     input_id = "metrics",
+#'     label = "Metrics:",
+#'     type = "checkbox",
+#'     filter_var = "metric",
+#'     options = c("Revenue", "Users", "Growth"),
+#'     inline = TRUE
+#'   )
+#'
+#' # Radio buttons
+#' content <- create_content() %>%
+#'   add_input(
+#'     input_id = "chart_type",
+#'     label = "Chart Type:",
+#'     type = "radio",
+#'     filter_var = "chart_type",
+#'     options = c("Line", "Bar", "Area")
+#'   )
+#'
+#' # Switch/toggle to show/hide a specific series
+#' content <- create_content() %>%
+#'   add_input(
+#'     input_id = "show_average",
+#'     label = "Show Global Average",
+#'     type = "switch",
+#'     filter_var = "country",
+#'     toggle_series = "Global Average",  # Name of the series to toggle
+#'     override = TRUE,                   # Don't let other filters hide this series
+#'     value = TRUE                       # Start with switch ON
+#'   )
+#'
+#' # Slider with custom labels
+#' content <- create_content() %>%
+#'   add_input(
+#'     input_id = "decade_filter",
+#'     label = "Decade:",
+#'     type = "slider",
+#'     filter_var = "decade",
+#'     min = 1,
+#'     max = 6,
+#'     step = 1,
+#'     value = 1,
+#'     labels = c("1970s", "1980s", "1990s", "2000s", "2010s", "2020s")
+#'   )
+#'
+#' # Text search input
+#' content <- create_content() %>%
+#'   add_input(
+#'     input_id = "search",
+#'     label = "Search:",
+#'     type = "text",
+#'     filter_var = "name",
+#'     placeholder = "Type to search...",
+#'     size = "lg"
+#'   )
+#'
+#' # Button group (segmented control)
+#' content <- create_content() %>%
+#'   add_input(
+#'     input_id = "period",
+#'     label = "Time Period:",
+#'     type = "button_group",
+#'     filter_var = "period",
+#'     options = c("Day", "Week", "Month", "Year")
+#'   )
+#' }
+add_input <- function(content,
+                      input_id,
+                      label = NULL,
+                      type = c("select_multiple", "select_single", "checkbox", 
+                               "radio", "switch", "slider", "text", "number", "button_group"),
+                      filter_var,
+                      options = NULL,
+                      options_from = NULL,
+                      default_selected = NULL,
+                      placeholder = "Select...",
+                      width = "300px",
+                      min = 0,
+                      max = 100,
+                      step = 1,
+                      value = NULL,
+                      show_value = TRUE,
+                      inline = TRUE,
+                      toggle_series = NULL,
+                      override = FALSE,
+                      labels = NULL,
+                      size = c("md", "sm", "lg"),
+                      help = NULL,
+                      disabled = FALSE,
+                      mt = NULL,
+                      mr = NULL,
+                      mb = NULL,
+                      ml = NULL,
+                      tabgroup = NULL) {
+  
+  type <- match.arg(type)
+  size <- match.arg(size)
+  
+  # Validate required args
+  if (missing(input_id) || is.null(input_id)) {
+    stop("input_id is required for add_input()", call. = FALSE)
+  }
+  if (missing(filter_var) || is.null(filter_var)) {
+    stop("filter_var is required for add_input() - this should match the group_var in your visualization", call. = FALSE)
+  }
+  
+  # Options required for select/checkbox/radio/button_group types
+  if (type %in% c("select_multiple", "select_single", "checkbox", "radio", "button_group")) {
+    if (is.null(options) && is.null(options_from)) {
+      stop("Either 'options' or 'options_from' must be provided for ", type, " input type", call. = FALSE)
+    }
+  }
+  
+  # Create the input specification
+  input_spec <- list(
+    input_id = input_id,
+    label = label,
+    type = type,
+    filter_var = filter_var,
+    options = options,
+    options_from = options_from,
+    default_selected = default_selected,
+    placeholder = placeholder,
+    width = width,
+    min = min,
+    max = max,
+    step = step,
+    value = value,
+    show_value = show_value,
+    inline = inline,
+    toggle_series = toggle_series,
+    override = override,
+    labels = labels,
+    size = size,
+    help = help,
+    disabled = disabled,
+    mt = mt,
+    mr = mr,
+    mb = mb,
+    ml = ml
+  )
+  
+  # Check if we're adding to a row container
+  if (inherits(content, "input_row_container")) {
+    # Add to the row's inputs
+    content$inputs <- c(content$inputs, list(input_spec))
+    
+    # If filter_var is "metric", mark on the row container (propagated in end_input_row)
+    if (!is.null(filter_var) && filter_var == "metric") {
+      content$needs_metric_data <- TRUE
+    }
+    
+    return(content)
+  }
+  
+  # Otherwise, add as a standalone input
+  if (!is_content(content)) {
+    stop("First argument must be a content_collection object or input_row_container", call. = FALSE)
+  }
+  
+  # Mark that this collection needs inputs enabled
+  content$needs_inputs <- TRUE
+  
+  # If filter_var is "metric", mark that we need full data embedded for JS
+  if (!is.null(filter_var) && filter_var == "metric") {
+    content$needs_metric_data <- TRUE
+  }
+  
+  input_block <- structure(c(
+    list(type = "input", tabgroup = .parse_tabgroup(tabgroup)),
+    input_spec
+  ), class = "content_block")
+  
+  insertion_idx <- length(content$items) + 1
+  input_block$.insertion_index <- insertion_idx
+  content$items <- c(content$items, list(input_block))
+  content
+}
+
+#' Start an input row
+#'
+#' Creates a container for input widgets that will be displayed in a horizontal row.
+#' The inputs will wrap responsively on smaller screens. Use with end_input_row().
+#'
+#' @param content Content collection object
+#' @param tabgroup Optional tabgroup for organizing content. Use this to place
+#'   the input row inside a specific tab (e.g., "trends" or "trends/Female Authorship")
+#' @param style Visual style: "boxed" (default, with background and border) or
+#'   "inline" (compact, transparent background)
+#' @param align Alignment: "center" (default), "left", or "right"
+#' @return An input_row_container for piping
+#' @export
+#' @examples
+#' \dontrun{
+#' content <- create_content() %>%
+#'   add_input_row() %>%
+#'     add_input(input_id = "country", filter_var = "country", options_from = "country") %>%
+#'     add_input(input_id = "metric", filter_var = "metric", options_from = "metric") %>%
+#'   end_input_row()
+#'
+#' # Place inputs inside a tabgroup
+#' content <- create_content() %>%
+#'   add_input_row(tabgroup = "trends", style = "inline") %>%
+#'     add_input(input_id = "country", filter_var = "country", options = c("A", "B")) %>%
+#'   end_input_row()
+#' }
+add_input_row <- function(content, tabgroup = NULL, style = c("boxed", "inline"), 
+                          align = c("center", "left", "right")) {
+  if (!is_content(content)) {
+    stop("First argument must be a content collection", call. = FALSE)
+  }
+  
+  style <- match.arg(style)
+  align <- match.arg(align)
+  
+  # Mark that this collection needs inputs enabled
+  content$needs_inputs <- TRUE
+  
+  # Create a special row container that add_input will detect
+  row_container <- structure(list(
+    type = "input_row",
+    inputs = list(),
+    parent_content = content,
+    tabgroup = .parse_tabgroup(tabgroup),
+    style = style,
+    align = align
+  ), class = c("input_row_container", "content_block"))
+  
+  row_container
+}
+
+#' End an input row
+#'
+#' Closes an input row and returns to the parent content collection.
+#' Must be called after add_input_row() and all add_input() calls.
+#'
+#' @param row_container Input row container object
+#' @return The parent content_collection for further piping
+#' @export
+#' @examples
+#' \dontrun{
+#' content <- create_content() %>%
+#'   add_input_row() %>%
+#'     add_input(input_id = "filter1", filter_var = "var1", options = c("A", "B")) %>%
+#'     add_input(input_id = "filter2", filter_var = "var2", options = c("X", "Y")) %>%
+#'   end_input_row() %>%
+#'   add_text("Content after the input row...")
+#' }
+end_input_row <- function(row_container) {
+  if (!inherits(row_container, "input_row_container")) {
+    stop("end_input_row() must be called on an input_row_container (created by add_input_row())", call. = FALSE)
+  }
+  
+  # Get the parent content collection
+  parent_content <- row_container$parent_content
+  
+  # Create the final input_row block with all collected inputs
+  input_row_block <- structure(list(
+    type = "input_row",
+    inputs = row_container$inputs,
+    tabgroup = row_container$tabgroup,
+    style = row_container$style %||% "boxed",
+    align = row_container$align %||% "center"
+  ), class = "content_block")
+  
+  # Add insertion index to preserve order
+  insertion_idx <- length(parent_content$items) + 1
+  input_row_block$.insertion_index <- insertion_idx
+  
+  # Add it to the parent content collection
+  parent_content$items <- c(parent_content$items, list(input_row_block))
+  
+  # Propagate needs_metric_data flag from row container to parent
+  if (isTRUE(row_container$needs_metric_data)) {
+    parent_content$needs_metric_data <- TRUE
+  }
+  
+  # Return the parent content collection for further piping
+  parent_content
+}
+
+# ============================================
+# OPERATOR OVERLOADING FOR + SYNTAX
+# ============================================
+
+#' Combine content collections using + operator
+#'
+#' Allows combining content and visualization collections using the `+` operator.
+#' This provides a clean, intuitive syntax for building dashboard content.
+#'
+#' @param e1 First content_collection or viz_collection
+#' @param e2 Second content_collection or viz_collection
+#' @return A merged content_collection containing items from both
+#' @export
+#' @examples
+#' \dontrun{
+#' # Combine content and visualizations
+#' combined <- content + viz
+#' 
+#' # Or the other way around
+#' combined <- viz + content
+#' 
+#' # Chain multiple combinations
+#' combined <- text_content + charts + more_content
+#' }
+`+.content_collection` <- function(e1, e2) {
+  merge_collections(e1, e2)
+}
+
+#' @rdname +.content_collection
+#' @export
+`+.viz_collection` <- function(e1, e2) {
+  merge_collections(e1, e2)
+}
+
+#' Merge two content/viz collections
+#'
+#' Internal function to merge two collections into one.
+#'
+#' @param c1 First collection
+#' @param c2 Second collection
+#' @return Merged content_collection
+#' @export
+merge_collections <- function(c1, c2) {
+  # Ensure both are content collections
+  if (!is_content(c1) && !is_content_block(c1)) {
+    stop("Left operand must be a content_collection, viz_collection, or content_block", call. = FALSE)
+  }
+  if (!is_content(c2) && !is_content_block(c2)) {
+    stop("Right operand must be a content_collection, viz_collection, or content_block", call. = FALSE)
+  }
+  
+  # Handle content blocks (single items)
+  if (is_content_block(c1) && !is_content(c1)) {
+    temp <- create_content()
+    temp$items <- list(c1)
+    c1 <- temp
+  }
+  if (is_content_block(c2) && !is_content(c2)) {
+    temp <- create_content()
+    temp$items <- list(c2)
+    c2 <- temp
+  }
+  
+  # Create new collection
+  result <- create_content()
+  
+  # Merge items from both collections
+  # Items from c1 first, then c2
+  all_items <- c(c1$items, c2$items)
+  
+  # Re-index insertion indices
+  for (i in seq_along(all_items)) {
+    all_items[[i]]$.insertion_index <- i
+  }
+  
+  result$items <- all_items
+  
+  # Merge tabgroup labels if present
+  if (!is.null(c1$tabgroup_labels) || !is.null(c2$tabgroup_labels)) {
+    result$tabgroup_labels <- c(c1$tabgroup_labels, c2$tabgroup_labels)
+  }
+  
+  # Merge defaults if present
+  if (!is.null(c1$defaults) || !is.null(c2$defaults)) {
+    result$defaults <- modifyList(
+      c1$defaults %||% list(),
+      c2$defaults %||% list()
+    )
+  }
+  
+  # Propagate needs_inputs flag
+  if (isTRUE(c1$needs_inputs) || isTRUE(c2$needs_inputs)) {
+    result$needs_inputs <- TRUE
+  }
+  
+  # Propagate needs_metric_data flag
+  if (isTRUE(c1$needs_metric_data) || isTRUE(c2$needs_metric_data)) {
+    result$needs_metric_data <- TRUE
+  }
+  
+  result
+}
+

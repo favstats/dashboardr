@@ -11,7 +11,8 @@ add_callout(
   type = c("note", "tip", "warning", "caution", "important"),
   title = NULL,
   icon = NULL,
-  collapse = FALSE
+  collapse = FALSE,
+  tabgroup = NULL
 )
 ```
 
@@ -40,6 +41,11 @@ add_callout(
 - collapse:
 
   Whether callout is collapsible
+
+- tabgroup:
+
+  Optional tabgroup for organizing content (character vector for nested
+  tabs)
 
 ## Value
 

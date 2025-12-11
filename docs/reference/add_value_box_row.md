@@ -7,7 +7,7 @@ pipeable syntax with end_value_box_row():
 ## Usage
 
 ``` r
-add_value_box_row(content)
+add_value_box_row(content, tabgroup = NULL)
 ```
 
 ## Arguments
@@ -15,6 +15,11 @@ add_value_box_row(content)
 - content:
 
   Content collection object
+
+- tabgroup:
+
+  Optional tabgroup for organizing content (character vector for nested
+  tabs)
 
 ## Examples
 

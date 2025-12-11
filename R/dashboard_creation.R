@@ -476,6 +476,9 @@ create_dashboard <- function(output_dir = "site",
 #' @param lazy_load_tabs Override tab-aware lazy loading for this page (default: NULL = inherit from dashboard)
 #' @param lazy_debug Override debug mode for lazy loading on this page (default: NULL = inherit from dashboard)
 #' @param pagination_separator Text to show in pagination navigation (e.g., "of" → "1 of 3"), default: NULL = inherit from dashboard
+#' @param time_var Name of the time/x-axis column in the data (e.g., "year", "decade", "date").
+#'   Used by input filters when switching metrics. If NULL (default), the JavaScript will try to 
+#'   auto-detect from common column names (year, decade, time, date).
 #' @return The updated dashboard_project object
 #' @export
 #' @examples
@@ -496,6 +499,10 @@ create_dashboard <- function(output_dir = "site",
 #' dashboard <- dashboard %>%
 #'   add_page("Results", text = "# Key Findings\n\nHere are the results:",
 #'            visualizations = results_viz, icon = "ph:chart-line")
+#'
+#' # Page with explicit time variable for metric switching
+#' dashboard <- dashboard %>%
+#'   add_page("Trends", data = trend_data, visualizations = trend_viz, time_var = "decade")
 #' }
 add_dashboard_page <- function(proj, name, data = NULL, data_path = NULL,
                                template = NULL, params = list(),
@@ -511,7 +518,8 @@ add_dashboard_page <- function(proj, name, data = NULL, data_path = NULL,
                                lazy_load_margin = NULL,
                                lazy_load_tabs = NULL,
                                lazy_debug = NULL,
-                               pagination_separator = NULL) {
+                               pagination_separator = NULL,
+                               time_var = NULL) {
   if (!inherits(proj, "dashboard_project")) {
     stop("proj must be a dashboard_project object")
   }
@@ -544,10 +552,61 @@ add_dashboard_page <- function(proj, name, data = NULL, data_path = NULL,
         }))
       }
       
-      if (isTRUE(has_tabgroups)) {
-        # Items have tabgroups - pass entire collection as visualizations
-        # so .process_visualizations() can organize them by tabgroup
-        visualizations <- combined_input
+      # Check if this is a mixed collection (from + operator) with both viz and content
+      has_viz_items <- any(sapply(combined_input$items, function(item) {
+        if (is.null(item) || !is.list(item)) return(FALSE)
+        item_type <- item$type %||% ""
+        item_type %in% c("viz", "pagination")
+      }))
+      has_content_items <- any(sapply(combined_input$items, function(item) {
+        if (is.null(item) || !is.list(item)) return(FALSE)
+        item_type <- item$type %||% ""
+        !(item_type %in% c("viz", "pagination"))
+      }))
+      is_mixed_collection <- has_viz_items && has_content_items
+      
+      if (isTRUE(is_mixed_collection) || isTRUE(has_tabgroups)) {
+        # Mixed collection (from + operator) OR items have tabgroups
+        # Keep together to preserve order
+        if (has_content_items) {
+          # Mixed collection (e.g., from content + viz) - keep together to preserve order
+          # Pass the whole collection to content_blocks, page_generation will handle ordering
+          content_blocks <- list(combined_input)
+          
+          # Also extract viz items for setup chunk (filter creation)
+          viz_specs <- list()
+          for (item in combined_input$items) {
+            if (is.null(item)) next
+            item_type <- if (is.list(item) && !is.null(item$type)) as.character(item$type)[1] else NULL
+            if (!is.null(item_type) && (item_type == "viz" || item_type == "pagination")) {
+              viz_specs <- c(viz_specs, list(item))
+            }
+          }
+          
+          # Create viz collection for setup chunk only (not for rendering)
+          if (length(viz_specs) > 0) {
+            viz_list <- create_viz()
+            viz_list$items <- viz_specs
+            if (!is.null(combined_input$tabgroup_labels)) {
+              viz_list$tabgroup_labels <- combined_input$tabgroup_labels
+            }
+            if (!is.null(combined_input$defaults)) {
+              viz_list$defaults <- combined_input$defaults
+            }
+            visualizations <- viz_list
+            # Mark that visualizations should NOT be rendered separately 
+            # (they're embedded in content_blocks)
+            visualizations$.embedded_in_content <- TRUE
+          }
+        } else {
+          # Pure viz collection - pass to visualizations as before
+          visualizations <- combined_input
+        }
+        
+        # Propagate needs_inputs flag
+        if (isTRUE(combined_input$needs_inputs)) {
+          needs_inputs <- TRUE
+        }
       } else {
         # No tabgroups - use legacy behavior: separate viz and content blocks
         viz_specs <- list()
@@ -808,8 +867,15 @@ add_dashboard_page <- function(proj, name, data = NULL, data_path = NULL,
 
   # Process visualization specifications
   viz_specs <- NULL
+  viz_embedded_in_content <- FALSE
 
   if (!is.null(visualizations)) {
+    # Check if visualizations are embedded in content (from + operator)
+    # In that case, we still need them for setup chunk but not for separate rendering
+    if (isTRUE(visualizations$.embedded_in_content)) {
+      viz_embedded_in_content <- TRUE
+    }
+    
     if (is_content(visualizations)) {
       viz_specs <- .process_visualizations(visualizations, data_path)
     }
@@ -823,6 +889,32 @@ add_dashboard_page <- function(proj, name, data = NULL, data_path = NULL,
   if (!is.null(combined_input) && isTRUE(combined_input$needs_modals)) {
     needs_modals <- TRUE
   }
+  # Also check original content parameter (combined_input may be a list)
+  if (!is.null(content) && is_content(content) && isTRUE(content$needs_modals)) {
+    needs_modals <- TRUE
+  }
+  
+  # Check if inputs are needed
+  needs_inputs <- FALSE
+  if (!is.null(visualizations) && isTRUE(visualizations$needs_inputs)) {
+    needs_inputs <- TRUE
+  }
+  if (!is.null(combined_input) && isTRUE(combined_input$needs_inputs)) {
+    needs_inputs <- TRUE
+  }
+  # Also check original content parameter (combined_input may be a list)
+  if (!is.null(content) && is_content(content) && isTRUE(content$needs_inputs)) {
+    needs_inputs <- TRUE
+  }
+  
+  # Check if metric data embedding is needed (for filter_var = "metric" inputs)
+  needs_metric_data <- FALSE
+  if (!is.null(combined_input) && isTRUE(combined_input$needs_metric_data)) {
+    needs_metric_data <- TRUE
+  }
+  if (!is.null(content) && is_content(content) && isTRUE(content$needs_metric_data)) {
+    needs_metric_data <- TRUE
+  }
   
   # Create page record
   page <- list(
@@ -832,8 +924,12 @@ add_dashboard_page <- function(proj, name, data = NULL, data_path = NULL,
     template = template,
     params = params,
     visualizations = viz_specs,
+    viz_embedded_in_content = viz_embedded_in_content,
     content_blocks = content_blocks,
     needs_modals = needs_modals,
+    needs_inputs = needs_inputs,
+    needs_metric_data = needs_metric_data,
+    time_var = time_var,
     text = text,
     icon = icon,
     is_landing_page = is_landing_page,

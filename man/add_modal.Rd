@@ -10,6 +10,7 @@ add_modal(
   title = NULL,
   modal_content = NULL,
   image = NULL,
+  image_width = "100\%",
   ...
 )
 }
@@ -23,6 +24,8 @@ add_modal(
 \item{modal_content}{Text content - can be plain text, HTML, or data.frame}
 
 \item{image}{Optional image URL or path}
+
+\item{image_width}{Width of the image (default "100\%"). Can be percentage ("70\%") or pixels ("500px")}
 
 \item{...}{Additional content (data.frames will be converted to tables)}
 }
@@ -45,13 +48,14 @@ content <- create_content() \%>\%
     modal_content = "Detailed analysis here..."
   )
 
-# With image
+# With image (custom width)
 content <- create_viz() \%>\%
   add_viz(type = "column", x_var = "x", y_var = "y") \%>\%
   add_modal(
     modal_id = "chart-details",
     title = "Chart Details",
     image = "chart.png",
+    image_width = "70\%",  # Control image width
     modal_content = "This chart shows..."
   )
 

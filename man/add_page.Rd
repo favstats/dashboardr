@@ -27,7 +27,8 @@ add_page(
   lazy_load_margin = NULL,
   lazy_load_tabs = NULL,
   lazy_debug = NULL,
-  pagination_separator = NULL
+  pagination_separator = NULL,
+  time_var = NULL
 )
 }
 \arguments{

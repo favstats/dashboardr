@@ -35,7 +35,8 @@ add_viz(
 
 - type:
 
-  Visualization type: "stackedbar", "heatmap", "histogram", "timeline"
+  Visualization type: "stackedbar", "heatmap", "histogram", "timeline",
+  "scatter", "bar"
 
 - ...:
 

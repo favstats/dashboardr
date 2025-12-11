@@ -2,7 +2,7 @@
 
 ## Pre-Demo Setup (1 minute before)
 
-```r
+``` r
 # Install required package
 install.packages("palmerpenguins")
 
@@ -12,14 +12,15 @@ library(palmerpenguins)
 data("penguins")
 ```
 
----
+------------------------------------------------------------------------
 
 ## Demo Flow (3-5 minutes)
 
 ### ⏱️ **STEP 1: Simplest Dashboard** (30 seconds)
-**What to say:** "Let's create a dashboard in 5 lines of code"
 
-```r
+**What to say:** “Let’s create a dashboard in 5 lines of code”
+
+``` r
 create_dashboard("Penguins") %>%
   add_page("Overview", data = penguins,
            content = create_viz() %>%
@@ -29,12 +30,13 @@ create_dashboard("Penguins") %>%
 
 **Show:** Browser opens with interactive scatter plot
 
----
+------------------------------------------------------------------------
 
 ### ⏱️ **STEP 2: Add More Charts** (45 seconds)
-**What to say:** "Adding more visualizations is just... more pipes!"
 
-```r
+**What to say:** “Adding more visualizations is just… more pipes!”
+
+``` r
 create_dashboard("Penguins") %>%
   add_page("Overview", data = penguins,
            content = create_viz() %>%
@@ -47,12 +49,13 @@ create_dashboard("Penguins") %>%
 
 **Show:** Three charts on one page
 
----
+------------------------------------------------------------------------
 
 ### ⏱️ **STEP 3: Add Tabs & Content** (1 minute)
-**What to say:** "Let's organize with tabs and add some context"
 
-```r
+**What to say:** “Let’s organize with tabs and add some context”
+
+``` r
 create_dashboard("Penguins", theme = "cosmo") %>%
   add_page("Analysis", data = penguins,
            content = create_viz() %>%
@@ -68,12 +71,14 @@ create_dashboard("Penguins", theme = "cosmo") %>%
 
 **Show:** Tabs + callout box
 
----
+------------------------------------------------------------------------
 
 ### ⏱️ **STEP 4: The Full Experience** (2 minutes)
-**What to say:** "Now let's go all-in: multiple pages, nested tabs, value boxes!"
 
-```r
+**What to say:** “Now let’s go all-in: multiple pages, nested tabs,
+value boxes!”
+
+``` r
 create_dashboard("Penguin Dashboard", theme = "flatly") %>%
   
   # Page 1: By Species
@@ -105,35 +110,33 @@ create_dashboard("Penguin Dashboard", theme = "flatly") %>%
   generate_dashboard(render = TRUE, open = "browser")
 ```
 
-**Show:** 
-- Multiple pages in navbar
-- Nested tabs (Adelie → Bills)
-- Value boxes
-- Filtered data per tab
+**Show:** - Multiple pages in navbar - Nested tabs (Adelie → Bills) -
+Value boxes - Filtered data per tab
 
----
+------------------------------------------------------------------------
 
 ## 🎯 Key Points to Emphasize
 
-1. **Piping:** Everything flows naturally with `%>%`
-2. **Simplicity:** From 5 lines to full dashboard
-3. **Flexibility:** Mix content (text, callouts, value boxes) with visualizations
-4. **Organization:** Tabs and nested tabs (`"Parent/Child"`)
-5. **Filtering:** `filter = species == "Adelie"` for subset views
-6. **Themes:** 25+ Bootswatch themes available
-7. **Publishing:** One command to deploy (if time permits)
+1.  **Piping:** Everything flows naturally with `%>%`
+2.  **Simplicity:** From 5 lines to full dashboard
+3.  **Flexibility:** Mix content (text, callouts, value boxes) with
+    visualizations
+4.  **Organization:** Tabs and nested tabs (`"Parent/Child"`)
+5.  **Filtering:** `filter = species == "Adelie"` for subset views
+6.  **Themes:** 25+ Bootswatch themes available
+7.  **Publishing:** One command to deploy (if time permits)
 
----
+------------------------------------------------------------------------
 
 ## 💡 Pro Tips for Live Coding
 
 - **Type slowly** - let people follow along
 - **Show the browser** after each step
 - **Point out** the `tabgroup =` and `filter =` parameters
-- **If typo occurs:** Just fix it and regenerate - that's the beauty!
+- **If typo occurs:** Just fix it and regenerate - that’s the beauty!
 - **Backup plan:** Use `demo_penguins_live.R` if typing fails
 
----
+------------------------------------------------------------------------
 
 ## 📊 Features Showcased
 
@@ -145,21 +148,22 @@ create_dashboard("Penguin Dashboard", theme = "flatly") %>%
 ✅ Data filtering  
 ✅ Color mapping  
 ✅ Theming  
-✅ Piping workflow  
+✅ Piping workflow
 
 **Total:** 9+ features in ~50 lines of code!
 
----
+------------------------------------------------------------------------
 
 ## 🚀 Closing Line
 
-> "And that's how you go from zero to a full interactive dashboard in under 5 minutes. Questions?"
+> “And that’s how you go from zero to a full interactive dashboard in
+> under 5 minutes. Questions?”
 
----
+------------------------------------------------------------------------
 
 ## Emergency Backup (if palmerpenguins fails)
 
-```r
+``` r
 # Use built-in mtcars instead
 create_dashboard("Cars") %>%
   add_page("Overview", data = mtcars,
@@ -167,4 +171,3 @@ create_dashboard("Cars") %>%
              add_viz(type = "scatter", x_var = "wt", y_var = "mpg", color_var = "cyl")) %>%
   generate_dashboard(render = TRUE, open = "browser")
 ```
-

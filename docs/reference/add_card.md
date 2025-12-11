@@ -5,7 +5,7 @@ Add card
 ## Usage
 
 ``` r
-add_card(content, text, title = NULL, footer = NULL)
+add_card(content, text, title = NULL, footer = NULL, tabgroup = NULL)
 ```
 
 ## Arguments
@@ -25,6 +25,11 @@ add_card(content, text, title = NULL, footer = NULL)
 - footer:
 
   Optional card footer
+
+- tabgroup:
+
+  Optional tabgroup for organizing content (character vector for nested
+  tabs)
 
 ## Value
 

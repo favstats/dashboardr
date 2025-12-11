@@ -5,7 +5,14 @@ Add code block
 ## Usage
 
 ``` r
-add_code(content, code, language = "r", caption = NULL, filename = NULL)
+add_code(
+  content,
+  code,
+  language = "r",
+  caption = NULL,
+  filename = NULL,
+  tabgroup = NULL
+)
 ```
 
 ## Arguments
@@ -29,6 +36,11 @@ add_code(content, code, language = "r", caption = NULL, filename = NULL)
 - filename:
 
   Optional filename to display
+
+- tabgroup:
+
+  Optional tabgroup for organizing content (character vector for nested
+  tabs)
 
 ## Value
 

@@ -42,10 +42,42 @@
       ""
     )
   }
+  
+  # Auto-enable inputs if needed (flag set by add_input())
+  if (isTRUE(page$needs_inputs)) {
+    content <- c(content,
+      "```{r, echo=FALSE, results='asis'}",
+      "dashboardr::enable_inputs()",
+      "```",
+      ""
+    )
+  }
 
   # Add global setup chunk with libraries, data, and settings
   if (!is.null(page$data_path) || !is.null(page$visualizations) || !is.null(page$content_blocks)) {
     content <- c(content, .generate_global_setup_chunk(page))
+  }
+  
+  # Embed full data for metric switching (AFTER setup chunk loads data)
+  if (isTRUE(page$needs_metric_data) && !is.null(page$data_path)) {
+    # Build time_var config if specified
+    time_var_line <- ""
+    if (!is.null(page$time_var) && nzchar(page$time_var)) {
+      time_var_line <- paste0("cat(\"<script>window.dashboardrTimeVar = '", page$time_var, "';\")")
+    } else {
+      time_var_line <- "cat('<script>')"
+    }
+    
+    content <- c(content,
+      "```{r, echo=FALSE, results='asis'}",
+      "# Embed full data for metric switching",
+      time_var_line,
+      "cat('window.dashboardrMetricData = ')",
+      "cat(jsonlite::toJSON(data, dataframe = 'rows'))",
+      "cat(';</script>')",
+      "```",
+      ""
+    )
   }
   
   # Add loading overlay chunk if enabled
@@ -104,13 +136,101 @@
       # Skip if neither
       if (!is_coll && !is_block) next
       
-      # If it's a content collection, handle it differently
+      # If it's a content collection, handle it by processing each item IN ORDER
       if (is_coll) {
-        # Generate viz content for this collection
-        viz_content <- .generate_viz_from_specs(block, 
-                                                  page$lazy_load_charts %||% FALSE, 
-                                                  page$lazy_load_tabs %||% FALSE)
-        content <- c(content, viz_content)
+        # Process mixed collections (content + viz combined via + operator)
+        # IMPORTANT: Preserve the order from the + operator!
+        
+        # Sort items by insertion index to preserve order
+        items_with_idx <- block$items
+        if (length(items_with_idx) > 1) {
+          indices <- sapply(items_with_idx, function(x) x$.insertion_index %||% 999)
+          items_with_idx <- items_with_idx[order(indices)]
+        }
+        
+        # Group consecutive viz items together for proper tabgroup handling
+        # but maintain overall order relative to other content
+        i <- 1
+        while (i <= length(items_with_idx)) {
+          item <- items_with_idx[[i]]
+          if (is.null(item)) {
+            i <- i + 1
+            next
+          }
+          
+          item_type <- item$type %||% ""
+          
+          if (item_type == "viz" || item_type == "pagination") {
+            # Collect consecutive viz/pagination items
+            viz_items <- list(item)
+            j <- i + 1
+            while (j <= length(items_with_idx)) {
+              next_item <- items_with_idx[[j]]
+              if (is.null(next_item)) {
+                j <- j + 1
+                next
+              }
+              next_type <- next_item$type %||% ""
+              if (next_type == "viz" || next_type == "pagination") {
+                viz_items <- c(viz_items, list(next_item))
+                j <- j + 1
+              } else {
+                break
+              }
+            }
+            
+            # Process this group of visualizations
+            # Create a viz_collection for proper processing with tabgroups
+            viz_coll <- structure(list(
+              items = viz_items,
+              defaults = block$defaults,
+              tabgroup_labels = block$tabgroup_labels
+            ), class = c("content_collection", "viz_collection"))
+            
+            # First process through viz_processing to handle tabgroup hierarchy
+            processed_specs <- .process_visualizations(viz_coll, page$data_path)
+            
+            # Then generate the markdown
+            if (!is.null(processed_specs) && length(processed_specs) > 0) {
+              viz_content <- .generate_viz_from_specs(processed_specs, 
+                                                        page$lazy_load_charts %||% FALSE, 
+                                                        page$lazy_load_tabs %||% FALSE)
+              content <- c(content, viz_content)
+            }
+            i <- j
+          } else {
+            # Process single content item
+            item_content <- switch(item_type,
+              "text" = c("", item$content, ""),
+              "image" = .generate_image_block(item),
+              "callout" = .generate_callout_block(item),
+              "divider" = .generate_divider_block(item),
+              "code" = .generate_code_block(item),
+              "card" = .generate_card_block(item),
+              "accordion" = .generate_accordion_block(item),
+              "iframe" = .generate_iframe_block(item),
+              "video" = .generate_video_block(item),
+              "table" = .generate_table_block(item),
+              "gt" = .generate_gt_block(item),
+              "reactable" = .generate_reactable_block(item),
+              "DT" = .generate_DT_block(item),
+              "spacer" = .generate_spacer_block(item),
+              "html" = .generate_html_block(item),
+              "quote" = .generate_quote_block(item),
+              "badge" = .generate_badge_block(item),
+              "metric" = .generate_metric_block(item),
+              "value_box" = .generate_value_box_block(item),
+              "value_box_row" = .generate_value_box_row_block(item),
+              "input" = .generate_input_block(item, page),
+              "input_row" = .generate_input_row_block(item, page),
+              NULL
+            )
+            if (!is.null(item_content)) {
+              content <- c(content, item_content)
+            }
+            i <- i + 1
+          }
+        }
         next
       }
       
@@ -140,6 +260,8 @@
         "metric" = .generate_metric_block(block),
         "value_box" = .generate_value_box_block(block),
         "value_box_row" = .generate_value_box_row_block(block),
+        "input" = .generate_input_block(block, page),
+        "input_row" = .generate_input_row_block(block, page),
         NULL  # Unknown type - skip
       )
       
@@ -149,8 +271,8 @@
     }
   }
 
-  # Add visualizations
-  if (!is.null(page$visualizations)) {
+  # Add visualizations (unless they're already embedded in content_blocks from + operator)
+  if (!is.null(page$visualizations) && !isTRUE(page$viz_embedded_in_content)) {
     # Get lazy load settings
     lazy_load_charts <- page$lazy_load_charts %||% FALSE
     lazy_load_tabs <- page$lazy_load_tabs %||% FALSE
@@ -714,6 +836,121 @@
   }
   
   lines <- c(lines, "))", "```", "")
+  lines
+}
+
+#' Generate input block markdown
+#'
+#' Internal function to generate markdown for input filter widgets
+#'
+#' @param block Input content block
+#' @param page Page object (for data access)
+#' @return Character vector of markdown lines
+#' @keywords internal
+.generate_input_block <- function(block, page = NULL) {
+  # Generate R chunk that renders the input widget
+  lines <- c(
+    "",
+    "```{r}",
+    "#| echo: false",
+    "#| results: 'asis'",
+    "dashboardr::render_input(",
+    paste0("  input_id = ", .serialize_arg(block$input_id), ","),
+    paste0("  label = ", .serialize_arg(block$label), ","),
+    paste0("  type = ", .serialize_arg(block$type), ","),
+    paste0("  filter_var = ", .serialize_arg(block$filter_var), ","),
+    paste0("  options = ", .serialize_arg(block$options), ","),
+    paste0("  options_from = ", .serialize_arg(block$options_from), ","),
+    paste0("  default_selected = ", .serialize_arg(block$default_selected), ","),
+    paste0("  placeholder = ", .serialize_arg(block$placeholder), ","),
+    paste0("  width = ", .serialize_arg(block$width), ","),
+    paste0("  min = ", .serialize_arg(block$min %||% 0), ","),
+    paste0("  max = ", .serialize_arg(block$max %||% 100), ","),
+    paste0("  step = ", .serialize_arg(block$step %||% 1), ","),
+    paste0("  value = ", .serialize_arg(block$value), ","),
+    paste0("  show_value = ", .serialize_arg(block$show_value %||% TRUE), ","),
+    paste0("  inline = ", .serialize_arg(block$inline %||% TRUE), ","),
+    paste0("  toggle_series = ", .serialize_arg(block$toggle_series), ","),
+    paste0("  override = ", .serialize_arg(block$override %||% FALSE), ","),
+    paste0("  labels = ", .serialize_arg(block$labels), ","),
+    paste0("  size = ", .serialize_arg(block$size %||% "md"), ","),
+    paste0("  help = ", .serialize_arg(block$help), ","),
+    paste0("  disabled = ", .serialize_arg(block$disabled %||% FALSE), ","),
+    paste0("  mt = ", .serialize_arg(block$mt), ","),
+    paste0("  mr = ", .serialize_arg(block$mr), ","),
+    paste0("  mb = ", .serialize_arg(block$mb), ","),
+    paste0("  ml = ", .serialize_arg(block$ml)),
+    ")",
+    "```",
+    ""
+  )
+
+  lines
+}
+
+#' Generate input row block markdown
+#'
+#' Internal function to generate markdown for a row of input widgets
+#'
+#' @param block Input row content block
+#' @param page Page object (for data access)
+#' @return Character vector of markdown lines
+#' @keywords internal
+.generate_input_row_block <- function(block, page = NULL) {
+  # Get style and align parameters
+  style <- block$style %||% "boxed"
+  align <- block$align %||% "center"
+  
+  # Generate R chunk that renders a row of inputs
+  lines <- c(
+    "",
+    "```{r}",
+    "#| echo: false",
+    "#| results: 'asis'",
+    paste0("dashboardr::render_input_row(list(")
+  )
+  
+  # Add each input as a list element
+  for (i in seq_along(block$inputs)) {
+    input <- block$inputs[[i]]
+    input_lines <- c(
+      "  list(",
+      paste0("    input_id = ", .serialize_arg(input$input_id), ","),
+      paste0("    label = ", .serialize_arg(input$label), ","),
+      paste0("    type = ", .serialize_arg(input$type), ","),
+      paste0("    filter_var = ", .serialize_arg(input$filter_var), ","),
+      paste0("    options = ", .serialize_arg(input$options), ","),
+      paste0("    options_from = ", .serialize_arg(input$options_from), ","),
+      paste0("    default_selected = ", .serialize_arg(input$default_selected), ","),
+      paste0("    placeholder = ", .serialize_arg(input$placeholder), ","),
+      paste0("    width = ", .serialize_arg(input$width), ","),
+      paste0("    min = ", .serialize_arg(input$min %||% 0), ","),
+      paste0("    max = ", .serialize_arg(input$max %||% 100), ","),
+      paste0("    step = ", .serialize_arg(input$step %||% 1), ","),
+      paste0("    value = ", .serialize_arg(input$value), ","),
+      paste0("    show_value = ", .serialize_arg(input$show_value %||% TRUE), ","),
+      paste0("    inline = ", .serialize_arg(input$inline %||% TRUE), ","),
+      paste0("    toggle_series = ", .serialize_arg(input$toggle_series), ","),
+      paste0("    override = ", .serialize_arg(input$override %||% FALSE), ","),
+      paste0("    labels = ", .serialize_arg(input$labels), ","),
+      paste0("    size = ", .serialize_arg(input$size %||% "md"), ","),
+      paste0("    help = ", .serialize_arg(input$help), ","),
+      paste0("    disabled = ", .serialize_arg(input$disabled %||% FALSE), ","),
+      paste0("    mt = ", .serialize_arg(input$mt), ","),
+      paste0("    mr = ", .serialize_arg(input$mr), ","),
+      paste0("    mb = ", .serialize_arg(input$mb), ","),
+      paste0("    ml = ", .serialize_arg(input$ml)),
+      if (i < length(block$inputs)) "  )," else "  )"
+    )
+    lines <- c(lines, input_lines)
+  }
+  
+  # Close the list and add style/align parameters
+  lines <- c(lines, 
+    paste0("), style = \"", style, "\", align = \"", align, "\")"),
+    "```", 
+    ""
+  )
   lines
 }
 

@@ -66,12 +66,11 @@ test_that("first page has navigation to next", {
   # Get absolute paths
   output_dir <- normalizePath(result$output_dir, mustWork = FALSE)
   
-  # First file should have navigation to next
+  # First file should have pagination nav R call (page 1 of 3)
   qmd1 <- readLines(file.path(output_dir, "analysis.qmd"))
-  expect_true(any(grepl("analysis_p2.html", qmd1)))
-  
-  # Should have disabled Previous button
-  expect_true(any(grepl("pagination-disabled", qmd1)))
+  # Check for create_pagination_nav call with page 1
+  expect_true(any(grepl("create_pagination_nav", qmd1)))
+  expect_true(any(grepl('1, 3, "analysis"', qmd1, fixed = TRUE)))
 })
 
 test_that("middle page has both prev and next navigation", {
@@ -90,19 +89,10 @@ test_that("middle page has both prev and next navigation", {
   result <- generate_dashboard(proj, render = FALSE, open = FALSE)
   output_dir <- normalizePath(result$output_dir, mustWork = FALSE)
   
-  # Middle file should have both navigation buttons
+  # Middle file should have pagination nav R call (page 2 of 3)
   qmd2 <- readLines(file.path(output_dir, "analysis_p2.qmd"))
-  expect_true(any(grepl("analysis.html", qmd2)))  # Previous
-  expect_true(any(grepl("analysis_p3.html", qmd2)))  # Next
-  expect_true(any(grepl("Previous", qmd2, fixed = TRUE)))
-  expect_true(any(grepl("Next", qmd2, fixed = TRUE)))
-  
-  # Should not have disabled buttons
-  prev_disabled_lines <- grepl("pagination-prev.*pagination-disabled", qmd2)
-  next_disabled_lines <- grepl("pagination-next.*pagination-disabled", qmd2)
-  expect_false(any(prev_disabled_lines))
-  expect_false(any(next_disabled_lines))
-  
+  expect_true(any(grepl("create_pagination_nav", qmd2)))
+  expect_true(any(grepl('2, 3, "analysis"', qmd2, fixed = TRUE)))
 })
 
 test_that("last page only has previous navigation", {
@@ -121,14 +111,10 @@ test_that("last page only has previous navigation", {
   result <- generate_dashboard(proj, render = FALSE, open = FALSE)
   output_dir <- normalizePath(result$output_dir, mustWork = FALSE)
   
-  # Last file should only have previous
+  # Last file should have pagination nav R call (page 3 of 3)
   qmd3 <- readLines(file.path(output_dir, "analysis_p3.qmd"))
-  expect_true(any(grepl("analysis_p2.html", qmd3)))
-  expect_true(any(grepl("Previous", qmd3, fixed = TRUE)))
-  
-  # Should have disabled Next button
-  expect_true(any(grepl("pagination-disabled", qmd3)))
-  
+  expect_true(any(grepl("create_pagination_nav", qmd3)))
+  expect_true(any(grepl('3, 3, "analysis"', qmd3, fixed = TRUE)))
 })
 
 test_that("each pagination page renders independently", {
@@ -180,25 +166,20 @@ test_that("pagination navigation includes page indicators", {
   result <- generate_dashboard(proj, render = FALSE, open = FALSE)
   output_dir <- normalizePath(result$output_dir, mustWork = FALSE)
   
-  # Check page indicators in each file
+  # Check page indicators in each file via R function calls
   qmd1 <- readLines(file.path(output_dir, "analysis.qmd"))
   qmd2 <- readLines(file.path(output_dir, "analysis_p2.qmd"))
   qmd3 <- readLines(file.path(output_dir, "analysis_p3.qmd"))
   
-  # All files should have pagination-info class
-  expect_true(any(grepl("pagination-info", qmd1)))
-  expect_true(any(grepl("pagination-info", qmd2)))
-  expect_true(any(grepl("pagination-info", qmd3)))
+  # All files should have create_pagination_nav R calls
+  expect_true(any(grepl("create_pagination_nav", qmd1)))
+  expect_true(any(grepl("create_pagination_nav", qmd2)))
+  expect_true(any(grepl("create_pagination_nav", qmd3)))
   
-  # Check that page input fields exist with correct values
-  expect_true(any(grepl("value='1'", qmd1)))
-  expect_true(any(grepl("value='2'", qmd2)))
-  expect_true(any(grepl("value='3'", qmd3)))
-  
-  # All should show total pages
-  expect_true(any(grepl("of 3", qmd1, fixed = TRUE)))
-  expect_true(any(grepl("of 3", qmd2, fixed = TRUE)))
-  expect_true(any(grepl("of 3", qmd3, fixed = TRUE)))
+  # Check that each file has the correct page number in the R call
+  expect_true(any(grepl('1, 3, "analysis"', qmd1, fixed = TRUE)))
+  expect_true(any(grepl('2, 3, "analysis"', qmd2, fixed = TRUE)))
+  expect_true(any(grepl('3, 3, "analysis"', qmd3, fixed = TRUE)))
   
 })
 
@@ -219,8 +200,8 @@ test_that("pagination navigation matches theme", {
   # Check that pagination.css is loaded globally (not inline)
   expect_true(file.exists(file.path(output_dir, "assets", "pagination.css")))
   
-  # Check that pagination-nav HTML is present
-  expect_true(grepl("pagination-nav", qmd_text))
+  # Check that create_pagination_nav R call is present (generates pagination-nav HTML)
+  expect_true(grepl("create_pagination_nav", qmd_text))
   
   # Cleanup
   unlink(output_dir, recursive = TRUE)

@@ -82,8 +82,7 @@ create_stackedbar(
 
 - stacked_type:
 
-  One of "normal" (counts) or "percent" (100% stacked). Default
-  "normal".
+  One of "counts" or "percent" (100% stacked). Default "normal".
 
 - tooltip_prefix:
 

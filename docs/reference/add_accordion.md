@@ -5,7 +5,7 @@ Add collapsible accordion/details section
 ## Usage
 
 ``` r
-add_accordion(content, title, text, open = FALSE)
+add_accordion(content, title, text, open = FALSE, tabgroup = NULL)
 ```
 
 ## Arguments
@@ -25,6 +25,11 @@ add_accordion(content, title, text, open = FALSE)
 - open:
 
   Whether section starts open (default: FALSE)
+
+- tabgroup:
+
+  Optional tabgroup for organizing content (character vector for nested
+  tabs)
 
 ## Value
 

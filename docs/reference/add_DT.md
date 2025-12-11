@@ -5,7 +5,7 @@ Add DT datatable
 ## Usage
 
 ``` r
-add_DT(content, table_data, options = NULL, ...)
+add_DT(content, table_data, options = NULL, tabgroup = NULL, ...)
 ```
 
 ## Arguments
@@ -22,6 +22,11 @@ add_DT(content, table_data, options = NULL, ...)
 - options:
 
   List of DT options (only used if passing a data frame)
+
+- tabgroup:
+
+  Optional tabgroup for organizing content (character vector for nested
+  tabs)
 
 - ...:
 

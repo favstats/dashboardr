@@ -238,7 +238,82 @@ This function performs the following steps:
 ## Examples
 
 ``` r
-if (FALSE) { # \dontrun{
+# Load the dataset included in the package
+data("gss_panel20", package = "dashboardr")
+#> Warning: data set ‘gss_panel20’ not found
+
+# Example 1: Basic heatmap – average age by sex and education level
+create_heatmap(
+  data = gss_panel20,
+  x_var = "degree",
+  y_var = "sex",
+  value_var = "age",
+  title = "Average Age by Education and Sex",
+  x_label = "Education Level",
+  y_label = "Sex",
+  value_label = "Mean Age"
+)
+#> Error: object 'gss_panel20' not found
+
+# Example 2: Weighted heatmap using survey weights
+create_heatmap(
+  data = gss_panel20,
+  x_var = "region",
+  y_var = "sex",
+  value_var = "satfin",         # Financial satisfaction
+  weight_var = "wtssall",       # Use GSS survey weight
+  title = "Weighted Average Financial Satisfaction",
+  subtitle = "Weighted by GSS sample weights",
+  color_palette = c("#f7fbff", "#08306b")
+)
+#> Error: object 'gss_panel20' not found
+
+# Example 3: Handling missing categories explicitly
+create_heatmap(
+  data = gss_panel20,
+  x_var = "region",
+  y_var = "degree",
+  value_var = "income16",
+  include_na = TRUE,
+  na_label_x = "Region Missing",
+  na_label_y = "Degree Missing",
+  na_color = "#d9d9d9",
+  title = "Average Income by Region and Education (Including Missing)"
+)
+#> Error: object 'gss_panel20' not found
+
+# Example 4: Custom order of education levels and relabeling of sex
+create_heatmap(
+  data = gss_panel20,
+  x_var = "degree",
+  y_var = "sex",
+  value_var = "income16",
+  x_order = c("Lt High School", "High School", "Junior College",
+              "Bachelor", "Graduate"),
+  y_map_values = list("Male" = "M", "Female" = "F"),
+  title = "Average Income by Education Level and Sex",
+  subtitle = "Custom order and relabeled categories",
+  color_palette = c("#ffffe0", "#31a354")
+)
+#> Error: object 'gss_panel20' not found
+
+# Example 5: Custom tooltip formatting and labels
+create_heatmap(
+  data = gss_panel20,
+  x_var = "region",
+  y_var = "sex",
+  value_var = "satjob",          # Job satisfaction
+  tooltip_prefix = "",
+  tooltip_suffix = " / 5",
+  tooltip_labels_format = "{point.value:.2f}",
+  data_labels_enabled = TRUE,
+  title = "Job Satisfaction by Region and Sex",
+  color_palette = c("#fee5d9", "#cb181d")
+)
+#> Error: object 'gss_panel20' not found
+
+
+#####
 # Example 1: Basic heatmap with average values
 plot1 <- create_heatmap(
   data = survey_data,
@@ -250,6 +325,7 @@ plot1 <- create_heatmap(
   y_label = "Gender",
   value_label = "Average Age"
 )
+#> Error: object 'survey_data' not found
 
 # Example 2: Weighted heatmap using survey weights
 plot2 <- create_heatmap(
@@ -261,8 +337,6 @@ plot2 <- create_heatmap(
   title = "Weighted Average Satisfaction by Region and Income",
   subtitle = "Using survey weights for population representation"
 )
-} # }
+#> Error: object 'survey_data' not found
 
-plot1
-#> Error: object 'plot1' not found
 ```

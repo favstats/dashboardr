@@ -5,7 +5,15 @@ Add a metric/value box
 ## Usage
 
 ``` r
-add_metric(content, value, title, icon = NULL, color = NULL, subtitle = NULL)
+add_metric(
+  content,
+  value,
+  title,
+  icon = NULL,
+  color = NULL,
+  subtitle = NULL,
+  tabgroup = NULL
+)
 ```
 
 ## Arguments
@@ -33,3 +41,8 @@ add_metric(content, value, title, icon = NULL, color = NULL, subtitle = NULL)
 - subtitle:
 
   Optional subtitle text
+
+- tabgroup:
+
+  Optional tabgroup for organizing content (character vector for nested
+  tabs)

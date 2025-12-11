@@ -16,7 +16,8 @@ add_image(
   height = NULL,
   align = c("center", "left", "right"),
   link = NULL,
-  class = NULL
+  class = NULL,
+  tabgroup = NULL
 )
 ```
 
@@ -58,6 +59,11 @@ add_image(
 
   Optional CSS class for custom styling
 
+- tabgroup:
+
+  Optional tabgroup for organizing content (character vector for nested
+  tabs)
+
 ## Value
 
 Updated content_collection object
@@ -73,6 +79,10 @@ img <- add_image(src = "logo.png", alt = "Logo")
 content <- create_content() %>%
   add_text("Welcome!") %>%
   add_image(src = "chart.png", alt = "Chart")
+
+# With tabgroup
+content <- create_content() %>%
+  add_image(src = "chart.png", alt = "Chart", tabgroup = "Gallery")
 
 # Pipe directly from viz
 content <- create_viz() %>%

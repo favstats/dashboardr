@@ -26,6 +26,12 @@ install.packages(c("usethis", "gert"))
 library(dashboardr)
 ```
 
+> **⚡ Already have Git and GitHub set up?**
+>
+> If you already have Git installed, a GitHub account, and a Personal
+> Access Token configured, you can skip directly to [Part 2: Publishing
+> Your Dashboard](#part-2-publishing-your-dashboard).
+
 ## Part 1: One-Time Setup (Do This Once)
 
 ### Step 1: Install Git on Your Computer
@@ -172,26 +178,63 @@ generate_dashboard(dashboard, render = TRUE)
 
 ### Step 2: Publish!
 
-Now for the magic command:
+Now for the magic command with the key arguments shown explicitly:
 
 ``` r
-publish_dashboard()
+publish_dashboard(
+  message = "Initial commit",  # Your commit message
+  path = "/docs"               # Folder with your dashboard (default)
+)
 ```
 
-**What happens:**
+Or simply:
+
+``` r
+publish_dashboard()  # Uses defaults above
+```
+
+#### Key Arguments
+
+**Important:**
+[`publish_dashboard()`](https://favstats.github.io/dashboardr/reference/publish_dashboard.md)
+works from **your current working directory**. It will:
+
+- Look for your dashboard files in the current folder
+- Create a git repository in that folder
+- Publish the contents of the `/docs` folder to GitHub Pages
+
+**Main arguments you might want to customize:**
+
+- **`message`** - Your initial commit message (default:
+  `"Initial commit"`)
+  - Example:
+    `publish_dashboard(message = "Launch my analysis dashboard")`
+  - This appears in your git history and helps you track what was
+    published
+- **`private`** - Create a private repository (default: `FALSE`)
+  - Example: `publish_dashboard(private = TRUE)`
+  - Use this if your dashboard (code) contains sensitive information
+- **`path`** - Which folder contains your site files (default:
+  `"/docs"`)
+  - The `/docs` (with leading slash) tells GitHub Pages to serve from
+    the `docs/` folder in your repository root
+  - This is where
+    [`generate_dashboard()`](https://favstats.github.io/dashboardr/reference/generate_dashboard.md)
+    creates your HTML files
+
+#### What happens:
 
 1.  Git is initialized in your dashboard folder
 2.  A comprehensive `.gitignore` file is created (automatically excludes
     data files, large files \>10MB, and temporary files)
-3.  You’ll be asked to confirm committing your files (type `1` or `3`
-    when prompted)
+3.  You’ll be asked to confirm committing your files
 4.  A GitHub repository is created
 5.  GitHub Pages is configured
 6.  Your dashboard is pushed online
 
 **Important notes:**
 
-- You may see prompts asking for confirmation - just type the number to
+- You will see prompts asking for confirmation - just type the number to
   proceed
 - Your browser may open showing your GitHub repository
 - The function will display your dashboard URL at the end
@@ -204,22 +247,19 @@ publish_dashboard()
 Copy this URL and wait 2-5 minutes, then visit it to see your live
 dashboard!
 
-### Publish Options
+### Additional Options
 
-You can customize the publishing process:
+For more advanced scenarios:
 
 ``` r
-# Create a private repository
-publish_dashboard(private = TRUE)
-
-# Publish to an organization
+# Publish to an organization instead of your personal account
 publish_dashboard(organisation = "my-organization")
 
-# Custom initial commit message
-publish_dashboard(message = "Launch my awesome dashboard!")
-
-# Use SSH instead of HTTPS
+# Use SSH instead of HTTPS (requires SSH keys set up)
 publish_dashboard(protocol = "ssh")
+
+# Custom branch (advanced - usually not needed)
+publish_dashboard(branch = "gh-pages")
 ```
 
 ## Part 3: Updating Your Dashboard
@@ -288,7 +328,7 @@ update_dashboard(
   message = "Regenerated all pages"
 )
 
-# Skip confirmation prompt (not recommended)
+# Skip confirmation prompt (not recommended!)
 update_dashboard(ask = FALSE)
 ```
 

@@ -5,7 +5,7 @@ Add generic table (data frame)
 ## Usage
 
 ``` r
-add_table(content, table_object, caption = NULL)
+add_table(content, table_object, caption = NULL, tabgroup = NULL)
 ```
 
 ## Arguments
@@ -21,6 +21,11 @@ add_table(content, table_object, caption = NULL)
 - caption:
 
   Optional caption
+
+- tabgroup:
+
+  Optional tabgroup for organizing content (character vector for nested
+  tabs)
 
 ## Value
 

@@ -5,7 +5,7 @@ Add iframe
 ## Usage
 
 ``` r
-add_iframe(content, src, height = "500px", width = "100%")
+add_iframe(content, src, height = "500px", width = "100%", tabgroup = NULL)
 ```
 
 ## Arguments
@@ -25,6 +25,11 @@ add_iframe(content, src, height = "500px", width = "100%")
 - width:
 
   iframe width (default: "100%")
+
+- tabgroup:
+
+  Optional tabgroup for organizing content (character vector for nested
+  tabs)
 
 ## Value
 

@@ -15,7 +15,8 @@ add_value_box(
   logo_text = NULL,
   bg_color = "#2c3e50",
   description = NULL,
-  description_title = "About this source"
+  description_title = "About this source",
+  tabgroup = NULL
 )
 ```
 
@@ -52,6 +53,11 @@ add_value_box(
 - description_title:
 
   Title for collapsible section, default "About this source"
+
+- tabgroup:
+
+  Optional tabgroup for organizing content (character vector for nested
+  tabs)
 
 ## Details
 

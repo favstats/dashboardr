@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Input Filter Test</title>
+    <!-- Choices.js from CDN -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js@10.2.0/public/assets/styles/choices.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/choices.js@10.2.0/public/assets/scripts/choices.min.js"></script>
+    <!-- Our custom CSS (inline for testing) -->
+    <style>
+/* INPUT ROW LAYOUT */
+.dashboardr-input-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  align-items: flex-end;
+  margin-bottom: 1.5rem;
+  padding: 1.25rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #dee2e6;
+  overflow: visible !important;
+}
+
+.dashboardr-input-row.align-center {
+  justify-content: center;
+}
+
+.dashboardr-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 280px;
+  flex: 1;
+  max-width: 500px;
+  overflow: visible !important;
+  position: relative;
+}
+
+.dashboardr-input-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #495057;
+  margin-bottom: 0.25rem;
+}
+
+/* CHOICES.JS - SHINY/BOOTSTRAP STYLE */
+.dashboardr-choices.choices {
+  margin-bottom: 0;
+  font-size: 14px;
+}
+
+.dashboardr-choices .choices__inner {
+  min-height: 38px;
+  padding: 4px 30px 4px 8px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  background-color: #fff;
+  cursor: pointer;
+  position: relative;
+}
+
+/* Add chevron/arrow indicator */
+.dashboardr-choices .choices__inner::after {
+  content: '';
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 6px solid #495057;
+  pointer-events: none;
+}
+
+.dashboardr-choices.is-open .choices__inner::after {
+  border-top: none;
+  border-bottom: 6px solid #495057;
+}
+
+.dashboardr-choices.is-focused .choices__inner,
+.dashboardr-choices.is-open .choices__inner {
+  border-color: #80bdff;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+  outline: none;
+}
+
+/* SELECTED ITEMS (TAGS) */
+.dashboardr-choices .choices__list--multiple .choices__item {
+  display: inline-flex;
+  align-items: center;
+  background-color: #e9ecef;
+  border: 1px solid #ced4da;
+  border-radius: 3px;
+  padding: 2px 6px 2px 8px;
+  margin: 2px;
+  font-size: 13px;
+  color: #495057;
+  line-height: 1.4;
+}
+
+.dashboardr-choices .choices__list--multiple .choices__item.is-highlighted {
+  background-color: #dee2e6;
+  border-color: #adb5bd;
+}
+
+/* Remove button (X) on tags */
+.dashboardr-choices .choices__button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  margin-left: 4px;
+  padding: 0;
+  border: none;
+  border-left: none;
+  border-radius: 2px;
+  background-color: transparent;
+  background-image: none;
+  color: #6c757d;
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+  opacity: 0.7;
+}
+
+.dashboardr-choices .choices__button::after {
+  content: '×';
+}
+
+.dashboardr-choices .choices__button:hover {
+  opacity: 1;
+  color: #dc3545;
+}
+
+.dashboardr-choices .choices__button > svg,
+.dashboardr-choices .choices__button > img {
+  display: none;
+}
+
+/* DROPDOWN LIST */
+.dashboardr-choices .choices__list--dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin-top: 0;
+  border: 1px solid #ced4da;
+  border-top: none;
+  border-radius: 0 0 4px 4px;
+  background-color: #fff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  z-index: 9999;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.dashboardr-choices.is-open .choices__inner {
+  border-radius: 4px 4px 0 0;
+  border-bottom-color: transparent;
+}
+
+.dashboardr-choices .choices__list--dropdown .choices__item {
+  padding: 8px 12px;
+  font-size: 14px;
+  color: #212529;
+  cursor: pointer;
+  border-bottom: 1px solid #f1f3f4;
+}
+
+.dashboardr-choices .choices__list--dropdown .choices__item:last-child {
+  border-bottom: none;
+}
+
+/* Hover state - blue highlight */
+.dashboardr-choices .choices__list--dropdown .choices__item--selectable.is-highlighted {
+  background-color: #007bff;
+  color: #fff;
+}
+
+/* Selected item in dropdown */
+.dashboardr-choices .choices__list--dropdown .choices__item--selectable.is-selected {
+  background-color: #e7f3ff;
+  color: #0056b3;
+}
+
+.dashboardr-choices .choices__list--dropdown .choices__item--selectable.is-selected::before {
+  content: '✓ ';
+  font-weight: bold;
+  color: #007bff;
+}
+
+.dashboardr-choices .choices__list--dropdown .choices__item--selectable.is-selected.is-highlighted {
+  background-color: #007bff;
+  color: #fff;
+}
+
+.dashboardr-choices .choices__list--dropdown .choices__item--selectable.is-selected.is-highlighted::before {
+  color: #fff;
+}
+
+.dashboardr-choices .choices__input {
+  background-color: transparent;
+  padding: 4px 0;
+  margin-bottom: 0;
+  font-size: 14px;
+  border: none;
+  min-width: 100px;
+}
+
+.dashboardr-choices .choices__input:focus {
+  outline: none;
+}
+
+.dashboardr-choices .choices__placeholder {
+  color: #6c757d;
+  opacity: 1;
+}
+    </style>
+</head>
+<body style="padding: 20px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+    <h1>Input Filter Test</h1>
+    
+    <div class="dashboardr-input-row align-center">
+        <div class="dashboardr-input-group" style="width: 400px;">
+            <label class="dashboardr-input-label" for="country_filter">Select Countries:</label>
+            <select id="country_filter" class="dashboardr-input" data-filter-var="country" data-placeholder="Choose countries..." multiple>
+                <option value="Netherlands" selected>Netherlands</option>
+                <option value="Germany" selected>Germany</option>
+                <option value="United States" selected>United States</option>
+                <option value="United Kingdom">United Kingdom</option>
+                <option value="France">France</option>
+                <option value="Canada">Canada</option>
+                <option value="Australia">Australia</option>
+                <option value="Japan">Japan</option>
+                <option value="China">China</option>
+                <option value="Brazil">Brazil</option>
+                <option value="Global Average" selected>Global Average</option>
+            </select>
+        </div>
+    </div>
+
+    <div id="status" style="margin-top: 20px; padding: 10px; background: #e9ecef; border-radius: 4px;">
+        <strong>Status:</strong> <span id="status-text">Loading...</span>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const input = document.getElementById('country_filter');
+        const statusText = document.getElementById('status-text');
+        
+        if (typeof Choices === 'undefined') {
+            statusText.textContent = 'ERROR: Choices.js not loaded!';
+            statusText.style.color = 'red';
+            return;
+        }
+        
+        try {
+            const choices = new Choices(input, {
+                removeItemButton: true,
+                searchEnabled: true,
+                searchPlaceholderValue: 'Type to search...',
+                placeholderValue: 'Choose countries...',
+                itemSelectText: '',
+                noResultsText: 'No results found',
+                noChoicesText: 'No options available',
+                shouldSort: false,
+                searchResultLimit: 100,
+                renderChoiceLimit: -1,
+                classNames: {
+                    containerOuter: 'choices dashboardr-choices'
+                }
+            });
+            
+            statusText.textContent = 'SUCCESS: Choices.js initialized! Click the dropdown above.';
+            statusText.style.color = 'green';
+            
+            input.addEventListener('change', function() {
+                const selected = Array.from(input.selectedOptions).map(o => o.value);
+                console.log('Selected:', selected);
+            });
+            
+        } catch (e) {
+            statusText.textContent = 'ERROR: ' + e.message;
+            statusText.style.color = 'red';
+        }
+    });
+    </script>
+</body>
+</html>

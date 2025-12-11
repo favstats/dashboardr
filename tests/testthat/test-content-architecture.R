@@ -129,7 +129,8 @@ test_that("add_spacer creates spacer with height", {
 })
 
 test_that("add_gt creates gt table block", {
-  skip_if_not_installed("gt")
+  # Suppress encoding warnings from gt package loading (external issue, not dashboardr)
+  suppressWarnings(skip_if_not_installed("gt"))
   
   content <- create_content() %>%
     add_gt(gt::gt(mtcars[1:5, 1:3]), caption = "Motor Trend Data")

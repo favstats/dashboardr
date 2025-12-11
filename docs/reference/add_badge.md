@@ -5,7 +5,7 @@ Add a status badge
 ## Usage
 
 ``` r
-add_badge(content, text, color = "primary")
+add_badge(content, text, color = "primary", tabgroup = NULL)
 ```
 
 ## Arguments
@@ -21,3 +21,8 @@ add_badge(content, text, color = "primary")
 - color:
 
   Badge color (success, warning, danger, info, primary, secondary)
+
+- tabgroup:
+
+  Optional tabgroup for organizing content (character vector for nested
+  tabs)

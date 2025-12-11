@@ -5,7 +5,14 @@ Add video
 ## Usage
 
 ``` r
-add_video(content, src, caption = NULL, width = NULL, height = NULL)
+add_video(
+  content,
+  src,
+  caption = NULL,
+  width = NULL,
+  height = NULL,
+  tabgroup = NULL
+)
 ```
 
 ## Arguments
@@ -29,6 +36,11 @@ add_video(content, src, caption = NULL, width = NULL, height = NULL)
 - height:
 
   Optional height
+
+- tabgroup:
+
+  Optional tabgroup for organizing content (character vector for nested
+  tabs)
 
 ## Value
 

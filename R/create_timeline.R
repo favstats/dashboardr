@@ -379,7 +379,13 @@ create_timeline <- function(data,
     time_var
   }
 
-  y_axis_title <- if (!is.null(y_label)) y_label else "Percentage"
+  y_axis_title <- if (!is.null(y_label)) {
+    y_label
+  } else if (chart_type == "line" && !is.null(group_var) && is.numeric(plot_data[[response_var]])) {
+    "Value"
+  } else {
+    "Percentage"
+  }
 
   # NA HANDLING - Apply AFTER mapping/filtering/binning
   if (!include_na) {
@@ -480,6 +486,61 @@ create_timeline <- function(data,
 
   } else if (chart_type == "line") {
     hc <- hc %>% hc_chart(type = "line")
+
+    # SPECIAL CASE: numeric response with grouping -> one series per group (e.g., country)
+    if (!is.null(group_var) && is.numeric(plot_data[[response_var]])) {
+      if (!is.null(weight_var)) {
+        if (!weight_var %in% names(plot_data)) {
+          stop("`weight_var` '", weight_var, "' not found in data.", call. = FALSE)
+        }
+        agg_data <- plot_data %>%
+          group_by(!!sym(time_var_plot), !!sym(group_var)) %>%
+          summarise(
+            value = {
+              w <- !!sym(weight_var)
+              v <- !!sym(response_var)
+              if (sum(w, na.rm = TRUE) == 0) NA_real_ else sum(v * w, na.rm = TRUE) / sum(w, na.rm = TRUE)
+            },
+            .groups = "drop"
+          )
+      } else {
+        agg_data <- plot_data %>%
+          group_by(!!sym(time_var_plot), !!sym(group_var)) %>%
+          summarise(
+            value = mean(!!sym(response_var), na.rm = TRUE),
+            .groups = "drop"
+          )
+      }
+
+      group_levels <- unique(agg_data[[group_var]])
+
+      for (group_level in group_levels) {
+        series_data <- agg_data %>%
+          filter(!!sym(group_var) == group_level) %>%
+          arrange(!!sym(time_var_plot))
+
+        if (nrow(series_data) == 0) next
+
+        # For categorical time, use category names; for numeric, use values
+        if (is_time_categorical) {
+          series_data <- series_data %>%
+            mutate(x = as.character(!!sym(time_var_plot))) %>%
+            select(x, y = value)
+        } else {
+          series_data <- series_data %>%
+            select(x = !!sym(time_var_plot), y = value)
+        }
+
+        hc <- hc %>%
+          hc_add_series(
+            name = as.character(group_level),
+            data = list_parse2(series_data),
+            type = "line"
+          )
+      }
+
+      return(hc)
+    }
 
     if (is.null(group_var)) {
       response_levels_to_use <- if (!is.null(response_levels)) response_levels else unique(agg_data[[response_var]])

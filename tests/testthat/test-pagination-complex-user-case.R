@@ -192,19 +192,19 @@ test_that("pagination survives ALL layers in complex real-world use case", {
   # Verify content of first page
   page1_content <- readLines(file.path(output_dir, "performance.qmd"))
   
-  # Should have navigation to next page
+  # Should have create_pagination_nav R call for page 1
   expect_true(
-    any(grepl("performance_p2\\.html", page1_content)),
-    "First page should have navigation to second page"
+    any(grepl("create_pagination_nav", page1_content)),
+    "First page should have create_pagination_nav call"
   )
   
   # Verify content of second page
   page2_content <- readLines(file.path(output_dir, "performance_p2.qmd"))
   
-  # Should have navigation back to first page
+  # Should have create_pagination_nav R call for page 2
   expect_true(
-    any(grepl("performance\\.html", page2_content)),
-    "Second page should have navigation back to first page"
+    any(grepl("create_pagination_nav", page2_content)),
+    "Second page should have create_pagination_nav call"
   )
   
   # Should contain the viz that came after pagination

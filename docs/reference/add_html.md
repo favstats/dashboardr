@@ -5,7 +5,7 @@ Add raw HTML content
 ## Usage
 
 ``` r
-add_html(content, html)
+add_html(content, html, tabgroup = NULL)
 ```
 
 ## Arguments
@@ -17,3 +17,8 @@ add_html(content, html)
 - html:
 
   Raw HTML string
+
+- tabgroup:
+
+  Optional tabgroup for organizing content (character vector for nested
+  tabs)

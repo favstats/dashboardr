@@ -5,7 +5,7 @@ Add horizontal divider
 ## Usage
 
 ``` r
-add_divider(content, style = "default")
+add_divider(content, style = "default", tabgroup = NULL)
 ```
 
 ## Arguments
@@ -17,6 +17,11 @@ add_divider(content, style = "default")
 - style:
 
   Divider style ("default", "thick", "dashed", "dotted")
+
+- tabgroup:
+
+  Optional tabgroup for organizing content (character vector for nested
+  tabs)
 
 ## Value
 

@@ -460,16 +460,16 @@ it will create. This makes the hierarchy visible and debuggable!</p>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">viz</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ╔══════════════════════════════════════════════════════════════════════════</span></span>
-<span><span class="co">#&gt; ║ 📊 VISUALIZATION COLLECTION</span></span>
+<span><span class="co">#&gt; ║ 📦 CONTENT COLLECTION</span></span>
 <span><span class="co">#&gt; ╠══════════════════════════════════════════════════════════════════════════</span></span>
-<span><span class="co">#&gt; ║ Total visualizations: 3</span></span>
+<span><span class="co">#&gt; ║ Total items: 3</span></span>
 <span><span class="co">#&gt; ║</span></span>
 <span><span class="co">#&gt; ║ STRUCTURE:</span></span>
 <span><span class="co">#&gt; ║ ├─ 📁 demographics</span></span>
-<span><span class="co">#&gt; ║ │  ├─ 📉 HISTOGRAM: Age Distribution</span></span>
-<span><span class="co">#&gt; ║ │  └─ 📉 HISTOGRAM: Income Distribution</span></span>
+<span><span class="co">#&gt; ║ │  ├─ 📄 VIZ: Age Distribution</span></span>
+<span><span class="co">#&gt; ║ │  └─ 📄 VIZ: Income Distribution</span></span>
 <span><span class="co">#&gt; ║ └─ 📁 feedback</span></span>
-<span><span class="co">#&gt; ║    └─ 📉 HISTOGRAM: Satisfaction Scores</span></span>
+<span><span class="co">#&gt; ║    └─ 📄 VIZ: Satisfaction Scores</span></span>
 <span><span class="co">#&gt; ╚══════════════════════════════════════════════════════════════════════════</span></span></code></pre></div>
 <p><strong>See the hierarchy?</strong> dashboardr automatically
 organized your visualizations into a tree based on the
@@ -503,20 +503,20 @@ paths:</p>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">nested_viz</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ╔══════════════════════════════════════════════════════════════════════════</span></span>
-<span><span class="co">#&gt; ║ 📊 VISUALIZATION COLLECTION</span></span>
+<span><span class="co">#&gt; ║ 📦 CONTENT COLLECTION</span></span>
 <span><span class="co">#&gt; ╠══════════════════════════════════════════════════════════════════════════</span></span>
-<span><span class="co">#&gt; ║ Total visualizations: 3</span></span>
+<span><span class="co">#&gt; ║ Total items: 3</span></span>
 <span><span class="co">#&gt; ║</span></span>
 <span><span class="co">#&gt; ║ STRUCTURE:</span></span>
 <span><span class="co">#&gt; ║ └─ 📁 analysis</span></span>
 <span><span class="co">#&gt; ║    ├─ 📁 demographics</span></span>
 <span><span class="co">#&gt; ║    │  ├─ 📁 age</span></span>
-<span><span class="co">#&gt; ║    │  │  └─ 📉 HISTOGRAM: Age</span></span>
+<span><span class="co">#&gt; ║    │  │  └─ 📄 VIZ: Age</span></span>
 <span><span class="co">#&gt; ║    │  └─ 📁 income</span></span>
-<span><span class="co">#&gt; ║    │     └─ 📉 HISTOGRAM: Income</span></span>
+<span><span class="co">#&gt; ║    │     └─ 📄 VIZ: Income</span></span>
 <span><span class="co">#&gt; ║    └─ 📁 feedback</span></span>
 <span><span class="co">#&gt; ║       └─ 📁 overall</span></span>
-<span><span class="co">#&gt; ║          └─ 📉 HISTOGRAM: Overall Satisfaction</span></span>
+<span><span class="co">#&gt; ║          └─ 📄 VIZ: Overall Satisfaction</span></span>
 <span><span class="co">#&gt; ╚══════════════════════════════════════════════════════════════════════════</span></span></code></pre></div>
 <p><strong>The tree shows exactly what your dashboard will look
 like!</strong> Each level becomes a tab, automatically organized.</p>
@@ -544,15 +544,15 @@ ggplot2!):</p>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">combined</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ╔══════════════════════════════════════════════════════════════════════════</span></span>
-<span><span class="co">#&gt; ║ 📊 VISUALIZATION COLLECTION</span></span>
+<span><span class="co">#&gt; ║ 📦 CONTENT COLLECTION</span></span>
 <span><span class="co">#&gt; ╠══════════════════════════════════════════════════════════════════════════</span></span>
-<span><span class="co">#&gt; ║ Total visualizations: 2</span></span>
+<span><span class="co">#&gt; ║ Total items: 2</span></span>
 <span><span class="co">#&gt; ║</span></span>
 <span><span class="co">#&gt; ║ STRUCTURE:</span></span>
 <span><span class="co">#&gt; ║ ├─ 📁 demographics</span></span>
-<span><span class="co">#&gt; ║ │  └─ 📉 HISTOGRAM: Age</span></span>
+<span><span class="co">#&gt; ║ │  └─ 📄 VIZ: Age</span></span>
 <span><span class="co">#&gt; ║ └─ 📁 feedback</span></span>
-<span><span class="co">#&gt; ║    └─ 📉 HISTOGRAM: Satisfaction</span></span>
+<span><span class="co">#&gt; ║    └─ 📄 VIZ: Satisfaction</span></span>
 <span><span class="co">#&gt; ╚══════════════════════════════════════════════════════════════════════════</span></span></code></pre></div>
 </div>
 <div class="section level3">
@@ -607,14 +607,14 @@ amounts of content more digestible.</p>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">viz_with_defaults</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ╔══════════════════════════════════════════════════════════════════════════</span></span>
-<span><span class="co">#&gt; ║ 📊 VISUALIZATION COLLECTION</span></span>
+<span><span class="co">#&gt; ║ 📦 CONTENT COLLECTION</span></span>
 <span><span class="co">#&gt; ╠══════════════════════════════════════════════════════════════════════════</span></span>
-<span><span class="co">#&gt; ║ Total visualizations: 2</span></span>
+<span><span class="co">#&gt; ║ Total items: 2</span></span>
 <span><span class="co">#&gt; ║</span></span>
 <span><span class="co">#&gt; ║ STRUCTURE:</span></span>
 <span><span class="co">#&gt; ║ └─ 📁 (no tabgroup)</span></span>
-<span><span class="co">#&gt; ║    ├─ 📉 HISTOGRAM: Age (uses defaults)</span></span>
-<span><span class="co">#&gt; ║    └─ 📉 HISTOGRAM: Income (custom)</span></span>
+<span><span class="co">#&gt; ║    ├─ 📄 VIZ: Age (uses defaults)</span></span>
+<span><span class="co">#&gt; ║    └─ 📄 VIZ: Income (custom)</span></span>
 <span><span class="co">#&gt; ╚══════════════════════════════════════════════════════════════════════════</span></span></code></pre></div>
 <p>This is especially powerful for surveys with many similar
 questions!</p>
@@ -645,14 +645,14 @@ questions!</p>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">filtered_viz</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ╔══════════════════════════════════════════════════════════════════════════</span></span>
-<span><span class="co">#&gt; ║ 📊 VISUALIZATION COLLECTION</span></span>
+<span><span class="co">#&gt; ║ 📦 CONTENT COLLECTION</span></span>
 <span><span class="co">#&gt; ╠══════════════════════════════════════════════════════════════════════════</span></span>
-<span><span class="co">#&gt; ║ Total visualizations: 2</span></span>
+<span><span class="co">#&gt; ║ Total items: 2</span></span>
 <span><span class="co">#&gt; ║</span></span>
 <span><span class="co">#&gt; ║ STRUCTURE:</span></span>
 <span><span class="co">#&gt; ║ └─ 📁 analysis</span></span>
-<span><span class="co">#&gt; ║    ├─ 📉 HISTOGRAM: Age Distribution [filtered]</span></span>
-<span><span class="co">#&gt; ║    └─ 📉 HISTOGRAM: Age Distribution [filtered]</span></span>
+<span><span class="co">#&gt; ║    ├─ 📄 VIZ: Age Distribution</span></span>
+<span><span class="co">#&gt; ║    └─ 📄 VIZ: Age Distribution</span></span>
 <span><span class="co">#&gt; ╚══════════════════════════════════════════════════════════════════════════</span></span></code></pre></div>
 <p>No manual grouping needed—just use filters and
 <code>title_tabset</code>!</p>
@@ -1279,15 +1279,15 @@ visualizations:</p>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">viz</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ╔══════════════════════════════════════════════════════════════════════════</span></span>
-<span><span class="co">#&gt; ║ 📊 VISUALIZATION COLLECTION</span></span>
+<span><span class="co">#&gt; ║ 📦 CONTENT COLLECTION</span></span>
 <span><span class="co">#&gt; ╠══════════════════════════════════════════════════════════════════════════</span></span>
-<span><span class="co">#&gt; ║ Total visualizations: 3</span></span>
+<span><span class="co">#&gt; ║ Total items: 3</span></span>
 <span><span class="co">#&gt; ║</span></span>
 <span><span class="co">#&gt; ║ STRUCTURE:</span></span>
 <span><span class="co">#&gt; ║ └─ 📁 survey</span></span>
-<span><span class="co">#&gt; ║    ├─ 📊 STACKEDBAR: Question 1</span></span>
-<span><span class="co">#&gt; ║    ├─ 📊 STACKEDBAR: Question 2</span></span>
-<span><span class="co">#&gt; ║    └─ 📊 STACKEDBAR: Question 3</span></span>
+<span><span class="co">#&gt; ║    ├─ 📄 VIZ: Question 1</span></span>
+<span><span class="co">#&gt; ║    ├─ 📄 VIZ: Question 2</span></span>
+<span><span class="co">#&gt; ║    └─ 📄 VIZ: Question 3</span></span>
 <span><span class="co">#&gt; ╚══════════════════════════════════════════════════════════════════════════</span></span></code></pre></div>
 </div>
 <div class="section level3">

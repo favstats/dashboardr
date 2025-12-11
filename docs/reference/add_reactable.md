@@ -5,7 +5,7 @@ Add reactable table
 ## Usage
 
 ``` r
-add_reactable(content, reactable_object)
+add_reactable(content, reactable_object, tabgroup = NULL)
 ```
 
 ## Arguments
@@ -18,6 +18,11 @@ add_reactable(content, reactable_object)
 
   A reactable object (from reactable::reactable()) OR a data frame (will
   be auto-converted)
+
+- tabgroup:
+
+  Optional tabgroup for organizing content (character vector for nested
+  tabs)
 
 ## Value
 

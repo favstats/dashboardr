@@ -5,7 +5,7 @@ Add a blockquote
 ## Usage
 
 ``` r
-add_quote(content, quote, attribution = NULL, cite = NULL)
+add_quote(content, quote, attribution = NULL, cite = NULL, tabgroup = NULL)
 ```
 
 ## Arguments
@@ -25,3 +25,8 @@ add_quote(content, quote, attribution = NULL, cite = NULL)
 - cite:
 
   Optional citation URL
+
+- tabgroup:
+
+  Optional tabgroup for organizing content (character vector for nested
+  tabs)

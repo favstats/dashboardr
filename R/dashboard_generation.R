@@ -165,6 +165,11 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
     modal_css <- system.file("assets", "modal.css", package = "dashboardr")
     modal_js <- system.file("assets", "modal.js", package = "dashboardr")
     pagination_css <- system.file("assets", "pagination.css", package = "dashboardr")
+    input_filter_css <- system.file("assets", "input_filter.css", package = "dashboardr")
+    input_filter_js <- system.file("assets", "input_filter.js", package = "dashboardr")
+    filter_hook_js <- system.file("assets", "filter_hook.js", package = "dashboardr")
+    choices_css <- system.file("assets", "choices.min.css", package = "dashboardr")
+    choices_js <- system.file("assets", "choices.min.js", package = "dashboardr")
     
     if (file.exists(modal_css)) {
       file.copy(modal_css, file.path(assets_dir, "modal.css"), overwrite = TRUE)
@@ -174,6 +179,21 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
     }
     if (file.exists(pagination_css)) {
       file.copy(pagination_css, file.path(assets_dir, "pagination.css"), overwrite = TRUE)
+    }
+    if (file.exists(input_filter_css)) {
+      file.copy(input_filter_css, file.path(assets_dir, "input_filter.css"), overwrite = TRUE)
+    }
+    if (file.exists(input_filter_js)) {
+      file.copy(input_filter_js, file.path(assets_dir, "input_filter.js"), overwrite = TRUE)
+    }
+    if (file.exists(filter_hook_js)) {
+      file.copy(filter_hook_js, file.path(assets_dir, "filter_hook.js"), overwrite = TRUE)
+    }
+    if (file.exists(choices_css)) {
+      file.copy(choices_css, file.path(assets_dir, "choices.min.css"), overwrite = TRUE)
+    }
+    if (file.exists(choices_js)) {
+      file.copy(choices_js, file.path(assets_dir, "choices.min.js"), overwrite = TRUE)
     }
 
     # Copy tabset theme SCSS file if using a built-in theme

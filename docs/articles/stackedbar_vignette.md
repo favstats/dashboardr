@@ -30,7 +30,7 @@ variables).
 
 ### Getting Started
 
-First, let’s load the necessary libraries and examine our dataset.
+First, let’s load the necessary libraries and examine our data set.
 
 ``` r
 library(gssr)
@@ -100,7 +100,6 @@ Let’s start with a basic stacked bar chart showing educational
 attainment by gender.
 
 ``` r
-## TODO: there is a odd 5 chart
 # Create basic stacked bar chart
 plot1 <- create_stackedbar(
   data = gss_clean,
@@ -123,10 +122,8 @@ Now let’s create a percentage-based stacked bar chart to show happiness
 distribution across education levels.
 
 ``` r
-## TODO: there is also an odd 5 chart
-
 # Define education order for logical display
-education_order <- c("Lt High School", "High School", "Junior College", "Bachelor", "Graduate")
+education_order <- c("less than high school", "high school", "associate/junior college", "bachelor's", "graduate")
 
 # Create percentage stacked bar chart
 plot2 <- create_stackedbar(
@@ -140,7 +137,7 @@ plot2 <- create_stackedbar(
   stack_label = "Happiness Level",
   stacked_type = "percent",
   x_order = education_order,
-  stack_order = c("Very Happy", "Pretty Happy", "Not Too Happy"),
+  stack_order = c("very happy", "pretty happy", "not too happy"),
   tooltip_suffix = "%",
   color_palette = c("#2E86AB", "#A23B72", "#F18F01")
 )
@@ -185,14 +182,20 @@ age_labels <- c("18-29", "30-44", "45-59", "60-74", "75+")
 
 # Map political views to shorter labels
 polviews_map <- list(
-  "Extremely Liberal" = "Ext Liberal",
-  "Liberal" = "Liberal", 
-  "Slightly Liberal" = "Sl Liberal",
-  "Moderate" = "Moderate",
-  "Slightly Conservative" = "Sl Conservative",
-  "Conservative" = "Conservative",
-  "Extremely Conservative" = "Ext Conservative"
+  "extremely liberal" = "Ext. Liberal",
+  "liberal" = "Liberal", 
+  "slightly liberal" = "Sl. Liberal",
+  "moderate, middle of the road" = "Moderate",
+  "slightly conservative" = "Sl. Conservative",
+  "conservative" = "Conservative",
+  "extremely conservative" = "Ext. Conservative"
 )
+
+polviews_order <- list("Ext. Liberal", "Liberal", "Sl. Liberal",
+                       "Moderate", "Sl. Conservative", "Conservative", 
+                       "Ext. Conservative")
+
+
 
 # Create chart with age binning and value mapping using the numeric age
 plot3 <- create_stackedbar(
@@ -209,7 +212,8 @@ plot3 <- create_stackedbar(
   stacked_type = "percent",
   tooltip_suffix = "%",
   x_tooltip_suffix = " years",
-  color_palette = c("#d7191c", "#fdae61", "#fee08b", "#e6f598", "#abdda4", "#66c2a5", "#2b83ba")
+  color_palette = c("#d7191c", "#fdae61", "#fee08b", "#e6f598", "#abdda4", "#66c2a5", "#2b83ba"),
+  stack_order = polviews_order
 )
 
 plot3
@@ -249,20 +253,18 @@ Let’s demonstrate comprehensive value mapping for cleaner labels.
 
 ``` r
 
-## TODO: there is also an odd 4 chart
-
 # Create mappings for cleaner display
-sex_map <- list("Male" = "Men", "Female" = "Women")
+sex_map <- list("male" = "Men", "female" = "Women")
 class_map <- list(
-  "Lower Class" = "Lower",
-  "Working Class" = "Working", 
-  "Middle Class" = "Middle",
-  "Upper Class" = "Upper"
+  "lower class" = "Lower",
+  "working class" = "Working", 
+  "middle class" = "Middle",
+  "upper class" = "Upper"
 )
 
 # Create chart with custom mappings
 plot5 <- create_stackedbar(
-  data = gss_clean,
+  data = gss_panel20,
   x_var = "class_1a",
   stack_var = "sex_1a",
   title = "Gender Distribution Across Social Classes",
@@ -289,101 +291,30 @@ Let’s examine how trust levels vary across regions and social classes.
 
 ``` r
 
-## TODO: there is also an odd Series 4 chart
+# Recode labels to fix the mistake
+trust_map <- list(
+  "can't trust" = "Can Trust",
+  "can't be too careful" = "Can't Be Too Careful",
+  "depends" = "It Depends"
+)
 
 # Create regional trust analysis
 plot6 <- create_stackedbar(
-  data = gss_clean,
+  data = gss_panel20,
   x_var = "region_1a",
   stack_var = "trust_1a",
-  title = "Trust Levels by US Region",
+  stack_map_values = trust_map,
+  title = "Do You Trust Strangers?",
   subtitle = "Regional variation in interpersonal trust",
   x_label = "US Region",
   stack_label = "Trust Level",
-  stack_order = c("Can Trust", "Can't Be Too Careful", "Depends"),
+  stack_order = c("Can Trust", "Can't Be Too Careful", "It Depends"),
   stacked_type = "percent",
   tooltip_suffix = "%",
-  color_palette = c("#2E8B57", "#DAA520", "#CD5C5C")
+  color_palette = c("#2E8B57", "#CD5C5C", "#DAA520")
 )
 
 plot6
-```
-
-### Example 7: Multi-level Analysis with Income Binning
-
-Let’s create income groups and examine their relationship with happiness
-and gender.
-
-``` r
-
-
-## TODO: there is also an odd 12 chart, + the order is off?
-
-# First, let's examine the income variable
-table(gss_clean$income_1a, useNA = "always")
-#> 
-#>    1    2    3    4    5    6    7    8    9   10   11   12 <NA> 
-#>   39   40   21   15   19   15   22   47  160  129  198 1728  434
-
-# Create income groups based on the GSS income categories
-# Note: GSS income is typically coded as categories, not continuous
-income_map <- list(
-  "1" = "Under $1,000",
-  "2" = "$1,000-2,999", 
-  "3" = "$3,000-3,999",
-  "4" = "$4,000-4,999",
-  "5" = "$5,000-5,999",
-  "6" = "$6,000-6,999",
-  "7" = "$7,000-7,999",
-  "8" = "$8,000-9,999",
-  "9" = "$10,000-12,499",
-  "10" = "$12,500-14,999",
-  "11" = "$15,000-17,499",
-  "12" = "$17,500-19,999",
-  "13" = "$20,000-22,499",
-  "14" = "$22,500-24,999",
-  "15" = "$25,000-29,999",
-  "16" = "$30,000-34,999",
-  "17" = "$35,000-39,999",
-  "18" = "$40,000-49,999",
-  "19" = "$50,000-59,999",
-  "20" = "$60,000-74,999",
-  "21" = "$75,000-89,999",
-  "22" = "$90,000-109,999",
-  "23" = "$110,000-129,999",
-  "24" = "$130,000-149,999",
-  "25" = "$150,000+"
-)
-
-# Create simplified income groups
-income_simple_map <- list(
-  "1" = "Low", "2" = "Low", "3" = "Low", "4" = "Low", "5" = "Low",
-  "6" = "Low", "7" = "Low", "8" = "Low", "9" = "Low-Mid",
-  "10" = "Low-Mid", "11" = "Low-Mid", "12" = "Low-Mid", "13" = "Low-Mid",
-  "14" = "Low-Mid", "15" = "Middle", "16" = "Middle", "17" = "Middle",
-  "18" = "Middle", "19" = "Mid-High", "20" = "Mid-High", "21" = "High",
-  "22" = "High", "23" = "High", "24" = "High", "25" = "High"
-)
-
-# Create income-happiness analysis
-plot7 <- create_stackedbar(
-  data = gss_clean,
-  x_var = "income_1a",
-  stack_var = "happy_1a",
-  title = "Happiness Distribution by Income Level",
-  subtitle = "Simplified income categories",
-  x_label = "Income Level",
-  stack_label = "Happiness",
-  x_map_values = income_simple_map,
-  x_order = c("Low", "Low-Mid", "Middle", "Mid-High", "High"),
-  stack_order = c("Very Happy", "Pretty Happy", "Not Too Happy"),
-  stacked_type = "percent",
-  tooltip_suffix = "%",
-  color_palette = c("#1f77b4", "#ff7f0e", "#d62728"),
-  include_na = FALSE
-)
-
-plot7
 ```
 
 ## Summary and Best Practices
@@ -402,37 +333,43 @@ plot7
 
 ### Best Practices for Stacked Bar Charts
 
-``` r
-# 1. Choose appropriate stacking type
-# - Use "normal" for comparing absolute counts across groups
-# - Use "percent" for comparing proportions within groups
+1.  Choose appropriate stacking type
 
-# 2. Order categories logically
-# - Use natural ordering for ordinal variables (e.g., Likert scales)
-# - Consider frequency-based ordering for nominal categories
-# - Place "Other" or "Missing" categories at the end
+- Use “normal” for comparing absolute counts across groups
+- Use “percent” for comparing proportions within groups
 
-# 3. Handle missing data thoughtfully
-# - Decide whether to include or exclude missing categories
-# - Use include_na = TRUE when missing patterns are meaningful
-# - Provide clear labels for missing categories
+2.  Order categories logically
 
-# 4. Use appropriate colors
-# - Use diverging palettes for scales with meaningful center points
-# - Use qualitative palettes for nominal categories
-# - Ensure sufficient contrast between adjacent categories
-# - Consider colorblind accessibility
+- When remapping values, remember to use the variable names as in the
+  DataFrame
+- Use natural ordering for ordinal variables (e.g., Likert scales)
+- Consider frequency-based ordering for nominal categories
+- Place “Other” or “Missing” categories at the end
 
-# 5. Customize tooltips for clarity
-# - Include units and context in tooltips
-# - Use prefixes/suffixes to clarify meaning
-# - Format numbers appropriately for your audience
+3.  Handle missing data thoughtfully
 
-# 6. Consider your audience
-# - Use descriptive labels rather than codes
-# - Provide clear titles and subtitles
-# - Include sample sizes in subtitles when relevant
-```
+- Decide whether to include or exclude missing categories
+- Use include_na = TRUE when missing patterns are meaningful
+- Provide clear labels for missing categories
+
+4.  Use appropriate colors
+
+- Use diverging palettes for scales with meaningful center points
+- Use qualitative palettes for nominal categories
+- Ensure sufficient contrast between adjacent categories
+- Consider colorblind accessibility
+
+5.  Customize tooltips for clarity
+
+- Include units and context in tooltips
+- Use prefixes/suffixes to clarify meaning
+- Format numbers appropriately for your audience
+
+6.  Consider your audience
+
+- Use descriptive labels rather than codes
+- Provide clear titles and subtitles
+- Include sample sizes in subtitles when relevant
 
 ### Common Use Cases
 

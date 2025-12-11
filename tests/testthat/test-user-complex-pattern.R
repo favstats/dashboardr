@@ -283,15 +283,15 @@ test_that("USER PATTERN: Complex production use case with all features", {
   expect_true(any(grepl('console\\.log\\(.*Chart loaded', page3_content)), 
               label = "Page 3 should have lazy debug logging")
   
-  # Verify navigation between pages
-  expect_true(any(grepl("performance_p2\\.html", page1_content)), 
-              label = "Page 1 should link to page 2")
-  expect_true(any(grepl("performance\\.html", page2_content)), 
-              label = "Page 2 should link back to page 1")
-  expect_true(any(grepl("performance_p3\\.html", page2_content)), 
-              label = "Page 2 should link to page 3")
-  expect_true(any(grepl("performance_p2\\.html", page3_content)), 
-              label = "Page 3 should link back to page 2")
+  # Verify navigation between pages (via create_pagination_nav R calls)
+  expect_true(any(grepl('create_pagination_nav\\(1,', page1_content)), 
+              label = "Page 1 should have pagination nav for page 1")
+  expect_true(any(grepl('create_pagination_nav\\(2,', page2_content)), 
+              label = "Page 2 should have pagination nav for page 2")
+  expect_true(any(grepl('create_pagination_nav\\(2,', page2_content)), 
+              label = "Page 2 pagination nav present")
+  expect_true(any(grepl('create_pagination_nav\\(3,', page3_content)), 
+              label = "Page 3 should have pagination nav for page 3")
   
   # Verify content distribution across pages
   # Just check that each page has visualizations (don't rely on specific variable names in output)

@@ -2,7 +2,7 @@
 % Please edit documentation in R/pagination_controls.R
 \name{.generate_pagination_nav}
 \alias{.generate_pagination_nav}
-\title{Generate pagination navigation controls}
+\title{Generate pagination navigation controls (internal function for dashboard creation)}
 \usage{
 .generate_pagination_nav(
   page_num,
@@ -20,17 +20,17 @@
 
 \item{base_name}{Base filename (e.g., "analysis" for analysis.qmd)}
 
-\item{theme}{Quarto theme name (for styling)}
+\item{theme}{Quarto theme name (for styling, currently unused but kept for compatibility)}
 
 \item{position}{Position of navigation: "top", "bottom" (default: "bottom")}
 
 \item{separator_text}{Text to show between page number and total (default: "/", kept for backward compatibility)}
 }
 \value{
-Character vector of HTML/CSS lines
+Character vector of R code chunk lines
 }
 \description{
 Creates theme-aware navigation controls for multi-page dashboards.
-Includes Previous/Next buttons and page indicator.
+Now generates clean R code chunks instead of raw HTML.
 }
 \keyword{internal}

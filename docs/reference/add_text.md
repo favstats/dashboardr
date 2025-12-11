@@ -6,7 +6,7 @@ a pipe. Supports viz_collection as first argument for seamless piping.
 ## Usage
 
 ``` r
-add_text(content_collection = NULL, text, ...)
+add_text(content_collection = NULL, text, tabgroup = NULL, ...)
 ```
 
 ## Arguments
@@ -18,6 +18,11 @@ add_text(content_collection = NULL, text, ...)
 - text:
 
   Markdown text content (can be multi-line)
+
+- tabgroup:
+
+  Optional tabgroup for organizing content (character vector for nested
+  tabs)
 
 - ...:
 
@@ -37,6 +42,10 @@ text_block <- add_text("# Welcome")
 # Pipe with content
 content <- create_content() %>%
   add_text("## Introduction")
+
+# With tabgroup
+content <- create_content() %>%
+  add_text("## Section 1", tabgroup = "Overview")
 
 # Pipe directly from viz
 content <- create_viz() %>%

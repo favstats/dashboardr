@@ -316,7 +316,8 @@ published</li>
 <ul>
 <li>Example: <code>publish_dashboard(private = TRUE)</code>
 </li>
-<li>Use this if your dashboard contains sensitive information</li>
+<li>Use this if your dashboard (code) contains sensitive
+information</li>
 </ul>
 </li>
 <li>
@@ -327,7 +328,6 @@ files (default: <code>"/docs"</code>)
 serve from the <code>docs/</code> folder in your repository root</li>
 <li>This is where <code><a href="../reference/generate_dashboard.html">generate_dashboard()</a></code> creates your HTML
 files</li>
-<li>Usually you don’t need to change this</li>
 </ul>
 </li>
 </ul>
@@ -340,15 +340,14 @@ files</li>
 <li>A comprehensive <code>.gitignore</code> file is created
 (automatically excludes data files, large files &gt;10MB, and temporary
 files)</li>
-<li>You’ll be asked to confirm committing your files (type
-<code>1</code> or <code>3</code> when prompted)</li>
+<li>You’ll be asked to confirm committing your files</li>
 <li>A GitHub repository is created</li>
 <li>GitHub Pages is configured</li>
 <li>Your dashboard is pushed online</li>
 </ol>
 <p><strong>Important notes:</strong></p>
 <ul>
-<li>You may see prompts asking for confirmation - just type the number
+<li>You will see prompts asking for confirmation - just type the number
 to proceed</li>
 <li>Your browser may open showing your GitHub repository</li>
 <li>The function will display your dashboard URL at the end</li>
@@ -442,7 +441,7 @@ see your updates.</p>
 <span>  message <span class="op">=</span> <span class="st">"Regenerated all pages"</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Skip confirmation prompt (not recommended)</span></span>
+<span><span class="co"># Skip confirmation prompt (not recommended!)</span></span>
 <span><span class="fu"><a href="../reference/update_dashboard.html">update_dashboard</a></span><span class="op">(</span>ask <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>

@@ -565,6 +565,8 @@ Functions for different chart types
   : Create a Timeline Chart
 - [`create_heatmap()`](https://favstats.github.io/dashboardr/reference/create_heatmap.md)
   : Create a Heatmap
+- [`create_scatter()`](https://favstats.github.io/dashboardr/reference/create_scatter.md)
+  : Create Scatter Plot
 
 ## Navigation & Layout
 
@@ -650,6 +652,10 @@ Functions for displaying KPIs and metrics
   : Start a value box row
 - [`end_value_box_row()`](https://favstats.github.io/dashboardr/reference/end_value_box_row.md)
   : End a value box row
+- [`render_value_box()`](https://favstats.github.io/dashboardr/reference/render_value_box.md)
+  : Render a single value box
+- [`render_value_box_row()`](https://favstats.github.io/dashboardr/reference/render_value_box_row.md)
+  : Render a row of value boxes
 
 ## Embedded Content
 

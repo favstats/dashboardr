@@ -2,6 +2,7 @@
 <url><loc>https://favstats.github.io/dashboardr/404.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/LICENSE-text.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/LICENSE.html</loc></url>
+<url><loc>https://favstats.github.io/dashboardr/LIVE_DEMO_GUIDE.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/REFACTOR_COMPLETE.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/articles/advanced-features.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/articles/bar_vignette.html</loc></url>
@@ -88,6 +89,7 @@
 <url><loc>https://favstats.github.io/dashboardr/reference/create_dashboard_old.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/create_heatmap.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/create_histogram.html</loc></url>
+<url><loc>https://favstats.github.io/dashboardr/reference/create_scatter.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/create_stackedbar.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/create_stackedbars.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/create_timeline.html</loc></url>
@@ -153,6 +155,8 @@
 <url><loc>https://favstats.github.io/dashboardr/reference/print.dashboard_project.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/print.viz_collection.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/publish_dashboard.html</loc></url>
+<url><loc>https://favstats.github.io/dashboardr/reference/render_value_box.html</loc></url>
+<url><loc>https://favstats.github.io/dashboardr/reference/render_value_box_row.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/set_tabgroup_labels.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/showcase_dashboard.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/sidebar_group.html</loc></url>

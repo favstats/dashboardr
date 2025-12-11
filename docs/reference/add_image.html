@@ -68,7 +68,8 @@ Supports viz_collection as first argument for seamless piping.</p>
 <span>  height <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  align <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"center"</span>, <span class="st">"left"</span>, <span class="st">"right"</span><span class="op">)</span>,</span>
 <span>  link <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  class <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  class <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  tabgroup <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -111,6 +112,10 @@ Supports viz_collection as first argument for seamless piping.</p>
 <dt id="arg-class">class<a class="anchor" aria-label="anchor" href="#arg-class"></a></dt>
 <dd><p>Optional CSS class for custom styling</p></dd>
 
+
+<dt id="arg-tabgroup">tabgroup<a class="anchor" aria-label="anchor" href="#arg-tabgroup"></a></dt>
+<dd><p>Optional tabgroup for organizing content (character vector for nested tabs)</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
@@ -127,6 +132,10 @@ Supports viz_collection as first argument for seamless piping.</p>
 <span class="r-in"><span><span class="va">content</span> <span class="op">&lt;-</span> <span class="fu"><a href="create_content.html">create_content</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="pipe.html">%&gt;%</a></span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="add_text.html">add_text</a></span><span class="op">(</span><span class="st">"Welcome!"</span><span class="op">)</span> <span class="op"><a href="pipe.html">%&gt;%</a></span></span></span>
 <span class="r-in"><span>  <span class="fu">add_image</span><span class="op">(</span>src <span class="op">=</span> <span class="st">"chart.png"</span>, alt <span class="op">=</span> <span class="st">"Chart"</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># With tabgroup</span></span></span>
+<span class="r-in"><span><span class="va">content</span> <span class="op">&lt;-</span> <span class="fu"><a href="create_content.html">create_content</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="pipe.html">%&gt;%</a></span></span></span>
+<span class="r-in"><span>  <span class="fu">add_image</span><span class="op">(</span>src <span class="op">=</span> <span class="st">"chart.png"</span>, alt <span class="op">=</span> <span class="st">"Chart"</span>, tabgroup <span class="op">=</span> <span class="st">"Gallery"</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Pipe directly from viz</span></span></span>
 <span class="r-in"><span><span class="va">content</span> <span class="op">&lt;-</span> <span class="fu"><a href="create_viz.html">create_viz</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="pipe.html">%&gt;%</a></span></span></span>
