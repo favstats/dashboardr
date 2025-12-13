@@ -576,7 +576,7 @@ add_viz <- function(viz_collection, type = NULL, ..., tabgroup = NULL, title = N
   dot_args <- merged_params[!names(merged_params) %in% c("type", "tabgroup", "title", "title_tabset", "text", "icon", "text_position", "text_before_tabset", "text_after_tabset", "text_before_viz", "text_after_viz", "height", "filter", "data", "drop_na_vars")]
 
   # Validate supported visualization types
-  supported_types <- c("stackedbar", "stackedbars", "heatmap", "histogram", "timeline", "bar", "scatter")
+  supported_types <- c("map", "stackedbar", "stackedbars", "heatmap", "histogram", "timeline", "bar", "scatter")
 
   # Validate type parameter
   if (is.null(type) || !is.character(type) || length(type) != 1 || nchar(type) == 0) {

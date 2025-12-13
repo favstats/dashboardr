@@ -249,6 +249,7 @@
   ## TODO: this needs to create from some list of available visualizations (maybe!)
   # Map type to function name
   viz_function <- switch(spec$viz_type,
+                         "map" = "create_map",
                          "stackedbars" = "create_stackedbars",
                          "stackedbar" = "create_stackedbar",
                          "histogram" = "create_histogram",

@@ -3,6 +3,28 @@
 # =================================================================
 
 
+# Helper function to generate data loading code based on file type and location
+# Supports: local RDS, local parquet, remote RDS (URL), remote parquet (URL)
+.generate_data_load_code <- function(data_path, var_name = "data") {
+  is_url <- grepl("^https?://", data_path)
+  is_parquet <- grepl("\\.parquet$", data_path, ignore.case = TRUE)
+  
+  if (is_url && is_parquet) {
+    # Remote parquet - arrow can read directly from URL
+    paste0(var_name, " <- arrow::read_parquet('", data_path, "')")
+  } else if (is_url) {
+    # Remote RDS - use gzcon + url for compressed RDS files
+    paste0(var_name, " <- readRDS(gzcon(url('", data_path, "')))")
+  } else if (is_parquet) {
+    # Local parquet
+    paste0(var_name, " <- arrow::read_parquet('", basename(data_path), "')")
+  } else {
+    # Local RDS (original behavior)
+    paste0(var_name, " <- readRDS('", basename(data_path), "')")
+  }
+}
+
+
 .generate_default_page_content <- function(page) {
   # Build title with icon if provided
   title_content <- page$name
@@ -1003,20 +1025,21 @@
       lines <- c(lines, "# Load multiple datasets", "")
       
       for (dataset_name in names(page$data_path)) {
-        data_file <- basename(page$data_path[[dataset_name]])
+        data_path <- page$data_path[[dataset_name]]
+        load_code <- .generate_data_load_code(data_path, dataset_name)
         lines <- c(lines,
-          paste0("# Load ", dataset_name, " from ", data_file),
-          paste0(dataset_name, " <- readRDS('", data_file, "')"),
+          paste0("# Load ", dataset_name),
+          load_code,
           paste0("cat('", dataset_name, " loaded:', nrow(", dataset_name, "), 'rows,', ncol(", dataset_name, "), 'columns\\n')"),
           ""
         )
       }
     } else {
       # Single dataset (data_path is a string)
-      data_file <- basename(page$data_path)
+      load_code <- .generate_data_load_code(page$data_path, "data")
       lines <- c(lines,
-        paste0("# Load data from ", data_file),
-        paste0("data <- readRDS('", data_file, "')"),
+        "# Load data",
+        load_code,
         "",
         "# Data summary",
         "cat('Dataset loaded:', nrow(data), 'rows,', ncol(data), 'columns\\n')",
