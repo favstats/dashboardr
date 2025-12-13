@@ -1034,3 +1034,220 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
 #' @details
 #' Build a hierarchy key from a tabgroup vector
 
+
+# ===================================================================
+# Batch Dashboard Generation
+# ===================================================================
+
+#' Generate multiple dashboards
+#'
+#' Generates a list of dashboard projects in batch, with progress tracking
+#' and error handling. Useful for generating many related dashboards
+#' (e.g., one per country, per topic, etc.) in a single workflow.
+#'
+#' @param dashboards Named list of dashboard_project objects created with create_dashboard().
+#'   When \code{linked = TRUE}, the first dashboard is the main/parent and others are
+#'   sub-dashboards that will be output into subdirectories of the main's docs folder.
+#' @param render Whether to render each dashboard to HTML (default TRUE)
+#' @param open Whether to open the main dashboard after generation (default FALSE)
+#' @param continue_on_error Continue generating remaining dashboards if one fails (default TRUE)
+#' @param show_progress Whether to show progress for each dashboard (default TRUE)
+#' @param quiet Whether to suppress output (default FALSE)
+#' @param linked Whether dashboards are linked (default FALSE). When TRUE:
+#'   \itemize{
+#'     \item First dashboard is treated as the main/parent dashboard
+#'     \item Other dashboards are output to subdirectories of main's docs folder
+#'     \item Use list names as subdirectory names (e.g., list(main = ..., US = ..., DE = ...))
+#'     \item Click navigation like \code{click_url_template = "\{iso2c\}/index.html"} will work
+#'   }
+#' @return Invisibly returns a list of results, one per dashboard, containing:
+#'   \itemize{
+#'     \item \code{success}: logical, whether generation succeeded
+#'     \item \code{title}: dashboard title
+#'     \item \code{output_dir}: output directory path
+#'     \item \code{error}: error message if failed (only present on failure)
+#'     \item \code{duration}: generation time in seconds
+#'   }
+#' @export
+#' @examples
+#' \dontrun{
+#' # Linked dashboards with map navigation
+#' main_db <- create_dashboard("Main", output_dir = "project") %>%
+#'   add_page("Map", data = summary_data, 
+#'            visualizations = create_viz() %>% 
+#'              add_viz(type = "map", click_url_template = "{iso2c}/index.html"))
+#' 
+#' us_db <- create_dashboard("US Details", output_dir = "project/US") %>%
+#'   add_page("Analysis", data = us_data)
+#' 
+#' de_db <- create_dashboard("DE Details", output_dir = "project/DE") %>%
+#'   add_page("Analysis", data = de_data)
+#' 
+#' # Generate with linked = TRUE - outputs go to project/docs/, project/docs/US/, etc.
+#' generate_dashboards(
+#'   list(main = main_db, US = us_db, DE = de_db),
+#'   linked = TRUE
+#' )
+#' }
+generate_dashboards <- function(
+    dashboards,
+    render = TRUE,
+    open = FALSE,
+    continue_on_error = TRUE,
+    show_progress = TRUE,
+    quiet = FALSE,
+    linked = FALSE
+) {
+  # Validate input
+  if (!is.list(dashboards) || length(dashboards) == 0) {
+    stop("dashboards must be a non-empty list of dashboard_project objects")
+  }
+  
+  n <- length(dashboards)
+  results <- vector("list", n)
+  
+  # Handle linked dashboards - set publish_dir so sub-dashboards output into main's docs folder
+  if (linked && n > 1) {
+    # First dashboard is the main/parent
+    main_db <- dashboards[[1]]
+    main_output_dir <- main_db$output_dir
+    main_publish_dir <- main_db$publish_dir %||% "docs"
+    
+    # Get names for subdirectories
+    db_names <- names(dashboards)
+    if (is.null(db_names) || db_names[1] == "") {
+      db_names <- c("main", paste0("sub_", seq_len(n - 1)))
+    }
+    
+    # Set publish_dir for sub-dashboards to go into main's docs folder
+    # Sub-dashboard at OUTPUT_DIR/{name}/ publishes to OUTPUT_DIR/docs/{name}/
+    for (i in 2:n) {
+      sub_name <- db_names[i]
+      if (is.null(sub_name) || sub_name == "") {
+        sub_name <- paste0("sub_", i - 1)
+      }
+      
+      # publish_dir is relative to the sub's output_dir
+      # From OUTPUT_DIR/{name}/, we want to go to OUTPUT_DIR/docs/{name}/
+      dashboards[[i]]$publish_dir <- file.path("..", main_publish_dir, sub_name)
+    }
+    
+    if (!quiet) {
+      cli::cli_alert_info("Linked mode: sub-dashboards output to {main_output_dir}/{main_publish_dir}/{{name}}/")
+    }
+  }
+  
+  # Get dashboard names/titles for display
+  get_title <- function(db) {
+    if (inherits(db, "dashboard_project")) {
+      db$title %||% db$output_dir %||% "Unnamed"
+    } else {
+      "Invalid"
+    }
+  }
+  
+  if (!quiet) {
+    cli::cli_h1("Generating {n} dashboard{?s}")
+  }
+  
+  for (i in seq_len(n)) {
+    db <- dashboards[[i]]
+    title <- get_title(db)
+    start_time <- Sys.time()
+    
+    if (!quiet && show_progress) {
+      cli::cli_alert_info("[{i}/{n}] {title}")
+    }
+    
+    # Validate it's a dashboard project
+    if (!inherits(db, "dashboard_project")) {
+      results[[i]] <- list(
+        success = FALSE,
+        title = title,
+        error = "Not a dashboard_project object",
+        duration = 0
+      )
+      if (!quiet) {
+        cli::cli_alert_danger("  Skipped: not a dashboard_project")
+      }
+      next
+    }
+    
+    # Generate the dashboard
+    results[[i]] <- tryCatch({
+      generate_dashboard(
+        db,
+        render = render,
+        open = FALSE,  # Don't open individual dashboards in batch mode
+        quiet = quiet || !show_progress
+      )
+      
+      duration <- as.numeric(difftime(Sys.time(), start_time, units = "secs"))
+      
+      if (!quiet && show_progress) {
+        cli::cli_alert_success("  Done in {round(duration, 1)}s")
+      }
+      
+      list(
+        success = TRUE,
+        title = title,
+        output_dir = db$output_dir,
+        duration = duration
+      )
+    }, error = function(e) {
+      duration <- as.numeric(difftime(Sys.time(), start_time, units = "secs"))
+      
+      if (!quiet) {
+        cli::cli_alert_danger("  Failed: {conditionMessage(e)}")
+      }
+      
+      if (!continue_on_error) {
+        stop(e)
+      }
+      
+      list(
+        success = FALSE,
+        title = title,
+        output_dir = db$output_dir,
+        error = conditionMessage(e),
+        duration = duration
+      )
+    })
+  }
+  
+  # Summary
+  ok <- sum(vapply(results, function(r) isTRUE(r$success), logical(1)))
+  total_time <- sum(vapply(results, function(r) r$duration %||% 0, numeric(1)))
+  
+  if (!quiet) {
+    cli::cli_rule()
+    if (ok == n) {
+      cli::cli_alert_success("Generated {ok}/{n} dashboards in {round(total_time, 1)}s")
+    } else {
+      cli::cli_alert_warning("Generated {ok}/{n} dashboards ({n - ok} failed) in {round(total_time, 1)}s")
+    }
+  }
+  
+  # Open main dashboard if requested
+  if (open && ok > 0) {
+    # For linked dashboards, open the main (first) dashboard's docs folder
+    main_db <- dashboards[[1]]
+    main_output_dir <- main_db$output_dir
+    main_publish_dir <- main_db$publish_dir %||% "docs"
+    
+    # Try docs folder first, then root
+    index_path <- file.path(main_output_dir, main_publish_dir, "index.html")
+    if (!file.exists(index_path)) {
+      index_path <- file.path(main_output_dir, "index.html")
+    }
+    
+    if (file.exists(index_path)) {
+      if (!quiet) {
+        cli::cli_alert_info("Opening {index_path}")
+      }
+      utils::browseURL(index_path)
+    }
+  }
+  
+  invisible(results)
+}
