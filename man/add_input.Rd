@@ -28,6 +28,10 @@ add_input(
   size = c("md", "sm", "lg"),
   help = NULL,
   disabled = FALSE,
+  mt = NULL,
+  mr = NULL,
+  mb = NULL,
+  ml = NULL,
   tabgroup = NULL
 )
 }
