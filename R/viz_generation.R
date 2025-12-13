@@ -250,6 +250,7 @@
   # Map type to function name
   viz_function <- switch(spec$viz_type,
                          "map" = "create_map",
+                         "treemap" = "create_treemap",
                          "stackedbars" = "create_stackedbars",
                          "stackedbar" = "create_stackedbar",
                          "histogram" = "create_histogram",

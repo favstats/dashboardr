@@ -145,12 +145,42 @@ create_map <- function(
 
   # Color scale configuration
   if (!is.null(color_stops) && length(color_stops) > 0) {
-    # Use explicit stops
+    # Use explicit stops - normalize breakpoints to 0-1 range
+    stop_min <- min(color_stops, na.rm = TRUE)
+    stop_max <- max(color_stops, na.rm = TRUE)
+    stop_range <- stop_max - stop_min
+    
+    # Normalize stop positions to 0-1
+    if (stop_range > 0) {
+      normalized_positions <- (color_stops - stop_min) / stop_range
+    } else {
+      normalized_positions <- seq(0, 1, length.out = length(color_stops))
+    }
+    
+    # Interpolate colors for each stop position
     n_stops <- length(color_stops)
+    n_colors <- length(color_palette)
+    
+    # Generate colors at the stop positions
+    if (n_colors >= n_stops) {
+      # Use evenly-spaced colors from palette
+      color_indices <- round(seq(1, n_colors, length.out = n_stops))
+      stop_colors <- color_palette[color_indices]
+    } else {
+      # Interpolate colors using colorRampPalette
+      color_fn <- grDevices::colorRampPalette(color_palette)
+      stop_colors <- color_fn(n_stops)
+    }
+    
+    # Create stops as list of [position, color] pairs
+    custom_stops <- lapply(seq_len(n_stops), function(i) {
+      list(normalized_positions[i], stop_colors[i])
+    })
+    
     hc <- hc %>% highcharter::hc_colorAxis(
-      stops = highcharter::color_stops(n_stops, color_palette),
-      min = min(color_stops, na.rm = TRUE),
-      max = max(color_stops, na.rm = TRUE)
+      stops = custom_stops,
+      min = stop_min,
+      max = stop_max
     )
   } else {
     # Auto scale based on data

@@ -27,7 +27,7 @@
 \item{default_position}{Default pagination position from dashboard config (default: "bottom")}
 }
 \value{
-Invisible NULL
+Character vector of generated .qmd filenames (basenames only)
 }
 \description{
 Internal function that splits a paginated page into multiple QMD files

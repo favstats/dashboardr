@@ -117,7 +117,8 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
   build_info <- list(
     regenerated = character(),
     skipped = character(),
-    preview_mode = !is.null(preview_pages)
+    preview_mode = !is.null(preview_pages),
+    qmd_files = character()  # Track generated .qmd files for targeted rendering
   )
 
   tryCatch({
@@ -343,17 +344,23 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
           content <- .process_viz_specs(content, page$visualizations)
         }
         writeLines(content, page_file)
+        # Track this .qmd file for targeted rendering
+        build_info$qmd_files <- c(build_info$qmd_files, basename(page_file))
       } else {
         # Default page generation - check for pagination
         has_pagination <- .has_pagination_markers(page)
-        
+
         if (has_pagination) {
           # Generate multiple QMD files for paginated page
-          .generate_paginated_page_files(page, page_name, page_file, output_dir, proj$theme, proj$pagination_position)
+          paginated_files <- .generate_paginated_page_files(page, page_name, page_file, output_dir, proj$theme, proj$pagination_position)
+          # Track all paginated .qmd files for targeted rendering
+          build_info$qmd_files <- c(build_info$qmd_files, paginated_files)
         } else {
           # Single page generation
           content <- .generate_default_page_content(page)
           writeLines(content, page_file)
+          # Track this .qmd file for targeted rendering
+          build_info$qmd_files <- c(build_info$qmd_files, basename(page_file))
         }
       }
       
@@ -431,6 +438,8 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
 
           writeLines(content, index_file)
           new_manifest$pages[[landing_page_name]] <- list(hash = .compute_hash(landing_page))
+          # Track the landing page .qmd file for targeted rendering
+          build_info$qmd_files <- c(build_info$qmd_files, "index.qmd")
           
           landing_elapsed <- as.numeric(difftime(Sys.time(), landing_start, units = "secs"))
           .progress_step(paste0(landing_page_name, " [🏠 Landing]"), landing_elapsed, show_progress, is_last = TRUE, use_page_style = TRUE)
@@ -493,7 +502,7 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
       } else {
         .progress_section("🎨 Rendering Dashboard", show_progress)
         render_start <- Sys.time()
-        render_success <- .render_dashboard(output_dir, open, quiet, show_progress, proj$publish_dir)
+        render_success <- .render_dashboard(output_dir, open, quiet, show_progress, proj$publish_dir, build_info$qmd_files)
         render_elapsed <- as.numeric(difftime(Sys.time(), render_start, units = "secs"))
         
         if (render_success) {
@@ -560,7 +569,7 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
 }
 
 
-.render_dashboard <- function(output_dir, open = FALSE, quiet = FALSE, show_progress = TRUE, publish_dir = NULL) {
+.render_dashboard <- function(output_dir, open = FALSE, quiet = FALSE, show_progress = TRUE, publish_dir = NULL, qmd_files = NULL) {
   if (!requireNamespace("quarto", quietly = TRUE)) {
     if (!quiet) {
       message("quarto package not available. Skipping render.")
@@ -608,13 +617,36 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
   }
 
   tryCatch({
-    # Render with Quarto
-    if (quiet) {
-      # Completely silent
-      invisible(capture.output(quarto::quarto_render(".", as_job = FALSE), type = "message"))
+    # Render with Quarto - only the specific files for this dashboard
+    # If qmd_files is provided, render only those files; otherwise render all (fallback)
+    if (!is.null(qmd_files) && length(qmd_files) > 0) {
+      # Remove duplicates and ensure unique files
+      qmd_files <- unique(qmd_files)
+      
+      if (!quiet) {
+        message("Rendering ", length(qmd_files), " .qmd file(s)...")
+      }
+      
+      # Render each file individually to avoid rendering files from other dashboards
+      for (qmd_file in qmd_files) {
+        if (quiet) {
+          invisible(capture.output(quarto::quarto_render(qmd_file, as_job = FALSE), type = "message"))
+        } else {
+          quarto::quarto_render(qmd_file, as_job = FALSE)
+        }
+      }
     } else {
-      # Show Quarto's normal output
-      quarto::quarto_render(".", as_job = FALSE)
+      # Fallback: render entire project (original behavior)
+      if (!quiet) {
+        message("Rendering entire project...")
+      }
+      if (quiet) {
+        # Completely silent
+        invisible(capture.output(quarto::quarto_render(".", as_job = FALSE), type = "message"))
+      } else {
+        # Show Quarto's normal output
+        quarto::quarto_render(".", as_job = FALSE)
+      }
     }
     
     if (!quiet) message("Dashboard rendered successfully")
@@ -918,7 +950,7 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
 #' @param output_dir Output directory
 #' @param theme Quarto theme name
 #' @param default_position Default pagination position from dashboard config (default: "bottom")
-#' @return Invisible NULL
+#' @return Character vector of generated .qmd filenames (basenames only)
 #' @keywords internal
 .generate_paginated_page_files <- function(page, page_name, base_page_file, output_dir, theme, default_position = "bottom") {
   # Split visualizations by pagination markers
@@ -930,6 +962,9 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
   
   # Get base name for files (without .qmd extension)
   base_name <- sub("\\.qmd$", "", basename(base_page_file))
+  
+  # Track generated files
+  generated_files <- character()
   
   # Determine pagination position - use per-page setting if specified, otherwise use dashboard default
   pagination_position <- default_position  # Start with dashboard default
@@ -1011,9 +1046,13 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
     
     # Write file
     writeLines(full_content, page_file)
+    
+    # Track this generated file
+    generated_files <- c(generated_files, basename(page_file))
   }
   
-  invisible(NULL)
+  # Return list of generated filenames for targeted rendering
+  generated_files
 }
 
 # ===================================================================
