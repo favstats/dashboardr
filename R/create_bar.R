@@ -19,12 +19,17 @@
 #' @param color_palette Optional character vector of colors for the bars.
 #' @param group_order Optional character vector specifying the order of groups (for `group_var`).
 #' @param x_order Optional character vector specifying the order of x categories.
+#' @param sort_by_value Logical. If `TRUE`, sort categories by their value (highest on top for horizontal bars).
+#' @param sort_desc Logical. If `sort_by_value = TRUE`, sort descending (default) or ascending.
 #' @param x_breaks Optional numeric vector for binning continuous x variables.
 #' @param x_bin_labels Optional character vector of labels for x bins.
 #' @param include_na Logical. Whether to include NA values as a separate category. Defaults to `FALSE`.
 #' @param na_label Character string. Label for NA category if `include_na = TRUE`. Defaults to "Missing".
 #' @param weight_var Optional character string. Name of a weight variable to use for weighted
 #'   aggregation. When provided, counts are computed as the sum of weights instead of simple counts.
+#' @param tooltip_prefix Optional string prepended to tooltip values.
+#' @param tooltip_suffix Optional string appended to tooltip values.
+#' @param x_tooltip_suffix Optional string appended to x-axis values in tooltips.
 #'
 #' @return A highcharter plot object.
 #'
@@ -64,11 +69,16 @@ create_bar <- function(data,
                        color_palette = NULL,
                        group_order = NULL,
                        x_order = NULL,
+                       sort_by_value = FALSE,
+                       sort_desc = TRUE,
                        x_breaks = NULL,
                        x_bin_labels = NULL,
                        include_na = FALSE,
                        na_label = "Missing",
-                       weight_var = NULL) {
+                       weight_var = NULL,
+                       tooltip_prefix = "",
+                       tooltip_suffix = "",
+                       x_tooltip_suffix = "") {
   
   # Input validation
   if (!is.data.frame(data)) {
@@ -211,6 +221,36 @@ create_bar <- function(data,
     }
   }
   
+  # Auto-sort when weight_var is used (unless explicitly disabled)
+  if (!is.null(weight_var) && !isTRUE(sort_by_value) && !isFALSE(sort_by_value)) {
+    sort_by_value <- TRUE
+  }
+  
+  # Optional sorting by value (highest on top for horizontal bars)
+  if (isTRUE(sort_by_value)) {
+    if (is.null(group_var)) {
+      # Simple case: sort by single series values
+      agg_data <- agg_data %>%
+        dplyr::arrange(if (sort_desc) dplyr::desc(.data$value) else .data$value) %>%
+        dplyr::mutate(!!rlang::sym(x_var_plot) := factor(
+          !!rlang::sym(x_var_plot),
+          levels = !!rlang::sym(x_var_plot)
+        ))
+    } else {
+      # Grouped bars: sort categories by total value across groups
+      cat_order <- agg_data %>%
+        dplyr::group_by(.data[[x_var_plot]]) %>%
+        dplyr::summarize(total_value = sum(.data$value, na.rm = TRUE), .groups = "drop") %>%
+        dplyr::arrange(if (sort_desc) dplyr::desc(.data$total_value) else .data$total_value) %>%
+        dplyr::pull(.data[[x_var_plot]])
+
+      agg_data <- agg_data %>%
+        dplyr::mutate(
+          !!rlang::sym(x_var_plot) := factor(!!rlang::sym(x_var_plot), levels = cat_order)
+        )
+    }
+  }
+
   # Set up axis labels
   final_x_label <- x_label %||% x_var
   final_y_label <- y_label %||% if (bar_type == "percent") "Percentage" else "Count"
@@ -230,7 +270,7 @@ create_bar <- function(data,
     # For horizontal bars, x-axis is categories (vertical), y-axis is values (horizontal)
     hc <- hc %>%
       highcharter::hc_xAxis(
-        categories = unique(as.character(agg_data[[x_var_plot]])),
+        categories = as.character(unique(agg_data[[x_var_plot]])),
         title = list(text = final_x_label)
       ) %>%
       highcharter::hc_yAxis(title = list(text = final_y_label))
@@ -238,7 +278,7 @@ create_bar <- function(data,
     # For vertical bars, x-axis is categories (horizontal), y-axis is values (vertical)
     hc <- hc %>%
       highcharter::hc_xAxis(
-        categories = unique(as.character(agg_data[[x_var_plot]])),
+        categories = as.character(unique(agg_data[[x_var_plot]])),
         title = list(text = final_x_label)
       ) %>%
       highcharter::hc_yAxis(title = list(text = final_y_label))
@@ -247,14 +287,31 @@ create_bar <- function(data,
   # Add series
   if (is.null(group_var)) {
     # Simple bars - single series with multiple colors per bar
-    series_data <- agg_data %>%
-      dplyr::arrange(!!rlang::sym(x_var_plot)) %>%
-      dplyr::pull(value)
+    # Store both value (for display) and raw value (for tooltips when bar_type = "percent")
+    # When bar_type = "percent" and weight_var is used, we need to store the raw dollar amount
+    if (bar_type == "percent" && !is.null(weight_var) && "count" %in% names(agg_data)) {
+      # For percent bars with weight_var, store raw values (sum of weights = dollar amounts)
+      series_data_list <- agg_data %>%
+        dplyr::arrange(!!rlang::sym(x_var_plot)) %>%
+        dplyr::rowwise() %>%
+        dplyr::mutate(
+          point_data = list(list(
+            y = value,
+            rawValue = count  # count is the sum of weights (dollar amounts)
+          ))
+        ) %>%
+        dplyr::pull(point_data)
+    } else {
+      # For regular bars, just use values
+      series_data_list <- agg_data %>%
+        dplyr::arrange(!!rlang::sym(x_var_plot)) %>%
+        dplyr::pull(value)
+    }
     
     hc <- hc %>%
       highcharter::hc_add_series(
         name = final_y_label,
-        data = series_data,
+        data = series_data_list,
         showInLegend = FALSE,
         colorByPoint = TRUE  # Enable different colors for each bar
       )
@@ -303,6 +360,97 @@ create_bar <- function(data,
         )
       )
     )
+  
+  # ─── TOOLTIP ───────────────────────────────────────────────────────────────
+  pre <- if (is.null(tooltip_prefix) || tooltip_prefix == "") "" else tooltip_prefix
+  suf <- if (is.null(tooltip_suffix) || tooltip_suffix == "") "" else tooltip_suffix
+  xsuf <- if (is.null(x_tooltip_suffix) || x_tooltip_suffix == "") "" else x_tooltip_suffix
+  
+  # Calculate total for percentage calculation in tooltips
+  total_value <- if (bar_type == "percent") {
+    100  # For percent type, total is always 100
+  } else {
+    sum(agg_data$value, na.rm = TRUE)
+  }
+  
+  # Format tooltip based on bar type and whether grouped
+  if (is.null(group_var)) {
+    # Simple bars - single series with enhanced tooltips
+    if (bar_type == "percent") {
+      # For percent bars, calculate dollar amount if weight_var was used (spending data)
+      # Calculate total from all data points: sum of all percentages = 100, so we need raw totals
+      # If weight_var was used, we can estimate: percentage represents share of total
+      tooltip_fn <- sprintf(
+        "function() {
+           var cat = this.point.category || this.series.chart.xAxis[0].categories[this.point.x] || this.x;
+           var pct = this.y.toFixed(1);
+           var rank = this.series.data.indexOf(this.point) + 1;
+           var totalItems = this.series.data.length;
+           var percentile = Math.round((rank - 1) / totalItems * 100);
+           
+           // Try to get raw value if available (for dollar amounts)
+           var rawVal = this.point.rawValue || this.point.options.rawValue;
+           var tooltipText = '<b>' + cat + '%s</b><br/>';
+           
+           if (rawVal !== undefined && rawVal !== null) {
+             // Show both dollar amount and percentage
+             tooltipText += '%s' + rawVal.toLocaleString('en-US', {maximumFractionDigits: 1}) + '%s<br/>';
+             tooltipText += '<span style=\"color:#666;font-size:0.9em\">' + pct + '%% of total budget</span><br/>';
+           } else {
+             // Just show percentage
+             tooltipText += '%s' + pct + '%s<br/>';
+           }
+           
+           tooltipText += '<span style=\"color:#666;font-size:0.9em\">Rank: #' + rank + ' of ' + totalItems + ' (' + percentile + 'th percentile)</span>';
+           return tooltipText;
+         }",
+        xsuf, # x_tooltip_suffix
+        pre,  # tooltip_prefix
+        suf,  # tooltip_suffix
+        pre,  # tooltip_prefix (for percentage if no raw value)
+        suf   # tooltip_suffix (for percentage if no raw value)
+      )
+    } else {
+      # For count bars, show value, percentage, and rank
+      tooltip_fn <- sprintf(
+        "function() {
+           var cat = this.point.category || this.series.chart.xAxis[0].categories[this.point.x] || this.x;
+           var val = this.y;
+           var total = %s;
+           var pct = total > 0 ? (val / total * 100).toFixed(1) : 0;
+           var rank = this.series.data.indexOf(this.point) + 1;
+           var totalItems = this.series.data.length;
+           return '<b>' + cat + '%s</b><br/>' +
+                  '%s' + val.toLocaleString() + '%s<br/>' +
+                  '<span style=\"color:#666;font-size:0.9em\">' + pct + '%% of total | Rank: #' + rank + ' of ' + totalItems + '</span>';
+         }",
+        total_value,
+        xsuf, # x_tooltip_suffix
+        pre,  # tooltip_prefix
+        suf   # tooltip_suffix
+      )
+    }
+  } else {
+    # Grouped bars - multiple series
+    tooltip_fn <- sprintf(
+      "function() {
+         var cat = this.point.category || this.series.chart.xAxis[0].categories[this.point.x] || this.x;
+         var val = %s;
+         return '<b>' + cat + '%s</b><br/>' +
+                this.series.name + ': %s' + val + '%s';
+       }",
+      if (bar_type == "percent") {
+        "this.y.toFixed(1)"
+      } else {
+        "this.y"
+      },
+      xsuf, # x_tooltip_suffix
+      pre,  # tooltip_prefix
+      suf   # tooltip_suffix
+    )
+  }
+  
+  hc <- hc %>% highcharter::hc_tooltip(formatter = highcharter::JS(tooltip_fn), useHTML = TRUE)
   
   return(hc)
 }

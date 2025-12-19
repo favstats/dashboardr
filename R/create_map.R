@@ -119,6 +119,16 @@ create_map <- function(
 
   }
 
+  # Handle haven_labelled variables
+  if (requireNamespace("haven", quietly = TRUE)) {
+    if (inherits(data[[value_var]], "haven_labelled")) {
+      data[[value_var]] <- as.numeric(data[[value_var]])
+    }
+    if (inherits(data[[join_var]], "haven_labelled")) {
+      data[[join_var]] <- as.character(haven::as_factor(data[[join_var]], levels = "values"))
+    }
+  }
+
   # Build the base map
   hc <- highcharter::hcmap(
     map = map_type,

@@ -512,9 +512,6 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
             message("\n❌ Rendering FAILED")
             message("   QMD files were generated successfully, but Quarto rendering failed")
             message("   Check the error/warning messages above for details")
-            message("\n   Common causes:")
-            message("   • Quarto not installed: https://quarto.org/docs/get-started/")
-            message("   • Missing iconify extension: cd ", output_dir, " && quarto add mcanouil/quarto-iconify")
           }
         }
       }

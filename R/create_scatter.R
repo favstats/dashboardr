@@ -138,6 +138,10 @@ create_scatter <- function(data,
       plot_data <- plot_data %>%
         dplyr::mutate(!!rlang::sym(color_var) := haven::as_factor(!!rlang::sym(color_var), levels = "labels"))
     }
+    if (!is.null(size_var) && inherits(plot_data[[size_var]], "haven_labelled")) {
+      plot_data <- plot_data %>%
+        dplyr::mutate(!!rlang::sym(size_var) := as.numeric(!!rlang::sym(size_var)))
+    }
   }
   
   # Handle NA values in color_var

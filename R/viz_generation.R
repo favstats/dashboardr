@@ -349,14 +349,18 @@
     call_str <- arg_lines
   }
 
-  # Add height support if specified
+  # Add height support - wrap in explicit height container 
   if (!is.null(spec$height)) {
     height_lines <- c(
       "",
-      "# Apply height to highcharter object",
+      "# Force container height with explicit wrapper",
       paste0("if (inherits(result, 'highchart')) {"),
-      paste0("  result <- highcharter::hc_chart(result, height = ", spec$height, ")"),
-      paste0("}")
+      paste0("  result <- highcharter::hc_size(result, height = ", spec$height, ")"),
+      paste0("}"),
+      paste0("result <- htmltools::div("),
+      paste0("  style = 'height: ", spec$height, "px !important; min-height: ", spec$height, "px !important; width: 100%; overflow: visible;',"),
+      paste0("  result"),
+      paste0(")")
     )
     call_str <- c(call_str, height_lines)
   }
@@ -413,14 +417,18 @@
     call_str <- paste0("result <- ", fn_name, "(", args_str, ")")
   }
 
-  # Add height support if specified
+  # Add height support - wrap in explicit height container 
   if (!is.null(spec$height)) {
     height_lines <- c(
       "",
-      "# Apply height to highcharter object",
+      "# Force container height with explicit wrapper",
       paste0("if (inherits(result, 'highchart')) {"),
-      paste0("  result <- highcharter::hc_chart(result, height = ", spec$height, ")"),
-      paste0("}")
+      paste0("  result <- highcharter::hc_size(result, height = ", spec$height, ")"),
+      paste0("}"),
+      paste0("result <- htmltools::div("),
+      paste0("  style = 'height: ", spec$height, "px !important; min-height: ", spec$height, "px !important; width: 100%; overflow: visible;',"),
+      paste0("  result"),
+      paste0(")")
     )
     call_str <- c(call_str, height_lines)
   }
@@ -515,14 +523,18 @@
     call_str <- arg_lines
   }
 
-  # Add height support if specified
+  # Add height support - wrap in explicit height container 
   if (!is.null(spec$height)) {
     height_lines <- c(
       "",
-      "# Apply height to highcharter object",
+      "# Force container height with explicit wrapper",
       paste0("if (inherits(result, 'highchart')) {"),
-      paste0("  result <- highcharter::hc_chart(result, height = ", spec$height, ")"),
-      paste0("}")
+      paste0("  result <- highcharter::hc_size(result, height = ", spec$height, ")"),
+      paste0("}"),
+      paste0("result <- htmltools::div("),
+      paste0("  style = 'height: ", spec$height, "px !important; min-height: ", spec$height, "px !important; width: 100%; overflow: visible;',"),
+      paste0("  result"),
+      paste0(")")
     )
     call_str <- c(call_str, height_lines)
   }

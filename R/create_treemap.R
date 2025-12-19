@@ -83,13 +83,38 @@ create_treemap <- function(
     stop(paste0("subgroup_var '", subgroup_var, "' not found in data"), call. = FALSE)
   }
   
-  # Prepare data - ensure value_var is numeric
-  data[[value_var]] <- as.numeric(data[[value_var]])
+  # Prepare data
+  plot_data <- data %>%
+    dplyr::select(dplyr::all_of(c(group_var, value_var, subgroup_var, color_var)))
+  
+  # Handle haven_labelled variables
+  if (requireNamespace("haven", quietly = TRUE)) {
+    # value_var should be numeric
+    if (inherits(plot_data[[value_var]], "haven_labelled")) {
+      plot_data[[value_var]] <- as.numeric(plot_data[[value_var]])
+    }
+    
+    # group_var and subgroup_var should be factors/labels
+    if (inherits(plot_data[[group_var]], "haven_labelled")) {
+      plot_data[[group_var]] <- haven::as_factor(plot_data[[group_var]], levels = "labels")
+    }
+    
+    if (!is.null(subgroup_var) && inherits(plot_data[[subgroup_var]], "haven_labelled")) {
+      plot_data[[subgroup_var]] <- haven::as_factor(plot_data[[subgroup_var]], levels = "labels")
+    }
+    
+    if (!is.null(color_var) && inherits(plot_data[[color_var]], "haven_labelled")) {
+      plot_data[[color_var]] <- haven::as_factor(plot_data[[color_var]], levels = "labels")
+    }
+  }
+
+  # Ensure value_var is numeric
+  plot_data[[value_var]] <- as.numeric(plot_data[[value_var]])
   
   # Remove NA values
-  data <- data[!is.na(data[[value_var]]) & !is.na(data[[group_var]]), ]
+  plot_data <- plot_data[!is.na(plot_data[[value_var]]) & !is.na(plot_data[[group_var]]), ]
   
-  if (nrow(data) == 0) {
+  if (nrow(plot_data) == 0) {
     warning("No data remaining after removing NA values")
     return(highcharter::highchart() %>%
              highcharter::hc_title(text = title %||% "No Data") %>%
@@ -98,15 +123,51 @@ create_treemap <- function(
   
   # Build hierarchical data structure
   if (!is.null(subgroup_var)) {
-    # Two-level hierarchy
-    hc_data <- highcharter::data_to_hierarchical(
-      data = data,
-      group_vars = c(group_var, subgroup_var),
-      size_var = value_var
-    )
+    # Two-level hierarchy - manually build to avoid highcharter::data_to_hierarchical stack issues
+    
+    # 1. Aggregate for level 2 (subgroups)
+    l2_data <- plot_data %>%
+      dplyr::group_by(across(all_of(c(group_var, subgroup_var)))) %>%
+      dplyr::summarize(value = sum(.data[[value_var]], na.rm = TRUE), .groups = "drop") %>%
+      dplyr::mutate(
+        parent = as.character(.data[[group_var]]),
+        name = as.character(.data[[subgroup_var]]),
+        id = paste0(parent, "_", name)
+      )
+    
+    # 2. Aggregate for level 1 (groups)
+    l1_data <- l2_data %>%
+      dplyr::group_by(parent) %>%
+      dplyr::summarize(value = sum(value, na.rm = TRUE), .groups = "drop") %>%
+      dplyr::mutate(
+        name = parent,
+        id = parent
+      )
+    
+    # 3. Combine into Highcharts format
+    hc_data <- list()
+    
+    # Add level 1 points
+    for (i in seq_len(nrow(l1_data))) {
+      hc_data[[length(hc_data) + 1]] <- list(
+        id = l1_data$id[i],
+        name = l1_data$name[i],
+        value = l1_data$value[i],
+        colorValue = l1_data$value[i] # For gradient coloring
+      )
+    }
+    
+    # Add level 2 points
+    for (i in seq_len(nrow(l2_data))) {
+      hc_data[[length(hc_data) + 1]] <- list(
+        name = l2_data$name[i],
+        parent = l2_data$parent[i],
+        value = l2_data$value[i]
+      )
+    }
   } else {
     # Single-level - create simple list format
-    hc_data <- data %>%
+    hc_data <- plot_data %>%
       dplyr::group_by(.data[[group_var]]) %>%
       dplyr::summarize(value = sum(.data[[value_var]], na.rm = TRUE), .groups = "drop") %>%
       dplyr::mutate(
