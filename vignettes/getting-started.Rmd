@@ -194,13 +194,34 @@ generate_dashboard(dashboard, render = TRUE, open = "browser")
 
 **That's it!** You now have a professional, interactive HTML dashboard.
 
-## Core Workflow: Understanding the Three Steps
 
-Every dashboard follows the same pattern. Let's understand each step in depth.
+
+## Suggested Workflow
+
+Now that we've made our very first dashboard, let's break it down so that we can add a bit of functionality and flexibility. Every dashboard follows the same pattern. Let's understand each step in depth.
 
 ### Step 1: Build Visualizations
 
-**The Concept:** Create a collection of charts that share common properties. Think of it like setting up a "template" that all your charts will follow.
+Before we start actually creating the visualizations that are dashboard-ready, we generally recommend exploring the core visualization functions in order to actually see what your plots will look like. Let's take the above histogram example and examine what it actually looks like:
+
+```{r, eval=FALSE}
+# Use the similar parameters as above to replicate the visualization
+create_histogram(
+  data=survey_data,
+  x_var="age",
+  title = "Summary of Age Distribution",
+  subtitle = NULL,
+  x_label = "Age (years)",
+  y_label = "count",
+  histogram_type = "count",
+)
+
+
+```
+
+It's the same! The `create_histogram()` function is the function that is actually used under the hood. The same holds for all other visualization types. For instance, the visualization function that renders heat maps is `create_heatmap()`. It is worth reading through each of the visualization function documentation and vignettes, especially if you plan to use `dashboardr` for deeper or more complex work.
+
+Now that we're happy with the result, we can set up the dashboard objects. We can create a collection of charts that share common properties. Think of it like setting up a "template" that all your charts will follow.
 
 ```{r, eval=FALSE}
 # Set defaults that ALL visualizations inherit
@@ -212,7 +233,7 @@ my_viz <- create_viz(
 )
 ```
 
-**Why defaults matter:** Instead of repeating the same parameters for every chart, you set them once. This is the DRY principle (Don't Repeat Yourself) in action!
+Instead of repeating the same parameters for every chart, you set them once. This is the DRY principle (Don't Repeat Yourself) in action!
 
 ```{r, eval=FALSE}
 # Add individual visualizations
@@ -234,7 +255,7 @@ my_viz <- my_viz %>%
 
 ### Step 2: Build Dashboard Structure
 
-**The Concept:** Configure the dashboard itself and add pages with different content types.
+Next, you can configure the dashboard itself and add pages with different content types.
 
 ```{r, eval=FALSE}
 # Configure dashboard-level settings
@@ -307,7 +328,7 @@ dashboard <- dashboard %>%
 
 ### Step 3: Generate HTML
 
-**The Concept:** dashboardr creates Quarto files (.qmd) and optionally renders them to HTML.
+`dashboardr` then creates Quarto files (.qmd) and optionally renders them to HTML.
 
 ```{r, eval=FALSE}
 # Option A: Just create files (fast, for development)
@@ -361,7 +382,9 @@ viz <- create_viz(type = "histogram") %>%
 print(viz)
 ```
 
-**See the hierarchy?** dashboardr automatically organized your visualizations into a tree based on the `tabgroup` parameter. This tree determines the tab structure in your final dashboard.
+**See the hierarchy?** `dashboardr` automatically organized your visualizations into a tree based on the `tabgroup` parameter. This tree determines the tab structure in your final dashboard.
+
+Remember, if you want to see what your plot actually looks like, use the `create_()` visualization functions and just plug in your data and other parameters.
 
 ### Creating Nested Hierarchies
 
@@ -512,6 +535,19 @@ create_viz(type = "histogram") %>%
     y_label = "Frequency"
   )
 ```
+```{r, eval=FALSE}
+create_histogram(
+  data=survey_data,
+  x_var="age",
+  title="Age Distribution",
+  bins = 30,
+  color_palette = c("#3498DB"),
+  x_label = "Age (years)",
+  y_label = "Frequency"
+)
+```
+
+Notice that the parameters are translatable across the functions.
 
 ### Bar Chart
 
@@ -527,6 +563,16 @@ create_viz(type = "bar") %>%
     color_palette = c("#E74C3C")
   )
 ```
+```{r, eval=FALSE}
+create_bar(
+  data=survey_data,
+  x_var = "department",
+  title = "Department Sizes",
+  horizontal = TRUE,
+  bar_type = "percent",  # or "count"
+  color_palette = c("#E74C3C")
+)
+```
 
 ### Grouped Bar Chart
 
@@ -541,6 +587,17 @@ create_viz(type = "bar") %>%
     horizontal = TRUE,
     bar_type = "percent"
   )
+```
+```{r, eval=FALSE}
+create_bar(
+  data=survey_data,
+  x_var = "department",
+  group_var = "wave",
+  title = "Department Sizes by Wave",
+  horizontal = TRUE,
+  bar_type = "percent"
+)
+
 ```
 
 ### Stacked Bar
@@ -558,6 +615,19 @@ create_viz(type = "stackedbar") %>%
     stack_breaks = c(1, 2, 3, 4, 5),
     stack_bin_labels = c("Very Low", "Low", "Medium", "High", "Very High")
   )
+```
+```{r, eval=false}
+create_stackedbar(
+  data=survey_data,
+  x_var = "department",
+  stack_var = "satisfaction",
+  title = "Satisfaction by Department",
+  stacked_type = "percent",
+  horizontal = TRUE,
+  stack_breaks = c(1, 2, 3, 4, 5, 6), # the length of stack_breaks must be one more than the number of labels
+  stack_bin_labels = c("Very Low", "Low", "Medium", "High", "Very High")
+)
+
 ```
 
 ### Multiple Stacked Bars
@@ -582,6 +652,25 @@ create_viz(type = "stackedbars") %>%
     stack_bin_labels = c("1", "2", "3", "4", "5"),
     tabgroup = "sentiment"
   )
+```
+```{r, eval=FALSE}
+questions <- c("q1", "q2", "q3", "q4")
+labels <- c("I trust the company", 
+            "I feel valued",
+            "I have opportunities",
+            "I would recommend")
+
+create_stackedbars(
+  data=survey_data,
+  questions = questions,
+  question_labels = labels,
+  title = "Employee Sentiment",
+  stacked_type = "percent",
+  horizontal = TRUE,
+  stack_breaks = c(0.5, 1.5, 2.5, 3.5, 4.5, 5.5),
+  stack_bin_labels = c("1", "2", "3", "4", "5")
+)
+
 ```
 
 ### Timeline

@@ -1,0 +1,12 @@
+---
+title: "{{< iconify ph link >}} Showcase Dashboard"
+format: html
+---
+
+```{r}
+#| include: false
+library(dashboardr)
+```
+
+This is a placeholder for a link to the showcase dashboard.
+
