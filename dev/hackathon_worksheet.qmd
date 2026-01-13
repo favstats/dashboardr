@@ -1,0 +1,368 @@
+---
+title: "hackathon_worksheet"
+format: html
+---
+
+## dashboardr Workshop Activity Booklet
+
+You just learned all about the `dashboardr` package and its capabilities from Fabio. Now it is time to put your learning to the test by solving a few challenges. But don't worry, we will first go through a few steps to check your knowledge.
+
+Before we get started, decide on what data set you will be using. If you brought your own data to the workshop, that's great! You will leave with a dashboard of your own data. Otherwise, you can use the 2016 wave of the GSS data set using the `gssr` package. If necessary, let's load that in now:
+
+```{r}
+# install.packages(gssr)
+library(gssr)
+data(gssr)
+
+dat <- gss_panel20
+
+# Otherwise:
+dat <- read.csv(your_path_here)
+```
+
+## Install `dashboardr`
+
+Next, let's make sure you have the package:
+
+```{r}
+# Install from GitHub
+devtools::install_github("favstats/dashboardr")
+library(dashboardr)
+```
+
+## Quick Win: Your First Dashboard in 5 Minutes
+
+Let's create a complete dashboard from scratch. Here we will use simplistic dummy data. Examine the code so you understand the syntax.
+
+```{r, eval=FALSE}
+# Generate the dummy data
+survey_data <- data.frame(
+  age = sample(18:80, 300, replace = TRUE),
+  income = rnorm(300, mean = 50000, sd = 15000),
+  satisfaction = sample(1:5, 300, replace = TRUE),
+  department = sample(c("Sales", "Engineering", "Marketing"), 300, replace = TRUE)
+)
+
+# Step 1: Create content (visualizations + text + more)
+content <- create_viz(type = "histogram", color_palette = c("#3498DB")) %>% # notice the piping structure!
+  add_viz(x_var = "age", title = "Age Distribution", tabgroup = "overview") %>% # plot
+  add_text("## Key Demographics", "", "Summary of age distribution...") %>% # the text corresponds to the plot
+  add_viz(x_var = "income", title = "Income Distribution", tabgroup = "overview") %>% # another plot
+  add_callout("All data is anonymized and aggregated", type = "note") # disclaimer at the bottom
+
+# Step 2: Build dashboard
+dashboard <- create_dashboard(
+  title = "Employee Survey Dashboard",
+  output_dir = "my_dashboard"
+) %>%
+  add_page(
+    "Home", # this is a text only page
+    text = md_text("# Welcome!", "", "This dashboard presents employee survey results."),
+    icon = "ph:house-fill",
+    is_landing_page = TRUE
+  ) %>%
+  add_page(
+    "Analysis",
+    data = survey_data,
+    content = content,  # this is what we made in step 1
+    icon = "ph:chart-line"
+  )
+
+# Step 3: Generate and view
+generate_dashboard(dashboard, render = TRUE, open = "browser")
+```
+
+**That's it!** You now have a professional, interactive HTML dashboard.
+
+## Suggested Workflow
+
+As you probably noticed, there are fundamentally three main steps to this package: 1) building plots, 2) building structure, and then 3) rendering.
+
+Let's break it down so that we can add a bit of functionality and flexibility. Every dashboard follows the same pattern. Let's understand each step in depth.
+
+### Step 1: Build Visualizations
+
+Before we start actually creating the visualizations that are dashboard-ready, we generally recommend exploring the core visualization functions in order to actually see what your plots will look like. Let's take the above histogram example and examine what it actually looks like:
+
+```{r, eval=FALSE}
+# Use the similar parameters as above to replicate the visualization
+create_histogram(
+  data=survey_data,
+  x_var="age",
+  title = "Summary of Age Distribution",
+  subtitle = NULL,
+  x_label = "Age (years)",
+  y_label = "count",
+  histogram_type = "count",
+)
+```
+
+It's the same! The `create_histogram()` function is the function that is actually used under the hood. The same holds for all other visualization types. For instance, the visualization function that renders heat maps is `create_heatmap()`. It is worth reading through each of the visualization function documentation and vignettes, especially if you plan to use `dashboardr` for deeper or more complex work.
+
+Now that we're happy with the result, we can set up the dashboard objects. We can create a collection of charts that share common properties. Think of it like setting up a "template" that all your charts will follow.
+
+```{r, eval=FALSE}
+# Set defaults that ALL visualizations inherit
+my_viz <- create_viz(
+  type = "histogram",          # All will be histograms
+  color_palette = c("#3498DB"), # All use this color
+  bins = 30,                    # All use 30 bins
+  drop_na_vars = TRUE          # All drop NA values
+)
+```
+
+Instead of repeating the same parameters for every chart, you set them once. This is the DRY principle (Don't Repeat Yourself) in action!
+
+```{r, eval=FALSE}
+# Add individual visualizations
+my_viz <- my_viz %>%
+  add_viz(
+    x_var = "age",                # REQUIRED: what variable to plot
+    title = "Age Distribution",    # Chart title
+    tabgroup = "overview"          # Where it appears (more on this later!)
+  ) %>%
+  add_viz(
+    x_var = "income",
+    title = "Income Distribution",
+    tabgroup = "overview",
+    bins = 50  # Override: this one uses 50 bins instead of 30
+  )
+```
+
+Notice that each `add_viz()` creates one chart. However, you can override any default for individual charts.
+
+### Step 2: Build Dashboard Structure
+
+Next, you can configure the dashboard itself and add pages with different content types.
+
+```{r, eval=FALSE}
+# Configure dashboard-level settings
+dashboard <- create_dashboard(
+  title = "Employee Survey Dashboard",    # Appears at the top
+  output_dir = "my_dashboard",            # Where files are saved
+  theme = "flatly",                       # Overall Bootstrap theme
+  tabset_theme = "modern",                # How tabs look
+  search = TRUE,                          # Add search functionality
+  breadcrumbs = TRUE,                     # Show breadcrumb navigation
+  page_navigation = TRUE,                 # Show prev/next links
+  back_to_top = TRUE                      # Add "back to top" button
+)
+```
+
+**Add different types of pages:**
+
+```{r, eval=FALSE}
+# 1. Text-only landing page
+dashboard <- dashboard %>%
+  add_page(
+    name = "Home",
+    text = md_text(
+      "# Welcome to Our Dashboard!",
+      "",
+      "This dashboard presents **employee survey results**.",
+      "",
+      "## Key Findings",
+      "",
+      "- Average satisfaction: 4.2/5",
+      "- Response rate: 85%",
+      "",
+      "[View detailed analysis →](analysis.html)"
+    ),
+    icon = "ph:house-fill",
+    is_landing_page = TRUE  # This page loads first
+  )
+
+# 2. Data + visualizations page
+dashboard <- dashboard %>%
+  add_page(
+    name = "Analysis",
+    data = survey_data,           # Attach your data
+    visualizations = my_viz,       # Add your charts
+    icon = "ph:chart-line",        # Icon in navbar
+    overlay = TRUE,                # Show loading animation
+    overlay_duration = 1,          # 1 second overlay
+    lazy_load_charts = TRUE,       # Load charts as user scrolls
+    lazy_load_tabs = TRUE,         # Load tab content on demand
+    text = md_text(
+      "## Survey Analysis",
+      "",
+      "Explore the detailed results below."
+    )
+  )
+
+# 3. About page (aligned right in navbar)
+dashboard <- dashboard %>%
+  add_page(
+    name = "About",
+    icon = "ph:info-fill",
+    navbar_align = "right",  # Align to right side of navbar
+    text = md_text(
+      "## About This Dashboard",
+      "",
+      "Created with [dashboardr](https://github.com/favstats/dashboardr)"
+    )
+  )
+```
+
+Note that you do not need to add pages iteratively if you do not want to. Because of the piping functionality, something like this would yield the same output:
+
+```{r}
+dashboard <- create_dashboard(
+  title = "Employee Survey Dashboard",
+  output_dir = "my_dashboard",
+  theme = "flatly",
+  tabset_theme = "modern",
+  search = TRUE,
+  breadcrumbs = TRUE,
+  page_navigation = TRUE,
+  back_to_top = TRUE
+) %>%  
+  add_page(
+    name = "Home",
+    text = md_text(
+      "# Welcome to Our Dashboard!",
+      "",
+      "This dashboard presents **employee survey results**.",
+      "",
+      "## Key Findings",
+      "",
+      "- Average satisfaction: 4.2/5",
+      "- Response rate: 85%",
+      "",
+      "[View detailed analysis →](analysis.html)"
+    ),
+    icon = "ph:house-fill",
+    is_landing_page = TRUE  # This page loads first
+  ) %>%
+  add_page(
+    name = "Analysis",
+    data = survey_data,           # Attach your data
+    visualizations = my_viz,       # Add your charts
+    icon = "ph:chart-line",        # Icon in navbar
+    overlay = TRUE,                # Show loading animation
+    overlay_duration = 1,          # 1 second overlay
+    lazy_load_charts = TRUE,       # Load charts as user scrolls
+    lazy_load_tabs = TRUE,         # Load tab content on demand
+    text = md_text(
+      "## Survey Analysis",
+      "",
+      "Explore the detailed results below."
+    )
+  ) %>%
+  add_page(
+    name = "About",
+    icon = "ph:info-fill",
+    navbar_align = "right",  # Align to right side of navbar
+    text = md_text(
+      "## About This Dashboard",
+      "",
+      "Created with [dashboardr](https://github.com/favstats/dashboardr)"
+    )
+)
+```
+
+### Step 3: Generate HTML
+
+`dashboardr` then creates Quarto files (.qmd) and optionally renders them to HTML.
+
+```{r, eval=FALSE}
+# Option A: Just create files (fast, for development)
+generate_dashboard(dashboard, render = FALSE)
+# Creates: my_dashboard/home.qmd, my_dashboard/analysis.qmd, etc.
+
+# Option B: Create files AND render to HTML (requires Quarto CLI)
+generate_dashboard(dashboard, render = TRUE)
+# Creates: my_dashboard/docs/index.html (and all other pages)
+
+# Option C: Render + open is the default setting
+generate_dashboard(dashboard)
+```
+
+And that's the basics!
+
+## Fun Challenges
+
+Now that you're a dashboard pro, let's test out your skills with a few fun challenges. If you have any questions or if something doesn't work, please ask for help and/or write it down so we can address it at another time.
+
+**Thank you for your feedback!**
+
+### Challenge #1
+
+Using your own data, plot a stacked bar chart with variables of your choice. Make sure at least one of the stacked bars is pink.
+
+```{r}
+# Your solution goes here
+```
+
+### Challenge #2
+
+Using the same independent variables as Challenge #1, plot the density of your data using a heat map.
+
+```{r}
+# Your solution goes here
+```
+
+### Challenge #3: BONUS
+
+If your data set has any time-sensitive variables, plot them using `create_timeline()` here!
+
+```{r}
+# Your solution goes here
+```
+
+### Challenge #4
+
+Now that you have at least a couple data visualizations and know what they look like, let's store them using `create_viz`. Name the visualization collection "Fabio". Do this here:
+
+```{r}
+# Your solution goes here
+```
+
+### Challenge #5
+
+Add titles and descriptive texts to the plots.
+
+```{r}
+# Your solution goes here
+```
+
+
+### Challenge #6: BONUS
+
+In a separate visualization collection, put your stacked bar chart and heat map (and timeline) in a tab group. Make sure there is a description text for each plot, and a summary under the tab group. Name this separate collection "Max".
+
+```{r}
+# Your solution goes here
+```
+
+### Challenge 7
+
+Create a dashboard with a landing page, and your two visualization collections. Each collection should have its own separate page. Name your dashboard "Rudolph" and make sure there's a navbar menu to organize analysis pages.
+
+```{r}
+# Your solution goes here
+```
+
+### Challenge 8
+
+Add a Twitter, LinkedIn, or your own website URL link on the navbar. Make sure the icon is correct!
+
+```{r}
+# Your solution goes here
+```
+
+### Challenge 9
+
+Add an 'About Me' page named after yourself. Add an image that you like to this page, and write a description of the data you used.
+
+```{r}
+# Your solution goes here
+```
+
+### Challenge 10
+
+Generate your dashboard and render it to your browser!
+
+```{r}
+# Your solution goes here
+```

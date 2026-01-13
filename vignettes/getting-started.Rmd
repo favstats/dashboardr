@@ -16,7 +16,6 @@ knitr::opts_chunk$set(
 )
 ```
 
-
 ## Installation and Loading
 
 ```{r, eval=FALSE}
@@ -30,125 +29,135 @@ library(dashboardr)
 
 ## Introduction: A Grammar of Dashboards
 
-Just as ggplot2 gave us a **grammar of graphics**, dashboardr provides a **grammar of dashboards**. 
+Just as ggplot2 gave us a **grammar of graphics**, dashboardr provides a **grammar of dashboards**.
 
 ### What is a Grammar?
 
 A grammar provides:
 
-- **Building blocks** - Fundamental components you can combine
-- **Composition rules** - How components fit together
-- **Layering** - Build complex structures from simple pieces
-- **Consistency** - Predictable behavior across contexts
+-   **Building blocks** - Fundamental components you can combine
+-   **Composition rules** - How components fit together
+-   **Layering** - Build complex structures from simple pieces
+-   **Consistency** - Predictable behavior across contexts
 
 ### dashboardr's Grammar
 
 `dashboardr` gives you a complete grammar with six core layers:
 
-1. **Data** - What you're working with
-   ```r
-   # Pass data to pages
-   add_page("Analysis", 
-     data = survey_data,
-     weight_var = "survey_weight",  # Optional weighting
-     filter = ~ wave == 1            # Filter subsets
-   )
-   ```
+1.  **Data** - What you're working with
 
-2. **Content** - Unified system for visualizations, text, images, and more
-   ```r
-   # Mix everything together in one fluent pipeline
-   content <- create_viz(type = "histogram", color_palette = c("#3498DB")) %>%
-     add_viz(x_var = "age", title = "Age", tabgroup = "overview") %>%
-     add_text("## Analysis Results", "", "Key findings from the data...") %>%
-     add_callout("Important: Sample size is 1000 respondents", type = "note") %>%
-     add_viz(x_var = "income", title = "Income", tabgroup = "overview") %>%
-     add_image("charts/trend.png", caption = "Quarterly trends") %>%
-     add_accordion("Methodology", text = "Details about our approach...")
-   ```
-   **Functions:** `create_viz()`, `add_viz()`, `add_text()`, `add_image()`, `add_callout()`, `add_accordion()`, `add_card()`, `add_divider()`, `add_code()`, `add_spacer()`
+    ``` r
+    # Pass data to pages
+    add_page("Analysis", 
+      data = survey_data,
+      weight_var = "survey_weight",  # Optional weighting
+      filter = ~ wave == 1            # Filter subsets
+    )
+    ```
 
-3. **Layout** - How you organize content
-   ```r
-   # Nested hierarchies with tabgroups
-   add_viz(x_var = "age", tabgroup = "analysis/demographics/age")  # Creates nested tabs
-   
-   # Pagination for large dashboards
-   content %>% add_pagination()  # Splits into multiple pages
-   
-   # Custom tab labels with icons
-   content %>% set_tabgroup_labels(
-     overview = "{{< iconify ph:chart-bar-fill >}} Overview",
-     demographics = "{{< iconify ph:users-fill >}} Demographics"
-   )
-   ```
-   **Functions:** `add_pagination()`, `set_tabgroup_labels()`, `combine_viz()` (or `+` operator)
+2.  **Content** - Unified system for visualizations, text, images, and more
 
-4. **Navigation** - How users move between pages
-   ```r
-   # Top navbar with pages
-   create_dashboard(...) %>%
-     add_page("Home", is_landing_page = TRUE) %>%
-     add_page("Analysis") %>%
-     add_page("About", navbar_align = "right")
-   
-   # Dropdown menus for related pages
-   create_dashboard(...) %>%
-     navbar_menu("Reports", pages = c("Monthly", "Quarterly"), icon = "ph:file-text")
-   
-   # Sidebar navigation for many pages
-   create_dashboard(...) %>%
-     sidebar_group(id = "analysis", pages = c("Overview", "Details", "Trends"))
-   ```
-   **Functions:** `add_page()`, `navbar_menu()`, `sidebar_group()`
+    ``` r
+    # Mix everything together in one fluent pipeline
+    content <- create_viz(type = "histogram", color_palette = c("#3498DB")) %>%
+      add_viz(x_var = "age", title = "Age", tabgroup = "overview") %>%
+      add_text("## Analysis Results", "", "Key findings from the data...") %>%
+      add_callout("Important: Sample size is 1000 respondents", type = "note") %>%
+      add_viz(x_var = "income", title = "Income", tabgroup = "overview") %>%
+      add_image("charts/trend.png", caption = "Quarterly trends") %>%
+      add_accordion("Methodology", text = "Details about our approach...")
+    ```
 
-5. **Styling** - How it looks
-   ```r
-   # Apply complete themes (PRIMARY styling method)
-   dashboard <- create_dashboard("My Dashboard", "output") %>%
-     apply_theme(theme_academic(accent_color = "#8B0000")) %>%
-     add_page("Analysis", data = data, content = content)
-   
-   # Available themes
-   apply_theme(theme_ascor())       # UvA/ASCoR branding (also: theme_uva())
-   apply_theme(theme_academic())    # Academic/research style
-   apply_theme(theme_modern())      # Modern tech style
-   apply_theme(theme_clean())       # Minimal clean style
-   
-   # Override ANY theme parameter
-   dashboard %>% apply_theme(
-     theme_modern("purple"),
-     navbar_bg_color = "#8B0000",      # Custom navbar color
-     navbar_text_color = "#FFFFFF",    # Navbar text color
-     mainfont = "Inter",               # Font family
-     fontsize = "18px",                # Base font size
-     linkcolor = "#0066CC",            # Link color
-     max_width = "1400px"              # Page width
-   )
-   # Supports: navbar_bg_color, navbar_text_color, navbar_text_hover_color,
-   #           mainfont, fontsize, fontcolor, linkcolor, monofont,
-   #           monobackgroundcolor, linestretch, backgroundcolor, max_width,
-   #           margin_left, margin_right, margin_top, margin_bottom
-   
-   # Styling can also be applied at:
-   # - Dashboard level: create_dashboard(theme = "flatly", tabset_theme = "modern")
-   # - Page level: add_page(icon = "ph:chart-line", overlay = TRUE)
-   # - Content level: create_viz(color_palette = c("#3498DB"), icon = "ph:chart-bar")
-   ```
-   **Functions:** `apply_theme()`, `theme_ascor()`, `theme_academic()`, `theme_modern()`, `theme_clean()`
+    **Functions:** `create_viz()`, `add_viz()`, `add_text()`, `add_image()`, `add_callout()`, `add_accordion()`, `add_card()`, `add_divider()`, `add_code()`, `add_spacer()`
 
-6. **Assembly** - Putting it all together
-   ```r
-   # The complete pipeline
-   dashboard <- create_dashboard(title = "My Dashboard", output_dir = "output") %>%
-     add_page("Home", text = md_text("# Welcome!"), is_landing_page = TRUE) %>%
-     add_page("Analysis", data = survey_data, content = content) %>%
-     generate_dashboard(render = TRUE, open = "browser")
-   ```
-   **Functions:** `create_dashboard()`, `add_page()`, `generate_dashboard()`, `md_text()`
+3.  **Layout** - How you organize content
+
+    ``` r
+    # Nested hierarchies with tabgroups
+    add_viz(x_var = "age", tabgroup = "analysis/demographics/age")  # Creates nested tabs
+
+    # Pagination for large dashboards
+    content %>% add_pagination()  # Splits into multiple pages
+
+    # Custom tab labels with icons
+    content %>% set_tabgroup_labels(
+      overview = "{{< iconify ph:chart-bar-fill >}} Overview",
+      demographics = "{{< iconify ph:users-fill >}} Demographics"
+    )
+    ```
+
+    **Functions:** `add_pagination()`, `set_tabgroup_labels()`, `combine_viz()` (or `+` operator)
+
+4.  **Navigation** - How users move between pages
+
+    ``` r
+    # Top navbar with pages
+    create_dashboard(...) %>%
+      add_page("Home", is_landing_page = TRUE) %>%
+      add_page("Analysis") %>%
+      add_page("About", navbar_align = "right")
+
+    # Dropdown menus for related pages
+    create_dashboard(...) %>%
+      navbar_menu("Reports", pages = c("Monthly", "Quarterly"), icon = "ph:file-text")
+
+    # Sidebar navigation for many pages
+    create_dashboard(...) %>%
+      sidebar_group(id = "analysis", pages = c("Overview", "Details", "Trends"))
+    ```
+
+    **Functions:** `add_page()`, `navbar_menu()`, `sidebar_group()`
+
+5.  **Styling** - How it looks
+
+    ``` r
+    # Apply complete themes (PRIMARY styling method)
+    dashboard <- create_dashboard("My Dashboard", "output") %>%
+      apply_theme(theme_academic(accent_color = "#8B0000")) %>%
+      add_page("Analysis", data = data, content = content)
+
+    # Available themes
+    apply_theme(theme_ascor())       # UvA/ASCoR branding (also: theme_uva())
+    apply_theme(theme_academic())    # Academic/research style
+    apply_theme(theme_modern())      # Modern tech style
+    apply_theme(theme_clean())       # Minimal clean style
+
+    # Override ANY theme parameter
+    dashboard %>% apply_theme(
+      theme_modern("purple"),
+      navbar_bg_color = "#8B0000",      # Custom navbar color
+      navbar_text_color = "#FFFFFF",    # Navbar text color
+      mainfont = "Inter",               # Font family
+      fontsize = "18px",                # Base font size
+      linkcolor = "#0066CC",            # Link color
+      max_width = "1400px"              # Page width
+    )
+    # Supports: navbar_bg_color, navbar_text_color, navbar_text_hover_color,
+    #           mainfont, fontsize, fontcolor, linkcolor, monofont,
+    #           monobackgroundcolor, linestretch, backgroundcolor, max_width,
+    #           margin_left, margin_right, margin_top, margin_bottom
+
+    # Styling can also be applied at:
+    # - Dashboard level: create_dashboard(theme = "flatly", tabset_theme = "modern")
+    # - Page level: add_page(icon = "ph:chart-line", overlay = TRUE)
+    # - Content level: create_viz(color_palette = c("#3498DB"), icon = "ph:chart-bar")
+    ```
+
+    **Functions:** `apply_theme()`, `theme_ascor()`, `theme_academic()`, `theme_modern()`, `theme_clean()`
+
+6.  **Assembly** - Putting it all together
+
+    ``` r
+    # The complete pipeline
+    dashboard <- create_dashboard(title = "My Dashboard", output_dir = "output") %>%
+      add_page("Home", text = md_text("# Welcome!"), is_landing_page = TRUE) %>%
+      add_page("Analysis", data = survey_data, content = content) %>%
+      generate_dashboard(render = TRUE, open = "browser")
+    ```
+
+    **Functions:** `create_dashboard()`, `add_page()`, `generate_dashboard()`, `md_text()`
 
 By combining these through a **fluent piping interface** (`%>%`), you build complex dashboards from simple, composable parts.
-
 
 ## Quick Start: Your First Dashboard in 5 Minutes
 
@@ -193,8 +202,6 @@ generate_dashboard(dashboard, render = TRUE, open = "browser")
 ```
 
 **That's it!** You now have a professional, interactive HTML dashboard.
-
-
 
 ## Suggested Workflow
 
@@ -339,9 +346,7 @@ generate_dashboard(dashboard, render = FALSE)
 generate_dashboard(dashboard, render = TRUE)
 # Creates: my_dashboard/docs/index.html (and all other pages)
 
-# Option C: Render + open in browser (recommended!)
-generate_dashboard(dashboard, render = TRUE, open = "browser")
-# Does everything and opens the dashboard automatically
+# Option C: Render + open is the dashboard automatically
 ```
 
 **Pro tip:** During development, use `render = FALSE` to quickly iterate on structure. Only render when you want to see the final result.
@@ -535,6 +540,7 @@ create_viz(type = "histogram") %>%
     y_label = "Frequency"
   )
 ```
+
 ```{r, eval=FALSE}
 create_histogram(
   data=survey_data,
@@ -563,6 +569,7 @@ create_viz(type = "bar") %>%
     color_palette = c("#E74C3C")
   )
 ```
+
 ```{r, eval=FALSE}
 create_bar(
   data=survey_data,
@@ -588,6 +595,7 @@ create_viz(type = "bar") %>%
     bar_type = "percent"
   )
 ```
+
 ```{r, eval=FALSE}
 create_bar(
   data=survey_data,
@@ -616,6 +624,7 @@ create_viz(type = "stackedbar") %>%
     stack_bin_labels = c("Very Low", "Low", "Medium", "High", "Very High")
   )
 ```
+
 ```{r, eval=false}
 create_stackedbar(
   data=survey_data,
@@ -653,6 +662,7 @@ create_viz(type = "stackedbars") %>%
     tabgroup = "sentiment"
   )
 ```
+
 ```{r, eval=FALSE}
 questions <- c("q1", "q2", "q3", "q4")
 labels <- c("I trust the company", 
@@ -784,7 +794,7 @@ dashboardr uses [Iconify](https://icon-sets.iconify.design/) icons, giving you a
 
 Icons use Quarto's iconify shortcode:
 
-```r
+``` r
 icon = "ph:house-fill"  # Phosphor icon set, house-fill icon
 ```
 
@@ -792,10 +802,10 @@ The format is: `icon-set:icon-name`
 
 ### Popular Icon Sets
 
-- **Phosphor** (`ph:`): Modern, clean icons - `ph:chart-line`, `ph:users-fill`, `ph:gear-fill`
-- **Bootstrap Icons** (`bi:`): Bootstrap's official set - `bi:graph-up`, `bi:people`, `bi:gear`
-- **Font Awesome** (`fa:` or `fa6-solid:`): Most popular icon font - `fa:chart-bar`, `fa:users`
-- **Material Design** (`mdi:`): Google's Material Design - `mdi:chart-line`, `mdi:account-group`
+-   **Phosphor** (`ph:`): Modern, clean icons - `ph:chart-line`, `ph:users-fill`, `ph:gear-fill`
+-   **Bootstrap Icons** (`bi:`): Bootstrap's official set - `bi:graph-up`, `bi:people`, `bi:gear`
+-   **Font Awesome** (`fa:` or `fa6-solid:`): Most popular icon font - `fa:chart-bar`, `fa:users`
+-   **Material Design** (`mdi:`): Google's Material Design - `mdi:chart-line`, `mdi:account-group`
 
 ### Using Icons in Your Dashboard
 
@@ -840,13 +850,13 @@ text = md_text(
 
 Visit [Iconify Icon Sets](https://icon-sets.iconify.design/) to browse and search. Popular choices:
 
-- Home: `ph:house-fill`, `bi:house-fill`, `mdi:home`
-- Charts: `ph:chart-line`, `ph:chart-bar-fill`, `bi:graph-up`
-- Users: `ph:users-fill`, `bi:people-fill`, `mdi:account-group`
-- Settings: `ph:gear-fill`, `bi:gear-fill`, `mdi:cog`
-- Info: `ph:info-fill`, `bi:info-circle-fill`, `mdi:information`
-- Time: `ph:clock-fill`, `bi:clock-fill`, `mdi:clock`
-- Search: `ph:magnifying-glass`, `bi:search`, `mdi:magnify`
+-   Home: `ph:house-fill`, `bi:house-fill`, `mdi:home`
+-   Charts: `ph:chart-line`, `ph:chart-bar-fill`, `bi:graph-up`
+-   Users: `ph:users-fill`, `bi:people-fill`, `mdi:account-group`
+-   Settings: `ph:gear-fill`, `bi:gear-fill`, `mdi:cog`
+-   Info: `ph:info-fill`, `bi:info-circle-fill`, `mdi:information`
+-   Time: `ph:clock-fill`, `bi:clock-fill`, `mdi:clock`
+-   Search: `ph:magnifying-glass`, `bi:search`, `mdi:magnify`
 
 ## Styling and Themes
 
@@ -864,13 +874,13 @@ dashboard <- create_dashboard(
 
 **Popular themes:**
 
-- **flatly** - Clean, modern, flat design
-- **cosmo** - Bright and friendly
-- **darkly** - Dark mode (great for presentations)
-- **minty** - Fresh and minty
-- **pulse** - Bold and vibrant
-- **united** - Professional corporate look
-- **yeti** - Minimal and elegant
+-   **flatly** - Clean, modern, flat design
+-   **cosmo** - Bright and friendly
+-   **darkly** - Dark mode (great for presentations)
+-   **minty** - Fresh and minty
+-   **pulse** - Bold and vibrant
+-   **united** - Professional corporate look
+-   **yeti** - Minimal and elegant
 
 [Browse all themes](https://bootswatch.com/)
 
@@ -889,12 +899,12 @@ dashboard <- create_dashboard(
 
 **Theme descriptions:**
 
-- **modern** - Clean, centered tabs with subtle shadows (default)
-- **minimal** - Simple, understated design
-- **pills** - Rounded pill-shaped tabs
-- **classic** - Traditional tab appearance
-- **underline** - Bottom-underline active indicator
-- **segmented** - Segmented control style (iOS-like)
+-   **modern** - Clean, centered tabs with subtle shadows (default)
+-   **minimal** - Simple, understated design
+-   **pills** - Rounded pill-shaped tabs
+-   **classic** - Traditional tab appearance
+-   **underline** - Bottom-underline active indicator
+-   **segmented** - Segmented control style (iOS-like)
 
 ### Custom Tab Colors
 
@@ -1578,15 +1588,15 @@ vignette(package = "dashboardr")
 
 Now that you've mastered the basics, explore:
 
-- **Advanced Features**: `vignette("advanced-features")` - Complex hierarchies, multi-dataset support, custom themes
-- **Visualization Details**: See individual vignettes for detailed parameters:
-  - `vignette("timeline_vignette")`
-  - `vignette("stackedbar_vignette")`
-  - `vignette("heatmap_vignette")`
-  - `vignette("bar_vignette")`
-- **Real-World Examples**: `vignette("case-studies")` - Complete dashboard examples from real projects
+-   **Advanced Features**: `vignette("advanced-features")` - Complex hierarchies, multi-dataset support, custom themes
+-   **Visualization Details**: See individual vignettes for detailed parameters:
+    -   `vignette("timeline_vignette")`
+    -   `vignette("stackedbar_vignette")`
+    -   `vignette("heatmap_vignette")`
+    -   `vignette("bar_vignette")`
+-   **Real-World Examples**: `vignette("case-studies")` - Complete dashboard examples from real projects
 
----
+------------------------------------------------------------------------
 
 **Happy dashboard building!** 🎉
 
