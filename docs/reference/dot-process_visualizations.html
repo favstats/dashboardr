@@ -15,7 +15,13 @@ Converts single-item groups to standalone visualizations with group titles
 Creates tab group objects for multi-item groups
 Applies custom tab group labels if provided
 
-"><meta property="og:image" content="https://favstats.github.io/dashboardr/logo.svg"></head><body>
+"><style>
+.navbar-brand img {
+  max-height: 30px;
+  width: auto;
+  object-fit: contain;
+}
+</style></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -61,7 +67,8 @@ Applies custom tab group labels if provided
 </nav><div class="container template-reference-topic">
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
-      <img src="../logo.svg" class="logo" alt=""><h1>This function handles both viz_collection objects and plain lists of visualization specifications. It: <ul><li><p>Attaches data_path to each visualization</p></li> <li><p>Groups visualizations by their tabgroup parameter (supports nested hierarchies)</p></li> <li><p>Converts single-item groups to standalone visualizations with group titles</p></li> <li><p>Creates tab group objects for multi-item groups</p></li> <li><p>Applies custom tab group labels if provided</p></li> </ul></h1>
+
+      <h1>This function handles both viz_collection objects and plain lists of visualization specifications. It: <ul><li><p>Attaches data_path to each visualization</p></li> <li><p>Groups visualizations by their tabgroup parameter (supports nested hierarchies)</p></li> <li><p>Converts single-item groups to standalone visualizations with group titles</p></li> <li><p>Creates tab group objects for multi-item groups</p></li> <li><p>Applies custom tab group labels if provided</p></li> </ul></h1>
 
       <div class="d-none name"><code>dot-process_visualizations.Rd</code></div>
     </div>

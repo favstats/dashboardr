@@ -73,16 +73,17 @@ create_stackedbar(
 
 - y_label:
 
-  Optional string. Y-axis label. Defaults to "Number of Respondents" or
-  "Percentage of Respondents".
+  Optional string. Y-axis label. Defaults to "Count" for counts or
+  "Percentage" for percent stacking.
 
 - stack_label:
 
-  Optional string. Title for the stack legend. Defaults to `stack_var`.
+  Optional string. Title for the stack legend. Defaults to empty (no
+  title).
 
 - stacked_type:
 
-  One of "counts" or "percent" (100% stacked). Default "normal".
+  One of "counts" (default) or "percent" (100% stacked).
 
 - tooltip_prefix:
 

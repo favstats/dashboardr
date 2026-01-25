@@ -1,4 +1,4 @@
-# dashboardr
+# dashboardr ![](reference/figures/logo.svg)
 
 **dashboardr** makes it easy to create beautiful, interactive [Quarto
 dashboards](https://quarto.org/docs/dashboards/) in R with minimal code.
@@ -508,12 +508,16 @@ Functions for creating and managing dashboards
   : Add Page to Dashboard (Alias)
 - [`generate_dashboard()`](https://favstats.github.io/dashboardr/reference/generate_dashboard.md)
   : Generate all dashboard files
+- [`generate_dashboards()`](https://favstats.github.io/dashboardr/reference/generate_dashboards.md)
+  : Process visualizations into organized specs with tab groups
 - [`publish_dashboard()`](https://favstats.github.io/dashboardr/reference/publish_dashboard.md)
   : Publish dashboard to GitHub Pages
 - [`update_dashboard()`](https://favstats.github.io/dashboardr/reference/update_dashboard.md)
   : Update dashboard on GitHub
-- [`add_loading_overlay()`](https://favstats.github.io/dashboardr/reference/add_loading_overlay.md)
-  : Add a loading overlay to a dashboard page
+- [`create_loading_overlay()`](https://favstats.github.io/dashboardr/reference/create_loading_overlay.md)
+  : Create a loading overlay for a dashboard page
+- [`create_pagination_nav()`](https://favstats.github.io/dashboardr/reference/create_pagination_nav.md)
+  : Create pagination navigation controls for a dashboard page
 - [`add_powered_by_dashboardr()`](https://favstats.github.io/dashboardr/reference/add_powered_by_dashboardr.md)
   : Add "Powered by dashboardr" branding to footer
 
@@ -544,10 +548,16 @@ Functions for creating visualizations
   : Combine visualization collections
 - [`combine_content()`](https://favstats.github.io/dashboardr/reference/combine_content.md)
   : Combine content collections (universal combiner)
+- [`merge_collections()`](https://favstats.github.io/dashboardr/reference/merge_collections.md)
+  : Merge two content/viz collections
 - [`add_pagination()`](https://favstats.github.io/dashboardr/reference/add_pagination.md)
   : Create a sidebar group for hybrid navigation
 - [`set_tabgroup_labels()`](https://favstats.github.io/dashboardr/reference/set_tabgroup_labels.md)
   : Set or update tabgroup display labels
+- [`preview()`](https://favstats.github.io/dashboardr/reference/preview.md)
+  : Preview a visualization or content collection
+- [`knit_print(`*`<content_collection>`*`)`](https://favstats.github.io/dashboardr/reference/knit_print.content_collection.md)
+  : Knitr print method for content collections
 
 ## Visualization Types
 
@@ -567,6 +577,10 @@ Functions for different chart types
   : Create a Heatmap
 - [`create_scatter()`](https://favstats.github.io/dashboardr/reference/create_scatter.md)
   : Create Scatter Plot
+- [`create_map()`](https://favstats.github.io/dashboardr/reference/create_map.md)
+  : Create an interactive map visualization
+- [`create_treemap()`](https://favstats.github.io/dashboardr/reference/create_treemap.md)
+  : Create a treemap visualization
 
 ## Navigation & Layout
 
@@ -657,6 +671,25 @@ Functions for displaying KPIs and metrics
 - [`render_value_box_row()`](https://favstats.github.io/dashboardr/reference/render_value_box_row.md)
   : Render a row of value boxes
 
+## Interactive Inputs
+
+Functions for adding interactive inputs to dashboards
+
+- [`add_input()`](https://favstats.github.io/dashboardr/reference/add_input.md)
+  : Add an interactive input filter
+- [`add_input_row()`](https://favstats.github.io/dashboardr/reference/add_input_row.md)
+  : Start an input row
+- [`add_reset_button()`](https://favstats.github.io/dashboardr/reference/add_reset_button.md)
+  : Add a reset button to reset filters
+- [`enable_inputs()`](https://favstats.github.io/dashboardr/reference/enable_inputs.md)
+  : Enable Input Filter Functionality
+- [`end_input_row()`](https://favstats.github.io/dashboardr/reference/end_input_row.md)
+  : End an input row
+- [`render_input()`](https://favstats.github.io/dashboardr/reference/render_input.md)
+  : Render an input widget
+- [`render_input_row()`](https://favstats.github.io/dashboardr/reference/render_input_row.md)
+  : Render a row of input widgets
+
 ## Embedded Content
 
 Functions for embedding external content
@@ -707,7 +740,7 @@ S3 methods for displaying objects
 - [`` `+`( ``*`<viz_collection>`*`)`](https://favstats.github.io/dashboardr/reference/plus-.viz_collection.md)
   : Combine Visualization Collections with + Operator
 - [`` `+`( ``*`<content_collection>`*`)`](https://favstats.github.io/dashboardr/reference/plus-.content_collection.md)
-  : Combine Content Collections with + Operator
+  : Combine content collections using + operator
 
 # Articles
 

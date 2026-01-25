@@ -30,7 +30,8 @@ add_dashboard_page(
   lazy_load_margin = NULL,
   lazy_load_tabs = NULL,
   lazy_debug = NULL,
-  pagination_separator = NULL
+  pagination_separator = NULL,
+  time_var = NULL
 )
 ```
 
@@ -138,6 +139,13 @@ add_dashboard_page(
 
   Text to show in pagination navigation (e.g., "of" → "1 of 3"),
   default: NULL = inherit from dashboard
+
+- time_var:
+
+  Name of the time/x-axis column in the data (e.g., "year", "decade",
+  "date"). Used by input filters when switching metrics. If NULL
+  (default), the JavaScript will try to auto-detect from common column
+  names (year, decade, time, date).
 
 ## Value
 

@@ -9,7 +9,13 @@ the relationship between two categorical variables and a numeric value
 using color intensity. It handles ordered factors, ensures all combinations
 are plotted, and allows for extensive customization. It also includes
 robust handling of missing values (NA) by allowing them to be displayed
-as explicit categories."><meta property="og:image" content="https://favstats.github.io/dashboardr/logo.svg"></head><body>
+as explicit categories."><style>
+.navbar-brand img {
+  max-height: 30px;
+  width: auto;
+  object-fit: contain;
+}
+</style></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -55,7 +61,8 @@ as explicit categories."><meta property="og:image" content="https://favstats.git
 </nav><div class="container template-reference-topic">
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
-      <img src="../logo.svg" class="logo" alt=""><h1>Create a Heatmap</h1>
+
+      <h1>Create a Heatmap</h1>
 
       <div class="d-none name"><code>create_heatmap.Rd</code></div>
     </div>
@@ -89,6 +96,8 @@ as explicit categories.</p>
 <span>  y_tooltip_prefix <span class="op">=</span> <span class="st">""</span>,</span>
 <span>  x_order <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  y_order <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  x_order_by <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  y_order_by <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  color_min <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  color_max <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  color_palette <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"#FFFFFF"</span>, <span class="st">"#7CB5EC"</span><span class="op">)</span>,</span>
@@ -171,11 +180,25 @@ determine the color intensity.</p></dd>
 
 
 <dt id="arg-x-order">x_order<a class="anchor" aria-label="anchor" href="#arg-x-order"></a></dt>
-<dd><p>Optional character vector to order the factor levels of <code>x_var</code>.</p></dd>
+<dd><p>Optional character vector to order the factor levels of <code>x_var</code>.
+Alternatively, use <code>x_order_by</code> to order by aggregated values.</p></dd>
 
 
 <dt id="arg-y-order">y_order<a class="anchor" aria-label="anchor" href="#arg-y-order"></a></dt>
-<dd><p>Optional character vector to order the factor levels of <code>y_var</code>.</p></dd>
+<dd><p>Optional character vector to order the factor levels of <code>y_var</code>.
+Alternatively, use <code>y_order_by</code> to order by aggregated values.</p></dd>
+
+
+<dt id="arg-x-order-by">x_order_by<a class="anchor" aria-label="anchor" href="#arg-x-order-by"></a></dt>
+<dd><p>Optional. Order x-axis categories by aggregated value.
+Can be "asc" (ascending), "desc" (descending), or NULL (default, no reordering).
+When set, categories are sorted by their mean value across all y categories.</p></dd>
+
+
+<dt id="arg-y-order-by">y_order_by<a class="anchor" aria-label="anchor" href="#arg-y-order-by"></a></dt>
+<dd><p>Optional. Order y-axis categories by aggregated value.
+Can be "asc" (ascending), "desc" (descending), or NULL (default, no reordering).
+When set, categories are sorted by their mean value across all x categories.</p></dd>
 
 
 <dt id="arg-color-min">color_min<a class="anchor" aria-label="anchor" href="#arg-color-min"></a></dt>
@@ -262,16 +285,16 @@ filling missing <code>value_var</code> with <code>NA_real_</code> (which will ap
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Load the dataset included in the package</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"gss_panel20"</span>, package <span class="op">=</span> <span class="st">"dashboardr"</span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>data set ‘gss_panel20’ not found</span>
+<span class="r-in"><span><span class="co"># Load the dataset</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">gss_panel20</span><span class="op">)</span></span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>data set 'gss_panel20' not found</span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Example 1: Basic heatmap – average age by sex and education level</span></span></span>
+<span class="r-in"><span><span class="co"># Example 1: Basic heatmap – no mapped values or other customization</span></span></span>
 <span class="r-in"><span><span class="fu">create_heatmap</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  data <span class="op">=</span> <span class="va">gss_panel20</span>,</span></span>
-<span class="r-in"><span>  x_var <span class="op">=</span> <span class="st">"degree"</span>,</span></span>
-<span class="r-in"><span>  y_var <span class="op">=</span> <span class="st">"sex"</span>,</span></span>
-<span class="r-in"><span>  value_var <span class="op">=</span> <span class="st">"age"</span>,</span></span>
+<span class="r-in"><span>  x_var <span class="op">=</span> <span class="st">"degree_1a"</span>,</span></span>
+<span class="r-in"><span>  y_var <span class="op">=</span> <span class="st">"sex_1a"</span>,</span></span>
+<span class="r-in"><span>  value_var <span class="op">=</span> <span class="st">"age_1a"</span>,</span></span>
 <span class="r-in"><span>  title <span class="op">=</span> <span class="st">"Average Age by Education and Sex"</span>,</span></span>
 <span class="r-in"><span>  x_label <span class="op">=</span> <span class="st">"Education Level"</span>,</span></span>
 <span class="r-in"><span>  y_label <span class="op">=</span> <span class="st">"Sex"</span>,</span></span>
@@ -279,89 +302,89 @@ filling missing <code>value_var</code> with <code>NA_real_</code> (which will ap
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'gss_panel20' not found</span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Example 2: Weighted heatmap using survey weights</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Example 2: Heatmap With Custom Variable Mapping and Colors</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">region_map</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"1"</span> <span class="op">=</span> <span class="st">"New England"</span>,</span></span>
+<span class="r-in"><span><span class="st">"2"</span> <span class="op">=</span> <span class="st">"Mid-Atlantic"</span>,</span></span>
+<span class="r-in"><span><span class="st">"3"</span> <span class="op">=</span> <span class="st">"East North Central"</span>,</span></span>
+<span class="r-in"><span><span class="st">"4"</span> <span class="op">=</span> <span class="st">"West North Central"</span>,</span></span>
+<span class="r-in"><span><span class="st">"5"</span> <span class="op">=</span> <span class="st">"South Atlantic"</span>,</span></span>
+<span class="r-in"><span><span class="st">"6"</span> <span class="op">=</span> <span class="st">"Deep South"</span>,</span></span>
+<span class="r-in"><span><span class="st">"7"</span> <span class="op">=</span> <span class="st">"West South Central"</span>,</span></span>
+<span class="r-in"><span><span class="st">"8"</span> <span class="op">=</span> <span class="st">"Mountain"</span>,</span></span>
+<span class="r-in"><span><span class="st">"9"</span> <span class="op">=</span> <span class="st">"West Coast"</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">sex_map</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"1"</span> <span class="op">=</span> <span class="st">"Male"</span>,</span></span>
+<span class="r-in"><span>               <span class="st">"2"</span> <span class="op">=</span> <span class="st">"Female"</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">create_heatmap</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  data <span class="op">=</span> <span class="va">gss_panel20</span>,</span></span>
-<span class="r-in"><span>  x_var <span class="op">=</span> <span class="st">"region"</span>,</span></span>
-<span class="r-in"><span>  y_var <span class="op">=</span> <span class="st">"sex"</span>,</span></span>
-<span class="r-in"><span>  value_var <span class="op">=</span> <span class="st">"satfin"</span>,         <span class="co"># Financial satisfaction</span></span></span>
-<span class="r-in"><span>  weight_var <span class="op">=</span> <span class="st">"wtssall"</span>,       <span class="co"># Use GSS survey weight</span></span></span>
-<span class="r-in"><span>  title <span class="op">=</span> <span class="st">"Weighted Average Financial Satisfaction"</span>,</span></span>
-<span class="r-in"><span>  subtitle <span class="op">=</span> <span class="st">"Weighted by GSS sample weights"</span>,</span></span>
-<span class="r-in"><span>  color_palette <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"#f7fbff"</span>, <span class="st">"#08306b"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  x_var <span class="op">=</span> <span class="st">"region_1a"</span>,</span></span>
+<span class="r-in"><span>  y_var <span class="op">=</span> <span class="st">"sex_1a"</span>,</span></span>
+<span class="r-in"><span>  value_var <span class="op">=</span> <span class="st">"satfin_1a"</span>,</span></span>
+<span class="r-in"><span>  x_map_values <span class="op">=</span> <span class="va">region_map</span>,</span></span>
+<span class="r-in"><span>  y_map_values <span class="op">=</span> <span class="va">sex_map</span>,</span></span>
+<span class="r-in"><span>  value_label <span class="op">=</span> <span class="st">"Satisfaction"</span>,</span></span>
+<span class="r-in"><span>  x_label <span class="op">=</span> <span class="st">"U.S. Region"</span>,</span></span>
+<span class="r-in"><span>  y_label <span class="op">=</span> <span class="st">"Gender"</span>,</span></span>
+<span class="r-in"><span>  title <span class="op">=</span> <span class="st">"Satisfaction with Financial Situation"</span>,</span></span>
+<span class="r-in"><span>  subtitle <span class="op">=</span> <span class="st">"Per U.S. Region and Gender"</span>,</span></span>
+<span class="r-in"><span>  color_palette <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"#f7fbff"</span>, <span class="st">"darkgreen"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  color_min <span class="op">=</span> <span class="fl">1</span>,</span></span>
+<span class="r-in"><span>  color_max <span class="op">=</span> <span class="fl">3</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'gss_panel20' not found</span>
 <span class="r-in"><span></span></span>
+<span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Example 3: Handling missing categories explicitly</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">edu_map</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"0"</span> <span class="op">=</span> <span class="st">"less than high school"</span>,</span></span>
+<span class="r-in"><span><span class="st">"1"</span> <span class="op">=</span>  <span class="st">"high school"</span>,</span></span>
+<span class="r-in"><span><span class="st">"2"</span> <span class="op">=</span> <span class="st">"associate/junior college"</span>,</span></span>
+<span class="r-in"><span><span class="st">"3"</span> <span class="op">=</span> <span class="st">"bachelor's"</span>,</span></span>
+<span class="r-in"><span><span class="st">"4"</span> <span class="op">=</span> <span class="st">"graduate"</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">create_heatmap</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  data <span class="op">=</span> <span class="va">gss_panel20</span>,</span></span>
-<span class="r-in"><span>  x_var <span class="op">=</span> <span class="st">"region"</span>,</span></span>
-<span class="r-in"><span>  y_var <span class="op">=</span> <span class="st">"degree"</span>,</span></span>
-<span class="r-in"><span>  value_var <span class="op">=</span> <span class="st">"income16"</span>,</span></span>
-<span class="r-in"><span>  include_na <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
-<span class="r-in"><span>  na_label_x <span class="op">=</span> <span class="st">"Region Missing"</span>,</span></span>
-<span class="r-in"><span>  na_label_y <span class="op">=</span> <span class="st">"Degree Missing"</span>,</span></span>
-<span class="r-in"><span>  na_color <span class="op">=</span> <span class="st">"#d9d9d9"</span>,</span></span>
-<span class="r-in"><span>  title <span class="op">=</span> <span class="st">"Average Income by Region and Education (Including Missing)"</span></span></span>
+<span class="r-in"><span>data <span class="op">=</span> <span class="va">gss_panel20</span>,</span></span>
+<span class="r-in"><span>x_var <span class="op">=</span> <span class="st">"region_1a"</span>,</span></span>
+<span class="r-in"><span>y_var <span class="op">=</span> <span class="st">"degree_1a"</span>,</span></span>
+<span class="r-in"><span>value_var <span class="op">=</span> <span class="st">"income_1a"</span>,</span></span>
+<span class="r-in"><span>x_map_values <span class="op">=</span> <span class="va">region_map</span>,</span></span>
+<span class="r-in"><span>y_map_values <span class="op">=</span> <span class="va">edu_map</span>,</span></span>
+<span class="r-in"><span>color_min <span class="op">=</span> <span class="fl">8</span>,</span></span>
+<span class="r-in"><span>color_max <span class="op">=</span> <span class="fl">12</span>,</span></span>
+<span class="r-in"><span>value_label <span class="op">=</span> <span class="st">"Income"</span>,</span></span>
+<span class="r-in"><span>x_label <span class="op">=</span> <span class="st">"U.S. Region"</span>,</span></span>
+<span class="r-in"><span>y_label <span class="op">=</span> <span class="st">"Education"</span>,</span></span>
+<span class="r-in"><span>include_na <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
+<span class="r-in"><span>na_label_x <span class="op">=</span> <span class="st">"Region Missing"</span>,</span></span>
+<span class="r-in"><span>na_label_y <span class="op">=</span> <span class="st">"Degree Missing"</span>,</span></span>
+<span class="r-in"><span>na_color <span class="op">=</span> <span class="st">"grey"</span>,</span></span>
+<span class="r-in"><span>title <span class="op">=</span> <span class="st">"Average Income by Region and Education (Including Missing)"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'gss_panel20' not found</span>
+<span class="r-in"><span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Example 4: Custom order of education levels and relabeling of sex</span></span></span>
 <span class="r-in"><span><span class="fu">create_heatmap</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  data <span class="op">=</span> <span class="va">gss_panel20</span>,</span></span>
-<span class="r-in"><span>  x_var <span class="op">=</span> <span class="st">"degree"</span>,</span></span>
-<span class="r-in"><span>  y_var <span class="op">=</span> <span class="st">"sex"</span>,</span></span>
-<span class="r-in"><span>  value_var <span class="op">=</span> <span class="st">"income16"</span>,</span></span>
-<span class="r-in"><span>  x_order <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Lt High School"</span>, <span class="st">"High School"</span>, <span class="st">"Junior College"</span>,</span></span>
-<span class="r-in"><span>              <span class="st">"Bachelor"</span>, <span class="st">"Graduate"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  y_map_values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"Male"</span> <span class="op">=</span> <span class="st">"M"</span>, <span class="st">"Female"</span> <span class="op">=</span> <span class="st">"F"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  title <span class="op">=</span> <span class="st">"Average Income by Education Level and Sex"</span>,</span></span>
-<span class="r-in"><span>  subtitle <span class="op">=</span> <span class="st">"Custom order and relabeled categories"</span>,</span></span>
-<span class="r-in"><span>  color_palette <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"#ffffe0"</span>, <span class="st">"#31a354"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>data <span class="op">=</span> <span class="va">gss_panel20</span>,</span></span>
+<span class="r-in"><span>x_var <span class="op">=</span> <span class="st">"degree_1a"</span>,</span></span>
+<span class="r-in"><span>y_var <span class="op">=</span> <span class="st">"sex_1a"</span>,</span></span>
+<span class="r-in"><span>value_var <span class="op">=</span> <span class="st">"income_1a"</span>,</span></span>
+<span class="r-in"><span>x_map_values <span class="op">=</span> <span class="va">edu_map</span>,</span></span>
+<span class="r-in"><span>x_order <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"less than high school"</span>, <span class="st">"high school"</span>, <span class="st">"associate/junior college"</span>,</span></span>
+<span class="r-in"><span><span class="st">"bachelor's"</span>, <span class="st">"graduate"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>y_map_values <span class="op">=</span> <span class="va">sex_map</span>,</span></span>
+<span class="r-in"><span>y_label <span class="op">=</span> <span class="st">"Gender"</span>,</span></span>
+<span class="r-in"><span>x_label <span class="op">=</span> <span class="st">"Education Level"</span>,</span></span>
+<span class="r-in"><span>value_label <span class="op">=</span> <span class="st">"Income Level"</span>,</span></span>
+<span class="r-in"><span>title <span class="op">=</span> <span class="st">"Average Income by Education Level and Sex"</span>,</span></span>
+<span class="r-in"><span>subtitle <span class="op">=</span> <span class="st">"Custom order and relabeled categories"</span>,</span></span>
+<span class="r-in"><span>color_palette <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"#ffffe0"</span>, <span class="st">"#31a354"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'gss_panel20' not found</span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Example 5: Custom tooltip formatting and labels</span></span></span>
-<span class="r-in"><span><span class="fu">create_heatmap</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  data <span class="op">=</span> <span class="va">gss_panel20</span>,</span></span>
-<span class="r-in"><span>  x_var <span class="op">=</span> <span class="st">"region"</span>,</span></span>
-<span class="r-in"><span>  y_var <span class="op">=</span> <span class="st">"sex"</span>,</span></span>
-<span class="r-in"><span>  value_var <span class="op">=</span> <span class="st">"satjob"</span>,          <span class="co"># Job satisfaction</span></span></span>
-<span class="r-in"><span>  tooltip_prefix <span class="op">=</span> <span class="st">""</span>,</span></span>
-<span class="r-in"><span>  tooltip_suffix <span class="op">=</span> <span class="st">" / 5"</span>,</span></span>
-<span class="r-in"><span>  tooltip_labels_format <span class="op">=</span> <span class="st">"{point.value:.2f}"</span>,</span></span>
-<span class="r-in"><span>  data_labels_enabled <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
-<span class="r-in"><span>  title <span class="op">=</span> <span class="st">"Job Satisfaction by Region and Sex"</span>,</span></span>
-<span class="r-in"><span>  color_palette <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"#fee5d9"</span>, <span class="st">"#cb181d"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'gss_panel20' not found</span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co">#####</span></span></span>
-<span class="r-in"><span><span class="co"># Example 1: Basic heatmap with average values</span></span></span>
-<span class="r-in"><span><span class="va">plot1</span> <span class="op">&lt;-</span> <span class="fu">create_heatmap</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  data <span class="op">=</span> <span class="va">survey_data</span>,</span></span>
-<span class="r-in"><span>  x_var <span class="op">=</span> <span class="st">"education"</span>,</span></span>
-<span class="r-in"><span>  y_var <span class="op">=</span> <span class="st">"gender"</span>,</span></span>
-<span class="r-in"><span>  value_var <span class="op">=</span> <span class="st">"age"</span>,</span></span>
-<span class="r-in"><span>  title <span class="op">=</span> <span class="st">"Average Age by Education and Gender"</span>,</span></span>
-<span class="r-in"><span>  x_label <span class="op">=</span> <span class="st">"Education Level"</span>,</span></span>
-<span class="r-in"><span>  y_label <span class="op">=</span> <span class="st">"Gender"</span>,</span></span>
-<span class="r-in"><span>  value_label <span class="op">=</span> <span class="st">"Average Age"</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'survey_data' not found</span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Example 2: Weighted heatmap using survey weights</span></span></span>
-<span class="r-in"><span><span class="va">plot2</span> <span class="op">&lt;-</span> <span class="fu">create_heatmap</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  data <span class="op">=</span> <span class="va">survey_data</span>,</span></span>
-<span class="r-in"><span>  x_var <span class="op">=</span> <span class="st">"region"</span>,</span></span>
-<span class="r-in"><span>  y_var <span class="op">=</span> <span class="st">"income_bracket"</span>,</span></span>
-<span class="r-in"><span>  value_var <span class="op">=</span> <span class="st">"satisfaction_score"</span>,</span></span>
-<span class="r-in"><span>  weight_var <span class="op">=</span> <span class="st">"survey_weight"</span>,  <span class="co"># Use survey weights for accurate representation</span></span></span>
-<span class="r-in"><span>  title <span class="op">=</span> <span class="st">"Weighted Average Satisfaction by Region and Income"</span>,</span></span>
-<span class="r-in"><span>  subtitle <span class="op">=</span> <span class="st">"Using survey weights for population representation"</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'survey_data' not found</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>

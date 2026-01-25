@@ -5,7 +5,13 @@ Can be used with apply_theme() for piping or unpacked into create_dashboard().
 All parameters can be overridden to customize the theme."><meta property="og:description" content="Returns a list of styling parameters that apply University of Amsterdam
 and ASCoR (Amsterdam School of Communication Research) branding to a dashboard.
 Can be used with apply_theme() for piping or unpacked into create_dashboard().
-All parameters can be overridden to customize the theme."><meta property="og:image" content="https://favstats.github.io/dashboardr/logo.svg"></head><body>
+All parameters can be overridden to customize the theme."><style>
+.navbar-brand img {
+  max-height: 30px;
+  width: auto;
+  object-fit: contain;
+}
+</style></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -51,7 +57,8 @@ All parameters can be overridden to customize the theme."><meta property="og:ima
 </nav><div class="container template-reference-topic">
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
-      <img src="../logo.svg" class="logo" alt=""><h1>Apply ASCoR/UvA Theme to Dashboard</h1>
+
+      <h1>Apply ASCoR/UvA Theme to Dashboard</h1>
 
       <div class="d-none name"><code>theme_ascor.Rd</code></div>
     </div>

@@ -7,10 +7,17 @@ tab groups and default parameters that apply to all visualizations.
 ## Usage
 
 ``` r
-create_viz(tabgroup_labels = NULL, ...)
+create_viz(data = NULL, tabgroup_labels = NULL, ...)
 ```
 
 ## Arguments
+
+- data:
+
+  Optional data frame to use for all visualizations in this collection.
+  This data will be used by add_viz() calls and can be used with
+  preview(). Can also be passed to add_page() which will use this as
+  fallback if no page-level data is provided.
 
 - tabgroup_labels:
 
@@ -30,6 +37,11 @@ A viz_collection object
 
 ``` r
 if (FALSE) { # \dontrun{
+# Create viz collection with data for preview
+vizzes <- create_viz(data = mtcars) %>%
+  add_viz(type = "histogram", x_var = "mpg", title = "MPG Distribution") %>%
+  preview()
+
 # Create viz collection with custom group labels
 vizzes <- create_viz(tabgroup_labels = c("demo" = "Demographics",
                                           "pol" = "Political Views"))

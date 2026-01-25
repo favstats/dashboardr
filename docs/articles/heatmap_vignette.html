@@ -19,6 +19,13 @@
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
 <meta property="og:title" content="Creating Interactive Heatmaps with `create_heatmap`">
+<style>
+.navbar-brand img {
+  max-height: 30px;
+  width: auto;
+  object-fit: contain;
+}
+</style>
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -76,11 +83,12 @@
 
 
 
-<link href="heatmap_vignette_files/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet">
+<link href="heatmap_vignette_files/htmltools-fill-0.5.9/fill.css" rel="stylesheet">
 <script src="heatmap_vignette_files/htmlwidgets-1.6.4/htmlwidgets.js"></script><script src="heatmap_vignette_files/proj4js-2.3.15/proj4.js"></script><link href="heatmap_vignette_files/highcharts-9.3.1/css/motion.css" rel="stylesheet">
 <script src="heatmap_vignette_files/highcharts-9.3.1/highcharts.js"></script><script src="heatmap_vignette_files/highcharts-9.3.1/highcharts-3d.js"></script><script src="heatmap_vignette_files/highcharts-9.3.1/highcharts-more.js"></script><script src="heatmap_vignette_files/highcharts-9.3.1/modules/stock.js"></script><script src="heatmap_vignette_files/highcharts-9.3.1/modules/map.js"></script><script src="heatmap_vignette_files/highcharts-9.3.1/modules/data.js"></script><script src="heatmap_vignette_files/highcharts-9.3.1/modules/exporting.js"></script><script src="heatmap_vignette_files/highcharts-9.3.1/modules/offline-exporting.js"></script><script src="heatmap_vignette_files/highcharts-9.3.1/modules/drilldown.js"></script><script src="heatmap_vignette_files/highcharts-9.3.1/modules/item-series.js"></script><script src="heatmap_vignette_files/highcharts-9.3.1/modules/overlapping-datalabels.js"></script><script src="heatmap_vignette_files/highcharts-9.3.1/modules/annotations.js"></script><script src="heatmap_vignette_files/highcharts-9.3.1/modules/export-data.js"></script><script src="heatmap_vignette_files/highcharts-9.3.1/modules/funnel.js"></script><script src="heatmap_vignette_files/highcharts-9.3.1/modules/heatmap.js"></script><script src="heatmap_vignette_files/highcharts-9.3.1/modules/treemap.js"></script><script src="heatmap_vignette_files/highcharts-9.3.1/modules/sankey.js"></script><script src="heatmap_vignette_files/highcharts-9.3.1/modules/dependency-wheel.js"></script><script src="heatmap_vignette_files/highcharts-9.3.1/modules/organization.js"></script><script src="heatmap_vignette_files/highcharts-9.3.1/modules/solid-gauge.js"></script><script src="heatmap_vignette_files/highcharts-9.3.1/modules/streamgraph.js"></script><script src="heatmap_vignette_files/highcharts-9.3.1/modules/sunburst.js"></script><script src="heatmap_vignette_files/highcharts-9.3.1/modules/vector.js"></script><script src="heatmap_vignette_files/highcharts-9.3.1/modules/wordcloud.js"></script><script src="heatmap_vignette_files/highcharts-9.3.1/modules/xrange.js"></script><script src="heatmap_vignette_files/highcharts-9.3.1/modules/tilemap.js"></script><script src="heatmap_vignette_files/highcharts-9.3.1/modules/venn.js"></script><script src="heatmap_vignette_files/highcharts-9.3.1/modules/gantt.js"></script><script src="heatmap_vignette_files/highcharts-9.3.1/modules/timeline.js"></script><script src="heatmap_vignette_files/highcharts-9.3.1/modules/parallel-coordinates.js"></script><script src="heatmap_vignette_files/highcharts-9.3.1/modules/bullet.js"></script><script src="heatmap_vignette_files/highcharts-9.3.1/modules/coloraxis.js"></script><script src="heatmap_vignette_files/highcharts-9.3.1/modules/dumbbell.js"></script><script src="heatmap_vignette_files/highcharts-9.3.1/modules/lollipop.js"></script><script src="heatmap_vignette_files/highcharts-9.3.1/modules/series-label.js"></script><script src="heatmap_vignette_files/highcharts-9.3.1/plugins/motion.js"></script><script src="heatmap_vignette_files/highcharts-9.3.1/custom/reset.js"></script><script src="heatmap_vignette_files/highcharts-9.3.1/modules/boost.js"></script><script src="heatmap_vignette_files/highchart-binding-0.9.4/highchart.js"></script><div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
-      <img src="../logo.svg" class="logo" alt=""><h1>Creating Interactive Heatmaps with `create_heatmap`</h1>
+
+      <h1>Creating Interactive Heatmaps with `create_heatmap`</h1>
                         <h4 data-toc-skip class="author">Alexandra
 Pafford</h4>
             

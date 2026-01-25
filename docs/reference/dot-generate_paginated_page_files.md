@@ -44,4 +44,4 @@ and writes them with appropriate navigation controls.
 
 ## Value
 
-Invisible NULL
+Character vector of generated .qmd filenames (basenames only)

@@ -3,7 +3,13 @@
 landing pages, analysis pages, about pages, or any combination of text and
 visualizations. All content is markdown-compatible."><meta property="og:description" content="Universal function for adding any type of page to the dashboard. Can create
 landing pages, analysis pages, about pages, or any combination of text and
-visualizations. All content is markdown-compatible."><meta property="og:image" content="https://favstats.github.io/dashboardr/logo.svg"></head><body>
+visualizations. All content is markdown-compatible."><style>
+.navbar-brand img {
+  max-height: 30px;
+  width: auto;
+  object-fit: contain;
+}
+</style></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -49,7 +55,8 @@ visualizations. All content is markdown-compatible."><meta property="og:image" c
 </nav><div class="container template-reference-topic">
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
-      <img src="../logo.svg" class="logo" alt=""><h1>Add a page to the dashboard</h1>
+
+      <h1>Add a page to the dashboard</h1>
 
       <div class="d-none name"><code>add_dashboard_page.Rd</code></div>
     </div>
@@ -85,7 +92,8 @@ visualizations. All content is markdown-compatible.</p>
 <span>  lazy_load_margin <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  lazy_load_tabs <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  lazy_debug <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  pagination_separator <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  pagination_separator <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  time_var <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -185,6 +193,12 @@ list of file paths for multiple datasets</p></dd>
 
 <dt id="arg-pagination-separator">pagination_separator<a class="anchor" aria-label="anchor" href="#arg-pagination-separator"></a></dt>
 <dd><p>Text to show in pagination navigation (e.g., "of" → "1 of 3"), default: NULL = inherit from dashboard</p></dd>
+
+
+<dt id="arg-time-var">time_var<a class="anchor" aria-label="anchor" href="#arg-time-var"></a></dt>
+<dd><p>Name of the time/x-axis column in the data (e.g., "year", "decade", "date").
+Used by input filters when switching metrics. If NULL (default), the JavaScript will try to
+auto-detect from common column names (year, decade, time, date).</p></dd>
 
 </dl></div>
     <div class="section level2">

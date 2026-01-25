@@ -21,7 +21,13 @@
 <meta property="og:title" content="What the Package Does (One Line, Title Case)">
 <meta name="description" content="What the package does (one paragraph).">
 <meta property="og:description" content="What the package does (one paragraph).">
-<meta property="og:image" content="https://favstats.github.io/dashboardr/logo.svg">
+<style>
+.navbar-brand img {
+  max-height: 30px;
+  width: auto;
+  object-fit: contain;
+}
+</style>
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -78,10 +84,8 @@
 </nav><div class="container template-home">
 <div class="row">
   <main id="main" class="col-md-9"><div class="section level1">
-<div class="page-header">
-<img src="logo.svg" class="logo" alt=""><h1 id="dashboardr-">dashboardr <a class="anchor" aria-label="anchor" href="#dashboardr-"></a>
-</h1>
-</div>
+<div class="page-header"><h1 id="dashboardr-">dashboardr <img src="reference/figures/logo.svg" align="right" height="139" alt=""><a class="anchor" aria-label="anchor" href="#dashboardr-"></a>
+</h1></div>
 <!-- badges: start -->
 
 <p><strong>dashboardr</strong> makes it easy to create beautiful, interactive <a href="https://quarto.org/docs/dashboards/" class="external-link">Quarto dashboards</a> in R with minimal code. Perfect for survey data, analytics reports, and data storytelling.</p>

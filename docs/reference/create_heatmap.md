@@ -28,6 +28,8 @@ create_heatmap(
   y_tooltip_prefix = "",
   x_order = NULL,
   y_order = NULL,
+  x_order_by = NULL,
+  y_order_by = NULL,
   color_min = NULL,
   color_max = NULL,
   color_palette = c("#FFFFFF", "#7CB5EC"),
@@ -110,10 +112,26 @@ create_heatmap(
 - x_order:
 
   Optional character vector to order the factor levels of `x_var`.
+  Alternatively, use `x_order_by` to order by aggregated values.
 
 - y_order:
 
   Optional character vector to order the factor levels of `y_var`.
+  Alternatively, use `y_order_by` to order by aggregated values.
+
+- x_order_by:
+
+  Optional. Order x-axis categories by aggregated value. Can be "asc"
+  (ascending), "desc" (descending), or NULL (default, no reordering).
+  When set, categories are sorted by their mean value across all y
+  categories.
+
+- y_order_by:
+
+  Optional. Order y-axis categories by aggregated value. Can be "asc"
+  (ascending), "desc" (descending), or NULL (default, no reordering).
+  When set, categories are sorted by their mean value across all x
+  categories.
 
 - color_min:
 
@@ -238,16 +256,16 @@ This function performs the following steps:
 ## Examples
 
 ``` r
-# Load the dataset included in the package
-data("gss_panel20", package = "dashboardr")
-#> Warning: data set ‘gss_panel20’ not found
+# Load the dataset
+data(gss_panel20)
+#> Warning: data set 'gss_panel20' not found
 
-# Example 1: Basic heatmap – average age by sex and education level
+# Example 1: Basic heatmap – no mapped values or other customization
 create_heatmap(
   data = gss_panel20,
-  x_var = "degree",
-  y_var = "sex",
-  value_var = "age",
+  x_var = "degree_1a",
+  y_var = "sex_1a",
+  value_var = "age_1a",
   title = "Average Age by Education and Sex",
   x_label = "Education Level",
   y_label = "Sex",
@@ -255,88 +273,88 @@ create_heatmap(
 )
 #> Error: object 'gss_panel20' not found
 
-# Example 2: Weighted heatmap using survey weights
+
+# Example 2: Heatmap With Custom Variable Mapping and Colors
+
+region_map <- list("1" = "New England",
+"2" = "Mid-Atlantic",
+"3" = "East North Central",
+"4" = "West North Central",
+"5" = "South Atlantic",
+"6" = "Deep South",
+"7" = "West South Central",
+"8" = "Mountain",
+"9" = "West Coast"
+)
+sex_map <- list("1" = "Male",
+               "2" = "Female")
+
 create_heatmap(
   data = gss_panel20,
-  x_var = "region",
-  y_var = "sex",
-  value_var = "satfin",         # Financial satisfaction
-  weight_var = "wtssall",       # Use GSS survey weight
-  title = "Weighted Average Financial Satisfaction",
-  subtitle = "Weighted by GSS sample weights",
-  color_palette = c("#f7fbff", "#08306b")
+  x_var = "region_1a",
+  y_var = "sex_1a",
+  value_var = "satfin_1a",
+  x_map_values = region_map,
+  y_map_values = sex_map,
+  value_label = "Satisfaction",
+  x_label = "U.S. Region",
+  y_label = "Gender",
+  title = "Satisfaction with Financial Situation",
+  subtitle = "Per U.S. Region and Gender",
+  color_palette = c("#f7fbff", "darkgreen"),
+  color_min = 1,
+  color_max = 3
 )
 #> Error: object 'gss_panel20' not found
 
+
 # Example 3: Handling missing categories explicitly
+
+edu_map = list("0" = "less than high school",
+"1" =  "high school",
+"2" = "associate/junior college",
+"3" = "bachelor's",
+"4" = "graduate")
+
 create_heatmap(
-  data = gss_panel20,
-  x_var = "region",
-  y_var = "degree",
-  value_var = "income16",
-  include_na = TRUE,
-  na_label_x = "Region Missing",
-  na_label_y = "Degree Missing",
-  na_color = "#d9d9d9",
-  title = "Average Income by Region and Education (Including Missing)"
+data = gss_panel20,
+x_var = "region_1a",
+y_var = "degree_1a",
+value_var = "income_1a",
+x_map_values = region_map,
+y_map_values = edu_map,
+color_min = 8,
+color_max = 12,
+value_label = "Income",
+x_label = "U.S. Region",
+y_label = "Education",
+include_na = TRUE,
+na_label_x = "Region Missing",
+na_label_y = "Degree Missing",
+na_color = "grey",
+title = "Average Income by Region and Education (Including Missing)"
 )
 #> Error: object 'gss_panel20' not found
+
 
 # Example 4: Custom order of education levels and relabeling of sex
 create_heatmap(
-  data = gss_panel20,
-  x_var = "degree",
-  y_var = "sex",
-  value_var = "income16",
-  x_order = c("Lt High School", "High School", "Junior College",
-              "Bachelor", "Graduate"),
-  y_map_values = list("Male" = "M", "Female" = "F"),
-  title = "Average Income by Education Level and Sex",
-  subtitle = "Custom order and relabeled categories",
-  color_palette = c("#ffffe0", "#31a354")
+data = gss_panel20,
+x_var = "degree_1a",
+y_var = "sex_1a",
+value_var = "income_1a",
+x_map_values = edu_map,
+x_order = c("less than high school", "high school", "associate/junior college",
+"bachelor's", "graduate"),
+y_map_values = sex_map,
+y_label = "Gender",
+x_label = "Education Level",
+value_label = "Income Level",
+title = "Average Income by Education Level and Sex",
+subtitle = "Custom order and relabeled categories",
+color_palette = c("#ffffe0", "#31a354")
 )
 #> Error: object 'gss_panel20' not found
 
-# Example 5: Custom tooltip formatting and labels
-create_heatmap(
-  data = gss_panel20,
-  x_var = "region",
-  y_var = "sex",
-  value_var = "satjob",          # Job satisfaction
-  tooltip_prefix = "",
-  tooltip_suffix = " / 5",
-  tooltip_labels_format = "{point.value:.2f}",
-  data_labels_enabled = TRUE,
-  title = "Job Satisfaction by Region and Sex",
-  color_palette = c("#fee5d9", "#cb181d")
-)
-#> Error: object 'gss_panel20' not found
-
-
-#####
-# Example 1: Basic heatmap with average values
-plot1 <- create_heatmap(
-  data = survey_data,
-  x_var = "education",
-  y_var = "gender",
-  value_var = "age",
-  title = "Average Age by Education and Gender",
-  x_label = "Education Level",
-  y_label = "Gender",
-  value_label = "Average Age"
-)
-#> Error: object 'survey_data' not found
-
-# Example 2: Weighted heatmap using survey weights
-plot2 <- create_heatmap(
-  data = survey_data,
-  x_var = "region",
-  y_var = "income_bracket",
-  value_var = "satisfaction_score",
-  weight_var = "survey_weight",  # Use survey weights for accurate representation
-  title = "Weighted Average Satisfaction by Region and Income",
-  subtitle = "Using survey weights for population representation"
-)
-#> Error: object 'survey_data' not found
 
 ```

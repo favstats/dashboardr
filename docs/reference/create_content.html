@@ -3,7 +3,13 @@
 Use whichever name makes more sense for your use case. The returned collection
 can be built up with any combination of add_viz(), add_text(), and add_image()."><meta property="og:description" content="This is an alias for create_viz - both functions are identical.
 Use whichever name makes more sense for your use case. The returned collection
-can be built up with any combination of add_viz(), add_text(), and add_image()."><meta property="og:image" content="https://favstats.github.io/dashboardr/logo.svg"></head><body>
+can be built up with any combination of add_viz(), add_text(), and add_image()."><style>
+.navbar-brand img {
+  max-height: 30px;
+  width: auto;
+  object-fit: contain;
+}
+</style></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -49,7 +55,8 @@ can be built up with any combination of add_viz(), add_text(), and add_image()."
 </nav><div class="container template-reference-topic">
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
-      <img src="../logo.svg" class="logo" alt=""><h1>Create a new content/visualization collection (alias for create_viz)</h1>
+
+      <h1>Create a new content/visualization collection (alias for create_viz)</h1>
 
       <div class="d-none name"><code>create_content.Rd</code></div>
     </div>
@@ -62,19 +69,26 @@ can be built up with any combination of add_viz(), add_text(), and add_image().<
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">create_content</span><span class="op">(</span>tabgroup_labels <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">create_content</span><span class="op">(</span>data <span class="op">=</span> <span class="cn">NULL</span>, tabgroup_labels <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
 
 
-<dl><dt id="arg-tabgroup-labels">tabgroup_labels<a class="anchor" aria-label="anchor" href="#arg-tabgroup-labels"></a></dt>
+<dl><dt id="arg-data">data<a class="anchor" aria-label="anchor" href="#arg-data"></a></dt>
+<dd><p>Optional data frame to use for all visualizations in this collection.
+This data will be used by add_viz() calls and can be used with preview().</p></dd>
+
+
+<dt id="arg-tabgroup-labels">tabgroup_labels<a class="anchor" aria-label="anchor" href="#arg-tabgroup-labels"></a></dt>
 <dd><p>Named vector/list mapping tabgroup IDs to display names</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
-<dd><p>Default parameters to apply to all subsequent add_viz() calls</p></dd>
+<dd><p>Default parameters to apply to all subsequent add_viz() calls.
+Common defaults include: type, color_palette, stacked_type, horizontal, etc.
+Any parameter that can be passed to add_viz() can be set as a default here.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -90,6 +104,22 @@ can be built up with any combination of add_viz(), add_text(), and add_image().<
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
+<span class="r-in"><span><span class="co"># Create content with inline data for preview</span></span></span>
+<span class="r-in"><span><span class="va">content</span> <span class="op">&lt;-</span> <span class="fu">create_content</span><span class="op">(</span>data <span class="op">=</span> <span class="va">mtcars</span><span class="op">)</span> <span class="op"><a href="pipe.html">%&gt;%</a></span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="add_text.html">add_text</a></span><span class="op">(</span><span class="st">"# MPG Analysis"</span><span class="op">)</span> <span class="op"><a href="pipe.html">%&gt;%</a></span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="add_viz.html">add_viz</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"histogram"</span>, x_var <span class="op">=</span> <span class="st">"mpg"</span><span class="op">)</span> <span class="op"><a href="pipe.html">%&gt;%</a></span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="preview.html">preview</a></span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Set shared defaults like type - all add_viz() calls inherit these</span></span></span>
+<span class="r-in"><span><span class="va">content</span> <span class="op">&lt;-</span> <span class="fu">create_content</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  data <span class="op">=</span> <span class="va">survey_df</span>,</span></span>
+<span class="r-in"><span>  type <span class="op">=</span> <span class="st">"stackedbar"</span>,</span></span>
+<span class="r-in"><span>  stacked_type <span class="op">=</span> <span class="st">"percent"</span>,</span></span>
+<span class="r-in"><span>  horizontal <span class="op">=</span> <span class="cn">TRUE</span></span></span>
+<span class="r-in"><span><span class="op">)</span> <span class="op"><a href="pipe.html">%&gt;%</a></span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="add_viz.html">add_viz</a></span><span class="op">(</span>x_var <span class="op">=</span> <span class="st">"age"</span>, stack_var <span class="op">=</span> <span class="st">"response"</span>, tabgroup <span class="op">=</span> <span class="st">"Age"</span><span class="op">)</span> <span class="op"><a href="pipe.html">%&gt;%</a></span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="add_viz.html">add_viz</a></span><span class="op">(</span>x_var <span class="op">=</span> <span class="st">"gender"</span>, stack_var <span class="op">=</span> <span class="st">"response"</span>, tabgroup <span class="op">=</span> <span class="st">"Gender"</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># These are equivalent:</span></span></span>
 <span class="r-in"><span><span class="va">content</span> <span class="op">&lt;-</span> <span class="fu">create_content</span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="pipe.html">%&gt;%</a></span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="add_text.html">add_text</a></span><span class="op">(</span><span class="st">"# Title"</span><span class="op">)</span> <span class="op"><a href="pipe.html">%&gt;%</a></span></span></span>

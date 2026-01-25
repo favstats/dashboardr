@@ -1,7 +1,7 @@
-# Generate pagination navigation controls
+# Generate pagination navigation controls (internal function for dashboard creation)
 
-Creates theme-aware navigation controls for multi-page dashboards.
-Includes Previous/Next buttons and page indicator.
+Creates theme-aware navigation controls for multi-page dashboards. Now
+generates clean R code chunks instead of raw HTML.
 
 ## Usage
 
@@ -32,7 +32,8 @@ Includes Previous/Next buttons and page indicator.
 
 - theme:
 
-  Quarto theme name (for styling)
+  Quarto theme name (for styling, currently unused but kept for
+  compatibility)
 
 - position:
 
@@ -45,4 +46,4 @@ Includes Previous/Next buttons and page indicator.
 
 ## Value
 
-Character vector of HTML/CSS lines
+Character vector of R code chunk lines

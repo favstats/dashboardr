@@ -183,7 +183,7 @@ This function performs the following steps:
 #our `dashboardr` package.
 
 data(gss_panel20)
-#> Warning: data set ‘gss_panel20’ not found
+#> Warning: data set 'gss_panel20' not found
 
 # Example 1: Basic histogram of age distribution
 plot1 <- create_histogram(

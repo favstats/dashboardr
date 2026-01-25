@@ -7,7 +7,7 @@ piping workflow with add_landingpage() and add_page().
 
 ``` r
 # S3 method for class 'viz_collection'
-print(x, ...)
+print(x, render = FALSE, ...)
 ```
 
 ## Arguments
@@ -16,6 +16,11 @@ print(x, ...)
 
   A viz_collection object created by
   [`create_viz`](https://favstats.github.io/dashboardr/reference/create_viz.md).
+
+- render:
+
+  If TRUE and data is attached, opens a preview in the viewer instead of
+  showing the structure. Default is FALSE.
 
 - ...:
 
@@ -212,5 +217,9 @@ The print method displays:
 - Visualization types with emoji indicators
 
 - Filter status for each visualization
+
+Use `print(x, render = TRUE)` to open a preview in the viewer instead of
+showing the structure. This is useful for quick visualization in the
+console.
 
 ## Examples

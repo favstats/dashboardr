@@ -19,6 +19,13 @@
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
 <meta property="og:title" content="Getting Started with dashboardr">
+<style>
+.navbar-brand img {
+  max-height: 30px;
+  width: auto;
+  object-fit: contain;
+}
+</style>
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -79,7 +86,8 @@
 
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
-      <img src="../logo.svg" class="logo" alt=""><h1>Getting Started with dashboardr</h1>
+
+      <h1>Getting Started with dashboardr</h1>
             
       
 
@@ -292,17 +300,42 @@ composable parts.</p>
 HTML dashboard.</p>
 </div>
 <div class="section level2">
-<h2 id="core-workflow-understanding-the-three-steps">Core Workflow: Understanding the Three Steps<a class="anchor" aria-label="anchor" href="#core-workflow-understanding-the-three-steps"></a>
+<h2 id="suggested-workflow">Suggested Workflow<a class="anchor" aria-label="anchor" href="#suggested-workflow"></a>
 </h2>
-<p>Every dashboard follows the same pattern. Let’s understand each step
-in depth.</p>
+<p>Now that we’ve made our very first dashboard, let’s break it down so
+that we can add a bit of functionality and flexibility. Every dashboard
+follows the same pattern. Let’s understand each step in depth.</p>
 <div class="section level3">
 <h3 id="step-1-build-visualizations">Step 1: Build Visualizations<a class="anchor" aria-label="anchor" href="#step-1-build-visualizations"></a>
 </h3>
-<p><strong>The Concept:</strong> Create a collection of charts that
-share common properties. Think of it like setting up a “template” that
-all your charts will follow.</p>
+<p>Before we start actually creating the visualizations that are
+dashboard-ready, we generally recommend exploring the core visualization
+functions in order to actually see what your plots will look like. Let’s
+take the above histogram example and examine what it actually looks
+like:</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Use the similar parameters as above to replicate the visualization</span></span>
+<span><span class="fu"><a href="../reference/create_histogram.html">create_histogram</a></span><span class="op">(</span></span>
+<span>  data<span class="op">=</span><span class="va">survey_data</span>,</span>
+<span>  x_var<span class="op">=</span><span class="st">"age"</span>,</span>
+<span>  title <span class="op">=</span> <span class="st">"Summary of Age Distribution"</span>,</span>
+<span>  subtitle <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  x_label <span class="op">=</span> <span class="st">"Age (years)"</span>,</span>
+<span>  y_label <span class="op">=</span> <span class="st">"count"</span>,</span>
+<span>  histogram_type <span class="op">=</span> <span class="st">"count"</span>,</span>
+<span><span class="op">)</span></span></code></pre></div>
+<p>It’s the same! The <code><a href="../reference/create_histogram.html">create_histogram()</a></code> function is the
+function that is actually used under the hood. The same holds for all
+other visualization types. For instance, the visualization function that
+renders heat maps is <code><a href="../reference/create_heatmap.html">create_heatmap()</a></code>. It is worth reading
+through each of the visualization function documentation and vignettes,
+especially if you plan to use <code>dashboardr</code> for deeper or more
+complex work.</p>
+<p>Now that we’re happy with the result, we can set up the dashboard
+objects. We can create a collection of charts that share common
+properties. Think of it like setting up a “template” that all your
+charts will follow.</p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Set defaults that ALL visualizations inherit</span></span>
 <span><span class="va">my_viz</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_viz.html">create_viz</a></span><span class="op">(</span></span>
 <span>  type <span class="op">=</span> <span class="st">"histogram"</span>,          <span class="co"># All will be histograms</span></span>
@@ -310,10 +343,10 @@ all your charts will follow.</p>
 <span>  bins <span class="op">=</span> <span class="fl">30</span>,                    <span class="co"># All use 30 bins</span></span>
 <span>  drop_na_vars <span class="op">=</span> <span class="cn">TRUE</span>          <span class="co"># All drop NA values</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p><strong>Why defaults matter:</strong> Instead of repeating the same
-parameters for every chart, you set them once. This is the DRY principle
-(Don’t Repeat Yourself) in action!</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<p>Instead of repeating the same parameters for every chart, you set
+them once. This is the DRY principle (Don’t Repeat Yourself) in
+action!</p>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Add individual visualizations</span></span>
 <span><span class="va">my_viz</span> <span class="op">&lt;-</span> <span class="va">my_viz</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span></span>
@@ -333,9 +366,9 @@ chart. You can override any default for individual charts.</p>
 <div class="section level3">
 <h3 id="step-2-build-dashboard-structure">Step 2: Build Dashboard Structure<a class="anchor" aria-label="anchor" href="#step-2-build-dashboard-structure"></a>
 </h3>
-<p><strong>The Concept:</strong> Configure the dashboard itself and add
-pages with different content types.</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<p>Next, you can configure the dashboard itself and add pages with
+different content types.</p>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Configure dashboard-level settings</span></span>
 <span><span class="va">dashboard</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_dashboard.html">create_dashboard</a></span><span class="op">(</span></span>
 <span>  title <span class="op">=</span> <span class="st">"Employee Survey Dashboard"</span>,    <span class="co"># Appears at the top</span></span>
@@ -348,7 +381,7 @@ pages with different content types.</p>
 <span>  back_to_top <span class="op">=</span> <span class="cn">TRUE</span>                      <span class="co"># Add "back to top" button</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p><strong>Add different types of pages:</strong></p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># 1. Text-only landing page</span></span>
 <span><span class="va">dashboard</span> <span class="op">&lt;-</span> <span class="va">dashboard</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="../reference/add_page.html">add_page</a></span><span class="op">(</span></span>
@@ -403,9 +436,9 @@ pages with different content types.</p>
 <div class="section level3">
 <h3 id="step-3-generate-html">Step 3: Generate HTML<a class="anchor" aria-label="anchor" href="#step-3-generate-html"></a>
 </h3>
-<p><strong>The Concept:</strong> dashboardr creates Quarto files (.qmd)
-and optionally renders them to HTML.</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<p><code>dashboardr</code> then creates Quarto files (.qmd) and
+optionally renders them to HTML.</p>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Option A: Just create files (fast, for development)</span></span>
 <span><span class="fu"><a href="../reference/generate_dashboard.html">generate_dashboard</a></span><span class="op">(</span><span class="va">dashboard</span>, render <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="co"># Creates: my_dashboard/home.qmd, my_dashboard/analysis.qmd, etc.</span></span>
@@ -414,31 +447,121 @@ and optionally renders them to HTML.</p>
 <span><span class="fu"><a href="../reference/generate_dashboard.html">generate_dashboard</a></span><span class="op">(</span><span class="va">dashboard</span>, render <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="co"># Creates: my_dashboard/docs/index.html (and all other pages)</span></span>
 <span></span>
-<span><span class="co"># Option C: Render + open in browser (recommended!)</span></span>
-<span><span class="fu"><a href="../reference/generate_dashboard.html">generate_dashboard</a></span><span class="op">(</span><span class="va">dashboard</span>, render <span class="op">=</span> <span class="cn">TRUE</span>, open <span class="op">=</span> <span class="st">"browser"</span><span class="op">)</span></span>
-<span><span class="co"># Does everything and opens the dashboard automatically</span></span></code></pre></div>
+<span><span class="co"># Option C: Render + open is the dashboard automatically</span></span></code></pre></div>
 <p><strong>Pro tip:</strong> During development, use
 <code>render = FALSE</code> to quickly iterate on structure. Only render
 when you want to see the final result.</p>
 </div>
 </div>
 <div class="section level2">
+<h2 id="previewing-individual-visualizations">Previewing Individual Visualizations<a class="anchor" aria-label="anchor" href="#previewing-individual-visualizations"></a>
+</h2>
+<p>dashboardr makes it easy to preview individual visualizations before
+building a full dashboard. Just attach your data and the visualization
+renders automatically!</p>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># When you attach data, the visualization renders inline!</span></span>
+<span><span class="fu"><a href="../reference/create_viz.html">create_viz</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">survey_data</span>, type <span class="op">=</span> <span class="st">"histogram"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span>x_var <span class="op">=</span> <span class="st">"age"</span>, title <span class="op">=</span> <span class="st">"Age Distribution"</span><span class="op">)</span></span></code></pre></div>
+<div style="margin-bottom: 20px;">
+  <h4 style="margin: 0 0 10px 0; font-weight: 500; color: #333;">Age Distribution</h4>
+  <div class="highchart html-widget html-fill-item" id="htmlwidget-ac96cb3ee4656e2e9ec3" style="width:100%;height:500px;"></div>
+  <script type="application/json" data-for="htmlwidget-ac96cb3ee4656e2e9ec3">{"x":{"hc_opts":{"chart":{"reflow":true},"title":{"text":null},"yAxis":{"title":{"text":"Count"}},"credits":{"enabled":false},"exporting":{"enabled":false},"boost":{"enabled":false},"plotOptions":{"series":{"label":{"enabled":false},"turboThreshold":0},"treemap":{"layoutAlgorithm":"squarified"},"column":{"stacking":null,"dataLabels":{"enabled":true,"format":"{y}","style":{"textOutline":"none"}},"pointPadding":0,"groupPadding":0,"borderWidth":0,"pointWidth":50,"pointPlacement":"on","maxPointWidth":80}},"xAxis":{"categories":["18","19","20","21","22","23","24","25","26","27","28","29","30","31","32","33","34","35","36","37","38","39","40","41","42","43","44","45","46","47","48","49","50","51","52","53","54","55","56","57","58","59","60","61","62","63","64","65","66","67","68","69","70","71","72","73","74","75","76","77","78","79","80"],"title":{"text":"age"}},"series":[{"data":[2,1,3,2,4,4,10,7,6,6,4,4,5,6,6,4,3,2,3,4,4,5,9,5,11,9,7,1,6,6,4,8,3,4,4,4,3,3,4,6,3,7,7,4,3,10,2,4,3,3,6,7,6,10,2,1,8,3,1,4,7,2,5],"name":"Count","type":"column"}],"tooltip":{"formatter":"function() {\n       // here we pull the label directly\n       var cat = this.point.category;\n       var val = this.y;\n       return '<b>' + cat + '<\/b><br/>' +\n              '' + val + '';\n     }"}},"theme":{"chart":{"backgroundColor":"transparent"},"colors":["#7cb5ec","#434348","#90ed7d","#f7a35c","#8085e9","#f15c80","#e4d354","#2b908f","#f45b5b","#91e8e1"]},"conf_opts":{"global":{"Date":null,"VMLRadialGradientURL":"http =//code.highcharts.com/list(version)/gfx/vml-radial-gradient.png","canvasToolsURL":"http =//code.highcharts.com/list(version)/modules/canvas-tools.js","getTimezoneOffset":null,"timezoneOffset":0,"useUTC":true},"lang":{"contextButtonTitle":"Chart context menu","decimalPoint":".","downloadCSV":"Download CSV","downloadJPEG":"Download JPEG image","downloadPDF":"Download PDF document","downloadPNG":"Download PNG image","downloadSVG":"Download SVG vector image","downloadXLS":"Download XLS","drillUpText":"◁ Back to {series.name}","exitFullscreen":"Exit from full screen","exportData":{"annotationHeader":"Annotations","categoryDatetimeHeader":"DateTime","categoryHeader":"Category"},"hideData":"Hide data table","invalidDate":null,"loading":"Loading...","months":["January","February","March","April","May","June","July","August","September","October","November","December"],"noData":"No data to display","numericSymbolMagnitude":1000,"numericSymbols":["k","M","G","T","P","E"],"printChart":"Print chart","resetZoom":"Reset zoom","resetZoomTitle":"Reset zoom level 1:1","shortMonths":["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],"shortWeekdays":["Sat","Sun","Mon","Tue","Wed","Thu","Fri"],"thousandsSep":" ","viewData":"View data table","viewFullscreen":"View in full screen","weekdays":["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]}},"type":"chart","fonts":[],"debug":false},"evals":["hc_opts.tooltip.formatter"],"jsHooks":[]}</script>
+</div>
+<p>Multiple visualizations render stacked:</p>
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/create_viz.html">create_viz</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">survey_data</span>, type <span class="op">=</span> <span class="st">"histogram"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span>x_var <span class="op">=</span> <span class="st">"age"</span>, title <span class="op">=</span> <span class="st">"Age Distribution"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span>x_var <span class="op">=</span> <span class="st">"income"</span>, title <span class="op">=</span> <span class="st">"Income Distribution"</span><span class="op">)</span></span></code></pre></div>
+<div style="margin-bottom: 20px;">
+  <h4 style="margin: 0 0 10px 0; font-weight: 500; color: #333;">Age Distribution</h4>
+  <div class="highchart html-widget html-fill-item" id="htmlwidget-e5c8c404fe174e4c81bd" style="width:100%;height:500px;"></div>
+  <script type="application/json" data-for="htmlwidget-e5c8c404fe174e4c81bd">{"x":{"hc_opts":{"chart":{"reflow":true},"title":{"text":null},"yAxis":{"title":{"text":"Count"}},"credits":{"enabled":false},"exporting":{"enabled":false},"boost":{"enabled":false},"plotOptions":{"series":{"label":{"enabled":false},"turboThreshold":0},"treemap":{"layoutAlgorithm":"squarified"},"column":{"stacking":null,"dataLabels":{"enabled":true,"format":"{y}","style":{"textOutline":"none"}},"pointPadding":0,"groupPadding":0,"borderWidth":0,"pointWidth":50,"pointPlacement":"on","maxPointWidth":80}},"xAxis":{"categories":["18","19","20","21","22","23","24","25","26","27","28","29","30","31","32","33","34","35","36","37","38","39","40","41","42","43","44","45","46","47","48","49","50","51","52","53","54","55","56","57","58","59","60","61","62","63","64","65","66","67","68","69","70","71","72","73","74","75","76","77","78","79","80"],"title":{"text":"age"}},"series":[{"data":[2,1,3,2,4,4,10,7,6,6,4,4,5,6,6,4,3,2,3,4,4,5,9,5,11,9,7,1,6,6,4,8,3,4,4,4,3,3,4,6,3,7,7,4,3,10,2,4,3,3,6,7,6,10,2,1,8,3,1,4,7,2,5],"name":"Count","type":"column"}],"tooltip":{"formatter":"function() {\n       // here we pull the label directly\n       var cat = this.point.category;\n       var val = this.y;\n       return '<b>' + cat + '<\/b><br/>' +\n              '' + val + '';\n     }"}},"theme":{"chart":{"backgroundColor":"transparent"},"colors":["#7cb5ec","#434348","#90ed7d","#f7a35c","#8085e9","#f15c80","#e4d354","#2b908f","#f45b5b","#91e8e1"]},"conf_opts":{"global":{"Date":null,"VMLRadialGradientURL":"http =//code.highcharts.com/list(version)/gfx/vml-radial-gradient.png","canvasToolsURL":"http =//code.highcharts.com/list(version)/modules/canvas-tools.js","getTimezoneOffset":null,"timezoneOffset":0,"useUTC":true},"lang":{"contextButtonTitle":"Chart context menu","decimalPoint":".","downloadCSV":"Download CSV","downloadJPEG":"Download JPEG image","downloadPDF":"Download PDF document","downloadPNG":"Download PNG image","downloadSVG":"Download SVG vector image","downloadXLS":"Download XLS","drillUpText":"◁ Back to {series.name}","exitFullscreen":"Exit from full screen","exportData":{"annotationHeader":"Annotations","categoryDatetimeHeader":"DateTime","categoryHeader":"Category"},"hideData":"Hide data table","invalidDate":null,"loading":"Loading...","months":["January","February","March","April","May","June","July","August","September","October","November","December"],"noData":"No data to display","numericSymbolMagnitude":1000,"numericSymbols":["k","M","G","T","P","E"],"printChart":"Print chart","resetZoom":"Reset zoom","resetZoomTitle":"Reset zoom level 1:1","shortMonths":["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],"shortWeekdays":["Sat","Sun","Mon","Tue","Wed","Thu","Fri"],"thousandsSep":" ","viewData":"View data table","viewFullscreen":"View in full screen","weekdays":["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]}},"type":"chart","fonts":[],"debug":false},"evals":["hc_opts.tooltip.formatter"],"jsHooks":[]}</script>
+</div>
+<div style="margin-bottom: 20px;">
+  <h4 style="margin: 0 0 10px 0; font-weight: 500; color: #333;">Income Distribution</h4>
+  <div class="highchart html-widget html-fill-item" id="htmlwidget-36aa3d2a04d42bbc2145" style="width:100%;height:500px;"></div>
+  <script type="application/json" data-for="htmlwidget-36aa3d2a04d42bbc2145">{"x":{"hc_opts":{"chart":{"reflow":true},"title":{"text":null},"yAxis":{"title":{"text":"Count"}},"credits":{"enabled":false},"exporting":{"enabled":false},"boost":{"enabled":false},"plotOptions":{"series":{"label":{"enabled":false},"turboThreshold":0},"treemap":{"layoutAlgorithm":"squarified"},"column":{"stacking":null,"dataLabels":{"enabled":true,"format":"{y}","style":{"textOutline":"none"}},"pointPadding":0,"groupPadding":0,"borderWidth":0,"pointWidth":50,"pointPlacement":"on","maxPointWidth":80}},"xAxis":{"categories":["10352.7657195653","13011.5270935996","16625.1845526888","17635.3049747708","19214.9452414707","19216.6576934941","19786.8425311892","20108.7726696713","23145.7814410391","23652.0890666354","23701.439612866","24099.0440132851","24987.8735362151","25234.2665646772","25241.8018486234","25454.3109791146","27006.469956641","28422.4003262822","29070.884753008","29539.4382187644","29602.3894426791","29736.4597095393","29918.3856914754","30244.7580154214","30337.9770000804","30729.264165233","31089.7568177184","31097.6713286283","31120.2705790974","31230.9295756258","31384.3325478726","31455.9032167506","32173.4894727803","32217.7987310403","32470.2286336347","32940.4456900138","32966.1729443849","33560.05599388","33838.6902033203","34050.1079904321","34174.7443609598","34212.3008099189","34262.344900009","34766.1113209468","34874.3508758449","34915.4561073374","35048.2888668872","35112.3927441194","35389.8562579386","35818.8675331416","35921.9194458966","36569.5496303369","36601.8864491757","37017.3070601994","37557.8358256322","38170.67043719","38170.9574322464","38276.9526941787","38387.8260559189","38709.6654767339","38879.9585559076","38922.0844289064","39154.0104509019","39175.9333934598","39223.0066802111","39241.7275763899","39271.3671916581","39431.053044799","40028.4584708891","40294.315530226","40323.2906471031","40478.7760263664","40832.5112497937","40977.3993798983","41080.7409881073","41157.784422275","41337.9799841066","41384.169653551","41390.3978105302","41396.5959384758","41422.2491315666","41571.8545467533","41670.8247303012","41917.8626003361","42156.3143552987","42183.2402367122","42259.0425358283","42467.0192248571","42510.6197424161","42651.9432029229","42743.2906143688","42856.2965807663","43040.1913555098","43084.4249167347","43124.5200093334","43244.9206411293","43301.6417535917","43382.5517464207","43442.607002294","43465.3179546214","43590.8106919186","43747.1361775935","43784.9007812171","43794.8522961182","44168.3020389239","44365.9569249534","44381.2871334948","44413.4186584426","44545.1405435712","44681.8639538903","44719.3031512607","44753.686411831","44755.2441806967","44841.2414880731","45129.7113276375","45794.0699724463","46015.2256208267","46022.8241495547","46455.8064658836","46714.2443159979","46769.2923853746","46853.1024315724","46920.511137977","46988.2847661632","47001.6525784785","47042.3615847717","47142.2479693565","47256.1191744091","47301.4065342869","47314.226084297","48002.7355350658","48159.3700853393","48208.2109005401","48295.4015674079","48414.9299899434","48471.7511642717","48485.3767200679","48605.8847228079","48645.2060905122","48671.5233179167","48896.6597129528","49087.6706800989","49189.5781237184","49220.2714072865","49488.991193923","49504.4576108601","49567.3767060753","49785.3888024963","50109.3513547535","50166.9378083133","50288.8891193806","50314.7537953136","50370.1247423921","50518.2660070078","50566.8259875662","50707.3164914229","50840.2509991244","50896.249060769","50979.3955028797","51000.5130639527","51118.267657606","51271.0593829579","51338.1083460994","51357.4497070883","51418.7529226036","51489.9139113174","51749.5592537406","51772.1676657002","51788.6785464138","51894.7378768833","52010.579680527","52167.1355706605","52479.8153186308","52520.9807582699","52620.8959547276","52622.0405024188","52853.4547353869","53179.7065005844","53216.679643724","53218.0823994382","53315.292028415","53409.3788250941","53561.4540873654","53655.3114439864","54017.5252299752","54106.4973655482","54296.3662944324","54473.4138731107","54500.578178087","54657.2112416471","54864.5651624207","54967.6875943847","54983.0386842518","55008.5441374884","55191.5542933041","55534.4679107763","55660.8195953589","55672.5165831276","55676.3585545525","55790.3985252451","56171.448809236","56284.736073867","56422.5014745576","56454.2704453998","56547.8521836527","56582.2805107168","56821.5390347395","56843.5460476972","57141.9991745394","57281.8996835732","57383.4285509665","57651.98820318","57752.9306647041","58030.9826130223","58147.9108884813","58444.8429983072","59010.6323550863","59269.7872574979","59362.8120803098","59461.3117347585","59494.4106954718","59548.5451105077","59767.899223815","59798.8651920707","59898.5395721391","59912.304466847","60060.439531009","60256.1828277607","60264.641441247","60552.8585413534","60613.8253075338","60690.5498786642","61047.4394716016","61310.8067777678","61346.0965781823","61351.6214569394","61535.6336150136","62264.8916956113","62380.6979413886","62675.1950610115","62685.9731028394","62744.6456845003","62853.8451634898","62986.6910650173","63249.5422992306","63263.7623004231","63269.7574846538","63670.8693769394","64385.0806668174","64437.9195272641","64654.6008002843","65224.1475911549","65263.3795542814","65370.0985222752","65790.67198369","65812.7153506538","66211.9924422728","66271.6263479097","66647.7220839458","66648.8043457046","67178.9466557054","67525.7580960364","68271.6291548872","68487.1381772801","68535.4019345022","68550.1256962485","68748.7185645382","68947.7776413424","69084.0016920278","69502.9801650023","69517.6398830088","69686.1946465027","70032.7642258909","70678.5520543886","71456.0351178227","72440.9100476953","72558.509135068","72788.2656708227","73213.7158847565","73977.6315671874","74503.5263211246","74612.6924896623","74763.6120100503","75065.8224329441","75135.4539860479","75266.5356214117","76692.5436466272","78002.7776706029","78535.4273251839","79329.409482387","79958.2007712195","80037.2409543924","80563.6102736065","81926.7784852427","82982.1552332558","84396.1846074664","85961.7872007464","86251.6003068232","88571.8721879996","98615.5990241361"],"title":{"text":"income"}},"series":[{"data":[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],"name":"Count","type":"column"}],"tooltip":{"formatter":"function() {\n       // here we pull the label directly\n       var cat = this.point.category;\n       var val = this.y;\n       return '<b>' + cat + '<\/b><br/>' +\n              '' + val + '';\n     }"}},"theme":{"chart":{"backgroundColor":"transparent"},"colors":["#7cb5ec","#434348","#90ed7d","#f7a35c","#8085e9","#f15c80","#e4d354","#2b908f","#f45b5b","#91e8e1"]},"conf_opts":{"global":{"Date":null,"VMLRadialGradientURL":"http =//code.highcharts.com/list(version)/gfx/vml-radial-gradient.png","canvasToolsURL":"http =//code.highcharts.com/list(version)/modules/canvas-tools.js","getTimezoneOffset":null,"timezoneOffset":0,"useUTC":true},"lang":{"contextButtonTitle":"Chart context menu","decimalPoint":".","downloadCSV":"Download CSV","downloadJPEG":"Download JPEG image","downloadPDF":"Download PDF document","downloadPNG":"Download PNG image","downloadSVG":"Download SVG vector image","downloadXLS":"Download XLS","drillUpText":"◁ Back to {series.name}","exitFullscreen":"Exit from full screen","exportData":{"annotationHeader":"Annotations","categoryDatetimeHeader":"DateTime","categoryHeader":"Category"},"hideData":"Hide data table","invalidDate":null,"loading":"Loading...","months":["January","February","March","April","May","June","July","August","September","October","November","December"],"noData":"No data to display","numericSymbolMagnitude":1000,"numericSymbols":["k","M","G","T","P","E"],"printChart":"Print chart","resetZoom":"Reset zoom","resetZoomTitle":"Reset zoom level 1:1","shortMonths":["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],"shortWeekdays":["Sat","Sun","Mon","Tue","Wed","Thu","Fri"],"thousandsSep":" ","viewData":"View data table","viewFullscreen":"View in full screen","weekdays":["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]}},"type":"chart","fonts":[],"debug":false},"evals":["hc_opts.tooltip.formatter"],"jsHooks":[]}</script>
+</div>
+<div class="section level3">
+<h3 id="tabbed-previews">Tabbed Previews<a class="anchor" aria-label="anchor" href="#tabbed-previews"></a>
+</h3>
+<p>When you use tabgroups, visualizations render with interactive
+tabs:</p>
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/create_viz.html">create_viz</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">survey_data</span>, type <span class="op">=</span> <span class="st">"histogram"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span>x_var <span class="op">=</span> <span class="st">"age"</span>, title <span class="op">=</span> <span class="st">"Age"</span>, tabgroup <span class="op">=</span> <span class="st">"Demographics"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span>x_var <span class="op">=</span> <span class="st">"income"</span>, title <span class="op">=</span> <span class="st">"Income"</span>, tabgroup <span class="op">=</span> <span class="st">"Demographics"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span>x_var <span class="op">=</span> <span class="st">"satisfaction"</span>, title <span class="op">=</span> <span class="st">"Satisfaction"</span>, tabgroup <span class="op">=</span> <span class="st">"Feedback"</span><span class="op">)</span></span></code></pre></div>
+<div style="margin-bottom: 25px;">
+  <h3 style="margin: 0 0 15px 0; font-weight: 500; color: #333;">Demographics</h3>
+  <ul class="nav nav-tabs" role="tablist" style="border-bottom: 1px solid #dee2e6; margin-bottom: 0;">
+<li class="nav-item">
+      <a class="nav-link active" data-bs-toggle="tab" href="#tabs_748786e7_1" role="tab">Age</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link " data-bs-toggle="tab" href="#tabs_748786e7_2" role="tab">Income</a>
+    </li>
+  </ul>
+<div class="tab-content">
+    <div class="tab-pane fade show active" id="tabs_748786e7_1" role="tabpanel" style="padding: 15px 0;">
+      <div class="highchart html-widget html-fill-item" id="htmlwidget-febe03efa1a2d8d52a86" style="width:100%;height:500px;"></div>
+      <script type="application/json" data-for="htmlwidget-febe03efa1a2d8d52a86">{"x":{"hc_opts":{"chart":{"reflow":true},"title":{"text":null},"yAxis":{"title":{"text":"Count"}},"credits":{"enabled":false},"exporting":{"enabled":false},"boost":{"enabled":false},"plotOptions":{"series":{"label":{"enabled":false},"turboThreshold":0},"treemap":{"layoutAlgorithm":"squarified"},"column":{"stacking":null,"dataLabels":{"enabled":true,"format":"{y}","style":{"textOutline":"none"}},"pointPadding":0,"groupPadding":0,"borderWidth":0,"pointWidth":50,"pointPlacement":"on","maxPointWidth":80}},"xAxis":{"categories":["18","19","20","21","22","23","24","25","26","27","28","29","30","31","32","33","34","35","36","37","38","39","40","41","42","43","44","45","46","47","48","49","50","51","52","53","54","55","56","57","58","59","60","61","62","63","64","65","66","67","68","69","70","71","72","73","74","75","76","77","78","79","80"],"title":{"text":"age"}},"series":[{"data":[2,1,3,2,4,4,10,7,6,6,4,4,5,6,6,4,3,2,3,4,4,5,9,5,11,9,7,1,6,6,4,8,3,4,4,4,3,3,4,6,3,7,7,4,3,10,2,4,3,3,6,7,6,10,2,1,8,3,1,4,7,2,5],"name":"Count","type":"column"}],"tooltip":{"formatter":"function() {\n       // here we pull the label directly\n       var cat = this.point.category;\n       var val = this.y;\n       return '<b>' + cat + '<\/b><br/>' +\n              '' + val + '';\n     }"}},"theme":{"chart":{"backgroundColor":"transparent"},"colors":["#7cb5ec","#434348","#90ed7d","#f7a35c","#8085e9","#f15c80","#e4d354","#2b908f","#f45b5b","#91e8e1"]},"conf_opts":{"global":{"Date":null,"VMLRadialGradientURL":"http =//code.highcharts.com/list(version)/gfx/vml-radial-gradient.png","canvasToolsURL":"http =//code.highcharts.com/list(version)/modules/canvas-tools.js","getTimezoneOffset":null,"timezoneOffset":0,"useUTC":true},"lang":{"contextButtonTitle":"Chart context menu","decimalPoint":".","downloadCSV":"Download CSV","downloadJPEG":"Download JPEG image","downloadPDF":"Download PDF document","downloadPNG":"Download PNG image","downloadSVG":"Download SVG vector image","downloadXLS":"Download XLS","drillUpText":"◁ Back to {series.name}","exitFullscreen":"Exit from full screen","exportData":{"annotationHeader":"Annotations","categoryDatetimeHeader":"DateTime","categoryHeader":"Category"},"hideData":"Hide data table","invalidDate":null,"loading":"Loading...","months":["January","February","March","April","May","June","July","August","September","October","November","December"],"noData":"No data to display","numericSymbolMagnitude":1000,"numericSymbols":["k","M","G","T","P","E"],"printChart":"Print chart","resetZoom":"Reset zoom","resetZoomTitle":"Reset zoom level 1:1","shortMonths":["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],"shortWeekdays":["Sat","Sun","Mon","Tue","Wed","Thu","Fri"],"thousandsSep":" ","viewData":"View data table","viewFullscreen":"View in full screen","weekdays":["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]}},"type":"chart","fonts":[],"debug":false},"evals":["hc_opts.tooltip.formatter"],"jsHooks":[]}</script>
+</div>
+    <div class="tab-pane fade " id="tabs_748786e7_2" role="tabpanel" style="padding: 15px 0;">
+      <div class="highchart html-widget html-fill-item" id="htmlwidget-1fb4450895fe099f74a1" style="width:100%;height:500px;"></div>
+      <script type="application/json" data-for="htmlwidget-1fb4450895fe099f74a1">{"x":{"hc_opts":{"chart":{"reflow":true},"title":{"text":null},"yAxis":{"title":{"text":"Count"}},"credits":{"enabled":false},"exporting":{"enabled":false},"boost":{"enabled":false},"plotOptions":{"series":{"label":{"enabled":false},"turboThreshold":0},"treemap":{"layoutAlgorithm":"squarified"},"column":{"stacking":null,"dataLabels":{"enabled":true,"format":"{y}","style":{"textOutline":"none"}},"pointPadding":0,"groupPadding":0,"borderWidth":0,"pointWidth":50,"pointPlacement":"on","maxPointWidth":80}},"xAxis":{"categories":["10352.7657195653","13011.5270935996","16625.1845526888","17635.3049747708","19214.9452414707","19216.6576934941","19786.8425311892","20108.7726696713","23145.7814410391","23652.0890666354","23701.439612866","24099.0440132851","24987.8735362151","25234.2665646772","25241.8018486234","25454.3109791146","27006.469956641","28422.4003262822","29070.884753008","29539.4382187644","29602.3894426791","29736.4597095393","29918.3856914754","30244.7580154214","30337.9770000804","30729.264165233","31089.7568177184","31097.6713286283","31120.2705790974","31230.9295756258","31384.3325478726","31455.9032167506","32173.4894727803","32217.7987310403","32470.2286336347","32940.4456900138","32966.1729443849","33560.05599388","33838.6902033203","34050.1079904321","34174.7443609598","34212.3008099189","34262.344900009","34766.1113209468","34874.3508758449","34915.4561073374","35048.2888668872","35112.3927441194","35389.8562579386","35818.8675331416","35921.9194458966","36569.5496303369","36601.8864491757","37017.3070601994","37557.8358256322","38170.67043719","38170.9574322464","38276.9526941787","38387.8260559189","38709.6654767339","38879.9585559076","38922.0844289064","39154.0104509019","39175.9333934598","39223.0066802111","39241.7275763899","39271.3671916581","39431.053044799","40028.4584708891","40294.315530226","40323.2906471031","40478.7760263664","40832.5112497937","40977.3993798983","41080.7409881073","41157.784422275","41337.9799841066","41384.169653551","41390.3978105302","41396.5959384758","41422.2491315666","41571.8545467533","41670.8247303012","41917.8626003361","42156.3143552987","42183.2402367122","42259.0425358283","42467.0192248571","42510.6197424161","42651.9432029229","42743.2906143688","42856.2965807663","43040.1913555098","43084.4249167347","43124.5200093334","43244.9206411293","43301.6417535917","43382.5517464207","43442.607002294","43465.3179546214","43590.8106919186","43747.1361775935","43784.9007812171","43794.8522961182","44168.3020389239","44365.9569249534","44381.2871334948","44413.4186584426","44545.1405435712","44681.8639538903","44719.3031512607","44753.686411831","44755.2441806967","44841.2414880731","45129.7113276375","45794.0699724463","46015.2256208267","46022.8241495547","46455.8064658836","46714.2443159979","46769.2923853746","46853.1024315724","46920.511137977","46988.2847661632","47001.6525784785","47042.3615847717","47142.2479693565","47256.1191744091","47301.4065342869","47314.226084297","48002.7355350658","48159.3700853393","48208.2109005401","48295.4015674079","48414.9299899434","48471.7511642717","48485.3767200679","48605.8847228079","48645.2060905122","48671.5233179167","48896.6597129528","49087.6706800989","49189.5781237184","49220.2714072865","49488.991193923","49504.4576108601","49567.3767060753","49785.3888024963","50109.3513547535","50166.9378083133","50288.8891193806","50314.7537953136","50370.1247423921","50518.2660070078","50566.8259875662","50707.3164914229","50840.2509991244","50896.249060769","50979.3955028797","51000.5130639527","51118.267657606","51271.0593829579","51338.1083460994","51357.4497070883","51418.7529226036","51489.9139113174","51749.5592537406","51772.1676657002","51788.6785464138","51894.7378768833","52010.579680527","52167.1355706605","52479.8153186308","52520.9807582699","52620.8959547276","52622.0405024188","52853.4547353869","53179.7065005844","53216.679643724","53218.0823994382","53315.292028415","53409.3788250941","53561.4540873654","53655.3114439864","54017.5252299752","54106.4973655482","54296.3662944324","54473.4138731107","54500.578178087","54657.2112416471","54864.5651624207","54967.6875943847","54983.0386842518","55008.5441374884","55191.5542933041","55534.4679107763","55660.8195953589","55672.5165831276","55676.3585545525","55790.3985252451","56171.448809236","56284.736073867","56422.5014745576","56454.2704453998","56547.8521836527","56582.2805107168","56821.5390347395","56843.5460476972","57141.9991745394","57281.8996835732","57383.4285509665","57651.98820318","57752.9306647041","58030.9826130223","58147.9108884813","58444.8429983072","59010.6323550863","59269.7872574979","59362.8120803098","59461.3117347585","59494.4106954718","59548.5451105077","59767.899223815","59798.8651920707","59898.5395721391","59912.304466847","60060.439531009","60256.1828277607","60264.641441247","60552.8585413534","60613.8253075338","60690.5498786642","61047.4394716016","61310.8067777678","61346.0965781823","61351.6214569394","61535.6336150136","62264.8916956113","62380.6979413886","62675.1950610115","62685.9731028394","62744.6456845003","62853.8451634898","62986.6910650173","63249.5422992306","63263.7623004231","63269.7574846538","63670.8693769394","64385.0806668174","64437.9195272641","64654.6008002843","65224.1475911549","65263.3795542814","65370.0985222752","65790.67198369","65812.7153506538","66211.9924422728","66271.6263479097","66647.7220839458","66648.8043457046","67178.9466557054","67525.7580960364","68271.6291548872","68487.1381772801","68535.4019345022","68550.1256962485","68748.7185645382","68947.7776413424","69084.0016920278","69502.9801650023","69517.6398830088","69686.1946465027","70032.7642258909","70678.5520543886","71456.0351178227","72440.9100476953","72558.509135068","72788.2656708227","73213.7158847565","73977.6315671874","74503.5263211246","74612.6924896623","74763.6120100503","75065.8224329441","75135.4539860479","75266.5356214117","76692.5436466272","78002.7776706029","78535.4273251839","79329.409482387","79958.2007712195","80037.2409543924","80563.6102736065","81926.7784852427","82982.1552332558","84396.1846074664","85961.7872007464","86251.6003068232","88571.8721879996","98615.5990241361"],"title":{"text":"income"}},"series":[{"data":[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],"name":"Count","type":"column"}],"tooltip":{"formatter":"function() {\n       // here we pull the label directly\n       var cat = this.point.category;\n       var val = this.y;\n       return '<b>' + cat + '<\/b><br/>' +\n              '' + val + '';\n     }"}},"theme":{"chart":{"backgroundColor":"transparent"},"colors":["#7cb5ec","#434348","#90ed7d","#f7a35c","#8085e9","#f15c80","#e4d354","#2b908f","#f45b5b","#91e8e1"]},"conf_opts":{"global":{"Date":null,"VMLRadialGradientURL":"http =//code.highcharts.com/list(version)/gfx/vml-radial-gradient.png","canvasToolsURL":"http =//code.highcharts.com/list(version)/modules/canvas-tools.js","getTimezoneOffset":null,"timezoneOffset":0,"useUTC":true},"lang":{"contextButtonTitle":"Chart context menu","decimalPoint":".","downloadCSV":"Download CSV","downloadJPEG":"Download JPEG image","downloadPDF":"Download PDF document","downloadPNG":"Download PNG image","downloadSVG":"Download SVG vector image","downloadXLS":"Download XLS","drillUpText":"◁ Back to {series.name}","exitFullscreen":"Exit from full screen","exportData":{"annotationHeader":"Annotations","categoryDatetimeHeader":"DateTime","categoryHeader":"Category"},"hideData":"Hide data table","invalidDate":null,"loading":"Loading...","months":["January","February","March","April","May","June","July","August","September","October","November","December"],"noData":"No data to display","numericSymbolMagnitude":1000,"numericSymbols":["k","M","G","T","P","E"],"printChart":"Print chart","resetZoom":"Reset zoom","resetZoomTitle":"Reset zoom level 1:1","shortMonths":["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],"shortWeekdays":["Sat","Sun","Mon","Tue","Wed","Thu","Fri"],"thousandsSep":" ","viewData":"View data table","viewFullscreen":"View in full screen","weekdays":["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]}},"type":"chart","fonts":[],"debug":false},"evals":["hc_opts.tooltip.formatter"],"jsHooks":[]}</script>
+</div>
+  </div>
+</div>
+<div style="margin-bottom: 20px;">
+  <h4 style="margin: 0 0 10px 0; font-weight: 500;">Satisfaction</h4>
+  <div class="highchart html-widget html-fill-item" id="htmlwidget-10b3b7155e8045a1b2ad" style="width:100%;height:500px;"></div>
+  <script type="application/json" data-for="htmlwidget-10b3b7155e8045a1b2ad">{"x":{"hc_opts":{"chart":{"reflow":true},"title":{"text":null},"yAxis":{"title":{"text":"Count"}},"credits":{"enabled":false},"exporting":{"enabled":false},"boost":{"enabled":false},"plotOptions":{"series":{"label":{"enabled":false},"turboThreshold":0},"treemap":{"layoutAlgorithm":"squarified"},"column":{"stacking":null,"dataLabels":{"enabled":true,"format":"{y}","style":{"textOutline":"none"}},"pointPadding":0,"groupPadding":0,"borderWidth":0,"pointWidth":50,"pointPlacement":"on","maxPointWidth":80}},"xAxis":{"categories":["1","2","3","4","5"],"title":{"text":"satisfaction"}},"series":[{"data":[54,69,68,52,57],"name":"Count","type":"column"}],"tooltip":{"formatter":"function() {\n       // here we pull the label directly\n       var cat = this.point.category;\n       var val = this.y;\n       return '<b>' + cat + '<\/b><br/>' +\n              '' + val + '';\n     }"}},"theme":{"chart":{"backgroundColor":"transparent"},"colors":["#7cb5ec","#434348","#90ed7d","#f7a35c","#8085e9","#f15c80","#e4d354","#2b908f","#f45b5b","#91e8e1"]},"conf_opts":{"global":{"Date":null,"VMLRadialGradientURL":"http =//code.highcharts.com/list(version)/gfx/vml-radial-gradient.png","canvasToolsURL":"http =//code.highcharts.com/list(version)/modules/canvas-tools.js","getTimezoneOffset":null,"timezoneOffset":0,"useUTC":true},"lang":{"contextButtonTitle":"Chart context menu","decimalPoint":".","downloadCSV":"Download CSV","downloadJPEG":"Download JPEG image","downloadPDF":"Download PDF document","downloadPNG":"Download PNG image","downloadSVG":"Download SVG vector image","downloadXLS":"Download XLS","drillUpText":"◁ Back to {series.name}","exitFullscreen":"Exit from full screen","exportData":{"annotationHeader":"Annotations","categoryDatetimeHeader":"DateTime","categoryHeader":"Category"},"hideData":"Hide data table","invalidDate":null,"loading":"Loading...","months":["January","February","March","April","May","June","July","August","September","October","November","December"],"noData":"No data to display","numericSymbolMagnitude":1000,"numericSymbols":["k","M","G","T","P","E"],"printChart":"Print chart","resetZoom":"Reset zoom","resetZoomTitle":"Reset zoom level 1:1","shortMonths":["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],"shortWeekdays":["Sat","Sun","Mon","Tue","Wed","Thu","Fri"],"thousandsSep":" ","viewData":"View data table","viewFullscreen":"View in full screen","weekdays":["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]}},"type":"chart","fonts":[],"debug":false},"evals":["hc_opts.tooltip.formatter"],"jsHooks":[]}</script>
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Bootstrap 5 tab activation
+      var tabElems = document.querySelectorAll('[data-bs-toggle="tab"]');
+      tabElems.forEach(function(tabElem) {
+        tabElem.addEventListener('click', function(e) {
+          e.preventDefault();
+          var target = this.getAttribute('href') || this.getAttribute('data-bs-target');
+          // Deactivate all tabs in this group
+          var tabList = this.closest('.nav-tabs');
+          tabList.querySelectorAll('.nav-link').forEach(function(link) {
+            link.classList.remove('active');
+          });
+          // Activate clicked tab
+          this.classList.add('active');
+          // Hide all panes
+          var tabContent = tabList.nextElementSibling;
+          if (tabContent && tabContent.classList.contains('tab-content')) {
+            tabContent.querySelectorAll('.tab-pane').forEach(function(pane) {
+              pane.classList.remove('show', 'active');
+            });
+            // Show target pane
+            var targetPane = tabContent.querySelector(target);
+            if (targetPane) {
+              targetPane.classList.add('show', 'active');
+            }
+          }
+        });
+      });
+    });
+  </script>
+</div>
+</div>
+<div class="section level2">
 <h2 id="the-power-of-print-visualizing-structure">The Power of Print: Visualizing Structure<a class="anchor" aria-label="anchor" href="#the-power-of-print-visualizing-structure"></a>
 </h2>
-<p><strong>One of dashboardr’s killer features:</strong> When you print
-a visualization object, it shows you the <strong>tree structure</strong>
-it will create. This makes the hierarchy visible and debuggable!</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Create some sample data</span></span>
-<span><span class="va">survey_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
-<span>  age <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fl">18</span><span class="op">:</span><span class="fl">80</span>, <span class="fl">300</span>, replace <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
-<span>  income <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">300</span>, mean <span class="op">=</span> <span class="fl">50000</span>, sd <span class="op">=</span> <span class="fl">15000</span><span class="op">)</span>,</span>
-<span>  satisfaction <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>, <span class="fl">300</span>, replace <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
-<span>  department <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Sales"</span>, <span class="st">"Engineering"</span>, <span class="st">"Marketing"</span><span class="op">)</span>, <span class="fl">300</span>, replace <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
-<span>  wave <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, <span class="fl">300</span>, replace <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Create a visualization collection</span></span>
+<p><strong>Another killer feature:</strong> When you print a
+visualization object <em>without data</em>, it shows you the
+<strong>tree structure</strong> it will create. This makes the hierarchy
+visible and debuggable!</p>
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Create a visualization collection WITHOUT data</span></span>
+<span><span class="co"># This shows structure instead of rendering</span></span>
 <span><span class="va">viz</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_viz.html">create_viz</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"histogram"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span></span>
 <span>    x_var <span class="op">=</span> <span class="st">"age"</span>,</span>
@@ -456,31 +579,64 @@ it will create. This makes the hierarchy visible and debuggable!</p>
 <span>    title <span class="op">=</span> <span class="st">"Satisfaction Scores"</span></span>
 <span>  <span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Print it to see the tree structure!</span></span>
+<span><span class="co"># Print shows the tree structure (no data = structure view)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">viz</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ╔══════════════════════════════════════════════════════════════════════════</span></span>
-<span><span class="co">#&gt; ║ 📦 CONTENT COLLECTION</span></span>
-<span><span class="co">#&gt; ╠══════════════════════════════════════════════════════════════════════════</span></span>
-<span><span class="co">#&gt; ║ Total items: 3</span></span>
-<span><span class="co">#&gt; ║</span></span>
-<span><span class="co">#&gt; ║ STRUCTURE:</span></span>
-<span><span class="co">#&gt; ║ ├─ 📁 demographics</span></span>
-<span><span class="co">#&gt; ║ │  ├─ 📄 VIZ: Age Distribution</span></span>
-<span><span class="co">#&gt; ║ │  └─ 📄 VIZ: Income Distribution</span></span>
-<span><span class="co">#&gt; ║ └─ 📁 feedback</span></span>
-<span><span class="co">#&gt; ║    └─ 📄 VIZ: Satisfaction Scores</span></span>
-<span><span class="co">#&gt; ╚══════════════════════════════════════════════════════════════════════════</span></span></code></pre></div>
-<p><strong>See the hierarchy?</strong> dashboardr automatically
-organized your visualizations into a tree based on the
+<span><span class="co">#&gt; &lt;e2&gt;&lt;95&gt;&lt;94&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;</span></span>
+<span><span class="co">#&gt; &lt;e2&gt;&lt;95&gt;&lt;91&gt; &lt;f0&gt;&lt;9f&gt;&lt;93&gt;&lt;a6&gt; CONTENT COLLECTION</span></span>
+<span><span class="co">#&gt; &lt;e2&gt;&lt;95&gt;&lt;a0&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;</span></span>
+<span><span class="co">#&gt; &lt;e2&gt;&lt;95&gt;&lt;91&gt; Total items: 3</span></span>
+<span><span class="co">#&gt; &lt;e2&gt;&lt;95&gt;&lt;91&gt;</span></span>
+<span><span class="co">#&gt; &lt;e2&gt;&lt;95&gt;&lt;91&gt; STRUCTURE:</span></span>
+<span><span class="co">#&gt; &lt;e2&gt;&lt;95&gt;&lt;91&gt; &lt;e2&gt;&lt;94&gt;&lt;9c&gt;&lt;e2&gt;&lt;94&gt;&lt;80&gt; &lt;f0&gt;&lt;9f&gt;&lt;93&gt;&lt;81&gt; demographics</span></span>
+<span><span class="co">#&gt; &lt;e2&gt;&lt;95&gt;&lt;91&gt; &lt;e2&gt;&lt;94&gt;&lt;82&gt;  &lt;e2&gt;&lt;94&gt;&lt;9c&gt;&lt;e2&gt;&lt;94&gt;&lt;80&gt; &lt;f0&gt;&lt;9f&gt;&lt;93&gt;&lt;84&gt; VIZ: Age Distribution</span></span>
+<span><span class="co">#&gt; &lt;e2&gt;&lt;95&gt;&lt;91&gt; &lt;e2&gt;&lt;94&gt;&lt;82&gt;  &lt;e2&gt;&lt;94&gt;&lt;94&gt;&lt;e2&gt;&lt;94&gt;&lt;80&gt; &lt;f0&gt;&lt;9f&gt;&lt;93&gt;&lt;84&gt; VIZ: Income Distribution</span></span>
+<span><span class="co">#&gt; &lt;e2&gt;&lt;95&gt;&lt;91&gt; &lt;e2&gt;&lt;94&gt;&lt;94&gt;&lt;e2&gt;&lt;94&gt;&lt;80&gt; &lt;f0&gt;&lt;9f&gt;&lt;93&gt;&lt;81&gt; feedback</span></span>
+<span><span class="co">#&gt; &lt;e2&gt;&lt;95&gt;&lt;91&gt;    &lt;e2&gt;&lt;94&gt;&lt;94&gt;&lt;e2&gt;&lt;94&gt;&lt;80&gt; &lt;f0&gt;&lt;9f&gt;&lt;93&gt;&lt;84&gt; VIZ: Satisfaction Scores</span></span>
+<span><span class="co">#&gt; &lt;e2&gt;&lt;95&gt;&lt;9a&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;</span></span></code></pre></div>
+<p><strong>See the hierarchy?</strong> <code>dashboardr</code>
+automatically organized your visualizations into a tree based on the
 <code>tabgroup</code> parameter. This tree determines the tab structure
 in your final dashboard.</p>
+<div class="section level3">
+<h3 id="two-modes-preview-vs-structure">Two Modes: Preview vs Structure<a class="anchor" aria-label="anchor" href="#two-modes-preview-vs-structure"></a>
+</h3>
+<ul>
+<li>
+<strong>With data attached</strong> → Auto-renders the
+visualization</li>
+<li>
+<strong>Without data</strong> → Shows the structure tree</li>
+</ul>
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># MODE 1: Renders as interactive chart (data attached)</span></span>
+<span><span class="fu"><a href="../reference/create_viz.html">create_viz</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">survey_data</span>, type <span class="op">=</span> <span class="st">"histogram"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span>x_var <span class="op">=</span> <span class="st">"age"</span>, title <span class="op">=</span> <span class="st">"Age"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># MODE 2: Shows structure tree (no data)</span></span>
+<span><span class="fu"><a href="../reference/create_viz.html">create_viz</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"histogram"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span>x_var <span class="op">=</span> <span class="st">"age"</span>, title <span class="op">=</span> <span class="st">"Age"</span>, tabgroup <span class="op">=</span> <span class="st">"demographics"</span><span class="op">)</span></span></code></pre></div>
+<p>You can also use <code><a href="../reference/preview.html">preview()</a></code> for more control over
+rendering, including Quarto-based rendering with full tabset
+support:</p>
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Quick preview in viewer</span></span>
+<span><span class="va">viz</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_viz.html">create_viz</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">survey_data</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"histogram"</span>, x_var <span class="op">=</span> <span class="st">"age"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/preview.html">preview</a></span><span class="op">(</span><span class="va">viz</span><span class="op">)</span>  <span class="co"># Opens in RStudio Viewer</span></span>
+<span></span>
+<span><span class="co"># Save to specific location</span></span>
+<span><span class="fu"><a href="../reference/preview.html">preview</a></span><span class="op">(</span><span class="va">viz</span>, path <span class="op">=</span> <span class="st">"~/Desktop/my_preview.html"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Use Quarto for full tabset rendering (requires Quarto installed)</span></span>
+<span><span class="fu"><a href="../reference/preview.html">preview</a></span><span class="op">(</span><span class="va">viz</span>, quarto <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+</div>
 <div class="section level3">
 <h3 id="creating-nested-hierarchies">Creating Nested Hierarchies<a class="anchor" aria-label="anchor" href="#creating-nested-hierarchies"></a>
 </h3>
 <p>You can create deeper nesting using <code>/</code> in tabgroup
 paths:</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Create nested structure: section/subsection/item</span></span>
 <span><span class="va">nested_viz</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_viz.html">create_viz</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"histogram"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span></span>
@@ -502,22 +658,22 @@ paths:</p>
 <span><span class="co"># Print to see the nested tree!</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">nested_viz</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ╔══════════════════════════════════════════════════════════════════════════</span></span>
-<span><span class="co">#&gt; ║ 📦 CONTENT COLLECTION</span></span>
-<span><span class="co">#&gt; ╠══════════════════════════════════════════════════════════════════════════</span></span>
-<span><span class="co">#&gt; ║ Total items: 3</span></span>
-<span><span class="co">#&gt; ║</span></span>
-<span><span class="co">#&gt; ║ STRUCTURE:</span></span>
-<span><span class="co">#&gt; ║ └─ 📁 analysis</span></span>
-<span><span class="co">#&gt; ║    ├─ 📁 demographics</span></span>
-<span><span class="co">#&gt; ║    │  ├─ 📁 age</span></span>
-<span><span class="co">#&gt; ║    │  │  └─ 📄 VIZ: Age</span></span>
-<span><span class="co">#&gt; ║    │  └─ 📁 income</span></span>
-<span><span class="co">#&gt; ║    │     └─ 📄 VIZ: Income</span></span>
-<span><span class="co">#&gt; ║    └─ 📁 feedback</span></span>
-<span><span class="co">#&gt; ║       └─ 📁 overall</span></span>
-<span><span class="co">#&gt; ║          └─ 📄 VIZ: Overall Satisfaction</span></span>
-<span><span class="co">#&gt; ╚══════════════════════════════════════════════════════════════════════════</span></span></code></pre></div>
+<span><span class="co">#&gt; &lt;e2&gt;&lt;95&gt;&lt;94&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;</span></span>
+<span><span class="co">#&gt; &lt;e2&gt;&lt;95&gt;&lt;91&gt; &lt;f0&gt;&lt;9f&gt;&lt;93&gt;&lt;a6&gt; CONTENT COLLECTION</span></span>
+<span><span class="co">#&gt; &lt;e2&gt;&lt;95&gt;&lt;a0&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;</span></span>
+<span><span class="co">#&gt; &lt;e2&gt;&lt;95&gt;&lt;91&gt; Total items: 3</span></span>
+<span><span class="co">#&gt; &lt;e2&gt;&lt;95&gt;&lt;91&gt;</span></span>
+<span><span class="co">#&gt; &lt;e2&gt;&lt;95&gt;&lt;91&gt; STRUCTURE:</span></span>
+<span><span class="co">#&gt; &lt;e2&gt;&lt;95&gt;&lt;91&gt; &lt;e2&gt;&lt;94&gt;&lt;94&gt;&lt;e2&gt;&lt;94&gt;&lt;80&gt; &lt;f0&gt;&lt;9f&gt;&lt;93&gt;&lt;81&gt; analysis</span></span>
+<span><span class="co">#&gt; &lt;e2&gt;&lt;95&gt;&lt;91&gt;    &lt;e2&gt;&lt;94&gt;&lt;9c&gt;&lt;e2&gt;&lt;94&gt;&lt;80&gt; &lt;f0&gt;&lt;9f&gt;&lt;93&gt;&lt;81&gt; demographics</span></span>
+<span><span class="co">#&gt; &lt;e2&gt;&lt;95&gt;&lt;91&gt;    &lt;e2&gt;&lt;94&gt;&lt;82&gt;  &lt;e2&gt;&lt;94&gt;&lt;9c&gt;&lt;e2&gt;&lt;94&gt;&lt;80&gt; &lt;f0&gt;&lt;9f&gt;&lt;93&gt;&lt;81&gt; age</span></span>
+<span><span class="co">#&gt; &lt;e2&gt;&lt;95&gt;&lt;91&gt;    &lt;e2&gt;&lt;94&gt;&lt;82&gt;  &lt;e2&gt;&lt;94&gt;&lt;82&gt;  &lt;e2&gt;&lt;94&gt;&lt;94&gt;&lt;e2&gt;&lt;94&gt;&lt;80&gt; &lt;f0&gt;&lt;9f&gt;&lt;93&gt;&lt;84&gt; VIZ: Age</span></span>
+<span><span class="co">#&gt; &lt;e2&gt;&lt;95&gt;&lt;91&gt;    &lt;e2&gt;&lt;94&gt;&lt;82&gt;  &lt;e2&gt;&lt;94&gt;&lt;94&gt;&lt;e2&gt;&lt;94&gt;&lt;80&gt; &lt;f0&gt;&lt;9f&gt;&lt;93&gt;&lt;81&gt; income</span></span>
+<span><span class="co">#&gt; &lt;e2&gt;&lt;95&gt;&lt;91&gt;    &lt;e2&gt;&lt;94&gt;&lt;82&gt;     &lt;e2&gt;&lt;94&gt;&lt;94&gt;&lt;e2&gt;&lt;94&gt;&lt;80&gt; &lt;f0&gt;&lt;9f&gt;&lt;93&gt;&lt;84&gt; VIZ: Income</span></span>
+<span><span class="co">#&gt; &lt;e2&gt;&lt;95&gt;&lt;91&gt;    &lt;e2&gt;&lt;94&gt;&lt;94&gt;&lt;e2&gt;&lt;94&gt;&lt;80&gt; &lt;f0&gt;&lt;9f&gt;&lt;93&gt;&lt;81&gt; feedback</span></span>
+<span><span class="co">#&gt; &lt;e2&gt;&lt;95&gt;&lt;91&gt;       &lt;e2&gt;&lt;94&gt;&lt;94&gt;&lt;e2&gt;&lt;94&gt;&lt;80&gt; &lt;f0&gt;&lt;9f&gt;&lt;93&gt;&lt;81&gt; overall</span></span>
+<span><span class="co">#&gt; &lt;e2&gt;&lt;95&gt;&lt;91&gt;          &lt;e2&gt;&lt;94&gt;&lt;94&gt;&lt;e2&gt;&lt;94&gt;&lt;80&gt; &lt;f0&gt;&lt;9f&gt;&lt;93&gt;&lt;84&gt; VIZ: Overall Satisfaction</span></span>
+<span><span class="co">#&gt; &lt;e2&gt;&lt;95&gt;&lt;9a&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;</span></span></code></pre></div>
 <p><strong>The tree shows exactly what your dashboard will look
 like!</strong> Each level becomes a tab, automatically organized.</p>
 </div>
@@ -530,7 +686,7 @@ like!</strong> Each level becomes a tab, automatically organized.</p>
 </h3>
 <p>Combine visualization collections using <code>+</code> (just like
 ggplot2!):</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Create separate collections</span></span>
 <span><span class="va">demographics</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_viz.html">create_viz</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"histogram"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span>x_var <span class="op">=</span> <span class="st">"age"</span>, title <span class="op">=</span> <span class="st">"Age"</span>, tabgroup <span class="op">=</span> <span class="st">"demographics"</span><span class="op">)</span></span>
@@ -543,23 +699,23 @@ ggplot2!):</p>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">combined</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ╔══════════════════════════════════════════════════════════════════════════</span></span>
-<span><span class="co">#&gt; ║ 📦 CONTENT COLLECTION</span></span>
-<span><span class="co">#&gt; ╠══════════════════════════════════════════════════════════════════════════</span></span>
-<span><span class="co">#&gt; ║ Total items: 2</span></span>
-<span><span class="co">#&gt; ║</span></span>
-<span><span class="co">#&gt; ║ STRUCTURE:</span></span>
-<span><span class="co">#&gt; ║ ├─ 📁 demographics</span></span>
-<span><span class="co">#&gt; ║ │  └─ 📄 VIZ: Age</span></span>
-<span><span class="co">#&gt; ║ └─ 📁 feedback</span></span>
-<span><span class="co">#&gt; ║    └─ 📄 VIZ: Satisfaction</span></span>
-<span><span class="co">#&gt; ╚══════════════════════════════════════════════════════════════════════════</span></span></code></pre></div>
+<span><span class="co">#&gt; &lt;e2&gt;&lt;95&gt;&lt;94&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;</span></span>
+<span><span class="co">#&gt; &lt;e2&gt;&lt;95&gt;&lt;91&gt; &lt;f0&gt;&lt;9f&gt;&lt;93&gt;&lt;a6&gt; CONTENT COLLECTION</span></span>
+<span><span class="co">#&gt; &lt;e2&gt;&lt;95&gt;&lt;a0&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;</span></span>
+<span><span class="co">#&gt; &lt;e2&gt;&lt;95&gt;&lt;91&gt; Total items: 2</span></span>
+<span><span class="co">#&gt; &lt;e2&gt;&lt;95&gt;&lt;91&gt;</span></span>
+<span><span class="co">#&gt; &lt;e2&gt;&lt;95&gt;&lt;91&gt; STRUCTURE:</span></span>
+<span><span class="co">#&gt; &lt;e2&gt;&lt;95&gt;&lt;91&gt; &lt;e2&gt;&lt;94&gt;&lt;9c&gt;&lt;e2&gt;&lt;94&gt;&lt;80&gt; &lt;f0&gt;&lt;9f&gt;&lt;93&gt;&lt;81&gt; demographics</span></span>
+<span><span class="co">#&gt; &lt;e2&gt;&lt;95&gt;&lt;91&gt; &lt;e2&gt;&lt;94&gt;&lt;82&gt;  &lt;e2&gt;&lt;94&gt;&lt;94&gt;&lt;e2&gt;&lt;94&gt;&lt;80&gt; &lt;f0&gt;&lt;9f&gt;&lt;93&gt;&lt;84&gt; VIZ: Age</span></span>
+<span><span class="co">#&gt; &lt;e2&gt;&lt;95&gt;&lt;91&gt; &lt;e2&gt;&lt;94&gt;&lt;94&gt;&lt;e2&gt;&lt;94&gt;&lt;80&gt; &lt;f0&gt;&lt;9f&gt;&lt;93&gt;&lt;81&gt; feedback</span></span>
+<span><span class="co">#&gt; &lt;e2&gt;&lt;95&gt;&lt;91&gt;    &lt;e2&gt;&lt;94&gt;&lt;94&gt;&lt;e2&gt;&lt;94&gt;&lt;80&gt; &lt;f0&gt;&lt;9f&gt;&lt;93&gt;&lt;84&gt; VIZ: Satisfaction</span></span>
+<span><span class="co">#&gt; &lt;e2&gt;&lt;95&gt;&lt;9a&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="the-combine_viz-function">The combine_viz() Function<a class="anchor" aria-label="anchor" href="#the-combine_viz-function"></a>
 </h3>
 <p>For more explicit combining, use <code><a href="../reference/combine_viz.html">combine_viz()</a></code>:</p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Same as +, but more explicit</span></span>
 <span><span class="va">viz1</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="../reference/combine_viz.html">combine_viz</a></span><span class="op">(</span><span class="va">viz2</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
@@ -569,7 +725,7 @@ ggplot2!):</p>
 <h3 id="adding-pagination">Adding Pagination<a class="anchor" aria-label="anchor" href="#adding-pagination"></a>
 </h3>
 <p>Break up long dashboards with pagination:</p>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">viz</span> <span class="op">&lt;-</span> <span class="va">viz1</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="../reference/combine_viz.html">combine_viz</a></span><span class="op">(</span><span class="va">viz2</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="../reference/combine_viz.html">combine_viz</a></span><span class="op">(</span><span class="va">viz3</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
@@ -584,7 +740,7 @@ amounts of content more digestible.</p>
 <h2 id="defaults-and-overrides">Defaults and Overrides<a class="anchor" aria-label="anchor" href="#defaults-and-overrides"></a>
 </h2>
 <p>Set common parameters once, override when needed:</p>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Set defaults that apply to all visualizations</span></span>
 <span><span class="va">viz_with_defaults</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_viz.html">create_viz</a></span><span class="op">(</span></span>
 <span>  type <span class="op">=</span> <span class="st">"histogram"</span>,</span>
@@ -606,16 +762,16 @@ amounts of content more digestible.</p>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">viz_with_defaults</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ╔══════════════════════════════════════════════════════════════════════════</span></span>
-<span><span class="co">#&gt; ║ 📦 CONTENT COLLECTION</span></span>
-<span><span class="co">#&gt; ╠══════════════════════════════════════════════════════════════════════════</span></span>
-<span><span class="co">#&gt; ║ Total items: 2</span></span>
-<span><span class="co">#&gt; ║</span></span>
-<span><span class="co">#&gt; ║ STRUCTURE:</span></span>
-<span><span class="co">#&gt; ║ └─ 📁 (no tabgroup)</span></span>
-<span><span class="co">#&gt; ║    ├─ 📄 VIZ: Age (uses defaults)</span></span>
-<span><span class="co">#&gt; ║    └─ 📄 VIZ: Income (custom)</span></span>
-<span><span class="co">#&gt; ╚══════════════════════════════════════════════════════════════════════════</span></span></code></pre></div>
+<span><span class="co">#&gt; &lt;e2&gt;&lt;95&gt;&lt;94&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;</span></span>
+<span><span class="co">#&gt; &lt;e2&gt;&lt;95&gt;&lt;91&gt; &lt;f0&gt;&lt;9f&gt;&lt;93&gt;&lt;a6&gt; CONTENT COLLECTION</span></span>
+<span><span class="co">#&gt; &lt;e2&gt;&lt;95&gt;&lt;a0&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;</span></span>
+<span><span class="co">#&gt; &lt;e2&gt;&lt;95&gt;&lt;91&gt; Total items: 2</span></span>
+<span><span class="co">#&gt; &lt;e2&gt;&lt;95&gt;&lt;91&gt;</span></span>
+<span><span class="co">#&gt; &lt;e2&gt;&lt;95&gt;&lt;91&gt; STRUCTURE:</span></span>
+<span><span class="co">#&gt; &lt;e2&gt;&lt;95&gt;&lt;91&gt; &lt;e2&gt;&lt;94&gt;&lt;94&gt;&lt;e2&gt;&lt;94&gt;&lt;80&gt; &lt;f0&gt;&lt;9f&gt;&lt;93&gt;&lt;81&gt; (no tabgroup)</span></span>
+<span><span class="co">#&gt; &lt;e2&gt;&lt;95&gt;&lt;91&gt;    &lt;e2&gt;&lt;94&gt;&lt;9c&gt;&lt;e2&gt;&lt;94&gt;&lt;80&gt; &lt;f0&gt;&lt;9f&gt;&lt;93&gt;&lt;84&gt; VIZ: Age (uses defaults)</span></span>
+<span><span class="co">#&gt; &lt;e2&gt;&lt;95&gt;&lt;91&gt;    &lt;e2&gt;&lt;94&gt;&lt;94&gt;&lt;e2&gt;&lt;94&gt;&lt;80&gt; &lt;f0&gt;&lt;9f&gt;&lt;93&gt;&lt;84&gt; VIZ: Income (custom)</span></span>
+<span><span class="co">#&gt; &lt;e2&gt;&lt;95&gt;&lt;9a&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;</span></span></code></pre></div>
 <p>This is especially powerful for surveys with many similar
 questions!</p>
 </div>
@@ -623,7 +779,7 @@ questions!</p>
 <h2 id="filter-aware-grouping">Filter-Aware Grouping<a class="anchor" aria-label="anchor" href="#filter-aware-grouping"></a>
 </h2>
 <p>dashboardr automatically groups visualizations by their filters:</p>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Create visualizations with filters</span></span>
 <span><span class="va">filtered_viz</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_viz.html">create_viz</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"histogram"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span></span>
@@ -644,16 +800,16 @@ questions!</p>
 <span><span class="co"># dashboardr creates separate "Wave 1" and "Wave 2" tabs!</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">filtered_viz</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ╔══════════════════════════════════════════════════════════════════════════</span></span>
-<span><span class="co">#&gt; ║ 📦 CONTENT COLLECTION</span></span>
-<span><span class="co">#&gt; ╠══════════════════════════════════════════════════════════════════════════</span></span>
-<span><span class="co">#&gt; ║ Total items: 2</span></span>
-<span><span class="co">#&gt; ║</span></span>
-<span><span class="co">#&gt; ║ STRUCTURE:</span></span>
-<span><span class="co">#&gt; ║ └─ 📁 analysis</span></span>
-<span><span class="co">#&gt; ║    ├─ 📄 VIZ: Age Distribution</span></span>
-<span><span class="co">#&gt; ║    └─ 📄 VIZ: Age Distribution</span></span>
-<span><span class="co">#&gt; ╚══════════════════════════════════════════════════════════════════════════</span></span></code></pre></div>
+<span><span class="co">#&gt; &lt;e2&gt;&lt;95&gt;&lt;94&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;</span></span>
+<span><span class="co">#&gt; &lt;e2&gt;&lt;95&gt;&lt;91&gt; &lt;f0&gt;&lt;9f&gt;&lt;93&gt;&lt;a6&gt; CONTENT COLLECTION</span></span>
+<span><span class="co">#&gt; &lt;e2&gt;&lt;95&gt;&lt;a0&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;</span></span>
+<span><span class="co">#&gt; &lt;e2&gt;&lt;95&gt;&lt;91&gt; Total items: 2</span></span>
+<span><span class="co">#&gt; &lt;e2&gt;&lt;95&gt;&lt;91&gt;</span></span>
+<span><span class="co">#&gt; &lt;e2&gt;&lt;95&gt;&lt;91&gt; STRUCTURE:</span></span>
+<span><span class="co">#&gt; &lt;e2&gt;&lt;95&gt;&lt;91&gt; &lt;e2&gt;&lt;94&gt;&lt;94&gt;&lt;e2&gt;&lt;94&gt;&lt;80&gt; &lt;f0&gt;&lt;9f&gt;&lt;93&gt;&lt;81&gt; analysis</span></span>
+<span><span class="co">#&gt; &lt;e2&gt;&lt;95&gt;&lt;91&gt;    &lt;e2&gt;&lt;94&gt;&lt;9c&gt;&lt;e2&gt;&lt;94&gt;&lt;80&gt; &lt;f0&gt;&lt;9f&gt;&lt;93&gt;&lt;84&gt; VIZ: Age Distribution</span></span>
+<span><span class="co">#&gt; &lt;e2&gt;&lt;95&gt;&lt;91&gt;    &lt;e2&gt;&lt;94&gt;&lt;94&gt;&lt;e2&gt;&lt;94&gt;&lt;80&gt; &lt;f0&gt;&lt;9f&gt;&lt;93&gt;&lt;84&gt; VIZ: Age Distribution</span></span>
+<span><span class="co">#&gt; &lt;e2&gt;&lt;95&gt;&lt;9a&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;</span></span></code></pre></div>
 <p>No manual grouping needed—just use filters and
 <code>title_tabset</code>!</p>
 </div>
@@ -664,7 +820,7 @@ questions!</p>
 <h3 id="histogram">Histogram<a class="anchor" aria-label="anchor" href="#histogram"></a>
 </h3>
 <p>Perfect for showing distributions:</p>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/create_viz.html">create_viz</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"histogram"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span></span>
 <span>    x_var <span class="op">=</span> <span class="st">"age"</span>,</span>
@@ -674,12 +830,23 @@ questions!</p>
 <span>    x_label <span class="op">=</span> <span class="st">"Age (years)"</span>,</span>
 <span>    y_label <span class="op">=</span> <span class="st">"Frequency"</span></span>
 <span>  <span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/create_histogram.html">create_histogram</a></span><span class="op">(</span></span>
+<span>  data<span class="op">=</span><span class="va">survey_data</span>,</span>
+<span>  x_var<span class="op">=</span><span class="st">"age"</span>,</span>
+<span>  title<span class="op">=</span><span class="st">"Age Distribution"</span>,</span>
+<span>  bins <span class="op">=</span> <span class="fl">30</span>,</span>
+<span>  color_palette <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"#3498DB"</span><span class="op">)</span>,</span>
+<span>  x_label <span class="op">=</span> <span class="st">"Age (years)"</span>,</span>
+<span>  y_label <span class="op">=</span> <span class="st">"Frequency"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p>Notice that the parameters are translatable across the functions.</p>
 </div>
 <div class="section level3">
 <h3 id="bar-chart">Bar Chart<a class="anchor" aria-label="anchor" href="#bar-chart"></a>
 </h3>
 <p>Great for categorical comparisons:</p>
-<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/create_viz.html">create_viz</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"bar"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span></span>
 <span>    x_var <span class="op">=</span> <span class="st">"department"</span>,</span>
@@ -688,12 +855,21 @@ questions!</p>
 <span>    bar_type <span class="op">=</span> <span class="st">"percent"</span>,  <span class="co"># or "count"</span></span>
 <span>    color_palette <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"#E74C3C"</span><span class="op">)</span></span>
 <span>  <span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/create_bar.html">create_bar</a></span><span class="op">(</span></span>
+<span>  data<span class="op">=</span><span class="va">survey_data</span>,</span>
+<span>  x_var <span class="op">=</span> <span class="st">"department"</span>,</span>
+<span>  title <span class="op">=</span> <span class="st">"Department Sizes"</span>,</span>
+<span>  horizontal <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  bar_type <span class="op">=</span> <span class="st">"percent"</span>,  <span class="co"># or "count"</span></span>
+<span>  color_palette <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"#E74C3C"</span><span class="op">)</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="grouped-bar-chart">Grouped Bar Chart<a class="anchor" aria-label="anchor" href="#grouped-bar-chart"></a>
 </h3>
 <p>Compare categories across groups:</p>
-<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/create_viz.html">create_viz</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"bar"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span></span>
 <span>    x_var <span class="op">=</span> <span class="st">"department"</span>,</span>
@@ -702,12 +878,21 @@ questions!</p>
 <span>    horizontal <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>    bar_type <span class="op">=</span> <span class="st">"percent"</span></span>
 <span>  <span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/create_bar.html">create_bar</a></span><span class="op">(</span></span>
+<span>  data<span class="op">=</span><span class="va">survey_data</span>,</span>
+<span>  x_var <span class="op">=</span> <span class="st">"department"</span>,</span>
+<span>  group_var <span class="op">=</span> <span class="st">"wave"</span>,</span>
+<span>  title <span class="op">=</span> <span class="st">"Department Sizes by Wave"</span>,</span>
+<span>  horizontal <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  bar_type <span class="op">=</span> <span class="st">"percent"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="stacked-bar">Stacked Bar<a class="anchor" aria-label="anchor" href="#stacked-bar"></a>
 </h3>
 <p>Show composition within categories:</p>
-<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/create_viz.html">create_viz</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"stackedbar"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span></span>
 <span>    x_var <span class="op">=</span> <span class="st">"department"</span>,</span>
@@ -718,12 +903,23 @@ questions!</p>
 <span>    stack_breaks <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span>, <span class="fl">3</span>, <span class="fl">4</span>, <span class="fl">5</span><span class="op">)</span>,</span>
 <span>    stack_bin_labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Very Low"</span>, <span class="st">"Low"</span>, <span class="st">"Medium"</span>, <span class="st">"High"</span>, <span class="st">"Very High"</span><span class="op">)</span></span>
 <span>  <span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/create_stackedbar.html">create_stackedbar</a></span><span class="op">(</span></span>
+<span>  data<span class="op">=</span><span class="va">survey_data</span>,</span>
+<span>  x_var <span class="op">=</span> <span class="st">"department"</span>,</span>
+<span>  stack_var <span class="op">=</span> <span class="st">"satisfaction"</span>,</span>
+<span>  title <span class="op">=</span> <span class="st">"Satisfaction by Department"</span>,</span>
+<span>  stacked_type <span class="op">=</span> <span class="st">"percent"</span>,</span>
+<span>  horizontal <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  stack_breaks <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span>, <span class="fl">3</span>, <span class="fl">4</span>, <span class="fl">5</span>, <span class="fl">6</span><span class="op">)</span>, <span class="co"># the length of stack_breaks must be one more than the number of labels</span></span>
+<span>  stack_bin_labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Very Low"</span>, <span class="st">"Low"</span>, <span class="st">"Medium"</span>, <span class="st">"High"</span>, <span class="st">"Very High"</span><span class="op">)</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="multiple-stacked-bars">Multiple Stacked Bars<a class="anchor" aria-label="anchor" href="#multiple-stacked-bars"></a>
 </h3>
 <p>For survey questions with the same response scale:</p>
-<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">questions</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"q1"</span>, <span class="st">"q2"</span>, <span class="st">"q3"</span>, <span class="st">"q4"</span><span class="op">)</span></span>
 <span><span class="va">labels</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"I trust the company"</span>, </span>
 <span>            <span class="st">"I feel valued"</span>,</span>
@@ -741,12 +937,29 @@ questions!</p>
 <span>    stack_bin_labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"1"</span>, <span class="st">"2"</span>, <span class="st">"3"</span>, <span class="st">"4"</span>, <span class="st">"5"</span><span class="op">)</span>,</span>
 <span>    tabgroup <span class="op">=</span> <span class="st">"sentiment"</span></span>
 <span>  <span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">questions</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"q1"</span>, <span class="st">"q2"</span>, <span class="st">"q3"</span>, <span class="st">"q4"</span><span class="op">)</span></span>
+<span><span class="va">labels</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"I trust the company"</span>, </span>
+<span>            <span class="st">"I feel valued"</span>,</span>
+<span>            <span class="st">"I have opportunities"</span>,</span>
+<span>            <span class="st">"I would recommend"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="../reference/create_stackedbars.html">create_stackedbars</a></span><span class="op">(</span></span>
+<span>  data<span class="op">=</span><span class="va">survey_data</span>,</span>
+<span>  questions <span class="op">=</span> <span class="va">questions</span>,</span>
+<span>  question_labels <span class="op">=</span> <span class="va">labels</span>,</span>
+<span>  title <span class="op">=</span> <span class="st">"Employee Sentiment"</span>,</span>
+<span>  stacked_type <span class="op">=</span> <span class="st">"percent"</span>,</span>
+<span>  horizontal <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  stack_breaks <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.5</span>, <span class="fl">1.5</span>, <span class="fl">2.5</span>, <span class="fl">3.5</span>, <span class="fl">4.5</span>, <span class="fl">5.5</span><span class="op">)</span>,</span>
+<span>  stack_bin_labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"1"</span>, <span class="st">"2"</span>, <span class="st">"3"</span>, <span class="st">"4"</span>, <span class="st">"5"</span><span class="op">)</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="timeline">Timeline<a class="anchor" aria-label="anchor" href="#timeline"></a>
 </h3>
 <p>Track changes over time:</p>
-<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/create_viz.html">create_viz</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"timeline"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span></span>
 <span>    time_var <span class="op">=</span> <span class="st">"year"</span>,</span>
@@ -760,7 +973,7 @@ questions!</p>
 <h3 id="heatmap">Heatmap<a class="anchor" aria-label="anchor" href="#heatmap"></a>
 </h3>
 <p>Visualize intensity across two dimensions:</p>
-<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb39"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/create_viz.html">create_viz</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"heatmap"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span></span>
 <span>    x_var <span class="op">=</span> <span class="st">"department"</span>,</span>
@@ -778,7 +991,7 @@ questions!</p>
 <h3 id="weighted-visualizations">Weighted Visualizations<a class="anchor" aria-label="anchor" href="#weighted-visualizations"></a>
 </h3>
 <p>Use survey weights or other weighting variables:</p>
-<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb40"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/create_viz.html">create_viz</a></span><span class="op">(</span></span>
 <span>  type <span class="op">=</span> <span class="st">"histogram"</span>,</span>
 <span>  weight_var <span class="op">=</span> <span class="st">"survey_weight"</span>  <span class="co"># Apply to all visualizations</span></span>
@@ -789,7 +1002,7 @@ questions!</p>
 <h3 id="drop-na-values">Drop NA Values<a class="anchor" aria-label="anchor" href="#drop-na-values"></a>
 </h3>
 <p>Automatically remove rows with missing values:</p>
-<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb41"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/create_viz.html">create_viz</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"histogram"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span></span>
 <span>    x_var <span class="op">=</span> <span class="st">"age"</span>,</span>
@@ -800,7 +1013,7 @@ questions!</p>
 <h3 id="response-filters">Response Filters<a class="anchor" aria-label="anchor" href="#response-filters"></a>
 </h3>
 <p>Filter responses to specific values:</p>
-<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb42"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Only show "high" satisfaction (4-5)</span></span>
 <span><span class="fu"><a href="../reference/create_viz.html">create_viz</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"timeline"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span></span>
@@ -813,7 +1026,7 @@ questions!</p>
 <div class="section level3">
 <h3 id="custom-colors-and-styling">Custom Colors and Styling<a class="anchor" aria-label="anchor" href="#custom-colors-and-styling"></a>
 </h3>
-<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb43"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/create_viz.html">create_viz</a></span><span class="op">(</span></span>
 <span>  type <span class="op">=</span> <span class="st">"stackedbar"</span>,</span>
 <span>  color_palette <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"#E8F5E9"</span>, <span class="st">"#81C784"</span>, <span class="st">"#388E3C"</span>, <span class="st">"#1B5E20"</span><span class="op">)</span>,</span>
@@ -829,7 +1042,7 @@ questions!</p>
 <h3 id="text-annotations">Text Annotations<a class="anchor" aria-label="anchor" href="#text-annotations"></a>
 </h3>
 <p>Add explanatory text above or below visualizations:</p>
-<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb44"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/create_viz.html">create_viz</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"histogram"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span></span>
 <span>    x_var <span class="op">=</span> <span class="st">"age"</span>,</span>
@@ -851,7 +1064,7 @@ access to <strong>200,000+ icons</strong> from 100+ icon sets!</p>
 <h3 id="icon-syntax">Icon Syntax<a class="anchor" aria-label="anchor" href="#icon-syntax"></a>
 </h3>
 <p>Icons use Quarto’s iconify shortcode:</p>
-<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb45"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">icon</span> <span class="op">=</span> <span class="st">"ph:house-fill"</span>  <span class="co"># Phosphor icon set, house-fill icon</span></span></code></pre></div>
 <p>The format is: <code>icon-set:icon-name</code></p>
 </div>
@@ -885,14 +1098,14 @@ Material Design - <code>mdi:chart-line</code>,
 <h3 id="using-icons-in-your-dashboard">Using Icons in Your Dashboard<a class="anchor" aria-label="anchor" href="#using-icons-in-your-dashboard"></a>
 </h3>
 <p><strong>Page icons</strong> (appear in navbar):</p>
-<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb46"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/add_page.html">add_page</a></span><span class="op">(</span></span>
 <span>  name <span class="op">=</span> <span class="st">"Home"</span>,</span>
 <span>  icon <span class="op">=</span> <span class="st">"ph:house-fill"</span>,</span>
 <span>  text <span class="op">=</span> <span class="st">"Welcome home!"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p><strong>Tab group icons</strong> with labels:</p>
-<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb47"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">viz</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_viz.html">create_viz</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"histogram"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span>x_var <span class="op">=</span> <span class="st">"age"</span>, tabgroup <span class="op">=</span> <span class="st">"demographics"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span>x_var <span class="op">=</span> <span class="st">"income"</span>, tabgroup <span class="op">=</span> <span class="st">"financial"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
@@ -904,7 +1117,7 @@ Material Design - <code>mdi:chart-line</code>,
 <span>    overall <span class="op">=</span> <span class="st">"{{&lt; iconify ph:chart-bar-fill &gt;}} Overall"</span></span>
 <span>  <span class="op">)</span></span></code></pre></div>
 <p><strong>In markdown text</strong>:</p>
-<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb48"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">text</span> <span class="op">=</span> <span class="fu"><a href="../reference/md_text.html">md_text</a></span><span class="op">(</span></span>
 <span>  <span class="st">"## Features {{&lt; iconify ph:sparkle-fill &gt;}}"</span>,</span>
 <span>  <span class="st">""</span>,</span>
@@ -950,7 +1163,7 @@ Sets</a> to browse and search. Popular choices:</p>
 <h3 id="dashboard-level-themes-bootswatch">Dashboard-Level Themes (Bootswatch)<a class="anchor" aria-label="anchor" href="#dashboard-level-themes-bootswatch"></a>
 </h3>
 <p>Choose from 25+ professional Bootstrap themes:</p>
-<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb49"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">dashboard</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_dashboard.html">create_dashboard</a></span><span class="op">(</span></span>
 <span>  title <span class="op">=</span> <span class="st">"Styled Dashboard"</span>,</span>
 <span>  output_dir <span class="op">=</span> <span class="st">"styled"</span>,</span>
@@ -979,7 +1192,7 @@ Sets</a> to browse and search. Popular choices:</p>
 <h3 id="tabset-themes-how-tabs-look">Tabset Themes (How Tabs Look)<a class="anchor" aria-label="anchor" href="#tabset-themes-how-tabs-look"></a>
 </h3>
 <p>dashboardr includes 6 custom-designed tabset themes:</p>
-<div class="sourceCode" id="cb39"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb50"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">dashboard</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_dashboard.html">create_dashboard</a></span><span class="op">(</span></span>
 <span>  title <span class="op">=</span> <span class="st">"My Dashboard"</span>,</span>
 <span>  output_dir <span class="op">=</span> <span class="st">"dashboard"</span>,</span>
@@ -1007,7 +1220,7 @@ Sets</a> to browse and search. Popular choices:</p>
 <h3 id="custom-tab-colors">Custom Tab Colors<a class="anchor" aria-label="anchor" href="#custom-tab-colors"></a>
 </h3>
 <p>Override the default colors:</p>
-<div class="sourceCode" id="cb40"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb51"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">dashboard</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_dashboard.html">create_dashboard</a></span><span class="op">(</span></span>
 <span>  title <span class="op">=</span> <span class="st">"Custom Colors"</span>,</span>
 <span>  output_dir <span class="op">=</span> <span class="st">"custom"</span>,</span>
@@ -1024,7 +1237,7 @@ Sets</a> to browse and search. Popular choices:</p>
 <div class="section level3">
 <h3 id="navbar-styling">Navbar Styling<a class="anchor" aria-label="anchor" href="#navbar-styling"></a>
 </h3>
-<div class="sourceCode" id="cb41"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb52"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">dashboard</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_dashboard.html">create_dashboard</a></span><span class="op">(</span></span>
 <span>  title <span class="op">=</span> <span class="st">"My Dashboard"</span>,</span>
 <span>  output_dir <span class="op">=</span> <span class="st">"dashboard"</span>,</span>
@@ -1042,7 +1255,7 @@ Sets</a> to browse and search. Popular choices:</p>
 </h3>
 <p>The <code><a href="../reference/md_text.html">md_text()</a></code> function creates markdown content. Each
 argument becomes a line:</p>
-<div class="sourceCode" id="cb42"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb53"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">text</span> <span class="op">=</span> <span class="fu"><a href="../reference/md_text.html">md_text</a></span><span class="op">(</span></span>
 <span>  <span class="st">"# Main Heading"</span>,</span>
 <span>  <span class="st">""</span>,  <span class="co"># Empty line</span></span>
@@ -1066,7 +1279,7 @@ argument becomes a line:</p>
 </h3>
 <p>You can embed R code blocks that execute when the dashboard
 renders:</p>
-<div class="sourceCode" id="cb43"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb54"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">text</span> <span class="op">=</span> <span class="fu"><a href="../reference/md_text.html">md_text</a></span><span class="op">(</span></span>
 <span>  <span class="st">"## Survey Overview"</span>,</span>
 <span>  <span class="st">""</span>,</span>
@@ -1088,7 +1301,7 @@ data!</p>
 </h3>
 <p>Create beautiful card layouts for landing pages or about
 sections:</p>
-<div class="sourceCode" id="cb44"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb55"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">text</span> <span class="op">=</span> <span class="fu"><a href="../reference/md_text.html">md_text</a></span><span class="op">(</span></span>
 <span>  <span class="st">"## Our Team"</span>,</span>
 <span>  <span class="st">""</span>,</span>
@@ -1119,7 +1332,7 @@ sections:</p>
 <h3 id="blockquotes">Blockquotes<a class="anchor" aria-label="anchor" href="#blockquotes"></a>
 </h3>
 <p>Create highlighted callout boxes:</p>
-<div class="sourceCode" id="cb45"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb56"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">text</span> <span class="op">=</span> <span class="fu"><a href="../reference/md_text.html">md_text</a></span><span class="op">(</span></span>
 <span>  <span class="st">"## Important Note"</span>,</span>
 <span>  <span class="st">""</span>,</span>
@@ -1142,7 +1355,7 @@ sections:</p>
 <h3 id="basic-page-navigation">Basic Page Navigation<a class="anchor" aria-label="anchor" href="#basic-page-navigation"></a>
 </h3>
 <p>Pages appear in the navbar in the order you add them:</p>
-<div class="sourceCode" id="cb46"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb57"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">dashboard</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="../reference/add_page.html">add_page</a></span><span class="op">(</span><span class="st">"Home"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="../reference/add_page.html">add_page</a></span><span class="op">(</span><span class="st">"Analysis"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
@@ -1153,7 +1366,7 @@ sections:</p>
 <h3 id="navbar-dropdown-menus">Navbar Dropdown Menus<a class="anchor" aria-label="anchor" href="#navbar-dropdown-menus"></a>
 </h3>
 <p>Group related pages under dropdown menus:</p>
-<div class="sourceCode" id="cb47"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb58"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Create menu</span></span>
 <span><span class="va">reports_menu</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/navbar_menu.html">navbar_menu</a></span><span class="op">(</span></span>
 <span>  text <span class="op">=</span> <span class="st">"Reports"</span>,</span>
@@ -1178,7 +1391,7 @@ sections:</p>
 <h3 id="sidebar-navigation">Sidebar Navigation<a class="anchor" aria-label="anchor" href="#sidebar-navigation"></a>
 </h3>
 <p>For many related pages, use sidebar groups:</p>
-<div class="sourceCode" id="cb48"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb59"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Create sidebar group</span></span>
 <span><span class="va">analysis_sidebar</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sidebar_group.html">sidebar_group</a></span><span class="op">(</span></span>
 <span>  id <span class="op">=</span> <span class="st">"analysis"</span>,</span>
@@ -1211,7 +1424,7 @@ sections:</p>
 <div class="section level3">
 <h3 id="navigation-enhancements">Navigation Enhancements<a class="anchor" aria-label="anchor" href="#navigation-enhancements"></a>
 </h3>
-<div class="sourceCode" id="cb49"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb60"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">dashboard</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_dashboard.html">create_dashboard</a></span><span class="op">(</span></span>
 <span>  title <span class="op">=</span> <span class="st">"My Dashboard"</span>,</span>
 <span>  output_dir <span class="op">=</span> <span class="st">"dashboard"</span>,</span>
@@ -1228,7 +1441,7 @@ sections:</p>
 <h3 id="loading-overlays">Loading Overlays<a class="anchor" aria-label="anchor" href="#loading-overlays"></a>
 </h3>
 <p>Add a loading animation to pages with heavy content:</p>
-<div class="sourceCode" id="cb50"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb61"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/add_page.html">add_page</a></span><span class="op">(</span></span>
 <span>  name <span class="op">=</span> <span class="st">"Analysis"</span>,</span>
 <span>  data <span class="op">=</span> <span class="va">large_dataset</span>,</span>
@@ -1243,7 +1456,7 @@ sections:</p>
 <h3 id="lazy-loading">Lazy Loading<a class="anchor" aria-label="anchor" href="#lazy-loading"></a>
 </h3>
 <p>Improve initial page load time by loading content on-demand:</p>
-<div class="sourceCode" id="cb51"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb62"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/add_page.html">add_page</a></span><span class="op">(</span></span>
 <span>  name <span class="op">=</span> <span class="st">"Reports"</span>,</span>
 <span>  data <span class="op">=</span> <span class="va">data</span>,</span>
@@ -1264,7 +1477,7 @@ visualizations or tabs.</p>
 </h3>
 <p>Use <code><a href="../reference/add_vizzes.html">add_vizzes()</a></code> to create multiple similar
 visualizations:</p>
-<div class="sourceCode" id="cb52"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb63"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">questions</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"q1"</span>, <span class="st">"q2"</span>, <span class="st">"q3"</span><span class="op">)</span></span>
 <span><span class="va">labels</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Question 1"</span>, <span class="st">"Question 2"</span>, <span class="st">"Question 3"</span><span class="op">)</span></span>
 <span></span>
@@ -1278,23 +1491,23 @@ visualizations:</p>
 <span><span class="co"># Creates one viz for each question!</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">viz</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ╔══════════════════════════════════════════════════════════════════════════</span></span>
-<span><span class="co">#&gt; ║ 📦 CONTENT COLLECTION</span></span>
-<span><span class="co">#&gt; ╠══════════════════════════════════════════════════════════════════════════</span></span>
-<span><span class="co">#&gt; ║ Total items: 3</span></span>
-<span><span class="co">#&gt; ║</span></span>
-<span><span class="co">#&gt; ║ STRUCTURE:</span></span>
-<span><span class="co">#&gt; ║ └─ 📁 survey</span></span>
-<span><span class="co">#&gt; ║    ├─ 📄 VIZ: Question 1</span></span>
-<span><span class="co">#&gt; ║    ├─ 📄 VIZ: Question 2</span></span>
-<span><span class="co">#&gt; ║    └─ 📄 VIZ: Question 3</span></span>
-<span><span class="co">#&gt; ╚══════════════════════════════════════════════════════════════════════════</span></span></code></pre></div>
+<span><span class="co">#&gt; &lt;e2&gt;&lt;95&gt;&lt;94&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;</span></span>
+<span><span class="co">#&gt; &lt;e2&gt;&lt;95&gt;&lt;91&gt; &lt;f0&gt;&lt;9f&gt;&lt;93&gt;&lt;a6&gt; CONTENT COLLECTION</span></span>
+<span><span class="co">#&gt; &lt;e2&gt;&lt;95&gt;&lt;a0&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;</span></span>
+<span><span class="co">#&gt; &lt;e2&gt;&lt;95&gt;&lt;91&gt; Total items: 3</span></span>
+<span><span class="co">#&gt; &lt;e2&gt;&lt;95&gt;&lt;91&gt;</span></span>
+<span><span class="co">#&gt; &lt;e2&gt;&lt;95&gt;&lt;91&gt; STRUCTURE:</span></span>
+<span><span class="co">#&gt; &lt;e2&gt;&lt;95&gt;&lt;91&gt; &lt;e2&gt;&lt;94&gt;&lt;94&gt;&lt;e2&gt;&lt;94&gt;&lt;80&gt; &lt;f0&gt;&lt;9f&gt;&lt;93&gt;&lt;81&gt; survey</span></span>
+<span><span class="co">#&gt; &lt;e2&gt;&lt;95&gt;&lt;91&gt;    &lt;e2&gt;&lt;94&gt;&lt;9c&gt;&lt;e2&gt;&lt;94&gt;&lt;80&gt; &lt;f0&gt;&lt;9f&gt;&lt;93&gt;&lt;84&gt; VIZ: Question 1</span></span>
+<span><span class="co">#&gt; &lt;e2&gt;&lt;95&gt;&lt;91&gt;    &lt;e2&gt;&lt;94&gt;&lt;9c&gt;&lt;e2&gt;&lt;94&gt;&lt;80&gt; &lt;f0&gt;&lt;9f&gt;&lt;93&gt;&lt;84&gt; VIZ: Question 2</span></span>
+<span><span class="co">#&gt; &lt;e2&gt;&lt;95&gt;&lt;91&gt;    &lt;e2&gt;&lt;94&gt;&lt;94&gt;&lt;e2&gt;&lt;94&gt;&lt;80&gt; &lt;f0&gt;&lt;9f&gt;&lt;93&gt;&lt;84&gt; VIZ: Question 3</span></span>
+<span><span class="co">#&gt; &lt;e2&gt;&lt;95&gt;&lt;9a&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;&lt;e2&gt;&lt;95&gt;&lt;90&gt;</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="custom-tab-labels-with-icons">Custom Tab Labels with Icons<a class="anchor" aria-label="anchor" href="#custom-tab-labels-with-icons"></a>
 </h3>
 <p>Make your tabs more descriptive and visual:</p>
-<div class="sourceCode" id="cb53"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb64"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">viz</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_viz.html">create_viz</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"histogram"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span>x_var <span class="op">=</span> <span class="st">"age"</span>, tabgroup <span class="op">=</span> <span class="st">"demographics/age"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span>x_var <span class="op">=</span> <span class="st">"income"</span>, tabgroup <span class="op">=</span> <span class="st">"demographics/income"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
@@ -1310,7 +1523,7 @@ visualizations:</p>
 <div class="section level3">
 <h3 id="publishing-and-deployment">Publishing and Deployment<a class="anchor" aria-label="anchor" href="#publishing-and-deployment"></a>
 </h3>
-<div class="sourceCode" id="cb54"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb65"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">dashboard</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_dashboard.html">create_dashboard</a></span><span class="op">(</span></span>
 <span>  title <span class="op">=</span> <span class="st">"My Dashboard"</span>,</span>
 <span>  output_dir <span class="op">=</span> <span class="st">"src"</span>,            <span class="co"># Source files</span></span>
@@ -1325,7 +1538,7 @@ visualizations:</p>
 <h3 id="social-links">Social Links<a class="anchor" aria-label="anchor" href="#social-links"></a>
 </h3>
 <p>Add social media and contact links to the navbar:</p>
-<div class="sourceCode" id="cb55"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb66"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">dashboard</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_dashboard.html">create_dashboard</a></span><span class="op">(</span></span>
 <span>  title <span class="op">=</span> <span class="st">"My Dashboard"</span>,</span>
 <span>  output_dir <span class="op">=</span> <span class="st">"dashboard"</span>,</span>
@@ -1340,7 +1553,7 @@ visualizations:</p>
 <h3 id="search-functionality">Search Functionality<a class="anchor" aria-label="anchor" href="#search-functionality"></a>
 </h3>
 <p>Add a search bar to help users find content:</p>
-<div class="sourceCode" id="cb56"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb67"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">dashboard</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_dashboard.html">create_dashboard</a></span><span class="op">(</span></span>
 <span>  title <span class="op">=</span> <span class="st">"My Dashboard"</span>,</span>
 <span>  output_dir <span class="op">=</span> <span class="st">"dashboard"</span>,</span>
@@ -1351,7 +1564,7 @@ visualizations:</p>
 <h3 id="analytics">Analytics<a class="anchor" aria-label="anchor" href="#analytics"></a>
 </h3>
 <p>Track usage with Plausible Analytics:</p>
-<div class="sourceCode" id="cb57"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb68"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">dashboard</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_dashboard.html">create_dashboard</a></span><span class="op">(</span></span>
 <span>  title <span class="op">=</span> <span class="st">"My Dashboard"</span>,</span>
 <span>  output_dir <span class="op">=</span> <span class="st">"dashboard"</span>,</span>
@@ -1362,7 +1575,7 @@ visualizations:</p>
 <h3 id="page-layout-options">Page Layout Options<a class="anchor" aria-label="anchor" href="#page-layout-options"></a>
 </h3>
 <p>Control the width and layout of pages:</p>
-<div class="sourceCode" id="cb58"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb69"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">dashboard</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_dashboard.html">create_dashboard</a></span><span class="op">(</span></span>
 <span>  title <span class="op">=</span> <span class="st">"My Dashboard"</span>,</span>
 <span>  output_dir <span class="op">=</span> <span class="st">"dashboard"</span>,</span>
@@ -1374,7 +1587,7 @@ visualizations:</p>
 <h2 id="complete-example-putting-it-all-together">Complete Example: Putting It All Together<a class="anchor" aria-label="anchor" href="#complete-example-putting-it-all-together"></a>
 </h2>
 <p>Here’s a complete, real-world example showcasing many features:</p>
-<div class="sourceCode" id="cb59"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb70"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://favstats.github.io/dashboardr/">dashboardr</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
 <span></span>
@@ -1542,7 +1755,7 @@ visualizations:</p>
 <h3 id="use-print-during-development">1. Use Print During Development<a class="anchor" aria-label="anchor" href="#use-print-during-development"></a>
 </h3>
 <p>Always print your objects to see what’s being built:</p>
-<div class="sourceCode" id="cb60"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb71"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Print visualizations to see tree structure</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">my_viz</span><span class="op">)</span></span>
 <span></span>
@@ -1554,7 +1767,7 @@ visualizations:</p>
 </h3>
 <p>Use <code><a href="../reference/create_viz.html">create_viz()</a></code> defaults for parameters that apply to
 most visualizations:</p>
-<div class="sourceCode" id="cb61"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb72"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Good: Set common parameters once</span></span>
 <span><span class="va">viz</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_viz.html">create_viz</a></span><span class="op">(</span></span>
 <span>  type <span class="op">=</span> <span class="st">"histogram"</span>,</span>
@@ -1572,7 +1785,7 @@ most visualizations:</p>
 <h3 id="use-icons-consistently">3. Use Icons Consistently<a class="anchor" aria-label="anchor" href="#use-icons-consistently"></a>
 </h3>
 <p>Pick an icon set and stick with it for consistency:</p>
-<div class="sourceCode" id="cb62"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb73"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Good: All Phosphor icons</span></span>
 <span><span class="fu"><a href="../reference/add_page.html">add_page</a></span><span class="op">(</span><span class="st">"Home"</span>, icon <span class="op">=</span> <span class="st">"ph:house-fill"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/add_page.html">add_page</a></span><span class="op">(</span><span class="st">"Analysis"</span>, icon <span class="op">=</span> <span class="st">"ph:chart-line"</span><span class="op">)</span></span>
@@ -1587,7 +1800,7 @@ most visualizations:</p>
 <h3 id="organize-complex-dashboards">4. Organize Complex Dashboards<a class="anchor" aria-label="anchor" href="#organize-complex-dashboards"></a>
 </h3>
 <p>For large dashboards, create visualizations in separate sections:</p>
-<div class="sourceCode" id="cb63"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb74"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Create modular visualization collections</span></span>
 <span><span class="va">demographics</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_viz.html">create_viz</a></span><span class="op">(</span><span class="va">...</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span><span class="va">...</span><span class="op">)</span></span>
 <span><span class="va">satisfaction</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_viz.html">create_viz</a></span><span class="op">(</span><span class="va">...</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span><span class="va">...</span><span class="op">)</span></span>
@@ -1603,7 +1816,7 @@ most visualizations:</p>
 <h3 id="use-lazy-loading-for-large-dashboards">5. Use Lazy Loading for Large Dashboards<a class="anchor" aria-label="anchor" href="#use-lazy-loading-for-large-dashboards"></a>
 </h3>
 <p>If your dashboard has many visualizations or tabs:</p>
-<div class="sourceCode" id="cb64"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb75"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/add_page.html">add_page</a></span><span class="op">(</span></span>
 <span>  name <span class="op">=</span> <span class="st">"Analysis"</span>,</span>
 <span>  data <span class="op">=</span> <span class="va">data</span>,</span>
@@ -1616,7 +1829,7 @@ most visualizations:</p>
 <h3 id="test-without-rendering">6. Test Without Rendering<a class="anchor" aria-label="anchor" href="#test-without-rendering"></a>
 </h3>
 <p>During development, skip rendering to iterate quickly:</p>
-<div class="sourceCode" id="cb65"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb76"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Fast iteration: just create QMD files</span></span>
 <span><span class="fu"><a href="../reference/generate_dashboard.html">generate_dashboard</a></span><span class="op">(</span><span class="va">dashboard</span>, render <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span></span>
@@ -1633,7 +1846,7 @@ most visualizations:</p>
 <div class="section level4">
 <h4 id="visualization-not-showing">Visualization Not Showing<a class="anchor" aria-label="anchor" href="#visualization-not-showing"></a>
 </h4>
-<div class="sourceCode" id="cb66"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb77"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Check variable names match your data</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">my_data</span><span class="op">)</span></span>
 <span></span>
@@ -1647,7 +1860,7 @@ most visualizations:</p>
 <h4 id="tabs-in-wrong-order">Tabs in Wrong Order<a class="anchor" aria-label="anchor" href="#tabs-in-wrong-order"></a>
 </h4>
 <p>Tabs appear in the order you call <code><a href="../reference/add_viz.html">add_viz()</a></code>:</p>
-<div class="sourceCode" id="cb67"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb78"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Check the structure</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">viz</span><span class="op">)</span></span>
 <span></span>
@@ -1660,7 +1873,7 @@ most visualizations:</p>
 <div class="section level4">
 <h4 id="filter-not-working">Filter Not Working<a class="anchor" aria-label="anchor" href="#filter-not-working"></a>
 </h4>
-<div class="sourceCode" id="cb68"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb79"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Use formula syntax with ~</span></span>
 <span><span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span></span>
 <span>  x_var <span class="op">=</span> <span class="st">"age"</span>,</span>
@@ -1677,7 +1890,7 @@ most visualizations:</p>
 <div class="section level3">
 <h3 id="getting-help">Getting Help<a class="anchor" aria-label="anchor" href="#getting-help"></a>
 </h3>
-<div class="sourceCode" id="cb69"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb80"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Function documentation</span></span>
 <span><span class="op">?</span><span class="va">create_dashboard</span></span>
 <span><span class="op">?</span><span class="va">add_viz</span></span>

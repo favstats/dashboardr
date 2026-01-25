@@ -67,6 +67,11 @@ library(highcharter)
 
 ``` r
 library(tidyr)
+```
+
+    ## Warning: package 'tidyr' was built under R version 4.4.3
+
+``` r
 library(dashboardr)
 
 # Load GSS Panel 2020 data
@@ -217,12 +222,12 @@ plot1 <- create_stackedbars(
 ```
 
     ## Warning: `trust_1a` and `fair_1a` have conflicting value labels.
-    ## ℹ Labels for these values will be taken from `trust_1a`.
-    ## ✖ Values: 1 and 2
+    ## i Labels for these values will be taken from `trust_1a`.
+    ## x Values: 1 and 2
 
     ## Warning: `trust_1a` and `helpful_1a` have conflicting value labels.
-    ## ℹ Labels for these values will be taken from `trust_1a`.
-    ## ✖ Values: 1 and 2
+    ## i Labels for these values will be taken from `trust_1a`.
+    ## x Values: 1 and 2
 
     ## Note: Column 'response' was 'haven_labelled' and converted to factor (levels = values).
 
@@ -252,12 +257,12 @@ plot2 <- create_stackedbars(
 ```
 
     ## Warning: `trust_1a` and `fair_1a` have conflicting value labels.
-    ## ℹ Labels for these values will be taken from `trust_1a`.
-    ## ✖ Values: 1 and 2
+    ## i Labels for these values will be taken from `trust_1a`.
+    ## x Values: 1 and 2
 
     ## Warning: `trust_1a` and `helpful_1a` have conflicting value labels.
-    ## ℹ Labels for these values will be taken from `trust_1a`.
-    ## ✖ Values: 1 and 2
+    ## i Labels for these values will be taken from `trust_1a`.
+    ## x Values: 1 and 2
 
     ## Note: Column 'response' was 'haven_labelled' and converted to factor (levels = values).
 
@@ -334,12 +339,12 @@ plot3 <- create_stackedbars(
 ```
 
     ## Warning: `trust_1a` and `fair_1a` have conflicting value labels.
-    ## ℹ Labels for these values will be taken from `trust_1a`.
-    ## ✖ Values: 1 and 2
+    ## i Labels for these values will be taken from `trust_1a`.
+    ## x Values: 1 and 2
 
     ## Warning: `trust_1a` and `helpful_1a` have conflicting value labels.
-    ## ℹ Labels for these values will be taken from `trust_1a`.
-    ## ✖ Values: 1 and 2
+    ## i Labels for these values will be taken from `trust_1a`.
+    ## x Values: 1 and 2
 
     ## Note: Column 'response' was 'haven_labelled' and converted to factor (levels = values).
 
@@ -374,12 +379,12 @@ plot4 <- create_stackedbars(
 ```
 
     ## Warning: `trust_1a` and `fair_1a` have conflicting value labels.
-    ## ℹ Labels for these values will be taken from `trust_1a`.
-    ## ✖ Values: 1 and 2
+    ## i Labels for these values will be taken from `trust_1a`.
+    ## x Values: 1 and 2
 
     ## Warning: `trust_1a` and `helpful_1a` have conflicting value labels.
-    ## ℹ Labels for these values will be taken from `trust_1a`.
-    ## ✖ Values: 1 and 2
+    ## i Labels for these values will be taken from `trust_1a`.
+    ## x Values: 1 and 2
 
     ## Note: Column 'response' was 'haven_labelled' and converted to factor (levels = values).
 
@@ -698,12 +703,12 @@ if (nrow(college_data) > 50) {
 ```
 
     ## Warning: `trust_1a` and `fair_1a` have conflicting value labels.
-    ## ℹ Labels for these values will be taken from `trust_1a`.
-    ## ✖ Values: 1 and 2
+    ## i Labels for these values will be taken from `trust_1a`.
+    ## x Values: 1 and 2
 
     ## Warning: `trust_1a` and `helpful_1a` have conflicting value labels.
-    ## ℹ Labels for these values will be taken from `trust_1a`.
-    ## ✖ Values: 1 and 2
+    ## i Labels for these values will be taken from `trust_1a`.
+    ## x Values: 1 and 2
 
     ## Note: Column 'response' was 'haven_labelled' and converted to factor (levels = values).
 
@@ -735,11 +740,11 @@ if (nrow(high_school_data) > 50) {
 ```
 
     ## Warning: `trust_1a` and `fair_1a` have conflicting value labels.
-    ## ℹ Labels for these values will be taken from `trust_1a`.
-    ## ✖ Values: 1 and 2
+    ## i Labels for these values will be taken from `trust_1a`.
+    ## x Values: 1 and 2
     ## `trust_1a` and `helpful_1a` have conflicting value labels.
-    ## ℹ Labels for these values will be taken from `trust_1a`.
-    ## ✖ Values: 1 and 2
+    ## i Labels for these values will be taken from `trust_1a`.
+    ## x Values: 1 and 2
 
     ## Note: Column 'response' was 'haven_labelled' and converted to factor (levels = values).
 
@@ -781,12 +786,12 @@ plot9 <- create_stackedbars(
 ```
 
     ## Warning: `trust_1a` and `fair_1a` have conflicting value labels.
-    ## ℹ Labels for these values will be taken from `trust_1a`.
-    ## ✖ Values: 1 and 2
+    ## i Labels for these values will be taken from `trust_1a`.
+    ## x Values: 1 and 2
 
     ## Warning: `trust_1a` and `helpful_1a` have conflicting value labels.
-    ## ℹ Labels for these values will be taken from `trust_1a`.
-    ## ✖ Values: 1 and 2
+    ## i Labels for these values will be taken from `trust_1a`.
+    ## x Values: 1 and 2
 
     ## Note: Column 'response' was 'haven_labelled' and converted to factor (levels = values).
 
@@ -826,12 +831,12 @@ plot10 <- create_stackedbars(
 ```
 
     ## Warning: `trust_1a` and `fair_1a` have conflicting value labels.
-    ## ℹ Labels for these values will be taken from `trust_1a`.
-    ## ✖ Values: 1 and 2
+    ## i Labels for these values will be taken from `trust_1a`.
+    ## x Values: 1 and 2
 
     ## Warning: `trust_1a` and `helpful_1a` have conflicting value labels.
-    ## ℹ Labels for these values will be taken from `trust_1a`.
-    ## ✖ Values: 1 and 2
+    ## i Labels for these values will be taken from `trust_1a`.
+    ## x Values: 1 and 2
 
     ## Note: Column 'response' was 'haven_labelled' and converted to factor (levels = values).
 

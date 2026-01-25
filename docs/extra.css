@@ -1,5 +1,12 @@
 /* Custom styles for dashboardr pkgdown site */
 
+/* Fix logo scaling */
+.navbar-brand img {
+  max-height: 30px;
+  width: auto;
+  object-fit: contain;
+}
+
 /* Make demo dashboard links stand out */
 .navbar-nav .nav-link.demo-link {
   font-weight: 600;

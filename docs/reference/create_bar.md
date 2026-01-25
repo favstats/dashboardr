@@ -19,11 +19,16 @@ create_bar(
   color_palette = NULL,
   group_order = NULL,
   x_order = NULL,
+  sort_by_value = FALSE,
+  sort_desc = TRUE,
   x_breaks = NULL,
   x_bin_labels = NULL,
   include_na = FALSE,
   na_label = "Missing",
-  weight_var = NULL
+  weight_var = NULL,
+  tooltip_prefix = "",
+  tooltip_suffix = "",
+  x_tooltip_suffix = ""
 )
 ```
 
@@ -81,6 +86,16 @@ create_bar(
 
   Optional character vector specifying the order of x categories.
 
+- sort_by_value:
+
+  Logical. If `TRUE`, sort categories by their value (highest on top for
+  horizontal bars).
+
+- sort_desc:
+
+  Logical. If `sort_by_value = TRUE`, sort descending (default) or
+  ascending.
+
 - x_breaks:
 
   Optional numeric vector for binning continuous x variables.
@@ -104,6 +119,18 @@ create_bar(
   Optional character string. Name of a weight variable to use for
   weighted aggregation. When provided, counts are computed as the sum of
   weights instead of simple counts.
+
+- tooltip_prefix:
+
+  Optional string prepended to tooltip values.
+
+- tooltip_suffix:
+
+  Optional string appended to tooltip values.
+
+- x_tooltip_suffix:
+
+  Optional string appended to x-axis values in tooltips.
 
 ## Value
 

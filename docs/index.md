@@ -1,4 +1,4 @@
-# dashboardr
+# dashboardr ![](reference/figures/logo.svg)
 
 **dashboardr** makes it easy to create beautiful, interactive [Quarto
 dashboards](https://quarto.org/docs/dashboards/) in R with minimal code.

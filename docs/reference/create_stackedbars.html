@@ -3,7 +3,13 @@
 creates a stacked‐bar chart where each bar is a question and each stack is
 a Likert‐type response category."><meta property="og:description" content="Turns wide survey data (one column per question) into long format and then
 creates a stacked‐bar chart where each bar is a question and each stack is
-a Likert‐type response category."><meta property="og:image" content="https://favstats.github.io/dashboardr/logo.svg"></head><body>
+a Likert‐type response category."><style>
+.navbar-brand img {
+  max-height: 30px;
+  width: auto;
+  object-fit: contain;
+}
+</style></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -49,7 +55,8 @@ a Likert‐type response category."><meta property="og:image" content="https://f
 </nav><div class="container template-reference-topic">
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
-      <img src="../logo.svg" class="logo" alt=""><h1>Stacked Bar Charts</h1>
+
+      <h1>Stacked Bar Charts</h1>
 
       <div class="d-none name"><code>create_stackedbars.Rd</code></div>
     </div>
@@ -229,7 +236,7 @@ the visual order of the stacks matches the legend order.</p></dd>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Load GSS data</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">gss_all</span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>data set ‘gss_all’ not found</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>data set 'gss_all' not found</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Filter to recent years and select Likert-style questions</span></span></span>
 <span class="r-in"><span><span class="va">gss_recent</span> <span class="op">&lt;-</span> <span class="va">gss_all</span> <span class="op"><a href="pipe.html">%&gt;%</a></span></span></span>

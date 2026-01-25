@@ -9,7 +9,13 @@ handles raw (unaggregated) data, counting the occurrences of
 categories, supporting ordered factors, allowing numerical x-axis
 and stacked variables to be binned into custom groups, and
 enables renaming of categorical values for display. It can also
-handle SPSS (.sav) columns automatically."><meta property="og:image" content="https://favstats.github.io/dashboardr/logo.svg"></head><body>
+handle SPSS (.sav) columns automatically."><style>
+.navbar-brand img {
+  max-height: 30px;
+  width: auto;
+  object-fit: contain;
+}
+</style></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -55,7 +61,8 @@ handle SPSS (.sav) columns automatically."><meta property="og:image" content="ht
 </nav><div class="container template-reference-topic">
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
-      <img src="../logo.svg" class="logo" alt=""><h1>Create a Stacked Bar Chart</h1>
+
+      <h1>Create a Stacked Bar Chart</h1>
 
       <div class="d-none name"><code>create_stackedbar.Rd</code></div>
     </div>
@@ -136,16 +143,16 @@ the function counts occurrences.</p></dd>
 
 
 <dt id="arg-y-label">y_label<a class="anchor" aria-label="anchor" href="#arg-y-label"></a></dt>
-<dd><p>Optional string. Y-axis label. Defaults to "Number of Respondents"
-or "Percentage of Respondents".</p></dd>
+<dd><p>Optional string. Y-axis label. Defaults to "Count" for counts
+or "Percentage" for percent stacking.</p></dd>
 
 
 <dt id="arg-stack-label">stack_label<a class="anchor" aria-label="anchor" href="#arg-stack-label"></a></dt>
-<dd><p>Optional string. Title for the stack legend. Defaults to <code>stack_var</code>.</p></dd>
+<dd><p>Optional string. Title for the stack legend. Defaults to empty (no title).</p></dd>
 
 
 <dt id="arg-stacked-type">stacked_type<a class="anchor" aria-label="anchor" href="#arg-stacked-type"></a></dt>
-<dd><p>One of "counts" or "percent" (100% stacked). Default "normal".</p></dd>
+<dd><p>One of "counts" (default) or "percent" (100% stacked).</p></dd>
 
 
 <dt id="arg-tooltip-prefix">tooltip_prefix<a class="anchor" aria-label="anchor" href="#arg-tooltip-prefix"></a></dt>
