@@ -206,22 +206,6 @@ create_content(data = survey_data, type = "stackedbars") %>%
   preview()
 ```
 
-Or use the standalone function directly:
-
-``` r
-create_stackedbars(
-  data = survey_data,
-  questions = c("q1", "q2", "q3", "q4"),
-  question_labels = c("I trust the company", 
-                      "I feel valued",
-                      "I have opportunities",
-                      "I would recommend"),
-  title = "Employee Sentiment",
-  stacked_type = "percent",
-  horizontal = TRUE
-)
-```
-
 ### Timeline
 
 Track changes over time:

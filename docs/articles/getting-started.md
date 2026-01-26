@@ -95,7 +95,9 @@ inside: one visualization ready to go.
 
 Use
 [`preview()`](https://favstats.github.io/dashboardr/reference/preview.md)
-to see the actual chart:
+to see the actual chart. Note this might differ slightly from how
+content will eventually look like in your dashboard as it creates a
+simple preview of your data.
 
 ``` r
 demographics %>% preview()
@@ -237,7 +239,11 @@ Welcome!
 
 Explore the General Social Survey data.
 
-No content to render.
+(ungrouped)
+
+attitudes
+
+Happiness
 
 Pages appear in the navbar in the order you add them.
 
@@ -268,7 +274,11 @@ Welcome!
 
 Explore the General Social Survey data.
 
-No content to render.
+(ungrouped)
+
+attitudes
+
+Happiness
 
 ## Complete Example
 

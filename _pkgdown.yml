@@ -54,32 +54,32 @@ navbar:
     articles:
       text: Articles
       menu:
-      - text: Getting Started
+      - text: "🚀 Getting Started"
         href: articles/getting-started.html
       - text: -------
-      - text: The Three Layers
-      - text: Content
+      - text: "📦 The Three Layers"
+      - text: "   ├─ Content Collections"
         href: articles/content-collections.html
-      - text: Pages
+      - text: "   ├─ Pages"
         href: articles/pages.html
-      - text: Dashboards
+      - text: "   └─ Dashboards"
         href: articles/dashboards.html
       - text: -------
-      - text: Advanced Features
+      - text: "⚙️ Advanced Features"
         href: articles/advanced-features.html
-      - text: Publishing Dashboards
+      - text: "🌐 Publishing Dashboards"
         href: articles/publishing_dashboards.html
       - text: -------
-      - text: Visualization Types
-      - text: Bar Charts
+      - text: "📊 Visualization Types"
+      - text: "   ├─ Bar Charts"
         href: articles/bar_vignette.html
-      - text: Timelines
+      - text: "   ├─ Timelines"
         href: articles/timeline_vignette.html
-      - text: Stacked Bars
+      - text: "   ├─ Stacked Bars"
         href: articles/stackedbar_vignette.html
-      - text: Stacked Bars (Multiple)
+      - text: "   ├─ Stacked Bars (Multiple)"
         href: articles/stackedbars_vignette.html
-      - text: Heatmaps
+      - text: "   └─ Heatmaps"
         href: articles/heatmap_vignette.html
     demos_menu:
       text: 🎯 Live Demos
