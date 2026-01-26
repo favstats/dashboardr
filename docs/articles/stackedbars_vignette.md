@@ -211,8 +211,8 @@ social_labels <- c(
 # Create basic multi-question chart
 plot1 <- create_stackedbars(
   data = gss_likert,
-  questions = social_questions,
-  question_labels = social_labels,
+  x_vars = social_questions,
+  x_var_labels = social_labels,
   title = "Social Attitudes and Trust",
   subtitle = "GSS Panel 2016 - Distribution of responses across social attitude questions",
   x_label = "Social Attitude Dimension",
@@ -222,12 +222,12 @@ plot1 <- create_stackedbars(
 ```
 
     ## Warning: `trust_1a` and `fair_1a` have conflicting value labels.
-    ## i Labels for these values will be taken from `trust_1a`.
-    ## x Values: 1 and 2
+    ## ℹ Labels for these values will be taken from `trust_1a`.
+    ## ✖ Values: 1 and 2
 
     ## Warning: `trust_1a` and `helpful_1a` have conflicting value labels.
-    ## i Labels for these values will be taken from `trust_1a`.
-    ## x Values: 1 and 2
+    ## ℹ Labels for these values will be taken from `trust_1a`.
+    ## ✖ Values: 1 and 2
 
 ``` r
 plot1
@@ -242,8 +242,8 @@ patterns across questions.
 # Create percentage-based chart with custom colors
 plot2 <- create_stackedbars(
   data = gss_likert,
-  questions = social_questions,
-  question_labels = social_labels,
+  x_vars = social_questions,
+  x_var_labels = social_labels,
   title = "Social Attitudes - Response Distribution",
   subtitle = "Percentage breakdown showing response patterns across questions",
   x_label = "Social Attitude Dimension",
@@ -255,12 +255,12 @@ plot2 <- create_stackedbars(
 ```
 
     ## Warning: `trust_1a` and `fair_1a` have conflicting value labels.
-    ## i Labels for these values will be taken from `trust_1a`.
-    ## x Values: 1 and 2
+    ## ℹ Labels for these values will be taken from `trust_1a`.
+    ## ✖ Values: 1 and 2
 
     ## Warning: `trust_1a` and `helpful_1a` have conflicting value labels.
-    ## i Labels for these values will be taken from `trust_1a`.
-    ## x Values: 1 and 2
+    ## ℹ Labels for these values will be taken from `trust_1a`.
+    ## ✖ Values: 1 and 2
 
 ``` r
 plot2
@@ -320,8 +320,8 @@ response_order <- c("Low Trust/Negative", "Situational/Neutral", "High Trust/Pos
 # Create chart with custom mapping and ordering
 plot3 <- create_stackedbars(
   data = gss_likert,
-  questions = social_questions,
-  question_labels = social_labels,
+  x_vars = social_questions,
+  x_var_labels = social_labels,
   title = "Social Trust Dimensions with Standardized Responses",
   subtitle = "Responses mapped to consistent positive/negative categories",
   x_label = "Trust Dimension",
@@ -335,12 +335,12 @@ plot3 <- create_stackedbars(
 ```
 
     ## Warning: `trust_1a` and `fair_1a` have conflicting value labels.
-    ## i Labels for these values will be taken from `trust_1a`.
-    ## x Values: 1 and 2
+    ## ℹ Labels for these values will be taken from `trust_1a`.
+    ## ✖ Values: 1 and 2
 
     ## Warning: `trust_1a` and `helpful_1a` have conflicting value labels.
-    ## i Labels for these values will be taken from `trust_1a`.
-    ## x Values: 1 and 2
+    ## ℹ Labels for these values will be taken from `trust_1a`.
+    ## ✖ Values: 1 and 2
 
     ## Warning: stack_order provided with stack_map_values. Ensure stack_order refers
     ## to the *new* mapped labels.
@@ -357,8 +357,8 @@ Let’s create a chart that explicitly shows missing data patterns.
 # Create chart including NA values
 plot4 <- create_stackedbars(
   data = gss_likert,
-  questions = social_questions,
-  question_labels = social_labels,
+  x_vars = social_questions,
+  x_var_labels = social_labels,
   title = "Social Attitudes Including Non-Responses",
   subtitle = "Showing missing data patterns explicitly",
   x_label = "Social Attitude Question",
@@ -373,12 +373,12 @@ plot4 <- create_stackedbars(
 ```
 
     ## Warning: `trust_1a` and `fair_1a` have conflicting value labels.
-    ## i Labels for these values will be taken from `trust_1a`.
-    ## x Values: 1 and 2
+    ## ℹ Labels for these values will be taken from `trust_1a`.
+    ## ✖ Values: 1 and 2
 
     ## Warning: `trust_1a` and `helpful_1a` have conflicting value labels.
-    ## i Labels for these values will be taken from `trust_1a`.
-    ## x Values: 1 and 2
+    ## ℹ Labels for these values will be taken from `trust_1a`.
+    ## ✖ Values: 1 and 2
 
 ``` r
 plot4
@@ -413,7 +413,7 @@ table(gss_likert$happy_1a, useNA = "always")
 # Create happiness chart
 plot5 <- create_stackedbars(
   data = gss_likert,
-  questions = "happy_1a",
+  x_vars = "happy_1a",
   title = "General Happiness Distribution",
   x_label = "Well-being Measure",
   stack_label = "Happiness Level",
@@ -553,8 +553,8 @@ standardized_labels <- c(
 # Create comprehensive chart
 plot6 <- create_stackedbars(
   data = gss_standardized,
-  questions = standardized_questions,
-  question_labels = standardized_labels,
+  x_vars = standardized_questions,
+  x_var_labels = standardized_labels,
   title = "Social Attitudes and Well-being Battery",
   subtitle = "Multiple dimensions of social trust and personal happiness",
   x_label = "Question Domain",
@@ -669,8 +669,8 @@ cat("High school data rows:", nrow(high_school_data), "\n")
 if (nrow(college_data) > 50) {
   plot8a <- create_stackedbars(
     data = college_data,
-    questions = social_questions,
-    question_labels = social_labels,
+    x_vars = social_questions,
+    x_var_labels = social_labels,
     stack_map_values = trust_fix_map,
     title = "Social Attitudes Among College-Educated",
     subtitle = paste0("Junior college, bachelor's, and graduate degree holders (n=", nrow(college_data), ")"),
@@ -691,12 +691,12 @@ if (nrow(college_data) > 50) {
 ```
 
     ## Warning: `trust_1a` and `fair_1a` have conflicting value labels.
-    ## i Labels for these values will be taken from `trust_1a`.
-    ## x Values: 1 and 2
+    ## ℹ Labels for these values will be taken from `trust_1a`.
+    ## ✖ Values: 1 and 2
 
     ## Warning: `trust_1a` and `helpful_1a` have conflicting value labels.
-    ## i Labels for these values will be taken from `trust_1a`.
-    ## x Values: 1 and 2
+    ## ℹ Labels for these values will be taken from `trust_1a`.
+    ## ✖ Values: 1 and 2
 
     ## [1] "College-educated chart:"
 
@@ -704,8 +704,8 @@ if (nrow(college_data) > 50) {
 if (nrow(high_school_data) > 50) {
   plot8b <- create_stackedbars(
     data = high_school_data,
-    questions = social_questions,
-    question_labels = social_labels,
+    x_vars = social_questions,
+    x_var_labels = social_labels,
     stack_map_values = trust_fix_map,
     title = "Social Attitudes Among High School Educated",
     subtitle = paste0("High school diploma or less (n=", nrow(high_school_data), ")"),
@@ -726,11 +726,11 @@ if (nrow(high_school_data) > 50) {
 ```
 
     ## Warning: `trust_1a` and `fair_1a` have conflicting value labels.
-    ## i Labels for these values will be taken from `trust_1a`.
-    ## x Values: 1 and 2
+    ## ℹ Labels for these values will be taken from `trust_1a`.
+    ## ✖ Values: 1 and 2
     ## `trust_1a` and `helpful_1a` have conflicting value labels.
-    ## i Labels for these values will be taken from `trust_1a`.
-    ## x Values: 1 and 2
+    ## ℹ Labels for these values will be taken from `trust_1a`.
+    ## ✖ Values: 1 and 2
 
     ## [1] "High school educated chart:"
 
@@ -753,8 +753,8 @@ trust_battery_labels <- c(
 # Create a comprehensive battery analysis
 plot9 <- create_stackedbars(
   data = gss_likert,
-  questions = trust_battery,
-  question_labels = trust_battery_labels,
+  x_vars = trust_battery,
+  x_var_labels = trust_battery_labels,
   title = "Social Trust Battery - Complete Analysis",
   subtitle = "Comprehensive view of social trust dimensions with enhanced tooltips",
   x_label = "Trust Dimension",
@@ -762,7 +762,7 @@ plot9 <- create_stackedbars(
   stacked_type = "percent",
   tooltip_prefix = "Percentage: ",
   tooltip_suffix = "% of respondents",
-  show_question_tooltip = TRUE,
+  show_var_tooltip = TRUE,
   include_na = TRUE,
   na_label_stack= "No answer",
   color_palette = c("#8c510a", "#d8b365", "#f6e8c3", "darkgrey")
@@ -770,12 +770,12 @@ plot9 <- create_stackedbars(
 ```
 
     ## Warning: `trust_1a` and `fair_1a` have conflicting value labels.
-    ## i Labels for these values will be taken from `trust_1a`.
-    ## x Values: 1 and 2
+    ## ℹ Labels for these values will be taken from `trust_1a`.
+    ## ✖ Values: 1 and 2
 
     ## Warning: `trust_1a` and `helpful_1a` have conflicting value labels.
-    ## i Labels for these values will be taken from `trust_1a`.
-    ## x Values: 1 and 2
+    ## ℹ Labels for these values will be taken from `trust_1a`.
+    ## ✖ Values: 1 and 2
 
 ``` r
 plot9
@@ -791,8 +791,8 @@ Let’s create a fully customized, publication-ready chart.
 # Create the most polished example
 plot10 <- create_stackedbars(
   data = gss_likert,
-  questions = social_questions,
-  question_labels = c(
+  x_vars = social_questions,
+  x_var_labels = c(
     "Interpersonal Trust\n('Can most people be trusted?')",
     "Perceived Fairness\n('Do people try to be fair?')",
     "Perceived Helpfulness\n('Are people helpful?')"
@@ -808,17 +808,17 @@ plot10 <- create_stackedbars(
   include_na = TRUE,
   na_label_stack = "No response",
   color_palette = c("#b2182b", "#ef8a62", "#fddbc7", "darkgrey"),
-  show_question_tooltip = TRUE
+  show_var_tooltip = TRUE
 )
 ```
 
     ## Warning: `trust_1a` and `fair_1a` have conflicting value labels.
-    ## i Labels for these values will be taken from `trust_1a`.
-    ## x Values: 1 and 2
+    ## ℹ Labels for these values will be taken from `trust_1a`.
+    ## ✖ Values: 1 and 2
 
     ## Warning: `trust_1a` and `helpful_1a` have conflicting value labels.
-    ## i Labels for these values will be taken from `trust_1a`.
-    ## x Values: 1 and 2
+    ## ℹ Labels for these values will be taken from `trust_1a`.
+    ## ✖ Values: 1 and 2
 
 ``` r
 plot10

@@ -80,7 +80,7 @@ create_content <- function(data = NULL, tabgroup_labels = NULL, ...) {
 #'   add_viz(type = "histogram", x_var = "age") %>%
 #'   add_text("Analysis complete")
 #' }
-add_text <- function(x = NULL, text, tabgroup = NULL, ...) {
+add_text <- function(x = NULL, text, ..., tabgroup = NULL) {
   # Dispatch to page_object method if appropriate
   if (inherits(x, "page_object")) {
     return(add_text.page_object(x, text, ..., tabgroup = tabgroup))
@@ -321,21 +321,27 @@ add_callout <- function(x, text, type = c("note", "tip", "warning", "caution", "
 }
 
 #' Add horizontal divider
-#' @param content A content_collection or viz_collection object
+#' @param content A content_collection, viz_collection, or page_object
 #' @param style Divider style ("default", "thick", "dashed", "dotted")
 #' @param tabgroup Optional tabgroup for organizing content (character vector for nested tabs)
-#' @return Updated content_collection
+#' @return Updated object (same type as input)
 #' @export
 add_divider <- function(content, style = "default", tabgroup = NULL) {
-  if (!is_content(content)) {
-    stop("First argument must be a content collection")
-  }
-  
   divider_block <- structure(list(
     type = "divider",
     style = style,
     tabgroup = .parse_tabgroup(tabgroup)
   ), class = "content_block")
+  
+  # Handle page_object
+ if (inherits(content, "page_object")) {
+    content$.items <- c(content$.items, list(divider_block))
+    return(content)
+  }
+  
+  if (!is_content(content)) {
+    stop("First argument must be a content collection or page_object")
+  }
   
   insertion_idx <- length(content$items) + 1
   divider_block$.insertion_index <- insertion_idx
@@ -344,19 +350,15 @@ add_divider <- function(content, style = "default", tabgroup = NULL) {
 }
 
 #' Add code block
-#' @param content A content_collection or viz_collection object
+#' @param content A content_collection, viz_collection, or page_object
 #' @param code Code content
 #' @param language Programming language for syntax highlighting
 #' @param caption Optional caption
 #' @param filename Optional filename to display
 #' @param tabgroup Optional tabgroup for organizing content (character vector for nested tabs)
-#' @return Updated content_collection
+#' @return Updated object (same type as input)
 #' @export
 add_code <- function(content, code, language = "r", caption = NULL, filename = NULL, tabgroup = NULL) {
-  if (!is_content(content)) {
-    stop("First argument must be a content collection")
-  }
-  
   code_block <- structure(list(
     type = "code",
     code = code,
@@ -366,6 +368,16 @@ add_code <- function(content, code, language = "r", caption = NULL, filename = N
     tabgroup = .parse_tabgroup(tabgroup)
   ), class = "content_block")
   
+  # Handle page_object
+  if (inherits(content, "page_object")) {
+    content$.items <- c(content$.items, list(code_block))
+    return(content)
+  }
+  
+  if (!is_content(content)) {
+    stop("First argument must be a content collection or page_object")
+  }
+  
   insertion_idx <- length(content$items) + 1
   code_block$.insertion_index <- insertion_idx
   content$items <- c(content$items, list(code_block))
@@ -373,21 +385,27 @@ add_code <- function(content, code, language = "r", caption = NULL, filename = N
 }
 
 #' Add vertical spacer
-#' @param content A content_collection or viz_collection object
+#' @param content A content_collection, viz_collection, or page_object
 #' @param height Height (CSS unit, e.g. "2rem", "50px")
 #' @param tabgroup Optional tabgroup for organizing content (character vector for nested tabs)
-#' @return Updated content_collection
+#' @return Updated object (same type as input)
 #' @export
 add_spacer <- function(content, height = "2rem", tabgroup = NULL) {
-  if (!is_content(content)) {
-    stop("First argument must be a content collection")
-  }
-  
   spacer_block <- structure(list(
     type = "spacer",
     height = height,
     tabgroup = .parse_tabgroup(tabgroup)
   ), class = "content_block")
+  
+  # Handle page_object
+  if (inherits(content, "page_object")) {
+    content$.items <- c(content$.items, list(spacer_block))
+    return(content)
+  }
+  
+  if (!is_content(content)) {
+    stop("First argument must be a content collection or page_object")
+  }
   
   insertion_idx <- length(content$items) + 1
   spacer_block$.insertion_index <- insertion_idx
@@ -417,13 +435,7 @@ add_spacer <- function(content, height = "2rem", tabgroup = NULL) {
 #'   add_gt(mtcars, caption = "Motor Trend Cars")
 #' }
 add_gt <- function(content, gt_object, caption = NULL, tabgroup = NULL) {
-  if (!is_content(content)) {
-    stop("First argument must be a content collection")
-  }
-  
   # Accept both gt tables and data frames
-  # If it's a data frame, it will be converted to gt in rendering
-  
   gt_block <- structure(list(
     type = "gt",
     gt_object = gt_object,
@@ -431,6 +443,15 @@ add_gt <- function(content, gt_object, caption = NULL, tabgroup = NULL) {
     is_dataframe = is.data.frame(gt_object),
     tabgroup = .parse_tabgroup(tabgroup)
   ), class = "content_block")
+  
+  if (inherits(content, "page_object")) {
+    content$.items <- c(content$.items, list(gt_block))
+    return(content)
+  }
+  
+  if (!is_content(content)) {
+    stop("First argument must be a content collection or page_object")
+  }
   
   insertion_idx <- length(content$items) + 1
   gt_block$.insertion_index <- insertion_idx
@@ -462,19 +483,21 @@ add_gt <- function(content, gt_object, caption = NULL, tabgroup = NULL) {
 #'   add_reactable(mtcars)
 #' }
 add_reactable <- function(content, reactable_object, tabgroup = NULL) {
-  if (!is_content(content)) {
-    stop("First argument must be a content collection")
-  }
-  
-  # Accept both reactable tables and data frames
-  # If it's a data frame, it will be converted to reactable in rendering
-  
   reactable_block <- structure(list(
     type = "reactable",
     reactable_object = reactable_object,
     is_dataframe = is.data.frame(reactable_object),
     tabgroup = .parse_tabgroup(tabgroup)
   ), class = "content_block")
+  
+  if (inherits(content, "page_object")) {
+    content$.items <- c(content$.items, list(reactable_block))
+    return(content)
+  }
+  
+  if (!is_content(content)) {
+    stop("First argument must be a content collection or page_object")
+  }
   
   insertion_idx <- length(content$items) + 1
   reactable_block$.insertion_index <- insertion_idx
@@ -490,16 +513,21 @@ add_reactable <- function(content, reactable_object, tabgroup = NULL) {
 #' @return Updated content_collection
 #' @export
 add_table <- function(content, table_object, caption = NULL, tabgroup = NULL) {
-  if (!is_content(content)) {
-    stop("First argument must be a content collection")
-  }
-  
   table_block <- structure(list(
     type = "table",
     table_object = table_object,
     caption = caption,
     tabgroup = .parse_tabgroup(tabgroup)
   ), class = "content_block")
+  
+  if (inherits(content, "page_object")) {
+    content$.items <- c(content$.items, list(table_block))
+    return(content)
+  }
+  
+  if (!is_content(content)) {
+    stop("First argument must be a content collection or page_object")
+  }
   
   insertion_idx <- length(content$items) + 1
   table_block$.insertion_index <- insertion_idx
@@ -533,10 +561,6 @@ add_table <- function(content, table_object, caption = NULL, tabgroup = NULL) {
 #'   add_DT(mtcars, options = list(pageLength = 5, scrollX = TRUE))
 #' }
 add_DT <- function(content, table_data, options = NULL, tabgroup = NULL, ...) {
-  if (!is_content(content)) {
-    stop("First argument must be a content collection")
-  }
-  
   dt_block <- structure(list(
     type = "DT",
     table_data = table_data,
@@ -544,6 +568,15 @@ add_DT <- function(content, table_data, options = NULL, tabgroup = NULL, ...) {
     extra_args = list(...),
     tabgroup = .parse_tabgroup(tabgroup)
   ), class = "content_block")
+  
+  if (inherits(content, "page_object")) {
+    content$.items <- c(content$.items, list(dt_block))
+    return(content)
+  }
+  
+  if (!is_content(content)) {
+    stop("First argument must be a content collection or page_object")
+  }
   
   insertion_idx <- length(content$items) + 1
   dt_block$.insertion_index <- insertion_idx
@@ -561,10 +594,6 @@ add_DT <- function(content, table_data, options = NULL, tabgroup = NULL, ...) {
 #' @return Updated content_collection
 #' @export
 add_video <- function(content, src, caption = NULL, width = NULL, height = NULL, tabgroup = NULL) {
-  if (!is_content(content)) {
-    stop("First argument must be a content collection")
-  }
-  
   video_block <- structure(list(
     type = "video",
     url = src,
@@ -573,6 +602,15 @@ add_video <- function(content, src, caption = NULL, width = NULL, height = NULL,
     height = height,
     tabgroup = .parse_tabgroup(tabgroup)
   ), class = "content_block")
+  
+  if (inherits(content, "page_object")) {
+    content$.items <- c(content$.items, list(video_block))
+    return(content)
+  }
+  
+  if (!is_content(content)) {
+    stop("First argument must be a content collection or page_object")
+  }
   
   insertion_idx <- length(content$items) + 1
   video_block$.insertion_index <- insertion_idx
@@ -589,10 +627,6 @@ add_video <- function(content, src, caption = NULL, width = NULL, height = NULL,
 #' @return Updated content_collection
 #' @export
 add_iframe <- function(content, src, height = "500px", width = "100%", tabgroup = NULL) {
-  if (!is_content(content)) {
-    stop("First argument must be a content collection")
-  }
-  
   iframe_block <- structure(list(
     type = "iframe",
     url = src,
@@ -600,6 +634,15 @@ add_iframe <- function(content, src, height = "500px", width = "100%", tabgroup 
     width = width,
     tabgroup = .parse_tabgroup(tabgroup)
   ), class = "content_block")
+  
+  if (inherits(content, "page_object")) {
+    content$.items <- c(content$.items, list(iframe_block))
+    return(content)
+  }
+  
+  if (!is_content(content)) {
+    stop("First argument must be a content collection or page_object")
+  }
   
   insertion_idx <- length(content$items) + 1
   iframe_block$.insertion_index <- insertion_idx
@@ -616,10 +659,6 @@ add_iframe <- function(content, src, height = "500px", width = "100%", tabgroup 
 #' @return Updated content_collection
 #' @export
 add_accordion <- function(content, title, text, open = FALSE, tabgroup = NULL) {
-  if (!is_content(content)) {
-    stop("First argument must be a content collection")
-  }
-  
   accordion_block <- structure(list(
     type = "accordion",
     title = title,
@@ -627,6 +666,15 @@ add_accordion <- function(content, title, text, open = FALSE, tabgroup = NULL) {
     open = open,
     tabgroup = .parse_tabgroup(tabgroup)
   ), class = "content_block")
+  
+  if (inherits(content, "page_object")) {
+    content$.items <- c(content$.items, list(accordion_block))
+    return(content)
+  }
+  
+  if (!is_content(content)) {
+    stop("First argument must be a content collection or page_object")
+  }
   
   insertion_idx <- length(content$items) + 1
   accordion_block$.insertion_index <- insertion_idx
@@ -643,10 +691,6 @@ add_accordion <- function(content, title, text, open = FALSE, tabgroup = NULL) {
 #' @return Updated content_collection
 #' @export
 add_card <- function(content, text, title = NULL, footer = NULL, tabgroup = NULL) {
-  if (!is_content(content)) {
-    stop("First argument must be a content collection")
-  }
-  
   card_block <- structure(list(
     type = "card",
     title = title,
@@ -654,6 +698,15 @@ add_card <- function(content, text, title = NULL, footer = NULL, tabgroup = NULL
     footer = footer,
     tabgroup = .parse_tabgroup(tabgroup)
   ), class = "content_block")
+  
+  if (inherits(content, "page_object")) {
+    content$.items <- c(content$.items, list(card_block))
+    return(content)
+  }
+  
+  if (!is_content(content)) {
+    stop("First argument must be a content collection or page_object")
+  }
   
   insertion_idx <- length(content$items) + 1
   card_block$.insertion_index <- insertion_idx
@@ -668,14 +721,21 @@ add_card <- function(content, text, title = NULL, footer = NULL, tabgroup = NULL
 #' @param tabgroup Optional tabgroup for organizing content (character vector for nested tabs)
 #' @export
 add_html <- function(content, html, tabgroup = NULL) {
-  if (!is_content(content)) {
-    stop("First argument must be a content collection")
-  }
   html_block <- structure(list(
     type = "html",
     html = html,
     tabgroup = .parse_tabgroup(tabgroup)
   ), class = "content_block")
+  
+  if (inherits(content, "page_object")) {
+    content$.items <- c(content$.items, list(html_block))
+    return(content)
+  }
+  
+  if (!is_content(content)) {
+    stop("First argument must be a content collection or page_object")
+  }
+  
   insertion_idx <- length(content$items) + 1
   html_block$.insertion_index <- insertion_idx
   content$items <- c(content$items, list(html_block))
@@ -691,9 +751,6 @@ add_html <- function(content, html, tabgroup = NULL) {
 #' @param tabgroup Optional tabgroup for organizing content (character vector for nested tabs)
 #' @export
 add_quote <- function(content, quote, attribution = NULL, cite = NULL, tabgroup = NULL) {
-  if (!is_content(content)) {
-    stop("First argument must be a content collection")
-  }
   quote_block <- structure(list(
     type = "quote",
     quote = quote,
@@ -701,6 +758,16 @@ add_quote <- function(content, quote, attribution = NULL, cite = NULL, tabgroup 
     cite = cite,
     tabgroup = .parse_tabgroup(tabgroup)
   ), class = "content_block")
+  
+  if (inherits(content, "page_object")) {
+    content$.items <- c(content$.items, list(quote_block))
+    return(content)
+  }
+  
+  if (!is_content(content)) {
+    stop("First argument must be a content collection or page_object")
+  }
+  
   insertion_idx <- length(content$items) + 1
   quote_block$.insertion_index <- insertion_idx
   content$items <- c(content$items, list(quote_block))
@@ -715,15 +782,22 @@ add_quote <- function(content, quote, attribution = NULL, cite = NULL, tabgroup 
 #' @param tabgroup Optional tabgroup for organizing content (character vector for nested tabs)
 #' @export
 add_badge <- function(content, text, color = "primary", tabgroup = NULL) {
-  if (!is_content(content)) {
-    stop("First argument must be a content collection")
-  }
   badge_block <- structure(list(
     type = "badge",
     text = text,
     color = color,
     tabgroup = .parse_tabgroup(tabgroup)
   ), class = "content_block")
+  
+  if (inherits(content, "page_object")) {
+    content$.items <- c(content$.items, list(badge_block))
+    return(content)
+  }
+  
+  if (!is_content(content)) {
+    stop("First argument must be a content collection or page_object")
+  }
+  
   insertion_idx <- length(content$items) + 1
   badge_block$.insertion_index <- insertion_idx
   content$items <- c(content$items, list(badge_block))
@@ -741,9 +815,6 @@ add_badge <- function(content, text, color = "primary", tabgroup = NULL) {
 #' @param tabgroup Optional tabgroup for organizing content (character vector for nested tabs)
 #' @export
 add_metric <- function(content, value, title, icon = NULL, color = NULL, subtitle = NULL, tabgroup = NULL) {
-  if (!is_content(content)) {
-    stop("First argument must be a content collection")
-  }
   metric_block <- structure(list(
     type = "metric",
     value = value,
@@ -753,6 +824,16 @@ add_metric <- function(content, value, title, icon = NULL, color = NULL, subtitl
     subtitle = subtitle,
     tabgroup = .parse_tabgroup(tabgroup)
   ), class = "content_block")
+  
+  if (inherits(content, "page_object")) {
+    content$.items <- c(content$.items, list(metric_block))
+    return(content)
+  }
+  
+  if (!is_content(content)) {
+    stop("First argument must be a content collection or page_object")
+  }
+  
   insertion_idx <- length(content$items) + 1
   metric_block$.insertion_index <- insertion_idx
   content$items <- c(content$items, list(metric_block))
@@ -849,8 +930,20 @@ add_value_box <- function(content, title, value, logo_url = NULL, logo_text = NU
 #'   end_value_box_row()
 #' }
 add_value_box_row <- function(content, tabgroup = NULL) {
+  # Handle page_object - store reference for end_value_box_row to use
+  if (inherits(content, "page_object")) {
+    row_container <- structure(list(
+      type = "value_box_row",
+      boxes = list(),
+      parent_page = content,
+      parent_content = NULL,
+      tabgroup = .parse_tabgroup(tabgroup)
+    ), class = c("value_box_row_container", "content_block"))
+    return(row_container)
+  }
+  
   if (!is_content(content)) {
-    stop("First argument must be a content collection")
+    stop("First argument must be a content collection or page_object")
   }
   
   # Create a special row container that add_value_box will detect
@@ -858,6 +951,7 @@ add_value_box_row <- function(content, tabgroup = NULL) {
     type = "value_box_row",
     boxes = list(),
     parent_content = content,
+    parent_page = NULL,
     tabgroup = .parse_tabgroup(tabgroup)
   ), class = c("value_box_row_container", "content_block"))
   
@@ -885,15 +979,22 @@ end_value_box_row <- function(row_container) {
     stop("end_value_box_row() must be called on a value_box_row_container (created by add_value_box_row())")
   }
   
-  # Get the parent content collection
-  parent_content <- row_container$parent_content
-  
   # Create the final value_box_row block with all collected boxes
   value_box_row_block <- structure(list(
     type = "value_box_row",
     boxes = row_container$boxes,
     tabgroup = row_container$tabgroup
   ), class = "content_block")
+  
+  # Handle page_object parent
+  if (!is.null(row_container$parent_page)) {
+    parent_page <- row_container$parent_page
+    parent_page$.items <- c(parent_page$.items, list(value_box_row_block))
+    return(parent_page)
+  }
+  
+  # Handle content collection parent
+  parent_content <- row_container$parent_content
   
   # Add insertion index to preserve order
   insertion_idx <- length(parent_content$items) + 1
@@ -1186,12 +1287,26 @@ add_input <- function(content,
 #' }
 add_input_row <- function(content, tabgroup = NULL, style = c("boxed", "inline"), 
                           align = c("center", "left", "right")) {
-  if (!is_content(content)) {
-    stop("First argument must be a content collection", call. = FALSE)
-  }
-  
   style <- match.arg(style)
   align <- match.arg(align)
+  
+  # Handle page_object
+  if (inherits(content, "page_object")) {
+    row_container <- structure(list(
+      type = "input_row",
+      inputs = list(),
+      parent_page = content,
+      parent_content = NULL,
+      tabgroup = .parse_tabgroup(tabgroup),
+      style = style,
+      align = align
+    ), class = c("input_row_container", "content_block"))
+    return(row_container)
+  }
+  
+  if (!is_content(content)) {
+    stop("First argument must be a content collection or page_object", call. = FALSE)
+  }
   
   # Mark that this collection needs inputs enabled
   content$needs_inputs <- TRUE
@@ -1201,6 +1316,7 @@ add_input_row <- function(content, tabgroup = NULL, style = c("boxed", "inline")
     type = "input_row",
     inputs = list(),
     parent_content = content,
+    parent_page = NULL,
     tabgroup = .parse_tabgroup(tabgroup),
     style = style,
     align = align
@@ -1231,9 +1347,6 @@ end_input_row <- function(row_container) {
     stop("end_input_row() must be called on an input_row_container (created by add_input_row())", call. = FALSE)
   }
   
-  # Get the parent content collection
-  parent_content <- row_container$parent_content
-  
   # Create the final input_row block with all collected inputs
   input_row_block <- structure(list(
     type = "input_row",
@@ -1242,6 +1355,16 @@ end_input_row <- function(row_container) {
     style = row_container$style %||% "boxed",
     align = row_container$align %||% "center"
   ), class = "content_block")
+  
+  # Handle page_object parent
+  if (!is.null(row_container$parent_page)) {
+    parent_page <- row_container$parent_page
+    parent_page$.items <- c(parent_page$.items, list(input_row_block))
+    return(parent_page)
+  }
+  
+  # Handle content collection parent
+  parent_content <- row_container$parent_content
   
   # Add insertion index to preserve order
   insertion_idx <- length(parent_content$items) + 1

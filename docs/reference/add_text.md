@@ -6,7 +6,7 @@ a pipe. Supports viz_collection as first argument for seamless piping.
 ## Usage
 
 ``` r
-add_text(x = NULL, text, tabgroup = NULL, ...)
+add_text(x = NULL, text, ..., tabgroup = NULL)
 ```
 
 ## Arguments
@@ -15,14 +15,14 @@ add_text(x = NULL, text, tabgroup = NULL, ...)
 
   Markdown text content (can be multi-line)
 
+- ...:
+
+  Additional text lines (will be combined with newlines)
+
 - tabgroup:
 
   Optional tabgroup for organizing content (character vector for nested
   tabs)
-
-- ...:
-
-  Additional text lines (will be combined with newlines)
 
 - content_collection:
 

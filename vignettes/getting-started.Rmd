@@ -14,6 +14,9 @@ knitr::opts_chunk$set(
   fig.width = 7,
   fig.height = 5
 )
+# Ensure proper UTF-8 encoding for Unicode output
+options(encoding = "UTF-8")
+Sys.setlocale("LC_ALL", "en_US.UTF-8")
 ```
 
 This vignette walks you through building your first interactive dashboard with dashboardr. By the end, you'll understand the core concepts and have a working dashboard you can customize.
@@ -41,16 +44,16 @@ In this tutorial, we'll create a dashboard exploring the General Social Survey (
 
 First, let's load the packages and prepare our data:
 
-```{r setup, message=FALSE}
+```{r setup, message=FALSE, warning=FALSE}
 library(dashboardr)
 library(dplyr)
 library(gssr)
 
-# Load GSS data and select relevant variables
+# Load GSS data and select relevant variables (latest wave only)
 data(gss_all)
 gss <- gss_all %>%
   select(year, age, sex, race, degree, happy, polviews) %>%
-  filter(year >= 2010, !is.na(age), !is.na(sex), !is.na(race), !is.na(degree))
+  filter(year == max(year, na.rm = TRUE), !is.na(age), !is.na(sex), !is.na(race), !is.na(degree))
 ```
 
 ```{r, include = FALSE}
@@ -59,7 +62,7 @@ devtools::load_all()
 
 We now have a dataset with about 22,000 respondents from 2010 onwards, with variables for demographics (age, sex, race, education) and attitudes (happiness, political views).
 
-## The Three Layers
+## Core Concepts
 
 Just as ggplot2 builds plots from layers (data, aesthetics, geoms), dashboardr builds dashboards from three layers:
 
@@ -73,7 +76,7 @@ Just as ggplot2 builds plots from layers (data, aesthetics, geoms), dashboardr b
 
 Each layer flows into the next using pipes (`%>%`), making your code readable and modular.
 
-## Layer 1: Content
+### Layer 1: Content
 
 Content collections hold your visualizations and text. You create one with `create_content()`, passing the data and a default chart type:
 
@@ -97,14 +100,14 @@ You can keep adding to content collections. Use `tabgroup` to organize charts in
 
 ```{r}
 demographics <- create_content(data = gss, type = "bar") %>%
-  add_viz(x_var = "degree", title = "Education", tabgroup = "demographics") %>%
-  add_viz(x_var = "race", title = "Race", tabgroup = "demographics") %>%
-  add_viz(x_var = "happy", title = "Happiness", tabgroup = "attitudes")
+  add_viz(x_var = "degree", title = "Education", tabgroup = "Demographics") %>%
+  add_viz(x_var = "race", title = "Race", tabgroup = "Demographics") %>%
+  add_viz(x_var = "happy", title = "Happiness", tabgroup = "Attitudes")
 
 demographics %>% preview()
 ```
 
-## Layer 2: Pages
+### Layer 2: Pages
 
 Pages organize content and define your dashboard's navigation. Each page becomes a separate HTML file.
 
@@ -119,10 +122,11 @@ home %>% preview()
 
 The `is_landing_page = TRUE` makes this the default page when someone opens your dashboard.
 
-Now an analysis page that uses our content from Layer 1:
+Now an analysis page that uses our content from Layer 1. You can also add text directly to pages:
 
 ```{r}
 analysis <- create_page("Analysis", data = gss) %>%
+  add_text("## Demographic Overview", "Explore how GSS respondents break down by key categories.") %>%
   add_content(demographics)
 
 print(analysis)
@@ -144,7 +148,7 @@ quick_page <- create_page("Quick", data = gss, type = "bar") %>%
 quick_page %>% preview()
 ```
 
-## Layer 3: Dashboard
+### Layer 3: Dashboard
 
 The dashboard brings pages together and configures the final output. You specify where to save files, pick a theme, and add your pages:
 
@@ -152,11 +156,11 @@ The dashboard brings pages together and configures the final output. You specify
 my_dashboard <- create_dashboard(
   title = "GSS Explorer", 
   output_dir = "my_dashboard",
-  theme = "flatly"
+  theme = "cosmo"
 ) %>%
   add_pages(home, analysis) 
 
-my_dashboard
+print(my_dashboard)
 ```
 
 Pages appear in the navbar in the order you add them.
@@ -176,20 +180,11 @@ You can also preview dashboards without generating everything with Quarto:
 my_dashboard %>% preview()
 ```
 
-## Complete Example
+## Your first Dashboard in 1 Minute
 
-Here's everything together, from data to published dashboard:
+Here's everything together, from data to published dashboard. Just copy paste, run it, and you will have your first dashboard:
 
 ```{r, eval=TRUE, include=FALSE}
-library(dashboardr)
-library(dplyr)
-library(gssr)
-
-# Prepare data
-data(gss_all)
-gss <- gss_all %>%
-  select(year, age, sex, race, degree, happy, polviews) %>%
-  filter(year >= 2010, !is.na(age), !is.na(sex), !is.na(race), !is.na(degree))
 
 # LAYER 1: Build content collections
 demographics <- create_content(type = "bar") %>%
@@ -234,11 +229,11 @@ library(dashboardr)
 library(dplyr)
 library(gssr)
 
-# Prepare data
+# Prepare data (latest wave only)
 data(gss_all)
 gss <- gss_all %>%
   select(year, age, sex, race, degree, happy, polviews) %>%
-  filter(year >= 2010, !is.na(age), !is.na(sex), !is.na(race), !is.na(degree))
+  filter(year == max(year, na.rm = TRUE), !is.na(age), !is.na(sex), !is.na(race), !is.na(degree))
 
 # LAYER 1: Build content collections
 demographics <- create_content(type = "bar") %>%
@@ -287,11 +282,17 @@ Here's what the *one minute* dashboard structure looks like:
 print(onemin_dashboard)
 ```
 
+
+```{r}
+preview(onemin_dashboard)
+```
+
+
 ## Tips
 
 1. **Print often**: use `print()` to inspect structure before generating
 2. **Preview as you go**: use `preview()` to see charts without building everything
-3. **Start simple**: build one page first, then expand
+3. **Start simple**: build one piece of content first, then the page, then expand
 4. **Use tabgroups**: they make complex dashboards navigable
 5. **Build content separately**: create reusable collections, attach to multiple pages
 

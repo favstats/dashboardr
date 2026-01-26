@@ -2,6 +2,7 @@
 .Rhistory
 .RData
 .Ruserdata
+.cursor/
 _extensions/
 tests/testthat/test_*/
 tests/testthat/test[0-9]*/

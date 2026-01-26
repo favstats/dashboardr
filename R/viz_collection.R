@@ -171,8 +171,73 @@ combine_content <- function(...) {
   combined_labels <- list()
   combined_defaults <- list()
   combined_attrs <- list()  # For extra attributes like lazy loading
-
+  
+  # Track datasets from each collection for merging
+  # Key: dataset name, Value: dataset (data frame or list of data frames)
+  combined_data <- list()
+  
+  # Initialize data_counter from existing named datasets to avoid collisions
+  # This handles chained operations like (c1 + c2) + c3 where c1+c2 already has data_1, data_2
+  data_counter <- 0
   for (col in collections) {
+    if (!is.null(col$data) && is.list(col$data) && !is.data.frame(col$data)) {
+      for (nm in names(col$data)) {
+        if (grepl("^data_[0-9]+$", nm)) {
+          num <- as.integer(sub("^data_", "", nm))
+          if (!is.na(num) && num > data_counter) {
+            data_counter <- num
+          }
+        }
+      }
+    }
+  }
+  
+  for (col_idx in seq_along(collections)) {
+    col <- collections[[col_idx]]
+    
+    # Determine dataset name for this collection's data
+    col_data_name <- NULL
+    if (!is.null(col$data)) {
+      # Check if data is already a named list (multi-dataset)
+      if (is.list(col$data) && !is.data.frame(col$data) && !is.null(names(col$data))) {
+        # Merge each named dataset
+        for (ds_name in names(col$data)) {
+          # Avoid duplicates by checking hash
+          ds_hash <- digest::digest(col$data[[ds_name]])
+          existing_name <- NULL
+          for (existing in names(combined_data)) {
+            if (digest::digest(combined_data[[existing]]) == ds_hash) {
+              existing_name <- existing
+              break
+            }
+          }
+          if (is.null(existing_name)) {
+            combined_data[[ds_name]] <- col$data[[ds_name]]
+          }
+        }
+        # For viz items from this collection, use first dataset name as default
+        col_data_name <- names(col$data)[1]
+      } else if (is.data.frame(col$data)) {
+        # Single dataset - generate unique name or reuse if identical
+        data_hash <- digest::digest(col$data)
+        existing_name <- NULL
+        for (existing in names(combined_data)) {
+          if (digest::digest(combined_data[[existing]]) == data_hash) {
+            existing_name <- existing
+            break
+          }
+        }
+        if (is.null(existing_name)) {
+          # Generate a unique name
+          data_counter <- data_counter + 1
+          col_data_name <- paste0("data_", data_counter)
+          combined_data[[col_data_name]] <- col$data
+        } else {
+          col_data_name <- existing_name
+        }
+      }
+    }
+    
     # Renumber indices to maintain global order
     offset <- length(combined_items)
     for (i in seq_along(col$items)) {
@@ -180,6 +245,15 @@ combine_content <- function(...) {
       # Remove old insertion index and add new one
       item[[".insertion_index"]] <- NULL
       item[[".insertion_index"]] <- offset + i
+      
+      # If this collection has data and item is a viz, tag it with the data source
+      # Only if the item doesn't already have a data attribute specified
+      if (!is.null(col_data_name) && !is.null(item$type) && item$type == "viz") {
+        if (is.null(item[["data"]])) {
+          item[["data"]] <- col_data_name
+        }
+      }
+      
       combined_items[[length(combined_items) + 1]] <- item
     }
 
@@ -198,8 +272,8 @@ combine_content <- function(...) {
     }
 
     # Merge any extra attributes (lazy loading, etc.) - later collections override
-    # Only override if the value is not NULL (to preserve data from earlier collections)
-    standard_names <- c("items", "tabgroup_labels", "defaults", "class")
+    # Skip 'data' as we handle it specially above
+    standard_names <- c("items", "tabgroup_labels", "defaults", "class", "data")
     extra_attrs <- setdiff(names(col), standard_names)
     for (attr_name in extra_attrs) {
       if (!is.null(col[[attr_name]])) {
@@ -213,6 +287,35 @@ combine_content <- function(...) {
     sort_order <- order(sapply(combined_items, function(x) x$.insertion_index %||% Inf))
     combined_items <- combined_items[sort_order]
   }
+  
+  # Handle data and viz item data references
+  final_data <- NULL
+  if (length(combined_data) == 0) {
+    # No data from any collection
+    final_data <- NULL
+  } else if (length(combined_data) == 1) {
+    # Single unique dataset - use simple single-dataset mode
+    # Unwrap the named list and clear data refs from viz items (they'll use default "data")
+    final_data <- combined_data[[1]]
+    for (i in seq_along(combined_items)) {
+      if (!is.null(combined_items[[i]]$type) && combined_items[[i]]$type == "viz") {
+        combined_items[[i]][["data"]] <- NULL
+      }
+    }
+  } else {
+    # Multiple unique datasets - use multi-dataset mode
+    final_data <- combined_data
+    
+    # Ensure all viz items have a data reference
+    # Items without a data ref get the first dataset as fallback
+    first_data_name <- names(combined_data)[1]
+    for (i in seq_along(combined_items)) {
+      item <- combined_items[[i]]
+      if (!is.null(item$type) && item$type == "viz" && is.null(item[["data"]])) {
+        combined_items[[i]][["data"]] <- first_data_name
+      }
+    }
+  }
 
   # Build result with all attributes
   result <- list(
@@ -225,6 +328,9 @@ combine_content <- function(...) {
   for (attr_name in names(combined_attrs)) {
     result[[attr_name]] <- combined_attrs[[attr_name]]
   }
+  
+  # Set the combined/processed data
+  result$data <- final_data
 
   structure(result, class = c("content_collection", "viz_collection"))
 }
@@ -1603,6 +1709,7 @@ add_pagination <- function(viz_collection, position = NULL) {
 #'   a file path ending in .html.
 #' @param page Optional page name to preview (only used for dashboard_project objects).
 #'   When NULL, previews all pages. When specified, previews only the named page.
+#' @param debug Whether to show debug messages like file paths (default: FALSE).
 #'
 #' @return Invisibly returns the path to the generated HTML file.
 #'
@@ -1673,18 +1780,33 @@ add_pagination <- function(viz_collection, position = NULL) {
 #' html_path <- my_viz %>% preview(open = FALSE)
 #' }
 preview <- function(collection, title = "Preview", open = TRUE, clean = FALSE,
-                    quarto = FALSE, theme = "cosmo", path = NULL, page = NULL) {
+                    quarto = FALSE, theme = "cosmo", path = NULL, page = NULL,
+                    debug = FALSE) {
   
-  # If we're in a knitr context, return the object for knit_print to handle
+  # If we're in a knitr context, render inline using knit_print
+  # This ensures preview() works the same in Quarto documents as in Viewer
   if (isTRUE(getOption("knitr.in.progress"))) {
+    # Use the appropriate knit_print method
+    if (inherits(collection, "dashboard_project")) {
+      return(knit_print.dashboard_project(collection))
+    } else if (inherits(collection, "page_object")) {
+      return(knit_print.page_object(collection))
+    } else if (is_content(collection)) {
+      return(knit_print.content_collection(collection))
+    } else if (is_content_block(collection)) {
+      wrapped <- .wrap_content_block(collection)
+      return(knit_print.content_collection(wrapped))
+    }
+    # Fallback: return as-is
     return(collection)
   }
   
-  # Handle dashboard_project objects
+  # Handle dashboard_project objects (for Viewer/browser)
   if (inherits(collection, "dashboard_project")) {
     return(.preview_dashboard_project(collection, title = title, open = open, 
                                        clean = clean, quarto = quarto, 
-                                       theme = theme, path = path, page = page))
+                                       theme = theme, path = path, page = page,
+                                       debug = debug))
   }
   
   # Handle content_block objects (standalone blocks like add_text("hello"))
@@ -1720,23 +1842,8 @@ preview <- function(collection, title = "Preview", open = TRUE, clean = FALSE,
     stop("No data attached to collection. Use create_viz(data = df) or create_content(data = df) to attach data for visualizations.", call. = FALSE)
   }
 
-  # Check for features that require Quarto (non-null and non-empty)
-  has_tabgroups <- any(sapply(collection$items, function(item) {
-    !is.null(item$tabgroup) && nchar(item$tabgroup) > 0
-  }))
-  has_icons <- any(sapply(collection$items, function(item) !is.null(item$icon)))
-  
-  if (!quarto && (has_tabgroups || has_icons) && interactive()) {
-    features <- c()
-    if (has_tabgroups) features <- c(features, "tabgroups/tabsets")
-    if (has_icons) features <- c(features, "icons")
-    warning(
-      "Your collection uses ", paste(features, collapse = " and "), 
-      " which require Quarto to render properly.\n",
-      "Use preview(quarto = TRUE) for full tabset support, or remove tabgroup arguments for direct preview.",
-      call. = FALSE
-    )
-  }
+  # Note: Tabgroups now work in direct preview mode via Bootstrap tabs
+  # No warning needed - direct mode fully supports tabs
 
   # Parse path parameter
   preview_dir <- NULL
@@ -1760,9 +1867,11 @@ preview <- function(collection, title = "Preview", open = TRUE, clean = FALSE,
 
   # Use appropriate preview mode
   if (quarto) {
-    html_file <- .preview_quarto(collection, title, theme, clean, preview_dir, output_filename)
+    html_file <- .preview_quarto(collection, title, theme, clean, preview_dir, output_filename,
+                                  debug = debug)
   } else {
-    html_file <- .preview_direct(collection, title, clean, preview_dir, output_filename)
+    html_file <- .preview_direct(collection, title, clean, preview_dir, output_filename,
+                                  debug = debug)
   }
 
   # Open in viewer
@@ -1782,9 +1891,12 @@ preview <- function(collection, title = "Preview", open = TRUE, clean = FALSE,
 }
 
 #' Direct preview using htmltools (no Quarto required)
+#' 
+#' Now uses the same advanced rendering logic as knit_print for tabgroups,
+#' nested tabs, and Highcharts reflow handling.
 #' @noRd
-.preview_direct <- function(collection, title, clean, preview_dir = NULL, output_filename = "preview.html") {
-  data <- collection$data
+.preview_direct <- function(collection, title, clean, preview_dir = NULL, output_filename = "preview.html",
+                             debug = FALSE) {
   
   # Create temp directory for preview if not specified
   if (is.null(preview_dir)) {
@@ -1796,70 +1908,61 @@ preview <- function(collection, title = "Preview", open = TRUE, clean = FALSE,
   has_inputs <- .collection_has_inputs(collection)
   has_modals <- .collection_has_modals(collection)
   
-  # Render all items (content blocks AND visualizations)
-  content_widgets <- list()
+  # Use the same rendering logic as knit_print for consistent behavior
+  # Check if any items have tabgroups (non-null and non-empty)
+  has_tabgroups <- any(sapply(collection$items, function(item) {
+    tg <- item$tabgroup
+    !is.null(tg) && length(tg) > 0 && nchar(paste(tg, collapse = "")) > 0
+  }))
   
-  for (i in seq_along(collection$items)) {
-    item <- collection$items[[i]]
-    
-    # Check if it's a visualization
-    is_viz <- !is.null(item$viz_type) || (!is.null(item$type) && item$type == "viz")
-    
-    if (is_viz) {
-      # Render visualization
-      viz_type <- item$viz_type %||% item$type
-      
-      viz_result <- tryCatch({
-        .render_viz_direct(item, data)
-      }, error = function(e) {
-        htmltools::div(
-          style = "padding: 20px; background: #fee; border: 1px solid #c00; border-radius: 4px;",
-          htmltools::h4(paste0("Error rendering: ", item$title %||% viz_type)),
-          htmltools::p(e$message)
-        )
-      })
-      
-      # Wrap with title if present
-      if (!is.null(item$title)) {
-        viz_result <- htmltools::tagList(
-          htmltools::h3(item$title),
-          viz_result
-        )
-      }
-      
-      content_widgets[[length(content_widgets) + 1]] <- htmltools::div(
-        style = "margin-bottom: 30px;",
-        viz_result
-      )
-    } else {
-      # Render content block
-      block_result <- tryCatch({
-        .render_content_block_direct(item, preview_dir)
-      }, error = function(e) {
-        htmltools::div(
-          style = "padding: 10px; background: #fff3e0; border: 1px solid #ff9800; border-radius: 4px;",
-          htmltools::p(paste0("Error rendering content: ", e$message))
-        )
-      })
-      
-      if (!is.null(block_result)) {
-        content_widgets[[length(content_widgets) + 1]] <- htmltools::div(
-          style = "margin-bottom: 20px;",
-          block_result
-        )
-      }
-    }
+  # Use the EXACT same rendering as knit_print for consistency
+  if (has_tabgroups) {
+    content_html <- .render_tabbed_simple(collection, options = NULL)
+  } else {
+    content_html <- .render_stacked_knitr(collection, options = NULL)
   }
   
-  # Build comprehensive CSS
+  # Wrap in the same bordered preview container as knit_print
+  wrapped_content <- htmltools::div(
+    style = paste0(
+      "border: 2px solid #e1e4e8; ",
+      "border-radius: 8px; ",
+      "padding: 20px; ",
+      "margin: 16px 0; ",
+      "background-color: #fafbfc;"
+    ),
+    htmltools::div(
+      style = paste0(
+        "font-size: 0.75em; ",
+        "color: #6a737d; ",
+        "font-weight: 600; ",
+        "text-transform: uppercase; ",
+        "letter-spacing: 0.5px; ",
+        "margin-bottom: 12px; ",
+        "padding-bottom: 8px; ",
+        "border-bottom: 1px solid #e1e4e8;"
+      ),
+      "Preview"
+    ),
+    content_html
+  )
+  
+  # Build minimal HTML page - just enough to make it work standalone
   css <- .get_preview_css()
   
-  # Build HTML page
   html_content <- htmltools::tagList(
     htmltools::tags$head(
       htmltools::tags$title(title),
       htmltools::tags$meta(charset = "utf-8"),
       htmltools::tags$meta(name = "viewport", content = "width=device-width, initial-scale=1"),
+      # Bootstrap for tabs
+      htmltools::tags$link(
+        rel = "stylesheet",
+        href = "https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      ),
+      htmltools::tags$script(
+        src = "https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+      ),
       # Choices.js for inputs
       if (has_inputs) htmltools::tagList(
         htmltools::tags$link(
@@ -1874,11 +1977,8 @@ preview <- function(collection, title = "Preview", open = TRUE, clean = FALSE,
       if (has_modals) htmltools::tags$style(htmltools::HTML(.get_modal_css()))
     ),
     htmltools::tags$body(
-      htmltools::h1(title),
-      htmltools::div(
-        class = "viz-container",
-        content_widgets
-      ),
+      style = "padding: 20px; max-width: 1200px; margin: 0 auto;",
+      wrapped_content,
       if (has_modals) htmltools::tags$script(htmltools::HTML(.get_modal_js())),
       if (has_inputs) htmltools::tags$script(htmltools::HTML(.get_input_init_js()))
     )
@@ -1888,7 +1988,7 @@ preview <- function(collection, title = "Preview", open = TRUE, clean = FALSE,
   html_file <- file.path(preview_dir, output_filename)
   htmltools::save_html(html_content, html_file, libdir = "lib")
   
-  if (!clean && interactive()) {
+  if (debug && !clean && interactive()) {
     message("Preview files saved to: ", preview_dir)
   }
   
@@ -2616,7 +2716,7 @@ preview <- function(collection, title = "Preview", open = TRUE, clean = FALSE,
 
 #' Quarto-based preview (original implementation)
 #' @noRd
-.preview_quarto <- function(collection, title, theme, clean, preview_dir = NULL, output_filename = "preview.html", styling = NULL) {
+.preview_quarto <- function(collection, title, theme, clean, preview_dir = NULL, output_filename = "preview.html", styling = NULL, debug = FALSE) {
   # Check for Quarto
   quarto_path <- Sys.which("quarto")
   if (quarto_path == "") {
@@ -2752,7 +2852,7 @@ preview <- function(collection, title = "Preview", open = TRUE, clean = FALSE,
     stop("Preview rendering failed. Check the output above for errors.", call. = FALSE)
   }
 
-  if (!clean && interactive()) {
+  if (debug && !clean && interactive()) {
     message("Preview files saved to: ", preview_dir)
   }
 
@@ -2773,7 +2873,8 @@ preview <- function(collection, title = "Preview", open = TRUE, clean = FALSE,
 #' @noRd
 .preview_dashboard_project <- function(proj, title = "Preview", open = TRUE, 
                                         clean = FALSE, quarto = FALSE, 
-                                        theme = NULL, path = NULL, page = NULL) {
+                                        theme = NULL, path = NULL, page = NULL,
+                                        debug = FALSE) {
   
   # Validate project has pages
 
@@ -2835,10 +2936,12 @@ preview <- function(collection, title = "Preview", open = TRUE, clean = FALSE,
   # Use appropriate preview mode
   if (quarto) {
     html_file <- .preview_dashboard_quarto(proj, pages_to_preview, title, theme, 
-                                            clean, preview_dir, output_filename)
+                                            clean, preview_dir, output_filename,
+                                            debug = debug)
   } else {
     html_file <- .preview_dashboard_direct(proj, pages_to_preview, title, 
-                                            clean, preview_dir, output_filename)
+                                            clean, preview_dir, output_filename,
+                                            debug = debug)
   }
   
   # Open in viewer
@@ -2857,110 +2960,155 @@ preview <- function(collection, title = "Preview", open = TRUE, clean = FALSE,
 
 
 #' Preview dashboard using htmltools (direct mode)
+#' Uses the SAME rendering and styling as content_collection preview for consistency.
 #' @noRd
-.preview_dashboard_direct <- function(proj, pages, title, clean, preview_dir, output_filename) {
+.preview_dashboard_direct <- function(proj, pages, title, clean, preview_dir, output_filename,
+                                       debug = FALSE) {
   
-  # Build styling from dashboard project
-  styling <- .build_preview_styling(proj)
-  
-  # Build page content
+  # Build page content - each page wrapped in consistent preview container
   page_widgets <- list()
   
   for (page_name in names(pages)) {
     page <- pages[[page_name]]
     
-    # Page header
-    page_header <- htmltools::div(
-      style = "margin-top: 40px; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid #ddd;",
-      htmltools::h2(
-        style = paste0("margin: 0; color: ", styling$text_color, ";"),
-        if (!is.null(page$icon)) htmltools::span(style = "margin-right: 10px;", page$icon) else NULL,
-        page_name
-      ),
-      if (!is.null(page$is_landing_page) && page$is_landing_page) {
-        htmltools::span(
-          style = "display: inline-block; background: #e3f2fd; color: #1565c0; padding: 2px 8px; border-radius: 4px; font-size: 12px; margin-left: 10px;",
-          "Landing Page"
-        )
+    # Build content_collection from dashboard page structure
+    # Dashboard pages have: visualizations (viz_specs), content_blocks, text, data_path
+    page_content <- create_content()
+    
+    # Try to load data from RDS file
+    page_data <- NULL
+    if (!is.null(page$data_path)) {
+      # Handle both single and multi-dataset cases
+      if (is.list(page$data_path)) {
+        # Multi-dataset - use first one for now
+        first_path <- page$data_path[[1]]
+        data_file <- file.path(proj$output_dir %||% ".", first_path)
+      } else {
+        data_file <- file.path(proj$output_dir %||% ".", page$data_path)
       }
+      if (file.exists(data_file)) {
+        page_data <- tryCatch(readRDS(data_file), error = function(e) NULL)
+      }
+    }
+    
+    # Add text content first
+    if (!is.null(page$text) && nzchar(page$text)) {
+      text_block <- list(type = "text", content = page$text)
+      class(text_block) <- c("content_block", "list")
+      page_content$items <- c(page_content$items, list(text_block))
+    }
+    
+    # Add content blocks
+    if (!is.null(page$content_blocks) && length(page$content_blocks) > 0) {
+      for (block in page$content_blocks) {
+        if (!is.null(block)) {
+          page_content$items <- c(page_content$items, list(block))
+        }
+      }
+    }
+    
+    # Add visualizations (convert viz_specs back to viz items)
+    # page$visualizations is hierarchical (may contain tabgroups) - extract flat items
+    if (!is.null(page$visualizations) && length(page$visualizations) > 0) {
+      # Use .extract_flat_viz_items() to get flat list from hierarchical structure
+      flat_viz_items <- .extract_flat_viz_items(page$visualizations)
+      for (viz_item in flat_viz_items) {
+        if (!is.null(viz_item)) {
+          # Ensure type is set for rendering
+          if (is.null(viz_item$type)) viz_item$type <- "viz"
+          page_content$items <- c(page_content$items, list(viz_item))
+        }
+      }
+    }
+    
+    # Attach data to collection
+    page_content$data <- page_data
+    
+    # Render page content using unified logic
+    if (length(page_content$items) > 0) {
+      has_tabgroups <- any(sapply(page_content$items, function(item) {
+        tg <- item$tabgroup
+        !is.null(tg) && length(tg) > 0 && nchar(paste(tg, collapse = "")) > 0
+      }))
+      
+      content_html <- tryCatch({
+        if (has_tabgroups) {
+          .render_tabbed_simple(page_content, options = NULL)
+        } else {
+          .render_stacked_knitr(page_content, options = NULL)
+        }
+      }, error = function(e) {
+        htmltools::div(
+          style = "padding: 20px; background: #fee; border: 1px solid #c00; border-radius: 4px;",
+          htmltools::h4("Error rendering page content"),
+          htmltools::p(e$message)
+        )
+      })
+    } else {
+      # Truly empty page
+      content_html <- htmltools::p(style = "color: #666; font-style: italic;", "(Empty page)")
+    }
+    
+    # Wrap each page in the SAME bordered preview container as content preview
+    page_widget <- htmltools::div(
+      style = paste0(
+        "border: 2px solid #e1e4e8; ",
+        "border-radius: 8px; ",
+        "padding: 20px; ",
+        "margin: 16px 0; ",
+        "background-color: #fafbfc;"
+      ),
+      # Page header with "Preview: PageName" label
+      htmltools::div(
+        style = paste0(
+          "font-size: 0.75em; ",
+          "color: #6a737d; ",
+          "font-weight: 600; ",
+          "text-transform: uppercase; ",
+          "letter-spacing: 0.5px; ",
+          "margin-bottom: 12px; ",
+          "padding-bottom: 8px; ",
+          "border-bottom: 1px solid #e1e4e8; ",
+          "display: flex; ",
+          "align-items: center; ",
+          "gap: 8px;"
+        ),
+        htmltools::span("Preview:"),
+        htmltools::span(style = "color: #0969da;", page_name),
+        if (!is.null(page$is_landing_page) && page$is_landing_page) {
+          htmltools::span(
+            style = "background: #ddf4ff; color: #0969da; padding: 2px 6px; border-radius: 3px; font-size: 0.9em;",
+            "Landing"
+          )
+        }
+      ),
+      content_html
     )
     
-    page_widgets[[length(page_widgets) + 1]] <- page_header
-    
-    # Render page text content
-    if (!is.null(page$text) && nzchar(page$text)) {
-      text_html <- .render_markdown_to_html(page$text)
-      page_widgets[[length(page_widgets) + 1]] <- htmltools::div(
-        style = "margin-bottom: 20px;",
-        htmltools::HTML(text_html)
-      )
-    }
-    
-    # Render content blocks
-    if (!is.null(page$content_blocks)) {
-      for (block in page$content_blocks) {
-        if (is.null(block)) next
-        
-        block_html <- .render_content_block_direct(block, preview_dir)
-        if (!is.null(block_html)) {
-          page_widgets[[length(page_widgets) + 1]] <- htmltools::div(
-            style = "margin-bottom: 20px;",
-            block_html
-          )
-        }
-      }
-    }
-    
-    # Render visualizations if data is available
-    if (!is.null(page$visualizations) && !is.null(page$data_path)) {
-      # Try to load data and render visualizations
-      data_file <- file.path(proj$output_dir %||% ".", page$data_path)
-      if (file.exists(data_file)) {
-        data <- readRDS(data_file)
-        for (viz_spec in page$visualizations) {
-          viz_html <- tryCatch({
-            .render_viz_direct(viz_spec, data)
-          }, error = function(e) {
-            htmltools::div(
-              style = "padding: 20px; background: #fee; border: 1px solid #c00; border-radius: 4px;",
-              htmltools::h4("Error rendering visualization"),
-              htmltools::p(e$message)
-            )
-          })
-          
-          if (!is.null(viz_spec$title)) {
-            viz_html <- htmltools::tagList(
-              htmltools::h3(viz_spec$title),
-              viz_html
-            )
-          }
-          
-          page_widgets[[length(page_widgets) + 1]] <- htmltools::div(
-            style = "margin-bottom: 30px;",
-            viz_html
-          )
-        }
-      }
-    }
+    page_widgets[[length(page_widgets) + 1]] <- page_widget
   }
   
-  # Check if we have interactive elements that need assets
+  # Check for interactive elements
   has_inputs <- .has_interactive_inputs(pages)
   has_modals <- .has_interactive_modals(pages)
   
-  # Build the full HTML page
+  # Use the SAME CSS as content preview
+  css <- .get_preview_css()
+  
+  # Build HTML page with same structure as content preview
   html_content <- htmltools::tagList(
     htmltools::tags$head(
       htmltools::tags$title(title),
       htmltools::tags$meta(charset = "utf-8"),
       htmltools::tags$meta(name = "viewport", content = "width=device-width, initial-scale=1"),
-      # Include font from Google Fonts if specified
-      if (!is.null(proj$mainfont) && proj$mainfont != "system-ui") {
-        htmltools::tags$link(
-          href = paste0("https://fonts.googleapis.com/css2?family=", gsub(" ", "+", proj$mainfont), ":wght@400;500;600;700&display=swap"),
-          rel = "stylesheet"
-        )
-      },
+      # Bootstrap for tabs (same as content preview)
+      htmltools::tags$link(
+        rel = "stylesheet",
+        href = "https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      ),
+      htmltools::tags$script(
+        src = "https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+      ),
       # Choices.js for inputs
       if (has_inputs) htmltools::tagList(
         htmltools::tags$link(
@@ -2971,18 +3119,27 @@ preview <- function(collection, title = "Preview", open = TRUE, clean = FALSE,
           src = "https://cdn.jsdelivr.net/npm/choices.js@10.2.0/public/assets/scripts/choices.min.js"
         )
       ),
-      htmltools::tags$style(htmltools::HTML(styling$css)),
-      # Modal CSS if needed
+      htmltools::tags$style(htmltools::HTML(css)),
       if (has_modals) htmltools::tags$style(htmltools::HTML(.get_modal_css()))
     ),
     htmltools::tags$body(
+      style = "padding: 20px; max-width: 1200px; margin: 0 auto;",
+      # Dashboard title
       htmltools::div(
-        class = "preview-container",
-        htmltools::h1(title),
-        htmltools::div(class = "content-wrapper", page_widgets)
+        style = paste0(
+          "font-size: 0.75em; ",
+          "color: #6a737d; ",
+          "font-weight: 600; ",
+          "text-transform: uppercase; ",
+          "letter-spacing: 0.5px; ",
+          "margin-bottom: 20px;"
+        ),
+        paste0("Dashboard: ", title)
       ),
-      # Modal JS if needed
-      if (has_modals) htmltools::tags$script(htmltools::HTML(.get_modal_js()))
+      # All page widgets
+      htmltools::tagList(page_widgets),
+      if (has_modals) htmltools::tags$script(htmltools::HTML(.get_modal_js())),
+      if (has_inputs) htmltools::tags$script(htmltools::HTML(.get_input_init_js()))
     )
   )
   
@@ -2990,7 +3147,7 @@ preview <- function(collection, title = "Preview", open = TRUE, clean = FALSE,
   html_file <- file.path(preview_dir, output_filename)
   htmltools::save_html(html_content, html_file, libdir = "lib")
   
-  if (!clean && interactive()) {
+  if (debug && !clean && interactive()) {
     message("Preview files saved to: ", preview_dir)
   }
   
@@ -3000,7 +3157,8 @@ preview <- function(collection, title = "Preview", open = TRUE, clean = FALSE,
 
 #' Preview dashboard using Quarto
 #' @noRd
-.preview_dashboard_quarto <- function(proj, pages, title, theme, clean, preview_dir, output_filename) {
+.preview_dashboard_quarto <- function(proj, pages, title, theme, clean, preview_dir, output_filename,
+                                       debug = FALSE) {
   
   # Check for Quarto
   quarto_path <- Sys.which("quarto")
@@ -3132,7 +3290,7 @@ preview <- function(collection, title = "Preview", open = TRUE, clean = FALSE,
     stop("Preview rendering failed. Check the output above for errors.", call. = FALSE)
   }
   
-  if (!clean && interactive()) {
+  if (debug && !clean && interactive()) {
     message("Preview files saved to: ", preview_dir)
   }
   
@@ -3740,8 +3898,9 @@ knit_print.content_collection <- function(x, ..., options = NULL) {
   }
 
   # Check if any items have tabgroups (non-null and non-empty)
+  # Note: tabgroup can be a vector for nested tabs (e.g., c("Parent", "Child"))
   has_tabgroups <- any(sapply(x$items, function(item) {
-    !is.null(item$tabgroup) && nchar(item$tabgroup) > 0
+    !is.null(item$tabgroup) && length(item$tabgroup) > 0 && any(nchar(item$tabgroup) > 0)
   }))
 
   if (has_tabgroups) {
@@ -3798,8 +3957,8 @@ knit_print.content_collection <- function(x, ..., options = NULL) {
     }
     
   } else if (item_type == "text") {
-    # Text block
-    text_content <- item$text
+    # Text block - content is stored in 'content' field (from add_text)
+    text_content <- item$content %||% item$text
     if (is.list(text_content)) text_content <- unlist(text_content)
     if (length(text_content) > 0) {
       md_html <- paste(text_content, collapse = "\n\n")
@@ -3810,18 +3969,18 @@ knit_print.content_collection <- function(x, ..., options = NULL) {
     }
     
   } else if (item_type == "callout") {
-    # Callout
+    # Callout - content is stored in 'content' field (from add_callout)
     callout_type <- item$callout_type %||% "note"
     callout_colors <- list(
-      note = list(bg = "#e7f3ff", border = "#0969da", icon = "i"),
-      tip = list(bg = "#d4edda", border = "#28a745", icon = "*"),
-      warning = list(bg = "#fff3cd", border = "#ffc107", icon = "!"),
-      caution = list(bg = "#fff3cd", border = "#fd7e14", icon = "!"),
-      important = list(bg = "#f8d7da", border = "#dc3545", icon = "!")
+      note = list(bg = "#e7f3ff", border = "#0969da", icon = "ℹ️"),
+      tip = list(bg = "#d4edda", border = "#28a745", icon = "💡"),
+      warning = list(bg = "#fff3cd", border = "#ffc107", icon = "⚠️"),
+      caution = list(bg = "#fff3cd", border = "#fd7e14", icon = "⚠️"),
+      important = list(bg = "#f8d7da", border = "#dc3545", icon = "❗")
     )
     colors <- callout_colors[[callout_type]] %||% callout_colors$note
     callout_title <- item$title %||% toupper(callout_type)
-    callout_text <- item$text
+    callout_text <- item$content %||% item$text %||% ""
     if (is.list(callout_text)) callout_text <- paste(unlist(callout_text), collapse = " ")
     
     return(htmltools::tags$div(
@@ -3863,6 +4022,131 @@ knit_print.content_collection <- function(x, ..., options = NULL) {
       style = "background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 16px; margin: 15px 0;",
       if (nchar(card_title) > 0) htmltools::tags$div(class = "preview-h5", style = "font-size: 0.83em; font-weight: bold; margin: 0 0 10px 0;", card_title),
       htmltools::tags$p(style = "margin: 0;", card_text)
+    ))
+    
+  } else if (item_type == "quote") {
+    quote_text <- item$quote %||% ""
+    attribution <- item$attribution %||% ""
+    return(htmltools::tags$blockquote(
+      style = "border-left: 4px solid #6c757d; padding-left: 16px; margin: 20px 0; font-style: italic; color: #495057;",
+      htmltools::tags$p(style = "margin: 0 0 8px 0;", quote_text),
+      if (nchar(attribution) > 0) htmltools::tags$footer(style = "font-size: 0.9em; color: #6c757d;", paste0("— ", attribution))
+    ))
+    
+  } else if (item_type == "metric") {
+    metric_title <- item$title %||% ""
+    metric_value <- item$value %||% ""
+    metric_icon <- item$icon %||% ""
+    return(htmltools::tags$div(
+      style = "background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 8px; text-align: center; margin: 15px 0;",
+      if (nchar(metric_icon) > 0) htmltools::tags$div(style = "font-size: 24px; margin-bottom: 8px;", metric_icon),
+      htmltools::tags$div(style = "font-size: 2em; font-weight: 700;", as.character(metric_value)),
+      htmltools::tags$div(style = "opacity: 0.9; margin-top: 4px;", metric_title)
+    ))
+    
+  } else if (item_type == "value_box") {
+    vb_title <- item$title %||% ""
+    vb_value <- item$value %||% ""
+    vb_color <- item$bg_color %||% "#2c3e50"
+    return(htmltools::tags$div(
+      style = sprintf("background: %s; color: white; padding: 20px; border-radius: 8px; text-align: center; margin: 15px 0;", vb_color),
+      htmltools::tags$div(style = "font-size: 0.9em; opacity: 0.9; margin-bottom: 8px;", vb_title),
+      htmltools::tags$div(style = "font-size: 2em; font-weight: 700;", as.character(vb_value))
+    ))
+    
+  } else if (item_type == "value_box_row") {
+    boxes <- item$boxes %||% list()
+    box_html <- lapply(boxes, function(box) {
+      vb_title <- box$title %||% ""
+      vb_value <- box$value %||% ""
+      vb_color <- box$bg_color %||% "#2c3e50"
+      htmltools::tags$div(
+        style = sprintf("flex: 1; min-width: 200px; background: %s; color: white; padding: 20px; border-radius: 8px; text-align: center; margin: 8px;", vb_color),
+        htmltools::tags$div(style = "font-size: 0.9em; opacity: 0.9; margin-bottom: 8px;", vb_title),
+        htmltools::tags$div(style = "font-size: 2em; font-weight: 700;", as.character(vb_value))
+      )
+    })
+    return(htmltools::tags$div(
+      style = "display: flex; flex-wrap: wrap; margin: 15px -8px;",
+      box_html
+    ))
+    
+  } else if (item_type == "badge") {
+    badge_text <- item$text %||% ""
+    badge_color <- item$color %||% "primary"
+    color_map <- list(
+      primary = "#007bff", secondary = "#6c757d", success = "#28a745",
+      danger = "#dc3545", warning = "#ffc107", info = "#17a2b8"
+    )
+    bg <- color_map[[badge_color]] %||% "#007bff"
+    return(htmltools::tags$span(
+      style = sprintf("display: inline-block; padding: 4px 10px; background: %s; color: white; border-radius: 4px; font-size: 0.85em; margin: 5px 0;", bg),
+      badge_text
+    ))
+    
+  } else if (item_type == "html") {
+    return(htmltools::HTML(item$html %||% ""))
+    
+  } else if (item_type == "code") {
+    code_content <- item$code %||% ""
+    code_lang <- item$language %||% "r"
+    return(htmltools::tags$pre(
+      style = "background: #f4f4f4; padding: 15px; border-radius: 4px; overflow-x: auto; margin: 15px 0;",
+      htmltools::tags$code(class = paste0("language-", code_lang), code_content)
+    ))
+    
+  } else if (item_type == "spacer") {
+    height <- item$height %||% "2rem"
+    return(htmltools::tags$div(style = sprintf("height: %s;", height)))
+    
+  } else if (item_type == "iframe") {
+    iframe_url <- item$url %||% item$src %||% ""
+    iframe_height <- item$height %||% "500px"
+    iframe_width <- item$width %||% "100%"
+    return(htmltools::tags$div(
+      style = "margin: 15px 0;",
+      htmltools::tags$iframe(
+        src = iframe_url,
+        style = sprintf("width: %s; height: %s; border: 1px solid #dee2e6; border-radius: 4px;", iframe_width, iframe_height),
+        frameborder = "0",
+        allowfullscreen = "true"
+      )
+    ))
+    
+  } else if (item_type == "video") {
+    video_url <- item$url %||% item$src %||% ""
+    video_width <- item$width %||% "100%"
+    video_height <- item$height %||% "auto"
+    video_caption <- item$caption %||% ""
+    return(htmltools::tags$figure(
+      style = "margin: 20px 0; text-align: center;",
+      htmltools::tags$video(
+        src = video_url,
+        controls = "controls",
+        style = sprintf("max-width: %s; height: %s;", video_width, video_height)
+      ),
+      if (nchar(video_caption) > 0) htmltools::tags$figcaption(style = "color: #6c757d; font-style: italic; margin-top: 8px;", video_caption)
+    ))
+    
+  } else if (item_type == "modal") {
+    # Modal trigger link
+    modal_id <- item$modal_id %||% paste0("modal-", digest::digest(Sys.time()))
+    trigger_text <- item$trigger_text %||% "Open Modal"
+    return(htmltools::tags$a(
+      href = "#", 
+      class = "modal-trigger",
+      `data-modal` = modal_id,
+      style = "color: #007bff; text-decoration: underline; cursor: pointer;",
+      trigger_text
+    ))
+    
+  } else if (item_type %in% c("input", "input_row")) {
+    # Input widgets - show placeholder in preview
+    label <- item$label %||% item$input_id %||% "Filter"
+    return(htmltools::tags$div(
+      style = "background: #f0f7ff; border: 1px dashed #007bff; border-radius: 4px; padding: 12px; margin: 15px 0;",
+      htmltools::tags$span(style = "color: #007bff; font-weight: 500;", paste0("🎚 Input: ", label)),
+      htmltools::tags$span(style = "color: #6c757d; font-size: 0.9em; margin-left: 10px;", "(Interactive in full dashboard)")
     ))
   }
   
@@ -3910,21 +4194,49 @@ knit_print.content_collection <- function(x, ..., options = NULL) {
 .render_tabbed_simple <- function(collection, options = NULL) {
   data <- collection$data
 
-  # Group items by tabgroup
-  groups <- list()
+  # Separate viz items (which go into tabs) from other content (rendered before tabs)
+  viz_items <- list()
+  other_items <- list()
+  
   for (item in collection$items) {
+    is_viz <- (!is.null(item$type) && item$type == "viz") || !is.null(item$viz_type)
+    if (is_viz) {
+      viz_items <- c(viz_items, list(item))
+    } else {
+      other_items <- c(other_items, list(item))
+    }
+  }
+  
+  # Render non-viz items first (text, content blocks, etc.)
+  other_html <- lapply(other_items, function(item) {
+    .render_item_html(item, data, options)
+  })
+  
+  # If no viz items, just return the other content
+  if (length(viz_items) == 0) {
+    return(do.call(htmltools::tagList, other_html))
+  }
+  
+  # Group viz items by tabgroup
+  groups <- list()
+  for (item in viz_items) {
     tabgroup <- item$tabgroup %||% "(ungrouped)"
+    # Handle vector tabgroups (take first level for simple rendering)
+    if (length(tabgroup) > 1) tabgroup <- tabgroup[1]
     if (is.null(groups[[tabgroup]])) groups[[tabgroup]] <- list()
     groups[[tabgroup]] <- c(groups[[tabgroup]], list(item))
   }
 
-  tab_id <- paste0("dtabs-", substr(digest::digest(Sys.time()), 1, 8))
+  # Use unique ID AND unique class prefix to avoid conflicts with parent tabs
+  tab_id <- paste0("vtabs-", substr(digest::digest(Sys.time()), 1, 8))
+  btn_class <- paste0("vtab-btn-", substr(tab_id, 7, 14))
+  pane_class <- paste0("vtab-pane-", substr(tab_id, 7, 14))
 
   # Tab buttons
   tab_buttons <- lapply(seq_along(groups), function(i) {
     htmltools::tags$button(
       type = "button",
-      class = if (i == 1) "dtab-btn dtab-active" else "dtab-btn",
+      class = if (i == 1) paste0(btn_class, " ", btn_class, "-active") else btn_class,
       `data-tab` = paste0(tab_id, "-", i),
       names(groups)[i]
     )
@@ -3939,42 +4251,49 @@ knit_print.content_collection <- function(x, ..., options = NULL) {
     })
 
     htmltools::tags$div(
-      class = "dtab-pane",
+      class = pane_class,
       id = paste0(tab_id, "-", i),
       `data-visible` = if (i == 1) "true" else "false",
       pane_content
     )
   })
 
-  # CSS and JS for tabs
+  # CSS and JS for tabs - use specific class names to avoid conflicts
   styles <- htmltools::tags$style(htmltools::HTML(sprintf("
-    #%s .dtab-btn {
+    #%s .%s {
       padding: 8px 16px; margin-right: 4px; border: 1px solid #dee2e6;
       background: #f8f9fa; cursor: pointer; border-radius: 4px 4px 0 0;
+      font-size: 0.9em;
     }
-    #%s .dtab-btn.dtab-active { background: white; border-bottom-color: white; font-weight: bold; }
-    #%s .dtab-pane { padding: 15px 0; }
-    #%s .dtab-pane[data-visible='false'] { display: none; }
-  ", tab_id, tab_id, tab_id, tab_id)))
+    #%s .%s-active { background: white; border-bottom-color: white; font-weight: bold; }
+    #%s .%s { padding: 15px 0; }
+    #%s .%s[data-visible='false'] { display: none; }
+  ", tab_id, btn_class, tab_id, btn_class, tab_id, pane_class, tab_id, pane_class)))
 
   script <- htmltools::tags$script(htmltools::HTML(sprintf("
     (function() {
+      var container = document.getElementById('%s');
+      if (!container) return;
+      
       // Wait for Highcharts to render, then hide inactive panes
       setTimeout(function() {
-        document.querySelectorAll('#%s .dtab-pane[data-visible=\"false\"]').forEach(function(p) {
+        container.querySelectorAll('.%s[data-visible=\"false\"]').forEach(function(p) {
           p.style.display = 'none';
         });
       }, 500);
 
-      // Tab click handler
-      document.querySelectorAll('#%s .dtab-btn').forEach(function(btn) {
-        btn.addEventListener('click', function() {
+      // Tab click handler - only target buttons within THIS container
+      container.querySelectorAll('.%s').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+          e.stopPropagation(); // Prevent bubbling to parent tabs
           var tabId = this.getAttribute('data-tab');
-          // Update buttons
-          document.querySelectorAll('#%s .dtab-btn').forEach(function(b) { b.classList.remove('dtab-active'); });
-          this.classList.add('dtab-active');
-          // Update panes
-          document.querySelectorAll('#%s .dtab-pane').forEach(function(p) {
+          // Update buttons within this container only
+          container.querySelectorAll('.%s').forEach(function(b) { 
+            b.classList.remove('%s-active'); 
+          });
+          this.classList.add('%s-active');
+          // Update panes within this container only
+          container.querySelectorAll('.%s').forEach(function(p) {
             p.style.display = p.id === tabId ? 'block' : 'none';
             p.setAttribute('data-visible', p.id === tabId ? 'true' : 'false');
           });
@@ -3985,14 +4304,16 @@ knit_print.content_collection <- function(x, ..., options = NULL) {
         });
       });
     })();
-  ", tab_id, tab_id, tab_id, tab_id)))
+  ", tab_id, pane_class, btn_class, btn_class, btn_class, btn_class, pane_class)))
 
+  # Combine: other content first, then tabbed viz
   htmltools::tagList(
+    do.call(htmltools::tagList, other_html),
     htmltools::tags$div(
       id = tab_id,
       style = "margin: 20px 0;",
-      htmltools::tags$div(class = "dtab-buttons", style = "border-bottom: 1px solid #dee2e6; margin-bottom: 10px;", tab_buttons),
-      htmltools::tags$div(class = "dtab-content", tab_panes)
+      htmltools::tags$div(class = "vtab-buttons", style = "border-bottom: 1px solid #dee2e6; margin-bottom: 10px;", tab_buttons),
+      htmltools::tags$div(class = "vtab-content", tab_panes)
     ),
     styles,
     script
@@ -4225,51 +4546,118 @@ knit_print.dashboard_project <- function(x, ..., options = NULL) {
       ))
     }
     
-    # Render content blocks
+    # Helper to load page data
+    .load_page_data <- function(page, dashboard) {
+      if (is.null(page$data_path)) return(NULL)
+      data_file <- if (is.list(page$data_path)) page$data_path[[1]] else page$data_path
+      
+      # Try loading from dashboard output directory
+      if (!is.null(dashboard$output_dir)) {
+        full_data_path <- file.path(dashboard$output_dir, data_file)
+        if (file.exists(full_data_path)) {
+          result <- tryCatch(readRDS(full_data_path), error = function(e) NULL)
+          if (!is.null(result)) return(result)
+        }
+      }
+      # Try direct path
+      if (file.exists(data_file)) {
+        return(tryCatch(readRDS(data_file), error = function(e) NULL))
+      }
+      NULL
+    }
+    
+    # Render content blocks - handle mixed collections with viz items
     if (!is.null(page$content_blocks) && length(page$content_blocks) > 0) {
       for (block in page$content_blocks) {
         if (is.null(block)) next
-        block_html <- .render_content_block_direct(block)
-        if (!is.null(block_html)) {
-          page_html_parts <- c(page_html_parts, list(block_html))
+        
+        # Check if this is a content collection with items
+        if (is_content(block) && !is.null(block$items) && length(block$items) > 0) {
+          # Separate viz and non-viz items
+          viz_items <- list()
+          non_viz_items <- list()
+          
+          for (item in block$items) {
+            if (is.null(item)) next
+            item_type <- item$type %||% ""
+            if (item_type == "viz" || !is.null(item$viz_type)) {
+              viz_items <- c(viz_items, list(item))
+            } else {
+              non_viz_items <- c(non_viz_items, list(item))
+            }
+          }
+          
+          # Render non-viz items first
+          for (item in non_viz_items) {
+            item_html <- .render_content_block_direct(item)
+            if (!is.null(item_html)) {
+              page_html_parts <- c(page_html_parts, list(item_html))
+            }
+          }
+          
+          # Render viz items if we have them and data
+          if (length(viz_items) > 0) {
+            page_data <- .load_page_data(page, x)
+            if (!is.null(page_data)) {
+              collection <- create_viz(data = page_data)
+              collection$items <- viz_items
+              
+              has_tabgroups <- any(sapply(viz_items, function(item) {
+                !is.null(item$tabgroup) && length(item$tabgroup) > 0 && nchar(item$tabgroup[1]) > 0
+              }))
+              
+              viz_html <- if (has_tabgroups) {
+                .render_tabbed_simple(collection, options)
+              } else {
+                .render_stacked_knitr(collection, options)
+              }
+              page_html_parts <- c(page_html_parts, list(viz_html))
+            } else {
+              page_html_parts <- c(page_html_parts, list(
+                htmltools::div(
+                  style = "padding: 20px; background: #f8f9fa; border-radius: 8px; text-align: center; color: #666;",
+                  htmltools::em(paste0(length(viz_items), " visualization(s) - data not available for inline preview"))
+                )
+              ))
+            }
+          }
+        } else {
+          # Regular content block
+          block_html <- .render_content_block_direct(block)
+          if (!is.null(block_html)) {
+            page_html_parts <- c(page_html_parts, list(block_html))
+          }
         }
       }
     }
     
     # Render visualizations (need data from data_path or embedded)
-    if (!is.null(page$visualizations) && length(page$visualizations) > 0) {
-      # Try to load data if data_path exists
-      page_data <- NULL
-      if (!is.null(page$data_path)) {
-        data_file <- if (is.list(page$data_path)) page$data_path[[1]] else page$data_path
-        # Data files are stored in the dashboard's output directory
-        if (!is.null(x$output_dir)) {
-          full_data_path <- file.path(x$output_dir, data_file)
-          if (file.exists(full_data_path)) {
-            page_data <- tryCatch(readRDS(full_data_path), error = function(e) NULL)
-          }
-        }
-        # Also try the path directly in case it's already absolute
-        if (is.null(page_data) && file.exists(data_file)) {
-          page_data <- tryCatch(readRDS(data_file), error = function(e) NULL)
-        }
-      }
+    # Skip if visualizations are embedded in content blocks (already handled above)
+    if (!isTRUE(page$viz_embedded_in_content) && 
+        !is.null(page$visualizations) && length(page$visualizations) > 0) {
+      page_data <- .load_page_data(page, x)
       
       if (!is.null(page_data)) {
-        # Create a collection from viz specs and render
-        collection <- create_viz(data = page_data)
-        collection$items <- page$visualizations
+        # page$visualizations might be processed (hierarchical) structure from .process_visualizations()
+        # Try to extract flat viz items for rendering
+        viz_items <- .extract_flat_viz_items(page$visualizations)
         
-        has_tabgroups <- any(sapply(page$visualizations, function(item) {
-          !is.null(item$tabgroup) && nchar(item$tabgroup) > 0
-        }))
-        
-        viz_html <- if (has_tabgroups) {
-          .render_tabbed_simple(collection, options)
-        } else {
-          .render_stacked_knitr(collection, options)
+        if (length(viz_items) > 0) {
+          # Create a collection from viz specs and render
+          collection <- create_viz(data = page_data)
+          collection$items <- viz_items
+          
+          has_tabgroups <- any(sapply(viz_items, function(item) {
+            !is.null(item$tabgroup) && length(item$tabgroup) > 0 && nchar(item$tabgroup[1]) > 0
+          }))
+          
+          viz_html <- if (has_tabgroups) {
+            .render_tabbed_simple(collection, options)
+          } else {
+            .render_stacked_knitr(collection, options)
+          }
+          page_html_parts <- c(page_html_parts, list(viz_html))
         }
-        page_html_parts <- c(page_html_parts, list(viz_html))
       } else {
         # No data available - show placeholder
         page_html_parts <- c(page_html_parts, list(
@@ -4364,6 +4752,72 @@ knit_print.dashboard_project <- function(x, ..., options = NULL) {
   knitr::knit_print(wrapped_output, options = options, ...)
 }
 
+#' Extract flat visualization items from processed viz structure
+#' The .process_visualizations() function transforms viz items into a nested 
+#' hierarchical structure (tabgroups with children). This helper extracts the
+#' original flat viz items for simpler rendering.
+#' @param viz_list List of processed viz items (may contain tabgroups)
+#' @param parent_tabgroup Parent tabgroup name for nested items
+#' @noRd
+.extract_flat_viz_items <- function(viz_list, parent_tabgroup = NULL) {
+  result <- list()
+  
+  for (item in viz_list) {
+    if (is.null(item)) next
+    
+    item_type <- item$type %||% ""
+    
+    if (item_type == "tabgroup") {
+      # This is a processed tabgroup - extract its visualizations
+      tabgroup_name <- item$tabgroup %||% item$title %||% parent_tabgroup
+      
+      # Get direct visualizations in this tabgroup
+      if (!is.null(item$visualizations)) {
+        for (viz in item$visualizations) {
+          viz$tabgroup <- tabgroup_name
+          result <- c(result, list(viz))
+        }
+      }
+      
+      # Recursively process nested children
+      if (!is.null(item$children) && length(item$children) > 0) {
+        nested <- .extract_flat_viz_items(item$children, tabgroup_name)
+        result <- c(result, nested)
+      }
+      
+      # Also check for nested_children field
+      if (!is.null(item$nested_children) && length(item$nested_children) > 0) {
+        nested <- .extract_flat_viz_items(item$nested_children, tabgroup_name)
+        result <- c(result, nested)
+      }
+      
+    } else if (item_type == "viz" || !is.null(item$viz_type)) {
+      # Direct viz item - preserve or set tabgroup
+      if (is.null(item$tabgroup) && !is.null(parent_tabgroup)) {
+        item$tabgroup <- parent_tabgroup
+      }
+      result <- c(result, list(item))
+    } else if (!is.null(item$visualizations) || !is.null(item$children)) {
+      # Tabgroup without explicit type = "tabgroup" (older format)
+      tabgroup_name <- item$tabgroup %||% item$title %||% parent_tabgroup
+      
+      if (!is.null(item$visualizations)) {
+        for (viz in item$visualizations) {
+          viz$tabgroup <- tabgroup_name
+          result <- c(result, list(viz))
+        }
+      }
+      
+      if (!is.null(item$children) && length(item$children) > 0) {
+        nested <- .extract_flat_viz_items(item$children, tabgroup_name)
+        result <- c(result, nested)
+      }
+    }
+  }
+  
+  result
+}
+
 #' Helper to check if collection has visualizations that need data
 #' @noRd
 has_viz_needing_data <- function(collection) {
@@ -4420,8 +4874,9 @@ show_structure <- function(x) {
   }
 
   # Check if any items have tabgroups (non-null and non-empty)
+  # Note: tabgroup can be a vector for nested tabs (e.g., c("Parent", "Child"))
   has_tabgroups <- any(sapply(collection$items, function(item) {
-    !is.null(item$tabgroup) && nchar(item$tabgroup) > 0
+    !is.null(item$tabgroup) && length(item$tabgroup) > 0 && any(nchar(item$tabgroup) > 0)
   }))
 
   if (has_tabgroups) {

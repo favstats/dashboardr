@@ -38,12 +38,12 @@ content <- create_content(data = gss, type = "bar") %>%
   add_callout("Sample size: 21,788", type = "note")
 
 print(content)
-#> -- Content Collection ----------------------------------------------------------
-#> 3 items | v data: 21788 rows x 8 cols
+#> -- Content Collection ──────────────────────────────────────────────────────────
+#> 3 items | ✔ data: 21788 rows x 8 cols
 #> 
-#> * [Viz] Education (bar) x=degree
-#> i [Text]
-#> ! [Callout]
+#> • [Viz] Education (bar) x=degree
+#> ℹ [Text]
+#> ⚠ [Callout]
 ```
 
 ## The Defaults System
@@ -70,11 +70,11 @@ content <- content %>%
   add_viz(x_var = "race", title = "Race (green)", color_palette = c("#2ECC71"))
 
 print(content)
-#> -- Content Collection ----------------------------------------------------------
-#> 2 items | v data: 21788 rows x 8 cols
+#> -- Content Collection ──────────────────────────────────────────────────────────
+#> 2 items | ✔ data: 21788 rows x 8 cols
 #> 
-#> * [Viz] Education (defaults) (bar) x=degree
-#> * [Viz] Race (green) (bar) x=race
+#> • [Viz] Education (defaults) (bar) x=degree
+#> • [Viz] Race (green) (bar) x=race
 ```
 
 ``` r
@@ -194,11 +194,11 @@ For survey questions with the same response scale, use
 # Within create_content() workflow
 create_content(data = survey_data, type = "stackedbars") %>%
   add_viz(
-    questions = c("q1", "q2", "q3", "q4"),
-    question_labels = c("I trust the company", 
-                        "I feel valued",
-                        "I have opportunities",
-                        "I would recommend"),
+    x_vars = c("q1", "q2", "q3", "q4"),
+    x_var_labels = c("I trust the company", 
+                     "I feel valued",
+                     "I have opportunities",
+                     "I would recommend"),
     title = "Employee Sentiment",
     stacked_type = "percent",
     horizontal = TRUE
@@ -256,15 +256,15 @@ content <- create_content(data = gss, type = "bar") %>%
   add_viz(x_var = "polviews", title = "Politics", tabgroup = "attitudes")
 
 print(content)
-#> -- Content Collection ----------------------------------------------------------
-#> 4 items | v data: 21788 rows x 8 cols
+#> -- Content Collection ──────────────────────────────────────────────────────────
+#> 4 items | ✔ data: 21788 rows x 8 cols
 #> 
-#> > [Tab] demographics (2 vizs)
-#>   * [Viz] Education (bar) x=degree
-#>   * [Viz] Race (bar) x=race
-#> > [Tab] attitudes (2 vizs)
-#>   * [Viz] Happiness (bar) x=happy
-#>   * [Viz] Politics (bar) x=polviews
+#> ❯ [Tab] demographics (2 vizs)
+#>   • [Viz] Education (bar) x=degree
+#>   • [Viz] Race (bar) x=race
+#> ❯ [Tab] attitudes (2 vizs)
+#>   • [Viz] Happiness (bar) x=happy
+#>   • [Viz] Politics (bar) x=polviews
 ```
 
 ``` r
@@ -320,20 +320,20 @@ nested <- create_content(data = gss, type = "bar") %>%
           tabgroup = "Attitudes/Politics")
 
 print(nested)
-#> -- Content Collection ----------------------------------------------------------
-#> 5 items | v data: 21788 rows x 8 cols
+#> -- Content Collection ──────────────────────────────────────────────────────────
+#> 5 items | ✔ data: 21788 rows x 8 cols
 #> 
-#> > [Tab] Demographics (2 tabs)
-#>   > [Tab] Education (2 vizs)
-#>     * [Viz] Education Level (bar) x=degree
-#>     * [Viz] Race Distribution (bar) x=race
-#>   > [Tab] Age (1 viz)
-#>     * [Viz] Age Distribution (bar) x=age
-#> > [Tab] Attitudes (2 tabs)
-#>   > [Tab] Wellbeing (1 viz)
-#>     * [Viz] General Happiness (bar) x=happy
-#>   > [Tab] Politics (1 viz)
-#>     * [Viz] Political Views (bar) x=polviews
+#> ❯ [Tab] Demographics (2 tabs)
+#>   ❯ [Tab] Education (2 vizs)
+#>     • [Viz] Education Level (bar) x=degree
+#>     • [Viz] Race Distribution (bar) x=race
+#>   ❯ [Tab] Age (1 viz)
+#>     • [Viz] Age Distribution (bar) x=age
+#> ❯ [Tab] Attitudes (2 tabs)
+#>   ❯ [Tab] Wellbeing (1 viz)
+#>     • [Viz] General Happiness (bar) x=happy
+#>   ❯ [Tab] Politics (1 viz)
+#>     • [Viz] Political Views (bar) x=polviews
 ```
 
 **The structure:**
@@ -369,13 +369,13 @@ labeled <- create_content(data = gss, type = "bar") %>%
   )
 
 print(labeled)
-#> -- Content Collection ----------------------------------------------------------
-#> 2 items | v data: 21788 rows x 8 cols
+#> -- Content Collection ──────────────────────────────────────────────────────────
+#> 2 items | ✔ data: 21788 rows x 8 cols
 #> 
-#> > [Tab] demo (1 viz)
-#>   * [Viz] Education (bar) x=degree
-#> > [Tab] attitudes (1 viz)
-#>   * [Viz] Happiness (bar) x=happy
+#> ❯ [Tab] demo (1 viz)
+#>   • [Viz] Education (bar) x=degree
+#> ❯ [Tab] attitudes (1 viz)
+#>   • [Viz] Happiness (bar) x=happy
 ```
 
 ``` r
@@ -414,10 +414,10 @@ content <- create_content(type = "bar") %>%
   )
 
 print(content)
-#> -- Content Collection ----------------------------------------------------------
-#> 1 items | x no data
+#> -- Content Collection ──────────────────────────────────────────────────────────
+#> 1 items | ✖ no data
 #> 
-#> i [Text]
+#> ℹ [Text]
 ```
 
 ### Callouts
@@ -433,14 +433,14 @@ content <- create_content(type = "bar") %>%
   add_callout("This is important", type = "important")
 
 print(content)
-#> -- Content Collection ----------------------------------------------------------
-#> 5 items | x no data
+#> -- Content Collection ──────────────────────────────────────────────────────────
+#> 5 items | ✖ no data
 #> 
-#> ! [Callout]
-#> ! [Callout]
-#> ! [Callout]
-#> ! [Callout]
-#> ! [Callout]
+#> ⚠ [Callout]
+#> ⚠ [Callout]
+#> ⚠ [Callout]
+#> ⚠ [Callout]
+#> ⚠ [Callout]
 ```
 
 ### Images
@@ -452,10 +452,10 @@ img_content <- create_content() %>%
   add_image("workflow_example.png", caption = "Figure 1: The dashboardr workflow")
 
 print(img_content)
-#> -- Content Collection ----------------------------------------------------------
-#> 1 items | x no data
+#> -- Content Collection ──────────────────────────────────────────────────────────
+#> 1 items | ✖ no data
 #> 
-#> (*) [Image]
+#> ◉ [Image]
 ```
 
 ### Accordions
@@ -474,11 +474,11 @@ accordion_content <- create_content() %>%
   )
 
 print(accordion_content)
-#> -- Content Collection ----------------------------------------------------------
-#> 2 items | x no data
+#> -- Content Collection ──────────────────────────────────────────────────────────
+#> 2 items | ✖ no data
 #> 
-#> = [Accordion] Methodology Details
-#> = [Accordion] Data Sources
+#> ☰ [Accordion] Methodology Details
+#> ☰ [Accordion] Data Sources
 ```
 
 ### Cards
@@ -493,10 +493,10 @@ card_content <- create_content() %>%
   )
 
 print(card_content)
-#> -- Content Collection ----------------------------------------------------------
-#> 1 items | x no data
+#> -- Content Collection ──────────────────────────────────────────────────────────
+#> 1 items | ✖ no data
 #> 
-#> [x] [Card] Key Finding
+#> ◼ [Card] Key Finding
 ```
 
 ### Dividers
@@ -510,12 +510,12 @@ divider_content <- create_content(data = gss, type = "bar") %>%
   add_viz(x_var = "happy", title = "Happiness")
 
 print(divider_content)
-#> -- Content Collection ----------------------------------------------------------
-#> 3 items | v data: 21788 rows x 8 cols
+#> -- Content Collection ──────────────────────────────────────────────────────────
+#> 3 items | ✔ data: 21788 rows x 8 cols
 #> 
-#> * [Viz] Education (bar) x=degree
-#> - [Divider]
-#> * [Viz] Happiness (bar) x=happy
+#> • [Viz] Education (bar) x=degree
+#> ─ [Divider]
+#> • [Viz] Happiness (bar) x=happy
 ```
 
 ``` r
@@ -545,13 +545,13 @@ attitudes <- create_content(data = gss, type = "bar") %>%
 
 combined <- demographics + attitudes
 print(combined)
-#> -- Content Collection ----------------------------------------------------------
-#> 2 items | v data: 21788 rows x 8 cols
+#> -- Content Collection ──────────────────────────────────────────────────────────
+#> 2 items | ✔ data: 21788 rows x 8 cols
 #> 
-#> > [Tab] demo (1 viz)
-#>   * [Viz] Education (bar) x=degree
-#> > [Tab] attitudes (1 viz)
-#>   * [Viz] Happiness (bar) x=happy
+#> ❯ [Tab] demo (1 viz)
+#>   • [Viz] Education (bar) x=degree
+#> ❯ [Tab] attitudes (1 viz)
+#>   • [Viz] Happiness (bar) x=happy
 ```
 
 ``` r
@@ -577,13 +577,13 @@ all_content <- demographics %>%
   combine_viz(attitudes)
 
 print(all_content)
-#> -- Content Collection ----------------------------------------------------------
-#> 2 items | v data: 21788 rows x 8 cols
+#> -- Content Collection ──────────────────────────────────────────────────────────
+#> 2 items | ✔ data: 21788 rows x 8 cols
 #> 
-#> > [Tab] demo (1 viz)
-#>   * [Viz] Education (bar) x=degree
-#> > [Tab] attitudes (1 viz)
-#>   * [Viz] Happiness (bar) x=happy
+#> ❯ [Tab] demo (1 viz)
+#>   • [Viz] Education (bar) x=degree
+#> ❯ [Tab] attitudes (1 viz)
+#>   • [Viz] Happiness (bar) x=happy
 ```
 
 ``` r
@@ -616,14 +616,14 @@ paginated <- section1 %>%
   combine_viz(section2)
 
 print(paginated)
-#> -- Content Collection ----------------------------------------------------------
-#> 3 items | x no data
+#> -- Content Collection ──────────────────────────────────────────────────────────
+#> 3 items | ✖ no data
 #> 
-#> > [Tab] demo (1 viz)
-#>   * [Viz] Education (bar) x=degree
-#> > [PageBreak]
-#> > [Tab] cross (1 viz)
-#>   * [Viz] Happiness (stackedbar) x=happy, stack=sex
+#> ❯ [Tab] demo (1 viz)
+#>   • [Viz] Education (bar) x=degree
+#> → [PageBreak]
+#> ❯ [Tab] cross (1 viz)
+#>   • [Viz] Happiness (stackedbar) x=happy, stack=sex
 ```
 
 ## Filtering Data
@@ -636,12 +636,12 @@ filtered <- create_content(data = gss, type = "bar") %>%
   add_viz(x_var = "happy", title = "Female", filter = ~ sex == 2, tabgroup = "by_sex")
 
 print(filtered)
-#> -- Content Collection ----------------------------------------------------------
-#> 2 items | v data: 21788 rows x 8 cols
+#> -- Content Collection ──────────────────────────────────────────────────────────
+#> 2 items | ✔ data: 21788 rows x 8 cols
 #> 
-#> > [Tab] by_sex (2 vizs)
-#>   * [Viz] Male (bar) x=happy +filter
-#>   * [Viz] Female (bar) x=happy +filter
+#> ❯ [Tab] by_sex (2 vizs)
+#>   • [Viz] Male (bar) x=happy +filter
+#>   • [Viz] Female (bar) x=happy +filter
 ```
 
 ``` r
@@ -668,13 +668,13 @@ complex <- create_content(data = gss, type = "bar") %>%
           filter = ~ age > 55, tabgroup = "age_groups")
 
 print(complex)
-#> -- Content Collection ----------------------------------------------------------
-#> 3 items | v data: 21788 rows x 8 cols
+#> -- Content Collection ──────────────────────────────────────────────────────────
+#> 3 items | ✔ data: 21788 rows x 8 cols
 #> 
-#> > [Tab] age_groups (3 vizs)
-#>   * [Viz] Young Adults (bar) x=happy +filter
-#>   * [Viz] Middle Age (bar) x=happy +filter
-#>   * [Viz] Older Adults (bar) x=happy +filter
+#> ❯ [Tab] age_groups (3 vizs)
+#>   • [Viz] Young Adults (bar) x=happy +filter
+#>   • [Viz] Middle Age (bar) x=happy +filter
+#>   • [Viz] Older Adults (bar) x=happy +filter
 ```
 
 ``` r
@@ -709,15 +709,15 @@ gender_comparison <- create_content(data = gss, type = "bar") %>%
           filter = ~ sex == 2, title_tabset = "Female", tabgroup = "education")
 
 print(gender_comparison)
-#> -- Content Collection ----------------------------------------------------------
-#> 4 items | v data: 21788 rows x 8 cols
+#> -- Content Collection ──────────────────────────────────────────────────────────
+#> 4 items | ✔ data: 21788 rows x 8 cols
 #> 
-#> > [Tab] happiness (2 vizs)
-#>   * [Viz] Happiness (bar) x=happy +filter
-#>   * [Viz] Happiness (bar) x=happy +filter
-#> > [Tab] education (2 vizs)
-#>   * [Viz] Education (bar) x=degree +filter
-#>   * [Viz] Education (bar) x=degree +filter
+#> ❯ [Tab] happiness (2 vizs)
+#>   • [Viz] Happiness (bar) x=happy +filter
+#>   • [Viz] Happiness (bar) x=happy +filter
+#> ❯ [Tab] education (2 vizs)
+#>   • [Viz] Education (bar) x=degree +filter
+#>   • [Viz] Education (bar) x=degree +filter
 ```
 
 The `title_tabset` parameter creates a second level of tabs - perfect
@@ -735,14 +735,14 @@ batch <- create_content(data = gss, type = "bar") %>%
   add_vizzes(x_var = vars, title = labels, tabgroup = "survey")
 
 print(batch)
-#> -- Content Collection ----------------------------------------------------------
-#> 4 items | v data: 21788 rows x 8 cols
+#> -- Content Collection ──────────────────────────────────────────────────────────
+#> 4 items | ✔ data: 21788 rows x 8 cols
 #> 
-#> > [Tab] survey (4 vizs)
-#>   * [Viz] Education (bar) x=degree
-#>   * [Viz] Race (bar) x=race
-#>   * [Viz] Happiness (bar) x=happy
-#>   * [Viz] Politics (bar) x=polviews
+#> ❯ [Tab] survey (4 vizs)
+#>   • [Viz] Education (bar) x=degree
+#>   • [Viz] Race (bar) x=race
+#>   • [Viz] Happiness (bar) x=happy
+#>   • [Viz] Politics (bar) x=polviews
 ```
 
 ## Survey Weights
@@ -754,10 +754,10 @@ weighted <- create_content(data = gss, type = "bar", weight_var = "wtssall") %>%
   add_viz(x_var = "degree", title = "Weighted Education")
 
 print(weighted)
-#> -- Content Collection ----------------------------------------------------------
-#> 1 items | v data: 21788 rows x 8 cols
+#> -- Content Collection ──────────────────────────────────────────────────────────
+#> 1 items | ✔ data: 21788 rows x 8 cols
 #> 
-#> * [Viz] Weighted Education (bar) x=degree
+#> • [Viz] Weighted Education (bar) x=degree
 ```
 
 ``` r

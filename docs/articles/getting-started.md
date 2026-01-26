@@ -79,10 +79,10 @@ demographics <- create_content(data = gss, type = "bar") %>%
   add_viz(x_var = "degree", title = "Education") 
 
 print(demographics)
-#> -- Content Collection ----------------------------------------------------------
-#> 1 items | v data: 21788 rows x 7 cols
+#> -- Content Collection ──────────────────────────────────────────────────────────
+#> 1 items | ✔ data: 21788 rows x 7 cols
 #> 
-#> * [Viz] Education (bar) x=degree
+#> • [Viz] Education (bar) x=degree
 ```
 
 Here
@@ -154,22 +154,25 @@ Explore the General Social Survey data.
 The `is_landing_page = TRUE` makes this the default page when someone
 opens your dashboard.
 
-Now an analysis page that uses our content from Layer 1:
+Now an analysis page that uses our content from Layer 1. You can also
+add text directly to pages:
 
 ``` r
 analysis <- create_page("Analysis", data = gss) %>%
+  add_text("## Demographic Overview", "Explore how GSS respondents break down by key categories.") %>%
   add_content(demographics)
 
 print(analysis)
-#> -- Page: Analysis -----------------------------------------------
-#> v data: 21788 rows x 7 cols 
-#> 3 items
+#> -- Page: Analysis ───────────────────────────────────────────────
+#> ✔ data: 21788 rows x 7 cols 
+#> 4 items
 #> 
-#> > [Tab] demographics (2 vizs)
-#>   * [Viz] Education (bar) x=degree
-#>   * [Viz] Race (bar) x=race
-#> > [Tab] attitudes (1 viz)
-#>   * [Viz] Happiness (bar) x=happy
+#> ℹ [Text]
+#> ❯ [Tab] demographics (2 vizs)
+#>   • [Viz] Education (bar) x=degree
+#>   • [Viz] Race (bar) x=race
+#> ❯ [Tab] attitudes (1 viz)
+#>   • [Viz] Happiness (bar) x=happy
 ```
 
 The
@@ -183,6 +186,10 @@ analysis %>% preview()
 ```
 
 Preview
+
+Demographic Overview
+
+Explore how GSS respondents break down by key categories.
 
 demographics
 
@@ -223,8 +230,6 @@ my_dashboard <- create_dashboard(
   theme = "flatly"
 ) %>%
   add_pages(home, analysis) 
-#> Output directory already exists: /Users/favstats/Dropbox/postdoc/my_dashboard
-#> Files may be overwritten when generate_dashboard() is called.
 
 my_dashboard
 ```
@@ -239,9 +244,17 @@ Welcome!
 
 Explore the General Social Survey data.
 
-(ungrouped)
+Demographic Overview
+
+Explore how GSS respondents break down by key categories.
+
+demographics
 
 attitudes
+
+Education
+
+Race
 
 Happiness
 
@@ -274,9 +287,17 @@ Welcome!
 
 Explore the General Social Survey data.
 
-(ungrouped)
+Demographic Overview
+
+Explore how GSS respondents break down by key categories.
+
+demographics
 
 attitudes
+
+Education
+
+Race
 
 Happiness
 
@@ -341,22 +362,22 @@ Here’s what the *one minute* dashboard structure looks like:
 ``` r
 print(onemin_dashboard)
 #> 
-#> <U+2554><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550>
-#> <U+2551> <U+0001F3A8> DASHBOARD PROJECT
-#> <U+2560><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550>
-#> <U+2551> <U+0001F4DD> Title: GSS Data Explorer
-#> <U+2551> <U+0001F4C1> Output: /Users/favstats/Dropbox/postdoc/gss_dashboard
-#> <U+2551>
-#> <U+2551> <U+2699><U+FE0F>  FEATURES:
-#> <U+2551>    <U+2022> <U+0001F50D> Search
-#> <U+2551>    <U+2022> <U+0001F3A8> Theme: flatly
-#> <U+2551>    <U+2022> <U+0001F5C2><U+FE0F>  Tabs: minimal
-#> <U+2551>
-#> <U+2551> <U+0001F4C4> PAGES (3):
-#> <U+2551> <U+251C><U+2500> <U+0001F4C4> Home [<U+0001F3E0> Landing]
-#> <U+2551> <U+251C><U+2500> <U+0001F4C4> Analysis [<U+0001F3AF> Icon, <U+0001F4BE> 1 dataset]
-#> <U+2551> <U+2514><U+2500> <U+0001F4C4> About [<U+0001F3AF> Icon, <U+2192> Right]
-#> <U+255A><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550>
+#> +==============================================================================
+#> | [*] DASHBOARD PROJECT
+#> +==============================================================================
+#> | [T] Title: GSS Data Explorer
+#> | [>] Output: /Users/favstats/Dropbox/postdoc/gss_dashboard
+#> |
+#> | [+] FEATURES:
+#> |    * [?] Search
+#> |    * [#] Theme: flatly
+#> |    * [~] Tabs: minimal
+#> |
+#> | [P] PAGES (3):
+#> | +- [P] Home [[H] Landing]
+#> | +- [P] Analysis [[i] Icon, [d] 1 dataset]
+#> | +- [P] About [[i] Icon, -> Right]
+#> +==============================================================================
 ```
 
 ## Tips

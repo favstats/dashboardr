@@ -290,12 +290,12 @@ create_heatmap <- function(data,
     if (inherits(df_plot$.x_raw, "haven_labelled")) {
       df_plot <- df_plot |>
         dplyr::mutate(.x_raw = haven::as_factor(.x_raw, levels = "values"))
-      if (interactive()) message(paste0("Note: Column '", x_var, "' was 'haven_labelled' and converted to factor (levels = values)."))
+      if (isTRUE(getOption("dashboardr.verbose"))) message(paste0("Note: Column '", x_var, "' was 'haven_labelled' and converted to factor (levels = values)."))
     }
     if (inherits(df_plot$.y_raw, "haven_labelled")) {
       df_plot <- df_plot |>
         dplyr::mutate(.y_raw = haven::as_factor(.y_raw, levels = "values"))
-      if (interactive()) message(paste0("Note: Column '", y_var, "' was 'haven_labelled' and converted to factor (levels = values)."))
+      if (isTRUE(getOption("dashboardr.verbose"))) message(paste0("Note: Column '", y_var, "' was 'haven_labelled' and converted to factor (levels = values)."))
     }
   }
 

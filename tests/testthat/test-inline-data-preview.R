@@ -247,8 +247,8 @@ test_that("knit_print handles tabgroups", {
   result <- knitr::knit_print(viz)
   
   expect_s3_class(result, "knit_asis")
-  # Should contain tab elements (using custom dtab classes)
-  expect_true(grepl("dtab-btn|dtab-pane", as.character(result)))
+  # Should contain tab elements (using vtab classes from .render_tabbed_simple)
+  expect_true(grepl("vtab-btn|vtab-pane|data-tab", as.character(result)))
 })
 
 # -----------------------------------------------------------------------------

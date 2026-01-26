@@ -16,14 +16,15 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r setup, message=FALSE}
+```{r setup, message=FALSE, warning=FALSE}
 library(dashboardr)
 library(dplyr)
 library(gssr)
+# Load latest wave only
 data(gss_all)
 gss <- gss_all %>%
   select(year, age, sex, race, degree, happy, polviews) %>%
-  filter(year >= 2010, !is.na(age), !is.na(sex), !is.na(race), !is.na(degree))
+  filter(year == max(year, na.rm = TRUE), !is.na(age), !is.na(sex), !is.na(race), !is.na(degree))
 ```
 
 This vignette goes deep into dashboards - the third layer of dashboardr's architecture. For a quick overview, see `vignette("getting-started")`.
@@ -365,10 +366,11 @@ library(dplyr)
 library(gssr)
 
 # Load data
+# Load latest wave only
 data(gss_all)
 gss <- gss_all %>%
   select(year, age, sex, race, degree, happy, polviews) %>%
-  filter(year >= 2010, !is.na(age), !is.na(sex), !is.na(race), !is.na(degree))
+  filter(year == max(year, na.rm = TRUE), !is.na(age), !is.na(sex), !is.na(race), !is.na(degree))
 
 # === LAYER 1: CONTENT ===
 
@@ -483,6 +485,404 @@ print(demographics)
 dashboard %>% generate_dashboard(render = FALSE)
 
 # Check the generated .qmd files in output_dir
+```
+
+## Dashboard Configuration Gallery
+
+Complete reference of all dashboard options with examples.
+
+### Theme Gallery
+
+Built-in Quarto themes for different looks.
+
+```{r}
+# List of available themes with descriptions
+themes <- data.frame(
+  Theme = c("flatly", "cosmo", "journal", "lux", "simplex", "cerulean", "litera", "minty", "pulse", "sandstone", "sketchy", "slate", "solar", "spacelab", "superhero", "united", "yeti", "zephyr"),
+  Style = c("Clean modern", "Professional", "Academic", "Luxurious", "Minimal", "Blue corporate", "Readable", "Fresh green", "Bold purple", "Warm tones", "Hand-drawn", "Dark mode", "Dark solarized", "Space theme", "Comic style", "Ubuntu orange", "Friendly", "Light airy")
+)
+
+print(themes)
+```
+
+### Custom Theme Examples
+
+```{r}
+# Academic/Research theme
+academic_config <- list(
+  theme = "journal",
+  navbar_bg_color = "#2C3E50",
+  navbar_text_color = "#ECF0F1",
+  mainfont = "Georgia",
+  fontsize = "17px"
+)
+
+# Tech/Startup theme
+tech_config <- list(
+  theme = "flatly",
+  navbar_bg_color = "#1A1A2E",
+  navbar_text_color = "#E94560",
+  mainfont = "Inter",
+  fontsize = "15px"
+)
+
+# Government/Institutional theme
+gov_config <- list(
+  theme = "cosmo",
+  navbar_bg_color = "#003366",
+  navbar_text_color = "#FFFFFF",
+  mainfont = "Roboto",
+  fontsize = "16px"
+)
+
+cat("Academic Config:\n")
+str(academic_config)
+```
+
+### Navbar Style Options
+
+```{r}
+# Dark navbar (light text on dark background)
+dark_navbar <- create_dashboard(
+  title = "Dark Navbar",
+  output_dir = "temp_out",
+  navbar_style = "dark",
+  navbar_bg_color = "#2C3E50",
+  navbar_text_color = "#ECF0F1",
+  navbar_text_hover_color = "#3498DB"
+)
+
+print(dark_navbar)
+```
+
+```{r}
+# Light navbar (dark text on light background)
+light_navbar <- create_dashboard(
+  title = "Light Navbar",
+  output_dir = "temp_out",
+  navbar_style = "light",
+  navbar_bg_color = "#F8F9FA",
+  navbar_text_color = "#2C3E50",
+  navbar_text_hover_color = "#E74C3C"
+)
+
+print(light_navbar)
+```
+
+### Tab Theme Gallery
+
+Four built-in tab themes.
+
+```{r}
+tab_themes <- data.frame(
+  Theme = c("default", "modern", "pills", "minimal"),
+  Description = c(
+    "Standard Bootstrap tabs with underline",
+    "Rounded corners with subtle shadows",
+    "Pill-shaped buttons for each tab",
+    "Clean underline only, no backgrounds"
+  )
+)
+
+print(tab_themes)
+```
+
+```{r}
+# Modern tabs with custom colors
+modern_tabs <- create_dashboard(
+  title = "Modern Tabs",
+  output_dir = "temp_out",
+  tabset_theme = "modern",
+  tabset_colors = list(
+    active_bg = "#3498DB",
+    active_text = "#FFFFFF",
+    inactive_bg = "#ECF0F1",
+    inactive_text = "#7F8C8D",
+    hover_bg = "#BDC3C7"
+  )
+)
+
+print(modern_tabs)
+```
+
+### Navigation Features
+
+All navigation options demonstrated.
+
+```{r}
+full_nav <- create_dashboard(
+  title = "Full Navigation",
+  output_dir = "temp_out",
+  
+  # Core navigation
+  search = TRUE,
+  breadcrumbs = TRUE,
+  page_navigation = TRUE,
+  back_to_top = TRUE,
+  
+  # Sidebar (alternative to top nav)
+  sidebar = FALSE
+)
+
+print(full_nav)
+```
+
+### Social Links Configuration
+
+Add contact and social media links.
+
+```{r}
+social_dashboard <- create_dashboard(
+  title = "With Social Links",
+  output_dir = "temp_out",
+  github = "https://github.com/username/project",
+  twitter = "https://twitter.com/username",
+  linkedin = "https://linkedin.com/in/username",
+  email = "researcher@university.edu",
+  website = "https://myresearch.com"
+)
+
+print(social_dashboard)
+```
+
+### Metadata for SEO
+
+Configure metadata for search engines and sharing.
+
+```{r}
+seo_dashboard <- create_dashboard(
+  title = "SEO Optimized",
+  output_dir = "temp_out",
+  author = "Dr. Jane Smith",
+  description = "Interactive dashboard exploring 15 years of General Social Survey data with demographics, attitudes, and trends.",
+  date = "2025-01-15",
+  page_footer = "© 2025 Research Institute. Data: GSS/NORC."
+)
+
+print(seo_dashboard)
+```
+
+### Publishing Configuration
+
+Set up for GitHub Pages or other hosting.
+
+```{r}
+github_pages <- create_dashboard(
+  title = "For GitHub Pages",
+  output_dir = "src",           # Quarto source files
+  publish_dir = "../docs"       # Output HTML for GitHub Pages
+)
+
+print(github_pages)
+```
+
+## Complete Dashboard Examples
+
+### Minimal Dashboard
+
+Simplest possible configuration.
+
+```{r}
+minimal <- create_dashboard(
+  title = "Minimal",
+  output_dir = "minimal_out"
+)
+
+home <- create_page("Home") %>%
+  add_text("# Welcome", "", "A minimal dashboard.")
+
+minimal <- minimal %>% add_pages(home)
+
+print(minimal)
+```
+
+### Research Dashboard
+
+Academic/research focused configuration.
+
+```{r}
+research <- create_dashboard(
+  title = "Research Dashboard",
+  output_dir = "research_out",
+  theme = "journal",
+  author = "Research Team",
+  description = "Academic research findings",
+  search = TRUE,
+  breadcrumbs = TRUE
+)
+
+# Create pages
+home <- create_page("Overview", is_landing_page = TRUE) %>%
+  add_text(
+    "# Research Findings",
+    "",
+    "Comprehensive analysis of survey data."
+  )
+
+methods_content <- create_content() %>%
+  add_text("## Methodology", "", "Our research approach.") %>%
+  add_accordion(
+    title = "Sample Details",
+    text = "N = 21,788 respondents"
+  )
+
+methods <- create_page("Methods") %>%
+  add_content(methods_content)
+
+references <- create_page("References", navbar_align = "right") %>%
+  add_text("## References", "", "- GSS Codebook (2024)")
+
+research <- research %>% add_pages(home, methods, references)
+
+print(research)
+```
+
+### Corporate Dashboard
+
+Business/analytics focused configuration.
+
+```{r}
+corporate <- create_dashboard(
+  title = "Analytics Dashboard",
+  output_dir = "corporate_out",
+  theme = "flatly",
+  navbar_style = "dark",
+  navbar_bg_color = "#1A1A2E",
+  tabset_theme = "pills",
+  back_to_top = TRUE,
+  page_footer = "© 2025 Company Inc."
+)
+
+# Create content collections first
+overview_content <- create_content(data = gss, type = "bar") %>%
+  add_value_box_row() %>%
+    add_value_box(title = "Total Users", value = "21.8K", bg_color = "#E94560") %>%
+    add_value_box(title = "Active", value = "87%", bg_color = "#16C79A") %>%
+  end_value_box_row() %>%
+  add_viz(x_var = "degree", title = "Distribution")
+
+details_content <- create_content(data = gss, type = "stackedbar") %>%
+  add_viz(x_var = "degree", stack_var = "happy", 
+          title = "Breakdown", stacked_type = "percent")
+
+# Create pages and add content
+overview <- create_page("Overview") %>%
+  add_content(overview_content)
+
+details <- create_page("Details") %>%
+  add_content(details_content)
+
+settings <- create_page("Settings", navbar_align = "right") %>%
+  add_text("## Configuration options")
+
+corporate <- corporate %>% add_pages(overview, details, settings)
+
+print(corporate)
+```
+
+### Multi-Page Survey Dashboard
+
+Complete survey analysis dashboard.
+
+```{r}
+survey_dashboard <- create_dashboard(
+  title = "GSS Data Explorer",
+  output_dir = "gss_out",
+  theme = "flatly",
+  search = TRUE,
+  breadcrumbs = TRUE,
+  back_to_top = TRUE,
+  github = "https://github.com/example/gss-dashboard"
+)
+
+# Landing page
+home <- create_page("Home", is_landing_page = TRUE) %>%
+  add_text(
+    "# GSS Data Explorer",
+    "",
+    "Interactive exploration of General Social Survey data (2010-2024).",
+    "",
+    "## What's Inside",
+    "",
+    "- **Demographics**: Education, age, race distributions",
+    "- **Attitudes**: Happiness, political views",
+    "- **Trends**: Changes over time"
+  ) %>%
+  add_callout("Use the navigation above to explore different sections.", type = "tip")
+
+# Demographics page
+demographics <- create_page("Demographics", data = gss, type = "bar",
+                           icon = "ph:users", overlay = TRUE) %>%
+  add_text("## Demographic Distributions") %>%
+  add_viz(x_var = "degree", title = "Education", tabgroup = "Variables") %>%
+  add_viz(x_var = "race", title = "Race", tabgroup = "Variables")
+
+# Attitudes page
+attitudes <- create_page("Attitudes", data = gss, type = "bar",
+                        icon = "ph:heart", overlay = TRUE) %>%
+  add_text("## Attitudes & Values") %>%
+  add_viz(x_var = "happy", title = "Happiness", tabgroup = "Measures") %>%
+  add_viz(x_var = "polviews", title = "Political Views", tabgroup = "Measures")
+
+# Cross-tabs page
+crosstabs <- create_page("Cross-Tabs", data = gss, type = "stackedbar",
+                        icon = "ph:table") %>%
+  add_text("## Cross-Tabulations") %>%
+  add_viz(x_var = "degree", stack_var = "happy", 
+          title = "Happiness by Education", 
+          stacked_type = "percent", tabgroup = "Analyses")
+
+# About page
+about <- create_page("About", navbar_align = "right", icon = "ph:info") %>%
+  add_text(
+    "## About This Dashboard",
+    "",
+    "Created with [dashboardr](https://github.com/favstats/dashboardr).",
+    "",
+    "### Data Source",
+    "",
+    "General Social Survey (GSS), conducted by NORC at University of Chicago."
+  ) %>%
+  add_callout("Last updated: January 2025", type = "note")
+
+# Assemble dashboard
+survey_dashboard <- survey_dashboard %>%
+  add_pages(home, demographics, attitudes, crosstabs, about)
+
+print(survey_dashboard)
+```
+
+## Debugging & Inspection
+
+Check your dashboard structure before generating.
+
+### Print Dashboard Structure
+
+```{r}
+# Print overall dashboard
+print(survey_dashboard)
+```
+
+### Inspect Individual Components
+
+```{r}
+# Check a specific page
+print(demographics)
+
+# Check page content items
+cat("\nNumber of items in demographics:", 
+    length(demographics$content$items), "\n")
+```
+
+### List All Pages
+
+```{r}
+# Get page names
+pages <- survey_dashboard$pages
+cat("Pages in dashboard:\n")
+for (i in seq_along(pages)) {
+  cat(" ", i, ". ", pages[[i]]$name, "\n", sep = "")
+}
 ```
 
 ## Related Vignettes

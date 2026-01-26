@@ -78,7 +78,7 @@ Functions for different chart types
 - [`create_stackedbar()`](https://favstats.github.io/dashboardr/reference/create_stackedbar.md)
   : Create a Stacked Bar Chart
 - [`create_stackedbars()`](https://favstats.github.io/dashboardr/reference/create_stackedbars.md)
-  : Stacked Bar Charts
+  : Stacked Bar Charts (Multiple Variables)
 - [`create_timeline()`](https://favstats.github.io/dashboardr/reference/create_timeline.md)
   : Create a Timeline Chart
 - [`create_heatmap()`](https://favstats.github.io/dashboardr/reference/create_heatmap.md)

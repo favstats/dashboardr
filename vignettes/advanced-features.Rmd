@@ -16,16 +16,17 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r setup, message=FALSE}
+```{r setup, message=FALSE, warning=FALSE}
 library(dashboardr)
 library(dplyr)
 
 # Load GSS data for examples
 library(gssr)
+# Load latest wave only
 data(gss_all)
 gss <- gss_all %>%
   select(year, age, sex, race, degree, happy, polviews, wtssall) %>%
-  filter(year >= 2010, !is.na(age), !is.na(sex), !is.na(race), !is.na(degree))
+  filter(year == max(year, na.rm = TRUE), !is.na(age), !is.na(sex), !is.na(race), !is.na(degree))
 ```
 
 ## Multiple Visualizations at Once
@@ -491,6 +492,288 @@ help(package = "dashboardr")
 
 # All vignettes
 vignette(package = "dashboardr")
+```
+
+## Advanced Features Gallery
+
+This gallery demonstrates all advanced features with both `print()` (structure) and `preview()` (rendered) output.
+
+### Weighted Data Visualizations
+
+Apply survey weights to get population-representative results.
+
+```{r}
+weighted_demo <- create_content(data = gss, type = "bar") %>%
+  add_viz(x_var = "degree", title = "Unweighted", tabgroup = "Comparison") %>%
+  add_viz(x_var = "degree", title = "Weighted", weight_var = "wtssall", tabgroup = "Comparison")
+
+print(weighted_demo)
+```
+
+```{r}
+weighted_demo %>% preview()
+```
+
+### Multi-Filter Comparisons
+
+Compare the same variable across different subgroups.
+
+```{r}
+age_groups <- create_content(data = gss, type = "bar") %>%
+  add_viz(x_var = "happy", title = "Young Adults (18-35)", 
+          filter = ~ age >= 18 & age <= 35, tabgroup = "Age") %>%
+  add_viz(x_var = "happy", title = "Middle Age (36-55)", 
+          filter = ~ age > 35 & age <= 55, tabgroup = "Age") %>%
+  add_viz(x_var = "happy", title = "Older Adults (55+)", 
+          filter = ~ age > 55, tabgroup = "Age")
+
+print(age_groups)
+```
+
+```{r}
+age_groups %>% preview()
+```
+
+### title_tabset for Sub-Tabs
+
+Create automatic sub-tabs within a tabgroup using `title_tabset`.
+
+```{r}
+gender_tabs <- create_content(data = gss, type = "bar") %>%
+  add_viz(x_var = "happy", title = "Happiness", 
+          filter = ~ sex == 1, title_tabset = "Male", tabgroup = "Happiness") %>%
+  add_viz(x_var = "happy", title = "Happiness", 
+          filter = ~ sex == 2, title_tabset = "Female", tabgroup = "Happiness") %>%
+  add_viz(x_var = "degree", title = "Education", 
+          filter = ~ sex == 1, title_tabset = "Male", tabgroup = "Education") %>%
+  add_viz(x_var = "degree", title = "Education", 
+          filter = ~ sex == 2, title_tabset = "Female", tabgroup = "Education")
+
+print(gender_tabs)
+```
+
+```{r}
+gender_tabs %>% preview()
+```
+
+### Nested Tabgroups
+
+Create hierarchical tab structures with `/` separator.
+
+```{r}
+nested <- create_content(data = gss, type = "bar") %>%
+  add_viz(x_var = "degree", title = "Education", 
+          tabgroup = "Demographics/Background") %>%
+  add_viz(x_var = "race", title = "Race", 
+          tabgroup = "Demographics/Background") %>%
+  add_viz(x_var = "age", title = "Age", 
+          tabgroup = "Demographics/Age Info") %>%
+  add_viz(x_var = "happy", title = "Happiness", 
+          tabgroup = "Attitudes/Wellbeing") %>%
+  add_viz(x_var = "polviews", title = "Politics", 
+          tabgroup = "Attitudes/Political")
+
+print(nested)
+```
+
+```{r}
+nested %>% preview()
+```
+
+### Batch Creation with add_vizzes()
+
+Create multiple visualizations efficiently.
+
+```{r}
+vars <- c("degree", "race", "happy", "polviews")
+titles <- c("Education Level", "Race/Ethnicity", "Happiness", "Political Views")
+
+batch <- create_content(data = gss, type = "bar") %>%
+  add_vizzes(x_var = vars, title = titles, tabgroup = "Survey Variables")
+
+print(batch)
+```
+
+```{r}
+batch %>% preview()
+```
+
+### Custom Tabgroup Labels
+
+Replace tabgroup IDs with human-readable labels.
+
+```{r}
+labeled <- create_content(data = gss, type = "bar") %>%
+  add_viz(x_var = "degree", title = "Education", tabgroup = "demo") %>%
+  add_viz(x_var = "happy", title = "Happiness", tabgroup = "att") %>%
+  set_tabgroup_labels(
+    demo = "Demographics",
+    att = "Attitudes & Values"
+  )
+
+print(labeled)
+```
+
+```{r}
+labeled %>% preview()
+```
+
+### Combining Multiple Collections
+
+Merge separate content collections while preserving structure.
+
+```{r}
+# Build sections separately
+demographics <- create_content(data = gss, type = "bar") %>%
+  add_viz(x_var = "degree", title = "Education", tabgroup = "Demographics")
+
+attitudes <- create_content(data = gss, type = "bar") %>%
+  add_viz(x_var = "happy", title = "Happiness", tabgroup = "Attitudes")
+
+crosstabs <- create_content(data = gss, type = "stackedbar") %>%
+  add_viz(x_var = "degree", stack_var = "happy", 
+          title = "Happiness by Education", tabgroup = "Analysis",
+          stacked_type = "percent")
+
+# Combine with + operator
+combined <- demographics + attitudes + crosstabs
+
+print(combined)
+```
+
+```{r}
+combined %>% preview()
+```
+
+### Pagination Between Sections
+
+Insert page breaks for long content.
+
+```{r}
+paginated <- demographics %>%
+  add_pagination() %>%
+  combine_viz(attitudes) %>%
+  add_pagination() %>%
+  combine_viz(crosstabs)
+
+print(paginated)
+```
+
+### Mixed Content with Visualizations
+
+Combine explanatory text with charts.
+
+```{r}
+mixed <- create_content(data = gss, type = "bar") %>%
+  add_text(
+    "## Survey Analysis",
+    "",
+    "This section presents key findings from the GSS data."
+  ) %>%
+  add_callout("Sample size: 21,788 respondents (2010-2024)", type = "note") %>%
+  add_viz(x_var = "degree", title = "Education Distribution") %>%
+  add_divider() %>%
+  add_text("### Interpretation", "", "The data shows variation across education levels.") %>%
+  add_accordion(
+    title = "Technical Notes",
+    text = "Weighted data using wtssall variable. Missing values excluded."
+  )
+
+print(mixed)
+```
+
+```{r}
+mixed %>% preview()
+```
+
+### Dashboard-Style Metrics
+
+KPIs and value boxes for executive summaries.
+
+```{r}
+dashboard_style <- create_content(data = gss, type = "bar") %>%
+  add_text("## Key Metrics") %>%
+  add_value_box_row() %>%
+    add_value_box(title = "Respondents", value = "21,788", bg_color = "#3498DB") %>%
+    add_value_box(title = "Years", value = "15", bg_color = "#27AE60") %>%
+    add_value_box(title = "Response Rate", value = "68%", bg_color = "#9B59B6") %>%
+  end_value_box_row() %>%
+  add_spacer(height = "2rem") %>%
+  add_viz(x_var = "degree", title = "Primary Distribution")
+
+print(dashboard_style)
+```
+
+```{r}
+dashboard_style %>% preview()
+```
+
+### Rich Text Formatting
+
+Cards, quotes, and badges for polished reports.
+
+```{r}
+rich_text <- create_content() %>%
+  add_text("## Executive Summary") %>%
+  add_card(
+    title = "Key Finding",
+    text = "Education shows the strongest correlation with life satisfaction across all age groups."
+  ) %>%
+  add_quote(
+    quote = "Education is the passport to the future, for tomorrow belongs to those who prepare for it today.",
+    attribution = "Malcolm X"
+  ) %>%
+  add_text("### Status Indicators") %>%
+  add_badge("Phase 1", color = "success") %>%
+  add_badge("Phase 2", color = "warning") %>%
+  add_badge("Phase 3", color = "secondary")
+
+print(rich_text)
+```
+
+```{r}
+rich_text %>% preview()
+```
+
+### Complete Research Report Pattern
+
+Full research report layout.
+
+```{r}
+research_report <- create_content(data = gss, type = "bar") %>%
+  add_text(
+    "## Research Report",
+    "",
+    "### Background",
+    "",
+    "This study examines the relationship between education and subjective well-being."
+  ) %>%
+  add_accordion(
+    title = "Methodology",
+    text = "Cross-sectional analysis using GSS data (2010-2024). N=21,788."
+  ) %>%
+  add_callout("Hypothesis: Higher education is associated with greater happiness.", type = "note") %>%
+  add_divider() %>%
+  add_text("### Results") %>%
+  add_viz(x_var = "degree", stack_var = "happy", 
+          title = "Happiness by Education Level",
+          stacked_type = "percent") %>%
+  add_divider() %>%
+  add_text(
+    "### Discussion",
+    "",
+    "The results support the hypothesis, with college graduates showing higher happiness."
+  ) %>%
+  add_callout(
+    "Limitation: Correlation does not imply causation. Selection effects may be present.",
+    type = "warning"
+  )
+
+print(research_report)
+```
+
+```{r}
+research_report %>% preview()
 ```
 
 ## Related Vignettes

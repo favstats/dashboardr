@@ -27,13 +27,13 @@ viz <- create_content(data = gss, type = "bar") %>%
   add_vizzes(x_var = questions, title = labels, tabgroup = "survey")
 
 print(viz)
-#> -- Content Collection ----------------------------------------------------------
-#> 3 items | v data: 21788 rows x 8 cols
+#> -- Content Collection ──────────────────────────────────────────────────────────
+#> 3 items | ✔ data: 21788 rows x 8 cols
 #> 
-#> > [Tab] survey (3 vizs)
-#>   * [Viz] Education (bar) x=degree
-#>   * [Viz] Race (bar) x=race
-#>   * [Viz] Happiness (bar) x=happy
+#> ❯ [Tab] survey (3 vizs)
+#>   • [Viz] Education (bar) x=degree
+#>   • [Viz] Race (bar) x=race
+#>   • [Viz] Happiness (bar) x=happy
 ```
 
 ``` r
@@ -58,11 +58,11 @@ Use `type = "stackedbars"` within
 ``` r
 create_content(data = survey_data, type = "stackedbars") %>%
   add_viz(
-    questions = c("q1", "q2", "q3", "q4"),
-    question_labels = c("I enjoy my work",
-                        "I feel valued",
-                        "I have growth opportunities",
-                        "I would recommend"),
+    x_vars = c("q1", "q2", "q3", "q4"),
+    x_var_labels = c("I enjoy my work",
+                     "I feel valued",
+                     "I have growth opportunities",
+                     "I would recommend"),
     title = "Employee Sentiment",
     stacked_type = "percent",
     horizontal = TRUE
@@ -79,10 +79,10 @@ weighted <- create_content(data = gss, type = "bar", weight_var = "wtssall") %>%
   add_viz(x_var = "degree", title = "Weighted Education")
 
 print(weighted)
-#> -- Content Collection ----------------------------------------------------------
-#> 1 items | v data: 21788 rows x 8 cols
+#> -- Content Collection ──────────────────────────────────────────────────────────
+#> 1 items | ✔ data: 21788 rows x 8 cols
 #> 
-#> * [Viz] Weighted Education (bar) x=degree
+#> • [Viz] Weighted Education (bar) x=degree
 ```
 
 ``` r
@@ -105,12 +105,12 @@ filtered <- create_content(data = gss, type = "bar") %>%
           title_tabset = "Female", tabgroup = "analysis")
 
 print(filtered)
-#> -- Content Collection ----------------------------------------------------------
-#> 2 items | v data: 21788 rows x 8 cols
+#> -- Content Collection ──────────────────────────────────────────────────────────
+#> 2 items | ✔ data: 21788 rows x 8 cols
 #> 
-#> > [Tab] analysis (2 vizs)
-#>   * [Viz] Happiness (bar) x=happy +filter
-#>   * [Viz] Happiness (bar) x=happy +filter
+#> ❯ [Tab] analysis (2 vizs)
+#>   • [Viz] Happiness (bar) x=happy +filter
+#>   • [Viz] Happiness (bar) x=happy +filter
 ```
 
 ``` r
@@ -395,14 +395,14 @@ paginated <- section1 %>%
   combine_viz(section2)
 
 print(paginated)
-#> -- Content Collection ----------------------------------------------------------
-#> 3 items | x no data
+#> -- Content Collection ──────────────────────────────────────────────────────────
+#> 3 items | ✖ no data
 #> 
-#> > [Tab] demographics (1 viz)
-#>   * [Viz] Education (bar) x=degree
-#> > [PageBreak]
-#> > [Tab] crosstabs (1 viz)
-#>   * [Viz] Happiness (stackedbar) x=happy, stack=sex
+#> ❯ [Tab] demographics (1 viz)
+#>   • [Viz] Education (bar) x=degree
+#> → [PageBreak]
+#> ❯ [Tab] crosstabs (1 viz)
+#>   • [Viz] Happiness (stackedbar) x=happy, stack=sex
 ```
 
 ## Tips and Best Practices

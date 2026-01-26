@@ -295,7 +295,8 @@ create_dashboard <- function(output_dir = "site",
   # Create output directory if it doesn't exist
   if (!dir.exists(output_dir)) {
     dir.create(output_dir, recursive = TRUE)
-  } else if (warn_before_overwrite) {
+  } else if (warn_before_overwrite && !isTRUE(getOption("knitr.in.progress"))) {
+    # Only show warning in interactive mode, not in knitr/rmarkdown
     message(
       "Output directory already exists: ", output_dir, "\n",
       "Files may be overwritten when generate_dashboard() is called."

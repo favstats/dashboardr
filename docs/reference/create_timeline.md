@@ -152,7 +152,7 @@ A highcharter plot object.
 ``` r
 # Load GSS data
 data(gss_all)
-#> Warning: data set 'gss_all' not found
+#> Warning: data set ‘gss_all’ not found
 
 # Basic timeline - confidence in institutions over time
 plot1 <- create_timeline(

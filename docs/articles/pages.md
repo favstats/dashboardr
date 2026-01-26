@@ -40,11 +40,11 @@ page <- create_page(
   add_viz(x_var = "degree", title = "Education")
 
 print(page)
-#> -- Page: Analysis -----------------------------------------------
-#> v data: 21788 rows x 7 cols | default: bar 
+#> -- Page: Analysis ───────────────────────────────────────────────
+#> ✔ data: 21788 rows x 7 cols | default: bar 
 #> 1 items
 #> 
-#> * [Viz] Education (bar) x=degree
+#> • [Viz] Education (bar) x=degree
 ```
 
 ``` r
@@ -72,13 +72,13 @@ page1 <- create_page("Analysis", data = gss) %>%
   add_content(demographics)
 
 print(page1)
-#> -- Page: Analysis -----------------------------------------------
-#> v data: 21788 rows x 7 cols 
+#> -- Page: Analysis ───────────────────────────────────────────────
+#> ✔ data: 21788 rows x 7 cols 
 #> 2 items
 #> 
-#> > [Tab] demo (2 vizs)
-#>   * [Viz] Education (bar) x=degree
-#>   * [Viz] Race (bar) x=race
+#> ❯ [Tab] demo (2 vizs)
+#>   • [Viz] Education (bar) x=degree
+#>   • [Viz] Race (bar) x=race
 ```
 
 ``` r
@@ -103,14 +103,14 @@ page2 <- create_page("Analysis", data = gss, type = "bar") %>%
   add_text("## Summary", "", "Key findings from the analysis.")
 
 print(page2)
-#> -- Page: Analysis -----------------------------------------------
-#> v data: 21788 rows x 7 cols | default: bar 
+#> -- Page: Analysis ───────────────────────────────────────────────
+#> ✔ data: 21788 rows x 7 cols | default: bar 
 #> 3 items
 #> 
-#> > [Tab] demo (2 vizs)
-#>   * [Viz] Education (bar) x=degree
-#>   * [Viz] Race (bar) x=race
-#> i [Text]
+#> ❯ [Tab] demo (2 vizs)
+#>   • [Viz] Education (bar) x=degree
+#>   • [Viz] Race (bar) x=race
+#> ℹ [Text]
 ```
 
 ``` r
@@ -118,6 +118,10 @@ page2 %>% preview()
 ```
 
 Preview
+
+Summary
+
+Key findings from the analysis.
 
 demo
 
@@ -159,12 +163,12 @@ home <- create_page(
   add_callout("Data source: General Social Survey, NORC at University of Chicago", type = "note")
 
 print(home)
-#> -- Page: Home ---------------------------------------------------
+#> -- Page: Home ───────────────────────────────────────────────────
 #> landing page 
 #> 2 items
 #> 
-#> i [Text]
-#> ! [Callout]
+#> ℹ [Text]
+#> ⚠ [Callout]
 ```
 
 ### Analysis Pages
@@ -187,15 +191,15 @@ analysis <- create_page("Analysis", data = gss) %>%
   add_content(trends)
 
 print(analysis)
-#> -- Page: Analysis -----------------------------------------------
-#> v data: 21788 rows x 7 cols 
+#> -- Page: Analysis ───────────────────────────────────────────────
+#> ✔ data: 21788 rows x 7 cols 
 #> 3 items
 #> 
-#> > [Tab] overview (2 vizs)
-#>   * [Viz] Education (bar) x=degree
-#>   * [Viz] Happiness (bar) x=happy
-#> > [Tab] crosstabs (1 viz)
-#>   * [Viz] Happiness by Education (stackedbar) x=degree, stack=happy
+#> ❯ [Tab] overview (2 vizs)
+#>   • [Viz] Education (bar) x=degree
+#>   • [Viz] Happiness (bar) x=happy
+#> ❯ [Tab] crosstabs (1 viz)
+#>   • [Viz] Happiness by Education (stackedbar) x=degree, stack=happy
 ```
 
 ``` r
@@ -243,11 +247,11 @@ about <- create_page("About") %>%
   add_callout("Last updated: January 2025", type = "note")
 
 print(about)
-#> -- Page: About --------------------------------------------------
+#> -- Page: About ──────────────────────────────────────────────────
 #> 2 items
 #> 
-#> i [Text]
-#> ! [Callout]
+#> ℹ [Text]
+#> ⚠ [Callout]
 ```
 
 ## Page Settings
@@ -296,12 +300,12 @@ page <- create_page(
   add_viz(x_var = "happy", title = "Happiness", color_palette = c("#E74C3C"))
 
 print(page)
-#> -- Page: Survey Results -----------------------------------------
-#> v data: 21788 rows x 7 cols | default: bar 
+#> -- Page: Survey Results ─────────────────────────────────────────
+#> ✔ data: 21788 rows x 7 cols | default: bar 
 #> 2 items
 #> 
-#> * [Viz] Education (bar) x=degree
-#> * [Viz] Happiness (bar) x=happy
+#> • [Viz] Education (bar) x=degree
+#> • [Viz] Happiness (bar) x=happy
 ```
 
 ``` r
@@ -417,18 +421,18 @@ full_analysis <- create_page("Full Analysis", data = gss) %>%
   add_content(crosstabs)
 
 print(full_analysis)
-#> -- Page: Full Analysis ------------------------------------------
-#> v data: 21788 rows x 7 cols 
+#> -- Page: Full Analysis ──────────────────────────────────────────
+#> ✔ data: 21788 rows x 7 cols 
 #> 5 items
 #> 
-#> > [Tab] demo (2 vizs)
-#>   * [Viz] Education (bar) x=degree
-#>   * [Viz] Race (bar) x=race
-#> > [Tab] attitudes (2 vizs)
-#>   * [Viz] Happiness (bar) x=happy
-#>   * [Viz] Politics (bar) x=polviews
-#> > [Tab] crosstabs (1 viz)
-#>   * [Viz] Happiness by Education (stackedbar) x=degree, stack=happy
+#> ❯ [Tab] demo (2 vizs)
+#>   • [Viz] Education (bar) x=degree
+#>   • [Viz] Race (bar) x=race
+#> ❯ [Tab] attitudes (2 vizs)
+#>   • [Viz] Happiness (bar) x=happy
+#>   • [Viz] Politics (bar) x=polviews
+#> ❯ [Tab] crosstabs (1 viz)
+#>   • [Viz] Happiness by Education (stackedbar) x=degree, stack=happy
 ```
 
 Preview the combined page:
@@ -485,11 +489,11 @@ page <- create_page("Analysis", data = gss) %>%
   add_content(charts)
 
 print(page)
-#> -- Page: Analysis -----------------------------------------------
-#> v data: 21788 rows x 7 cols 
+#> -- Page: Analysis ───────────────────────────────────────────────
+#> ✔ data: 21788 rows x 7 cols 
 #> 1 items
 #> 
-#> * [Viz] Education (bar) x=degree
+#> • [Viz] Education (bar) x=degree
 ```
 
 If content collections have their own data, it takes precedence:

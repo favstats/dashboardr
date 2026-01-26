@@ -255,13 +255,12 @@ create_stackedbar <- function(data,
     if (inherits(plot_data_temp[[x_var]], "haven_labelled")) {
       plot_data_temp <- plot_data_temp |>
         dplyr::mutate(!!rlang::sym(x_var) := haven::as_factor(!!rlang::sym(x_var), levels = "labels"))
-      if (interactive()) message(paste0("Note: Column '", x_var, "' was 'haven_labelled' and converted to factor (levels = values)."))
+      if (isTRUE(getOption("dashboardr.verbose"))) message(paste0("Note: Column '", x_var, "' was 'haven_labelled' and converted to factor (levels = values)."))
     }
     if (inherits(plot_data_temp[[stack_var]], "haven_labelled")) {
       plot_data_temp <- plot_data_temp |>
-
         dplyr::mutate(!!rlang::sym(stack_var) := haven::as_factor(!!rlang::sym(stack_var), levels = "labels"))
-      if (interactive()) message(paste0("Note: Column '", stack_var, "' was 'haven_labelled' and converted to factor (levels = values)."))
+      if (isTRUE(getOption("dashboardr.verbose"))) message(paste0("Note: Column '", stack_var, "' was 'haven_labelled' and converted to factor (levels = values)."))
     }
   }
 

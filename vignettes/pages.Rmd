@@ -16,14 +16,15 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r setup, message=FALSE}
+```{r setup, message=FALSE, warning=FALSE}
 library(dashboardr)
 library(dplyr)
 library(gssr)
+# Load latest wave only
 data(gss_all)
 gss <- gss_all %>%
   select(year, age, sex, race, degree, happy, polviews) %>%
-  filter(year >= 2010, !is.na(age), !is.na(sex), !is.na(race), !is.na(degree))
+  filter(year == max(year, na.rm = TRUE), !is.na(age), !is.na(sex), !is.na(race), !is.na(degree))
 ```
 
 This vignette goes deep into pages - the second layer of dashboardr's architecture. For a quick overview, see `vignette("getting-started")`.
@@ -393,6 +394,313 @@ specific_charts <- create_content(data = gss %>% filter(year == 2020), type = "b
 # Page data is ignored for this content
 page <- create_page("Analysis", data = gss) %>%
   add_content(specific_charts)
+```
+
+## Page Types Gallery
+
+This gallery demonstrates all page types and configurations with both `print()` (structure) and `preview()` (rendered) output.
+
+### Standard Analysis Page
+
+The most common page type - data with visualizations.
+
+```{r}
+analysis_page <- create_page("Analysis", data = gss, type = "bar") %>%
+  add_viz(x_var = "degree", title = "Education Distribution") %>%
+  add_text("## Key Finding", "", "Education levels are distributed across the population.")
+
+print(analysis_page)
+```
+
+```{r}
+analysis_page %>% preview()
+```
+
+### Landing Page (Full Width)
+
+Welcome pages without sidebars - great for introductions.
+
+```{r}
+landing <- create_page("Welcome", is_landing_page = TRUE) %>%
+  add_text(
+    "# Welcome to the GSS Dashboard",
+    "",
+    "Explore insights from the General Social Survey.",
+    "",
+    "### Quick Navigation",
+    "",
+    "- **Demographics** - Age, education, race",
+    "- **Attitudes** - Happiness, politics, trust",
+    "- **Trends** - Changes over time"
+  ) %>%
+  add_callout("Click the tabs above to begin exploring!", type = "tip")
+
+print(landing)
+```
+
+```{r}
+landing %>% preview()
+```
+
+### Text-Only Page
+
+Documentation, methodology, or about pages.
+
+```{r}
+methodology <- create_page("Methodology") %>%
+  add_text(
+    "## Methodology",
+    "",
+    "### Data Source",
+    "",
+    "The General Social Survey (GSS) is conducted by NORC at the University of Chicago.",
+    "",
+    "### Sample",
+    "",
+    "- **Years**: 2010-2024",
+    "- **Sample Size**: 21,788 respondents",
+    "- **Sampling**: Stratified random sampling"
+  ) %>%
+  add_accordion(
+    title = "Technical Details",
+    text = "Margin of error: +/- 3%. Confidence level: 95%."
+  )
+
+print(methodology)
+```
+
+```{r}
+methodology %>% preview()
+```
+
+### Multi-Section Page
+
+Combining multiple content collections on one page.
+
+```{r}
+# Create separate sections
+intro <- create_content() %>%
+  add_text("## Overview", "", "This page combines multiple content sections.")
+
+demographics <- create_content(type = "bar") %>%
+  add_viz(x_var = "degree", title = "Education", tabgroup = "Demographics")
+
+attitudes <- create_content(type = "bar") %>%
+  add_viz(x_var = "happy", title = "Happiness", tabgroup = "Attitudes")
+
+# Combine into one page
+multi_section <- create_page("Full Analysis", data = gss) %>%
+  add_content(intro) %>%
+  add_content(demographics) %>%
+  add_content(attitudes)
+
+print(multi_section)
+```
+
+```{r}
+multi_section %>% preview()
+```
+
+## Page Settings Gallery
+
+All configurable page options demonstrated.
+
+### Loading Overlay Options
+
+Show loading spinners while content renders.
+
+```{r}
+overlay_themes <- list(
+  glass = "glass",
+  light = "light", 
+  dark = "dark",
+  accent = "accent"
+)
+
+# Example with glass overlay
+glass_page <- create_page(
+  "Glass Overlay",
+  data = gss,
+  type = "bar",
+  overlay = TRUE,
+  overlay_theme = "glass",
+  overlay_text = "Loading visualizations...",
+  overlay_duration = 1500
+) %>%
+  add_viz(x_var = "degree", title = "Education")
+
+print(glass_page)
+```
+
+### Lazy Loading
+
+Load content on-demand for better performance.
+```{r}
+lazy_page <- create_page(
+  "Lazy Loaded",
+  data = gss,
+  type = "bar",
+  lazy_load_charts = TRUE,
+  lazy_load_margin = "200px",
+  lazy_load_tabs = TRUE
+) %>%
+  add_viz(x_var = "degree", title = "Education", tabgroup = "A") %>%
+  add_viz(x_var = "race", title = "Race", tabgroup = "B") %>%
+  add_viz(x_var = "happy", title = "Happiness", tabgroup = "C")
+
+print(lazy_page)
+```
+
+### Navbar Alignment
+
+Position pages on left or right of navigation bar.
+
+```{r}
+right_aligned <- create_page("Settings", navbar_align = "right") %>%
+  add_text("This page appears on the right side of the navbar.")
+
+print(right_aligned)
+```
+
+### Page Icons
+
+Add icons to page names in navigation.
+
+```{r}
+icon_page <- create_page("Charts", icon = "ph:chart-bar-fill") %>%
+  add_text("This page has a bar chart icon in the navbar.")
+
+print(icon_page)
+```
+
+Available icon sets:
+- **Phosphor**: `ph:icon-name` (recommended)
+- **Material**: `mdi:icon-name`
+- **Font Awesome**: `fa:icon-name`
+
+### Tab Styling Options
+
+Customize tab appearance per page.
+
+```{r}
+styled_tabs <- create_page(
+  "Styled Tabs",
+  data = gss,
+  type = "bar",
+  tabset_theme = "pills",
+  tabset_colors = list(
+    active_bg = "#E74C3C",
+    active_text = "#FFFFFF",
+    inactive_bg = "#ECF0F1",
+    inactive_text = "#7F8C8D"
+  )
+) %>%
+  add_viz(x_var = "degree", title = "Education", tabgroup = "A") %>%
+  add_viz(x_var = "race", title = "Race", tabgroup = "B")
+
+print(styled_tabs)
+```
+
+## Page Content Patterns Gallery
+
+Common content organization patterns.
+
+### Mixed Content Page
+
+Visualizations with explanatory text.
+
+```{r}
+mixed_page <- create_page("Mixed Content", data = gss, type = "bar") %>%
+  add_text(
+    "## Survey Results",
+    "",
+    "Below are the key findings from our analysis."
+  ) %>%
+  add_viz(x_var = "degree", title = "Education Levels") %>%
+  add_callout("Note: Data filtered to 2010-2024", type = "note") %>%
+  add_text("### Interpretation", "", "Education levels show expected distribution patterns.")
+
+print(mixed_page)
+```
+
+```{r}
+mixed_page %>% preview()
+```
+
+### Comparison Page
+
+Side-by-side filtered views.
+
+```{r}
+comparison_page <- create_page("Gender Comparison", data = gss, type = "bar") %>%
+  add_text("## Happiness by Gender") %>%
+  add_viz(x_var = "happy", title = "Male", filter = ~ sex == 1, tabgroup = "By Gender") %>%
+  add_viz(x_var = "happy", title = "Female", filter = ~ sex == 2, tabgroup = "By Gender")
+
+print(comparison_page)
+```
+
+```{r}
+comparison_page %>% preview()
+```
+
+### Dashboard-Style Page
+
+Metrics at top, charts below.
+
+```{r}
+dashboard_content <- create_content(data = gss, type = "bar") %>%
+  add_value_box_row() %>%
+    add_value_box(title = "Respondents", value = "21,788", bg_color = "#3498DB") %>%
+    add_value_box(title = "Years", value = "15", bg_color = "#27AE60") %>%
+    add_value_box(title = "Variables", value = "8", bg_color = "#9B59B6") %>%
+  end_value_box_row() %>%
+  add_divider() %>%
+  add_viz(x_var = "degree", title = "Education Distribution")
+
+dashboard_page <- create_page("Dashboard") %>%
+  add_content(dashboard_content)
+
+print(dashboard_page)
+```
+
+```{r}
+dashboard_page %>% preview()
+```
+
+### Research Report Page
+
+Academic-style with methodology section.
+
+```{r}
+research_content <- create_content() %>%
+  add_text(
+    "## Abstract",
+    "",
+    "This study examines happiness levels across educational attainment groups.",
+    "",
+    "## Introduction",
+    "",
+    "Understanding the relationship between education and subjective well-being",
+    "is critical for policy development."
+  ) %>%
+  add_accordion(
+    title = "Methodology Details",
+    text = "Sample: N=21,788. Method: Cross-sectional survey analysis."
+  ) %>%
+  add_quote(
+    quote = "Education is the most powerful weapon which you can use to change the world.",
+    attribution = "Nelson Mandela"
+  )
+
+research_page <- create_page("Research Report") %>%
+  add_content(research_content)
+
+print(research_page)
+```
+
+```{r}
+research_page %>% preview()
 ```
 
 ## Next Steps

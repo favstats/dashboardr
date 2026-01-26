@@ -159,10 +159,13 @@ add_text.page_object <- function(page, text, ..., tabgroup = NULL) {
   # Combine text and ... into lines
   all_text <- c(text, unlist(list(...)))
   
-  text_spec <- list(
-    type = "text",
-    text = paste(all_text, collapse = "\n\n"),
-    tabgroup = tabgroup
+  text_spec <- structure(
+    list(
+      type = "text",
+      text = paste(all_text, collapse = "\n\n"),
+      tabgroup = tabgroup
+    ),
+    class = "content_block"
   )
 
   page$.items <- c(page$.items, list(text_spec))
@@ -187,12 +190,15 @@ add_callout.page_object <- function(page, text, type = "note", title = NULL, tab
     stop("First argument must be a page_object created by create_page()")
   }
 
-  callout_spec <- list(
-    type = "callout",
-    callout_type = type,
-    text = text,
-    title = title,
-    tabgroup = tabgroup
+  callout_spec <- structure(
+    list(
+      type = "callout",
+      callout_type = type,
+      text = text,
+      title = title,
+      tabgroup = tabgroup
+    ),
+    class = "content_block"
   )
 
   page$.items <- c(page$.items, list(callout_spec))

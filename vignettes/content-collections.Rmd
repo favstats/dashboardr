@@ -16,14 +16,20 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r setup, message=FALSE}
+```{r setup, message=FALSE, warning=FALSE}
 library(dashboardr)
 library(dplyr)
 library(gssr)
+# Load latest wave only
 data(gss_all)
 gss <- gss_all %>%
   select(year, age, sex, race, degree, happy, polviews, wtssall) %>%
-  filter(year >= 2010, !is.na(age), !is.na(sex), !is.na(race), !is.na(degree))
+  filter(year == max(year, na.rm = TRUE), !is.na(age), !is.na(sex), !is.na(race), !is.na(degree))
+```
+
+
+```{r, include = FALSE}
+devtools::load_all()
 ```
 
 This vignette goes deep into content collections - the first layer of dashboardr's architecture. For a quick overview, see `vignette("getting-started")`.
@@ -32,14 +38,21 @@ This vignette goes deep into content collections - the first layer of dashboardr
 
 A content collection is a container that holds:
 
-- **Visualizations** - Charts and graphs
-- **Text blocks** - Markdown content
-- **Callouts** - Highlighted notes, tips, warnings
-- **Images** - Static images with captions
-- **Accordions** - Collapsible sections
-- **Cards** - Styled content blocks
-- **Code blocks** - Syntax-highlighted code
-- **Pagination markers** - Page breaks
+- **[Visualizations](#visualization-types-gallery)** - Charts and graphs (bar, stacked bar, histogram, timeline, heatmap)
+- **[Text blocks](#text-blocks)** - Markdown content
+- **[Callouts](#callouts)** - Highlighted notes, tips, warnings
+- **[Cards](#cards)** - Styled content blocks
+- **[Accordions](#accordions)** - Collapsible sections
+- **[Images](#images)** - Static images with captions
+- **[Videos](#videos)** - Embedded video players
+- **[iframes](#iframes)** - External content embeds
+- **[Code blocks](#code-blocks)** - Syntax-highlighted code
+- **[Quotes](#quotes)** - Block quotations with attribution
+- **[Metrics](#metrics)** & **[Value Boxes](#value-boxes)** - KPI displays
+- **[Badges](#badges)** - Status indicators
+- **[Dividers](#dividers)** & **[Spacers](#spacers)** - Layout helpers
+- **[Pagination markers](#adding-pagination)** - Page breaks
+- **[Raw HTML](#raw-html)** - Custom HTML injection
 
 Everything is stored in a unified `items` list, and you can inspect it anytime:
 
@@ -47,10 +60,15 @@ Everything is stored in a unified `items` list, and you can inspect it anytime:
 content <- create_content(data = gss, type = "bar") %>%
   add_viz(x_var = "degree", title = "Education") %>%
   add_text("## Analysis", "", "Key findings:") %>%
-  add_callout("Sample size: 21,788", type = "note")
+  add_callout(paste0("Sample size: ", nrow(gss)), type = "note")
 
 print(content)
 ```
+
+```{r}
+preview(content)
+```
+
 
 ## The Defaults System
 
@@ -77,9 +95,42 @@ content <- content %>%
 print(content)
 ```
 
+## Combining Collections
+
+### The + Operator
+
+Merge collections while preserving structure:
+
 ```{r}
-content %>% preview()
+demographics <- create_content(data = gss, type = "bar") %>%
+  add_viz(x_var = "degree", title = "Education", tabgroup = "Demo")
+
+attitudes <- create_content(data = gss, type = "bar") %>%
+  add_viz(x_var = "happy", title = "Happiness", tabgroup = "Attitudes")
+
+combined <- demographics + attitudes
+print(combined)
 ```
+
+```{r}
+combined %>% preview()
+```
+
+### combine_viz()
+
+Same as `+` but in pipe-friendly form:
+
+```{r}
+all_content <- demographics %>%
+  combine_viz(attitudes)
+
+print(all_content)
+```
+
+```{r}
+all_content %>% preview()
+```
+
 
 ### Available Default Parameters
 
@@ -215,9 +266,6 @@ content <- create_content(data = gss, type = "bar") %>%
 print(content)
 ```
 
-```{r}
-content %>% preview()
-```
 
 ### Nested Tabgroups
 
@@ -267,6 +315,11 @@ print(nested)
    ├─ Wellbeing          (sub-tab with 1 chart)
    └─ Politics           (sub-tab with 1 chart)
 ```
+
+```{r}
+preview(nested)
+```
+
 
 **When to use nested tabs:**
 
@@ -394,41 +447,6 @@ print(divider_content)
 divider_content %>% preview()
 ```
 
-## Combining Collections
-
-### The + Operator
-
-Merge collections while preserving structure:
-
-```{r}
-demographics <- create_content(data = gss, type = "bar") %>%
-  add_viz(x_var = "degree", title = "Education", tabgroup = "demo")
-
-attitudes <- create_content(data = gss, type = "bar") %>%
-  add_viz(x_var = "happy", title = "Happiness", tabgroup = "attitudes")
-
-combined <- demographics + attitudes
-print(combined)
-```
-
-```{r}
-combined %>% preview()
-```
-
-### combine_viz()
-
-Same as `+` but in pipe-friendly form:
-
-```{r}
-all_content <- demographics %>%
-  combine_viz(attitudes)
-
-print(all_content)
-```
-
-```{r}
-all_content %>% preview()
-```
 
 ### Adding Pagination
 
@@ -545,6 +563,526 @@ content %>% preview(quarto = TRUE)
 
 # Save to specific location
 content %>% preview(path = "my_preview.html")
+```
+
+## Content Blocks Gallery
+
+This gallery shows every available content block type with both `print()` output (to see structure) and `preview()` output (to see rendered HTML).
+
+### Text Blocks
+
+Add markdown-formatted text content.
+
+```{r}
+text_example <- create_content() %>%
+  add_text(
+    "## Introduction",
+    "",
+    "This is a paragraph with **bold** and *italic* text.",
+    "",
+    "- Bullet point 1",
+    "- Bullet point 2"
+  )
+
+print(text_example)
+```
+
+```{r}
+text_example %>% preview()
+```
+
+### Callouts
+
+Five types of callouts for different purposes: note, tip, warning, caution, important.
+
+```{r}
+callout_gallery <- create_content() %>%
+  add_callout("Notes provide additional context or information.", type = "note", title = "Note") %>%
+  add_callout("Tips offer helpful suggestions to improve workflow.", type = "tip", title = "Pro Tip") %>%
+  add_callout("Warnings alert users to potential issues.", type = "warning", title = "Warning") %>%
+
+  add_callout("Caution indicates something that needs careful attention.", type = "caution", title = "Caution") %>%
+  add_callout("Important highlights critical information.", type = "important", title = "Important")
+
+print(callout_gallery)
+```
+
+```{r}
+callout_gallery %>% preview()
+```
+
+### Cards
+
+Styled content containers with optional titles and footers.
+
+```{r}
+card_example <- create_content() %>%
+  add_card(
+    title = "Key Finding",
+    text = "Education level shows a strong positive correlation with reported happiness levels across all demographic groups."
+  ) %>%
+  add_card(
+    text = "Cards without titles work too. Great for quick content blocks."
+  )
+
+print(card_example)
+```
+
+```{r}
+card_example %>% preview()
+```
+
+### Accordions
+
+Collapsible sections for supplementary or detailed content.
+
+```{r}
+accordion_example <- create_content() %>%
+  add_accordion(
+    title = "Click to expand: Methodology",
+    text = "This analysis uses weighted survey data from NORC. Sample size: 21,788 respondents."
+  ) %>%
+  add_accordion(
+    title = "Click to expand: Data Sources",
+    text = "General Social Survey (GSS), collected annually since 1972."
+  )
+
+print(accordion_example)
+```
+
+```{r}
+accordion_example %>% preview()
+```
+
+### Dividers
+
+Horizontal lines to separate content sections.
+
+```{r}
+divider_example <- create_content() %>%
+  add_text("## Section 1", "", "Content before the divider.") %>%
+  add_divider() %>%
+  add_text("## Section 2", "", "Content after the divider.")
+
+print(divider_example)
+```
+
+```{r}
+divider_example %>% preview()
+```
+
+### Spacers
+
+Add vertical spacing between elements.
+
+```{r}
+spacer_example <- create_content() %>%
+  add_text("Content above") %>%
+  add_spacer(height = "3rem") %>%
+  add_text("Content below (after 3rem spacer)")
+
+print(spacer_example)
+```
+
+```{r}
+spacer_example %>% preview()
+```
+
+### Code Blocks
+
+Syntax-highlighted code snippets.
+
+```{r}
+code_example <- create_content() %>%
+  add_code(
+    code = "library(dashboardr)\n\ncreate_content(data = df) %>%\n  add_viz(type = 'bar', x_var = 'category')",
+    language = "r"
+  )
+
+print(code_example)
+```
+
+```{r}
+code_example %>% preview()
+```
+
+### Quotes
+
+Block quotes with optional attribution.
+
+```{r}
+quote_example <- create_content() %>%
+  add_quote(
+    quote = "The only true wisdom is in knowing you know nothing.",
+    attribution = "Socrates"
+  )
+
+print(quote_example)
+```
+
+```{r}
+quote_example %>% preview()
+```
+
+### Badges
+
+Inline status indicators.
+
+```{r}
+badge_example <- create_content() %>%
+  add_text("Status indicators:") %>%
+  add_badge("Complete", color = "success") %>%
+  add_badge("In Progress", color = "warning") %>%
+  add_badge("Not Started", color = "danger") %>%
+  add_badge("Info", color = "info") %>%
+  add_badge("Primary", color = "primary") %>%
+  add_badge("Secondary", color = "secondary")
+
+print(badge_example)
+```
+
+```{r}
+badge_example %>% preview()
+```
+
+### Metrics
+
+Single KPI value boxes.
+
+```{r}
+metric_example <- create_content() %>%
+  add_metric(
+    title = "Total Respondents",
+    value = "21,788",
+    icon = "ph:users"
+  )
+
+print(metric_example)
+```
+
+```{r}
+metric_example %>% preview()
+```
+
+### Value Boxes
+
+Custom-styled value boxes with branding.
+
+```{r}
+value_box_example <- create_content() %>%
+  add_value_box(
+    title = "Revenue",
+    value = "$1.2M",
+    bg_color = "#27AE60"
+  )
+
+print(value_box_example)
+```
+
+```{r}
+value_box_example %>% preview()
+```
+
+### Value Box Rows
+
+Multiple value boxes in a responsive row.
+
+```{r}
+value_row_example <- create_content() %>%
+  add_value_box_row() %>%
+    add_value_box(title = "Users", value = "12,345", bg_color = "#3498DB") %>%
+    add_value_box(title = "Sessions", value = "45,678", bg_color = "#9B59B6") %>%
+    add_value_box(title = "Conversion", value = "3.2%", bg_color = "#E74C3C") %>%
+  end_value_box_row()
+
+print(value_row_example)
+```
+
+```{r}
+value_row_example %>% preview()
+```
+
+### Images
+
+Add images with captions and links.
+
+```{r, eval=FALSE}
+image_example <- create_content() %>%
+  add_image(
+    src = "logo.png",
+    alt = "Company Logo",
+    caption = "Our company logo",
+    width = "200px"
+  )
+
+print(image_example)
+image_example %>% preview()
+```
+
+### iframes
+
+Embed external content.
+
+```{r, eval=FALSE}
+iframe_example <- create_content() %>%
+  add_iframe(
+    src = "https://example.com/embed",
+    height = "400px"
+  )
+
+print(iframe_example)
+iframe_example %>% preview()
+```
+
+### Videos
+
+Embed video content.
+
+```{r, eval=FALSE}
+video_example <- create_content() %>%
+  add_video(
+    src = "presentation.mp4",
+    caption = "Project overview video"
+  )
+
+print(video_example)
+video_example %>% preview()
+```
+
+### Raw HTML
+
+Insert custom HTML when needed.
+
+```{r}
+html_example <- create_content() %>%
+  add_html('<div style="background: linear-gradient(to right, #667eea, #764ba2); color: white; padding: 20px; border-radius: 8px; text-align: center;"><h3>Custom HTML Block</h3><p>Style anything with raw HTML!</p></div>')
+
+print(html_example)
+```
+
+```{r}
+html_example %>% preview()
+```
+
+## Visualization Types Gallery
+
+Complete reference of all visualization types with examples.
+
+### Bar Charts
+
+Bar charts display categorical data as rectangular bars. Use `type = "bar"` when creating your collection.
+
+**Basic bar chart** - counts occurrences of each category:
+
+```{r}
+create_content(data = gss, type = "bar") %>%
+  add_viz(x_var = "degree", title = "Education Levels") %>%
+  preview()
+```
+
+**Percentage bar** - shows proportions instead of counts using `bar_type = "percent"`:
+
+```{r}
+create_content(data = gss, type = "bar") %>%
+  add_viz(x_var = "race", title = "Race Distribution (%)", bar_type = "percent") %>%
+  preview()
+```
+
+**Horizontal bar** - better for long category labels using `horizontal = TRUE`:
+
+```{r}
+create_content(data = gss, type = "bar") %>%
+  add_viz(x_var = "degree", title = "Education (Horizontal)", horizontal = TRUE) %>%
+  preview()
+```
+
+**Grouped bar** - compare categories across groups using `group_var`:
+
+```{r}
+create_content(data = gss, type = "bar") %>%
+  add_viz(x_var = "degree", group_var = "sex", title = "Education by Sex") %>%
+  preview()
+```
+
+### Stacked Bars
+
+Stacked bar charts show composition within categories. Use `type = "stackedbar"` and specify `stack_var` for the variable to stack by.
+
+**Count stacked** - raw counts in each segment:
+
+```{r}
+create_content(data = gss, type = "stackedbar") %>%
+  add_viz(x_var = "degree", stack_var = "happy", title = "Happiness by Education (Count)") %>%
+  preview()
+```
+
+**Percent stacked** - each bar sums to 100% using `stacked_type = "percent"`:
+
+```{r}
+create_content(data = gss, type = "stackedbar") %>%
+  add_viz(x_var = "degree", stack_var = "happy", title = "Happiness by Education (%)", 
+          stacked_type = "percent") %>%
+  preview()
+```
+
+**Horizontal stacked** - combine `horizontal = TRUE` with stacking:
+
+```{r}
+create_content(data = gss, type = "stackedbar") %>%
+  add_viz(x_var = "degree", stack_var = "happy", title = "Happiness by Education (Horizontal)",
+          stacked_type = "percent", horizontal = TRUE) %>%
+  preview()
+```
+
+### Histograms
+
+Histograms show distributions of continuous variables. Use `type = "histogram"` and control granularity with `bins`.
+
+**Default bins** - automatic bin calculation:
+
+```{r}
+create_content(data = gss, type = "histogram") %>%
+  add_viz(x_var = "age", title = "Age Distribution") %>%
+  preview()
+```
+
+**Custom bin count** - use `bins` to control granularity (fewer bins = smoother, more bins = more detail):
+
+```{r}
+create_content(data = gss, type = "histogram") %>%
+  add_viz(x_var = "age", title = "Age Distribution (20 bins)", bins = 20) %>%
+  preview()
+```
+
+```{r}
+create_content(data = gss, type = "histogram") %>%
+  add_viz(x_var = "age", title = "Age Distribution (50 bins)", bins = 50) %>%
+  preview()
+```
+
+### Timeline
+
+Timeline charts show trends over time. Use `type = "timeline"` with `time_var` for the time axis and `response_var` for what you're tracking.
+
+**Line chart** - default, shows trends as connected points:
+```{r}
+# Need full GSS data for timeline (multiple years)
+# library(gssr)
+# data(gss_all)
+gss_timeline <- gss_all %>%
+  select(year, happy) %>%
+  filter(!is.na(happy), !is.na(year))
+```
+
+```{r}
+create_content(data = gss_timeline, type = "timeline") %>%
+  add_viz(time_var = "year", response_var = "happy", title = "Happiness Over Time",
+          chart_type = "line") %>%
+  preview()
+```
+
+**Area chart** - fills the area under the line using `chart_type = "area"`:
+
+```{r}
+create_content(data = gss_timeline, type = "timeline") %>%
+  add_viz(time_var = "year", response_var = "happy", title = "Happiness Over Time (Area)",
+          chart_type = "area") %>%
+  preview()
+```
+
+### Heatmap
+
+Heatmaps visualize relationships between two categorical variables using color intensity. Use `type = "heatmap"` with `x_var` and `y_var`.
+
+**Count heatmap** - cell color represents frequency:
+
+```{r}
+create_content(data = gss, type = "heatmap") %>%
+  add_viz(x_var = "degree", y_var = "happy", title = "Education vs Happiness",
+          agg_fun = "count") %>%
+  preview()
+```
+
+**Custom color palette** - use `color_palette` to change the gradient:
+
+```{r}
+create_content(data = gss, type = "heatmap") %>%
+  add_viz(x_var = "degree", y_var = "happy", title = "Education vs Happiness (Custom Colors)",
+          agg_fun = "count", color_palette = c("#FFF5F0", "#67000D")) %>%
+  preview()
+```
+
+## Interactive Inputs Gallery
+
+Interactive input widgets let users filter and explore visualizations dynamically. These only work in the generated dashboard (not in preview mode).
+
+> **Note:** Inputs are shown as placeholders in `preview()` but become fully functional in the generated Quarto dashboard.
+
+### Select Dropdowns
+
+Dropdown menus allow users to select one or more values to filter the data. Use `type = "select"` for single selection or `type = "select_multiple"` for multi-select.
+
+**Multi-select dropdown** - users can select multiple education levels:
+
+```{r, eval=FALSE}
+select_example <- create_content(data = gss, type = "bar") %>%
+  add_input_row() %>%
+    add_input(
+      input_id = "degree_filter",
+      label = "Education Level",
+      type = "select_multiple",
+      filter_var = "degree",
+      options_from = "degree"  # Populate options from column values
+    ) %>%
+  end_input_row() %>%
+  add_viz(x_var = "happy", group_var = "degree", title = "Happiness by Education")
+
+print(select_example)
+select_example %>% preview()
+```
+
+### Checkbox Groups
+
+Checkboxes display all options at once, ideal when there are few categories. Use `inline = TRUE` to display horizontally.
+
+**Inline checkboxes** - all race options visible:
+
+```{r, eval=FALSE}
+checkbox_example <- create_content(data = gss, type = "bar") %>%
+  add_input_row() %>%
+    add_input(
+      input_id = "race_filter",
+      label = "Race",
+      type = "checkbox",
+      filter_var = "race",
+      options_from = "race",
+      inline = TRUE  # Display horizontally instead of stacked
+    ) %>%
+  end_input_row() %>%
+  add_viz(x_var = "happy", group_var = "race", title = "Happiness by Race")
+```
+
+### Sliders
+
+Sliders work for numeric variables, letting users select a value or range. Specify `min`, `max`, `step`, and initial `value`.
+
+**Year slider** - filter data by survey year:
+
+```{r, eval=FALSE}
+slider_example <- create_content(data = gss, type = "histogram") %>%
+  add_input_row() %>%
+    add_input(
+      input_id = "year_slider",
+      label = "Year",
+      type = "slider",
+      filter_var = "year",
+      min = 2010,
+      max = 2022,
+      step = 1,      # Increment by whole years
+      value = 2015   # Default starting value
+    ) %>%
+  end_input_row() %>%
+  add_viz(x_var = "age", title = "Age Distribution")
 ```
 
 ## Next Steps
