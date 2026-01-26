@@ -229,8 +229,6 @@ plot1 <- create_stackedbars(
     ## i Labels for these values will be taken from `trust_1a`.
     ## x Values: 1 and 2
 
-    ## Note: Column 'response' was 'haven_labelled' and converted to factor (levels = values).
-
 ``` r
 plot1
 ```
@@ -263,8 +261,6 @@ plot2 <- create_stackedbars(
     ## Warning: `trust_1a` and `helpful_1a` have conflicting value labels.
     ## i Labels for these values will be taken from `trust_1a`.
     ## x Values: 1 and 2
-
-    ## Note: Column 'response' was 'haven_labelled' and converted to factor (levels = values).
 
 ``` r
 plot2
@@ -346,8 +342,6 @@ plot3 <- create_stackedbars(
     ## i Labels for these values will be taken from `trust_1a`.
     ## x Values: 1 and 2
 
-    ## Note: Column 'response' was 'haven_labelled' and converted to factor (levels = values).
-
     ## Warning: stack_order provided with stack_map_values. Ensure stack_order refers
     ## to the *new* mapped labels.
 
@@ -385,8 +379,6 @@ plot4 <- create_stackedbars(
     ## Warning: `trust_1a` and `helpful_1a` have conflicting value labels.
     ## i Labels for these values will be taken from `trust_1a`.
     ## x Values: 1 and 2
-
-    ## Note: Column 'response' was 'haven_labelled' and converted to factor (levels = values).
 
 ``` r
 plot4
@@ -429,11 +421,7 @@ plot5 <- create_stackedbars(
   tooltip_suffix = "%",
   color_palette = c("#2E8B57", "#FFD700", "#CD5C5C", "grey")
 )
-```
 
-    ## Note: Column 'response' was 'haven_labelled' and converted to factor (levels = values).
-
-``` r
 plot5
 ```
 
@@ -710,8 +698,6 @@ if (nrow(college_data) > 50) {
     ## i Labels for these values will be taken from `trust_1a`.
     ## x Values: 1 and 2
 
-    ## Note: Column 'response' was 'haven_labelled' and converted to factor (levels = values).
-
     ## [1] "College-educated chart:"
 
 ``` r
@@ -745,8 +731,6 @@ if (nrow(high_school_data) > 50) {
     ## `trust_1a` and `helpful_1a` have conflicting value labels.
     ## i Labels for these values will be taken from `trust_1a`.
     ## x Values: 1 and 2
-
-    ## Note: Column 'response' was 'haven_labelled' and converted to factor (levels = values).
 
     ## [1] "High school educated chart:"
 
@@ -793,8 +777,6 @@ plot9 <- create_stackedbars(
     ## i Labels for these values will be taken from `trust_1a`.
     ## x Values: 1 and 2
 
-    ## Note: Column 'response' was 'haven_labelled' and converted to factor (levels = values).
-
 ``` r
 plot9
 ```
@@ -837,8 +819,6 @@ plot10 <- create_stackedbars(
     ## Warning: `trust_1a` and `helpful_1a` have conflicting value labels.
     ## i Labels for these values will be taken from `trust_1a`.
     ## x Values: 1 and 2
-
-    ## Note: Column 'response' was 'haven_labelled' and converted to factor (levels = values).
 
 ``` r
 plot10

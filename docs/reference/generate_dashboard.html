@@ -4,10 +4,23 @@ to HTML using Quarto. Supports incremental builds to skip unchanged pages and
 preview mode to generate only specific pages."><meta property="og:description" content="Writes out all .qmd files, _quarto.yml, and optionally renders the dashboard
 to HTML using Quarto. Supports incremental builds to skip unchanged pages and
 preview mode to generate only specific pages."><style>
+/* Navbar logo */
 .navbar-brand img {
   max-height: 30px;
   width: auto;
   object-fit: contain;
+}
+/* Home page logo - limit size */
+.page-header .logo {
+  max-width: 150px;
+  height: auto;
+}
+/* Also target the img in the README content */
+#dashboardr- img[src*="logo"] {
+  max-width: 150px;
+  height: auto;
+  float: right;
+  margin-left: 20px;
 }
 </style></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -29,6 +42,12 @@ preview mode to generate only specific pages."><style>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/getting-started.html">Getting Started</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>The Three Layers</h6></li>
+    <li><a class="dropdown-item" href="../articles/content-collections.html">Content Collections</a></li>
+    <li><a class="dropdown-item" href="../articles/pages.html">Pages</a></li>
+    <li><a class="dropdown-item" href="../articles/dashboards.html">Dashboards</a></li>
+    <li><hr class="dropdown-divider"></li>
     <li><a class="dropdown-item" href="../articles/advanced-features.html">Advanced Features</a></li>
     <li><a class="dropdown-item" href="../articles/publishing_dashboards.html">Publishing Dashboards</a></li>
     <li><hr class="dropdown-divider"></li>

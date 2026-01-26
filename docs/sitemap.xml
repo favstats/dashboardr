@@ -6,10 +6,13 @@
 <url><loc>https://favstats.github.io/dashboardr/REFACTOR_COMPLETE.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/articles/advanced-features.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/articles/bar_vignette.html</loc></url>
+<url><loc>https://favstats.github.io/dashboardr/articles/content-collections.html</loc></url>
+<url><loc>https://favstats.github.io/dashboardr/articles/dashboards.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/articles/demos.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/articles/getting-started.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/articles/heatmap_vignette.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/articles/index.html</loc></url>
+<url><loc>https://favstats.github.io/dashboardr/articles/pages.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/articles/publishing_dashboards.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/articles/stackedbar_vignette.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/articles/stackedbars_vignette.html</loc></url>
@@ -51,8 +54,10 @@
 <url><loc>https://favstats.github.io/dashboardr/reference/add_accordion.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/add_badge.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/add_callout.html</loc></url>
+<url><loc>https://favstats.github.io/dashboardr/reference/add_callout.page_object.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/add_card.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/add_code.html</loc></url>
+<url><loc>https://favstats.github.io/dashboardr/reference/add_content.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/add_dashboard_page.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/add_divider.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/add_gt.html</loc></url>
@@ -66,6 +71,7 @@
 <url><loc>https://favstats.github.io/dashboardr/reference/add_modal.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/add_navbar_element.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/add_page.html</loc></url>
+<url><loc>https://favstats.github.io/dashboardr/reference/add_pages.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/add_pagination.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/add_powered_by_dashboardr.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/add_quote.html</loc></url>
@@ -74,6 +80,7 @@
 <url><loc>https://favstats.github.io/dashboardr/reference/add_spacer.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/add_table.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/add_text.html</loc></url>
+<url><loc>https://favstats.github.io/dashboardr/reference/add_text.page_object.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/add_value_box.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/add_value_box_row.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/add_video.html</loc></url>
@@ -94,6 +101,7 @@
 <url><loc>https://favstats.github.io/dashboardr/reference/create_histogram.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/create_loading_overlay.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/create_map.html</loc></url>
+<url><loc>https://favstats.github.io/dashboardr/reference/create_page.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/create_pagination_nav.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/create_scatter.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/create_stackedbar.html</loc></url>
@@ -168,6 +176,8 @@
 <url><loc>https://favstats.github.io/dashboardr/reference/is_content.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/is_content_block.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/knit_print.content_collection.html</loc></url>
+<url><loc>https://favstats.github.io/dashboardr/reference/knit_print.dashboard_project.html</loc></url>
+<url><loc>https://favstats.github.io/dashboardr/reference/knit_print.page_object.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/md_text.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/merge_collections.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/modal_content.html</loc></url>
@@ -179,6 +189,7 @@
 <url><loc>https://favstats.github.io/dashboardr/reference/plus-.viz_collection.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/preview.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/print.dashboard_project.html</loc></url>
+<url><loc>https://favstats.github.io/dashboardr/reference/print.page_object.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/print.viz_collection.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/publish_dashboard.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/render_input.html</loc></url>
@@ -186,6 +197,8 @@
 <url><loc>https://favstats.github.io/dashboardr/reference/render_value_box.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/render_value_box_row.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/set_tabgroup_labels.html</loc></url>
+<url><loc>https://favstats.github.io/dashboardr/reference/set_tabgroup_labels.page_object.html</loc></url>
+<url><loc>https://favstats.github.io/dashboardr/reference/show_structure.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/showcase_dashboard.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/sidebar_group.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/spec_viz.html</loc></url>

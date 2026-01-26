@@ -5,10 +5,19 @@
 - [Getting Started with
   dashboardr](https://favstats.github.io/dashboardr/articles/getting-started.md):
 
+### The Three Layers
+
+- [Content Collections: Deep
+  Dive](https://favstats.github.io/dashboardr/articles/content-collections.md):
+- [Pages: Deep
+  Dive](https://favstats.github.io/dashboardr/articles/pages.md):
+- [Dashboards: Deep
+  Dive](https://favstats.github.io/dashboardr/articles/dashboards.md):
+
 ### Advanced Features
 
-- [Advanced Features in
-  dashboardr](https://favstats.github.io/dashboardr/articles/advanced-features.md):
+- [Advanced
+  Features](https://favstats.github.io/dashboardr/articles/advanced-features.md):
 
 ### Publishing
 

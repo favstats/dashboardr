@@ -10,6 +10,12 @@ Functions for creating and managing dashboards
   : Add a page to the dashboard
 - [`add_page()`](https://favstats.github.io/dashboardr/reference/add_page.md)
   : Add Page to Dashboard (Alias)
+- [`add_pages()`](https://favstats.github.io/dashboardr/reference/add_pages.md)
+  : Add multiple pages to a dashboard
+- [`create_page()`](https://favstats.github.io/dashboardr/reference/create_page.md)
+  : Create a page object
+- [`add_content()`](https://favstats.github.io/dashboardr/reference/add_content.md)
+  : Add content collection to a page
 - [`generate_dashboard()`](https://favstats.github.io/dashboardr/reference/generate_dashboard.md)
   : Generate all dashboard files
 - [`generate_dashboards()`](https://favstats.github.io/dashboardr/reference/generate_dashboards.md)
@@ -59,9 +65,7 @@ Functions for creating visualizations
 - [`set_tabgroup_labels()`](https://favstats.github.io/dashboardr/reference/set_tabgroup_labels.md)
   : Set or update tabgroup display labels
 - [`preview()`](https://favstats.github.io/dashboardr/reference/preview.md)
-  : Preview a visualization or content collection
-- [`knit_print(`*`<content_collection>`*`)`](https://favstats.github.io/dashboardr/reference/knit_print.content_collection.md)
-  : Knitr print method for content collections
+  : Preview any dashboardr object
 
 ## Visualization Types
 
@@ -241,7 +245,28 @@ S3 methods for displaying objects
   : Create a new dashboard project
 - [`print(`*`<dashboard_project>`*`)`](https://favstats.github.io/dashboardr/reference/print.dashboard_project.md)
   : Create iconify icon shortcode
+- [`print(`*`<page_object>`*`)`](https://favstats.github.io/dashboardr/reference/print.page_object.md)
+  : Print method for page objects
+- [`knit_print(`*`<content_collection>`*`)`](https://favstats.github.io/dashboardr/reference/knit_print.content_collection.md)
+  : Knitr print method for content collections
+- [`knit_print(`*`<page_object>`*`)`](https://favstats.github.io/dashboardr/reference/knit_print.page_object.md)
+  : Knitr print method for page objects
+- [`knit_print(`*`<dashboard_project>`*`)`](https://favstats.github.io/dashboardr/reference/knit_print.dashboard_project.md)
+  : Knitr print method for dashboard projects
+- [`show_structure()`](https://favstats.github.io/dashboardr/reference/show_structure.md)
+  : Show collection structure (even with data attached)
 - [`` `+`( ``*`<viz_collection>`*`)`](https://favstats.github.io/dashboardr/reference/plus-.viz_collection.md)
   : Combine Visualization Collections with + Operator
 - [`` `+`( ``*`<content_collection>`*`)`](https://favstats.github.io/dashboardr/reference/plus-.content_collection.md)
   : Combine content collections using + operator
+
+## Page Object Methods
+
+S3 methods for page objects
+
+- [`add_text.page_object()`](https://favstats.github.io/dashboardr/reference/add_text.page_object.md)
+  : Add text to a page
+- [`add_callout.page_object()`](https://favstats.github.io/dashboardr/reference/add_callout.page_object.md)
+  : Add a callout to a page
+- [`set_tabgroup_labels.page_object()`](https://favstats.github.io/dashboardr/reference/set_tabgroup_labels.page_object.md)
+  : Set tabgroup labels for a page

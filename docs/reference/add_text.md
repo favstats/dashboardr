@@ -6,14 +6,10 @@ a pipe. Supports viz_collection as first argument for seamless piping.
 ## Usage
 
 ``` r
-add_text(content_collection = NULL, text, tabgroup = NULL, ...)
+add_text(x = NULL, text, tabgroup = NULL, ...)
 ```
 
 ## Arguments
-
-- content_collection:
-
-  A content_collection, viz_collection, or NULL
 
 - text:
 
@@ -27,6 +23,10 @@ add_text(content_collection = NULL, text, tabgroup = NULL, ...)
 - ...:
 
   Additional text lines (will be combined with newlines)
+
+- content_collection:
+
+  A content_collection, viz_collection, or NULL
 
 ## Value
 

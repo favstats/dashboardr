@@ -6,7 +6,7 @@ Add callout box
 
 ``` r
 add_callout(
-  content,
+  x,
   text,
   type = c("note", "tip", "warning", "caution", "important"),
   title = NULL,
@@ -17,10 +17,6 @@ add_callout(
 ```
 
 ## Arguments
-
-- content:
-
-  A content_collection or viz_collection object
 
 - text:
 
@@ -46,6 +42,10 @@ add_callout(
 
   Optional tabgroup for organizing content (character vector for nested
   tabs)
+
+- content:
+
+  A content_collection or viz_collection object
 
 ## Value
 

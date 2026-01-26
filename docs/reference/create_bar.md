@@ -14,8 +14,8 @@ create_bar(
   subtitle = NULL,
   x_label = NULL,
   y_label = NULL,
-  horizontal = TRUE,
-  bar_type = "percent",
+  horizontal = FALSE,
+  bar_type = "count",
   color_palette = NULL,
   group_order = NULL,
   x_order = NULL,
@@ -66,12 +66,12 @@ create_bar(
 
 - horizontal:
 
-  Logical. If `TRUE`, creates horizontal bars. Defaults to `TRUE`.
+  Logical. If `TRUE`, creates horizontal bars. Defaults to `FALSE`.
 
 - bar_type:
 
   Character string. Type of bar chart: "count" or "percent". Defaults to
-  "percent".
+  "count".
 
 - color_palette:
 
@@ -139,28 +139,35 @@ A highcharter plot object.
 ## Examples
 
 ``` r
-# Simple bar chart showing distribution
+# Simple bar chart showing counts (default)
 plot1 <- create_bar(
+  data = survey_data,
+  x_var = "category"
+)
+#> Error: object 'survey_data' not found
+plot1
+#> Error: object 'plot1' not found
+
+# Horizontal bars with percentages
+plot2 <- create_bar(
   data = survey_data,
   x_var = "category",
   horizontal = TRUE,
   bar_type = "percent"
 )
 #> Error: object 'survey_data' not found
-plot1
-#> Error: object 'plot1' not found
+plot2
+#> Error: object 'plot2' not found
 
-# Grouped bars - like the user's image!
-plot2 <- create_bar(
+# Grouped bars
+plot3 <- create_bar(
   data = survey_data,
-  x_var = "question",           # "Knowledge Score"
-  group_var = "score_range",    # "Low (1-9)", "Middle (10-19)", "High (20-29)"
-  horizontal = TRUE,
-  bar_type = "percent",
+  x_var = "question",
+  group_var = "score_range",
   color_palette = c("#D2691E", "#4682B4", "#228B22"),
   group_order = c("Low (1-9)", "Middle (10-19)", "High (20-29)")
 )
 #> Error: object 'survey_data' not found
-plot2
-#> Error: object 'plot2' not found
+plot3
+#> Error: object 'plot3' not found
 ```

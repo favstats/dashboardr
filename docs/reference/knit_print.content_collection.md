@@ -9,7 +9,7 @@ instead.
 
 ``` r
 # S3 method for class 'content_collection'
-knit_print(x, ...)
+knit_print(x, ..., options = NULL)
 ```
 
 ## Arguments

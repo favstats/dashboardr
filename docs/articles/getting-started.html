@@ -226,10 +226,10 @@ type:</p>
 <span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span>x_var <span class="op">=</span> <span class="st">"degree"</span>, title <span class="op">=</span> <span class="st">"Education"</span><span class="op">)</span> </span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">demographics</span><span class="op">)</span></span>
-<span><span class="co">#&gt; -- <span style="font-weight: bold;">Content Collection</span> ──────────────────────────────────────────────────────────</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">1</span> items | ✔ data: 21788 rows x 7 cols</span></span>
+<span><span class="co">#&gt; -- <span style="font-weight: bold;">Content Collection</span> ----------------------------------------------------------</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">1</span> items | v data: 21788 rows x 7 cols</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; • <span style="color: #00BB00;">[Viz]</span> <span style="font-weight: bold;">Education</span> <span style="color: #555555;">(</span><span style="color: #BB00BB;">bar</span><span style="color: #555555;">)</span> <span style="color: #555555;">x=degree</span></span></span></code></pre></div>
+<span><span class="co">#&gt; * <span style="color: #00BB00;">[Viz]</span> <span style="font-weight: bold;">Education</span> <span style="color: #555555;">(</span><span style="color: #BB00BB;">bar</span><span style="color: #555555;">)</span> <span style="color: #555555;">x=degree</span></span></span></code></pre></div>
 <p>Here <code><a href="../reference/create_content.html">create_content()</a></code> sets up a container with the GSS
 data and says “make bar charts by default.” Then <code><a href="../reference/add_viz.html">add_viz()</a></code>
 adds a bar chart of the <code>degree</code> variable. The print output
@@ -239,7 +239,7 @@ shows what’s inside: one visualization ready to go.</p>
 <code class="sourceCode R"><span><span class="va">demographics</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/preview.html">preview</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <div style="border: 2px solid #e1e4e8; border-radius: 8px; padding: 20px; margin: 16px 0; background-color: #fafbfc;">
 <div style="font-size: 0.75em; color: #6a737d; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid #e1e4e8;">Preview</div>
-<h4 style="margin: 10px 0;">Education</h4>
+<div class="preview-h4" style="font-size: 1em; font-weight: bold; margin: 10px 0;">Education</div>
 <div class="highchart html-widget html-fill-item" id="htmlwidget-ac96cb3ee4656e2e9ec3" style="width:672px;height:480px;"></div>
 <script type="application/json" data-for="htmlwidget-ac96cb3ee4656e2e9ec3">{"x":{"hc_opts":{"chart":{"reflow":true,"type":"column"},"title":{"text":null},"yAxis":{"title":{"text":"Count"}},"credits":{"enabled":false},"exporting":{"enabled":false},"boost":{"enabled":false},"plotOptions":{"series":{"label":{"enabled":false},"turboThreshold":0,"dataLabels":{"enabled":true,"format":"{point.y}"}},"treemap":{"layoutAlgorithm":"squarified"}},"xAxis":{"categories":["less than high school","high school","associate/junior college","bachelor's","graduate"],"title":{"text":"degree"}},"series":[{"data":[2307,10308,1812,4523,2838],"name":"Count","showInLegend":false,"colorByPoint":true}],"tooltip":{"formatter":"function() {\n           var cat = this.point.category || this.series.chart.xAxis[0].categories[this.point.x] || this.x;\n           var val = this.y;\n           var total = 21788;\n           var pct = total > 0 ? (val / total * 100).toFixed(1) : 0;\n           var rank = this.series.data.indexOf(this.point) + 1;\n           var totalItems = this.series.data.length;\n           return '<b>' + cat + '<\/b><br/>' +\n                  '' + val.toLocaleString() + '<br/>' +\n                  '<span style=\"color:#666;font-size:0.9em\">' + pct + '% of total | Rank: #' + rank + ' of ' + totalItems + '<\/span>';\n         }","useHTML":true}},"theme":{"chart":{"backgroundColor":"transparent"},"colors":["#7cb5ec","#434348","#90ed7d","#f7a35c","#8085e9","#f15c80","#e4d354","#2b908f","#f45b5b","#91e8e1"]},"conf_opts":{"global":{"Date":null,"VMLRadialGradientURL":"http =//code.highcharts.com/list(version)/gfx/vml-radial-gradient.png","canvasToolsURL":"http =//code.highcharts.com/list(version)/modules/canvas-tools.js","getTimezoneOffset":null,"timezoneOffset":0,"useUTC":true},"lang":{"contextButtonTitle":"Chart context menu","decimalPoint":".","downloadCSV":"Download CSV","downloadJPEG":"Download JPEG image","downloadPDF":"Download PDF document","downloadPNG":"Download PNG image","downloadSVG":"Download SVG vector image","downloadXLS":"Download XLS","drillUpText":"◁ Back to {series.name}","exitFullscreen":"Exit from full screen","exportData":{"annotationHeader":"Annotations","categoryDatetimeHeader":"DateTime","categoryHeader":"Category"},"hideData":"Hide data table","invalidDate":null,"loading":"Loading...","months":["January","February","March","April","May","June","July","August","September","October","November","December"],"noData":"No data to display","numericSymbolMagnitude":1000,"numericSymbols":["k","M","G","T","P","E"],"printChart":"Print chart","resetZoom":"Reset zoom","resetZoomTitle":"Reset zoom level 1:1","shortMonths":["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],"shortWeekdays":["Sat","Sun","Mon","Tue","Wed","Thu","Fri"],"thousandsSep":" ","viewData":"View data table","viewFullscreen":"View in full screen","weekdays":["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]}},"type":"chart","fonts":[],"debug":false},"evals":["hc_opts.tooltip.formatter"],"jsHooks":[]}</script><div style="margin-bottom: 15px;"></div>
 </div>
@@ -254,54 +254,54 @@ to organize charts into tabs:</p>
 <span><span class="va">demographics</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/preview.html">preview</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <div style="border: 2px solid #e1e4e8; border-radius: 8px; padding: 20px; margin: 16px 0; background-color: #fafbfc;">
 <div style="font-size: 0.75em; color: #6a737d; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid #e1e4e8;">Preview</div>
-<div id="dtabs-c64332c9" style="margin: 20px 0;">
+<div id="dtabs-5b1fe38f" style="margin: 20px 0;">
 <div class="dtab-buttons" style="border-bottom: 1px solid #dee2e6; margin-bottom: 10px;">
-<button type="button" class="dtab-btn dtab-active" data-tab="dtabs-c64332c9-1">demographics</button>
-<button type="button" class="dtab-btn" data-tab="dtabs-c64332c9-2">attitudes</button>
+<button type="button" class="dtab-btn dtab-active" data-tab="dtabs-5b1fe38f-1">demographics</button>
+<button type="button" class="dtab-btn" data-tab="dtabs-5b1fe38f-2">attitudes</button>
 </div>
 <div class="dtab-content">
-<div class="dtab-pane" id="dtabs-c64332c9-1" data-visible="true">
-<h4 style="margin: 10px 0;">Education</h4>
+<div class="dtab-pane" id="dtabs-5b1fe38f-1" data-visible="true">
+<div class="preview-h4" style="font-size: 1em; font-weight: bold; margin: 10px 0;">Education</div>
 <div class="highchart html-widget html-fill-item" id="htmlwidget-e5c8c404fe174e4c81bd" style="width:672px;height:480px;"></div>
 <script type="application/json" data-for="htmlwidget-e5c8c404fe174e4c81bd">{"x":{"hc_opts":{"chart":{"reflow":true,"type":"column"},"title":{"text":null},"yAxis":{"title":{"text":"Count"}},"credits":{"enabled":false},"exporting":{"enabled":false},"boost":{"enabled":false},"plotOptions":{"series":{"label":{"enabled":false},"turboThreshold":0,"dataLabels":{"enabled":true,"format":"{point.y}"}},"treemap":{"layoutAlgorithm":"squarified"}},"xAxis":{"categories":["less than high school","high school","associate/junior college","bachelor's","graduate"],"title":{"text":"degree"}},"series":[{"data":[2307,10308,1812,4523,2838],"name":"Count","showInLegend":false,"colorByPoint":true}],"tooltip":{"formatter":"function() {\n           var cat = this.point.category || this.series.chart.xAxis[0].categories[this.point.x] || this.x;\n           var val = this.y;\n           var total = 21788;\n           var pct = total > 0 ? (val / total * 100).toFixed(1) : 0;\n           var rank = this.series.data.indexOf(this.point) + 1;\n           var totalItems = this.series.data.length;\n           return '<b>' + cat + '<\/b><br/>' +\n                  '' + val.toLocaleString() + '<br/>' +\n                  '<span style=\"color:#666;font-size:0.9em\">' + pct + '% of total | Rank: #' + rank + ' of ' + totalItems + '<\/span>';\n         }","useHTML":true}},"theme":{"chart":{"backgroundColor":"transparent"},"colors":["#7cb5ec","#434348","#90ed7d","#f7a35c","#8085e9","#f15c80","#e4d354","#2b908f","#f45b5b","#91e8e1"]},"conf_opts":{"global":{"Date":null,"VMLRadialGradientURL":"http =//code.highcharts.com/list(version)/gfx/vml-radial-gradient.png","canvasToolsURL":"http =//code.highcharts.com/list(version)/modules/canvas-tools.js","getTimezoneOffset":null,"timezoneOffset":0,"useUTC":true},"lang":{"contextButtonTitle":"Chart context menu","decimalPoint":".","downloadCSV":"Download CSV","downloadJPEG":"Download JPEG image","downloadPDF":"Download PDF document","downloadPNG":"Download PNG image","downloadSVG":"Download SVG vector image","downloadXLS":"Download XLS","drillUpText":"◁ Back to {series.name}","exitFullscreen":"Exit from full screen","exportData":{"annotationHeader":"Annotations","categoryDatetimeHeader":"DateTime","categoryHeader":"Category"},"hideData":"Hide data table","invalidDate":null,"loading":"Loading...","months":["January","February","March","April","May","June","July","August","September","October","November","December"],"noData":"No data to display","numericSymbolMagnitude":1000,"numericSymbols":["k","M","G","T","P","E"],"printChart":"Print chart","resetZoom":"Reset zoom","resetZoomTitle":"Reset zoom level 1:1","shortMonths":["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],"shortWeekdays":["Sat","Sun","Mon","Tue","Wed","Thu","Fri"],"thousandsSep":" ","viewData":"View data table","viewFullscreen":"View in full screen","weekdays":["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]}},"type":"chart","fonts":[],"debug":false},"evals":["hc_opts.tooltip.formatter"],"jsHooks":[]}</script><div style="margin-bottom: 15px;"></div>
-<h4 style="margin: 10px 0;">Race</h4>
+<div class="preview-h4" style="font-size: 1em; font-weight: bold; margin: 10px 0;">Race</div>
 <div class="highchart html-widget html-fill-item" id="htmlwidget-36aa3d2a04d42bbc2145" style="width:672px;height:480px;"></div>
 <script type="application/json" data-for="htmlwidget-36aa3d2a04d42bbc2145">{"x":{"hc_opts":{"chart":{"reflow":true,"type":"column"},"title":{"text":null},"yAxis":{"title":{"text":"Count"}},"credits":{"enabled":false},"exporting":{"enabled":false},"boost":{"enabled":false},"plotOptions":{"series":{"label":{"enabled":false},"turboThreshold":0,"dataLabels":{"enabled":true,"format":"{point.y}"}},"treemap":{"layoutAlgorithm":"squarified"}},"xAxis":{"categories":["white","black","other"],"title":{"text":"race"}},"series":[{"data":[16169,3356,2263],"name":"Count","showInLegend":false,"colorByPoint":true}],"tooltip":{"formatter":"function() {\n           var cat = this.point.category || this.series.chart.xAxis[0].categories[this.point.x] || this.x;\n           var val = this.y;\n           var total = 21788;\n           var pct = total > 0 ? (val / total * 100).toFixed(1) : 0;\n           var rank = this.series.data.indexOf(this.point) + 1;\n           var totalItems = this.series.data.length;\n           return '<b>' + cat + '<\/b><br/>' +\n                  '' + val.toLocaleString() + '<br/>' +\n                  '<span style=\"color:#666;font-size:0.9em\">' + pct + '% of total | Rank: #' + rank + ' of ' + totalItems + '<\/span>';\n         }","useHTML":true}},"theme":{"chart":{"backgroundColor":"transparent"},"colors":["#7cb5ec","#434348","#90ed7d","#f7a35c","#8085e9","#f15c80","#e4d354","#2b908f","#f45b5b","#91e8e1"]},"conf_opts":{"global":{"Date":null,"VMLRadialGradientURL":"http =//code.highcharts.com/list(version)/gfx/vml-radial-gradient.png","canvasToolsURL":"http =//code.highcharts.com/list(version)/modules/canvas-tools.js","getTimezoneOffset":null,"timezoneOffset":0,"useUTC":true},"lang":{"contextButtonTitle":"Chart context menu","decimalPoint":".","downloadCSV":"Download CSV","downloadJPEG":"Download JPEG image","downloadPDF":"Download PDF document","downloadPNG":"Download PNG image","downloadSVG":"Download SVG vector image","downloadXLS":"Download XLS","drillUpText":"◁ Back to {series.name}","exitFullscreen":"Exit from full screen","exportData":{"annotationHeader":"Annotations","categoryDatetimeHeader":"DateTime","categoryHeader":"Category"},"hideData":"Hide data table","invalidDate":null,"loading":"Loading...","months":["January","February","March","April","May","June","July","August","September","October","November","December"],"noData":"No data to display","numericSymbolMagnitude":1000,"numericSymbols":["k","M","G","T","P","E"],"printChart":"Print chart","resetZoom":"Reset zoom","resetZoomTitle":"Reset zoom level 1:1","shortMonths":["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],"shortWeekdays":["Sat","Sun","Mon","Tue","Wed","Thu","Fri"],"thousandsSep":" ","viewData":"View data table","viewFullscreen":"View in full screen","weekdays":["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]}},"type":"chart","fonts":[],"debug":false},"evals":["hc_opts.tooltip.formatter"],"jsHooks":[]}</script><div style="margin-bottom: 15px;"></div>
 </div>
-<div class="dtab-pane" id="dtabs-c64332c9-2" data-visible="false">
-<h4 style="margin: 10px 0;">Happiness</h4>
+<div class="dtab-pane" id="dtabs-5b1fe38f-2" data-visible="false">
+<div class="preview-h4" style="font-size: 1em; font-weight: bold; margin: 10px 0;">Happiness</div>
 <div class="highchart html-widget html-fill-item" id="htmlwidget-febe03efa1a2d8d52a86" style="width:672px;height:480px;"></div>
 <script type="application/json" data-for="htmlwidget-febe03efa1a2d8d52a86">{"x":{"hc_opts":{"chart":{"reflow":true,"type":"column"},"title":{"text":null},"yAxis":{"title":{"text":"Count"}},"credits":{"enabled":false},"exporting":{"enabled":false},"boost":{"enabled":false},"plotOptions":{"series":{"label":{"enabled":false},"turboThreshold":0,"dataLabels":{"enabled":true,"format":"{point.y}"}},"treemap":{"layoutAlgorithm":"squarified"}},"xAxis":{"categories":["very happy","pretty happy","not too happy"],"title":{"text":"happy"}},"series":[{"data":[5477,12256,3967],"name":"Count","showInLegend":false,"colorByPoint":true}],"tooltip":{"formatter":"function() {\n           var cat = this.point.category || this.series.chart.xAxis[0].categories[this.point.x] || this.x;\n           var val = this.y;\n           var total = 21700;\n           var pct = total > 0 ? (val / total * 100).toFixed(1) : 0;\n           var rank = this.series.data.indexOf(this.point) + 1;\n           var totalItems = this.series.data.length;\n           return '<b>' + cat + '<\/b><br/>' +\n                  '' + val.toLocaleString() + '<br/>' +\n                  '<span style=\"color:#666;font-size:0.9em\">' + pct + '% of total | Rank: #' + rank + ' of ' + totalItems + '<\/span>';\n         }","useHTML":true}},"theme":{"chart":{"backgroundColor":"transparent"},"colors":["#7cb5ec","#434348","#90ed7d","#f7a35c","#8085e9","#f15c80","#e4d354","#2b908f","#f45b5b","#91e8e1"]},"conf_opts":{"global":{"Date":null,"VMLRadialGradientURL":"http =//code.highcharts.com/list(version)/gfx/vml-radial-gradient.png","canvasToolsURL":"http =//code.highcharts.com/list(version)/modules/canvas-tools.js","getTimezoneOffset":null,"timezoneOffset":0,"useUTC":true},"lang":{"contextButtonTitle":"Chart context menu","decimalPoint":".","downloadCSV":"Download CSV","downloadJPEG":"Download JPEG image","downloadPDF":"Download PDF document","downloadPNG":"Download PNG image","downloadSVG":"Download SVG vector image","downloadXLS":"Download XLS","drillUpText":"◁ Back to {series.name}","exitFullscreen":"Exit from full screen","exportData":{"annotationHeader":"Annotations","categoryDatetimeHeader":"DateTime","categoryHeader":"Category"},"hideData":"Hide data table","invalidDate":null,"loading":"Loading...","months":["January","February","March","April","May","June","July","August","September","October","November","December"],"noData":"No data to display","numericSymbolMagnitude":1000,"numericSymbols":["k","M","G","T","P","E"],"printChart":"Print chart","resetZoom":"Reset zoom","resetZoomTitle":"Reset zoom level 1:1","shortMonths":["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],"shortWeekdays":["Sat","Sun","Mon","Tue","Wed","Thu","Fri"],"thousandsSep":" ","viewData":"View data table","viewFullscreen":"View in full screen","weekdays":["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]}},"type":"chart","fonts":[],"debug":false},"evals":["hc_opts.tooltip.formatter"],"jsHooks":[]}</script><div style="margin-bottom: 15px;"></div>
 </div>
 </div>
 </div>
 <style>
-    #dtabs-c64332c9 .dtab-btn {
+    #dtabs-5b1fe38f .dtab-btn {
       padding: 8px 16px; margin-right: 4px; border: 1px solid #dee2e6;
       background: #f8f9fa; cursor: pointer; border-radius: 4px 4px 0 0;
     }
-    #dtabs-c64332c9 .dtab-btn.dtab-active { background: white; border-bottom-color: white; font-weight: bold; }
-    #dtabs-c64332c9 .dtab-pane { padding: 15px 0; }
-    #dtabs-c64332c9 .dtab-pane[data-visible='false'] { display: none; }
+    #dtabs-5b1fe38f .dtab-btn.dtab-active { background: white; border-bottom-color: white; font-weight: bold; }
+    #dtabs-5b1fe38f .dtab-pane { padding: 15px 0; }
+    #dtabs-5b1fe38f .dtab-pane[data-visible='false'] { display: none; }
   </style>
 <script>
     (function() {
       // Wait for Highcharts to render, then hide inactive panes
       setTimeout(function() {
-        document.querySelectorAll('#dtabs-c64332c9 .dtab-pane[data-visible="false"]').forEach(function(p) {
+        document.querySelectorAll('#dtabs-5b1fe38f .dtab-pane[data-visible="false"]').forEach(function(p) {
           p.style.display = 'none';
         });
       }, 500);
 
       // Tab click handler
-      document.querySelectorAll('#dtabs-c64332c9 .dtab-btn').forEach(function(btn) {
+      document.querySelectorAll('#dtabs-5b1fe38f .dtab-btn').forEach(function(btn) {
         btn.addEventListener('click', function() {
           var tabId = this.getAttribute('data-tab');
           // Update buttons
-          document.querySelectorAll('#dtabs-c64332c9 .dtab-btn').forEach(function(b) { b.classList.remove('dtab-active'); });
+          document.querySelectorAll('#dtabs-5b1fe38f .dtab-btn').forEach(function(b) { b.classList.remove('dtab-active'); });
           this.classList.add('dtab-active');
           // Update panes
-          document.querySelectorAll('#dtabs-c64332c9 .dtab-pane').forEach(function(p) {
+          document.querySelectorAll('#dtabs-5b1fe38f .dtab-pane').forEach(function(p) {
             p.style.display = p.id === tabId ? 'block' : 'none';
             p.setAttribute('data-visible', p.id === tabId ? 'true' : 'false');
           });
@@ -341,15 +341,15 @@ when someone opens your dashboard.</p>
 <span>  <span class="fu"><a href="../reference/add_content.html">add_content</a></span><span class="op">(</span><span class="va">demographics</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">analysis</span><span class="op">)</span></span>
-<span><span class="co">#&gt; -- <span style="font-weight: bold;">Page:</span> Analysis ───────────────────────────────────────────────</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> data: 21788 rows x 7 cols </span></span>
+<span><span class="co">#&gt; -- <span style="font-weight: bold;">Page:</span> Analysis -----------------------------------------------</span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">v</span> data: 21788 rows x 7 cols </span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">3</span> items</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ❯ <span style="color: #0000BB;">[Tab]</span> <span style="color: #00BBBB; font-weight: bold;">demographics</span><span style="color: #555555;"> (2 vizs)</span></span></span>
-<span><span class="co">#&gt;   • <span style="color: #00BB00;">[Viz]</span> <span style="font-weight: bold;">Education</span> <span style="color: #555555;">(</span><span style="color: #BB00BB;">bar</span><span style="color: #555555;">)</span> <span style="color: #555555;">x=degree</span></span></span>
-<span><span class="co">#&gt;   • <span style="color: #00BB00;">[Viz]</span> <span style="font-weight: bold;">Race</span> <span style="color: #555555;">(</span><span style="color: #BB00BB;">bar</span><span style="color: #555555;">)</span> <span style="color: #555555;">x=race</span></span></span>
-<span><span class="co">#&gt; ❯ <span style="color: #0000BB;">[Tab]</span> <span style="color: #00BBBB; font-weight: bold;">attitudes</span><span style="color: #555555;"> (1 viz)</span></span></span>
-<span><span class="co">#&gt;   • <span style="color: #00BB00;">[Viz]</span> <span style="font-weight: bold;">Happiness</span> <span style="color: #555555;">(</span><span style="color: #BB00BB;">bar</span><span style="color: #555555;">)</span> <span style="color: #555555;">x=happy</span></span></span></code></pre></div>
+<span><span class="co">#&gt; &gt; <span style="color: #0000BB;">[Tab]</span> <span style="color: #00BBBB; font-weight: bold;">demographics</span><span style="color: #555555;"> (2 vizs)</span></span></span>
+<span><span class="co">#&gt;   * <span style="color: #00BB00;">[Viz]</span> <span style="font-weight: bold;">Education</span> <span style="color: #555555;">(</span><span style="color: #BB00BB;">bar</span><span style="color: #555555;">)</span> <span style="color: #555555;">x=degree</span></span></span>
+<span><span class="co">#&gt;   * <span style="color: #00BB00;">[Viz]</span> <span style="font-weight: bold;">Race</span> <span style="color: #555555;">(</span><span style="color: #BB00BB;">bar</span><span style="color: #555555;">)</span> <span style="color: #555555;">x=race</span></span></span>
+<span><span class="co">#&gt; &gt; <span style="color: #0000BB;">[Tab]</span> <span style="color: #00BBBB; font-weight: bold;">attitudes</span><span style="color: #555555;"> (1 viz)</span></span></span>
+<span><span class="co">#&gt;   * <span style="color: #00BB00;">[Viz]</span> <span style="font-weight: bold;">Happiness</span> <span style="color: #555555;">(</span><span style="color: #BB00BB;">bar</span><span style="color: #555555;">)</span> <span style="color: #555555;">x=happy</span></span></span></code></pre></div>
 <p>The <code><a href="../reference/add_content.html">add_content()</a></code> function connects layers: it takes the
 content collection you built earlier and attaches it to the page. The
 page’s <code>data</code> argument provides the dataset for any
@@ -358,54 +358,54 @@ visualizations that need it.</p>
 <code class="sourceCode R"><span><span class="va">analysis</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/preview.html">preview</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <div style="border: 2px solid #e1e4e8; border-radius: 8px; padding: 20px; margin: 16px 0; background-color: #fafbfc;">
 <div style="font-size: 0.75em; color: #6a737d; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid #e1e4e8;">Preview</div>
-<div id="dtabs-178e6ba0" style="margin: 20px 0;">
+<div id="dtabs-2b80e73a" style="margin: 20px 0;">
 <div class="dtab-buttons" style="border-bottom: 1px solid #dee2e6; margin-bottom: 10px;">
-<button type="button" class="dtab-btn dtab-active" data-tab="dtabs-178e6ba0-1">demographics</button>
-<button type="button" class="dtab-btn" data-tab="dtabs-178e6ba0-2">attitudes</button>
+<button type="button" class="dtab-btn dtab-active" data-tab="dtabs-2b80e73a-1">demographics</button>
+<button type="button" class="dtab-btn" data-tab="dtabs-2b80e73a-2">attitudes</button>
 </div>
 <div class="dtab-content">
-<div class="dtab-pane" id="dtabs-178e6ba0-1" data-visible="true">
-<h4 style="margin: 10px 0;">Education</h4>
+<div class="dtab-pane" id="dtabs-2b80e73a-1" data-visible="true">
+<div class="preview-h4" style="font-size: 1em; font-weight: bold; margin: 10px 0;">Education</div>
 <div class="highchart html-widget html-fill-item" id="htmlwidget-1fb4450895fe099f74a1" style="width:672px;height:480px;"></div>
 <script type="application/json" data-for="htmlwidget-1fb4450895fe099f74a1">{"x":{"hc_opts":{"chart":{"reflow":true,"type":"column"},"title":{"text":null},"yAxis":{"title":{"text":"Count"}},"credits":{"enabled":false},"exporting":{"enabled":false},"boost":{"enabled":false},"plotOptions":{"series":{"label":{"enabled":false},"turboThreshold":0,"dataLabels":{"enabled":true,"format":"{point.y}"}},"treemap":{"layoutAlgorithm":"squarified"}},"xAxis":{"categories":["less than high school","high school","associate/junior college","bachelor's","graduate"],"title":{"text":"degree"}},"series":[{"data":[2307,10308,1812,4523,2838],"name":"Count","showInLegend":false,"colorByPoint":true}],"tooltip":{"formatter":"function() {\n           var cat = this.point.category || this.series.chart.xAxis[0].categories[this.point.x] || this.x;\n           var val = this.y;\n           var total = 21788;\n           var pct = total > 0 ? (val / total * 100).toFixed(1) : 0;\n           var rank = this.series.data.indexOf(this.point) + 1;\n           var totalItems = this.series.data.length;\n           return '<b>' + cat + '<\/b><br/>' +\n                  '' + val.toLocaleString() + '<br/>' +\n                  '<span style=\"color:#666;font-size:0.9em\">' + pct + '% of total | Rank: #' + rank + ' of ' + totalItems + '<\/span>';\n         }","useHTML":true}},"theme":{"chart":{"backgroundColor":"transparent"},"colors":["#7cb5ec","#434348","#90ed7d","#f7a35c","#8085e9","#f15c80","#e4d354","#2b908f","#f45b5b","#91e8e1"]},"conf_opts":{"global":{"Date":null,"VMLRadialGradientURL":"http =//code.highcharts.com/list(version)/gfx/vml-radial-gradient.png","canvasToolsURL":"http =//code.highcharts.com/list(version)/modules/canvas-tools.js","getTimezoneOffset":null,"timezoneOffset":0,"useUTC":true},"lang":{"contextButtonTitle":"Chart context menu","decimalPoint":".","downloadCSV":"Download CSV","downloadJPEG":"Download JPEG image","downloadPDF":"Download PDF document","downloadPNG":"Download PNG image","downloadSVG":"Download SVG vector image","downloadXLS":"Download XLS","drillUpText":"◁ Back to {series.name}","exitFullscreen":"Exit from full screen","exportData":{"annotationHeader":"Annotations","categoryDatetimeHeader":"DateTime","categoryHeader":"Category"},"hideData":"Hide data table","invalidDate":null,"loading":"Loading...","months":["January","February","March","April","May","June","July","August","September","October","November","December"],"noData":"No data to display","numericSymbolMagnitude":1000,"numericSymbols":["k","M","G","T","P","E"],"printChart":"Print chart","resetZoom":"Reset zoom","resetZoomTitle":"Reset zoom level 1:1","shortMonths":["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],"shortWeekdays":["Sat","Sun","Mon","Tue","Wed","Thu","Fri"],"thousandsSep":" ","viewData":"View data table","viewFullscreen":"View in full screen","weekdays":["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]}},"type":"chart","fonts":[],"debug":false},"evals":["hc_opts.tooltip.formatter"],"jsHooks":[]}</script><div style="margin-bottom: 15px;"></div>
-<h4 style="margin: 10px 0;">Race</h4>
+<div class="preview-h4" style="font-size: 1em; font-weight: bold; margin: 10px 0;">Race</div>
 <div class="highchart html-widget html-fill-item" id="htmlwidget-10b3b7155e8045a1b2ad" style="width:672px;height:480px;"></div>
 <script type="application/json" data-for="htmlwidget-10b3b7155e8045a1b2ad">{"x":{"hc_opts":{"chart":{"reflow":true,"type":"column"},"title":{"text":null},"yAxis":{"title":{"text":"Count"}},"credits":{"enabled":false},"exporting":{"enabled":false},"boost":{"enabled":false},"plotOptions":{"series":{"label":{"enabled":false},"turboThreshold":0,"dataLabels":{"enabled":true,"format":"{point.y}"}},"treemap":{"layoutAlgorithm":"squarified"}},"xAxis":{"categories":["white","black","other"],"title":{"text":"race"}},"series":[{"data":[16169,3356,2263],"name":"Count","showInLegend":false,"colorByPoint":true}],"tooltip":{"formatter":"function() {\n           var cat = this.point.category || this.series.chart.xAxis[0].categories[this.point.x] || this.x;\n           var val = this.y;\n           var total = 21788;\n           var pct = total > 0 ? (val / total * 100).toFixed(1) : 0;\n           var rank = this.series.data.indexOf(this.point) + 1;\n           var totalItems = this.series.data.length;\n           return '<b>' + cat + '<\/b><br/>' +\n                  '' + val.toLocaleString() + '<br/>' +\n                  '<span style=\"color:#666;font-size:0.9em\">' + pct + '% of total | Rank: #' + rank + ' of ' + totalItems + '<\/span>';\n         }","useHTML":true}},"theme":{"chart":{"backgroundColor":"transparent"},"colors":["#7cb5ec","#434348","#90ed7d","#f7a35c","#8085e9","#f15c80","#e4d354","#2b908f","#f45b5b","#91e8e1"]},"conf_opts":{"global":{"Date":null,"VMLRadialGradientURL":"http =//code.highcharts.com/list(version)/gfx/vml-radial-gradient.png","canvasToolsURL":"http =//code.highcharts.com/list(version)/modules/canvas-tools.js","getTimezoneOffset":null,"timezoneOffset":0,"useUTC":true},"lang":{"contextButtonTitle":"Chart context menu","decimalPoint":".","downloadCSV":"Download CSV","downloadJPEG":"Download JPEG image","downloadPDF":"Download PDF document","downloadPNG":"Download PNG image","downloadSVG":"Download SVG vector image","downloadXLS":"Download XLS","drillUpText":"◁ Back to {series.name}","exitFullscreen":"Exit from full screen","exportData":{"annotationHeader":"Annotations","categoryDatetimeHeader":"DateTime","categoryHeader":"Category"},"hideData":"Hide data table","invalidDate":null,"loading":"Loading...","months":["January","February","March","April","May","June","July","August","September","October","November","December"],"noData":"No data to display","numericSymbolMagnitude":1000,"numericSymbols":["k","M","G","T","P","E"],"printChart":"Print chart","resetZoom":"Reset zoom","resetZoomTitle":"Reset zoom level 1:1","shortMonths":["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],"shortWeekdays":["Sat","Sun","Mon","Tue","Wed","Thu","Fri"],"thousandsSep":" ","viewData":"View data table","viewFullscreen":"View in full screen","weekdays":["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]}},"type":"chart","fonts":[],"debug":false},"evals":["hc_opts.tooltip.formatter"],"jsHooks":[]}</script><div style="margin-bottom: 15px;"></div>
 </div>
-<div class="dtab-pane" id="dtabs-178e6ba0-2" data-visible="false">
-<h4 style="margin: 10px 0;">Happiness</h4>
+<div class="dtab-pane" id="dtabs-2b80e73a-2" data-visible="false">
+<div class="preview-h4" style="font-size: 1em; font-weight: bold; margin: 10px 0;">Happiness</div>
 <div class="highchart html-widget html-fill-item" id="htmlwidget-4018eef1a407a0df6b52" style="width:672px;height:480px;"></div>
 <script type="application/json" data-for="htmlwidget-4018eef1a407a0df6b52">{"x":{"hc_opts":{"chart":{"reflow":true,"type":"column"},"title":{"text":null},"yAxis":{"title":{"text":"Count"}},"credits":{"enabled":false},"exporting":{"enabled":false},"boost":{"enabled":false},"plotOptions":{"series":{"label":{"enabled":false},"turboThreshold":0,"dataLabels":{"enabled":true,"format":"{point.y}"}},"treemap":{"layoutAlgorithm":"squarified"}},"xAxis":{"categories":["very happy","pretty happy","not too happy"],"title":{"text":"happy"}},"series":[{"data":[5477,12256,3967],"name":"Count","showInLegend":false,"colorByPoint":true}],"tooltip":{"formatter":"function() {\n           var cat = this.point.category || this.series.chart.xAxis[0].categories[this.point.x] || this.x;\n           var val = this.y;\n           var total = 21700;\n           var pct = total > 0 ? (val / total * 100).toFixed(1) : 0;\n           var rank = this.series.data.indexOf(this.point) + 1;\n           var totalItems = this.series.data.length;\n           return '<b>' + cat + '<\/b><br/>' +\n                  '' + val.toLocaleString() + '<br/>' +\n                  '<span style=\"color:#666;font-size:0.9em\">' + pct + '% of total | Rank: #' + rank + ' of ' + totalItems + '<\/span>';\n         }","useHTML":true}},"theme":{"chart":{"backgroundColor":"transparent"},"colors":["#7cb5ec","#434348","#90ed7d","#f7a35c","#8085e9","#f15c80","#e4d354","#2b908f","#f45b5b","#91e8e1"]},"conf_opts":{"global":{"Date":null,"VMLRadialGradientURL":"http =//code.highcharts.com/list(version)/gfx/vml-radial-gradient.png","canvasToolsURL":"http =//code.highcharts.com/list(version)/modules/canvas-tools.js","getTimezoneOffset":null,"timezoneOffset":0,"useUTC":true},"lang":{"contextButtonTitle":"Chart context menu","decimalPoint":".","downloadCSV":"Download CSV","downloadJPEG":"Download JPEG image","downloadPDF":"Download PDF document","downloadPNG":"Download PNG image","downloadSVG":"Download SVG vector image","downloadXLS":"Download XLS","drillUpText":"◁ Back to {series.name}","exitFullscreen":"Exit from full screen","exportData":{"annotationHeader":"Annotations","categoryDatetimeHeader":"DateTime","categoryHeader":"Category"},"hideData":"Hide data table","invalidDate":null,"loading":"Loading...","months":["January","February","March","April","May","June","July","August","September","October","November","December"],"noData":"No data to display","numericSymbolMagnitude":1000,"numericSymbols":["k","M","G","T","P","E"],"printChart":"Print chart","resetZoom":"Reset zoom","resetZoomTitle":"Reset zoom level 1:1","shortMonths":["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],"shortWeekdays":["Sat","Sun","Mon","Tue","Wed","Thu","Fri"],"thousandsSep":" ","viewData":"View data table","viewFullscreen":"View in full screen","weekdays":["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]}},"type":"chart","fonts":[],"debug":false},"evals":["hc_opts.tooltip.formatter"],"jsHooks":[]}</script><div style="margin-bottom: 15px;"></div>
 </div>
 </div>
 </div>
 <style>
-    #dtabs-178e6ba0 .dtab-btn {
+    #dtabs-2b80e73a .dtab-btn {
       padding: 8px 16px; margin-right: 4px; border: 1px solid #dee2e6;
       background: #f8f9fa; cursor: pointer; border-radius: 4px 4px 0 0;
     }
-    #dtabs-178e6ba0 .dtab-btn.dtab-active { background: white; border-bottom-color: white; font-weight: bold; }
-    #dtabs-178e6ba0 .dtab-pane { padding: 15px 0; }
-    #dtabs-178e6ba0 .dtab-pane[data-visible='false'] { display: none; }
+    #dtabs-2b80e73a .dtab-btn.dtab-active { background: white; border-bottom-color: white; font-weight: bold; }
+    #dtabs-2b80e73a .dtab-pane { padding: 15px 0; }
+    #dtabs-2b80e73a .dtab-pane[data-visible='false'] { display: none; }
   </style>
 <script>
     (function() {
       // Wait for Highcharts to render, then hide inactive panes
       setTimeout(function() {
-        document.querySelectorAll('#dtabs-178e6ba0 .dtab-pane[data-visible="false"]').forEach(function(p) {
+        document.querySelectorAll('#dtabs-2b80e73a .dtab-pane[data-visible="false"]').forEach(function(p) {
           p.style.display = 'none';
         });
       }, 500);
 
       // Tab click handler
-      document.querySelectorAll('#dtabs-178e6ba0 .dtab-btn').forEach(function(btn) {
+      document.querySelectorAll('#dtabs-2b80e73a .dtab-btn').forEach(function(btn) {
         btn.addEventListener('click', function() {
           var tabId = this.getAttribute('data-tab');
           // Update buttons
-          document.querySelectorAll('#dtabs-178e6ba0 .dtab-btn').forEach(function(b) { b.classList.remove('dtab-active'); });
+          document.querySelectorAll('#dtabs-2b80e73a .dtab-btn').forEach(function(b) { b.classList.remove('dtab-active'); });
           this.classList.add('dtab-active');
           // Update panes
-          document.querySelectorAll('#dtabs-178e6ba0 .dtab-pane').forEach(function(p) {
+          document.querySelectorAll('#dtabs-2b80e73a .dtab-pane').forEach(function(p) {
             p.style.display = p.id === tabId ? 'block' : 'none';
             p.setAttribute('data-visible', p.id === tabId ? 'true' : 'false');
           });
@@ -431,7 +431,7 @@ separate content collection first:</p>
 <div style="margin: 15px 0;">
 <div class="preview-h2" style="font-size: 1.5em; font-weight: bold; margin: 0.83em 0;">Quick Analysis</div>
 </div>
-<h4 style="margin: 10px 0;">Happiness Levels</h4>
+<div class="preview-h4" style="font-size: 1em; font-weight: bold; margin: 10px 0;">Happiness Levels</div>
 <div class="highchart html-widget html-fill-item" id="htmlwidget-5b1b2f4ad92281566982" style="width:672px;height:480px;"></div>
 <script type="application/json" data-for="htmlwidget-5b1b2f4ad92281566982">{"x":{"hc_opts":{"chart":{"reflow":true,"type":"column"},"title":{"text":null},"yAxis":{"title":{"text":"Count"}},"credits":{"enabled":false},"exporting":{"enabled":false},"boost":{"enabled":false},"plotOptions":{"series":{"label":{"enabled":false},"turboThreshold":0,"dataLabels":{"enabled":true,"format":"{point.y}"}},"treemap":{"layoutAlgorithm":"squarified"}},"xAxis":{"categories":["very happy","pretty happy","not too happy"],"title":{"text":"happy"}},"series":[{"data":[5477,12256,3967],"name":"Count","showInLegend":false,"colorByPoint":true}],"tooltip":{"formatter":"function() {\n           var cat = this.point.category || this.series.chart.xAxis[0].categories[this.point.x] || this.x;\n           var val = this.y;\n           var total = 21700;\n           var pct = total > 0 ? (val / total * 100).toFixed(1) : 0;\n           var rank = this.series.data.indexOf(this.point) + 1;\n           var totalItems = this.series.data.length;\n           return '<b>' + cat + '<\/b><br/>' +\n                  '' + val.toLocaleString() + '<br/>' +\n                  '<span style=\"color:#666;font-size:0.9em\">' + pct + '% of total | Rank: #' + rank + ' of ' + totalItems + '<\/span>';\n         }","useHTML":true}},"theme":{"chart":{"backgroundColor":"transparent"},"colors":["#7cb5ec","#434348","#90ed7d","#f7a35c","#8085e9","#f15c80","#e4d354","#2b908f","#f45b5b","#91e8e1"]},"conf_opts":{"global":{"Date":null,"VMLRadialGradientURL":"http =//code.highcharts.com/list(version)/gfx/vml-radial-gradient.png","canvasToolsURL":"http =//code.highcharts.com/list(version)/modules/canvas-tools.js","getTimezoneOffset":null,"timezoneOffset":0,"useUTC":true},"lang":{"contextButtonTitle":"Chart context menu","decimalPoint":".","downloadCSV":"Download CSV","downloadJPEG":"Download JPEG image","downloadPDF":"Download PDF document","downloadPNG":"Download PNG image","downloadSVG":"Download SVG vector image","downloadXLS":"Download XLS","drillUpText":"◁ Back to {series.name}","exitFullscreen":"Exit from full screen","exportData":{"annotationHeader":"Annotations","categoryDatetimeHeader":"DateTime","categoryHeader":"Category"},"hideData":"Hide data table","invalidDate":null,"loading":"Loading...","months":["January","February","March","April","May","June","July","August","September","October","November","December"],"noData":"No data to display","numericSymbolMagnitude":1000,"numericSymbols":["k","M","G","T","P","E"],"printChart":"Print chart","resetZoom":"Reset zoom","resetZoomTitle":"Reset zoom level 1:1","shortMonths":["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],"shortWeekdays":["Sat","Sun","Mon","Tue","Wed","Thu","Fri"],"thousandsSep":" ","viewData":"View data table","viewFullscreen":"View in full screen","weekdays":["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]}},"type":"chart","fonts":[],"debug":false},"evals":["hc_opts.tooltip.formatter"],"jsHooks":[]}</script><div style="margin-bottom: 15px;"></div>
 </div>
@@ -452,12 +452,52 @@ You specify where to save files, pick a theme, and add your pages:</p>
 <span><span class="co">#&gt; Files may be overwritten when generate_dashboard() is called.</span></span>
 <span></span>
 <span><span class="va">my_dashboard</span></span></code></pre></div>
-<div style="border: 2px solid #e1e4e8; border-radius: 8px; padding: 20px; margin: 16px 0; background-color: #fafbfc;">
-<div style="font-size: 0.75em; color: #6a737d; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid #e1e4e8;">Dashboard Preview: GSS Explorer (2 pages)</div>
+<div id="dashboard-preview-6292" style="border: 2px solid #e1e4e8; border-radius: 8px; padding: 20px; margin: 16px 0; background-color: #fafbfc;">
+<div style="font-size: 0.75em; color: #6a737d; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid #e1e4e8;">Dashboard Preview: GSS Explorer</div>
+<div style="margin-bottom: 15px;">
+<button class="dtab-btn active" data-target="dashboard-preview-6292-page-1" style="padding: 8px 16px; border: none; background: #0969da; color: white; cursor: pointer; border-radius: 4px; margin-right: 4px; font-size: 0.9em;">Home</button>
+<button class="dtab-btn" data-target="dashboard-preview-6292-page-2" style="padding: 8px 16px; border: none; background: #f1f3f5; color: #333; cursor: pointer; border-radius: 4px; margin-right: 4px; font-size: 0.9em;">Analysis</button>
+</div>
+<div class="dtab-pane" id="dashboard-preview-6292-page-1" data-visible="true" style="">
 <div style="margin: 15px 0;">
 <div class="preview-h1" style="font-size: 2em; font-weight: bold; margin: 0.67em 0;">Welcome!</div>
 <p>Explore the General Social Survey data.</p>
 </div>
+</div>
+<div class="dtab-pane" id="dashboard-preview-6292-page-2" data-visible="false" style="display: none;"><p>No content to render.</p></div>
+<script>
+    (function() {
+      var container = document.getElementById('dashboard-preview-6292');
+      if (!container) return;
+      var buttons = container.querySelectorAll('.dtab-btn');
+      buttons.forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          var target = this.getAttribute('data-target');
+          // Update buttons
+          buttons.forEach(function(b) {
+            b.classList.remove('active');
+            b.style.background = '#f1f3f5';
+            b.style.color = '#333';
+          });
+          this.classList.add('active');
+          this.style.background = '#0969da';
+          this.style.color = 'white';
+          // Update panes
+          container.querySelectorAll('.dtab-pane').forEach(function(pane) {
+            pane.style.display = 'none';
+          });
+          var targetPane = document.getElementById(target);
+          if (targetPane) targetPane.style.display = 'block';
+          // Reflow charts
+          setTimeout(function() {
+            if (typeof Highcharts !== 'undefined') {
+              Highcharts.charts.forEach(function(c) { if (c) c.reflow(); });
+            }
+          }, 50);
+        });
+      });
+    })();
+  </script>
 </div>
 <p>Pages appear in the navbar in the order you add them.</p>
 <p>To generate the final HTML dashboard:</p>
@@ -470,12 +510,52 @@ in your browser.</p>
 Quarto:</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">my_dashboard</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/preview.html">preview</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<div style="border: 2px solid #e1e4e8; border-radius: 8px; padding: 20px; margin: 16px 0; background-color: #fafbfc;">
-<div style="font-size: 0.75em; color: #6a737d; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid #e1e4e8;">Dashboard Preview: GSS Explorer (2 pages)</div>
+<div id="dashboard-preview-6526" style="border: 2px solid #e1e4e8; border-radius: 8px; padding: 20px; margin: 16px 0; background-color: #fafbfc;">
+<div style="font-size: 0.75em; color: #6a737d; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid #e1e4e8;">Dashboard Preview: GSS Explorer</div>
+<div style="margin-bottom: 15px;">
+<button class="dtab-btn active" data-target="dashboard-preview-6526-page-1" style="padding: 8px 16px; border: none; background: #0969da; color: white; cursor: pointer; border-radius: 4px; margin-right: 4px; font-size: 0.9em;">Home</button>
+<button class="dtab-btn" data-target="dashboard-preview-6526-page-2" style="padding: 8px 16px; border: none; background: #f1f3f5; color: #333; cursor: pointer; border-radius: 4px; margin-right: 4px; font-size: 0.9em;">Analysis</button>
+</div>
+<div class="dtab-pane" id="dashboard-preview-6526-page-1" data-visible="true" style="">
 <div style="margin: 15px 0;">
 <div class="preview-h1" style="font-size: 2em; font-weight: bold; margin: 0.67em 0;">Welcome!</div>
 <p>Explore the General Social Survey data.</p>
 </div>
+</div>
+<div class="dtab-pane" id="dashboard-preview-6526-page-2" data-visible="false" style="display: none;"><p>No content to render.</p></div>
+<script>
+    (function() {
+      var container = document.getElementById('dashboard-preview-6526');
+      if (!container) return;
+      var buttons = container.querySelectorAll('.dtab-btn');
+      buttons.forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          var target = this.getAttribute('data-target');
+          // Update buttons
+          buttons.forEach(function(b) {
+            b.classList.remove('active');
+            b.style.background = '#f1f3f5';
+            b.style.color = '#333';
+          });
+          this.classList.add('active');
+          this.style.background = '#0969da';
+          this.style.color = 'white';
+          // Update panes
+          container.querySelectorAll('.dtab-pane').forEach(function(pane) {
+            pane.style.display = 'none';
+          });
+          var targetPane = document.getElementById(target);
+          if (targetPane) targetPane.style.display = 'block';
+          // Reflow charts
+          setTimeout(function() {
+            if (typeof Highcharts !== 'undefined') {
+              Highcharts.charts.forEach(function(c) { if (c) c.reflow(); });
+            }
+          }, 50);
+        });
+      });
+    })();
+  </script>
 </div>
 </div>
 <div class="section level2">
@@ -537,22 +617,22 @@ like:</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">onemin_dashboard</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ╔══════════════════════════════════════════════════════════════════════════</span></span>
-<span><span class="co">#&gt; ║ 🎨 DASHBOARD PROJECT</span></span>
-<span><span class="co">#&gt; ╠══════════════════════════════════════════════════════════════════════════</span></span>
-<span><span class="co">#&gt; ║ 📝 Title: GSS Data Explorer</span></span>
-<span><span class="co">#&gt; ║ 📁 Output: /Users/favstats/Dropbox/postdoc/gss_dashboard</span></span>
-<span><span class="co">#&gt; ║</span></span>
-<span><span class="co">#&gt; ║ ⚙️  FEATURES:</span></span>
-<span><span class="co">#&gt; ║    • 🔍 Search</span></span>
-<span><span class="co">#&gt; ║    • 🎨 Theme: flatly</span></span>
-<span><span class="co">#&gt; ║    • 🗂️  Tabs: minimal</span></span>
-<span><span class="co">#&gt; ║</span></span>
-<span><span class="co">#&gt; ║ 📄 PAGES (3):</span></span>
-<span><span class="co">#&gt; ║ ├─ 📄 Home [🏠 Landing]</span></span>
-<span><span class="co">#&gt; ║ ├─ 📄 Analysis [🎯 Icon, 💾 1 dataset]</span></span>
-<span><span class="co">#&gt; ║ └─ 📄 About [🎯 Icon, → Right]</span></span>
-<span><span class="co">#&gt; ╚══════════════════════════════════════════════════════════════════════════</span></span></code></pre></div>
+<span><span class="co">#&gt; &lt;U+2554&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;</span></span>
+<span><span class="co">#&gt; &lt;U+2551&gt; &lt;U+0001F3A8&gt; DASHBOARD PROJECT</span></span>
+<span><span class="co">#&gt; &lt;U+2560&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;</span></span>
+<span><span class="co">#&gt; &lt;U+2551&gt; &lt;U+0001F4DD&gt; Title: GSS Data Explorer</span></span>
+<span><span class="co">#&gt; &lt;U+2551&gt; &lt;U+0001F4C1&gt; Output: /Users/favstats/Dropbox/postdoc/gss_dashboard</span></span>
+<span><span class="co">#&gt; &lt;U+2551&gt;</span></span>
+<span><span class="co">#&gt; &lt;U+2551&gt; &lt;U+2699&gt;&lt;U+FE0F&gt;  FEATURES:</span></span>
+<span><span class="co">#&gt; &lt;U+2551&gt;    &lt;U+2022&gt; &lt;U+0001F50D&gt; Search</span></span>
+<span><span class="co">#&gt; &lt;U+2551&gt;    &lt;U+2022&gt; &lt;U+0001F3A8&gt; Theme: flatly</span></span>
+<span><span class="co">#&gt; &lt;U+2551&gt;    &lt;U+2022&gt; &lt;U+0001F5C2&gt;&lt;U+FE0F&gt;  Tabs: minimal</span></span>
+<span><span class="co">#&gt; &lt;U+2551&gt;</span></span>
+<span><span class="co">#&gt; &lt;U+2551&gt; &lt;U+0001F4C4&gt; PAGES (3):</span></span>
+<span><span class="co">#&gt; &lt;U+2551&gt; &lt;U+251C&gt;&lt;U+2500&gt; &lt;U+0001F4C4&gt; Home [&lt;U+0001F3E0&gt; Landing]</span></span>
+<span><span class="co">#&gt; &lt;U+2551&gt; &lt;U+251C&gt;&lt;U+2500&gt; &lt;U+0001F4C4&gt; Analysis [&lt;U+0001F3AF&gt; Icon, &lt;U+0001F4BE&gt; 1 dataset]</span></span>
+<span><span class="co">#&gt; &lt;U+2551&gt; &lt;U+2514&gt;&lt;U+2500&gt; &lt;U+0001F4C4&gt; About [&lt;U+0001F3AF&gt; Icon, &lt;U+2192&gt; Right]</span></span>
+<span><span class="co">#&gt; &lt;U+255A&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="tips">Tips<a class="anchor" aria-label="anchor" href="#tips"></a>

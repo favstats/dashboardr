@@ -1,625 +1,543 @@
-# Advanced Features in dashboardr
-
-## Introduction
-
-This vignette covers advanced features in `dashboardr` that enable you
-to create sophisticated, data-rich dashboards with minimal code.
+# Advanced Features
 
 ``` r
 library(dashboardr)
 library(dplyr)
+
+# Load GSS data for examples
+library(gssr)
+#> Warning: package 'gssr' was built under R version 4.4.3
+data(gss_all)
+gss <- gss_all %>%
+  select(year, age, sex, race, degree, happy, polviews, wtssall) %>%
+  filter(year >= 2010, !is.na(age), !is.na(sex), !is.na(race), !is.na(degree))
 ```
 
-## Defaults System
+## Multiple Visualizations at Once
 
-The defaults system allows you to set common parameters once and reuse
-them across multiple visualizations.
+### add_vizzes()
 
-### Basic Defaults
+Create multiple similar visualizations in one call:
 
 ``` r
-# Set defaults in create_viz()
-viz <- create_viz(
-  type = "histogram",
-  x_var = "value",
-  bins = 30,
-  color = "steelblue"
-) %>%
-  add_viz(title = "Chart 1") %>%
-  add_viz(title = "Chart 2") %>%
-  add_viz(title = "Chart 3")
+questions <- c("degree", "race", "happy")
+labels <- c("Education", "Race", "Happiness")
 
-# All three charts inherit: type, x_var, bins, color
+viz <- create_content(data = gss, type = "bar") %>%
+  add_vizzes(x_var = questions, title = labels, tabgroup = "survey")
+
+print(viz)
+#> -- Content Collection ----------------------------------------------------------
+#> 3 items | v data: 21788 rows x 8 cols
+#> 
+#> > [Tab] survey (3 vizs)
+#>   * [Viz] Education (bar) x=degree
+#>   * [Viz] Race (bar) x=race
+#>   * [Viz] Happiness (bar) x=happy
 ```
-
-### Overriding Defaults
 
 ``` r
-viz <- create_viz(
-  type = "histogram",
-  bins = 20,
-  color = "steelblue"
-) %>%
-  add_viz(x_var = "age", title = "Age (default colors)") %>%
-  add_viz(x_var = "income", title = "Income (custom)", color = "red", bins = 40)
+viz %>% preview()
 ```
 
-### Complex Defaults
+Preview
 
-Perfect for survey data with multiple similar questions:
+survey
+
+Education
+
+Race
+
+Happiness
+
+### Likert-Scale Surveys
+
+Use `type = "stackedbars"` within
+[`create_content()`](https://favstats.github.io/dashboardr/reference/create_content.md):
 
 ``` r
-survey_viz <- create_viz(
-  type = "stackedbars",
-  questions = c("q1", "q2", "q3", "q4", "q5"),
-  question_labels = c("Question 1", "Question 2", "Question 3", "Question 4", "Question 5"),
-  stacked_type = "percent",
-  horizontal = TRUE,
-  stack_breaks = c(0.5, 2.5, 4.5),
-  stack_bin_labels = c("Disagree", "Neutral", "Agree"),
-  color_palette = c("#E74C3C", "#95A5A6", "#27AE60")
-) %>%
-  add_viz(title = "Wave 1", filter = ~ wave == 1) %>%
-  add_viz(title = "Wave 2", filter = ~ wave == 2) %>%
-  add_viz(title = "Wave 3", filter = ~ wave == 3)
+create_content(data = survey_data, type = "stackedbars") %>%
+  add_viz(
+    questions = c("q1", "q2", "q3", "q4"),
+    question_labels = c("I enjoy my work",
+                        "I feel valued",
+                        "I have growth opportunities",
+                        "I would recommend"),
+    title = "Employee Sentiment",
+    stacked_type = "percent",
+    horizontal = TRUE
+  ) %>%
+  preview()
 ```
 
-## Filters
+## Weighted Visualizations
 
-Apply row-level filters to individual visualizations.
-
-### Basic Filtering
+Apply survey weights:
 
 ``` r
-viz <- create_viz(
-  type = "histogram",
-  x_var = "score"
-) %>%
-  add_viz(title = "All Data") %>%
-  add_viz(title = "High Scores Only", filter = ~ score > 75) %>%
-  add_viz(title = "Recent Only", filter = ~ year >= 2020)
+weighted <- create_content(data = gss, type = "bar", weight_var = "wtssall") %>%
+  add_viz(x_var = "degree", title = "Weighted Education")
+
+print(weighted)
+#> -- Content Collection ----------------------------------------------------------
+#> 1 items | v data: 21788 rows x 8 cols
+#> 
+#> * [Viz] Weighted Education (bar) x=degree
 ```
+
+``` r
+weighted %>% preview()
+```
+
+Preview
+
+Weighted Education
+
+## Filtering
+
+### Basic Filters
+
+``` r
+filtered <- create_content(data = gss, type = "bar") %>%
+  add_viz(x_var = "happy", title = "Happiness", filter = ~ sex == 1,
+          title_tabset = "Male", tabgroup = "analysis") %>%
+  add_viz(x_var = "happy", title = "Happiness", filter = ~ sex == 2,
+          title_tabset = "Female", tabgroup = "analysis")
+
+print(filtered)
+#> -- Content Collection ----------------------------------------------------------
+#> 2 items | v data: 21788 rows x 8 cols
+#> 
+#> > [Tab] analysis (2 vizs)
+#>   * [Viz] Happiness (bar) x=happy +filter
+#>   * [Viz] Happiness (bar) x=happy +filter
+```
+
+``` r
+filtered %>% preview()
+```
+
+Preview
+
+analysis
+
+Happiness
+
+Happiness
 
 ### Complex Filters
 
 ``` r
-viz <- create_viz(type = "stackedbar", x_var = "question", stack_var = "response") %>%
+add_viz(
+  x_var = "happy",
+  filter = ~ year >= 2015 & degree %in% c(2, 3, 4)
+)
+```
+
+## Timeline Charts
+
+Track changes over time:
+
+``` r
+create_content(type = "timeline") %>%
   add_viz(
-    title = "Young Adults",
-    filter = ~ age >= 18 & age <= 35 & country %in% c("US", "UK", "CA")
+    time_var = "year",
+    response_var = "happy",
+    title = "Happiness Over Time",
+    chart_type = "line",
+    group_var = "sex"
   )
 ```
 
-### Combining Filters with Defaults
+## Heatmaps
+
+Visualize intensity across two dimensions:
 
 ``` r
-viz <- create_viz(
-  type = "timeline",
-  time_var = "year",
-  response_var = "satisfaction",
-  chart_type = "line"
-) %>%
-  add_viz(title = "Product A", filter = ~ product == "A") %>%
-  add_viz(title = "Product B", filter = ~ product == "B") %>%
-  add_viz(title = "Product C", filter = ~ product == "C")
-```
-
-## Multi-Dataset Support
-
-Work with multiple datasets in a single dashboard.
-
-### Named Datasets
-
-``` r
-dashboard <- create_dashboard(
-  title = "Multi-Dataset Dashboard",
-  output_dir = "multi_data"
-) %>%
-  add_page(
-    "Analysis",
-    data = list(
-      sales = sales_data,
-      customers = customer_data,
-      products = product_data
-    ),
-    visualizations = viz,
-    is_landing_page = TRUE
-  )
-```
-
-### Viz-Specific Datasets
-
-``` r
-viz <- create_viz() %>%
+create_content(type = "heatmap") %>%
   add_viz(
-    type = "histogram",
-    x_var = "revenue",
-    data = "sales",
-    title = "Revenue Distribution"
-  ) %>%
-  add_viz(
-    type = "bar",
-    x_var = "category",
-    data = "products",
-    title = "Product Categories"
-  ) %>%
-  add_viz(
-    type = "timeline",
-    time_var = "date",
-    response_var = "count",
-    data = "customers",
-    title = "Customer Growth"
+    x_var = "degree",
+    y_var = "happy",
+    value_var = "count",
+    title = "Happiness by Education",
+    agg_fun = "count",
+    x_order_by = "desc",  # Order by values
+    y_order_by = "desc"
   )
 ```
 
-### Filters with Multi-Dataset
+## Icons
+
+dashboardr uses [Iconify](https://icon-sets.iconify.design/) for
+**200,000+ icons** from 100+ icon sets!
+
+### Format
 
 ``` r
-viz <- create_viz() %>%
-  add_viz(
-    type = "histogram",
-    x_var = "amount",
-    data = "sales",
-    filter = ~ region == "North",
-    title = "North Region Sales"
-  ) %>%
-  add_viz(
-    type = "histogram",
-    x_var = "amount",
-    data = "sales",
-    filter = ~ region == "South",
-    title = "South Region Sales"
+icon = "ph:house-fill"  # icon-set:icon-name
+```
+
+### Popular Icon Sets
+
+| Set             | Prefix | Examples                                         |
+|-----------------|--------|--------------------------------------------------|
+| Phosphor        | `ph:`  | `ph:chart-line`, `ph:users-fill`, `ph:gear-fill` |
+| Bootstrap       | `bi:`  | `bi:graph-up`, `bi:people`, `bi:gear`            |
+| Font Awesome    | `fa:`  | `fa:chart-bar`, `fa:users`                       |
+| Material Design | `mdi:` | `mdi:chart-line`, `mdi:account-group`            |
+
+### Page Icons
+
+``` r
+create_page(
+  "Home",
+  icon = "ph:house-fill"
+)
+
+create_page(
+  "Analysis",
+  icon = "ph:chart-bar-fill"
+)
+```
+
+### Tab Group Icons
+
+``` r
+viz <- create_content(type = "bar") %>%
+  add_viz(x_var = "age", tabgroup = "demographics") %>%
+  add_viz(x_var = "income", tabgroup = "financial") %>%
+  set_tabgroup_labels(
+    demographics = "{{< iconify ph:users-fill >}} Demographics",
+    financial = "{{< iconify ph:currency-dollar >}} Financial"
   )
 ```
 
-## Vectorized Visualization Creation
-
-Use
-[`add_vizzes()`](https://favstats.github.io/dashboardr/reference/add_vizzes.md)
-to create multiple similar visualizations efficiently.
-
-### Basic Expansion
+### In Markdown Text
 
 ``` r
-viz <- create_viz(
-  type = "histogram",
-  x_var = "value"
-) %>%
-  add_vizzes(
-    title = c("Wave 1", "Wave 2", "Wave 3"),
-    filter = list(~ wave == 1, ~ wave == 2, ~ wave == 3)
-  )
-
-# Creates 3 visualizations automatically!
+add_text(
+  "## Features {{< iconify ph:sparkle-fill >}}",
+  "",
+  "- {{< iconify ph:check-circle-fill >}} Easy to use",
+  "- {{< iconify ph:lightning-fill >}} Fast performance",
+  "- {{< iconify ph:heart-fill >}} Beautiful design"
+)
 ```
 
-### Template-Based Tabgroups
+### Finding Icons
+
+Visit [Iconify Icon Sets](https://icon-sets.iconify.design/) to browse
+and search.
+
+**Common choices:**
+
+| Purpose  | Icons                                                    |
+|----------|----------------------------------------------------------|
+| Home     | `ph:house-fill`, `bi:house-fill`, `mdi:home`             |
+| Charts   | `ph:chart-line`, `ph:chart-bar-fill`, `bi:graph-up`      |
+| Users    | `ph:users-fill`, `bi:people-fill`, `mdi:account-group`   |
+| Settings | `ph:gear-fill`, `bi:gear-fill`, `mdi:cog`                |
+| Info     | `ph:info-fill`, `bi:info-circle-fill`, `mdi:information` |
+
+### Best Practice: Consistency
+
+Pick one icon set and stick with it:
 
 ``` r
-viz <- create_viz(
-  type = "stackedbar",
-  x_var = "question",
-  stack_var = "response"
-) %>%
-  add_vizzes(
-    title = c("Age", "Gender", "Education"),
-    .tabgroup_template = "demographics/{title}",
-    .title_template = "By {title}"
-  )
+# Good: All Phosphor icons
+create_page("Home", icon = "ph:house-fill")
+create_page("Analysis", icon = "ph:chart-line")
+create_page("About", icon = "ph:info-fill")
 
-# Creates nested tabs: demographics/Age, demographics/Gender, demographics/Education
+# Avoid: Mixed icon sets
+create_page("Home", icon = "ph:house-fill")
+create_page("Analysis", icon = "bi:graph-up")     # Different set
+create_page("About", icon = "mdi:information")    # Another set
 ```
 
-### Parallel Expansion
+## Loading Overlays
+
+Add loading animations for heavy content:
 
 ``` r
-viz <- create_viz(type = "histogram") %>%
-  add_vizzes(
-    x_var = c("age", "income", "satisfaction"),
-    title = c("Age Distribution", "Income Levels", "Satisfaction Scores"),
-    bins = c(20, 30, 15)
-  )
-
-# All vectors must be same length!
+create_page(
+  "Analysis",
+  data = large_dataset,
+  overlay = TRUE,
+  overlay_theme = "glass",  # "light", "dark", "accent"
+  overlay_text = "Loading analysis...",
+  overlay_duration = 1500   # milliseconds
+)
 ```
 
-## Nested Tabgroups
+## Lazy Loading
 
-Create hierarchical tab structures for complex dashboards.
-
-### Two-Level Nesting
+Load content on-demand for better performance:
 
 ``` r
-viz <- create_viz(
-  type = "stackedbar",
-  x_var = "question",
-  stack_var = "response"
-) %>%
-  # Level 1: Wave
-  add_viz(title = "Overview", tabgroup = "survey", filter = ~ wave == 1) %>%
-  # Level 2: Demographics under Wave 1
-  add_viz(title = "By Age", tabgroup = "survey/age", filter = ~ wave == 1) %>%
-  add_viz(title = "By Gender", tabgroup = "survey/gender", filter = ~ wave == 1)
+create_page(
+  "Reports",
+  data = data,
+  lazy_load_charts = TRUE,     # Load charts as user scrolls
+  lazy_load_margin = "300px",  # Start loading 300px before visible
+  lazy_load_tabs = TRUE        # Load tab content when clicked
+)
 ```
 
-### Three-Level Nesting
+## Rich Text Content
+
+### md_text()
 
 ``` r
-viz <- create_viz(
-  type = "stackedbar",
-  x_var = "item",
-  stack_var = "response",
-  stacked_type = "percent"
-) %>%
-  # survey -> wave1 -> age -> item1
-  add_viz(tabgroup = "survey/wave1/age/item1", filter = ~ wave == 1) %>%
-  add_viz(tabgroup = "survey/wave1/age/item2", filter = ~ wave == 1) %>%
-  add_viz(tabgroup = "survey/wave1/age/item3", filter = ~ wave == 1) %>%
-  # survey -> wave1 -> gender -> items
-  add_viz(tabgroup = "survey/wave1/gender/item1", filter = ~ wave == 1) %>%
-  add_viz(tabgroup = "survey/wave1/gender/item2", filter = ~ wave == 1) %>%
-  # survey -> wave2 -> age -> items
-  add_viz(tabgroup = "survey/wave2/age/item1", filter = ~ wave == 2) %>%
-  add_viz(tabgroup = "survey/wave2/age/item2", filter = ~ wave == 2)
+text = md_text(
+  "# Main Heading",
+  "",
+  "Paragraph with **bold** and *italic*.",
+  "",
+  "- Bullet 1",
+  "- Bullet 2"
+)
 ```
 
-### Custom Tab Labels
+### Embedded R Code
 
 ``` r
-viz <- viz %>%
-  set_tabgroup_labels(list(
-    survey = "📊 Survey Results",
-    wave1 = "Wave 1 (2023)",
-    wave2 = "Wave 2 (2024)",
-    age = "By Age Group",
-    gender = "By Gender",
-    item1 = "Question 1",
-    item2 = "Question 2",
-    item3 = "Question 3"
-  ))
+add_text(
+  "## Survey Overview",
+  "",
+  "```{r, echo=FALSE}",
+  "create_blockquote(",
+  "  'This survey was conducted in Q1 2025.',",
+  "  preset = 'info'",
+  ")",
+  "```"
+)
 ```
 
-## Timeline-Specific Features
-
-### Response Binning
+### Card Layouts
 
 ``` r
-create_viz(
-  type = "timeline",
-  time_var = "year",
-  response_var = "score",
-  response_breaks = c(0, 3, 7),
-  response_bin_labels = c("Low (1-3)", "High (4-7)")
-) %>%
-  add_viz(title = "Score Trends")
+add_text(
+  "```{r, echo=FALSE}",
+  "person_card <- card(",
+  "  title = 'Dr. Jane Smith',",
+  "  content = 'Lead data scientist.',",
+  "  image = 'https://example.com/jane.jpg'",
+  ")",
+  "card_row(person_card)",
+  "```"
+)
 ```
 
-### Response Filtering
+### Blockquotes
+
+Presets: `'default'`, `'info'`, `'success'`, `'warning'`, `'danger'`,
+`'question'`
 
 ``` r
-# Show only high scores as a percentage of total
-create_viz(
-  type = "timeline",
-  time_var = "year",
-  response_var = "satisfaction",
-  response_filter = 5:7,  # Only scores 5-7
-  response_filter_combine = TRUE,
-  response_filter_label = "Satisfied (5-7)"
-) %>%
-  add_viz(title = "Satisfaction Trends")
+add_text(
+  "```{r, echo=FALSE}",
+  "create_blockquote(",
+  "  'All data has been anonymized.',",
+  "  preset = 'warning'",
+  ")",
+  "```"
+)
 ```
 
-### Combined with Groups
-
-``` r
-create_viz(
-  type = "timeline",
-  time_var = "year",
-  response_var = "score",
-  group_var = "age_group",
-  response_filter = 5:7,
-  response_filter_combine = TRUE,
-  response_filter_label = ""  # Empty = show only group names
-) %>%
-  add_viz(title = "High Scores by Age")
-```
-
-## Data Cleaning Features
-
-### Automatic NA Removal
-
-``` r
-viz <- create_viz(
-  type = "stackedbar",
-  x_var = "question",
-  stack_var = "response"
-) %>%
-  add_viz(
-    title = "Clean Data",
-    drop_na_vars = TRUE  # Removes rows with NA in question or response
-  )
-```
-
-Works with all relevant variables:
-
-``` r
-# Histogram: drops NA in x_var
-# Stackedbar: drops NA in x_var AND stack_var
-# Timeline: drops NA in time_var, response_var, AND group_var
-# Heatmap: drops NA in x_var, y_var, AND value_var
-```
-
-## Combining Collections
-
-Merge visualization collections with
-[`combine_viz()`](https://favstats.github.io/dashboardr/reference/combine_viz.md)
-or `+`:
-
-``` r
-viz1 <- create_viz(type = "histogram", x_var = "age") %>%
-  add_viz(title = "Age Distribution")
-
-viz2 <- create_viz(type = "histogram", x_var = "income") %>%
-  add_viz(title = "Income Distribution")
-
-# Method 1
-combined <- combine_viz(viz1, viz2)
-
-# Method 2 (equivalent)
-combined <- viz1 + viz2
-```
-
-## Real-World Example
-
-Putting it all together:
-
-``` r
-# Survey data with multiple waves and demographics
-survey_viz <- create_viz(
-  type = "stackedbars",
-  questions = paste0("Q", 1:10),
-  question_labels = paste("Question", 1:10),
-  stacked_type = "percent",
-  horizontal = TRUE,
-  stack_breaks = c(0.5, 2.5, 4.5),
-  stack_bin_labels = c("Disagree", "Neutral", "Agree"),
-  color_palette = c("#E74C3C", "#95A5A6", "#27AE60"),
-  drop_na_vars = TRUE
-) %>%
-  # Wave 1 - Overall
-  add_viz(title = "Overall", tabgroup = "survey/wave1", filter = ~ wave == 1) %>%
-  # Wave 1 - By demographics
-  add_vizzes(
-    .tabgroup_template = "survey/wave1/{demographic}",
-    demographic = c("age", "gender", "education"),
-    title = c("By Age", "By Gender", "By Education")
-  ) %>%
-  # Wave 2 - Overall
-  add_viz(title = "Overall", tabgroup = "survey/wave2", filter = ~ wave == 2) %>%
-  # Wave 2 - By demographics  
-  add_vizzes(
-    .tabgroup_template = "survey/wave2/{demographic}",
-    demographic = c("age", "gender", "education"),
-    title = c("By Age", "By Gender", "By Education")
-  ) %>%
-  # Custom labels
-  set_tabgroup_labels(list(
-    survey = "📊 Survey Results",
-    wave1 = "Wave 1 (January 2024)",
-    wave2 = "Wave 2 (June 2024)",
-    age = "Age Groups",
-    gender = "Gender",
-    education = "Education Level"
-  ))
-
-# Create dashboard
-dashboard <- create_dashboard(
-  title = "Survey Dashboard",
-  output_dir = "survey_dashboard",
-  tabset_theme = "modern"
-) %>%
-  add_page(
-    "Results",
-    data = survey_data,
-    visualizations = survey_viz,
-    is_landing_page = TRUE,
-    overlay = TRUE,
-    overlay_text = "Loading survey results..."
-  )
-
-generate_dashboard(dashboard)
-```
-
-## Performance Tips
-
-For faster iteration during development:
-
-``` r
-# Skip rendering during development (faster)
-generate_dashboard(dashboard, render = FALSE)
-
-# Render when you want to see the final HTML
-generate_dashboard(dashboard, render = TRUE, open = "browser")
-```
-
-Quarto’s internal caching makes subsequent renders faster automatically.
-
-## Advanced Navigation
-
-Create sophisticated navigation structures with dropdown menus and
-custom layouts.
+## Navbar Customization
 
 ### Dropdown Menus
 
-Organize related pages into dropdown menus in the navbar:
-
 ``` r
-# Create a dropdown menu
-reports_menu <- navbar_menu(
-  text = "Reports",
-  pages = c("Monthly", "Quarterly", "Annual"),
-  icon = "ph:file-text"
-)
-
-dashboard <- create_dashboard(
-  title = "Business Dashboard",
-  output_dir = "business_dashboard"
-) %>%
-  add_navbar_section(reports_menu) %>%
-  add_page("Home", text = "Welcome", is_landing_page = TRUE) %>%
-  add_page("Monthly", data = monthly_data, visualizations = monthly_viz) %>%
-  add_page("Quarterly", data = quarterly_data, visualizations = quarterly_viz) %>%
-  add_page("Annual", data = annual_data, visualizations = annual_viz)
-
-generate_dashboard(dashboard)
-```
-
-**Multiple menus:**
-
-``` r
-# Create multiple dropdown menus
-reports_menu <- navbar_menu(
-  text = "Reports",
-  pages = c("Monthly", "Quarterly", "Annual"),
-  icon = "ph:file-text"
-)
-
-analysis_menu <- navbar_menu(
-  text = "Analysis",
-  pages = c("Demographics", "Trends", "Correlations"),
-  icon = "ph:chart-line"
-)
-
-dashboard <- create_dashboard(...) %>%
-  add_navbar_section(reports_menu) %>%
-  add_navbar_section(analysis_menu) %>%
-  # Add all pages...
-  add_page("Monthly", ...) %>%
-  add_page("Quarterly", ...) %>%
-  add_page("Demographics", ...) %>%
-  add_page("Trends", ...)
-```
-
-### Navbar Alignment
-
-Control the position of pages in the navbar:
-
-``` r
-dashboard <- create_dashboard(...) %>%
-  # Left-aligned pages (default)
-  add_page("Home", ..., navbar_align = "left") %>%
-  add_page("Analysis", ..., navbar_align = "left") %>%
-  
-  # Right-aligned pages
-  add_page("About", ..., navbar_align = "right") %>%
-  add_page("Contact", ..., navbar_align = "right")
-
-generate_dashboard(dashboard)
-```
-
-**Typical pattern:** - Left: Main content pages (Home, Analysis,
-Reports) - Right: Meta pages (About, Help, Settings)
-
-### Loading Overlays
-
-Add loading overlays to pages with heavy visualizations or data
-processing:
-
-``` r
-dashboard <- create_dashboard(...) %>%
-  add_page(
-    "Heavy Analysis",
-    data = large_dataset,
-    visualizations = complex_viz,
-    overlay = TRUE,
-    overlay_theme = "glass",  # Options: light, glass, dark, accent
-    overlay_text = "Loading analysis..."
+create_dashboard(
+  title = "My Dashboard",
+  output_dir = "output",
+  navbar_left = list(
+    list(
+      text = "Analysis",
+      menu = list(
+        list(text = "Demographics", href = "demographics.html"),
+        list(text = "Trends", href = "trends.html"),
+        list(text = "---"),  # Divider
+        list(text = "Download", href = "data.csv")
+      )
+    )
   )
+)
 ```
 
-**Overlay themes:** - `"light"` - Light background (default) -
-`"glass"` - Glassmorphism effect - `"dark"` - Dark background -
-`"accent"` - Matches dashboard accent color
-
-**When to use:** - Pages with 5+ visualizations - Large datasets (\>
-10MB) - Complex computations - Shiny integration
-
-### Complete Navigation Example
-
-Combining all navigation features:
+### Sidebar Navigation
 
 ``` r
-# Create dropdown menus
-data_menu <- navbar_menu(
-  text = "Data Views",
-  pages = c("Overview", "Detailed", "Comparison"),
-  icon = "ph:database"
+create_dashboard(
+  title = "My Dashboard",
+  output_dir = "output",
+  sidebar = TRUE,
+  sidebar_title = "Navigation",
+  sidebar_style = "floating"  # "docked" or "floating"
 )
-
-# Create dashboard with advanced navigation
-dashboard <- create_dashboard(
-  title = "Advanced Dashboard",
-  output_dir = "advanced_dashboard",
-  tabset_theme = "modern"
-) %>%
-  # Landing page (left)
-  add_page(
-    "Home",
-    text = "Welcome to the dashboard",
-    is_landing_page = TRUE,
-    navbar_align = "left"
-  ) %>%
-  
-  # Dropdown menu pages
-  add_navbar_section(data_menu) %>%
-  add_page(
-    "Overview",
-    data = summary_data,
-    visualizations = overview_viz
-  ) %>%
-  add_page(
-    "Detailed",
-    data = full_data,
-    visualizations = detailed_viz,
-    overlay = TRUE,
-    overlay_text = "Loading detailed analysis..."
-  ) %>%
-  add_page(
-    "Comparison",
-    data = comparison_data,
-    visualizations = comparison_viz
-  ) %>%
-  
-  # Regular page (left)
-  add_page(
-    "Custom Analysis",
-    data = custom_data,
-    visualizations = custom_viz,
-    navbar_align = "left"
-  ) %>%
-  
-  # Meta pages (right)
-  add_page(
-    "About",
-    text = "Dashboard information and methodology",
-    navbar_align = "right"
-  )
-
-# Generate dashboard
-generate_dashboard(dashboard)
 ```
 
-## See Also
+## Pagination
+
+Break long dashboards into sections:
+
+``` r
+section1 <- create_content(type = "bar") %>%
+  add_viz(x_var = "degree", title = "Education", tabgroup = "demographics")
+
+section2 <- create_content(type = "stackedbar") %>%
+  add_viz(x_var = "happy", stack_var = "sex", title = "Happiness", tabgroup = "crosstabs")
+
+paginated <- section1 %>%
+  add_pagination() %>%
+  combine_viz(section2)
+
+print(paginated)
+#> -- Content Collection ----------------------------------------------------------
+#> 3 items | x no data
+#> 
+#> > [Tab] demographics (1 viz)
+#>   * [Viz] Education (bar) x=degree
+#> > [PageBreak]
+#> > [Tab] crosstabs (1 viz)
+#>   * [Viz] Happiness (stackedbar) x=happy, stack=sex
+```
+
+## Tips and Best Practices
+
+### 1. Always Print During Development
+
+``` r
+# See visualization structure
+print(my_viz)
+
+# See page structure
+print(my_page)
+
+# See dashboard pages
+print(dashboard)
+```
+
+### 2. Set Sensible Defaults
+
+``` r
+# Good: Set common parameters once
+viz <- create_content(
+  type = "bar",
+  color_palette = c("#3498DB"),
+  drop_na_vars = TRUE
+)
+
+# Avoid: Repeating parameters
+viz <- create_content(type = "bar") %>%
+  add_viz(x_var = "age", color_palette = c("#3498DB")) %>%
+  add_viz(x_var = "income", color_palette = c("#3498DB"))
+```
+
+### 3. Organize Large Dashboards
+
+``` r
+# Create modular content collections
+demographics <- create_content(...) %>% add_viz(...)
+satisfaction <- create_content(...) %>% add_viz(...)
+trends <- create_content(...) %>% add_viz(...)
+
+# Combine them
+all_content <- demographics %>%
+  combine_viz(satisfaction) %>%
+  add_pagination() %>%
+  combine_viz(trends)
+```
+
+### 4. Use Lazy Loading for Performance
+
+``` r
+create_page(
+  "Large Analysis",
+  data = data,
+  lazy_load_charts = TRUE,
+  lazy_load_tabs = TRUE
+)
+```
+
+### 5. Test Without Rendering
+
+``` r
+# Fast iteration: just create QMD files
+generate_dashboard(dashboard, render = FALSE)
+
+# Check structure, fix issues, then render
+generate_dashboard(dashboard, render = TRUE)
+```
+
+## Debugging
+
+### Common Issues
+
+**Visualization not showing:**
+
+``` r
+# Check variable names match your data
+names(my_data)
+
+# Check for NA values
+summary(my_data$x_var)
+
+# Use drop_na_vars if needed
+add_viz(x_var = "age", drop_na_vars = TRUE)
+```
+
+**Filter not working:**
+
+``` r
+# Correct: use formula with ~
+add_viz(x_var = "age", filter = ~ wave == 1)
+
+# Wrong: missing ~
+add_viz(x_var = "age", filter = wave == 1)
+```
+
+**Tabs in wrong order:**
+
+Tabs appear in the order of
+[`add_viz()`](https://favstats.github.io/dashboardr/reference/add_viz.md)
+calls. Reorder your code to change tab order:
+
+``` r
+# Check the structure
+print(viz)
+
+# Reorder by changing add_viz() order
+viz <- create_content(...) %>%
+  add_viz(..., tabgroup = "first") %>%   # Will appear first
+  add_viz(..., tabgroup = "second") %>%  # Will appear second
+  add_viz(..., tabgroup = "third")       # Will appear third
+```
+
+### Getting Help
+
+``` r
+# Function documentation
+?create_dashboard
+?add_viz
+?generate_dashboard
+
+# Package overview
+help(package = "dashboardr")
+
+# All vignettes
+vignette(package = "dashboardr")
+```
+
+## Related Vignettes
 
 - [`vignette("getting-started")`](https://favstats.github.io/dashboardr/articles/getting-started.md) -
-  Basic dashboard creation
-- [`?create_viz`](https://favstats.github.io/dashboardr/reference/create_viz.md) -
-  Visualization creation
-- [`?add_vizzes`](https://favstats.github.io/dashboardr/reference/add_vizzes.md) -
-  Vectorized visualization creation
-- [`?set_tabgroup_labels`](https://favstats.github.io/dashboardr/reference/set_tabgroup_labels.md) -
-  Custom tab labels
-- [`?generate_dashboard`](https://favstats.github.io/dashboardr/reference/generate_dashboard.md) -
-  Dashboard generation options
-- [`?navbar_menu`](https://favstats.github.io/dashboardr/reference/navbar_menu.md) -
-  Dropdown menu creation
+  Quick overview
+- [`vignette("content-collections")`](https://favstats.github.io/dashboardr/articles/content-collections.md) -
+  Layer 1: Content
+- [`vignette("pages")`](https://favstats.github.io/dashboardr/articles/pages.md) -
+  Layer 2: Pages
+- [`vignette("dashboards")`](https://favstats.github.io/dashboardr/articles/dashboards.md) -
+  Layer 3: Dashboard

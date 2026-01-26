@@ -1,0 +1,519 @@
+# Pages: Deep Dive
+
+``` r
+library(dashboardr)
+library(dplyr)
+library(gssr)
+#> Warning: package 'gssr' was built under R version 4.4.3
+data(gss_all)
+gss <- gss_all %>%
+  select(year, age, sex, race, degree, happy, polviews) %>%
+  filter(year >= 2010, !is.na(age), !is.na(sex), !is.na(race), !is.na(degree))
+```
+
+This vignette goes deep into pages - the second layer of dashboardr’s
+architecture. For a quick overview, see
+[`vignette("getting-started")`](https://favstats.github.io/dashboardr/articles/getting-started.md).
+
+## What Pages Do
+
+Pages serve as **containers** that:
+
+1.  Hold content collections
+2.  Associate data with visualizations
+3.  Configure page-specific settings (icons, overlays, lazy loading)
+4.  Define position in the dashboard navbar
+
+Think of pages as “destinations” in your dashboard - each page is a
+separate HTML file that users navigate to.
+
+## Creating Pages
+
+### The create_page() Function
+
+``` r
+page <- create_page(
+  "Analysis",
+  data = gss,
+  type = "bar"  # Default viz type for this page
+) %>%
+  add_viz(x_var = "degree", title = "Education")
+
+print(page)
+#> -- Page: Analysis -----------------------------------------------
+#> v data: 21788 rows x 7 cols | default: bar 
+#> 1 items
+#> 
+#> * [Viz] Education (bar) x=degree
+```
+
+``` r
+page %>% preview()
+```
+
+Preview
+
+Education
+
+### Adding Content to Pages
+
+There are two ways to add content:
+
+**Method 1: Add pre-built content collections**
+
+``` r
+# Build content separately
+demographics <- create_content(type = "bar") %>%
+  add_viz(x_var = "degree", title = "Education", tabgroup = "demo") %>%
+  add_viz(x_var = "race", title = "Race", tabgroup = "demo")
+
+# Add to page
+page1 <- create_page("Analysis", data = gss) %>%
+  add_content(demographics)
+
+print(page1)
+#> -- Page: Analysis -----------------------------------------------
+#> v data: 21788 rows x 7 cols 
+#> 2 items
+#> 
+#> > [Tab] demo (2 vizs)
+#>   * [Viz] Education (bar) x=degree
+#>   * [Viz] Race (bar) x=race
+```
+
+``` r
+page1 %>% preview()
+```
+
+Preview
+
+demo
+
+Education
+
+Race
+
+**Method 2: Add content directly to the page**
+
+``` r
+# Build content directly on the page
+page2 <- create_page("Analysis", data = gss, type = "bar") %>%
+  add_viz(x_var = "degree", title = "Education", tabgroup = "demo") %>%
+  add_viz(x_var = "race", title = "Race", tabgroup = "demo") %>%
+  add_text("## Summary", "", "Key findings from the analysis.")
+
+print(page2)
+#> -- Page: Analysis -----------------------------------------------
+#> v data: 21788 rows x 7 cols | default: bar 
+#> 3 items
+#> 
+#> > [Tab] demo (2 vizs)
+#>   * [Viz] Education (bar) x=degree
+#>   * [Viz] Race (bar) x=race
+#> i [Text]
+```
+
+``` r
+page2 %>% preview()
+```
+
+Preview
+
+demo
+
+Education
+
+Race
+
+Both methods work - use whichever fits your workflow better.
+
+## Page Types
+
+### Landing Pages
+
+Full-width pages without sidebar, ideal for welcome screens:
+
+``` r
+home <- create_page(
+  "Home",
+  is_landing_page = TRUE
+) %>%
+  add_text(
+    "# Welcome to the GSS Dashboard",
+    "",
+    "Explore insights from the General Social Survey (2010-2024).",
+    "",
+    "## What You'll Find",
+    "",
+    "This dashboard presents analysis of:",
+    "",
+    "- **Demographics** - Age, education, race distributions",
+    "- **Attitudes** - Happiness, political views, social trust",
+    "- **Trends** - Changes over time in key indicators",
+    "",
+    "## Getting Started",
+    "",
+    "Click on the **Analysis** tab above to begin exploring the data.",
+    "Use the tabs within each page to navigate between different views."
+  ) %>%
+  add_callout("Data source: General Social Survey, NORC at University of Chicago", type = "note")
+
+print(home)
+#> -- Page: Home ---------------------------------------------------
+#> landing page 
+#> 2 items
+#> 
+#> i [Text]
+#> ! [Callout]
+```
+
+### Analysis Pages
+
+Standard pages with data and visualizations:
+
+``` r
+# Create content
+charts <- create_content(type = "bar") %>%
+  add_viz(x_var = "degree", title = "Education", tabgroup = "overview") %>%
+  add_viz(x_var = "happy", title = "Happiness", tabgroup = "overview")
+
+trends <- create_content(type = "stackedbar") %>%
+  add_viz(x_var = "degree", stack_var = "happy", title = "Happiness by Education",
+          tabgroup = "crosstabs", stacked_type = "percent")
+
+# Create page with content
+analysis <- create_page("Analysis", data = gss) %>%
+  add_content(charts) %>%
+  add_content(trends)
+
+print(analysis)
+#> -- Page: Analysis -----------------------------------------------
+#> v data: 21788 rows x 7 cols 
+#> 3 items
+#> 
+#> > [Tab] overview (2 vizs)
+#>   * [Viz] Education (bar) x=degree
+#>   * [Viz] Happiness (bar) x=happy
+#> > [Tab] crosstabs (1 viz)
+#>   * [Viz] Happiness by Education (stackedbar) x=degree, stack=happy
+```
+
+``` r
+analysis %>% preview()
+```
+
+Preview
+
+overview
+
+crosstabs
+
+Education
+
+Happiness
+
+Happiness by Education
+
+### Text-Only Pages
+
+For documentation, methodology, or about sections:
+
+``` r
+about <- create_page("About") %>%
+  add_text(
+    "## About This Dashboard",
+    "",
+    "This dashboard was created using [dashboardr](https://github.com/favstats/dashboardr).",
+    "",
+    "### Methodology",
+    "",
+    "The General Social Survey (GSS) is a nationally representative survey of adults",
+    "in the United States, conducted by NORC at the University of Chicago.",
+    "",
+    "### Data Processing",
+    "",
+    "- Filtered to years 2010-2024",
+    "- Removed cases with missing demographic data",
+    "- Applied survey weights where appropriate",
+    "",
+    "### Contact",
+    "",
+    "For questions about this dashboard, please contact the research team."
+  ) %>%
+  add_callout("Last updated: January 2025", type = "note")
+
+print(about)
+#> -- Page: About --------------------------------------------------
+#> 2 items
+#> 
+#> i [Text]
+#> ! [Callout]
+```
+
+## Page Settings
+
+### Icons
+
+Icons appear in the navbar next to page names:
+
+``` r
+page <- create_page("Analysis", icon = "ph:chart-bar-fill")
+```
+
+Popular icons from [Phosphor Icons](https://phosphoricons.com/):
+
+| Icon       | Code                |
+|------------|---------------------|
+| Home       | `ph:house-fill`     |
+| Chart      | `ph:chart-bar-fill` |
+| Line chart | `ph:chart-line`     |
+| Users      | `ph:users-fill`     |
+| Info       | `ph:info-fill`      |
+| Settings   | `ph:gear-fill`      |
+
+### Navbar Alignment
+
+Put pages on the right side of the navbar:
+
+``` r
+about <- create_page("About", navbar_align = "right")
+settings <- create_page("Settings", navbar_align = "right")
+```
+
+### Page-Level Defaults
+
+Set visualization defaults at the page level:
+
+``` r
+page <- create_page(
+  "Survey Results",
+  data = gss,
+  type = "bar",                    # Default viz type
+  color_palette = c("#3498DB"),    # Default colors
+  drop_na_vars = TRUE              # Default NA handling
+) %>%
+  add_viz(x_var = "degree", title = "Education") %>%
+  add_viz(x_var = "happy", title = "Happiness", color_palette = c("#E74C3C"))
+
+print(page)
+#> -- Page: Survey Results -----------------------------------------
+#> v data: 21788 rows x 7 cols | default: bar 
+#> 2 items
+#> 
+#> * [Viz] Education (bar) x=degree
+#> * [Viz] Happiness (bar) x=happy
+```
+
+``` r
+page %>% preview()
+```
+
+Preview
+
+Education
+
+Happiness
+
+## Performance Settings
+
+### Loading Overlays
+
+Show a spinner while the page loads:
+
+``` r
+heavy_page <- create_page(
+  "Heavy Analysis",
+  data = gss,
+  overlay = TRUE,
+  overlay_theme = "glass",      # Options: "glass", "light", "dark", "accent"
+  overlay_text = "Loading analysis...",
+  overlay_duration = 1500       # Milliseconds
+)
+```
+
+This is especially useful for pages with many visualizations or large
+datasets.
+
+### Lazy Loading
+
+Load charts only as the user scrolls to them:
+
+``` r
+large_page <- create_page(
+  "Large Dashboard",
+  data = gss,
+  lazy_load_charts = TRUE,       # Load charts on scroll
+  lazy_load_margin = "300px",    # Start loading 300px before visible
+  lazy_load_tabs = TRUE          # Load tab content only when clicked
+)
+```
+
+**When to use lazy loading:**
+
+- Pages with 10+ visualizations
+- Pages with complex charts (heatmaps, timelines)
+- Dashboards with many tabs
+
+### Combining Performance Settings
+
+``` r
+optimized_page <- create_page(
+  "Optimized",
+  data = gss,
+  overlay = TRUE,
+  overlay_theme = "glass",
+  overlay_duration = 1000,
+  lazy_load_charts = TRUE,
+  lazy_load_margin = "200px",
+  lazy_load_tabs = TRUE
+)
+```
+
+## Tab Styling
+
+Customize tab appearance at the page level:
+
+``` r
+styled_page <- create_page(
+  "Styled Tabs",
+  data = gss,
+  tabset_theme = "modern",
+  tabset_colors = list(
+    active_bg = "#3498DB",
+    active_text = "#FFFFFF",
+    inactive_bg = "#ECF0F1",
+    inactive_text = "#7F8C8D",
+    hover_bg = "#BDC3C7"
+  )
+)
+```
+
+Available themes: `"default"`, `"modern"`, `"pills"`, `"minimal"`
+
+## Combining Multiple Content Collections
+
+A single page can hold multiple content collections:
+
+``` r
+# Demographics section
+demographics <- create_content(type = "bar") %>%
+  add_viz(x_var = "degree", title = "Education", tabgroup = "demo") %>%
+  add_viz(x_var = "race", title = "Race", tabgroup = "demo")
+
+# Attitudes section
+attitudes <- create_content(type = "bar") %>%
+  add_viz(x_var = "happy", title = "Happiness", tabgroup = "attitudes") %>%
+  add_viz(x_var = "polviews", title = "Politics", tabgroup = "attitudes")
+
+# Cross-tabs section
+crosstabs <- create_content(type = "stackedbar") %>%
+  add_viz(x_var = "degree", stack_var = "happy", title = "Happiness by Education",
+          tabgroup = "crosstabs", stacked_type = "percent")
+
+# Combine all into one page
+full_analysis <- create_page("Full Analysis", data = gss) %>%
+  add_content(demographics) %>%
+  add_content(attitudes) %>%
+  add_content(crosstabs)
+
+print(full_analysis)
+#> -- Page: Full Analysis ------------------------------------------
+#> v data: 21788 rows x 7 cols 
+#> 5 items
+#> 
+#> > [Tab] demo (2 vizs)
+#>   * [Viz] Education (bar) x=degree
+#>   * [Viz] Race (bar) x=race
+#> > [Tab] attitudes (2 vizs)
+#>   * [Viz] Happiness (bar) x=happy
+#>   * [Viz] Politics (bar) x=polviews
+#> > [Tab] crosstabs (1 viz)
+#>   * [Viz] Happiness by Education (stackedbar) x=degree, stack=happy
+```
+
+Preview the combined page:
+
+``` r
+full_analysis %>% preview()
+```
+
+Preview
+
+demo
+
+attitudes
+
+crosstabs
+
+Education
+
+Race
+
+Happiness
+
+Politics
+
+Happiness by Education
+
+## Previewing Pages
+
+Test pages before adding to a dashboard:
+
+``` r
+# Quick preview
+page %>% preview()
+
+# Full Quarto preview
+page %>% preview(quarto = TRUE)
+
+# Save to file
+page %>% preview(path = "page_preview.html")
+```
+
+## Data Inheritance
+
+When you set `data` on a page, all visualizations in that page’s content
+collections inherit it:
+
+``` r
+# Content collection WITHOUT data
+charts <- create_content(type = "bar") %>%
+  add_viz(x_var = "degree", title = "Education")
+
+# Page WITH data - charts will use the page's data
+page <- create_page("Analysis", data = gss) %>%
+  add_content(charts)
+
+print(page)
+#> -- Page: Analysis -----------------------------------------------
+#> v data: 21788 rows x 7 cols 
+#> 1 items
+#> 
+#> * [Viz] Education (bar) x=degree
+```
+
+If content collections have their own data, it takes precedence:
+
+``` r
+# Content collection WITH its own data
+specific_charts <- create_content(data = gss %>% filter(year == 2020), type = "bar") %>%
+  add_viz(x_var = "degree", title = "Education (2020 only)")
+
+# Page data is ignored for this content
+page <- create_page("Analysis", data = gss) %>%
+  add_content(specific_charts)
+```
+
+## Next Steps
+
+Once you have pages, add them to a dashboard:
+
+``` r
+create_dashboard(title = "GSS Explorer", output_dir = "output") %>%
+  add_pages(home, analysis, about) %>%
+  generate_dashboard(render = TRUE)
+```
+
+See
+[`vignette("dashboards")`](https://favstats.github.io/dashboardr/articles/dashboards.md)
+for dashboard creation details.

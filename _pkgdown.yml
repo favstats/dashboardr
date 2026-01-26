@@ -136,6 +136,9 @@ reference:
   - create_dashboard
   - add_dashboard_page
   - add_page
+  - add_pages
+  - create_page
+  - add_content
   - generate_dashboard
   - generate_dashboards
   - publish_dashboard
@@ -164,7 +167,6 @@ reference:
   - add_pagination
   - set_tabgroup_labels
   - preview
-  - knit_print.content_collection
   
 - title: Visualization Types
   desc: Functions for different chart types
@@ -271,5 +273,17 @@ reference:
   contents:
   - print.viz_collection
   - print.dashboard_project
+  - print.page_object
+  - knit_print.content_collection
+  - knit_print.page_object
+  - knit_print.dashboard_project
+  - show_structure
   - "+.viz_collection"
   - "+.content_collection"
+
+- title: Page Object Methods
+  desc: S3 methods for page objects
+  contents:
+  - add_text.page_object
+  - add_callout.page_object
+  - set_tabgroup_labels.page_object

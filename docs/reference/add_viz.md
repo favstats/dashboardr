@@ -7,7 +7,7 @@ standardized character vector representing the hierarchy.
 
 ``` r
 add_viz(
-  viz_collection,
+  x,
   type = NULL,
   ...,
   tabgroup = NULL,
@@ -28,10 +28,6 @@ add_viz(
 ```
 
 ## Arguments
-
-- viz_collection:
-
-  A viz_collection object
 
 - type:
 
@@ -96,6 +92,10 @@ add_viz(
 
   - String: Name of dataset from named list (e.g., "survey",
     "demographics")
+
+- viz_collection:
+
+  A viz_collection object
 
 ## Value
 
