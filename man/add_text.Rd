@@ -4,16 +4,16 @@
 \alias{add_text}
 \title{Add text to content collection (pipeable)}
 \usage{
-add_text(content_collection = NULL, text, tabgroup = NULL, ...)
+add_text(x = NULL, text, tabgroup = NULL, ...)
 }
 \arguments{
-\item{content_collection}{A content_collection, viz_collection, or NULL}
-
 \item{text}{Markdown text content (can be multi-line)}
 
 \item{tabgroup}{Optional tabgroup for organizing content (character vector for nested tabs)}
 
 \item{...}{Additional text lines (will be combined with newlines)}
+
+\item{content_collection}{A content_collection, viz_collection, or NULL}
 }
 \value{
 Updated content_collection object

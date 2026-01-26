@@ -422,10 +422,9 @@ create_viz(data = survey_data, type = "histogram") %>%
   add_viz(x_var = "satisfaction", title = "Satisfaction", tabgroup = "Feedback")
 ```
 
-### Demographics
+#### Age
 
-- [Age](#tabs_748786e7_1)
-- [Income](#tabs_748786e7_2)
+#### Income
 
 #### Satisfaction
 

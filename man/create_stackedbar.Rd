@@ -50,12 +50,12 @@ the function counts occurrences.}
 
 \item{x_label}{Optional string. X-axis label. Defaults to \code{x_var}.}
 
-\item{y_label}{Optional string. Y-axis label. Defaults to "Number of Respondents"
-or "Percentage of Respondents".}
+\item{y_label}{Optional string. Y-axis label. Defaults to "Count" for counts
+or "Percentage" for percent stacking.}
 
-\item{stack_label}{Optional string. Title for the stack legend. Defaults to \code{stack_var}.}
+\item{stack_label}{Optional string. Title for the stack legend. Defaults to empty (no title).}
 
-\item{stacked_type}{One of "counts" or "percent" (100\% stacked). Default "normal".}
+\item{stacked_type}{One of "counts" (default) or "percent" (100\% stacked).}
 
 \item{tooltip_prefix}{Optional string prepended to tooltip values.}
 

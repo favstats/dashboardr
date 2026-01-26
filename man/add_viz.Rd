@@ -5,7 +5,7 @@
 \title{Parse tabgroup into normalized hierarchy}
 \usage{
 add_viz(
-  viz_collection,
+  x,
   type = NULL,
   ...,
   tabgroup = NULL,
@@ -25,8 +25,6 @@ add_viz(
 )
 }
 \arguments{
-\item{viz_collection}{A viz_collection object}
-
 \item{type}{Visualization type: "stackedbar", "heatmap", "histogram", "timeline", "scatter", "bar"}
 
 \item{...}{Additional parameters passed to the visualization function}
@@ -59,6 +57,8 @@ Use this when you want a short tab name but a longer, descriptive visualization 
 \item NULL: Uses default dataset (or only dataset if single)
 \item String: Name of dataset from named list (e.g., "survey", "demographics")
 }}
+
+\item{viz_collection}{A viz_collection object}
 }
 \value{
 Character vector of hierarchy levels, or NULL

@@ -449,7 +449,7 @@ create_timeline <- function(data,
 
   # Apply color palette if provided
   if (!is.null(color_palette)) {
-    hc <- hc %>% hc_colors(color_palette)
+    hc <- hc %>% highcharter::hc_colors(color_palette)
   }
 
   # Create chart based on type

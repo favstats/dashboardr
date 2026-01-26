@@ -11,12 +11,32 @@
 #' Note: Both names return the same object with both "content_collection" and
 #' "viz_collection" classes for backward compatibility.
 #'
+#' @param data Optional data frame to use for all visualizations in this collection.
+#'   This data will be used by add_viz() calls and can be used with preview().
 #' @param tabgroup_labels Named vector/list mapping tabgroup IDs to display names
-#' @param ... Default parameters to apply to all subsequent add_viz() calls
+#' @param ... Default parameters to apply to all subsequent add_viz() calls.
+#'   Common defaults include: type, color_palette, stacked_type, horizontal, etc.
+#'   Any parameter that can be passed to add_viz() can be set as a default here.
 #' @return A content_collection (also a viz_collection for compatibility)
 #' @export
 #' @examples
 #' \dontrun{
+#' # Create content with inline data for preview
+#' content <- create_content(data = mtcars) %>%
+#'   add_text("# MPG Analysis") %>%
+#'   add_viz(type = "histogram", x_var = "mpg") %>%
+#'   preview()
+#'
+#' # Set shared defaults like type - all add_viz() calls inherit these
+#' content <- create_content(
+#'   data = survey_df,
+#'   type = "stackedbar",
+#'   stacked_type = "percent",
+#'   horizontal = TRUE
+#' ) %>%
+#'   add_viz(x_var = "age", stack_var = "response", tabgroup = "Age") %>%
+#'   add_viz(x_var = "gender", stack_var = "response", tabgroup = "Gender")
+#'
 #' # These are equivalent:
 #' content <- create_content() %>%
 #'   add_text("# Title") %>%
@@ -26,8 +46,8 @@
 #'   add_text("# Title") %>%
 #'   add_viz(type = "histogram", x_var = "age")
 #' }
-create_content <- function(tabgroup_labels = NULL, ...) {
-  create_viz(tabgroup_labels = tabgroup_labels, ...)
+create_content <- function(data = NULL, tabgroup_labels = NULL, ...) {
+  create_viz(data = data, tabgroup_labels = tabgroup_labels, ...)
 }
 
 
@@ -60,7 +80,14 @@ create_content <- function(tabgroup_labels = NULL, ...) {
 #'   add_viz(type = "histogram", x_var = "age") %>%
 #'   add_text("Analysis complete")
 #' }
-add_text <- function(content_collection = NULL, text, tabgroup = NULL, ...) {
+add_text <- function(x = NULL, text, tabgroup = NULL, ...) {
+  # Dispatch to page_object method if appropriate
+  if (inherits(x, "page_object")) {
+    return(add_text.page_object(x, text, ..., tabgroup = tabgroup))
+  }
+  
+  content_collection <- x
+  
   # Track if we're in pipeable mode or standalone mode
   is_pipeable <- FALSE
   was_null <- FALSE
@@ -86,7 +113,7 @@ add_text <- function(content_collection = NULL, text, tabgroup = NULL, ...) {
     content_collection$items <- list(old_block)
     is_pipeable <- TRUE
   } else {
-    stop("First argument must be a content collection, content_block, character string, or NULL")
+    stop("First argument must be a content collection, page_object, content_block, character string, or NULL")
   }
   
   # Combine all text arguments from ...
@@ -263,10 +290,16 @@ add_image <- function(content_collection = NULL, src, alt = NULL, caption = NULL
 #' @param tabgroup Optional tabgroup for organizing content (character vector for nested tabs)
 #' @return Updated content_collection
 #' @export
-add_callout <- function(content, text, type = c("note", "tip", "warning", "caution", "important"),
+add_callout <- function(x, text, type = c("note", "tip", "warning", "caution", "important"),
                         title = NULL, icon = NULL, collapse = FALSE, tabgroup = NULL) {
+  # Dispatch to page_object method if appropriate
+  if (inherits(x, "page_object")) {
+    return(add_callout.page_object(x, text, type = type, title = title, tabgroup = tabgroup))
+  }
+  
+  content <- x
   if (!is_content(content)) {
-    stop("First argument must be a content collection")
+    stop("First argument must be a content collection or page_object")
   }
   
   type <- match.arg(type)

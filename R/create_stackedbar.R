@@ -19,10 +19,10 @@
 #' @param title Optional string. Main chart title.
 #' @param subtitle Optional string. Chart subtitle.
 #' @param x_label Optional string. X-axis label. Defaults to `x_var`.
-#' @param y_label Optional string. Y-axis label. Defaults to "Number of Respondents"
-#'   or "Percentage of Respondents".
-#' @param stack_label Optional string. Title for the stack legend. Defaults to `stack_var`.
-#' @param stacked_type One of "counts" or "percent" (100% stacked). Default "normal".
+#' @param y_label Optional string. Y-axis label. Defaults to "Count" for counts
+#'   or "Percentage" for percent stacking.
+#' @param stack_label Optional string. Title for the stack legend. Defaults to empty (no title).
+#' @param stacked_type One of "counts" (default) or "percent" (100% stacked).
 #' @param tooltip_prefix Optional string prepended to tooltip values.
 #' @param tooltip_suffix Optional string appended to tooltip values.
 #' @param x_tooltip_suffix Optional string appended to x-axis values in tooltips.
@@ -255,13 +255,13 @@ create_stackedbar <- function(data,
     if (inherits(plot_data_temp[[x_var]], "haven_labelled")) {
       plot_data_temp <- plot_data_temp |>
         dplyr::mutate(!!rlang::sym(x_var) := haven::as_factor(!!rlang::sym(x_var), levels = "labels"))
-      message(paste0("Note: Column '", x_var, "' was 'haven_labelled' and converted to factor (levels = values)."))
+      if (interactive()) message(paste0("Note: Column '", x_var, "' was 'haven_labelled' and converted to factor (levels = values)."))
     }
     if (inherits(plot_data_temp[[stack_var]], "haven_labelled")) {
       plot_data_temp <- plot_data_temp |>
 
         dplyr::mutate(!!rlang::sym(stack_var) := haven::as_factor(!!rlang::sym(stack_var), levels = "labels"))
-      message(paste0("Note: Column '", stack_var, "' was 'haven_labelled' and converted to factor (levels = values)."))
+      if (interactive()) message(paste0("Note: Column '", stack_var, "' was 'haven_labelled' and converted to factor (levels = values)."))
     }
   }
 
@@ -432,20 +432,17 @@ create_stackedbar <- function(data,
   # X-axis Title Logic:
   final_x_label <- x_label
   if (is.null(final_x_label)) {
-    if (!is.null(x_breaks)) {
-      final_x_label <- paste0(x_var, " (Binned)")
-    } else {
-      final_x_label <- x_var
-    }
+    # Default to empty string for cleaner charts
+    final_x_label <- ""
   }
 
   # Y-axis Title Logic:
   final_y_label <- y_label
   if (is.null(final_y_label)) {
     if (stacked_type == "percent") {
-      final_y_label <- "Percentage of Respondents"
+      final_y_label <- "Percentage"
     } else {
-      final_y_label <- "Number of Respondents"
+      final_y_label <- "Count"
     }
   }
 

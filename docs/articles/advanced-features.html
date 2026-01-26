@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Advanced Features in dashboardr • dashboardr</title>
+<title>Advanced Features • dashboardr</title>
 <!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png">
 <link rel="icon" type="”image/svg+xml”" href="../favicon.svg">
 <link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
@@ -18,12 +18,25 @@
 <link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
-<meta property="og:title" content="Advanced Features in dashboardr">
+<meta property="og:title" content="Advanced Features">
 <style>
+/* Navbar logo */
 .navbar-brand img {
   max-height: 30px;
   width: auto;
   object-fit: contain;
+}
+/* Home page logo - limit size */
+.page-header .logo {
+  max-width: 150px;
+  height: auto;
+}
+/* Also target the img in the README content */
+#dashboardr- img[src*="logo"] {
+  max-width: 150px;
+  height: auto;
+  float: right;
+  margin-left: 20px;
 }
 </style>
 </head>
@@ -49,6 +62,12 @@
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><a class="dropdown-item" href="../articles/getting-started.html">Getting Started</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>The Three Layers</h6></li>
+    <li><a class="dropdown-item" href="../articles/content-collections.html">Content Collections</a></li>
+    <li><a class="dropdown-item" href="../articles/pages.html">Pages</a></li>
+    <li><a class="dropdown-item" href="../articles/dashboards.html">Dashboards</a></li>
+    <li><hr class="dropdown-divider"></li>
     <li><a class="dropdown-item" href="../articles/advanced-features.html">Advanced Features</a></li>
     <li><a class="dropdown-item" href="../articles/publishing_dashboards.html">Publishing Dashboards</a></li>
     <li><hr class="dropdown-divider"></li>
@@ -83,11 +102,12 @@
 
 
 
-
-<div class="row">
+<link href="advanced-features_files/htmltools-fill-0.5.9/fill.css" rel="stylesheet">
+<script src="advanced-features_files/htmlwidgets-1.6.4/htmlwidgets.js"></script><script src="advanced-features_files/proj4js-2.3.15/proj4.js"></script><link href="advanced-features_files/highcharts-9.3.1/css/motion.css" rel="stylesheet">
+<script src="advanced-features_files/highcharts-9.3.1/highcharts.js"></script><script src="advanced-features_files/highcharts-9.3.1/highcharts-3d.js"></script><script src="advanced-features_files/highcharts-9.3.1/highcharts-more.js"></script><script src="advanced-features_files/highcharts-9.3.1/modules/stock.js"></script><script src="advanced-features_files/highcharts-9.3.1/modules/map.js"></script><script src="advanced-features_files/highcharts-9.3.1/modules/data.js"></script><script src="advanced-features_files/highcharts-9.3.1/modules/exporting.js"></script><script src="advanced-features_files/highcharts-9.3.1/modules/offline-exporting.js"></script><script src="advanced-features_files/highcharts-9.3.1/modules/drilldown.js"></script><script src="advanced-features_files/highcharts-9.3.1/modules/item-series.js"></script><script src="advanced-features_files/highcharts-9.3.1/modules/overlapping-datalabels.js"></script><script src="advanced-features_files/highcharts-9.3.1/modules/annotations.js"></script><script src="advanced-features_files/highcharts-9.3.1/modules/export-data.js"></script><script src="advanced-features_files/highcharts-9.3.1/modules/funnel.js"></script><script src="advanced-features_files/highcharts-9.3.1/modules/heatmap.js"></script><script src="advanced-features_files/highcharts-9.3.1/modules/treemap.js"></script><script src="advanced-features_files/highcharts-9.3.1/modules/sankey.js"></script><script src="advanced-features_files/highcharts-9.3.1/modules/dependency-wheel.js"></script><script src="advanced-features_files/highcharts-9.3.1/modules/organization.js"></script><script src="advanced-features_files/highcharts-9.3.1/modules/solid-gauge.js"></script><script src="advanced-features_files/highcharts-9.3.1/modules/streamgraph.js"></script><script src="advanced-features_files/highcharts-9.3.1/modules/sunburst.js"></script><script src="advanced-features_files/highcharts-9.3.1/modules/vector.js"></script><script src="advanced-features_files/highcharts-9.3.1/modules/wordcloud.js"></script><script src="advanced-features_files/highcharts-9.3.1/modules/xrange.js"></script><script src="advanced-features_files/highcharts-9.3.1/modules/tilemap.js"></script><script src="advanced-features_files/highcharts-9.3.1/modules/venn.js"></script><script src="advanced-features_files/highcharts-9.3.1/modules/gantt.js"></script><script src="advanced-features_files/highcharts-9.3.1/modules/timeline.js"></script><script src="advanced-features_files/highcharts-9.3.1/modules/parallel-coordinates.js"></script><script src="advanced-features_files/highcharts-9.3.1/modules/bullet.js"></script><script src="advanced-features_files/highcharts-9.3.1/modules/coloraxis.js"></script><script src="advanced-features_files/highcharts-9.3.1/modules/dumbbell.js"></script><script src="advanced-features_files/highcharts-9.3.1/modules/lollipop.js"></script><script src="advanced-features_files/highcharts-9.3.1/modules/series-label.js"></script><script src="advanced-features_files/highcharts-9.3.1/plugins/motion.js"></script><script src="advanced-features_files/highcharts-9.3.1/custom/reset.js"></script><script src="advanced-features_files/highcharts-9.3.1/modules/boost.js"></script><script src="advanced-features_files/highchart-binding-0.9.4/highchart.js"></script><div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
 
-      <h1>Advanced Features in dashboardr</h1>
+      <h1>Advanced Features</h1>
             
       
 
@@ -96,624 +116,696 @@
 
     
     
-<div class="section level2">
-<h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
-</h2>
-<p>This vignette covers advanced features in <code>dashboardr</code>
-that enable you to create sophisticated, data-rich dashboards with
-minimal code.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://favstats.github.io/dashboardr/">dashboardr</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level2">
-<h2 id="defaults-system">Defaults System<a class="anchor" aria-label="anchor" href="#defaults-system"></a>
-</h2>
-<p>The defaults system allows you to set common parameters once and
-reuse them across multiple visualizations.</p>
-<div class="section level3">
-<h3 id="basic-defaults">Basic Defaults<a class="anchor" aria-label="anchor" href="#basic-defaults"></a>
-</h3>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Set defaults in create_viz()</span></span>
-<span><span class="va">viz</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_viz.html">create_viz</a></span><span class="op">(</span></span>
-<span>  type <span class="op">=</span> <span class="st">"histogram"</span>,</span>
-<span>  x_var <span class="op">=</span> <span class="st">"value"</span>,</span>
-<span>  bins <span class="op">=</span> <span class="fl">30</span>,</span>
-<span>  color <span class="op">=</span> <span class="st">"steelblue"</span></span>
-<span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Chart 1"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Chart 2"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Chart 3"</span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># All three charts inherit: type, x_var, bins, color</span></span></code></pre></div>
-</div>
+<span><span class="co"># Load GSS data for examples</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/kjhealy/gssr" class="external-link">gssr</a></span><span class="op">)</span></span>
+<span><span class="co">#&gt; Warning: package 'gssr' was built under R version 4.4.3</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">gss_all</span><span class="op">)</span></span>
+<span><span class="va">gss</span> <span class="op">&lt;-</span> <span class="va">gss_all</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">year</span>, <span class="va">age</span>, <span class="va">sex</span>, <span class="va">race</span>, <span class="va">degree</span>, <span class="va">happy</span>, <span class="va">polviews</span>, <span class="va">wtssall</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">year</span> <span class="op">&gt;=</span> <span class="fl">2010</span>, <span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">age</span><span class="op">)</span>, <span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">sex</span><span class="op">)</span>, <span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">race</span><span class="op">)</span>, <span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">degree</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<div class="section level2">
+<h2 id="multiple-visualizations-at-once">Multiple Visualizations at Once<a class="anchor" aria-label="anchor" href="#multiple-visualizations-at-once"></a>
+</h2>
 <div class="section level3">
-<h3 id="overriding-defaults">Overriding Defaults<a class="anchor" aria-label="anchor" href="#overriding-defaults"></a>
+<h3 id="add_vizzes">add_vizzes()<a class="anchor" aria-label="anchor" href="#add_vizzes"></a>
 </h3>
+<p>Create multiple similar visualizations in one call:</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">questions</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"degree"</span>, <span class="st">"race"</span>, <span class="st">"happy"</span><span class="op">)</span></span>
+<span><span class="va">labels</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Education"</span>, <span class="st">"Race"</span>, <span class="st">"Happiness"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">viz</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_content.html">create_content</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">gss</span>, type <span class="op">=</span> <span class="st">"bar"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/add_vizzes.html">add_vizzes</a></span><span class="op">(</span>x_var <span class="op">=</span> <span class="va">questions</span>, title <span class="op">=</span> <span class="va">labels</span>, tabgroup <span class="op">=</span> <span class="st">"survey"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">viz</span><span class="op">)</span></span>
+<span><span class="co">#&gt; -- <span style="font-weight: bold;">Content Collection</span> ----------------------------------------------------------</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">3</span> items | v data: 21788 rows x 8 cols</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; &gt; <span style="color: #0000BB;">[Tab]</span> <span style="color: #00BBBB; font-weight: bold;">survey</span><span style="color: #555555;"> (3 vizs)</span></span></span>
+<span><span class="co">#&gt;   * <span style="color: #00BB00;">[Viz]</span> <span style="font-weight: bold;">Education</span> <span style="color: #555555;">(</span><span style="color: #BB00BB;">bar</span><span style="color: #555555;">)</span> <span style="color: #555555;">x=degree</span></span></span>
+<span><span class="co">#&gt;   * <span style="color: #00BB00;">[Viz]</span> <span style="font-weight: bold;">Race</span> <span style="color: #555555;">(</span><span style="color: #BB00BB;">bar</span><span style="color: #555555;">)</span> <span style="color: #555555;">x=race</span></span></span>
+<span><span class="co">#&gt;   * <span style="color: #00BB00;">[Viz]</span> <span style="font-weight: bold;">Happiness</span> <span style="color: #555555;">(</span><span style="color: #BB00BB;">bar</span><span style="color: #555555;">)</span> <span style="color: #555555;">x=happy</span></span></span></code></pre></div>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">viz</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_viz.html">create_viz</a></span><span class="op">(</span></span>
-<span>  type <span class="op">=</span> <span class="st">"histogram"</span>,</span>
-<span>  bins <span class="op">=</span> <span class="fl">20</span>,</span>
-<span>  color <span class="op">=</span> <span class="st">"steelblue"</span></span>
-<span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span>x_var <span class="op">=</span> <span class="st">"age"</span>, title <span class="op">=</span> <span class="st">"Age (default colors)"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span>x_var <span class="op">=</span> <span class="st">"income"</span>, title <span class="op">=</span> <span class="st">"Income (custom)"</span>, color <span class="op">=</span> <span class="st">"red"</span>, bins <span class="op">=</span> <span class="fl">40</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">viz</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/preview.html">preview</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<div id="dtabs-60cadba6" style="margin: 20px 0;">
+<div class="dtab-buttons" style="border-bottom: 1px solid #dee2e6; margin-bottom: 10px;">
+<button type="button" class="dtab-btn dtab-active" data-tab="dtabs-60cadba6-1">survey</button>
+</div>
+<div class="dtab-content">
+<div class="dtab-pane" id="dtabs-60cadba6-1" data-visible="true">
+<h4 style="margin: 10px 0;">Education</h4>
+<div class="highchart html-widget html-fill-item" id="htmlwidget-ac96cb3ee4656e2e9ec3" style="width:672px;height:480px;"></div>
+<script type="application/json" data-for="htmlwidget-ac96cb3ee4656e2e9ec3">{"x":{"hc_opts":{"chart":{"reflow":true,"type":"bar"},"title":{"text":null},"yAxis":{"title":{"text":"Percentage"}},"credits":{"enabled":false},"exporting":{"enabled":false},"boost":{"enabled":false},"plotOptions":{"series":{"label":{"enabled":false},"turboThreshold":0,"dataLabels":{"enabled":true,"format":"{point.y:.0f}%"}},"treemap":{"layoutAlgorithm":"squarified"}},"xAxis":{"categories":["less than high school","high school","associate/junior college","bachelor's","graduate"],"title":{"text":"degree"}},"series":[{"data":[10.6,47.3,8.300000000000001,20.8,13],"name":"Percentage","showInLegend":false,"colorByPoint":true}],"tooltip":{"formatter":"function() {\n           var cat = this.point.category || this.series.chart.xAxis[0].categories[this.point.x] || this.x;\n           var pct = this.y.toFixed(1);\n           var rank = this.series.data.indexOf(this.point) + 1;\n           var totalItems = this.series.data.length;\n           var percentile = Math.round((rank - 1) / totalItems * 100);\n           \n           // Try to get raw value if available (for dollar amounts)\n           var rawVal = this.point.rawValue || this.point.options.rawValue;\n           var tooltipText = '<b>' + cat + '<\/b><br/>';\n           \n           if (rawVal !== undefined && rawVal !== null) {\n             // Show both dollar amount and percentage\n             tooltipText += '' + rawVal.toLocaleString('en-US', {maximumFractionDigits: 1}) + '<br/>';\n             tooltipText += '<span style=\"color:#666;font-size:0.9em\">' + pct + '% of total budget<\/span><br/>';\n           } else {\n             // Just show percentage\n             tooltipText += '' + pct + '<br/>';\n           }\n           \n           tooltipText += '<span style=\"color:#666;font-size:0.9em\">Rank: #' + rank + ' of ' + totalItems + ' (' + percentile + 'th percentile)<\/span>';\n           return tooltipText;\n         }","useHTML":true}},"theme":{"chart":{"backgroundColor":"transparent"},"colors":["#7cb5ec","#434348","#90ed7d","#f7a35c","#8085e9","#f15c80","#e4d354","#2b908f","#f45b5b","#91e8e1"]},"conf_opts":{"global":{"Date":null,"VMLRadialGradientURL":"http =//code.highcharts.com/list(version)/gfx/vml-radial-gradient.png","canvasToolsURL":"http =//code.highcharts.com/list(version)/modules/canvas-tools.js","getTimezoneOffset":null,"timezoneOffset":0,"useUTC":true},"lang":{"contextButtonTitle":"Chart context menu","decimalPoint":".","downloadCSV":"Download CSV","downloadJPEG":"Download JPEG image","downloadPDF":"Download PDF document","downloadPNG":"Download PNG image","downloadSVG":"Download SVG vector image","downloadXLS":"Download XLS","drillUpText":"◁ Back to {series.name}","exitFullscreen":"Exit from full screen","exportData":{"annotationHeader":"Annotations","categoryDatetimeHeader":"DateTime","categoryHeader":"Category"},"hideData":"Hide data table","invalidDate":null,"loading":"Loading...","months":["January","February","March","April","May","June","July","August","September","October","November","December"],"noData":"No data to display","numericSymbolMagnitude":1000,"numericSymbols":["k","M","G","T","P","E"],"printChart":"Print chart","resetZoom":"Reset zoom","resetZoomTitle":"Reset zoom level 1:1","shortMonths":["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],"shortWeekdays":["Sat","Sun","Mon","Tue","Wed","Thu","Fri"],"thousandsSep":" ","viewData":"View data table","viewFullscreen":"View in full screen","weekdays":["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]}},"type":"chart","fonts":[],"debug":false},"evals":["hc_opts.tooltip.formatter"],"jsHooks":[]}</script><div style="margin-bottom: 15px;"></div>
+<h4 style="margin: 10px 0;">Race</h4>
+<div class="highchart html-widget html-fill-item" id="htmlwidget-e5c8c404fe174e4c81bd" style="width:672px;height:480px;"></div>
+<script type="application/json" data-for="htmlwidget-e5c8c404fe174e4c81bd">{"x":{"hc_opts":{"chart":{"reflow":true,"type":"bar"},"title":{"text":null},"yAxis":{"title":{"text":"Percentage"}},"credits":{"enabled":false},"exporting":{"enabled":false},"boost":{"enabled":false},"plotOptions":{"series":{"label":{"enabled":false},"turboThreshold":0,"dataLabels":{"enabled":true,"format":"{point.y:.0f}%"}},"treemap":{"layoutAlgorithm":"squarified"}},"xAxis":{"categories":["white","black","other"],"title":{"text":"race"}},"series":[{"data":[74.2,15.4,10.4],"name":"Percentage","showInLegend":false,"colorByPoint":true}],"tooltip":{"formatter":"function() {\n           var cat = this.point.category || this.series.chart.xAxis[0].categories[this.point.x] || this.x;\n           var pct = this.y.toFixed(1);\n           var rank = this.series.data.indexOf(this.point) + 1;\n           var totalItems = this.series.data.length;\n           var percentile = Math.round((rank - 1) / totalItems * 100);\n           \n           // Try to get raw value if available (for dollar amounts)\n           var rawVal = this.point.rawValue || this.point.options.rawValue;\n           var tooltipText = '<b>' + cat + '<\/b><br/>';\n           \n           if (rawVal !== undefined && rawVal !== null) {\n             // Show both dollar amount and percentage\n             tooltipText += '' + rawVal.toLocaleString('en-US', {maximumFractionDigits: 1}) + '<br/>';\n             tooltipText += '<span style=\"color:#666;font-size:0.9em\">' + pct + '% of total budget<\/span><br/>';\n           } else {\n             // Just show percentage\n             tooltipText += '' + pct + '<br/>';\n           }\n           \n           tooltipText += '<span style=\"color:#666;font-size:0.9em\">Rank: #' + rank + ' of ' + totalItems + ' (' + percentile + 'th percentile)<\/span>';\n           return tooltipText;\n         }","useHTML":true}},"theme":{"chart":{"backgroundColor":"transparent"},"colors":["#7cb5ec","#434348","#90ed7d","#f7a35c","#8085e9","#f15c80","#e4d354","#2b908f","#f45b5b","#91e8e1"]},"conf_opts":{"global":{"Date":null,"VMLRadialGradientURL":"http =//code.highcharts.com/list(version)/gfx/vml-radial-gradient.png","canvasToolsURL":"http =//code.highcharts.com/list(version)/modules/canvas-tools.js","getTimezoneOffset":null,"timezoneOffset":0,"useUTC":true},"lang":{"contextButtonTitle":"Chart context menu","decimalPoint":".","downloadCSV":"Download CSV","downloadJPEG":"Download JPEG image","downloadPDF":"Download PDF document","downloadPNG":"Download PNG image","downloadSVG":"Download SVG vector image","downloadXLS":"Download XLS","drillUpText":"◁ Back to {series.name}","exitFullscreen":"Exit from full screen","exportData":{"annotationHeader":"Annotations","categoryDatetimeHeader":"DateTime","categoryHeader":"Category"},"hideData":"Hide data table","invalidDate":null,"loading":"Loading...","months":["January","February","March","April","May","June","July","August","September","October","November","December"],"noData":"No data to display","numericSymbolMagnitude":1000,"numericSymbols":["k","M","G","T","P","E"],"printChart":"Print chart","resetZoom":"Reset zoom","resetZoomTitle":"Reset zoom level 1:1","shortMonths":["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],"shortWeekdays":["Sat","Sun","Mon","Tue","Wed","Thu","Fri"],"thousandsSep":" ","viewData":"View data table","viewFullscreen":"View in full screen","weekdays":["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]}},"type":"chart","fonts":[],"debug":false},"evals":["hc_opts.tooltip.formatter"],"jsHooks":[]}</script><div style="margin-bottom: 15px;"></div>
+<h4 style="margin: 10px 0;">Happiness</h4>
+<div class="highchart html-widget html-fill-item" id="htmlwidget-36aa3d2a04d42bbc2145" style="width:672px;height:480px;"></div>
+<script type="application/json" data-for="htmlwidget-36aa3d2a04d42bbc2145">{"x":{"hc_opts":{"chart":{"reflow":true,"type":"bar"},"title":{"text":null},"yAxis":{"title":{"text":"Percentage"}},"credits":{"enabled":false},"exporting":{"enabled":false},"boost":{"enabled":false},"plotOptions":{"series":{"label":{"enabled":false},"turboThreshold":0,"dataLabels":{"enabled":true,"format":"{point.y:.0f}%"}},"treemap":{"layoutAlgorithm":"squarified"}},"xAxis":{"categories":["very happy","pretty happy","not too happy"],"title":{"text":"happy"}},"series":[{"data":[25.2,56.5,18.3],"name":"Percentage","showInLegend":false,"colorByPoint":true}],"tooltip":{"formatter":"function() {\n           var cat = this.point.category || this.series.chart.xAxis[0].categories[this.point.x] || this.x;\n           var pct = this.y.toFixed(1);\n           var rank = this.series.data.indexOf(this.point) + 1;\n           var totalItems = this.series.data.length;\n           var percentile = Math.round((rank - 1) / totalItems * 100);\n           \n           // Try to get raw value if available (for dollar amounts)\n           var rawVal = this.point.rawValue || this.point.options.rawValue;\n           var tooltipText = '<b>' + cat + '<\/b><br/>';\n           \n           if (rawVal !== undefined && rawVal !== null) {\n             // Show both dollar amount and percentage\n             tooltipText += '' + rawVal.toLocaleString('en-US', {maximumFractionDigits: 1}) + '<br/>';\n             tooltipText += '<span style=\"color:#666;font-size:0.9em\">' + pct + '% of total budget<\/span><br/>';\n           } else {\n             // Just show percentage\n             tooltipText += '' + pct + '<br/>';\n           }\n           \n           tooltipText += '<span style=\"color:#666;font-size:0.9em\">Rank: #' + rank + ' of ' + totalItems + ' (' + percentile + 'th percentile)<\/span>';\n           return tooltipText;\n         }","useHTML":true}},"theme":{"chart":{"backgroundColor":"transparent"},"colors":["#7cb5ec","#434348","#90ed7d","#f7a35c","#8085e9","#f15c80","#e4d354","#2b908f","#f45b5b","#91e8e1"]},"conf_opts":{"global":{"Date":null,"VMLRadialGradientURL":"http =//code.highcharts.com/list(version)/gfx/vml-radial-gradient.png","canvasToolsURL":"http =//code.highcharts.com/list(version)/modules/canvas-tools.js","getTimezoneOffset":null,"timezoneOffset":0,"useUTC":true},"lang":{"contextButtonTitle":"Chart context menu","decimalPoint":".","downloadCSV":"Download CSV","downloadJPEG":"Download JPEG image","downloadPDF":"Download PDF document","downloadPNG":"Download PNG image","downloadSVG":"Download SVG vector image","downloadXLS":"Download XLS","drillUpText":"◁ Back to {series.name}","exitFullscreen":"Exit from full screen","exportData":{"annotationHeader":"Annotations","categoryDatetimeHeader":"DateTime","categoryHeader":"Category"},"hideData":"Hide data table","invalidDate":null,"loading":"Loading...","months":["January","February","March","April","May","June","July","August","September","October","November","December"],"noData":"No data to display","numericSymbolMagnitude":1000,"numericSymbols":["k","M","G","T","P","E"],"printChart":"Print chart","resetZoom":"Reset zoom","resetZoomTitle":"Reset zoom level 1:1","shortMonths":["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],"shortWeekdays":["Sat","Sun","Mon","Tue","Wed","Thu","Fri"],"thousandsSep":" ","viewData":"View data table","viewFullscreen":"View in full screen","weekdays":["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]}},"type":"chart","fonts":[],"debug":false},"evals":["hc_opts.tooltip.formatter"],"jsHooks":[]}</script><div style="margin-bottom: 15px;"></div>
+</div>
+</div>
+</div>
+<style>
+    #dtabs-60cadba6 .dtab-btn {
+      padding: 8px 16px; margin-right: 4px; border: 1px solid #dee2e6;
+      background: #f8f9fa; cursor: pointer; border-radius: 4px 4px 0 0;
+    }
+    #dtabs-60cadba6 .dtab-btn.dtab-active { background: white; border-bottom-color: white; font-weight: bold; }
+    #dtabs-60cadba6 .dtab-pane { padding: 15px 0; }
+    #dtabs-60cadba6 .dtab-pane[data-visible='false'] { display: none; }
+  </style>
+<script>
+    (function() {
+      // Wait for Highcharts to render, then hide inactive panes
+      setTimeout(function() {
+        document.querySelectorAll('#dtabs-60cadba6 .dtab-pane[data-visible="false"]').forEach(function(p) {
+          p.style.display = 'none';
+        });
+      }, 500);
+
+      // Tab click handler
+      document.querySelectorAll('#dtabs-60cadba6 .dtab-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          var tabId = this.getAttribute('data-tab');
+          // Update buttons
+          document.querySelectorAll('#dtabs-60cadba6 .dtab-btn').forEach(function(b) { b.classList.remove('dtab-active'); });
+          this.classList.add('dtab-active');
+          // Update panes
+          document.querySelectorAll('#dtabs-60cadba6 .dtab-pane').forEach(function(p) {
+            p.style.display = p.id === tabId ? 'block' : 'none';
+            p.setAttribute('data-visible', p.id === tabId ? 'true' : 'false');
+          });
+          // Reflow Highcharts
+          if (typeof Highcharts !== 'undefined') {
+            Highcharts.charts.forEach(function(c) { if (c) c.reflow(); });
+          }
+        });
+      });
+    })();
+  </script>
 </div>
 <div class="section level3">
-<h3 id="complex-defaults">Complex Defaults<a class="anchor" aria-label="anchor" href="#complex-defaults"></a>
+<h3 id="likert-scale-surveys">Likert-Scale Surveys<a class="anchor" aria-label="anchor" href="#likert-scale-surveys"></a>
 </h3>
-<p>Perfect for survey data with multiple similar questions:</p>
+<p>Use <code>type = "stackedbars"</code> within
+<code><a href="../reference/create_content.html">create_content()</a></code>:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">survey_viz</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_viz.html">create_viz</a></span><span class="op">(</span></span>
-<span>  type <span class="op">=</span> <span class="st">"stackedbars"</span>,</span>
-<span>  questions <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"q1"</span>, <span class="st">"q2"</span>, <span class="st">"q3"</span>, <span class="st">"q4"</span>, <span class="st">"q5"</span><span class="op">)</span>,</span>
-<span>  question_labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Question 1"</span>, <span class="st">"Question 2"</span>, <span class="st">"Question 3"</span>, <span class="st">"Question 4"</span>, <span class="st">"Question 5"</span><span class="op">)</span>,</span>
-<span>  stacked_type <span class="op">=</span> <span class="st">"percent"</span>,</span>
-<span>  horizontal <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  stack_breaks <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.5</span>, <span class="fl">2.5</span>, <span class="fl">4.5</span><span class="op">)</span>,</span>
-<span>  stack_bin_labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Disagree"</span>, <span class="st">"Neutral"</span>, <span class="st">"Agree"</span><span class="op">)</span>,</span>
-<span>  color_palette <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"#E74C3C"</span>, <span class="st">"#95A5A6"</span>, <span class="st">"#27AE60"</span><span class="op">)</span></span>
-<span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Wave 1"</span>, filter <span class="op">=</span> <span class="op">~</span> <span class="va">wave</span> <span class="op">==</span> <span class="fl">1</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Wave 2"</span>, filter <span class="op">=</span> <span class="op">~</span> <span class="va">wave</span> <span class="op">==</span> <span class="fl">2</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Wave 3"</span>, filter <span class="op">=</span> <span class="op">~</span> <span class="va">wave</span> <span class="op">==</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/create_content.html">create_content</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">survey_data</span>, type <span class="op">=</span> <span class="st">"stackedbars"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span></span>
+<span>    questions <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"q1"</span>, <span class="st">"q2"</span>, <span class="st">"q3"</span>, <span class="st">"q4"</span><span class="op">)</span>,</span>
+<span>    question_labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"I enjoy my work"</span>,</span>
+<span>                        <span class="st">"I feel valued"</span>,</span>
+<span>                        <span class="st">"I have growth opportunities"</span>,</span>
+<span>                        <span class="st">"I would recommend"</span><span class="op">)</span>,</span>
+<span>    title <span class="op">=</span> <span class="st">"Employee Sentiment"</span>,</span>
+<span>    stacked_type <span class="op">=</span> <span class="st">"percent"</span>,</span>
+<span>    horizontal <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>  <span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/preview.html">preview</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
-<h2 id="filters">Filters<a class="anchor" aria-label="anchor" href="#filters"></a>
+<h2 id="weighted-visualizations">Weighted Visualizations<a class="anchor" aria-label="anchor" href="#weighted-visualizations"></a>
 </h2>
-<p>Apply row-level filters to individual visualizations.</p>
-<div class="section level3">
-<h3 id="basic-filtering">Basic Filtering<a class="anchor" aria-label="anchor" href="#basic-filtering"></a>
-</h3>
+<p>Apply survey weights:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">viz</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_viz.html">create_viz</a></span><span class="op">(</span></span>
-<span>  type <span class="op">=</span> <span class="st">"histogram"</span>,</span>
-<span>  x_var <span class="op">=</span> <span class="st">"score"</span></span>
-<span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"All Data"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"High Scores Only"</span>, filter <span class="op">=</span> <span class="op">~</span> <span class="va">score</span> <span class="op">&gt;</span> <span class="fl">75</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Recent Only"</span>, filter <span class="op">=</span> <span class="op">~</span> <span class="va">year</span> <span class="op">&gt;=</span> <span class="fl">2020</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">weighted</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_content.html">create_content</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">gss</span>, type <span class="op">=</span> <span class="st">"bar"</span>, weight_var <span class="op">=</span> <span class="st">"wtssall"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span>x_var <span class="op">=</span> <span class="st">"degree"</span>, title <span class="op">=</span> <span class="st">"Weighted Education"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">weighted</span><span class="op">)</span></span>
+<span><span class="co">#&gt; -- <span style="font-weight: bold;">Content Collection</span> ----------------------------------------------------------</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">1</span> items | v data: 21788 rows x 8 cols</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; * <span style="color: #00BB00;">[Viz]</span> <span style="font-weight: bold;">Weighted Education</span> <span style="color: #555555;">(</span><span style="color: #BB00BB;">bar</span><span style="color: #555555;">)</span> <span style="color: #555555;">x=degree</span></span></span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">weighted</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/preview.html">preview</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<h4 style="margin: 10px 0;" id="weighted-visualizations-1">Weighted Education<a class="anchor" aria-label="anchor" href="#weighted-visualizations-1"></a>
+</h4>
+<div class="highchart html-widget html-fill-item" id="htmlwidget-febe03efa1a2d8d52a86" style="width:672px;height:480px;"></div>
+<script type="application/json" data-for="htmlwidget-febe03efa1a2d8d52a86">{"x":{"hc_opts":{"chart":{"reflow":true,"type":"bar"},"title":{"text":null},"yAxis":{"title":{"text":"Percentage"}},"credits":{"enabled":false},"exporting":{"enabled":false},"boost":{"enabled":false},"plotOptions":{"series":{"label":{"enabled":false},"turboThreshold":0,"dataLabels":{"enabled":true,"format":"{point.y:.0f}%"}},"treemap":{"layoutAlgorithm":"squarified"}},"xAxis":{"categories":["less than high school","high school","associate/junior college","bachelor's","graduate"],"title":{"text":"degree"}},"series":[{"name":"Percentage","data":[{"y":13.2,"rawValue":1547.499679189559},{"y":50.5,"rawValue":5916.572064908892},{"y":7.6,"rawValue":891.0265922513571},{"y":18.5,"rawValue":2173.40126901837},{"y":10.2,"rawValue":1198.662706264874}],"showInLegend":false,"colorByPoint":true}],"tooltip":{"formatter":"function() {\n           var cat = this.point.category || this.series.chart.xAxis[0].categories[this.point.x] || this.x;\n           var pct = this.y.toFixed(1);\n           var rank = this.series.data.indexOf(this.point) + 1;\n           var totalItems = this.series.data.length;\n           var percentile = Math.round((rank - 1) / totalItems * 100);\n           \n           // Try to get raw value if available (for dollar amounts)\n           var rawVal = this.point.rawValue || this.point.options.rawValue;\n           var tooltipText = '<b>' + cat + '<\/b><br/>';\n           \n           if (rawVal !== undefined && rawVal !== null) {\n             // Show both dollar amount and percentage\n             tooltipText += '' + rawVal.toLocaleString('en-US', {maximumFractionDigits: 1}) + '<br/>';\n             tooltipText += '<span style=\"color:#666;font-size:0.9em\">' + pct + '% of total budget<\/span><br/>';\n           } else {\n             // Just show percentage\n             tooltipText += '' + pct + '<br/>';\n           }\n           \n           tooltipText += '<span style=\"color:#666;font-size:0.9em\">Rank: #' + rank + ' of ' + totalItems + ' (' + percentile + 'th percentile)<\/span>';\n           return tooltipText;\n         }","useHTML":true}},"theme":{"chart":{"backgroundColor":"transparent"},"colors":["#7cb5ec","#434348","#90ed7d","#f7a35c","#8085e9","#f15c80","#e4d354","#2b908f","#f45b5b","#91e8e1"]},"conf_opts":{"global":{"Date":null,"VMLRadialGradientURL":"http =//code.highcharts.com/list(version)/gfx/vml-radial-gradient.png","canvasToolsURL":"http =//code.highcharts.com/list(version)/modules/canvas-tools.js","getTimezoneOffset":null,"timezoneOffset":0,"useUTC":true},"lang":{"contextButtonTitle":"Chart context menu","decimalPoint":".","downloadCSV":"Download CSV","downloadJPEG":"Download JPEG image","downloadPDF":"Download PDF document","downloadPNG":"Download PNG image","downloadSVG":"Download SVG vector image","downloadXLS":"Download XLS","drillUpText":"◁ Back to {series.name}","exitFullscreen":"Exit from full screen","exportData":{"annotationHeader":"Annotations","categoryDatetimeHeader":"DateTime","categoryHeader":"Category"},"hideData":"Hide data table","invalidDate":null,"loading":"Loading...","months":["January","February","March","April","May","June","July","August","September","October","November","December"],"noData":"No data to display","numericSymbolMagnitude":1000,"numericSymbols":["k","M","G","T","P","E"],"printChart":"Print chart","resetZoom":"Reset zoom","resetZoomTitle":"Reset zoom level 1:1","shortMonths":["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],"shortWeekdays":["Sat","Sun","Mon","Tue","Wed","Thu","Fri"],"thousandsSep":" ","viewData":"View data table","viewFullscreen":"View in full screen","weekdays":["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]}},"type":"chart","fonts":[],"debug":false},"evals":["hc_opts.tooltip.formatter"],"jsHooks":[]}</script><div style="margin-bottom: 20px;"></div>
+</div>
+<div class="section level2">
+<h2 id="filtering">Filtering<a class="anchor" aria-label="anchor" href="#filtering"></a>
+</h2>
+<div class="section level3">
+<h3 id="basic-filters">Basic Filters<a class="anchor" aria-label="anchor" href="#basic-filters"></a>
+</h3>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">filtered</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_content.html">create_content</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">gss</span>, type <span class="op">=</span> <span class="st">"bar"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span>x_var <span class="op">=</span> <span class="st">"happy"</span>, title <span class="op">=</span> <span class="st">"Happiness"</span>, filter <span class="op">=</span> <span class="op">~</span> <span class="va">sex</span> <span class="op">==</span> <span class="fl">1</span>,</span>
+<span>          title_tabset <span class="op">=</span> <span class="st">"Male"</span>, tabgroup <span class="op">=</span> <span class="st">"analysis"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span>x_var <span class="op">=</span> <span class="st">"happy"</span>, title <span class="op">=</span> <span class="st">"Happiness"</span>, filter <span class="op">=</span> <span class="op">~</span> <span class="va">sex</span> <span class="op">==</span> <span class="fl">2</span>,</span>
+<span>          title_tabset <span class="op">=</span> <span class="st">"Female"</span>, tabgroup <span class="op">=</span> <span class="st">"analysis"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">filtered</span><span class="op">)</span></span>
+<span><span class="co">#&gt; -- <span style="font-weight: bold;">Content Collection</span> ----------------------------------------------------------</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">2</span> items | v data: 21788 rows x 8 cols</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; &gt; <span style="color: #0000BB;">[Tab]</span> <span style="color: #00BBBB; font-weight: bold;">analysis</span><span style="color: #555555;"> (2 vizs)</span></span></span>
+<span><span class="co">#&gt;   * <span style="color: #00BB00;">[Viz]</span> <span style="font-weight: bold;">Happiness</span> <span style="color: #555555;">(</span><span style="color: #BB00BB;">bar</span><span style="color: #555555;">)</span> <span style="color: #555555;">x=happy</span><span style="color: #BBBB00;"> +filter</span></span></span>
+<span><span class="co">#&gt;   * <span style="color: #00BB00;">[Viz]</span> <span style="font-weight: bold;">Happiness</span> <span style="color: #555555;">(</span><span style="color: #BB00BB;">bar</span><span style="color: #555555;">)</span> <span style="color: #555555;">x=happy</span><span style="color: #BBBB00;"> +filter</span></span></span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">filtered</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/preview.html">preview</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<div id="dtabs-05b1bacb" style="margin: 20px 0;">
+<div class="dtab-buttons" style="border-bottom: 1px solid #dee2e6; margin-bottom: 10px;">
+<button type="button" class="dtab-btn dtab-active" data-tab="dtabs-05b1bacb-1">analysis</button>
+</div>
+<div class="dtab-content">
+<div class="dtab-pane" id="dtabs-05b1bacb-1" data-visible="true">
+<h4 style="margin: 10px 0;">Happiness</h4>
+<div class="highchart html-widget html-fill-item" id="htmlwidget-1fb4450895fe099f74a1" style="width:672px;height:480px;"></div>
+<script type="application/json" data-for="htmlwidget-1fb4450895fe099f74a1">{"x":{"hc_opts":{"chart":{"reflow":true,"type":"bar"},"title":{"text":null},"yAxis":{"title":{"text":"Percentage"}},"credits":{"enabled":false},"exporting":{"enabled":false},"boost":{"enabled":false},"plotOptions":{"series":{"label":{"enabled":false},"turboThreshold":0,"dataLabels":{"enabled":true,"format":"{point.y:.0f}%"}},"treemap":{"layoutAlgorithm":"squarified"}},"xAxis":{"categories":["very happy","pretty happy","not too happy"],"title":{"text":"happy"}},"series":[{"data":[25.3,56,18.7],"name":"Percentage","showInLegend":false,"colorByPoint":true}],"tooltip":{"formatter":"function() {\n           var cat = this.point.category || this.series.chart.xAxis[0].categories[this.point.x] || this.x;\n           var pct = this.y.toFixed(1);\n           var rank = this.series.data.indexOf(this.point) + 1;\n           var totalItems = this.series.data.length;\n           var percentile = Math.round((rank - 1) / totalItems * 100);\n           \n           // Try to get raw value if available (for dollar amounts)\n           var rawVal = this.point.rawValue || this.point.options.rawValue;\n           var tooltipText = '<b>' + cat + '<\/b><br/>';\n           \n           if (rawVal !== undefined && rawVal !== null) {\n             // Show both dollar amount and percentage\n             tooltipText += '' + rawVal.toLocaleString('en-US', {maximumFractionDigits: 1}) + '<br/>';\n             tooltipText += '<span style=\"color:#666;font-size:0.9em\">' + pct + '% of total budget<\/span><br/>';\n           } else {\n             // Just show percentage\n             tooltipText += '' + pct + '<br/>';\n           }\n           \n           tooltipText += '<span style=\"color:#666;font-size:0.9em\">Rank: #' + rank + ' of ' + totalItems + ' (' + percentile + 'th percentile)<\/span>';\n           return tooltipText;\n         }","useHTML":true}},"theme":{"chart":{"backgroundColor":"transparent"},"colors":["#7cb5ec","#434348","#90ed7d","#f7a35c","#8085e9","#f15c80","#e4d354","#2b908f","#f45b5b","#91e8e1"]},"conf_opts":{"global":{"Date":null,"VMLRadialGradientURL":"http =//code.highcharts.com/list(version)/gfx/vml-radial-gradient.png","canvasToolsURL":"http =//code.highcharts.com/list(version)/modules/canvas-tools.js","getTimezoneOffset":null,"timezoneOffset":0,"useUTC":true},"lang":{"contextButtonTitle":"Chart context menu","decimalPoint":".","downloadCSV":"Download CSV","downloadJPEG":"Download JPEG image","downloadPDF":"Download PDF document","downloadPNG":"Download PNG image","downloadSVG":"Download SVG vector image","downloadXLS":"Download XLS","drillUpText":"◁ Back to {series.name}","exitFullscreen":"Exit from full screen","exportData":{"annotationHeader":"Annotations","categoryDatetimeHeader":"DateTime","categoryHeader":"Category"},"hideData":"Hide data table","invalidDate":null,"loading":"Loading...","months":["January","February","March","April","May","June","July","August","September","October","November","December"],"noData":"No data to display","numericSymbolMagnitude":1000,"numericSymbols":["k","M","G","T","P","E"],"printChart":"Print chart","resetZoom":"Reset zoom","resetZoomTitle":"Reset zoom level 1:1","shortMonths":["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],"shortWeekdays":["Sat","Sun","Mon","Tue","Wed","Thu","Fri"],"thousandsSep":" ","viewData":"View data table","viewFullscreen":"View in full screen","weekdays":["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]}},"type":"chart","fonts":[],"debug":false},"evals":["hc_opts.tooltip.formatter"],"jsHooks":[]}</script><div style="margin-bottom: 15px;"></div>
+<h4 style="margin: 10px 0;">Happiness</h4>
+<div class="highchart html-widget html-fill-item" id="htmlwidget-10b3b7155e8045a1b2ad" style="width:672px;height:480px;"></div>
+<script type="application/json" data-for="htmlwidget-10b3b7155e8045a1b2ad">{"x":{"hc_opts":{"chart":{"reflow":true,"type":"bar"},"title":{"text":null},"yAxis":{"title":{"text":"Percentage"}},"credits":{"enabled":false},"exporting":{"enabled":false},"boost":{"enabled":false},"plotOptions":{"series":{"label":{"enabled":false},"turboThreshold":0,"dataLabels":{"enabled":true,"format":"{point.y:.0f}%"}},"treemap":{"layoutAlgorithm":"squarified"}},"xAxis":{"categories":["very happy","pretty happy","not too happy"],"title":{"text":"happy"}},"series":[{"data":[25.2,56.9,17.9],"name":"Percentage","showInLegend":false,"colorByPoint":true}],"tooltip":{"formatter":"function() {\n           var cat = this.point.category || this.series.chart.xAxis[0].categories[this.point.x] || this.x;\n           var pct = this.y.toFixed(1);\n           var rank = this.series.data.indexOf(this.point) + 1;\n           var totalItems = this.series.data.length;\n           var percentile = Math.round((rank - 1) / totalItems * 100);\n           \n           // Try to get raw value if available (for dollar amounts)\n           var rawVal = this.point.rawValue || this.point.options.rawValue;\n           var tooltipText = '<b>' + cat + '<\/b><br/>';\n           \n           if (rawVal !== undefined && rawVal !== null) {\n             // Show both dollar amount and percentage\n             tooltipText += '' + rawVal.toLocaleString('en-US', {maximumFractionDigits: 1}) + '<br/>';\n             tooltipText += '<span style=\"color:#666;font-size:0.9em\">' + pct + '% of total budget<\/span><br/>';\n           } else {\n             // Just show percentage\n             tooltipText += '' + pct + '<br/>';\n           }\n           \n           tooltipText += '<span style=\"color:#666;font-size:0.9em\">Rank: #' + rank + ' of ' + totalItems + ' (' + percentile + 'th percentile)<\/span>';\n           return tooltipText;\n         }","useHTML":true}},"theme":{"chart":{"backgroundColor":"transparent"},"colors":["#7cb5ec","#434348","#90ed7d","#f7a35c","#8085e9","#f15c80","#e4d354","#2b908f","#f45b5b","#91e8e1"]},"conf_opts":{"global":{"Date":null,"VMLRadialGradientURL":"http =//code.highcharts.com/list(version)/gfx/vml-radial-gradient.png","canvasToolsURL":"http =//code.highcharts.com/list(version)/modules/canvas-tools.js","getTimezoneOffset":null,"timezoneOffset":0,"useUTC":true},"lang":{"contextButtonTitle":"Chart context menu","decimalPoint":".","downloadCSV":"Download CSV","downloadJPEG":"Download JPEG image","downloadPDF":"Download PDF document","downloadPNG":"Download PNG image","downloadSVG":"Download SVG vector image","downloadXLS":"Download XLS","drillUpText":"◁ Back to {series.name}","exitFullscreen":"Exit from full screen","exportData":{"annotationHeader":"Annotations","categoryDatetimeHeader":"DateTime","categoryHeader":"Category"},"hideData":"Hide data table","invalidDate":null,"loading":"Loading...","months":["January","February","March","April","May","June","July","August","September","October","November","December"],"noData":"No data to display","numericSymbolMagnitude":1000,"numericSymbols":["k","M","G","T","P","E"],"printChart":"Print chart","resetZoom":"Reset zoom","resetZoomTitle":"Reset zoom level 1:1","shortMonths":["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],"shortWeekdays":["Sat","Sun","Mon","Tue","Wed","Thu","Fri"],"thousandsSep":" ","viewData":"View data table","viewFullscreen":"View in full screen","weekdays":["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]}},"type":"chart","fonts":[],"debug":false},"evals":["hc_opts.tooltip.formatter"],"jsHooks":[]}</script><div style="margin-bottom: 15px;"></div>
+</div>
+</div>
+</div>
+<style>
+    #dtabs-05b1bacb .dtab-btn {
+      padding: 8px 16px; margin-right: 4px; border: 1px solid #dee2e6;
+      background: #f8f9fa; cursor: pointer; border-radius: 4px 4px 0 0;
+    }
+    #dtabs-05b1bacb .dtab-btn.dtab-active { background: white; border-bottom-color: white; font-weight: bold; }
+    #dtabs-05b1bacb .dtab-pane { padding: 15px 0; }
+    #dtabs-05b1bacb .dtab-pane[data-visible='false'] { display: none; }
+  </style>
+<script>
+    (function() {
+      // Wait for Highcharts to render, then hide inactive panes
+      setTimeout(function() {
+        document.querySelectorAll('#dtabs-05b1bacb .dtab-pane[data-visible="false"]').forEach(function(p) {
+          p.style.display = 'none';
+        });
+      }, 500);
+
+      // Tab click handler
+      document.querySelectorAll('#dtabs-05b1bacb .dtab-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          var tabId = this.getAttribute('data-tab');
+          // Update buttons
+          document.querySelectorAll('#dtabs-05b1bacb .dtab-btn').forEach(function(b) { b.classList.remove('dtab-active'); });
+          this.classList.add('dtab-active');
+          // Update panes
+          document.querySelectorAll('#dtabs-05b1bacb .dtab-pane').forEach(function(p) {
+            p.style.display = p.id === tabId ? 'block' : 'none';
+            p.setAttribute('data-visible', p.id === tabId ? 'true' : 'false');
+          });
+          // Reflow Highcharts
+          if (typeof Highcharts !== 'undefined') {
+            Highcharts.charts.forEach(function(c) { if (c) c.reflow(); });
+          }
+        });
+      });
+    })();
+  </script>
 </div>
 <div class="section level3">
 <h3 id="complex-filters">Complex Filters<a class="anchor" aria-label="anchor" href="#complex-filters"></a>
 </h3>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">viz</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_viz.html">create_viz</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"stackedbar"</span>, x_var <span class="op">=</span> <span class="st">"question"</span>, stack_var <span class="op">=</span> <span class="st">"response"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span></span>
-<span>    title <span class="op">=</span> <span class="st">"Young Adults"</span>,</span>
-<span>    filter <span class="op">=</span> <span class="op">~</span> <span class="va">age</span> <span class="op">&gt;=</span> <span class="fl">18</span> <span class="op">&amp;</span> <span class="va">age</span> <span class="op">&lt;=</span> <span class="fl">35</span> <span class="op">&amp;</span> <span class="va">country</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"US"</span>, <span class="st">"UK"</span>, <span class="st">"CA"</span><span class="op">)</span></span>
-<span>  <span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level3">
-<h3 id="combining-filters-with-defaults">Combining Filters with Defaults<a class="anchor" aria-label="anchor" href="#combining-filters-with-defaults"></a>
-</h3>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">viz</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_viz.html">create_viz</a></span><span class="op">(</span></span>
-<span>  type <span class="op">=</span> <span class="st">"timeline"</span>,</span>
-<span>  time_var <span class="op">=</span> <span class="st">"year"</span>,</span>
-<span>  response_var <span class="op">=</span> <span class="st">"satisfaction"</span>,</span>
-<span>  chart_type <span class="op">=</span> <span class="st">"line"</span></span>
-<span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Product A"</span>, filter <span class="op">=</span> <span class="op">~</span> <span class="va">product</span> <span class="op">==</span> <span class="st">"A"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Product B"</span>, filter <span class="op">=</span> <span class="op">~</span> <span class="va">product</span> <span class="op">==</span> <span class="st">"B"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Product C"</span>, filter <span class="op">=</span> <span class="op">~</span> <span class="va">product</span> <span class="op">==</span> <span class="st">"C"</span><span class="op">)</span></span></code></pre></div>
-</div>
-</div>
-<div class="section level2">
-<h2 id="multi-dataset-support">Multi-Dataset Support<a class="anchor" aria-label="anchor" href="#multi-dataset-support"></a>
-</h2>
-<p>Work with multiple datasets in a single dashboard.</p>
-<div class="section level3">
-<h3 id="named-datasets">Named Datasets<a class="anchor" aria-label="anchor" href="#named-datasets"></a>
-</h3>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">dashboard</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_dashboard.html">create_dashboard</a></span><span class="op">(</span></span>
-<span>  title <span class="op">=</span> <span class="st">"Multi-Dataset Dashboard"</span>,</span>
-<span>  output_dir <span class="op">=</span> <span class="st">"multi_data"</span></span>
-<span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="../reference/add_page.html">add_page</a></span><span class="op">(</span></span>
-<span>    <span class="st">"Analysis"</span>,</span>
-<span>    data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
-<span>      sales <span class="op">=</span> <span class="va">sales_data</span>,</span>
-<span>      customers <span class="op">=</span> <span class="va">customer_data</span>,</span>
-<span>      products <span class="op">=</span> <span class="va">product_data</span></span>
-<span>    <span class="op">)</span>,</span>
-<span>    visualizations <span class="op">=</span> <span class="va">viz</span>,</span>
-<span>    is_landing_page <span class="op">=</span> <span class="cn">TRUE</span></span>
-<span>  <span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level3">
-<h3 id="viz-specific-datasets">Viz-Specific Datasets<a class="anchor" aria-label="anchor" href="#viz-specific-datasets"></a>
-</h3>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">viz</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_viz.html">create_viz</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span></span>
-<span>    type <span class="op">=</span> <span class="st">"histogram"</span>,</span>
-<span>    x_var <span class="op">=</span> <span class="st">"revenue"</span>,</span>
-<span>    data <span class="op">=</span> <span class="st">"sales"</span>,</span>
-<span>    title <span class="op">=</span> <span class="st">"Revenue Distribution"</span></span>
-<span>  <span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span></span>
-<span>    type <span class="op">=</span> <span class="st">"bar"</span>,</span>
-<span>    x_var <span class="op">=</span> <span class="st">"category"</span>,</span>
-<span>    data <span class="op">=</span> <span class="st">"products"</span>,</span>
-<span>    title <span class="op">=</span> <span class="st">"Product Categories"</span></span>
-<span>  <span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span></span>
-<span>    type <span class="op">=</span> <span class="st">"timeline"</span>,</span>
-<span>    time_var <span class="op">=</span> <span class="st">"date"</span>,</span>
-<span>    response_var <span class="op">=</span> <span class="st">"count"</span>,</span>
-<span>    data <span class="op">=</span> <span class="st">"customers"</span>,</span>
-<span>    title <span class="op">=</span> <span class="st">"Customer Growth"</span></span>
-<span>  <span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level3">
-<h3 id="filters-with-multi-dataset">Filters with Multi-Dataset<a class="anchor" aria-label="anchor" href="#filters-with-multi-dataset"></a>
-</h3>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">viz</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_viz.html">create_viz</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span></span>
-<span>    type <span class="op">=</span> <span class="st">"histogram"</span>,</span>
-<span>    x_var <span class="op">=</span> <span class="st">"amount"</span>,</span>
-<span>    data <span class="op">=</span> <span class="st">"sales"</span>,</span>
-<span>    filter <span class="op">=</span> <span class="op">~</span> <span class="va">region</span> <span class="op">==</span> <span class="st">"North"</span>,</span>
-<span>    title <span class="op">=</span> <span class="st">"North Region Sales"</span></span>
-<span>  <span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span></span>
-<span>    type <span class="op">=</span> <span class="st">"histogram"</span>,</span>
-<span>    x_var <span class="op">=</span> <span class="st">"amount"</span>,</span>
-<span>    data <span class="op">=</span> <span class="st">"sales"</span>,</span>
-<span>    filter <span class="op">=</span> <span class="op">~</span> <span class="va">region</span> <span class="op">==</span> <span class="st">"South"</span>,</span>
-<span>    title <span class="op">=</span> <span class="st">"South Region Sales"</span></span>
-<span>  <span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span></span>
+<span>  x_var <span class="op">=</span> <span class="st">"happy"</span>,</span>
+<span>  filter <span class="op">=</span> <span class="op">~</span> <span class="va">year</span> <span class="op">&gt;=</span> <span class="fl">2015</span> <span class="op">&amp;</span> <span class="va">degree</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">3</span>, <span class="fl">4</span><span class="op">)</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
-<h2 id="vectorized-visualization-creation">Vectorized Visualization Creation<a class="anchor" aria-label="anchor" href="#vectorized-visualization-creation"></a>
+<h2 id="timeline-charts">Timeline Charts<a class="anchor" aria-label="anchor" href="#timeline-charts"></a>
 </h2>
-<p>Use <code><a href="../reference/add_vizzes.html">add_vizzes()</a></code> to create multiple similar
-visualizations efficiently.</p>
-<div class="section level3">
-<h3 id="basic-expansion">Basic Expansion<a class="anchor" aria-label="anchor" href="#basic-expansion"></a>
-</h3>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">viz</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_viz.html">create_viz</a></span><span class="op">(</span></span>
-<span>  type <span class="op">=</span> <span class="st">"histogram"</span>,</span>
-<span>  x_var <span class="op">=</span> <span class="st">"value"</span></span>
-<span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="../reference/add_vizzes.html">add_vizzes</a></span><span class="op">(</span></span>
-<span>    title <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Wave 1"</span>, <span class="st">"Wave 2"</span>, <span class="st">"Wave 3"</span><span class="op">)</span>,</span>
-<span>    filter <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">~</span> <span class="va">wave</span> <span class="op">==</span> <span class="fl">1</span>, <span class="op">~</span> <span class="va">wave</span> <span class="op">==</span> <span class="fl">2</span>, <span class="op">~</span> <span class="va">wave</span> <span class="op">==</span> <span class="fl">3</span><span class="op">)</span></span>
-<span>  <span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Creates 3 visualizations automatically!</span></span></code></pre></div>
+<p>Track changes over time:</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/create_content.html">create_content</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"timeline"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span></span>
+<span>    time_var <span class="op">=</span> <span class="st">"year"</span>,</span>
+<span>    response_var <span class="op">=</span> <span class="st">"happy"</span>,</span>
+<span>    title <span class="op">=</span> <span class="st">"Happiness Over Time"</span>,</span>
+<span>    chart_type <span class="op">=</span> <span class="st">"line"</span>,</span>
+<span>    group_var <span class="op">=</span> <span class="st">"sex"</span></span>
+<span>  <span class="op">)</span></span></code></pre></div>
 </div>
+<div class="section level2">
+<h2 id="heatmaps">Heatmaps<a class="anchor" aria-label="anchor" href="#heatmaps"></a>
+</h2>
+<p>Visualize intensity across two dimensions:</p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/create_content.html">create_content</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"heatmap"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span></span>
+<span>    x_var <span class="op">=</span> <span class="st">"degree"</span>,</span>
+<span>    y_var <span class="op">=</span> <span class="st">"happy"</span>,</span>
+<span>    value_var <span class="op">=</span> <span class="st">"count"</span>,</span>
+<span>    title <span class="op">=</span> <span class="st">"Happiness by Education"</span>,</span>
+<span>    agg_fun <span class="op">=</span> <span class="st">"count"</span>,</span>
+<span>    x_order_by <span class="op">=</span> <span class="st">"desc"</span>,  <span class="co"># Order by values</span></span>
+<span>    y_order_by <span class="op">=</span> <span class="st">"desc"</span></span>
+<span>  <span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="icons">Icons<a class="anchor" aria-label="anchor" href="#icons"></a>
+</h2>
+<p>dashboardr uses <a href="https://icon-sets.iconify.design/" class="external-link">Iconify</a> for
+<strong>200,000+ icons</strong> from 100+ icon sets!</p>
 <div class="section level3">
-<h3 id="template-based-tabgroups">Template-Based Tabgroups<a class="anchor" aria-label="anchor" href="#template-based-tabgroups"></a>
+<h3 id="format">Format<a class="anchor" aria-label="anchor" href="#format"></a>
 </h3>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">viz</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_viz.html">create_viz</a></span><span class="op">(</span></span>
-<span>  type <span class="op">=</span> <span class="st">"stackedbar"</span>,</span>
-<span>  x_var <span class="op">=</span> <span class="st">"question"</span>,</span>
-<span>  stack_var <span class="op">=</span> <span class="st">"response"</span></span>
-<span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="../reference/add_vizzes.html">add_vizzes</a></span><span class="op">(</span></span>
-<span>    title <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Age"</span>, <span class="st">"Gender"</span>, <span class="st">"Education"</span><span class="op">)</span>,</span>
-<span>    .tabgroup_template <span class="op">=</span> <span class="st">"demographics/{title}"</span>,</span>
-<span>    .title_template <span class="op">=</span> <span class="st">"By {title}"</span></span>
-<span>  <span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Creates nested tabs: demographics/Age, demographics/Gender, demographics/Education</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">icon</span> <span class="op">=</span> <span class="st">"ph:house-fill"</span>  <span class="co"># icon-set:icon-name</span></span></code></pre></div>
 </div>
 <div class="section level3">
-<h3 id="parallel-expansion">Parallel Expansion<a class="anchor" aria-label="anchor" href="#parallel-expansion"></a>
+<h3 id="popular-icon-sets">Popular Icon Sets<a class="anchor" aria-label="anchor" href="#popular-icon-sets"></a>
+</h3>
+<table class="table">
+<thead><tr class="header">
+<th>Set</th>
+<th>Prefix</th>
+<th>Examples</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td>Phosphor</td>
+<td><code>ph:</code></td>
+<td>
+<code>ph:chart-line</code>, <code>ph:users-fill</code>,
+<code>ph:gear-fill</code>
+</td>
+</tr>
+<tr class="even">
+<td>Bootstrap</td>
+<td><code>bi:</code></td>
+<td>
+<code>bi:graph-up</code>, <code>bi:people</code>,
+<code>bi:gear</code>
+</td>
+</tr>
+<tr class="odd">
+<td>Font Awesome</td>
+<td><code>fa:</code></td>
+<td>
+<code>fa:chart-bar</code>, <code>fa:users</code>
+</td>
+</tr>
+<tr class="even">
+<td>Material Design</td>
+<td><code>mdi:</code></td>
+<td>
+<code>mdi:chart-line</code>, <code>mdi:account-group</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section level3">
+<h3 id="page-icons">Page Icons<a class="anchor" aria-label="anchor" href="#page-icons"></a>
 </h3>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">viz</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_viz.html">create_viz</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"histogram"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="../reference/add_vizzes.html">add_vizzes</a></span><span class="op">(</span></span>
-<span>    x_var <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"age"</span>, <span class="st">"income"</span>, <span class="st">"satisfaction"</span><span class="op">)</span>,</span>
-<span>    title <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Age Distribution"</span>, <span class="st">"Income Levels"</span>, <span class="st">"Satisfaction Scores"</span><span class="op">)</span>,</span>
-<span>    bins <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">20</span>, <span class="fl">30</span>, <span class="fl">15</span><span class="op">)</span></span>
-<span>  <span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/create_page.html">create_page</a></span><span class="op">(</span></span>
+<span>  <span class="st">"Home"</span>,</span>
+<span>  icon <span class="op">=</span> <span class="st">"ph:house-fill"</span></span>
+<span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># All vectors must be same length!</span></span></code></pre></div>
+<span><span class="fu"><a href="../reference/create_page.html">create_page</a></span><span class="op">(</span></span>
+<span>  <span class="st">"Analysis"</span>,</span>
+<span>  icon <span class="op">=</span> <span class="st">"ph:chart-bar-fill"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 </div>
-</div>
-<div class="section level2">
-<h2 id="nested-tabgroups">Nested Tabgroups<a class="anchor" aria-label="anchor" href="#nested-tabgroups"></a>
-</h2>
-<p>Create hierarchical tab structures for complex dashboards.</p>
 <div class="section level3">
-<h3 id="two-level-nesting">Two-Level Nesting<a class="anchor" aria-label="anchor" href="#two-level-nesting"></a>
+<h3 id="tab-group-icons">Tab Group Icons<a class="anchor" aria-label="anchor" href="#tab-group-icons"></a>
 </h3>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">viz</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_viz.html">create_viz</a></span><span class="op">(</span></span>
-<span>  type <span class="op">=</span> <span class="st">"stackedbar"</span>,</span>
-<span>  x_var <span class="op">=</span> <span class="st">"question"</span>,</span>
-<span>  stack_var <span class="op">=</span> <span class="st">"response"</span></span>
-<span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="co"># Level 1: Wave</span></span>
-<span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Overview"</span>, tabgroup <span class="op">=</span> <span class="st">"survey"</span>, filter <span class="op">=</span> <span class="op">~</span> <span class="va">wave</span> <span class="op">==</span> <span class="fl">1</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="co"># Level 2: Demographics under Wave 1</span></span>
-<span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"By Age"</span>, tabgroup <span class="op">=</span> <span class="st">"survey/age"</span>, filter <span class="op">=</span> <span class="op">~</span> <span class="va">wave</span> <span class="op">==</span> <span class="fl">1</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"By Gender"</span>, tabgroup <span class="op">=</span> <span class="st">"survey/gender"</span>, filter <span class="op">=</span> <span class="op">~</span> <span class="va">wave</span> <span class="op">==</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">viz</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_content.html">create_content</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"bar"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span>x_var <span class="op">=</span> <span class="st">"age"</span>, tabgroup <span class="op">=</span> <span class="st">"demographics"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span>x_var <span class="op">=</span> <span class="st">"income"</span>, tabgroup <span class="op">=</span> <span class="st">"financial"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/set_tabgroup_labels.html">set_tabgroup_labels</a></span><span class="op">(</span></span>
+<span>    demographics <span class="op">=</span> <span class="st">"{{&lt; iconify ph:users-fill &gt;}} Demographics"</span>,</span>
+<span>    financial <span class="op">=</span> <span class="st">"{{&lt; iconify ph:currency-dollar &gt;}} Financial"</span></span>
+<span>  <span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
-<h3 id="three-level-nesting">Three-Level Nesting<a class="anchor" aria-label="anchor" href="#three-level-nesting"></a>
+<h3 id="in-markdown-text">In Markdown Text<a class="anchor" aria-label="anchor" href="#in-markdown-text"></a>
 </h3>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">viz</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_viz.html">create_viz</a></span><span class="op">(</span></span>
-<span>  type <span class="op">=</span> <span class="st">"stackedbar"</span>,</span>
-<span>  x_var <span class="op">=</span> <span class="st">"item"</span>,</span>
-<span>  stack_var <span class="op">=</span> <span class="st">"response"</span>,</span>
-<span>  stacked_type <span class="op">=</span> <span class="st">"percent"</span></span>
-<span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="co"># survey -&gt; wave1 -&gt; age -&gt; item1</span></span>
-<span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span>tabgroup <span class="op">=</span> <span class="st">"survey/wave1/age/item1"</span>, filter <span class="op">=</span> <span class="op">~</span> <span class="va">wave</span> <span class="op">==</span> <span class="fl">1</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span>tabgroup <span class="op">=</span> <span class="st">"survey/wave1/age/item2"</span>, filter <span class="op">=</span> <span class="op">~</span> <span class="va">wave</span> <span class="op">==</span> <span class="fl">1</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span>tabgroup <span class="op">=</span> <span class="st">"survey/wave1/age/item3"</span>, filter <span class="op">=</span> <span class="op">~</span> <span class="va">wave</span> <span class="op">==</span> <span class="fl">1</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="co"># survey -&gt; wave1 -&gt; gender -&gt; items</span></span>
-<span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span>tabgroup <span class="op">=</span> <span class="st">"survey/wave1/gender/item1"</span>, filter <span class="op">=</span> <span class="op">~</span> <span class="va">wave</span> <span class="op">==</span> <span class="fl">1</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span>tabgroup <span class="op">=</span> <span class="st">"survey/wave1/gender/item2"</span>, filter <span class="op">=</span> <span class="op">~</span> <span class="va">wave</span> <span class="op">==</span> <span class="fl">1</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="co"># survey -&gt; wave2 -&gt; age -&gt; items</span></span>
-<span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span>tabgroup <span class="op">=</span> <span class="st">"survey/wave2/age/item1"</span>, filter <span class="op">=</span> <span class="op">~</span> <span class="va">wave</span> <span class="op">==</span> <span class="fl">2</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span>tabgroup <span class="op">=</span> <span class="st">"survey/wave2/age/item2"</span>, filter <span class="op">=</span> <span class="op">~</span> <span class="va">wave</span> <span class="op">==</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/add_text.html">add_text</a></span><span class="op">(</span></span>
+<span>  <span class="st">"## Features {{&lt; iconify ph:sparkle-fill &gt;}}"</span>,</span>
+<span>  <span class="st">""</span>,</span>
+<span>  <span class="st">"- {{&lt; iconify ph:check-circle-fill &gt;}} Easy to use"</span>,</span>
+<span>  <span class="st">"- {{&lt; iconify ph:lightning-fill &gt;}} Fast performance"</span>,</span>
+<span>  <span class="st">"- {{&lt; iconify ph:heart-fill &gt;}} Beautiful design"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
-<h3 id="custom-tab-labels">Custom Tab Labels<a class="anchor" aria-label="anchor" href="#custom-tab-labels"></a>
+<h3 id="finding-icons">Finding Icons<a class="anchor" aria-label="anchor" href="#finding-icons"></a>
 </h3>
+<p>Visit <a href="https://icon-sets.iconify.design/" class="external-link">Iconify Icon
+Sets</a> to browse and search.</p>
+<p><strong>Common choices:</strong></p>
+<table class="table">
+<thead><tr class="header">
+<th>Purpose</th>
+<th>Icons</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td>Home</td>
+<td>
+<code>ph:house-fill</code>, <code>bi:house-fill</code>,
+<code>mdi:home</code>
+</td>
+</tr>
+<tr class="even">
+<td>Charts</td>
+<td>
+<code>ph:chart-line</code>, <code>ph:chart-bar-fill</code>,
+<code>bi:graph-up</code>
+</td>
+</tr>
+<tr class="odd">
+<td>Users</td>
+<td>
+<code>ph:users-fill</code>, <code>bi:people-fill</code>,
+<code>mdi:account-group</code>
+</td>
+</tr>
+<tr class="even">
+<td>Settings</td>
+<td>
+<code>ph:gear-fill</code>, <code>bi:gear-fill</code>,
+<code>mdi:cog</code>
+</td>
+</tr>
+<tr class="odd">
+<td>Info</td>
+<td>
+<code>ph:info-fill</code>, <code>bi:info-circle-fill</code>,
+<code>mdi:information</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section level3">
+<h3 id="best-practice-consistency">Best Practice: Consistency<a class="anchor" aria-label="anchor" href="#best-practice-consistency"></a>
+</h3>
+<p>Pick one icon set and stick with it:</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">viz</span> <span class="op">&lt;-</span> <span class="va">viz</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="../reference/set_tabgroup_labels.html">set_tabgroup_labels</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
-<span>    survey <span class="op">=</span> <span class="st">"📊 Survey Results"</span>,</span>
-<span>    wave1 <span class="op">=</span> <span class="st">"Wave 1 (2023)"</span>,</span>
-<span>    wave2 <span class="op">=</span> <span class="st">"Wave 2 (2024)"</span>,</span>
-<span>    age <span class="op">=</span> <span class="st">"By Age Group"</span>,</span>
-<span>    gender <span class="op">=</span> <span class="st">"By Gender"</span>,</span>
-<span>    item1 <span class="op">=</span> <span class="st">"Question 1"</span>,</span>
-<span>    item2 <span class="op">=</span> <span class="st">"Question 2"</span>,</span>
-<span>    item3 <span class="op">=</span> <span class="st">"Question 3"</span></span>
-<span>  <span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># Good: All Phosphor icons</span></span>
+<span><span class="fu"><a href="../reference/create_page.html">create_page</a></span><span class="op">(</span><span class="st">"Home"</span>, icon <span class="op">=</span> <span class="st">"ph:house-fill"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/create_page.html">create_page</a></span><span class="op">(</span><span class="st">"Analysis"</span>, icon <span class="op">=</span> <span class="st">"ph:chart-line"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/create_page.html">create_page</a></span><span class="op">(</span><span class="st">"About"</span>, icon <span class="op">=</span> <span class="st">"ph:info-fill"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Avoid: Mixed icon sets</span></span>
+<span><span class="fu"><a href="../reference/create_page.html">create_page</a></span><span class="op">(</span><span class="st">"Home"</span>, icon <span class="op">=</span> <span class="st">"ph:house-fill"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/create_page.html">create_page</a></span><span class="op">(</span><span class="st">"Analysis"</span>, icon <span class="op">=</span> <span class="st">"bi:graph-up"</span><span class="op">)</span>     <span class="co"># Different set</span></span>
+<span><span class="fu"><a href="../reference/create_page.html">create_page</a></span><span class="op">(</span><span class="st">"About"</span>, icon <span class="op">=</span> <span class="st">"mdi:information"</span><span class="op">)</span>    <span class="co"># Another set</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
-<h2 id="timeline-specific-features">Timeline-Specific Features<a class="anchor" aria-label="anchor" href="#timeline-specific-features"></a>
+<h2 id="loading-overlays">Loading Overlays<a class="anchor" aria-label="anchor" href="#loading-overlays"></a>
+</h2>
+<p>Add loading animations for heavy content:</p>
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/create_page.html">create_page</a></span><span class="op">(</span></span>
+<span>  <span class="st">"Analysis"</span>,</span>
+<span>  data <span class="op">=</span> <span class="va">large_dataset</span>,</span>
+<span>  overlay <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  overlay_theme <span class="op">=</span> <span class="st">"glass"</span>,  <span class="co"># "light", "dark", "accent"</span></span>
+<span>  overlay_text <span class="op">=</span> <span class="st">"Loading analysis..."</span>,</span>
+<span>  overlay_duration <span class="op">=</span> <span class="fl">1500</span>   <span class="co"># milliseconds</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="lazy-loading">Lazy Loading<a class="anchor" aria-label="anchor" href="#lazy-loading"></a>
+</h2>
+<p>Load content on-demand for better performance:</p>
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/create_page.html">create_page</a></span><span class="op">(</span></span>
+<span>  <span class="st">"Reports"</span>,</span>
+<span>  data <span class="op">=</span> <span class="va">data</span>,</span>
+<span>  lazy_load_charts <span class="op">=</span> <span class="cn">TRUE</span>,     <span class="co"># Load charts as user scrolls</span></span>
+<span>  lazy_load_margin <span class="op">=</span> <span class="st">"300px"</span>,  <span class="co"># Start loading 300px before visible</span></span>
+<span>  lazy_load_tabs <span class="op">=</span> <span class="cn">TRUE</span>        <span class="co"># Load tab content when clicked</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="rich-text-content">Rich Text Content<a class="anchor" aria-label="anchor" href="#rich-text-content"></a>
 </h2>
 <div class="section level3">
-<h3 id="response-binning">Response Binning<a class="anchor" aria-label="anchor" href="#response-binning"></a>
-</h3>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/create_viz.html">create_viz</a></span><span class="op">(</span></span>
-<span>  type <span class="op">=</span> <span class="st">"timeline"</span>,</span>
-<span>  time_var <span class="op">=</span> <span class="st">"year"</span>,</span>
-<span>  response_var <span class="op">=</span> <span class="st">"score"</span>,</span>
-<span>  response_breaks <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">3</span>, <span class="fl">7</span><span class="op">)</span>,</span>
-<span>  response_bin_labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Low (1-3)"</span>, <span class="st">"High (4-7)"</span><span class="op">)</span></span>
-<span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Score Trends"</span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level3">
-<h3 id="response-filtering">Response Filtering<a class="anchor" aria-label="anchor" href="#response-filtering"></a>
-</h3>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Show only high scores as a percentage of total</span></span>
-<span><span class="fu"><a href="../reference/create_viz.html">create_viz</a></span><span class="op">(</span></span>
-<span>  type <span class="op">=</span> <span class="st">"timeline"</span>,</span>
-<span>  time_var <span class="op">=</span> <span class="st">"year"</span>,</span>
-<span>  response_var <span class="op">=</span> <span class="st">"satisfaction"</span>,</span>
-<span>  response_filter <span class="op">=</span> <span class="fl">5</span><span class="op">:</span><span class="fl">7</span>,  <span class="co"># Only scores 5-7</span></span>
-<span>  response_filter_combine <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  response_filter_label <span class="op">=</span> <span class="st">"Satisfied (5-7)"</span></span>
-<span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Satisfaction Trends"</span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level3">
-<h3 id="combined-with-groups">Combined with Groups<a class="anchor" aria-label="anchor" href="#combined-with-groups"></a>
+<h3 id="md_text">md_text()<a class="anchor" aria-label="anchor" href="#md_text"></a>
 </h3>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/create_viz.html">create_viz</a></span><span class="op">(</span></span>
-<span>  type <span class="op">=</span> <span class="st">"timeline"</span>,</span>
-<span>  time_var <span class="op">=</span> <span class="st">"year"</span>,</span>
-<span>  response_var <span class="op">=</span> <span class="st">"score"</span>,</span>
-<span>  group_var <span class="op">=</span> <span class="st">"age_group"</span>,</span>
-<span>  response_filter <span class="op">=</span> <span class="fl">5</span><span class="op">:</span><span class="fl">7</span>,</span>
-<span>  response_filter_combine <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  response_filter_label <span class="op">=</span> <span class="st">""</span>  <span class="co"># Empty = show only group names</span></span>
-<span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"High Scores by Age"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">text</span> <span class="op">=</span> <span class="fu"><a href="../reference/md_text.html">md_text</a></span><span class="op">(</span></span>
+<span>  <span class="st">"# Main Heading"</span>,</span>
+<span>  <span class="st">""</span>,</span>
+<span>  <span class="st">"Paragraph with **bold** and *italic*."</span>,</span>
+<span>  <span class="st">""</span>,</span>
+<span>  <span class="st">"- Bullet 1"</span>,</span>
+<span>  <span class="st">"- Bullet 2"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 </div>
-</div>
-<div class="section level2">
-<h2 id="data-cleaning-features">Data Cleaning Features<a class="anchor" aria-label="anchor" href="#data-cleaning-features"></a>
-</h2>
 <div class="section level3">
-<h3 id="automatic-na-removal">Automatic NA Removal<a class="anchor" aria-label="anchor" href="#automatic-na-removal"></a>
+<h3 id="embedded-r-code">Embedded R Code<a class="anchor" aria-label="anchor" href="#embedded-r-code"></a>
 </h3>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">viz</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_viz.html">create_viz</a></span><span class="op">(</span></span>
-<span>  type <span class="op">=</span> <span class="st">"stackedbar"</span>,</span>
-<span>  x_var <span class="op">=</span> <span class="st">"question"</span>,</span>
-<span>  stack_var <span class="op">=</span> <span class="st">"response"</span></span>
-<span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span></span>
-<span>    title <span class="op">=</span> <span class="st">"Clean Data"</span>,</span>
-<span>    drop_na_vars <span class="op">=</span> <span class="cn">TRUE</span>  <span class="co"># Removes rows with NA in question or response</span></span>
-<span>  <span class="op">)</span></span></code></pre></div>
-<p>Works with all relevant variables:</p>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/add_text.html">add_text</a></span><span class="op">(</span></span>
+<span>  <span class="st">"## Survey Overview"</span>,</span>
+<span>  <span class="st">""</span>,</span>
+<span>  <span class="st">"```{r, echo=FALSE}"</span>,</span>
+<span>  <span class="st">"create_blockquote("</span>,</span>
+<span>  <span class="st">"  'This survey was conducted in Q1 2025.',"</span>,</span>
+<span>  <span class="st">"  preset = 'info'"</span>,</span>
+<span>  <span class="st">")"</span>,</span>
+<span>  <span class="st">"```"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="card-layouts">Card Layouts<a class="anchor" aria-label="anchor" href="#card-layouts"></a>
+</h3>
 <div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Histogram: drops NA in x_var</span></span>
-<span><span class="co"># Stackedbar: drops NA in x_var AND stack_var</span></span>
-<span><span class="co"># Timeline: drops NA in time_var, response_var, AND group_var</span></span>
-<span><span class="co"># Heatmap: drops NA in x_var, y_var, AND value_var</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/add_text.html">add_text</a></span><span class="op">(</span></span>
+<span>  <span class="st">"```{r, echo=FALSE}"</span>,</span>
+<span>  <span class="st">"person_card &lt;- card("</span>,</span>
+<span>  <span class="st">"  title = 'Dr. Jane Smith',"</span>,</span>
+<span>  <span class="st">"  content = 'Lead data scientist.',"</span>,</span>
+<span>  <span class="st">"  image = 'https://example.com/jane.jpg'"</span>,</span>
+<span>  <span class="st">")"</span>,</span>
+<span>  <span class="st">"card_row(person_card)"</span>,</span>
+<span>  <span class="st">"```"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 </div>
-</div>
-<div class="section level2">
-<h2 id="combining-collections">Combining Collections<a class="anchor" aria-label="anchor" href="#combining-collections"></a>
-</h2>
-<p>Merge visualization collections with <code><a href="../reference/combine_viz.html">combine_viz()</a></code> or
-<code>+</code>:</p>
+<div class="section level3">
+<h3 id="blockquotes">Blockquotes<a class="anchor" aria-label="anchor" href="#blockquotes"></a>
+</h3>
+<p>Presets: <code>'default'</code>, <code>'info'</code>,
+<code>'success'</code>, <code>'warning'</code>, <code>'danger'</code>,
+<code>'question'</code></p>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">viz1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_viz.html">create_viz</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"histogram"</span>, x_var <span class="op">=</span> <span class="st">"age"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Age Distribution"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">viz2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_viz.html">create_viz</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"histogram"</span>, x_var <span class="op">=</span> <span class="st">"income"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Income Distribution"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Method 1</span></span>
-<span><span class="va">combined</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/combine_viz.html">combine_viz</a></span><span class="op">(</span><span class="va">viz1</span>, <span class="va">viz2</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Method 2 (equivalent)</span></span>
-<span><span class="va">combined</span> <span class="op">&lt;-</span> <span class="va">viz1</span> <span class="op">+</span> <span class="va">viz2</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/add_text.html">add_text</a></span><span class="op">(</span></span>
+<span>  <span class="st">"```{r, echo=FALSE}"</span>,</span>
+<span>  <span class="st">"create_blockquote("</span>,</span>
+<span>  <span class="st">"  'All data has been anonymized.',"</span>,</span>
+<span>  <span class="st">"  preset = 'warning'"</span>,</span>
+<span>  <span class="st">")"</span>,</span>
+<span>  <span class="st">"```"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+</div>
 </div>
 <div class="section level2">
-<h2 id="real-world-example">Real-World Example<a class="anchor" aria-label="anchor" href="#real-world-example"></a>
+<h2 id="navbar-customization">Navbar Customization<a class="anchor" aria-label="anchor" href="#navbar-customization"></a>
 </h2>
-<p>Putting it all together:</p>
-<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Survey data with multiple waves and demographics</span></span>
-<span><span class="va">survey_viz</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_viz.html">create_viz</a></span><span class="op">(</span></span>
-<span>  type <span class="op">=</span> <span class="st">"stackedbars"</span>,</span>
-<span>  questions <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Q"</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">10</span><span class="op">)</span>,</span>
-<span>  question_labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"Question"</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">10</span><span class="op">)</span>,</span>
-<span>  stacked_type <span class="op">=</span> <span class="st">"percent"</span>,</span>
-<span>  horizontal <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  stack_breaks <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.5</span>, <span class="fl">2.5</span>, <span class="fl">4.5</span><span class="op">)</span>,</span>
-<span>  stack_bin_labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Disagree"</span>, <span class="st">"Neutral"</span>, <span class="st">"Agree"</span><span class="op">)</span>,</span>
-<span>  color_palette <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"#E74C3C"</span>, <span class="st">"#95A5A6"</span>, <span class="st">"#27AE60"</span><span class="op">)</span>,</span>
-<span>  drop_na_vars <span class="op">=</span> <span class="cn">TRUE</span></span>
-<span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="co"># Wave 1 - Overall</span></span>
-<span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Overall"</span>, tabgroup <span class="op">=</span> <span class="st">"survey/wave1"</span>, filter <span class="op">=</span> <span class="op">~</span> <span class="va">wave</span> <span class="op">==</span> <span class="fl">1</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="co"># Wave 1 - By demographics</span></span>
-<span>  <span class="fu"><a href="../reference/add_vizzes.html">add_vizzes</a></span><span class="op">(</span></span>
-<span>    .tabgroup_template <span class="op">=</span> <span class="st">"survey/wave1/{demographic}"</span>,</span>
-<span>    demographic <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"age"</span>, <span class="st">"gender"</span>, <span class="st">"education"</span><span class="op">)</span>,</span>
-<span>    title <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"By Age"</span>, <span class="st">"By Gender"</span>, <span class="st">"By Education"</span><span class="op">)</span></span>
-<span>  <span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="co"># Wave 2 - Overall</span></span>
-<span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Overall"</span>, tabgroup <span class="op">=</span> <span class="st">"survey/wave2"</span>, filter <span class="op">=</span> <span class="op">~</span> <span class="va">wave</span> <span class="op">==</span> <span class="fl">2</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="co"># Wave 2 - By demographics  </span></span>
-<span>  <span class="fu"><a href="../reference/add_vizzes.html">add_vizzes</a></span><span class="op">(</span></span>
-<span>    .tabgroup_template <span class="op">=</span> <span class="st">"survey/wave2/{demographic}"</span>,</span>
-<span>    demographic <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"age"</span>, <span class="st">"gender"</span>, <span class="st">"education"</span><span class="op">)</span>,</span>
-<span>    title <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"By Age"</span>, <span class="st">"By Gender"</span>, <span class="st">"By Education"</span><span class="op">)</span></span>
-<span>  <span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="co"># Custom labels</span></span>
-<span>  <span class="fu"><a href="../reference/set_tabgroup_labels.html">set_tabgroup_labels</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
-<span>    survey <span class="op">=</span> <span class="st">"📊 Survey Results"</span>,</span>
-<span>    wave1 <span class="op">=</span> <span class="st">"Wave 1 (January 2024)"</span>,</span>
-<span>    wave2 <span class="op">=</span> <span class="st">"Wave 2 (June 2024)"</span>,</span>
-<span>    age <span class="op">=</span> <span class="st">"Age Groups"</span>,</span>
-<span>    gender <span class="op">=</span> <span class="st">"Gender"</span>,</span>
-<span>    education <span class="op">=</span> <span class="st">"Education Level"</span></span>
-<span>  <span class="op">)</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Create dashboard</span></span>
-<span><span class="va">dashboard</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_dashboard.html">create_dashboard</a></span><span class="op">(</span></span>
-<span>  title <span class="op">=</span> <span class="st">"Survey Dashboard"</span>,</span>
-<span>  output_dir <span class="op">=</span> <span class="st">"survey_dashboard"</span>,</span>
-<span>  tabset_theme <span class="op">=</span> <span class="st">"modern"</span></span>
-<span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="../reference/add_page.html">add_page</a></span><span class="op">(</span></span>
-<span>    <span class="st">"Results"</span>,</span>
-<span>    data <span class="op">=</span> <span class="va">survey_data</span>,</span>
-<span>    visualizations <span class="op">=</span> <span class="va">survey_viz</span>,</span>
-<span>    is_landing_page <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>    overlay <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>    overlay_text <span class="op">=</span> <span class="st">"Loading survey results..."</span></span>
-<span>  <span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="../reference/generate_dashboard.html">generate_dashboard</a></span><span class="op">(</span><span class="va">dashboard</span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level2">
-<h2 id="performance-tips">Performance Tips<a class="anchor" aria-label="anchor" href="#performance-tips"></a>
-</h2>
-<p>For faster iteration during development:</p>
-<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Skip rendering during development (faster)</span></span>
-<span><span class="fu"><a href="../reference/generate_dashboard.html">generate_dashboard</a></span><span class="op">(</span><span class="va">dashboard</span>, render <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Render when you want to see the final HTML</span></span>
-<span><span class="fu"><a href="../reference/generate_dashboard.html">generate_dashboard</a></span><span class="op">(</span><span class="va">dashboard</span>, render <span class="op">=</span> <span class="cn">TRUE</span>, open <span class="op">=</span> <span class="st">"browser"</span><span class="op">)</span></span></code></pre></div>
-<p>Quarto’s internal caching makes subsequent renders faster
-automatically.</p>
-</div>
-<div class="section level2">
-<h2 id="advanced-navigation">Advanced Navigation<a class="anchor" aria-label="anchor" href="#advanced-navigation"></a>
-</h2>
-<p>Create sophisticated navigation structures with dropdown menus and
-custom layouts.</p>
 <div class="section level3">
 <h3 id="dropdown-menus">Dropdown Menus<a class="anchor" aria-label="anchor" href="#dropdown-menus"></a>
 </h3>
-<p>Organize related pages into dropdown menus in the navbar:</p>
-<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Create a dropdown menu</span></span>
-<span><span class="va">reports_menu</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/navbar_menu.html">navbar_menu</a></span><span class="op">(</span></span>
-<span>  text <span class="op">=</span> <span class="st">"Reports"</span>,</span>
-<span>  pages <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Monthly"</span>, <span class="st">"Quarterly"</span>, <span class="st">"Annual"</span><span class="op">)</span>,</span>
-<span>  icon <span class="op">=</span> <span class="st">"ph:file-text"</span></span>
-<span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">dashboard</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_dashboard.html">create_dashboard</a></span><span class="op">(</span></span>
-<span>  title <span class="op">=</span> <span class="st">"Business Dashboard"</span>,</span>
-<span>  output_dir <span class="op">=</span> <span class="st">"business_dashboard"</span></span>
-<span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu">add_navbar_section</span><span class="op">(</span><span class="va">reports_menu</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="../reference/add_page.html">add_page</a></span><span class="op">(</span><span class="st">"Home"</span>, text <span class="op">=</span> <span class="st">"Welcome"</span>, is_landing_page <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="../reference/add_page.html">add_page</a></span><span class="op">(</span><span class="st">"Monthly"</span>, data <span class="op">=</span> <span class="va">monthly_data</span>, visualizations <span class="op">=</span> <span class="va">monthly_viz</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="../reference/add_page.html">add_page</a></span><span class="op">(</span><span class="st">"Quarterly"</span>, data <span class="op">=</span> <span class="va">quarterly_data</span>, visualizations <span class="op">=</span> <span class="va">quarterly_viz</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="../reference/add_page.html">add_page</a></span><span class="op">(</span><span class="st">"Annual"</span>, data <span class="op">=</span> <span class="va">annual_data</span>, visualizations <span class="op">=</span> <span class="va">annual_viz</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="../reference/generate_dashboard.html">generate_dashboard</a></span><span class="op">(</span><span class="va">dashboard</span><span class="op">)</span></span></code></pre></div>
-<p><strong>Multiple menus:</strong></p>
-<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Create multiple dropdown menus</span></span>
-<span><span class="va">reports_menu</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/navbar_menu.html">navbar_menu</a></span><span class="op">(</span></span>
-<span>  text <span class="op">=</span> <span class="st">"Reports"</span>,</span>
-<span>  pages <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Monthly"</span>, <span class="st">"Quarterly"</span>, <span class="st">"Annual"</span><span class="op">)</span>,</span>
-<span>  icon <span class="op">=</span> <span class="st">"ph:file-text"</span></span>
-<span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">analysis_menu</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/navbar_menu.html">navbar_menu</a></span><span class="op">(</span></span>
-<span>  text <span class="op">=</span> <span class="st">"Analysis"</span>,</span>
-<span>  pages <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Demographics"</span>, <span class="st">"Trends"</span>, <span class="st">"Correlations"</span><span class="op">)</span>,</span>
-<span>  icon <span class="op">=</span> <span class="st">"ph:chart-line"</span></span>
-<span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">dashboard</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_dashboard.html">create_dashboard</a></span><span class="op">(</span><span class="va">...</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu">add_navbar_section</span><span class="op">(</span><span class="va">reports_menu</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu">add_navbar_section</span><span class="op">(</span><span class="va">analysis_menu</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="co"># Add all pages...</span></span>
-<span>  <span class="fu"><a href="../reference/add_page.html">add_page</a></span><span class="op">(</span><span class="st">"Monthly"</span>, <span class="va">...</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="../reference/add_page.html">add_page</a></span><span class="op">(</span><span class="st">"Quarterly"</span>, <span class="va">...</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="../reference/add_page.html">add_page</a></span><span class="op">(</span><span class="st">"Demographics"</span>, <span class="va">...</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="../reference/add_page.html">add_page</a></span><span class="op">(</span><span class="st">"Trends"</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level3">
-<h3 id="navbar-alignment">Navbar Alignment<a class="anchor" aria-label="anchor" href="#navbar-alignment"></a>
-</h3>
-<p>Control the position of pages in the navbar:</p>
-<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">dashboard</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_dashboard.html">create_dashboard</a></span><span class="op">(</span><span class="va">...</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="co"># Left-aligned pages (default)</span></span>
-<span>  <span class="fu"><a href="../reference/add_page.html">add_page</a></span><span class="op">(</span><span class="st">"Home"</span>, <span class="va">...</span>, navbar_align <span class="op">=</span> <span class="st">"left"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="../reference/add_page.html">add_page</a></span><span class="op">(</span><span class="st">"Analysis"</span>, <span class="va">...</span>, navbar_align <span class="op">=</span> <span class="st">"left"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  </span>
-<span>  <span class="co"># Right-aligned pages</span></span>
-<span>  <span class="fu"><a href="../reference/add_page.html">add_page</a></span><span class="op">(</span><span class="st">"About"</span>, <span class="va">...</span>, navbar_align <span class="op">=</span> <span class="st">"right"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="../reference/add_page.html">add_page</a></span><span class="op">(</span><span class="st">"Contact"</span>, <span class="va">...</span>, navbar_align <span class="op">=</span> <span class="st">"right"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="../reference/generate_dashboard.html">generate_dashboard</a></span><span class="op">(</span><span class="va">dashboard</span><span class="op">)</span></span></code></pre></div>
-<p><strong>Typical pattern:</strong> - Left: Main content pages (Home,
-Analysis, Reports) - Right: Meta pages (About, Help, Settings)</p>
-</div>
-<div class="section level3">
-<h3 id="loading-overlays">Loading Overlays<a class="anchor" aria-label="anchor" href="#loading-overlays"></a>
-</h3>
-<p>Add loading overlays to pages with heavy visualizations or data
-processing:</p>
-<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">dashboard</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_dashboard.html">create_dashboard</a></span><span class="op">(</span><span class="va">...</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="../reference/add_page.html">add_page</a></span><span class="op">(</span></span>
-<span>    <span class="st">"Heavy Analysis"</span>,</span>
-<span>    data <span class="op">=</span> <span class="va">large_dataset</span>,</span>
-<span>    visualizations <span class="op">=</span> <span class="va">complex_viz</span>,</span>
-<span>    overlay <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>    overlay_theme <span class="op">=</span> <span class="st">"glass"</span>,  <span class="co"># Options: light, glass, dark, accent</span></span>
-<span>    overlay_text <span class="op">=</span> <span class="st">"Loading analysis..."</span></span>
-<span>  <span class="op">)</span></span></code></pre></div>
-<p><strong>Overlay themes:</strong> - <code>"light"</code> - Light
-background (default) - <code>"glass"</code> - Glassmorphism effect -
-<code>"dark"</code> - Dark background - <code>"accent"</code> - Matches
-dashboard accent color</p>
-<p><strong>When to use:</strong> - Pages with 5+ visualizations - Large
-datasets (&gt; 10MB) - Complex computations - Shiny integration</p>
-</div>
-<div class="section level3">
-<h3 id="complete-navigation-example">Complete Navigation Example<a class="anchor" aria-label="anchor" href="#complete-navigation-example"></a>
-</h3>
-<p>Combining all navigation features:</p>
-<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Create dropdown menus</span></span>
-<span><span class="va">data_menu</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/navbar_menu.html">navbar_menu</a></span><span class="op">(</span></span>
-<span>  text <span class="op">=</span> <span class="st">"Data Views"</span>,</span>
-<span>  pages <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Overview"</span>, <span class="st">"Detailed"</span>, <span class="st">"Comparison"</span><span class="op">)</span>,</span>
-<span>  icon <span class="op">=</span> <span class="st">"ph:database"</span></span>
-<span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Create dashboard with advanced navigation</span></span>
-<span><span class="va">dashboard</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_dashboard.html">create_dashboard</a></span><span class="op">(</span></span>
-<span>  title <span class="op">=</span> <span class="st">"Advanced Dashboard"</span>,</span>
-<span>  output_dir <span class="op">=</span> <span class="st">"advanced_dashboard"</span>,</span>
-<span>  tabset_theme <span class="op">=</span> <span class="st">"modern"</span></span>
-<span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="co"># Landing page (left)</span></span>
-<span>  <span class="fu"><a href="../reference/add_page.html">add_page</a></span><span class="op">(</span></span>
-<span>    <span class="st">"Home"</span>,</span>
-<span>    text <span class="op">=</span> <span class="st">"Welcome to the dashboard"</span>,</span>
-<span>    is_landing_page <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>    navbar_align <span class="op">=</span> <span class="st">"left"</span></span>
-<span>  <span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  </span>
-<span>  <span class="co"># Dropdown menu pages</span></span>
-<span>  <span class="fu">add_navbar_section</span><span class="op">(</span><span class="va">data_menu</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="../reference/add_page.html">add_page</a></span><span class="op">(</span></span>
-<span>    <span class="st">"Overview"</span>,</span>
-<span>    data <span class="op">=</span> <span class="va">summary_data</span>,</span>
-<span>    visualizations <span class="op">=</span> <span class="va">overview_viz</span></span>
-<span>  <span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="../reference/add_page.html">add_page</a></span><span class="op">(</span></span>
-<span>    <span class="st">"Detailed"</span>,</span>
-<span>    data <span class="op">=</span> <span class="va">full_data</span>,</span>
-<span>    visualizations <span class="op">=</span> <span class="va">detailed_viz</span>,</span>
-<span>    overlay <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>    overlay_text <span class="op">=</span> <span class="st">"Loading detailed analysis..."</span></span>
-<span>  <span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="../reference/add_page.html">add_page</a></span><span class="op">(</span></span>
-<span>    <span class="st">"Comparison"</span>,</span>
-<span>    data <span class="op">=</span> <span class="va">comparison_data</span>,</span>
-<span>    visualizations <span class="op">=</span> <span class="va">comparison_viz</span></span>
-<span>  <span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  </span>
-<span>  <span class="co"># Regular page (left)</span></span>
-<span>  <span class="fu"><a href="../reference/add_page.html">add_page</a></span><span class="op">(</span></span>
-<span>    <span class="st">"Custom Analysis"</span>,</span>
-<span>    data <span class="op">=</span> <span class="va">custom_data</span>,</span>
-<span>    visualizations <span class="op">=</span> <span class="va">custom_viz</span>,</span>
-<span>    navbar_align <span class="op">=</span> <span class="st">"left"</span></span>
-<span>  <span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  </span>
-<span>  <span class="co"># Meta pages (right)</span></span>
-<span>  <span class="fu"><a href="../reference/add_page.html">add_page</a></span><span class="op">(</span></span>
-<span>    <span class="st">"About"</span>,</span>
-<span>    text <span class="op">=</span> <span class="st">"Dashboard information and methodology"</span>,</span>
-<span>    navbar_align <span class="op">=</span> <span class="st">"right"</span></span>
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/create_dashboard.html">create_dashboard</a></span><span class="op">(</span></span>
+<span>  title <span class="op">=</span> <span class="st">"My Dashboard"</span>,</span>
+<span>  output_dir <span class="op">=</span> <span class="st">"output"</span>,</span>
+<span>  navbar_left <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>      text <span class="op">=</span> <span class="st">"Analysis"</span>,</span>
+<span>      menu <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>        <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>text <span class="op">=</span> <span class="st">"Demographics"</span>, href <span class="op">=</span> <span class="st">"demographics.html"</span><span class="op">)</span>,</span>
+<span>        <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>text <span class="op">=</span> <span class="st">"Trends"</span>, href <span class="op">=</span> <span class="st">"trends.html"</span><span class="op">)</span>,</span>
+<span>        <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>text <span class="op">=</span> <span class="st">"---"</span><span class="op">)</span>,  <span class="co"># Divider</span></span>
+<span>        <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>text <span class="op">=</span> <span class="st">"Download"</span>, href <span class="op">=</span> <span class="st">"data.csv"</span><span class="op">)</span></span>
+<span>      <span class="op">)</span></span>
+<span>    <span class="op">)</span></span>
 <span>  <span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Generate dashboard</span></span>
-<span><span class="fu"><a href="../reference/generate_dashboard.html">generate_dashboard</a></span><span class="op">(</span><span class="va">dashboard</span><span class="op">)</span></span></code></pre></div>
+<span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="sidebar-navigation">Sidebar Navigation<a class="anchor" aria-label="anchor" href="#sidebar-navigation"></a>
+</h3>
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/create_dashboard.html">create_dashboard</a></span><span class="op">(</span></span>
+<span>  title <span class="op">=</span> <span class="st">"My Dashboard"</span>,</span>
+<span>  output_dir <span class="op">=</span> <span class="st">"output"</span>,</span>
+<span>  sidebar <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  sidebar_title <span class="op">=</span> <span class="st">"Navigation"</span>,</span>
+<span>  sidebar_style <span class="op">=</span> <span class="st">"floating"</span>  <span class="co"># "docked" or "floating"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
-<h2 id="see-also">See Also<a class="anchor" aria-label="anchor" href="#see-also"></a>
+<h2 id="pagination">Pagination<a class="anchor" aria-label="anchor" href="#pagination"></a>
+</h2>
+<p>Break long dashboards into sections:</p>
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">section1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_content.html">create_content</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"bar"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span>x_var <span class="op">=</span> <span class="st">"degree"</span>, title <span class="op">=</span> <span class="st">"Education"</span>, tabgroup <span class="op">=</span> <span class="st">"demographics"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">section2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_content.html">create_content</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"stackedbar"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span>x_var <span class="op">=</span> <span class="st">"happy"</span>, stack_var <span class="op">=</span> <span class="st">"sex"</span>, title <span class="op">=</span> <span class="st">"Happiness"</span>, tabgroup <span class="op">=</span> <span class="st">"crosstabs"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">paginated</span> <span class="op">&lt;-</span> <span class="va">section1</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/add_pagination.html">add_pagination</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/combine_viz.html">combine_viz</a></span><span class="op">(</span><span class="va">section2</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">paginated</span><span class="op">)</span></span>
+<span><span class="co">#&gt; -- <span style="font-weight: bold;">Content Collection</span> ----------------------------------------------------------</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">3</span> items | <span style="color: #555555;">x no data</span></span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; &gt; <span style="color: #0000BB;">[Tab]</span> <span style="color: #00BBBB; font-weight: bold;">demographics</span><span style="color: #555555;"> (1 viz)</span></span></span>
+<span><span class="co">#&gt;   * <span style="color: #00BB00;">[Viz]</span> <span style="font-weight: bold;">Education</span> <span style="color: #555555;">(</span><span style="color: #BB00BB;">bar</span><span style="color: #555555;">)</span> <span style="color: #555555;">x=degree</span></span></span>
+<span><span class="co">#&gt; &gt; <span style="color: #BB0000;">[PageBreak]</span></span></span>
+<span><span class="co">#&gt; &gt; <span style="color: #0000BB;">[Tab]</span> <span style="color: #00BBBB; font-weight: bold;">crosstabs</span><span style="color: #555555;"> (1 viz)</span></span></span>
+<span><span class="co">#&gt;   * <span style="color: #00BB00;">[Viz]</span> <span style="font-weight: bold;">Happiness</span> <span style="color: #555555;">(</span><span style="color: #BB00BB;">stackedbar</span><span style="color: #555555;">)</span> <span style="color: #555555;">x=happy, stack=sex</span></span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="tips-and-best-practices">Tips and Best Practices<a class="anchor" aria-label="anchor" href="#tips-and-best-practices"></a>
+</h2>
+<div class="section level3">
+<h3 id="always-print-during-development">1. Always Print During Development<a class="anchor" aria-label="anchor" href="#always-print-during-development"></a>
+</h3>
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># See visualization structure</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">my_viz</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># See page structure</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">my_page</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># See dashboard pages</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">dashboard</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="set-sensible-defaults">2. Set Sensible Defaults<a class="anchor" aria-label="anchor" href="#set-sensible-defaults"></a>
+</h3>
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Good: Set common parameters once</span></span>
+<span><span class="va">viz</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_content.html">create_content</a></span><span class="op">(</span></span>
+<span>  type <span class="op">=</span> <span class="st">"bar"</span>,</span>
+<span>  color_palette <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"#3498DB"</span><span class="op">)</span>,</span>
+<span>  drop_na_vars <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Avoid: Repeating parameters</span></span>
+<span><span class="va">viz</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_content.html">create_content</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"bar"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span>x_var <span class="op">=</span> <span class="st">"age"</span>, color_palette <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"#3498DB"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span>x_var <span class="op">=</span> <span class="st">"income"</span>, color_palette <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"#3498DB"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="organize-large-dashboards">3. Organize Large Dashboards<a class="anchor" aria-label="anchor" href="#organize-large-dashboards"></a>
+</h3>
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Create modular content collections</span></span>
+<span><span class="va">demographics</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_content.html">create_content</a></span><span class="op">(</span><span class="va">...</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span><span class="va">...</span><span class="op">)</span></span>
+<span><span class="va">satisfaction</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_content.html">create_content</a></span><span class="op">(</span><span class="va">...</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span><span class="va">...</span><span class="op">)</span></span>
+<span><span class="va">trends</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_content.html">create_content</a></span><span class="op">(</span><span class="va">...</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span><span class="va">...</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Combine them</span></span>
+<span><span class="va">all_content</span> <span class="op">&lt;-</span> <span class="va">demographics</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/combine_viz.html">combine_viz</a></span><span class="op">(</span><span class="va">satisfaction</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/add_pagination.html">add_pagination</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/combine_viz.html">combine_viz</a></span><span class="op">(</span><span class="va">trends</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="use-lazy-loading-for-performance">4. Use Lazy Loading for Performance<a class="anchor" aria-label="anchor" href="#use-lazy-loading-for-performance"></a>
+</h3>
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/create_page.html">create_page</a></span><span class="op">(</span></span>
+<span>  <span class="st">"Large Analysis"</span>,</span>
+<span>  data <span class="op">=</span> <span class="va">data</span>,</span>
+<span>  lazy_load_charts <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  lazy_load_tabs <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="test-without-rendering">5. Test Without Rendering<a class="anchor" aria-label="anchor" href="#test-without-rendering"></a>
+</h3>
+<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Fast iteration: just create QMD files</span></span>
+<span><span class="fu"><a href="../reference/generate_dashboard.html">generate_dashboard</a></span><span class="op">(</span><span class="va">dashboard</span>, render <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Check structure, fix issues, then render</span></span>
+<span><span class="fu"><a href="../reference/generate_dashboard.html">generate_dashboard</a></span><span class="op">(</span><span class="va">dashboard</span>, render <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+</div>
+</div>
+<div class="section level2">
+<h2 id="debugging">Debugging<a class="anchor" aria-label="anchor" href="#debugging"></a>
+</h2>
+<div class="section level3">
+<h3 id="common-issues">Common Issues<a class="anchor" aria-label="anchor" href="#common-issues"></a>
+</h3>
+<p><strong>Visualization not showing:</strong></p>
+<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Check variable names match your data</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">my_data</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Check for NA values</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">my_data</span><span class="op">$</span><span class="va">x_var</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Use drop_na_vars if needed</span></span>
+<span><span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span>x_var <span class="op">=</span> <span class="st">"age"</span>, drop_na_vars <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<p><strong>Filter not working:</strong></p>
+<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Correct: use formula with ~</span></span>
+<span><span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span>x_var <span class="op">=</span> <span class="st">"age"</span>, filter <span class="op">=</span> <span class="op">~</span> <span class="va">wave</span> <span class="op">==</span> <span class="fl">1</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Wrong: missing ~</span></span>
+<span><span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span>x_var <span class="op">=</span> <span class="st">"age"</span>, filter <span class="op">=</span> <span class="va">wave</span> <span class="op">==</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
+<p><strong>Tabs in wrong order:</strong></p>
+<p>Tabs appear in the order of <code><a href="../reference/add_viz.html">add_viz()</a></code> calls. Reorder
+your code to change tab order:</p>
+<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Check the structure</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">viz</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Reorder by changing add_viz() order</span></span>
+<span><span class="va">viz</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_content.html">create_content</a></span><span class="op">(</span><span class="va">...</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span><span class="va">...</span>, tabgroup <span class="op">=</span> <span class="st">"first"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>   <span class="co"># Will appear first</span></span>
+<span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span><span class="va">...</span>, tabgroup <span class="op">=</span> <span class="st">"second"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>  <span class="co"># Will appear second</span></span>
+<span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span><span class="va">...</span>, tabgroup <span class="op">=</span> <span class="st">"third"</span><span class="op">)</span>       <span class="co"># Will appear third</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="getting-help">Getting Help<a class="anchor" aria-label="anchor" href="#getting-help"></a>
+</h3>
+<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Function documentation</span></span>
+<span><span class="op">?</span><span class="va">create_dashboard</span></span>
+<span><span class="op">?</span><span class="va">add_viz</span></span>
+<span><span class="op">?</span><span class="va">generate_dashboard</span></span>
+<span></span>
+<span><span class="co"># Package overview</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/help.html" class="external-link">help</a></span><span class="op">(</span>package <span class="op">=</span> <span class="st">"dashboardr"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># All vignettes</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/vignette.html" class="external-link">vignette</a></span><span class="op">(</span>package <span class="op">=</span> <span class="st">"dashboardr"</span><span class="op">)</span></span></code></pre></div>
+</div>
+</div>
+<div class="section level2">
+<h2 id="related-vignettes">Related Vignettes<a class="anchor" aria-label="anchor" href="#related-vignettes"></a>
 </h2>
 <ul>
 <li>
-<code><a href="../articles/getting-started.html">vignette("getting-started")</a></code> - Basic dashboard
-creation</li>
+<code><a href="../articles/getting-started.html">vignette("getting-started")</a></code> - Quick overview</li>
 <li>
-<code><a href="../reference/create_viz.html">?create_viz</a></code> - Visualization creation</li>
+<code><a href="../articles/content-collections.html">vignette("content-collections")</a></code> - Layer 1: Content</li>
 <li>
-<code><a href="../reference/add_vizzes.html">?add_vizzes</a></code> - Vectorized visualization creation</li>
+<code><a href="../articles/pages.html">vignette("pages")</a></code> - Layer 2: Pages</li>
 <li>
-<code><a href="../reference/set_tabgroup_labels.html">?set_tabgroup_labels</a></code> - Custom tab labels</li>
-<li>
-<code><a href="../reference/generate_dashboard.html">?generate_dashboard</a></code> - Dashboard generation options</li>
-<li>
-<code><a href="../reference/navbar_menu.html">?navbar_menu</a></code> - Dropdown menu creation</li>
+<code><a href="../articles/dashboards.html">vignette("dashboards")</a></code> - Layer 3: Dashboard</li>
 </ul>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

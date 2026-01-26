@@ -22,10 +22,23 @@
 <meta name="description" content="What the package does (one paragraph).">
 <meta property="og:description" content="What the package does (one paragraph).">
 <style>
+/* Navbar logo */
 .navbar-brand img {
   max-height: 30px;
   width: auto;
   object-fit: contain;
+}
+/* Home page logo - limit size */
+.page-header .logo {
+  max-width: 150px;
+  height: auto;
+}
+/* Also target the img in the README content */
+#dashboardr- img[src*="logo"] {
+  max-width: 150px;
+  height: auto;
+  float: right;
+  margin-left: 20px;
 }
 </style>
 </head>

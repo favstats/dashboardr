@@ -820,7 +820,8 @@
     "</div>"
   )
   
-  c("", metric_html, "")
+  # Wrap HTML in Quarto HTML block so it renders properly
+  c("", "```{=html}", metric_html, "```", "")
 }
 
 #' Generate value box block markdown

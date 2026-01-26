@@ -26,7 +26,15 @@
 #' @param x_tooltip_prefix Optional string prepended to x value in tooltip.
 #' @param y_tooltip_prefix Optional string prepended to y value in tooltip.
 #' @param x_order Optional character vector to order the factor levels of `x_var`.
+#'   Alternatively, use `x_order_by` to order by aggregated values.
 #' @param y_order Optional character vector to order the factor levels of `y_var`.
+#'   Alternatively, use `y_order_by` to order by aggregated values.
+#' @param x_order_by Optional. Order x-axis categories by aggregated value.
+#'   Can be "asc" (ascending), "desc" (descending), or NULL (default, no reordering).
+#'   When set, categories are sorted by their mean value across all y categories.
+#' @param y_order_by Optional. Order y-axis categories by aggregated value.
+#'   Can be "asc" (ascending), "desc" (descending), or NULL (default, no reordering).
+#'   When set, categories are sorted by their mean value across all x categories.
 #' @param color_min Optional numeric. Minimum value for the color axis. If NULL, defaults to data min.
 #' @param color_max Optional numeric. Maximum value for the color axis. If NULL, defaults to data max.
 #' @param color_palette Optional character vector of colors for the color gradient.
@@ -193,6 +201,8 @@ create_heatmap <- function(data,
                            y_tooltip_prefix = "",
                            x_order = NULL,
                            y_order = NULL,
+                           x_order_by = NULL,
+                           y_order_by = NULL,
                            color_min = NULL,
                            color_max = NULL,
                            color_palette = c("#FFFFFF", "#7CB5EC"), # Default: white to light blue
@@ -280,12 +290,12 @@ create_heatmap <- function(data,
     if (inherits(df_plot$.x_raw, "haven_labelled")) {
       df_plot <- df_plot |>
         dplyr::mutate(.x_raw = haven::as_factor(.x_raw, levels = "values"))
-      message(paste0("Note: Column '", x_var, "' was 'haven_labelled' and converted to factor (levels = values)."))
+      if (interactive()) message(paste0("Note: Column '", x_var, "' was 'haven_labelled' and converted to factor (levels = values)."))
     }
     if (inherits(df_plot$.y_raw, "haven_labelled")) {
       df_plot <- df_plot |>
         dplyr::mutate(.y_raw = haven::as_factor(.y_raw, levels = "values"))
-      message(paste0("Note: Column '", y_var, "' was 'haven_labelled' and converted to factor (levels = values)."))
+      if (interactive()) message(paste0("Note: Column '", y_var, "' was 'haven_labelled' and converted to factor (levels = values)."))
     }
   }
 
@@ -365,9 +375,9 @@ create_heatmap <- function(data,
       )
     )
 
-  # Get final levels for complete
-  final_x_levels <- levels(df_processed$.x_plot)
-  final_y_levels <- levels(df_processed$.y_plot)
+  # Get initial levels (may be reordered by x_order_by/y_order_by)
+  initial_x_levels <- levels(df_processed$.x_plot)
+  initial_y_levels <- levels(df_processed$.y_plot)
 
   # AGGREGATION with complete
   if (!is.null(weight_var)) {
@@ -389,6 +399,35 @@ create_heatmap <- function(data,
       dplyr::arrange(.x_plot, .y_plot)
   }
 
+
+  # Apply value-based ordering if requested (overrides x_order/y_order)
+  # x_order_by: order x-axis categories by their mean value
+  if (!is.null(x_order_by)) {
+    x_order_by <- match.arg(x_order_by, c("asc", "desc"))
+    x_means <- df_plot_complete |>
+      dplyr::group_by(.x_plot) |>
+      dplyr::summarise(.mean_val = mean(.value_plot, na.rm = TRUE), .groups = "drop") |>
+      dplyr::arrange(if (x_order_by == "desc") dplyr::desc(.mean_val) else .mean_val)
+    new_x_levels <- as.character(x_means$.x_plot)
+    df_plot_complete <- df_plot_complete |>
+      dplyr::mutate(.x_plot = factor(.x_plot, levels = new_x_levels))
+  }
+
+  # y_order_by: order y-axis categories by their mean value
+  if (!is.null(y_order_by)) {
+    y_order_by <- match.arg(y_order_by, c("asc", "desc"))
+    y_means <- df_plot_complete |>
+      dplyr::group_by(.y_plot) |>
+      dplyr::summarise(.mean_val = mean(.value_plot, na.rm = TRUE), .groups = "drop") |>
+      dplyr::arrange(if (y_order_by == "desc") dplyr::desc(.mean_val) else .mean_val)
+    new_y_levels <- as.character(y_means$.y_plot)
+    df_plot_complete <- df_plot_complete |>
+      dplyr::mutate(.y_plot = factor(.y_plot, levels = new_y_levels))
+  }
+
+  # Get final levels (after potential reordering)
+  final_x_levels <- levels(df_plot_complete$.x_plot)
+  final_y_levels <- levels(df_plot_complete$.y_plot)
 
   # Chart construction
   hc <- highcharter::highchart() %>%

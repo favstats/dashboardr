@@ -22,6 +22,8 @@ create_heatmap(
   y_tooltip_prefix = "",
   x_order = NULL,
   y_order = NULL,
+  x_order_by = NULL,
+  y_order_by = NULL,
   color_min = NULL,
   color_max = NULL,
   color_palette = c("#FFFFFF", "#7CB5EC"),
@@ -69,9 +71,19 @@ determine the color intensity.}
 
 \item{y_tooltip_prefix}{Optional string prepended to y value in tooltip.}
 
-\item{x_order}{Optional character vector to order the factor levels of \code{x_var}.}
+\item{x_order}{Optional character vector to order the factor levels of \code{x_var}.
+Alternatively, use \code{x_order_by} to order by aggregated values.}
 
-\item{y_order}{Optional character vector to order the factor levels of \code{y_var}.}
+\item{y_order}{Optional character vector to order the factor levels of \code{y_var}.
+Alternatively, use \code{y_order_by} to order by aggregated values.}
+
+\item{x_order_by}{Optional. Order x-axis categories by aggregated value.
+Can be "asc" (ascending), "desc" (descending), or NULL (default, no reordering).
+When set, categories are sorted by their mean value across all y categories.}
+
+\item{y_order_by}{Optional. Order y-axis categories by aggregated value.
+Can be "asc" (ascending), "desc" (descending), or NULL (default, no reordering).
+When set, categories are sorted by their mean value across all x categories.}
 
 \item{color_min}{Optional numeric. Minimum value for the color axis. If NULL, defaults to data min.}
 

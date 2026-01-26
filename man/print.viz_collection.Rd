@@ -4,10 +4,13 @@
 \alias{print.viz_collection}
 \title{Create a new dashboard project}
 \usage{
-\method{print}{viz_collection}(x, ...)
+\method{print}{viz_collection}(x, render = FALSE, ...)
 }
 \arguments{
 \item{x}{A viz_collection object created by \code{\link{create_viz}}.}
+
+\item{render}{If TRUE and data is attached, opens a preview in the viewer
+instead of showing the structure. Default is FALSE.}
 
 \item{...}{Additional arguments (currently ignored).}
 
@@ -115,6 +118,9 @@ The print method displays:
 \item Visualization types with emoji indicators
 \item Filter status for each visualization
 }
+
+Use \code{print(x, render = TRUE)} to open a preview in the viewer instead
+of showing the structure. This is useful for quick visualization in the console.
 }
 \examples{
 \dontrun{

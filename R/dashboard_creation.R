@@ -524,6 +524,11 @@ add_dashboard_page <- function(proj, name, data = NULL, data_path = NULL,
     stop("proj must be a dashboard_project object")
   }
 
+ # If 'name' is a page_object, delegate to add_pages
+  if (inherits(name, "page_object")) {
+    return(add_pages(proj, name))
+  }
+
   # Handle content and visualizations parameters - make them completely interchangeable
   # Both can accept viz_collection, content_collection, content_block, or list
   content_blocks <- NULL
@@ -759,6 +764,15 @@ add_dashboard_page <- function(proj, name, data = NULL, data_path = NULL,
   # Use dashboard-level tabset colors if page-level not specified
   if (is.null(tabset_colors)) {
     tabset_colors <- proj$tabset_colors
+  }
+
+  # Fallback to collection-level data if page-level data is not provided
+  # This allows create_viz(data = df) to pass data through without needing it in add_page()
+  if (is.null(data) && is.null(data_path)) {
+    # Check if visualizations/content collection has inline data
+    if (!is.null(combined_input) && is_content(combined_input) && !is.null(combined_input$data)) {
+      data <- combined_input$data
+    }
   }
 
   # Handle data storage with deduplication

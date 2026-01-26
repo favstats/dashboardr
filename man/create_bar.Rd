@@ -12,16 +12,21 @@ create_bar(
   subtitle = NULL,
   x_label = NULL,
   y_label = NULL,
-  horizontal = TRUE,
-  bar_type = "percent",
+  horizontal = FALSE,
+  bar_type = "count",
   color_palette = NULL,
   group_order = NULL,
   x_order = NULL,
+  sort_by_value = FALSE,
+  sort_desc = TRUE,
   x_breaks = NULL,
   x_bin_labels = NULL,
   include_na = FALSE,
   na_label = "Missing",
-  weight_var = NULL
+  weight_var = NULL,
+  tooltip_prefix = "",
+  tooltip_suffix = "",
+  x_tooltip_suffix = ""
 )
 }
 \arguments{
@@ -40,15 +45,19 @@ create_bar(
 
 \item{y_label}{Optional label for the y-axis.}
 
-\item{horizontal}{Logical. If \code{TRUE}, creates horizontal bars. Defaults to \code{TRUE}.}
+\item{horizontal}{Logical. If \code{TRUE}, creates horizontal bars. Defaults to \code{FALSE}.}
 
-\item{bar_type}{Character string. Type of bar chart: "count" or "percent". Defaults to "percent".}
+\item{bar_type}{Character string. Type of bar chart: "count" or "percent". Defaults to "count".}
 
 \item{color_palette}{Optional character vector of colors for the bars.}
 
 \item{group_order}{Optional character vector specifying the order of groups (for \code{group_var}).}
 
 \item{x_order}{Optional character vector specifying the order of x categories.}
+
+\item{sort_by_value}{Logical. If \code{TRUE}, sort categories by their value (highest on top for horizontal bars).}
+
+\item{sort_desc}{Logical. If \code{sort_by_value = TRUE}, sort descending (default) or ascending.}
 
 \item{x_breaks}{Optional numeric vector for binning continuous x variables.}
 
@@ -60,6 +69,12 @@ create_bar(
 
 \item{weight_var}{Optional character string. Name of a weight variable to use for weighted
 aggregation. When provided, counts are computed as the sum of weights instead of simple counts.}
+
+\item{tooltip_prefix}{Optional string prepended to tooltip values.}
+
+\item{tooltip_suffix}{Optional string appended to tooltip values.}
+
+\item{x_tooltip_suffix}{Optional string appended to x-axis values in tooltips.}
 }
 \value{
 A highcharter plot object.
@@ -69,25 +84,30 @@ Creates horizontal or vertical bar charts showing counts or percentages.
 Supports simple bars or grouped bars (when \code{group_var} is provided).
 }
 \examples{
-# Simple bar chart showing distribution
+# Simple bar chart showing counts (default)
 plot1 <- create_bar(
+  data = survey_data,
+  x_var = "category"
+)
+plot1
+
+# Horizontal bars with percentages
+plot2 <- create_bar(
   data = survey_data,
   x_var = "category",
   horizontal = TRUE,
   bar_type = "percent"
 )
-plot1
+plot2
 
-# Grouped bars - like the user's image!
-plot2 <- create_bar(
+# Grouped bars
+plot3 <- create_bar(
   data = survey_data,
-  x_var = "question",           # "Knowledge Score"
-  group_var = "score_range",    # "Low (1-9)", "Middle (10-19)", "High (20-29)"
-  horizontal = TRUE,
-  bar_type = "percent",
+  x_var = "question",
+  group_var = "score_range",
   color_palette = c("#D2691E", "#4682B4", "#228B22"),
   group_order = c("Low (1-9)", "Middle (10-19)", "High (20-29)")
 )
-plot2
+plot3
 
 }

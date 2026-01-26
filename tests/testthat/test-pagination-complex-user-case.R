@@ -228,9 +228,9 @@ test_that("print method handles pagination markers without crashing", {
     output <- capture.output(print(viz_collection))
   })
   
-  # Should mention pagination
+  # Should mention pagination (shown as [PageBreak] in new print format)
   output <- capture.output(print(viz_collection))
-  expect_true(any(grepl("PAGINATION", output)), 
+  expect_true(any(grepl("PageBreak|pagination", output, ignore.case = TRUE)), 
               "Print output should mention pagination")
 })
 

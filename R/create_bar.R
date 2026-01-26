@@ -14,8 +14,8 @@
 #' @param subtitle Optional subtitle for the chart.
 #' @param x_label Optional label for the x-axis. Defaults to `x_var` name.
 #' @param y_label Optional label for the y-axis.
-#' @param horizontal Logical. If `TRUE`, creates horizontal bars. Defaults to `TRUE`.
-#' @param bar_type Character string. Type of bar chart: "count" or "percent". Defaults to "percent".
+#' @param horizontal Logical. If `TRUE`, creates horizontal bars. Defaults to `FALSE`.
+#' @param bar_type Character string. Type of bar chart: "count" or "percent". Defaults to "count".
 #' @param color_palette Optional character vector of colors for the bars.
 #' @param group_order Optional character vector specifying the order of groups (for `group_var`).
 #' @param x_order Optional character vector specifying the order of x categories.
@@ -34,26 +34,31 @@
 #' @return A highcharter plot object.
 #'
 #' @examples
-#' # Simple bar chart showing distribution
+#' # Simple bar chart showing counts (default)
 #' plot1 <- create_bar(
+#'   data = survey_data,
+#'   x_var = "category"
+#' )
+#' plot1
+#'
+#' # Horizontal bars with percentages
+#' plot2 <- create_bar(
 #'   data = survey_data,
 #'   x_var = "category",
 #'   horizontal = TRUE,
 #'   bar_type = "percent"
 #' )
-#' plot1
+#' plot2
 #'
-#' # Grouped bars - like the user's image!
-#' plot2 <- create_bar(
+#' # Grouped bars
+#' plot3 <- create_bar(
 #'   data = survey_data,
-#'   x_var = "question",           # "Knowledge Score"
-#'   group_var = "score_range",    # "Low (1-9)", "Middle (10-19)", "High (20-29)"
-#'   horizontal = TRUE,
-#'   bar_type = "percent",
+#'   x_var = "question",
+#'   group_var = "score_range",
 #'   color_palette = c("#D2691E", "#4682B4", "#228B22"),
 #'   group_order = c("Low (1-9)", "Middle (10-19)", "High (20-29)")
 #' )
-#' plot2
+#' plot3
 #'
 #' @export
 
@@ -64,8 +69,8 @@ create_bar <- function(data,
                        subtitle = NULL,
                        x_label = NULL,
                        y_label = NULL,
-                       horizontal = TRUE,
-                       bar_type = "percent",
+                       horizontal = FALSE,
+                       bar_type = "count",
                        color_palette = NULL,
                        group_order = NULL,
                        x_order = NULL,

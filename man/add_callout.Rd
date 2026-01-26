@@ -5,7 +5,7 @@
 \title{Add callout box}
 \usage{
 add_callout(
-  content,
+  x,
   text,
   type = c("note", "tip", "warning", "caution", "important"),
   title = NULL,
@@ -15,8 +15,6 @@ add_callout(
 )
 }
 \arguments{
-\item{content}{A content_collection or viz_collection object}
-
 \item{text}{Callout content}
 
 \item{type}{Callout type (note/tip/warning/caution/important)}
@@ -28,6 +26,8 @@ add_callout(
 \item{collapse}{Whether callout is collapsible}
 
 \item{tabgroup}{Optional tabgroup for organizing content (character vector for nested tabs)}
+
+\item{content}{A content_collection or viz_collection object}
 }
 \value{
 Updated content_collection

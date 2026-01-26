@@ -8,6 +8,28 @@ after_build:
 
 template:
   bootstrap: 5
+  includes:
+    in_header: |
+      <style>
+      /* Navbar logo */
+      .navbar-brand img {
+        max-height: 30px;
+        width: auto;
+        object-fit: contain;
+      }
+      /* Home page logo - limit size */
+      .page-header .logo {
+        max-width: 150px;
+        height: auto;
+      }
+      /* Also target the img in the README content */
+      #dashboardr- img[src*="logo"] {
+        max-width: 150px;
+        height: auto;
+        float: right;
+        margin-left: 20px;
+      }
+      </style>
   bslib:
     bg: white
     fg: "#212529"
@@ -34,6 +56,15 @@ navbar:
       menu:
       - text: Getting Started
         href: articles/getting-started.html
+      - text: -------
+      - text: The Three Layers
+      - text: Content Collections
+        href: articles/content-collections.html
+      - text: Pages
+        href: articles/pages.html
+      - text: Dashboards
+        href: articles/dashboards.html
+      - text: -------
       - text: Advanced Features
         href: articles/advanced-features.html
       - text: Publishing Dashboards
@@ -66,6 +97,13 @@ articles:
   navbar: ~
   contents:
   - getting-started
+
+- title: The Three Layers
+  navbar: ~
+  contents:
+  - content-collections
+  - pages
+  - dashboards
   
 - title: Advanced Features
   navbar: ~
@@ -99,6 +137,7 @@ reference:
   - add_dashboard_page
   - add_page
   - generate_dashboard
+  - generate_dashboards
   - publish_dashboard
   - update_dashboard
   - create_loading_overlay
@@ -121,8 +160,11 @@ reference:
   - add_vizzes
   - combine_viz
   - combine_content
+  - merge_collections
   - add_pagination
   - set_tabgroup_labels
+  - preview
+  - knit_print.content_collection
   
 - title: Visualization Types
   desc: Functions for different chart types
@@ -134,6 +176,8 @@ reference:
   - create_timeline
   - create_heatmap
   - create_scatter
+  - create_map
+  - create_treemap
   
 - title: Navigation & Layout
   desc: Functions for dashboard navigation and structure
@@ -187,6 +231,17 @@ reference:
   - render_value_box
   - render_value_box_row
 
+- title: Interactive Inputs
+  desc: Functions for adding interactive inputs to dashboards
+  contents:
+  - add_input
+  - add_input_row
+  - add_reset_button
+  - enable_inputs
+  - end_input_row
+  - render_input
+  - render_input_row
+
 - title: Embedded Content
   desc: Functions for embedding external content
   contents:
@@ -218,4 +273,3 @@ reference:
   - print.dashboard_project
   - "+.viz_collection"
   - "+.content_collection"
-

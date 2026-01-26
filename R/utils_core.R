@@ -18,17 +18,20 @@
   startsWith(paste0(path, "/"), paste0(root, "/"))
 }
 
-.resolve_output_dir <- function(output_dir, allow_inside_pkg = FALSE) {
+.resolve_output_dir <- function(output_dir, allow_inside_pkg = FALSE, quiet = FALSE) {
   out_abs <- normalizePath(output_dir, winslash = "/", mustWork = FALSE)
   pkg_root <- .pkg_root()
 
   if (!allow_inside_pkg && !is.null(pkg_root) && .is_subpath(out_abs, pkg_root)) {
     relocated <- file.path(dirname(pkg_root), basename(out_abs))
-    message(
-      "Detected package repo at: ", pkg_root, "\n",
-      "Writing output outside the package at: ", relocated,
-      " (set allow_inside_pkg = TRUE to disable relocation)"
-    )
+    # Only show message if not quiet and in interactive session
+    if (!quiet && interactive()) {
+      message(
+        "Detected package repo at: ", pkg_root, "\n",
+        "Writing output outside the package at: ", relocated,
+        " (set allow_inside_pkg = TRUE to disable relocation)"
+      )
+    }
     out_abs <- relocated
   }
   out_abs
