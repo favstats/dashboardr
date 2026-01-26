@@ -7,14 +7,14 @@
 add_spacer(content, height = "2rem", tabgroup = NULL)
 }
 \arguments{
-\item{content}{A content_collection or viz_collection object}
+\item{content}{A content_collection, viz_collection, or page_object}
 
 \item{height}{Height (CSS unit, e.g. "2rem", "50px")}
 
 \item{tabgroup}{Optional tabgroup for organizing content (character vector for nested tabs)}
 }
 \value{
-Updated content_collection
+Updated object (same type as input)
 }
 \description{
 Add vertical spacer

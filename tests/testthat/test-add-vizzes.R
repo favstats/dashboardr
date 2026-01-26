@@ -9,17 +9,17 @@ test_that("add_vizzes creates multiple visualizations from vector input", {
     chart_type = "line"
   ) |>
     add_vizzes(
-      response_var = c("var1", "var2", "var3"),
+      y_var = c("var1", "var2", "var3"),
       .tabgroup_template = "test/item{i}"
     )
   
   # Should have 3 visualizations
   expect_equal(length(viz$items), 3)
   
-  # Check each has correct response_var
-  expect_equal(viz$items[[1]]$response_var, "var1")
-  expect_equal(viz$items[[2]]$response_var, "var2")
-  expect_equal(viz$items[[3]]$response_var, "var3")
+  # Check each has correct y_var
+  expect_equal(viz$items[[1]]$y_var, "var1")
+  expect_equal(viz$items[[2]]$y_var, "var2")
+  expect_equal(viz$items[[3]]$y_var, "var3")
   
   # Check tabgroups were templated correctly (parsed into vectors)
   expect_equal(viz$items[[1]]$tabgroup, c("test", "item1"))
@@ -30,7 +30,7 @@ test_that("add_vizzes creates multiple visualizations from vector input", {
 test_that("add_vizzes shares common parameters across all viz", {
   viz <- create_viz(type = "timeline") |>
     add_vizzes(
-      response_var = c("var1", "var2"),
+      y_var = c("var1", "var2"),
       group_var = "AgeGroup",  # Should be same for both
       time_var = "wave",       # Should be same for both
       .tabgroup_template = "test/item{i}"
@@ -69,7 +69,7 @@ test_that("add_vizzes works with parallel expansion of multiple params", {
 test_that("add_vizzes uses tabgroup vector if no template provided", {
   viz <- create_viz(type = "timeline") |>
     add_vizzes(
-      response_var = c("var1", "var2"),
+      y_var = c("var1", "var2"),
       tabgroup = c("test/a", "test/b")  # Explicit tabgroups
     )
   
@@ -82,8 +82,8 @@ test_that("add_vizzes uses tabgroup vector if no template provided", {
 test_that("add_vizzes template can use variable values", {
   viz <- create_viz(type = "timeline") |>
     add_vizzes(
-      response_var = c("SInfo1", "SInfo2", "SInfo3"),
-      .tabgroup_template = "skills/{response_var}"  # Use actual var name
+      y_var = c("SInfo1", "SInfo2", "SInfo3"),
+      .tabgroup_template = "skills/{y_var}"  # Use actual var name
     )
   
   expect_equal(length(viz$items), 3)
@@ -95,7 +95,7 @@ test_that("add_vizzes template can use variable values", {
 test_that("add_vizzes works with title_template", {
   viz <- create_viz(type = "timeline") |>
     add_vizzes(
-      response_var = c("var1", "var2"),
+      y_var = c("var1", "var2"),
       .tabgroup_template = "test/item{i}",
       .title_template = "Question {i}"
     )
@@ -113,7 +113,7 @@ test_that("add_vizzes inherits defaults from create_viz", {
     color_palette = c("#red", "#blue")
   ) |>
     add_vizzes(
-      response_var = c("var1", "var2"),
+      y_var = c("var1", "var2"),
       .tabgroup_template = "test/item{i}"
     )
   
@@ -130,7 +130,7 @@ test_that("add_vizzes errors if no expandable params with length > 1", {
   expect_error(
     create_viz(type = "timeline") |>
       add_vizzes(
-        response_var = "var1",  # Single value, not a vector
+        y_var = "var1",  # Single value, not a vector
         .tabgroup_template = "test/item{i}"
       ),
     "No expandable parameters found with length > 1"
@@ -141,7 +141,7 @@ test_that("add_vizzes errors if vector params have different lengths", {
   expect_error(
     create_viz(type = "timeline") |>
       add_vizzes(
-        response_var = c("var1", "var2", "var3"),  # Length 3
+        y_var = c("var1", "var2", "var3"),  # Length 3
         x_var = c("a", "b")  # Length 2 - mismatch!
       ),
     "All expandable vector parameters must have the same length"
@@ -151,11 +151,11 @@ test_that("add_vizzes errors if vector params have different lengths", {
 test_that("add_vizzes can be chained with add_viz", {
   viz <- create_viz(type = "timeline") |>
     add_vizzes(
-      response_var = c("var1", "var2"),
+      y_var = c("var1", "var2"),
       .tabgroup_template = "test/auto{i}"
     ) |>
     add_viz(
-      response_var = "var3",
+      y_var = "var3",
       tabgroup = "test/manual"
     )
   
@@ -183,7 +183,7 @@ test_that("add_vizzes works with filters", {
 test_that("add_vizzes preserves insertion order", {
   viz <- create_viz(type = "timeline") |>
     add_vizzes(
-      response_var = c("var1", "var2", "var3"),
+      y_var = c("var1", "var2", "var3"),
       .tabgroup_template = "test/item{i}"
     )
   
@@ -200,7 +200,7 @@ test_that("add_vizzes works with complex tabgroup template using glue", {
   
   viz <- create_viz(type = "timeline") |>
     add_vizzes(
-      response_var = c("var1", "var2"),
+      y_var = c("var1", "var2"),
       .tabgroup_template = glue::glue("{tbgrp}/{wave}/{demographic}/item{{i}}")
     )
   
@@ -214,7 +214,7 @@ test_that("add_vizzes works for user's helper function pattern", {
     wave_path <- tolower(gsub(" ", "", wave_label))
     
     viz |> add_vizzes(
-      response_var = vars,
+      y_var = vars,
       group_var = group_var,
       .tabgroup_template = glue::glue("{tbgrp}/{wave_path}/{demographic}/item{{i}}")
     )
@@ -231,10 +231,10 @@ test_that("add_vizzes works for user's helper function pattern", {
   
   expect_equal(length(viz$items), 3)
   expect_equal(viz$items[[1]]$tabgroup, c("skills", "overtime", "age", "item1"))
-  expect_equal(viz$items[[1]]$response_var, "SInfo1")
+  expect_equal(viz$items[[1]]$y_var, "SInfo1")
   expect_equal(viz$items[[1]]$group_var, "AgeGroup")
   
   expect_equal(viz$items[[3]]$tabgroup, c("skills", "overtime", "age", "item3"))
-  expect_equal(viz$items[[3]]$response_var, "SInfo3")
+  expect_equal(viz$items[[3]]$y_var, "SInfo3")
 })
 

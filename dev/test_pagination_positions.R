@@ -15,7 +15,7 @@ create_many_vizzes <- function() {
   # Page 1: 5 charts
   for (i in 1:5) {
     viz <- viz %>% add_viz_content(
-      create_bar(data = data, x_var = "cyl", title = paste("Chart", i))
+      viz_bar(data = data, x_var = "cyl", title = paste("Chart", i))
     )
   }
   
@@ -24,7 +24,7 @@ create_many_vizzes <- function() {
   # Page 2: 5 more charts
   for (i in 6:10) {
     viz <- viz %>% add_viz_content(
-      create_histogram(data = data, x_var = "mpg", title = paste("Chart", i))
+      viz_histogram(data = data, x_var = "mpg", title = paste("Chart", i))
     )
   }
   
@@ -33,7 +33,7 @@ create_many_vizzes <- function() {
   # Page 3: 5 more charts
   for (i in 11:15) {
     viz <- viz %>% add_viz_content(
-      create_bar(data = data, x_var = "gear", title = paste("Chart", i))
+      viz_bar(data = data, x_var = "gear", title = paste("Chart", i))
     )
   }
   
@@ -52,11 +52,11 @@ create_dashboard(
   ) %>%
   add_viz_content(
     create_viz_collection() %>%
-      add_viz_content(create_bar(data = data, x_var = "cyl", title = "Chart 1")) %>%
-      add_viz_content(create_bar(data = data, x_var = "gear", title = "Chart 2")) %>%
+      add_viz_content(viz_bar(data = data, x_var = "cyl", title = "Chart 1")) %>%
+      add_viz_content(viz_bar(data = data, x_var = "gear", title = "Chart 2")) %>%
       add_pagination(position = "bottom") %>%
-      add_viz_content(create_histogram(data = data, x_var = "mpg", title = "Chart 3")) %>%
-      add_viz_content(create_histogram(data = data, x_var = "hp", title = "Chart 4"))
+      add_viz_content(viz_histogram(data = data, x_var = "mpg", title = "Chart 3")) %>%
+      add_viz_content(viz_histogram(data = data, x_var = "hp", title = "Chart 4"))
   ) %>%
   generate_dashboard(render = TRUE, open = FALSE)
 
@@ -72,11 +72,11 @@ create_dashboard(
   ) %>%
   add_viz_content(
     create_viz_collection() %>%
-      add_viz_content(create_bar(data = data, x_var = "cyl", title = "Chart 1")) %>%
-      add_viz_content(create_bar(data = data, x_var = "gear", title = "Chart 2")) %>%
+      add_viz_content(viz_bar(data = data, x_var = "cyl", title = "Chart 1")) %>%
+      add_viz_content(viz_bar(data = data, x_var = "gear", title = "Chart 2")) %>%
       add_pagination(position = "top") %>%  # ← TOP!
-      add_viz_content(create_histogram(data = data, x_var = "mpg", title = "Chart 3")) %>%
-      add_viz_content(create_histogram(data = data, x_var = "hp", title = "Chart 4"))
+      add_viz_content(viz_histogram(data = data, x_var = "mpg", title = "Chart 3")) %>%
+      add_viz_content(viz_histogram(data = data, x_var = "hp", title = "Chart 4"))
   ) %>%
   generate_dashboard(render = TRUE, open = FALSE)
 
@@ -92,11 +92,11 @@ create_dashboard(
   ) %>%
   add_viz_content(
     create_viz_collection() %>%
-      add_viz_content(create_bar(data = data, x_var = "cyl", title = "Chart 1")) %>%
-      add_viz_content(create_bar(data = data, x_var = "gear", title = "Chart 2")) %>%
+      add_viz_content(viz_bar(data = data, x_var = "cyl", title = "Chart 1")) %>%
+      add_viz_content(viz_bar(data = data, x_var = "gear", title = "Chart 2")) %>%
       add_pagination(position = "both") %>%  # ← BOTH!
-      add_viz_content(create_histogram(data = data, x_var = "mpg", title = "Chart 3")) %>%
-      add_viz_content(create_histogram(data = data, x_var = "hp", title = "Chart 4"))
+      add_viz_content(viz_histogram(data = data, x_var = "mpg", title = "Chart 3")) %>%
+      add_viz_content(viz_histogram(data = data, x_var = "hp", title = "Chart 4"))
   ) %>%
   generate_dashboard(render = TRUE, open = "browser")
 

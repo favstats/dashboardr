@@ -64,10 +64,10 @@ test_that("Two-level nesting: Wave -> Age -> Questions renders all graphs", {
                 info = paste("Expected at least 3 R chunks (3 Questions - parent is container), found", 
                             length(r_chunks)))
     
-    # Check for create_histogram calls - only nested questions render
-    histogram_calls <- grep("create_histogram", qmd_content)
+    # Check for viz_histogram calls - only nested questions render
+    histogram_calls <- grep("viz_histogram", qmd_content)
     expect_true(length(histogram_calls) >= 3,
-                info = paste("Expected 3 create_histogram calls (parent is container), found", length(histogram_calls)))
+                info = paste("Expected 3 viz_histogram calls (parent is container), found", length(histogram_calls)))
     
     # Verify Age tab exists
     age_tab <- any(grepl("^####.*Age", qmd_content))
@@ -151,10 +151,10 @@ test_that("Three-level nesting: Wave -> Age/Gender -> Questions renders all grap
                 info = paste("Expected at least 6 R chunks (6 Questions - parent is container), found", 
                             length(r_chunks)))
     
-    # Check for create_histogram calls - only nested questions render
-    histogram_calls <- grep("create_histogram", qmd_content)
+    # Check for viz_histogram calls - only nested questions render
+    histogram_calls <- grep("viz_histogram", qmd_content)
     expect_true(length(histogram_calls) >= 6,
-                info = paste("Expected 6 create_histogram calls (parent is container), found", length(histogram_calls)))
+                info = paste("Expected 6 viz_histogram calls (parent is container), found", length(histogram_calls)))
     
     # Verify Age and Gender appear as tabs
     age_tab <- any(grepl("^####.*Age", qmd_content))
@@ -178,12 +178,12 @@ test_that("Three-level nesting: Wave -> Age/Gender -> Questions renders all grap
       next_lines <- qmd_content[(first_q1 + 1):min(first_q1 + 10, length(qmd_content))]
       r_chunk_after <- any(grepl("^```\\{r\\}", next_lines))
       
-      # Just check that R chunks and create_histogram exist
+      # Just check that R chunks and viz_histogram exist
       r_chunks_exist <- any(grepl("^```\\{r ", qmd_content))
-      histogram_exists <- any(grepl("create_histogram", qmd_content))
+      histogram_exists <- any(grepl("viz_histogram", qmd_content))
       
       expect_true(r_chunks_exist, "Should have R chunks")
-      expect_true(histogram_exists, "Should have create_histogram calls")
+      expect_true(histogram_exists, "Should have viz_histogram calls")
     }
   } else {
     skip("Generated QMD file not found")
@@ -234,10 +234,10 @@ test_that("Parent tabs with nested children act as containers (user's preferred 
                 info = paste("Expected at least 1 R chunk (only leaf renders), found", 
                             length(r_chunks)))
     
-    # Should have 1 create_histogram call (only leaf node)
-    histogram_calls <- grep("create_histogram", qmd_content)
+    # Should have 1 viz_histogram call (only leaf node)
+    histogram_calls <- grep("viz_histogram", qmd_content)
     expect_true(length(histogram_calls) >= 1,
-                info = paste("Expected 1 create_histogram call (only leaf), found", length(histogram_calls)))
+                info = paste("Expected 1 viz_histogram call (only leaf), found", length(histogram_calls)))
     
     # Verify all tab levels exist (even if parents don't render graphs)
     wave1_tab <- any(grepl("^###.*Wave 1", qmd_content))

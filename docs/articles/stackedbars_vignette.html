@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Getting Started With `create_stackedbars()` • dashboardr</title>
+<title>Getting Started With `viz_stackedbars()` • dashboardr</title>
 <!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png">
 <link rel="icon" type="”image/svg+xml”" href="../favicon.svg">
 <link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
@@ -18,7 +18,7 @@
 <link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
-<meta property="og:title" content="Getting Started With `create_stackedbars()`">
+<meta property="og:title" content="Getting Started With `viz_stackedbars()`">
 <style>
 /* Navbar logo */
 .navbar-brand img {
@@ -64,19 +64,23 @@
 <li><a class="dropdown-item" href="../articles/getting-started.html">🚀 Getting Started</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>📖 Core Concepts</h6></li>
-    <li><a class="dropdown-item" href="../articles/content-collections.html">→ Content Collections</a></li>
-    <li><a class="dropdown-item" href="../articles/pages.html">→ Pages</a></li>
-    <li><a class="dropdown-item" href="../articles/dashboards.html">→ Dashboards</a></li>
+    <li><a class="dropdown-item" href="../articles/content-collections.html">- Content</a></li>
+    <li><a class="dropdown-item" href="../articles/pages.html">- Pages</a></li>
+    <li><a class="dropdown-item" href="../articles/dashboards.html">- Dashboards</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><a class="dropdown-item" href="../articles/advanced-features.html">⚙️ Advanced Features</a></li>
     <li><a class="dropdown-item" href="../articles/publishing_dashboards.html">🌐 Publishing Dashboards</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>📊 Visualization Types</h6></li>
-    <li><a class="dropdown-item" href="../articles/bar_vignette.html">→ Bar Charts</a></li>
-    <li><a class="dropdown-item" href="../articles/timeline_vignette.html">→ Timelines</a></li>
-    <li><a class="dropdown-item" href="../articles/stackedbar_vignette.html">→ Stacked Bars</a></li>
-    <li><a class="dropdown-item" href="../articles/stackedbars_vignette.html">→ Stacked Bars (Multiple)</a></li>
-    <li><a class="dropdown-item" href="../articles/heatmap_vignette.html">→ Heatmaps</a></li>
+    <li><a class="dropdown-item" href="../articles/bar_vignette.html">- Bar Charts</a></li>
+    <li><a class="dropdown-item" href="../articles/timeline_vignette.html">- Timelines</a></li>
+    <li><a class="dropdown-item" href="../articles/stackedbar_vignette.html">- Stacked Bars</a></li>
+    <li><a class="dropdown-item" href="../articles/stackedbars_vignette.html">- Stacked Bars (Multiple)</a></li>
+    <li><a class="dropdown-item" href="../articles/heatmap_vignette.html">- Heatmaps</a></li>
+    <li><a class="dropdown-item" href="../articles/histogram_vignette.html">- Histograms</a></li>
+    <li><a class="dropdown-item" href="../articles/scatter_vignette.html">- Scatter Plots</a></li>
+    <li><a class="dropdown-item" href="../articles/treemap_vignette.html">- Treemaps</a></li>
+    <li><a class="dropdown-item" href="../articles/map_vignette.html">- Maps</a></li>
   </ul>
 </li>
 <li class="nav-item dropdown">
@@ -88,6 +92,7 @@
     <li><a class="dropdown-item" href="../live-demos/showcase/docs/index.html">🚀 Showcase Dashboard</a></li>
   </ul>
 </li>
+<li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul>
 <ul class="navbar-nav">
 <li class="nav-item"><form class="form-inline" role="search">
@@ -107,7 +112,7 @@
 <script src="stackedbars_vignette_files/highcharts-9.3.1/highcharts.js"></script><script src="stackedbars_vignette_files/highcharts-9.3.1/highcharts-3d.js"></script><script src="stackedbars_vignette_files/highcharts-9.3.1/highcharts-more.js"></script><script src="stackedbars_vignette_files/highcharts-9.3.1/modules/stock.js"></script><script src="stackedbars_vignette_files/highcharts-9.3.1/modules/map.js"></script><script src="stackedbars_vignette_files/highcharts-9.3.1/modules/data.js"></script><script src="stackedbars_vignette_files/highcharts-9.3.1/modules/exporting.js"></script><script src="stackedbars_vignette_files/highcharts-9.3.1/modules/offline-exporting.js"></script><script src="stackedbars_vignette_files/highcharts-9.3.1/modules/drilldown.js"></script><script src="stackedbars_vignette_files/highcharts-9.3.1/modules/item-series.js"></script><script src="stackedbars_vignette_files/highcharts-9.3.1/modules/overlapping-datalabels.js"></script><script src="stackedbars_vignette_files/highcharts-9.3.1/modules/annotations.js"></script><script src="stackedbars_vignette_files/highcharts-9.3.1/modules/export-data.js"></script><script src="stackedbars_vignette_files/highcharts-9.3.1/modules/funnel.js"></script><script src="stackedbars_vignette_files/highcharts-9.3.1/modules/heatmap.js"></script><script src="stackedbars_vignette_files/highcharts-9.3.1/modules/treemap.js"></script><script src="stackedbars_vignette_files/highcharts-9.3.1/modules/sankey.js"></script><script src="stackedbars_vignette_files/highcharts-9.3.1/modules/dependency-wheel.js"></script><script src="stackedbars_vignette_files/highcharts-9.3.1/modules/organization.js"></script><script src="stackedbars_vignette_files/highcharts-9.3.1/modules/solid-gauge.js"></script><script src="stackedbars_vignette_files/highcharts-9.3.1/modules/streamgraph.js"></script><script src="stackedbars_vignette_files/highcharts-9.3.1/modules/sunburst.js"></script><script src="stackedbars_vignette_files/highcharts-9.3.1/modules/vector.js"></script><script src="stackedbars_vignette_files/highcharts-9.3.1/modules/wordcloud.js"></script><script src="stackedbars_vignette_files/highcharts-9.3.1/modules/xrange.js"></script><script src="stackedbars_vignette_files/highcharts-9.3.1/modules/tilemap.js"></script><script src="stackedbars_vignette_files/highcharts-9.3.1/modules/venn.js"></script><script src="stackedbars_vignette_files/highcharts-9.3.1/modules/gantt.js"></script><script src="stackedbars_vignette_files/highcharts-9.3.1/modules/timeline.js"></script><script src="stackedbars_vignette_files/highcharts-9.3.1/modules/parallel-coordinates.js"></script><script src="stackedbars_vignette_files/highcharts-9.3.1/modules/bullet.js"></script><script src="stackedbars_vignette_files/highcharts-9.3.1/modules/coloraxis.js"></script><script src="stackedbars_vignette_files/highcharts-9.3.1/modules/dumbbell.js"></script><script src="stackedbars_vignette_files/highcharts-9.3.1/modules/lollipop.js"></script><script src="stackedbars_vignette_files/highcharts-9.3.1/modules/series-label.js"></script><script src="stackedbars_vignette_files/highcharts-9.3.1/plugins/motion.js"></script><script src="stackedbars_vignette_files/highcharts-9.3.1/custom/reset.js"></script><script src="stackedbars_vignette_files/highcharts-9.3.1/modules/boost.js"></script><script src="stackedbars_vignette_files/highchart-binding-0.9.4/highchart.js"></script><div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
 
-      <h1>Getting Started With `create_stackedbars()`</h1>
+      <h1>Getting Started With `viz_stackedbars()`</h1>
                         <h4 data-toc-skip class="author">Alexandra
 Pafford</h4>
             
@@ -120,14 +125,14 @@ Pafford</h4>
     
     
 <p>Welcome to this comprehensive guide on using the
-<code>create_stackedbars</code> function from the
-<code>dashboardr</code> package. This function is specifically designed
-to handle a common challenge in survey research: visualizing responses
-to multiple Likert-type questions simultaneously.</p>
-<p>The <code>create_stackedbars</code> function transforms wide survey
-data (where each question is a separate column) into an elegant stacked
-bar chart where: - Each bar represents a different survey question -
-Each stack within a bar represents a response category (e.g., “Strongly
+<code>viz_stackedbars</code> function from the <code>dashboardr</code>
+package. This function is specifically designed to handle a common
+challenge in survey research: visualizing responses to multiple
+Likert-type questions simultaneously.</p>
+<p>The <code>viz_stackedbars</code> function transforms wide survey data
+(where each question is a separate column) into an elegant stacked bar
+chart where: - Each bar represents a different survey question - Each
+stack within a bar represents a response category (e.g., “Strongly
 Agree”, “Agree”, etc.) - Colors show the distribution of responses
 across all questions</p>
 <p>This approach is particularly valuable for: - <strong>Comparing
@@ -275,7 +280,7 @@ multi-question chart using social attitude variables.</p>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Create basic multi-question chart</span></span>
-<span><span class="va">plot1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_stackedbars.html">create_stackedbars</a></span><span class="op">(</span></span>
+<span><span class="va">plot1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/viz_stackedbars.html">viz_stackedbars</a></span><span class="op">(</span></span>
 <span>  data <span class="op">=</span> <span class="va">gss_likert</span>,</span>
 <span>  x_vars <span class="op">=</span> <span class="va">social_questions</span>,</span>
 <span>  x_var_labels <span class="op">=</span> <span class="va">social_labels</span>,</span>
@@ -294,7 +299,7 @@ multi-question chart using social attitude variables.</p>
 <div class="sourceCode" id="cb42"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">plot1</span></span></code></pre></div>
 <div class="highchart html-widget html-fill-item" id="htmlwidget-ac96cb3ee4656e2e9ec3" style="width:700px;height:432.632880098888px;"></div>
-<script type="application/json" data-for="htmlwidget-ac96cb3ee4656e2e9ec3">{"x":{"hc_opts":{"chart":{"reflow":true},"title":{"text":"Social Attitudes and Trust"},"yAxis":{"title":{"text":"Count"},"type":"linear"},"credits":{"enabled":false},"exporting":{"enabled":false},"boost":{"enabled":false},"plotOptions":{"series":{"label":{"enabled":false},"turboThreshold":0,"showInLegend":true},"treemap":{"layoutAlgorithm":"squarified"},"scatter":{"marker":{"symbol":"circle"}},"column":{"stacking":"counts","dataLabels":{"enabled":true,"format":"{point.y}","style":{"textOutline":"none","fontSize":"10px"}}}},"series":[{"name":"can't trust","data":[{".x_var_col":"Interpersonal Trust",".stack_var_col":"can't trust","n":623,"y":623,"name":"Interpersonal Trust"},{".x_var_col":"Fairness of Others",".stack_var_col":"can't trust","n":797,"y":797,"name":"Fairness of Others"},{".x_var_col":"Helpfulness of Others",".stack_var_col":"can't trust","n":917,"y":917,"name":"Helpfulness of Others"}],"type":"column"},{"name":"can't be too careful","data":[{".x_var_col":"Interpersonal Trust",".stack_var_col":"can't be too careful","n":1244,"y":1244,"name":"Interpersonal Trust"},{".x_var_col":"Fairness of Others",".stack_var_col":"can't be too careful","n":1028,"y":1028,"name":"Fairness of Others"},{".x_var_col":"Helpfulness of Others",".stack_var_col":"can't be too careful","n":892,"y":892,"name":"Helpfulness of Others"}],"type":"column"},{"name":"depends","data":[{".x_var_col":"Interpersonal Trust",".stack_var_col":"depends","n":79,"y":79,"name":"Interpersonal Trust"},{".x_var_col":"Fairness of Others",".stack_var_col":"depends","n":114,"y":114,"name":"Fairness of Others"},{".x_var_col":"Helpfulness of Others",".stack_var_col":"depends","n":137,"y":137,"name":"Helpfulness of Others"}],"type":"column"}],"xAxis":{"type":"category","title":{"text":"Social Attitude Dimension"},"categories":["Interpersonal Trust","Fairness of Others","Helpfulness of Others"]},"subtitle":{"text":"GSS Panel 2016 - Distribution of responses across social attitude questions"},"legend":{"title":{"text":"Response Level"}},"tooltip":{"useHTML":true,"formatter":"\n        function() {\n          // pull the variable label from the axis categories array\n          var v = this.series.chart.xAxis[0].categories[this.point.x];\n          // If category is empty/undefined (single variable case), use chart title instead\n          if (!v || v === '') {\n            v = this.series.chart.title ? this.series.chart.title.textStr : '';\n          }\n          // the response (series name)\n          var r = this.series.name;\n          // format as percentage if percent-stacked, else point.y\n          var val = (this.point.percentage !== undefined)\n                  ? Highcharts.numberFormat(this.point.percentage,1) + '%'\n                  : this.point.y;\n          return '<b>' + v + '<\/b><br/>' +\n                 r + ': <b>' + val + '<\/b>';\n        }\n      "}},"theme":{"chart":{"backgroundColor":"transparent"},"colors":["#7cb5ec","#434348","#90ed7d","#f7a35c","#8085e9","#f15c80","#e4d354","#2b908f","#f45b5b","#91e8e1"]},"conf_opts":{"global":{"Date":null,"VMLRadialGradientURL":"http =//code.highcharts.com/list(version)/gfx/vml-radial-gradient.png","canvasToolsURL":"http =//code.highcharts.com/list(version)/modules/canvas-tools.js","getTimezoneOffset":null,"timezoneOffset":0,"useUTC":true},"lang":{"contextButtonTitle":"Chart context menu","decimalPoint":".","downloadCSV":"Download CSV","downloadJPEG":"Download JPEG image","downloadPDF":"Download PDF document","downloadPNG":"Download PNG image","downloadSVG":"Download SVG vector image","downloadXLS":"Download XLS","drillUpText":"◁ Back to {series.name}","exitFullscreen":"Exit from full screen","exportData":{"annotationHeader":"Annotations","categoryDatetimeHeader":"DateTime","categoryHeader":"Category"},"hideData":"Hide data table","invalidDate":null,"loading":"Loading...","months":["January","February","March","April","May","June","July","August","September","October","November","December"],"noData":"No data to display","numericSymbolMagnitude":1000,"numericSymbols":["k","M","G","T","P","E"],"printChart":"Print chart","resetZoom":"Reset zoom","resetZoomTitle":"Reset zoom level 1:1","shortMonths":["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],"shortWeekdays":["Sat","Sun","Mon","Tue","Wed","Thu","Fri"],"thousandsSep":" ","viewData":"View data table","viewFullscreen":"View in full screen","weekdays":["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]}},"type":"chart","fonts":[],"debug":false},"evals":["hc_opts.tooltip.formatter"],"jsHooks":[]}</script>
+<script type="application/json" data-for="htmlwidget-ac96cb3ee4656e2e9ec3">{"x":{"hc_opts":{"chart":{"reflow":true},"title":{"text":"Social Attitudes and Trust"},"yAxis":{"title":{"text":"Count"},"type":"linear"},"credits":{"enabled":false},"exporting":{"enabled":false},"boost":{"enabled":false},"plotOptions":{"series":{"label":{"enabled":false},"turboThreshold":0,"showInLegend":true},"treemap":{"layoutAlgorithm":"squarified"},"scatter":{"marker":{"symbol":"circle"}},"column":{"stacking":"counts","dataLabels":{"enabled":true,"format":"{point.y:.0f}","style":{"textOutline":"none","fontSize":"10px"}}}},"series":[{"name":"can't trust","data":[{".x_var_col":"Interpersonal Trust",".stack_var_col":"can't trust","n":623,"y":623,"name":"Interpersonal Trust"},{".x_var_col":"Fairness of Others",".stack_var_col":"can't trust","n":797,"y":797,"name":"Fairness of Others"},{".x_var_col":"Helpfulness of Others",".stack_var_col":"can't trust","n":917,"y":917,"name":"Helpfulness of Others"}],"type":"column"},{"name":"can't be too careful","data":[{".x_var_col":"Interpersonal Trust",".stack_var_col":"can't be too careful","n":1244,"y":1244,"name":"Interpersonal Trust"},{".x_var_col":"Fairness of Others",".stack_var_col":"can't be too careful","n":1028,"y":1028,"name":"Fairness of Others"},{".x_var_col":"Helpfulness of Others",".stack_var_col":"can't be too careful","n":892,"y":892,"name":"Helpfulness of Others"}],"type":"column"},{"name":"depends","data":[{".x_var_col":"Interpersonal Trust",".stack_var_col":"depends","n":79,"y":79,"name":"Interpersonal Trust"},{".x_var_col":"Fairness of Others",".stack_var_col":"depends","n":114,"y":114,"name":"Fairness of Others"},{".x_var_col":"Helpfulness of Others",".stack_var_col":"depends","n":137,"y":137,"name":"Helpfulness of Others"}],"type":"column"}],"xAxis":{"type":"category","title":{"text":"Social Attitude Dimension"},"categories":["Interpersonal Trust","Fairness of Others","Helpfulness of Others"]},"subtitle":{"text":"GSS Panel 2016 - Distribution of responses across social attitude questions"},"legend":{"title":{"text":"Response Level"}},"tooltip":{"useHTML":true,"formatter":"\n        function() {\n          // pull the variable label from the axis categories array\n          var v = this.series.chart.xAxis[0].categories[this.point.x];\n          // If category is empty/undefined (single variable case), use chart title instead\n          if (!v || v === '') {\n            v = this.series.chart.title ? this.series.chart.title.textStr : '';\n          }\n          // the response (series name)\n          var r = this.series.name;\n          // format as percentage if percent-stacked, else point.y\n          var val = (this.point.percentage !== undefined)\n                  ? Highcharts.numberFormat(this.point.percentage,1) + '%'\n                  : this.point.y;\n          return '<b>' + v + '<\/b><br/>' +\n                 r + ': <b>' + val + '<\/b>';\n        }\n      "}},"theme":{"chart":{"backgroundColor":"transparent"},"colors":["#7cb5ec","#434348","#90ed7d","#f7a35c","#8085e9","#f15c80","#e4d354","#2b908f","#f45b5b","#91e8e1"]},"conf_opts":{"global":{"Date":null,"VMLRadialGradientURL":"http =//code.highcharts.com/list(version)/gfx/vml-radial-gradient.png","canvasToolsURL":"http =//code.highcharts.com/list(version)/modules/canvas-tools.js","getTimezoneOffset":null,"timezoneOffset":0,"useUTC":true},"lang":{"contextButtonTitle":"Chart context menu","decimalPoint":".","downloadCSV":"Download CSV","downloadJPEG":"Download JPEG image","downloadPDF":"Download PDF document","downloadPNG":"Download PNG image","downloadSVG":"Download SVG vector image","downloadXLS":"Download XLS","drillUpText":"◁ Back to {series.name}","exitFullscreen":"Exit from full screen","exportData":{"annotationHeader":"Annotations","categoryDatetimeHeader":"DateTime","categoryHeader":"Category"},"hideData":"Hide data table","invalidDate":null,"loading":"Loading...","months":["January","February","March","April","May","June","July","August","September","October","November","December"],"noData":"No data to display","numericSymbolMagnitude":1000,"numericSymbols":["k","M","G","T","P","E"],"printChart":"Print chart","resetZoom":"Reset zoom","resetZoomTitle":"Reset zoom level 1:1","shortMonths":["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],"shortWeekdays":["Sat","Sun","Mon","Tue","Wed","Thu","Fri"],"thousandsSep":" ","viewData":"View data table","viewFullscreen":"View in full screen","weekdays":["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]}},"type":"chart","fonts":[],"debug":false},"evals":["hc_opts.tooltip.formatter"],"jsHooks":[]}</script>
 </div>
 <div class="section level3">
 <h3 id="example-2-percentage-based-comparison">Example 2: Percentage-Based Comparison<a class="anchor" aria-label="anchor" href="#example-2-percentage-based-comparison"></a>
@@ -303,7 +308,7 @@ multi-question chart using social attitude variables.</p>
 patterns across questions.</p>
 <div class="sourceCode" id="cb43"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Create percentage-based chart with custom colors</span></span>
-<span><span class="va">plot2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_stackedbars.html">create_stackedbars</a></span><span class="op">(</span></span>
+<span><span class="va">plot2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/viz_stackedbars.html">viz_stackedbars</a></span><span class="op">(</span></span>
 <span>  data <span class="op">=</span> <span class="va">gss_likert</span>,</span>
 <span>  x_vars <span class="op">=</span> <span class="va">social_questions</span>,</span>
 <span>  x_var_labels <span class="op">=</span> <span class="va">social_labels</span>,</span>
@@ -368,7 +373,7 @@ and cleaner labels.</p>
 <span><span class="va">response_order</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Low Trust/Negative"</span>, <span class="st">"Situational/Neutral"</span>, <span class="st">"High Trust/Positive"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Create chart with custom mapping and ordering</span></span>
-<span><span class="va">plot3</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_stackedbars.html">create_stackedbars</a></span><span class="op">(</span></span>
+<span><span class="va">plot3</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/viz_stackedbars.html">viz_stackedbars</a></span><span class="op">(</span></span>
 <span>  data <span class="op">=</span> <span class="va">gss_likert</span>,</span>
 <span>  x_vars <span class="op">=</span> <span class="va">social_questions</span>,</span>
 <span>  x_var_labels <span class="op">=</span> <span class="va">social_labels</span>,</span>
@@ -401,7 +406,7 @@ and cleaner labels.</p>
 <p>Let’s create a chart that explicitly shows missing data patterns.</p>
 <div class="sourceCode" id="cb60"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Create chart including NA values</span></span>
-<span><span class="va">plot4</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_stackedbars.html">create_stackedbars</a></span><span class="op">(</span></span>
+<span><span class="va">plot4</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/viz_stackedbars.html">viz_stackedbars</a></span><span class="op">(</span></span>
 <span>  data <span class="op">=</span> <span class="va">gss_likert</span>,</span>
 <span>  x_vars <span class="op">=</span> <span class="va">social_questions</span>,</span>
 <span>  x_var_labels <span class="op">=</span> <span class="va">social_labels</span>,</span>
@@ -450,7 +455,7 @@ and cleaner labels.</p>
 <span><span class="co">##  806 1601  452    8</span></span></code></pre>
 <div class="sourceCode" id="cb68"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Create happiness chart</span></span>
-<span><span class="va">plot5</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_stackedbars.html">create_stackedbars</a></span><span class="op">(</span></span>
+<span><span class="va">plot5</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/viz_stackedbars.html">viz_stackedbars</a></span><span class="op">(</span></span>
 <span>  data <span class="op">=</span> <span class="va">gss_likert</span>,</span>
 <span>  x_vars <span class="op">=</span> <span class="st">"happy_1a"</span>,</span>
 <span>  title <span class="op">=</span> <span class="st">"General Happiness Distribution"</span>,</span>
@@ -565,7 +570,7 @@ charting, especially if using SPSS data.</p>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Create comprehensive chart</span></span>
-<span><span class="va">plot6</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_stackedbars.html">create_stackedbars</a></span><span class="op">(</span></span>
+<span><span class="va">plot6</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/viz_stackedbars.html">viz_stackedbars</a></span><span class="op">(</span></span>
 <span>  data <span class="op">=</span> <span class="va">gss_standardized</span>,</span>
 <span>  x_vars <span class="op">=</span> <span class="va">standardized_questions</span>,</span>
 <span>  x_var_labels <span class="op">=</span> <span class="va">standardized_labels</span>,</span>
@@ -593,7 +598,7 @@ charting, especially if using SPSS data.</p>
 <p>Let’s create separate charts for different demographic groups.</p>
 <div class="sourceCode" id="cb87"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## TODO: maybe we dont need the if logic here? I think is confusing for the tutorial.</span></span>
-<span><span class="co"># You probably noticed one of the response labels is incorrect. Let's fix that first. We can do this easily using mapping in the `create_barcharts` function.</span></span>
+<span><span class="co"># You probably noticed one of the response labels is incorrect. Let's fix that first. We can do this easily using mapping in the `viz_barcharts` function.</span></span>
 <span><span class="va">trust_fix_map</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
 <span>  <span class="st">"can't trust"</span> <span class="op">=</span> <span class="st">"can trust"</span></span>
 <span>  <span class="co"># Add other mappings if needed</span></span>
@@ -660,7 +665,7 @@ charting, especially if using SPSS data.</p>
 <div class="sourceCode" id="cb103"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Only create charts if we have sufficient data</span></span>
 <span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">college_data</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">50</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="va">plot8a</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_stackedbars.html">create_stackedbars</a></span><span class="op">(</span></span>
+<span>  <span class="va">plot8a</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/viz_stackedbars.html">viz_stackedbars</a></span><span class="op">(</span></span>
 <span>    data <span class="op">=</span> <span class="va">college_data</span>,</span>
 <span>    x_vars <span class="op">=</span> <span class="va">social_questions</span>,</span>
 <span>    x_var_labels <span class="op">=</span> <span class="va">social_labels</span>,</span>
@@ -690,7 +695,7 @@ charting, especially if using SPSS data.</p>
 <pre><code><span><span class="co">## [1] "College-educated chart:"</span></span></code></pre>
 <div class="sourceCode" id="cb107"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">high_school_data</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">50</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="va">plot8b</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_stackedbars.html">create_stackedbars</a></span><span class="op">(</span></span>
+<span>  <span class="va">plot8b</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/viz_stackedbars.html">viz_stackedbars</a></span><span class="op">(</span></span>
 <span>    data <span class="op">=</span> <span class="va">high_school_data</span>,</span>
 <span>    x_vars <span class="op">=</span> <span class="va">social_questions</span>,</span>
 <span>    x_var_labels <span class="op">=</span> <span class="va">social_labels</span>,</span>
@@ -738,7 +743,7 @@ batteries).</p>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Create a comprehensive battery analysis</span></span>
-<span><span class="va">plot9</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_stackedbars.html">create_stackedbars</a></span><span class="op">(</span></span>
+<span><span class="va">plot9</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/viz_stackedbars.html">viz_stackedbars</a></span><span class="op">(</span></span>
 <span>  data <span class="op">=</span> <span class="va">gss_likert</span>,</span>
 <span>  x_vars <span class="op">=</span> <span class="va">trust_battery</span>,</span>
 <span>  x_var_labels <span class="op">=</span> <span class="va">trust_battery_labels</span>,</span>
@@ -767,15 +772,101 @@ batteries).</p>
 </div>
 </div>
 <div class="section level2">
+<h2 id="labels-and-tooltips-reference">Labels and Tooltips Reference<a class="anchor" aria-label="anchor" href="#labels-and-tooltips-reference"></a>
+</h2>
+<div class="section level3">
+<h3 id="summary-of-label-and-tooltip-options">Summary of Label and Tooltip Options<a class="anchor" aria-label="anchor" href="#summary-of-label-and-tooltip-options"></a>
+</h3>
+<p>The <code><a href="../reference/viz_stackedbars.html">viz_stackedbars()</a></code> function offers extensive
+customization for labels and tooltips:</p>
+<table class="table">
+<colgroup>
+<col width="33%">
+<col width="39%">
+<col width="27%">
+</colgroup>
+<thead><tr class="header">
+<th>Parameter</th>
+<th>Description</th>
+<th>Example</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td><code>x_label</code></td>
+<td>X-axis title</td>
+<td><code>"Question"</code></td>
+</tr>
+<tr class="even">
+<td><code>y_label</code></td>
+<td>Y-axis title (auto-set based on stacked_type)</td>
+<td><code>"Percentage"</code></td>
+</tr>
+<tr class="odd">
+<td><code>stack_label</code></td>
+<td>Legend title</td>
+<td><code>"Response Category"</code></td>
+</tr>
+<tr class="even">
+<td><code>x_var_labels</code></td>
+<td>Custom labels for each question</td>
+<td><code>c("Trust", "Fairness")</code></td>
+</tr>
+<tr class="odd">
+<td><code>tooltip_prefix</code></td>
+<td>Text before value in tooltip</td>
+<td><code>"Score: "</code></td>
+</tr>
+<tr class="even">
+<td><code>tooltip_suffix</code></td>
+<td>Text after value in tooltip</td>
+<td>
+<code>"%"</code>, <code>" respondents"</code>
+</td>
+</tr>
+<tr class="odd">
+<td><code>x_tooltip_suffix</code></td>
+<td>Text after question name in tooltip</td>
+<td><code>" question"</code></td>
+</tr>
+<tr class="even">
+<td><code>show_var_tooltip</code></td>
+<td>Show question name in tooltip</td>
+<td><code>TRUE</code></td>
+</tr>
+</tbody>
+</table>
+<div class="sourceCode" id="cb114"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Example with all label/tooltip options</span></span>
+<span><span class="fu"><a href="../reference/viz_stackedbars.html">viz_stackedbars</a></span><span class="op">(</span></span>
+<span>  data <span class="op">=</span> <span class="va">gss_likert</span>,</span>
+<span>  x_vars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"trust_1a"</span>, <span class="st">"fair_1a"</span><span class="op">)</span>,</span>
+<span>  x_var_labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Trust"</span>, <span class="st">"Fairness"</span><span class="op">)</span>,</span>
+<span>  title <span class="op">=</span> <span class="st">"Social Attitudes"</span>,</span>
+<span>  x_label <span class="op">=</span> <span class="st">"Attitude Measure"</span>,</span>
+<span>  y_label <span class="op">=</span> <span class="st">"Percent of Respondents"</span>,</span>
+<span>  stack_label <span class="op">=</span> <span class="st">"Response Level"</span>,</span>
+<span>  stacked_type <span class="op">=</span> <span class="st">"percent"</span>,</span>
+<span>  tooltip_prefix <span class="op">=</span> <span class="st">""</span>,</span>
+<span>  tooltip_suffix <span class="op">=</span> <span class="st">"% responded"</span>,</span>
+<span>  show_var_tooltip <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## Warning: `trust_1a` and `fair_1a` have conflicting value labels.</span></span>
+<span><span class="co">## <span style="color: #00BBBB;">ℹ</span> Labels for these values will be taken from `trust_1a`.</span></span>
+<span><span class="co">## <span style="color: #BB0000;">✖</span> Values: <span style="color: #0000BB;">1</span> and <span style="color: #0000BB;">2</span></span></span></code></pre>
+<div class="highchart html-widget html-fill-item" id="htmlwidget-3f27c09be0c60bb52829" style="width:700px;height:432.632880098888px;"></div>
+<script type="application/json" data-for="htmlwidget-3f27c09be0c60bb52829">{"x":{"hc_opts":{"chart":{"reflow":true},"title":{"text":"Social Attitudes"},"yAxis":{"title":{"text":"Percent of Respondents"},"type":"linear"},"credits":{"enabled":false},"exporting":{"enabled":false},"boost":{"enabled":false},"plotOptions":{"series":{"label":{"enabled":false},"turboThreshold":0,"showInLegend":true},"treemap":{"layoutAlgorithm":"squarified"},"scatter":{"marker":{"symbol":"circle"}},"column":{"stacking":"percent","dataLabels":{"enabled":true,"format":"{point.percentage:.1f}%","style":{"textOutline":"none","fontSize":"10px"}}}},"series":[{"name":"can't trust","data":[{".x_var_col":"Trust",".stack_var_col":"can't trust","n":623,"y":623,"name":"Trust"},{".x_var_col":"Fairness",".stack_var_col":"can't trust","n":797,"y":797,"name":"Fairness"}],"type":"column"},{"name":"can't be too careful","data":[{".x_var_col":"Trust",".stack_var_col":"can't be too careful","n":1244,"y":1244,"name":"Trust"},{".x_var_col":"Fairness",".stack_var_col":"can't be too careful","n":1028,"y":1028,"name":"Fairness"}],"type":"column"},{"name":"depends","data":[{".x_var_col":"Trust",".stack_var_col":"depends","n":79,"y":79,"name":"Trust"},{".x_var_col":"Fairness",".stack_var_col":"depends","n":114,"y":114,"name":"Fairness"}],"type":"column"}],"xAxis":{"type":"category","title":{"text":"Attitude Measure"},"categories":["Trust","Fairness"]},"legend":{"title":{"text":"Response Level"}},"tooltip":{"useHTML":true,"formatter":"\n        function() {\n          // pull the variable label from the axis categories array\n          var v = this.series.chart.xAxis[0].categories[this.point.x];\n          // If category is empty/undefined (single variable case), use chart title instead\n          if (!v || v === '') {\n            v = this.series.chart.title ? this.series.chart.title.textStr : '';\n          }\n          // the response (series name)\n          var r = this.series.name;\n          // format as percentage if percent-stacked, else point.y\n          var val = (this.point.percentage !== undefined)\n                  ? Highcharts.numberFormat(this.point.percentage,1) + '%'\n                  : this.point.y;\n          return '<b>' + v + '<\/b><br/>' +\n                 r + ': <b>' + val + '<\/b>';\n        }\n      "}},"theme":{"chart":{"backgroundColor":"transparent"},"colors":["#7cb5ec","#434348","#90ed7d","#f7a35c","#8085e9","#f15c80","#e4d354","#2b908f","#f45b5b","#91e8e1"]},"conf_opts":{"global":{"Date":null,"VMLRadialGradientURL":"http =//code.highcharts.com/list(version)/gfx/vml-radial-gradient.png","canvasToolsURL":"http =//code.highcharts.com/list(version)/modules/canvas-tools.js","getTimezoneOffset":null,"timezoneOffset":0,"useUTC":true},"lang":{"contextButtonTitle":"Chart context menu","decimalPoint":".","downloadCSV":"Download CSV","downloadJPEG":"Download JPEG image","downloadPDF":"Download PDF document","downloadPNG":"Download PNG image","downloadSVG":"Download SVG vector image","downloadXLS":"Download XLS","drillUpText":"◁ Back to {series.name}","exitFullscreen":"Exit from full screen","exportData":{"annotationHeader":"Annotations","categoryDatetimeHeader":"DateTime","categoryHeader":"Category"},"hideData":"Hide data table","invalidDate":null,"loading":"Loading...","months":["January","February","March","April","May","June","July","August","September","October","November","December"],"noData":"No data to display","numericSymbolMagnitude":1000,"numericSymbols":["k","M","G","T","P","E"],"printChart":"Print chart","resetZoom":"Reset zoom","resetZoomTitle":"Reset zoom level 1:1","shortMonths":["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],"shortWeekdays":["Sat","Sun","Mon","Tue","Wed","Thu","Fri"],"thousandsSep":" ","viewData":"View data table","viewFullscreen":"View in full screen","weekdays":["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]}},"type":"chart","fonts":[],"debug":false},"evals":["hc_opts.tooltip.formatter"],"jsHooks":[]}</script>
+</div>
+</div>
+<div class="section level2">
 <h2 id="best-practices-and-tips">Best Practices and Tips<a class="anchor" aria-label="anchor" href="#best-practices-and-tips"></a>
 </h2>
 <div class="section level3">
 <h3 id="example-10-publication-ready-chart">Example 10: Publication-Ready Chart<a class="anchor" aria-label="anchor" href="#example-10-publication-ready-chart"></a>
 </h3>
 <p>Let’s create a fully customized, publication-ready chart.</p>
-<div class="sourceCode" id="cb114"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb116"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Create the most polished example</span></span>
-<span><span class="va">plot10</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_stackedbars.html">create_stackedbars</a></span><span class="op">(</span></span>
+<span><span class="va">plot10</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/viz_stackedbars.html">viz_stackedbars</a></span><span class="op">(</span></span>
 <span>  data <span class="op">=</span> <span class="va">gss_likert</span>,</span>
 <span>  x_vars <span class="op">=</span> <span class="va">social_questions</span>,</span>
 <span>  x_var_labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
@@ -802,10 +893,10 @@ batteries).</p>
 <pre><code><span><span class="co">## Warning: `trust_1a` and `helpful_1a` have conflicting value labels.</span></span>
 <span><span class="co">## <span style="color: #00BBBB;">ℹ</span> Labels for these values will be taken from `trust_1a`.</span></span>
 <span><span class="co">## <span style="color: #BB0000;">✖</span> Values: <span style="color: #0000BB;">1</span> and <span style="color: #0000BB;">2</span></span></span></code></pre>
-<div class="sourceCode" id="cb117"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb119"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">plot10</span></span></code></pre></div>
-<div class="highchart html-widget html-fill-item" id="htmlwidget-3f27c09be0c60bb52829" style="width:700px;height:432.632880098888px;"></div>
-<script type="application/json" data-for="htmlwidget-3f27c09be0c60bb52829">{"x":{"hc_opts":{"chart":{"reflow":true},"title":{"text":"Social Capital Dimensions in American Society"},"yAxis":{"title":{"text":"Percentage"},"type":"linear"},"credits":{"enabled":false},"exporting":{"enabled":false},"boost":{"enabled":false},"plotOptions":{"series":{"label":{"enabled":false},"turboThreshold":0,"showInLegend":true},"treemap":{"layoutAlgorithm":"squarified"},"scatter":{"marker":{"symbol":"circle"}},"column":{"stacking":"percent","dataLabels":{"enabled":true,"format":"{point.percentage:.1f}%","style":{"textOutline":"none","fontSize":"10px"}}}},"series":[{"name":"can't trust","data":[{".x_var_col":"Interpersonal Trust\n('Can most people be trusted?')",".stack_var_col":"can't trust","n":623,"y":623,"name":"Interpersonal Trust\n('Can most people be trusted?')"},{".x_var_col":"Perceived Fairness\n('Do people try to be fair?')",".stack_var_col":"can't trust","n":797,"y":797,"name":"Perceived Fairness\n('Do people try to be fair?')"},{".x_var_col":"Perceived Helpfulness\n('Are people helpful?')",".stack_var_col":"can't trust","n":917,"y":917,"name":"Perceived Helpfulness\n('Are people helpful?')"}],"type":"column"},{"name":"can't be too careful","data":[{".x_var_col":"Interpersonal Trust\n('Can most people be trusted?')",".stack_var_col":"can't be too careful","n":1244,"y":1244,"name":"Interpersonal Trust\n('Can most people be trusted?')"},{".x_var_col":"Perceived Fairness\n('Do people try to be fair?')",".stack_var_col":"can't be too careful","n":1028,"y":1028,"name":"Perceived Fairness\n('Do people try to be fair?')"},{".x_var_col":"Perceived Helpfulness\n('Are people helpful?')",".stack_var_col":"can't be too careful","n":892,"y":892,"name":"Perceived Helpfulness\n('Are people helpful?')"}],"type":"column"},{"name":"depends","data":[{".x_var_col":"Interpersonal Trust\n('Can most people be trusted?')",".stack_var_col":"depends","n":79,"y":79,"name":"Interpersonal Trust\n('Can most people be trusted?')"},{".x_var_col":"Perceived Fairness\n('Do people try to be fair?')",".stack_var_col":"depends","n":114,"y":114,"name":"Perceived Fairness\n('Do people try to be fair?')"},{".x_var_col":"Perceived Helpfulness\n('Are people helpful?')",".stack_var_col":"depends","n":137,"y":137,"name":"Perceived Helpfulness\n('Are people helpful?')"}],"type":"column"},{"name":"No response","data":[{".x_var_col":"Interpersonal Trust\n('Can most people be trusted?')",".stack_var_col":"No response","n":921,"y":921,"name":"Interpersonal Trust\n('Can most people be trusted?')"},{".x_var_col":"Perceived Fairness\n('Do people try to be fair?')",".stack_var_col":"No response","n":928,"y":928,"name":"Perceived Fairness\n('Do people try to be fair?')"},{".x_var_col":"Perceived Helpfulness\n('Are people helpful?')",".stack_var_col":"No response","n":921,"y":921,"name":"Perceived Helpfulness\n('Are people helpful?')"}],"type":"column"}],"xAxis":{"type":"category","title":{"text":"Social Trust Dimension"},"categories":["Interpersonal Trust\n('Can most people be trusted?')","Perceived Fairness\n('Do people try to be fair?')","Perceived Helpfulness\n('Are people helpful?')"]},"subtitle":{"text":"General Social Survey Panel 2016 (N = 2,867 respondents)\nPercentage distribution of responses across social trust measures"},"legend":{"title":{"text":"Response Category"}},"tooltip":{"useHTML":true,"formatter":"\n        function() {\n          // pull the variable label from the axis categories array\n          var v = this.series.chart.xAxis[0].categories[this.point.x];\n          // If category is empty/undefined (single variable case), use chart title instead\n          if (!v || v === '') {\n            v = this.series.chart.title ? this.series.chart.title.textStr : '';\n          }\n          // the response (series name)\n          var r = this.series.name;\n          // format as percentage if percent-stacked, else point.y\n          var val = (this.point.percentage !== undefined)\n                  ? Highcharts.numberFormat(this.point.percentage,1) + '%'\n                  : this.point.y;\n          return '<b>' + v + '<\/b><br/>' +\n                 r + ': <b>' + val + '<\/b>';\n        }\n      "},"colors":["#b2182b","#ef8a62","#fddbc7","darkgrey"]},"theme":{"chart":{"backgroundColor":"transparent"},"colors":["#7cb5ec","#434348","#90ed7d","#f7a35c","#8085e9","#f15c80","#e4d354","#2b908f","#f45b5b","#91e8e1"]},"conf_opts":{"global":{"Date":null,"VMLRadialGradientURL":"http =//code.highcharts.com/list(version)/gfx/vml-radial-gradient.png","canvasToolsURL":"http =//code.highcharts.com/list(version)/modules/canvas-tools.js","getTimezoneOffset":null,"timezoneOffset":0,"useUTC":true},"lang":{"contextButtonTitle":"Chart context menu","decimalPoint":".","downloadCSV":"Download CSV","downloadJPEG":"Download JPEG image","downloadPDF":"Download PDF document","downloadPNG":"Download PNG image","downloadSVG":"Download SVG vector image","downloadXLS":"Download XLS","drillUpText":"◁ Back to {series.name}","exitFullscreen":"Exit from full screen","exportData":{"annotationHeader":"Annotations","categoryDatetimeHeader":"DateTime","categoryHeader":"Category"},"hideData":"Hide data table","invalidDate":null,"loading":"Loading...","months":["January","February","March","April","May","June","July","August","September","October","November","December"],"noData":"No data to display","numericSymbolMagnitude":1000,"numericSymbols":["k","M","G","T","P","E"],"printChart":"Print chart","resetZoom":"Reset zoom","resetZoomTitle":"Reset zoom level 1:1","shortMonths":["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],"shortWeekdays":["Sat","Sun","Mon","Tue","Wed","Thu","Fri"],"thousandsSep":" ","viewData":"View data table","viewFullscreen":"View in full screen","weekdays":["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]}},"type":"chart","fonts":[],"debug":false},"evals":["hc_opts.tooltip.formatter"],"jsHooks":[]}</script>
+<div class="highchart html-widget html-fill-item" id="htmlwidget-416566eb193bf50d04e6" style="width:700px;height:432.632880098888px;"></div>
+<script type="application/json" data-for="htmlwidget-416566eb193bf50d04e6">{"x":{"hc_opts":{"chart":{"reflow":true},"title":{"text":"Social Capital Dimensions in American Society"},"yAxis":{"title":{"text":"Percentage"},"type":"linear"},"credits":{"enabled":false},"exporting":{"enabled":false},"boost":{"enabled":false},"plotOptions":{"series":{"label":{"enabled":false},"turboThreshold":0,"showInLegend":true},"treemap":{"layoutAlgorithm":"squarified"},"scatter":{"marker":{"symbol":"circle"}},"column":{"stacking":"percent","dataLabels":{"enabled":true,"format":"{point.percentage:.1f}%","style":{"textOutline":"none","fontSize":"10px"}}}},"series":[{"name":"can't trust","data":[{".x_var_col":"Interpersonal Trust\n('Can most people be trusted?')",".stack_var_col":"can't trust","n":623,"y":623,"name":"Interpersonal Trust\n('Can most people be trusted?')"},{".x_var_col":"Perceived Fairness\n('Do people try to be fair?')",".stack_var_col":"can't trust","n":797,"y":797,"name":"Perceived Fairness\n('Do people try to be fair?')"},{".x_var_col":"Perceived Helpfulness\n('Are people helpful?')",".stack_var_col":"can't trust","n":917,"y":917,"name":"Perceived Helpfulness\n('Are people helpful?')"}],"type":"column"},{"name":"can't be too careful","data":[{".x_var_col":"Interpersonal Trust\n('Can most people be trusted?')",".stack_var_col":"can't be too careful","n":1244,"y":1244,"name":"Interpersonal Trust\n('Can most people be trusted?')"},{".x_var_col":"Perceived Fairness\n('Do people try to be fair?')",".stack_var_col":"can't be too careful","n":1028,"y":1028,"name":"Perceived Fairness\n('Do people try to be fair?')"},{".x_var_col":"Perceived Helpfulness\n('Are people helpful?')",".stack_var_col":"can't be too careful","n":892,"y":892,"name":"Perceived Helpfulness\n('Are people helpful?')"}],"type":"column"},{"name":"depends","data":[{".x_var_col":"Interpersonal Trust\n('Can most people be trusted?')",".stack_var_col":"depends","n":79,"y":79,"name":"Interpersonal Trust\n('Can most people be trusted?')"},{".x_var_col":"Perceived Fairness\n('Do people try to be fair?')",".stack_var_col":"depends","n":114,"y":114,"name":"Perceived Fairness\n('Do people try to be fair?')"},{".x_var_col":"Perceived Helpfulness\n('Are people helpful?')",".stack_var_col":"depends","n":137,"y":137,"name":"Perceived Helpfulness\n('Are people helpful?')"}],"type":"column"},{"name":"No response","data":[{".x_var_col":"Interpersonal Trust\n('Can most people be trusted?')",".stack_var_col":"No response","n":921,"y":921,"name":"Interpersonal Trust\n('Can most people be trusted?')"},{".x_var_col":"Perceived Fairness\n('Do people try to be fair?')",".stack_var_col":"No response","n":928,"y":928,"name":"Perceived Fairness\n('Do people try to be fair?')"},{".x_var_col":"Perceived Helpfulness\n('Are people helpful?')",".stack_var_col":"No response","n":921,"y":921,"name":"Perceived Helpfulness\n('Are people helpful?')"}],"type":"column"}],"xAxis":{"type":"category","title":{"text":"Social Trust Dimension"},"categories":["Interpersonal Trust\n('Can most people be trusted?')","Perceived Fairness\n('Do people try to be fair?')","Perceived Helpfulness\n('Are people helpful?')"]},"subtitle":{"text":"General Social Survey Panel 2016 (N = 2,867 respondents)\nPercentage distribution of responses across social trust measures"},"legend":{"title":{"text":"Response Category"}},"tooltip":{"useHTML":true,"formatter":"\n        function() {\n          // pull the variable label from the axis categories array\n          var v = this.series.chart.xAxis[0].categories[this.point.x];\n          // If category is empty/undefined (single variable case), use chart title instead\n          if (!v || v === '') {\n            v = this.series.chart.title ? this.series.chart.title.textStr : '';\n          }\n          // the response (series name)\n          var r = this.series.name;\n          // format as percentage if percent-stacked, else point.y\n          var val = (this.point.percentage !== undefined)\n                  ? Highcharts.numberFormat(this.point.percentage,1) + '%'\n                  : this.point.y;\n          return '<b>' + v + '<\/b><br/>' +\n                 r + ': <b>' + val + '<\/b>';\n        }\n      "},"colors":["#b2182b","#ef8a62","#fddbc7","darkgrey"]},"theme":{"chart":{"backgroundColor":"transparent"},"colors":["#7cb5ec","#434348","#90ed7d","#f7a35c","#8085e9","#f15c80","#e4d354","#2b908f","#f45b5b","#91e8e1"]},"conf_opts":{"global":{"Date":null,"VMLRadialGradientURL":"http =//code.highcharts.com/list(version)/gfx/vml-radial-gradient.png","canvasToolsURL":"http =//code.highcharts.com/list(version)/modules/canvas-tools.js","getTimezoneOffset":null,"timezoneOffset":0,"useUTC":true},"lang":{"contextButtonTitle":"Chart context menu","decimalPoint":".","downloadCSV":"Download CSV","downloadJPEG":"Download JPEG image","downloadPDF":"Download PDF document","downloadPNG":"Download PNG image","downloadSVG":"Download SVG vector image","downloadXLS":"Download XLS","drillUpText":"◁ Back to {series.name}","exitFullscreen":"Exit from full screen","exportData":{"annotationHeader":"Annotations","categoryDatetimeHeader":"DateTime","categoryHeader":"Category"},"hideData":"Hide data table","invalidDate":null,"loading":"Loading...","months":["January","February","March","April","May","June","July","August","September","October","November","December"],"noData":"No data to display","numericSymbolMagnitude":1000,"numericSymbols":["k","M","G","T","P","E"],"printChart":"Print chart","resetZoom":"Reset zoom","resetZoomTitle":"Reset zoom level 1:1","shortMonths":["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],"shortWeekdays":["Sat","Sun","Mon","Tue","Wed","Thu","Fri"],"thousandsSep":" ","viewData":"View data table","viewFullscreen":"View in full screen","weekdays":["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]}},"type":"chart","fonts":[],"debug":false},"evals":["hc_opts.tooltip.formatter"],"jsHooks":[]}</script>
 </div>
 </div>
 <div class="section level2">
@@ -898,7 +989,7 @@ least positive)</li>
 <div class="section level3">
 <h3 id="conclusion">Conclusion<a class="anchor" aria-label="anchor" href="#conclusion"></a>
 </h3>
-<p>The <code><a href="../reference/create_stackedbars.html">create_stackedbars()</a></code> function provides a powerful
+<p>The <code><a href="../reference/viz_stackedbars.html">viz_stackedbars()</a></code> function provides a powerful
 solution for visualizing multiple Likert-type survey questions
 simultaneously. Its key advantages include:</p>
 <ul>
@@ -926,7 +1017,7 @@ researchers, enabling them to communicate complex patterns in public
 opinion and social attitudes effectively.</p>
 <p>Whether you’re analyzing institutional confidence, social trust, life
 satisfaction, or any other multi-item survey construct,
-<code><a href="../reference/create_stackedbars.html">create_stackedbars()</a></code> provides the flexibility and polish
+<code><a href="../reference/viz_stackedbars.html">viz_stackedbars()</a></code> provides the flexibility and polish
 needed for both exploratory analysis and publication-ready
 visualizations.</p>
 </div>

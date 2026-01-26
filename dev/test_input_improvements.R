@@ -51,7 +51,7 @@ viz <- create_viz() %>%
   add_viz(
     type = "timeline",
     time_var = "decade",
-    response_var = "pct_female",
+    y_var = "pct_female",
     group_var = "country",  # This creates series named by country!
     chart_type = "line",
     title = "% Female Authorship Over Time",
@@ -64,7 +64,7 @@ viz <- create_viz() %>%
   add_viz(
     type = "timeline",
     time_var = "decade",
-    response_var = "pct_weird",
+    y_var = "pct_weird",
     group_var = "country",
     chart_type = "line",
     title = "% WEIRD Country Studies",
@@ -77,7 +77,7 @@ viz <- create_viz() %>%
   add_viz(
     type = "timeline",
     time_var = "decade",
-    response_var = "pct_quantitative",
+    y_var = "pct_quantitative",
     group_var = "country",
     chart_type = "line",
     title = "% Quantitative Studies",

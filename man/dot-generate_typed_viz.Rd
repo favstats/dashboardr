@@ -22,7 +22,7 @@ function names and serializing parameters.
 \details{
 This function:
 \itemize{
-\item Maps visualization types to function names (e.g., "stackedbar" → "create_stackedbar")
+\item Maps visualization types to function names (e.g., "stackedbar" → "viz_stackedbar")
 \item Excludes internal parameters (type, data_path, tabgroup, text, icon, text_position)
 \item Serializes all other parameters using .serialize_arg()
 Generate R code for typed visualizations
@@ -34,7 +34,7 @@ function names and serializing parameters.
 
 This function:
 \itemize{
-\item Maps visualization types to function names (e.g., "stackedbar" → "create_stackedbar")
+\item Maps visualization types to function names (e.g., "stackedbar" → "viz_stackedbar")
 \item Excludes internal parameters (type, data_path, tabgroup, text, icon, text_position)
 \item Serializes all other parameters using .serialize_arg()
 \item Formats the function call with proper indentation

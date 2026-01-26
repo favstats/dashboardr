@@ -97,11 +97,11 @@ test_that("drop_na_vars with stackedbar removes NAs from x_var and stack_var", {
   unlink(dashboard$output_dir, recursive = TRUE)
 })
 
-test_that("drop_na_vars with timeline removes NAs from time_var and response_var", {
+test_that("drop_na_vars with timeline removes NAs from time_var and y_var", {
   viz <- create_viz(
     type = "timeline",
     time_var = "year",
-    response_var = "value"
+    y_var = "value"
   ) %>%
     add_viz(
       title = "Clean Timeline",

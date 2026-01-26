@@ -27,7 +27,7 @@ Character vector of R code lines for the visualization
 This function:
 
 - Maps visualization types to function names (e.g., "stackedbar" →
-  "create_stackedbar")
+  "viz_stackedbar")
 
 - Excludes internal parameters (type, data_path, tabgroup, text, icon,
   text_position)
@@ -42,7 +42,7 @@ names to function names and serializing parameters.
 This function:
 
 - Maps visualization types to function names (e.g., "stackedbar" →
-  "create_stackedbar")
+  "viz_stackedbar")
 
 - Excludes internal parameters (type, data_path, tabgroup, text, icon,
   text_position)

@@ -1,10 +1,10 @@
 # dashboardr Comprehensive Workshop Materials
 
-Welcome to the dashboardr workshop! This folder contains all materials for a comprehensive hands-on workshop covering everything in dashboardr.
+Welcome to the dashboardr workshop! This folder contains all materials for a **three-day** comprehensive hands-on workshop covering dashboardr and R package development.
 
-## Workshop Contents
+## Workshop Structure
 
-### Topics Covered
+### Day 1: Foundations & Core Concepts
 
 1. **Foundations**
    - What is dashboardr and why use it
@@ -13,67 +13,118 @@ Welcome to the dashboardr workshop! This folder contains all materials for a com
    - The three-step workflow: Build → Assemble → Generate
 
 2. **Visualizations**
-   - All 8 visualization types (histogram, bar, stackedbar, stackedbars, timeline, heatmap, treemap, scatter)
+   - All 9 visualization types (histogram, bar, stackedbar, stackedbars, timeline, heatmap, treemap, scatter, **map**)
    - Smart defaults and overrides
    - Filters, weights, and binning
    - Custom bin breaks and labels
-   - Response filtering for timelines
    - Vectorized creation with `add_vizzes()`
 
-3. **Content System**
+3. **Content System Basics**
    - Text, images, callouts, cards
+   - Tabgroups (flat and nested hierarchies)
+   - Combining collections with `+`
+
+4. **Quick Start**
+   - First dashboard creation
+   - Themes preview
+   - Q&A
+
+### Day 2: Advanced Features & Publishing
+
+1. **Advanced Visualizations**
+   - Timeline with `y_filter`, `y_filter_combine`, `y_filter_label` (NEW!)
+   - Response binning with `y_breaks`, `y_bin_labels`, `y_levels`
+   - Time binning
+   - Map visualization
+
+2. **The Content System (Deep Dive)**
    - Value boxes and metrics
    - Accordions, dividers, spacers
    - Tables (gt, DT, reactable)
    - Mixing content types
 
-4. **Layout & Organization**
-   - Tabgroups (flat and nested hierarchies)
-   - Custom tabgroup labels with icons
-   - Pagination (page breaks)
-   - Combining collections with `+`
-
-5. **Interactive Inputs**
+3. **Interactive Inputs**
    - Select (single/multiple)
    - Checkbox and radio buttons
    - Switches for toggling series
    - Sliders with custom labels
    - Button groups
-   - Text search
 
-6. **Themes & Styling**
+4. **Theming & Styling**
    - Bootswatch themes
    - Tabset themes
    - Built-in theme functions (modern, academic, clean, ascor)
-   - Theme customization and overrides
-   - Color palettes for visualizations
+   - Deep customization and overrides
 
-7. **Dashboard Assembly**
-   - Creating dashboards
-   - Adding pages
+5. **Dashboard Assembly**
    - Loading overlays
-   - Lazy loading
+   - Lazy loading for performance
    - Multi-dataset pages
-   - Navbar dropdown menus
+   - Pagination (page breaks)
 
-8. **Publishing**
+6. **Publishing**
    - GitHub Pages deployment
    - One-time setup
    - Updating published dashboards
 
-9. **Best Practices**
-   - Debugging tips
+7. **Best Practices & Debugging**
    - Common mistakes and fixes
    - Pro tips
+   - The power of `print()`
+
+### Day 3: R Package Development
+
+1. **Why Create Packages?**
+   - Benefits of packaging code
+   - When to create a package
+   - Package vs. script mindset
+
+2. **Package Structure**
+   - Essential files and folders
+   - DESCRIPTION & NAMESPACE
+   - The R/ folder
+
+3. **Creating Your Package**
+   - `usethis` magic
+   - Tidy package conventions
+   - Git & GitHub integration
+
+4. **Documentation with roxygen2**
+   - Documentation tags (@param, @return, @export, etc.)
+   - Writing good documentation
+   - Examples that work
+   - Using other packages (@importFrom)
+
+5. **Testing with testthat**
+   - Why test?
+   - Writing effective tests
+   - Test-driven development
+   - Code coverage
+
+6. **Sharing Your Package**
+   - R CMD check
+   - README and badges
+   - pkgdown documentation sites
+   - Continuous Integration (GitHub Actions)
+   - CRAN considerations
+
+7. **Best Practices**
+   - Function naming conventions
+   - Error messages that help
+   - Internal vs. exported functions
+   - Package development checklist
 
 ## Files in This Folder
 
 | File | Description |
 |------|-------------|
-| `dashboardr_workshop.Rmd` | Main xaringan slides (~130 slides) |
+| `dashboardr_workshop.Rmd` | **Day 1** xaringan slides |
+| `dashboardr_workshop_day2.Rmd` | **Day 2** xaringan slides |
+| `dashboardr_workshop_day3.Rmd` | **Day 3** xaringan slides (Package Development) |
 | `exercises.R` | 15 hands-on exercises with solutions |
 | `cheatsheet.md` | Comprehensive quick reference |
 | `custom.css` | Custom CSS styling for slides |
+| `header.html` | Font Awesome icons support |
 | `README.md` | This file |
 
 ## Before the Workshop
@@ -115,27 +166,49 @@ generate_dashboard(dashboard, render = FALSE)
 # Install xaringan if needed
 install.packages("xaringan")
 
-# Live preview (recommended for presenting)
+# Day 1 - Live preview (recommended for presenting)
 xaringan::inf_mr("dashboardr_workshop.Rmd")
+
+# Day 2 - Live preview
+xaringan::inf_mr("dashboardr_workshop_day2.Rmd")
+
+# Day 3 - Live preview
+xaringan::inf_mr("dashboardr_workshop_day3.Rmd")
 
 # Or render to HTML
 rmarkdown::render("dashboardr_workshop.Rmd")
+rmarkdown::render("dashboardr_workshop_day2.Rmd")
+rmarkdown::render("dashboardr_workshop_day3.Rmd")
 ```
 
 ## Workshop Learning Objectives
 
 By the end of this workshop, participants will be able to:
 
+### Days 1-2: dashboardr
+
 1. ✅ Explain the "Grammar of Dashboards" concept
 2. ✅ Create visualization collections with smart defaults and overrides
-3. ✅ Use all 8 visualization types with appropriate parameters
+3. ✅ Use all **9** visualization types with appropriate parameters
 4. ✅ Apply filters, weights, and custom binning
-5. ✅ Organize content with flat and nested tabgroups
-6. ✅ Mix visualizations with text, callouts, and other content types
-7. ✅ Add interactive inputs for user filtering
-8. ✅ Apply and customize professional themes
-9. ✅ Publish dashboards to GitHub Pages
-10. ✅ Debug common issues
+5. ✅ Use timeline filtering with `y_filter`, `y_filter_combine`, `y_filter_label`
+6. ✅ Organize content with flat and nested tabgroups
+7. ✅ Mix visualizations with text, callouts, and other content types
+8. ✅ Add interactive inputs for user filtering
+9. ✅ Apply and customize professional themes
+10. ✅ Publish dashboards to GitHub Pages
+11. ✅ Debug common issues
+
+### Day 3: Package Development
+
+12. ✅ Understand R package structure and conventions
+13. ✅ Create a package using `usethis` and `devtools`
+14. ✅ Write roxygen2 documentation
+15. ✅ Create unit tests with `testthat`
+16. ✅ Run R CMD check and fix issues
+17. ✅ Set up GitHub Actions for CI
+18. ✅ Create a pkgdown documentation site
+19. ✅ Share packages via GitHub
 
 ## Key Analogies Used
 

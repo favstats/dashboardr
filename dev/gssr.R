@@ -36,7 +36,7 @@ grass_colors <- c("#1a9641", "#d7191c") # Green for Legal, Red for Not Legal
 
 
 ## By ideology
-create_stackedbar(
+viz_stackedbar(
   data = gss_data,
   x_var = "polviews_1a",
   stack_var = "grass_1a",
@@ -90,7 +90,7 @@ processed_gss_data <- gss_data %>%
 
 # --- Create the Chart ---
 
-create_stackedbar(
+viz_stackedbar(
   data = processed_gss_data,
   x_var = "finrela_1a",
   stack_var = "optimism_level", # Use our newly created variable for the stacks

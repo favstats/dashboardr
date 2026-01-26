@@ -1,4 +1,4 @@
-test_that("create_histogram accepts weight_var parameter", {
+test_that("viz_histogram accepts weight_var parameter", {
   data <- data.frame(
     x = c(1, 2, 3, 1, 2, 3),
     weight = c(1, 2, 3, 1, 2, 3)
@@ -11,7 +11,7 @@ test_that("create_histogram accepts weight_var parameter", {
   expect_equal(viz$items[[1]]$weight_var, "weight")
 })
 
-test_that("create_bar accepts weight_var parameter", {
+test_that("viz_bar accepts weight_var parameter", {
   data <- data.frame(
     category = c("A", "B", "A", "B"),
     weight = c(1, 2, 1, 2)
@@ -24,7 +24,7 @@ test_that("create_bar accepts weight_var parameter", {
   expect_equal(viz$items[[1]]$weight_var, "weight")
 })
 
-test_that("create_stackedbar accepts weight_var parameter", {
+test_that("viz_stackedbar accepts weight_var parameter", {
   data <- data.frame(
     response = c(1, 2, 3, 1, 2, 3),
     group = c("A", "A", "A", "B", "B", "B"),
@@ -43,7 +43,7 @@ test_that("create_stackedbar accepts weight_var parameter", {
   expect_equal(viz$items[[1]]$weight_var, "weight")
 })
 
-test_that("create_timeline accepts weight_var parameter", {
+test_that("viz_timeline accepts weight_var parameter", {
   data <- data.frame(
     time = c(1, 2, 3, 1, 2, 3),
     response = c(1, 2, 3, 1, 2, 3),
@@ -53,7 +53,7 @@ test_that("create_timeline accepts weight_var parameter", {
   viz <- create_viz(
     type = "timeline",
     time_var = "time",
-    response_var = "response",
+    y_var = "response",
     weight_var = "weight"
   ) %>%
     add_viz(title = "Weighted Timeline")
@@ -62,7 +62,7 @@ test_that("create_timeline accepts weight_var parameter", {
   expect_equal(viz$items[[1]]$weight_var, "weight")
 })
 
-test_that("create_heatmap accepts weight_var parameter", {
+test_that("viz_heatmap accepts weight_var parameter", {
   data <- data.frame(
     x = c("A", "B", "A", "B"),
     y = c("X", "X", "Y", "Y"),

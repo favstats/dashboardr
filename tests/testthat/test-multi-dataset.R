@@ -237,7 +237,7 @@ test_that("multi-dataset works with different viz types", {
     add_viz(
       type = "timeline",
       time_var = "year",
-      response_var = "metric",
+      y_var = "metric",
       data = "timeline_data",
       title = "Timeline"
     ) %>%
@@ -281,9 +281,9 @@ test_that("multi-dataset works with different viz types", {
   expect_true(grepl("bar_data", qmd_content))
   
   # Should have correct function calls
-  expect_true(grepl("create_histogram", qmd_content))
-  expect_true(grepl("create_timeline", qmd_content))
-  expect_true(grepl("create_stackedbar", qmd_content))
+  expect_true(grepl("viz_histogram", qmd_content))
+  expect_true(grepl("viz_timeline", qmd_content))
+  expect_true(grepl("viz_stackedbar", qmd_content))
   
 })
 
@@ -323,7 +323,8 @@ test_that("multi-dataset summary output shows all datasets", {
   output_text <- paste(output, collapse = "\n")
   
   # Summary should mention data files
-  expect_true(grepl("Data files|💾", output_text))
+  # Note: Check for "Data files" text (emoji may vary depending on encoding)
+  expect_true(grepl("Data files|data files", output_text, ignore.case = TRUE))
   
 })
 

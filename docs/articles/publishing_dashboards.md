@@ -3,6 +3,53 @@
 This vignette will take you from zero to publishing your dashboard
 online in under 10 minutes. No prior Git or GitHub knowledge required!
 
+> ⚠️ **IMPORTANT: Data Privacy Warning**
+>
+> When you publish a dashboard, **all data embedded in your
+> visualizations becomes publicly accessible**. Before publishing,
+> verify that your dashboard does not contain:
+>
+> - **Personal identifiable information (PII)** - names, emails,
+>   addresses, ID numbers
+> - **Sensitive survey responses** - individual-level data that could
+>   identify respondents
+> - **Confidential research data** - unpublished findings, proprietary
+>   information
+> - **Location data** - precise coordinates that could identify
+>   individuals
+>
+> **How dashboardr protects you:**
+>
+> - Data is aggregated for visualizations (counts, percentages, means)
+> - Individual-level microdata is not exported to the final HTML
+> - Only the summary statistics needed to render charts are included
+> - **Automatic .gitignore protection** - Data files are automatically
+>   excluded from Git commits
+>
+> **About .gitignore protection:**
+>
+> The `.gitignore` file in your dashboard folder automatically excludes
+> data files from being published:
+>
+> 1.  Common data file extensions (`.csv`, `.rds`, `.xlsx`, `.sav`,
+>     `.dta`) are ignored by default
+> 2.  Large files (\>10MB) are automatically detected and added to
+>     `.gitignore`
+> 3.  Check your `.gitignore` file to verify your data files match the
+>     patterns
+>
+> **Best practices:**
+>
+> 1.  **Review before publishing** - Open your generated HTML files and
+>     inspect what data is visible
+> 2.  **Remove identifying variables** - Drop columns like names, IDs,
+>     or exact dates before creating visualizations
+> 3.  **Test with `render = TRUE, open = "browser"`** - Review the full
+>     dashboard locally before pushing to GitHub
+> 4.  **Consider access controls** - For sensitive data, use private
+>     repositories or institutional hosting instead of public GitHub
+>     Pages
+
 ### What You’ll Learn
 
 By the end of this guide, you’ll be able to:

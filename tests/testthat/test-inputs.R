@@ -810,7 +810,7 @@ describe("Full pipeline integration", {
     
     viz <- create_viz() %>%
       add_viz(type = "timeline", time_var = "year", 
-              response_var = "value", group_var = "category")
+              y_var = "value", group_var = "category")
     
     combined <- content + viz
     

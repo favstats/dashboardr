@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Creating Interactive Heatmaps with `create_heatmap` • dashboardr</title>
+<title>Creating Interactive Heatmaps with `viz_heatmap` • dashboardr</title>
 <!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png">
 <link rel="icon" type="”image/svg+xml”" href="../favicon.svg">
 <link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
@@ -18,7 +18,7 @@
 <link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
-<meta property="og:title" content="Creating Interactive Heatmaps with `create_heatmap`">
+<meta property="og:title" content="Creating Interactive Heatmaps with `viz_heatmap`">
 <style>
 /* Navbar logo */
 .navbar-brand img {
@@ -64,19 +64,23 @@
 <li><a class="dropdown-item" href="../articles/getting-started.html">🚀 Getting Started</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>📖 Core Concepts</h6></li>
-    <li><a class="dropdown-item" href="../articles/content-collections.html">→ Content Collections</a></li>
-    <li><a class="dropdown-item" href="../articles/pages.html">→ Pages</a></li>
-    <li><a class="dropdown-item" href="../articles/dashboards.html">→ Dashboards</a></li>
+    <li><a class="dropdown-item" href="../articles/content-collections.html">- Content</a></li>
+    <li><a class="dropdown-item" href="../articles/pages.html">- Pages</a></li>
+    <li><a class="dropdown-item" href="../articles/dashboards.html">- Dashboards</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><a class="dropdown-item" href="../articles/advanced-features.html">⚙️ Advanced Features</a></li>
     <li><a class="dropdown-item" href="../articles/publishing_dashboards.html">🌐 Publishing Dashboards</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>📊 Visualization Types</h6></li>
-    <li><a class="dropdown-item" href="../articles/bar_vignette.html">→ Bar Charts</a></li>
-    <li><a class="dropdown-item" href="../articles/timeline_vignette.html">→ Timelines</a></li>
-    <li><a class="dropdown-item" href="../articles/stackedbar_vignette.html">→ Stacked Bars</a></li>
-    <li><a class="dropdown-item" href="../articles/stackedbars_vignette.html">→ Stacked Bars (Multiple)</a></li>
-    <li><a class="dropdown-item" href="../articles/heatmap_vignette.html">→ Heatmaps</a></li>
+    <li><a class="dropdown-item" href="../articles/bar_vignette.html">- Bar Charts</a></li>
+    <li><a class="dropdown-item" href="../articles/timeline_vignette.html">- Timelines</a></li>
+    <li><a class="dropdown-item" href="../articles/stackedbar_vignette.html">- Stacked Bars</a></li>
+    <li><a class="dropdown-item" href="../articles/stackedbars_vignette.html">- Stacked Bars (Multiple)</a></li>
+    <li><a class="dropdown-item" href="../articles/heatmap_vignette.html">- Heatmaps</a></li>
+    <li><a class="dropdown-item" href="../articles/histogram_vignette.html">- Histograms</a></li>
+    <li><a class="dropdown-item" href="../articles/scatter_vignette.html">- Scatter Plots</a></li>
+    <li><a class="dropdown-item" href="../articles/treemap_vignette.html">- Treemaps</a></li>
+    <li><a class="dropdown-item" href="../articles/map_vignette.html">- Maps</a></li>
   </ul>
 </li>
 <li class="nav-item dropdown">
@@ -88,6 +92,7 @@
     <li><a class="dropdown-item" href="../live-demos/showcase/docs/index.html">🚀 Showcase Dashboard</a></li>
   </ul>
 </li>
+<li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul>
 <ul class="navbar-nav">
 <li class="nav-item"><form class="form-inline" role="search">
@@ -107,7 +112,7 @@
 <script src="heatmap_vignette_files/highcharts-9.3.1/highcharts.js"></script><script src="heatmap_vignette_files/highcharts-9.3.1/highcharts-3d.js"></script><script src="heatmap_vignette_files/highcharts-9.3.1/highcharts-more.js"></script><script src="heatmap_vignette_files/highcharts-9.3.1/modules/stock.js"></script><script src="heatmap_vignette_files/highcharts-9.3.1/modules/map.js"></script><script src="heatmap_vignette_files/highcharts-9.3.1/modules/data.js"></script><script src="heatmap_vignette_files/highcharts-9.3.1/modules/exporting.js"></script><script src="heatmap_vignette_files/highcharts-9.3.1/modules/offline-exporting.js"></script><script src="heatmap_vignette_files/highcharts-9.3.1/modules/drilldown.js"></script><script src="heatmap_vignette_files/highcharts-9.3.1/modules/item-series.js"></script><script src="heatmap_vignette_files/highcharts-9.3.1/modules/overlapping-datalabels.js"></script><script src="heatmap_vignette_files/highcharts-9.3.1/modules/annotations.js"></script><script src="heatmap_vignette_files/highcharts-9.3.1/modules/export-data.js"></script><script src="heatmap_vignette_files/highcharts-9.3.1/modules/funnel.js"></script><script src="heatmap_vignette_files/highcharts-9.3.1/modules/heatmap.js"></script><script src="heatmap_vignette_files/highcharts-9.3.1/modules/treemap.js"></script><script src="heatmap_vignette_files/highcharts-9.3.1/modules/sankey.js"></script><script src="heatmap_vignette_files/highcharts-9.3.1/modules/dependency-wheel.js"></script><script src="heatmap_vignette_files/highcharts-9.3.1/modules/organization.js"></script><script src="heatmap_vignette_files/highcharts-9.3.1/modules/solid-gauge.js"></script><script src="heatmap_vignette_files/highcharts-9.3.1/modules/streamgraph.js"></script><script src="heatmap_vignette_files/highcharts-9.3.1/modules/sunburst.js"></script><script src="heatmap_vignette_files/highcharts-9.3.1/modules/vector.js"></script><script src="heatmap_vignette_files/highcharts-9.3.1/modules/wordcloud.js"></script><script src="heatmap_vignette_files/highcharts-9.3.1/modules/xrange.js"></script><script src="heatmap_vignette_files/highcharts-9.3.1/modules/tilemap.js"></script><script src="heatmap_vignette_files/highcharts-9.3.1/modules/venn.js"></script><script src="heatmap_vignette_files/highcharts-9.3.1/modules/gantt.js"></script><script src="heatmap_vignette_files/highcharts-9.3.1/modules/timeline.js"></script><script src="heatmap_vignette_files/highcharts-9.3.1/modules/parallel-coordinates.js"></script><script src="heatmap_vignette_files/highcharts-9.3.1/modules/bullet.js"></script><script src="heatmap_vignette_files/highcharts-9.3.1/modules/coloraxis.js"></script><script src="heatmap_vignette_files/highcharts-9.3.1/modules/dumbbell.js"></script><script src="heatmap_vignette_files/highcharts-9.3.1/modules/lollipop.js"></script><script src="heatmap_vignette_files/highcharts-9.3.1/modules/series-label.js"></script><script src="heatmap_vignette_files/highcharts-9.3.1/plugins/motion.js"></script><script src="heatmap_vignette_files/highcharts-9.3.1/custom/reset.js"></script><script src="heatmap_vignette_files/highcharts-9.3.1/modules/boost.js"></script><script src="heatmap_vignette_files/highchart-binding-0.9.4/highchart.js"></script><div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
 
-      <h1>Creating Interactive Heatmaps with `create_heatmap`</h1>
+      <h1>Creating Interactive Heatmaps with `viz_heatmap`</h1>
                         <h4 data-toc-skip class="author">Alexandra
 Pafford</h4>
             
@@ -122,13 +127,13 @@ Pafford</h4>
 <div class="section level3">
 <h3 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
 </h3>
-<p>Welcome to this guide on how to use the <code>create_heatmap</code>
+<p>Welcome to this guide on how to use the <code>viz_heatmap</code>
 function as part of the <code>dashboardr</code> package. This guide
 demonstrates how to use this function to generate interactive heatmaps.
 In this demonstration, we will use the <code>gss_2020</code> dataset
 from the <code>gssr</code> package to walk you through how to use the
 function.</p>
-<p>The <code>create_heatmap</code> function is designed to simplify the
+<p>The <code>viz_heatmap</code> function is designed to simplify the
 creation of highly customizable heatmaps from raw or aggregated data.
 Heatmaps are excellent for visualizing the relationship between two
 categorical variables and a continuous outcome, using color intensity to
@@ -147,12 +152,11 @@ categories.</li>
 for a given <code>(x, y)</code> cell.</li>
 <li>Setting up titles, labels, tooltips, and color scales.</li>
 </ul>
-<p>This vignette demonstrates how to use the
-<code><a href="../reference/create_heatmap.html">create_heatmap()</a></code> function with the General Social Survey
-(GSS) Panel 2020 dataset. The GSS Panel 2020 dataset follows the same
-respondents across three waves (2016, 2018, 2020), providing rich
-longitudinal data for understanding social attitudes and demographic
-patterns.</p>
+<p>This vignette demonstrates how to use the <code><a href="../reference/viz_heatmap.html">viz_heatmap()</a></code>
+function with the General Social Survey (GSS) Panel 2020 dataset. The
+GSS Panel 2020 dataset follows the same respondents across three waves
+(2016, 2018, 2020), providing rich longitudinal data for understanding
+social attitudes and demographic patterns.</p>
 </div>
 <div class="section level3">
 <h3 id="getting-started">Getting Started<a class="anchor" aria-label="anchor" href="#getting-started"></a>
@@ -263,7 +267,7 @@ levels and gender.</p>
 <span>               <span class="st">"4"</span> <span class="op">=</span> <span class="st">"Master's or Higher"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Create basic heatmap</span></span>
-<span><span class="va">plot1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_heatmap.html">create_heatmap</a></span><span class="op">(</span></span>
+<span><span class="va">plot1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/viz_heatmap.html">viz_heatmap</a></span><span class="op">(</span></span>
 <span>  data <span class="op">=</span> <span class="va">age_education_data</span>,</span>
 <span>  x_var <span class="op">=</span> <span class="st">"degree_1a"</span>,</span>
 <span>  y_var <span class="op">=</span> <span class="st">"sex_1a"</span>, </span>
@@ -307,7 +311,7 @@ showing average income.</p>
 <span><span class="va">education_order</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"High School or Less"</span>, <span class="st">"High School"</span>, <span class="st">"Associate/Junior College"</span>, <span class="st">"Bachelor's"</span>, <span class="st">"Master's or Higher"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Create heatmap with custom ordering</span></span>
-<span><span class="va">plot2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_heatmap.html">create_heatmap</a></span><span class="op">(</span></span>
+<span><span class="va">plot2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/viz_heatmap.html">viz_heatmap</a></span><span class="op">(</span></span>
 <span>  data <span class="op">=</span> <span class="va">income_data</span>,</span>
 <span>  x_var <span class="op">=</span> <span class="st">"age_group"</span>,</span>
 <span>  y_var <span class="op">=</span> <span class="st">"degree_1a"</span>,</span>
@@ -363,7 +367,7 @@ patterns.</p>
 <span>     <span class="st">"4"</span><span class="op">=</span><span class="st">"Upper Class"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Create heatmap including NAs</span></span>
-<span><span class="va">plot3</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_heatmap.html">create_heatmap</a></span><span class="op">(</span></span>
+<span><span class="va">plot3</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/viz_heatmap.html">viz_heatmap</a></span><span class="op">(</span></span>
 <span>  data <span class="op">=</span> <span class="va">happiness_data</span>,</span>
 <span>  x_var <span class="op">=</span> <span class="st">"race_1a"</span>,</span>
 <span>  x_map_values <span class="op">=</span> <span class="va">race_map</span>,</span>
@@ -413,7 +417,7 @@ patterns.</p>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Create heatmap with custom styling</span></span>
-<span><span class="va">plot5</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_heatmap.html">create_heatmap</a></span><span class="op">(</span></span>
+<span><span class="va">plot5</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/viz_heatmap.html">viz_heatmap</a></span><span class="op">(</span></span>
 <span>  data <span class="op">=</span> <span class="va">gss_panel20</span>,</span>
 <span>  x_var <span class="op">=</span> <span class="st">"region_1a"</span>, </span>
 <span>  y_var <span class="op">=</span> <span class="st">"degree_1a"</span>,</span>
@@ -436,6 +440,94 @@ patterns.</p>
 <span><span class="va">plot5</span></span></code></pre></div>
 <div class="highchart html-widget html-fill-item" id="htmlwidget-febe03efa1a2d8d52a86" style="width:672px;height:480px;"></div>
 <script type="application/json" data-for="htmlwidget-febe03efa1a2d8d52a86">{"x":{"hc_opts":{"chart":{"reflow":true,"type":"heatmap"},"title":{"text":"Perceived Fairness by Region and Education"},"yAxis":{"title":{"text":"Education Level"},"categories":["Associate/Junior College","Bachelor's","High School","High School or Less","Master's or Higher"]},"credits":{"enabled":false},"exporting":{"enabled":false},"boost":{"enabled":false},"plotOptions":{"series":{"label":{"enabled":false},"turboThreshold":0},"treemap":{"layoutAlgorithm":"squarified"}},"subtitle":{"text":null},"xAxis":{"categories":["Deep South","East North Central","Mid-Atlantic","Mountain","New England","South Atlantic","West Coast","West North Central","West South Central"],"title":{"text":"US Region"},"opposite":false},"colorAxis":{"min":1.294117647058824,"max":2.222222222222222,"stops":[[0,"#ffffcc"],[0.25,"#a1dab4"],[0.5,"#41b6c4"],[0.75,"#2c7fb8"],[1,"#253494"]],"title":{"text":"Fairness Rating"}},"series":[{"group":"group","data":[{".x_plot":"Deep South",".y_plot":"Associate/Junior College",".value_plot":2,"x":0,"y":0,"value":2,"xf":"Deep South","yf":"Associate/Junior College"},{".x_plot":"Deep South",".y_plot":"Bachelor's",".value_plot":1.636363636363636,"x":0,"y":1,"value":1.636363636363636,"xf":"Deep South","yf":"Bachelor's"},{".x_plot":"Deep South",".y_plot":"High School",".value_plot":1.480519480519481,"x":0,"y":2,"value":1.480519480519481,"xf":"Deep South","yf":"High School"},{".x_plot":"Deep South",".y_plot":"High School or Less",".value_plot":1.411764705882353,"x":0,"y":3,"value":1.411764705882353,"xf":"Deep South","yf":"High School or Less"},{".x_plot":"Deep South",".y_plot":"Master's or Higher",".value_plot":1.866666666666667,"x":0,"y":4,"value":1.866666666666667,"xf":"Deep South","yf":"Master's or Higher"},{".x_plot":"East North Central",".y_plot":"Associate/Junior College",".value_plot":1.35,"x":1,"y":0,"value":1.35,"xf":"East North Central","yf":"Associate/Junior College"},{".x_plot":"East North Central",".y_plot":"Bachelor's",".value_plot":1.813333333333333,"x":1,"y":1,"value":1.813333333333333,"xf":"East North Central","yf":"Bachelor's"},{".x_plot":"East North Central",".y_plot":"High School",".value_plot":1.647727272727273,"x":1,"y":2,"value":1.647727272727273,"xf":"East North Central","yf":"High School"},{".x_plot":"East North Central",".y_plot":"High School or Less",".value_plot":1.464285714285714,"x":1,"y":3,"value":1.464285714285714,"xf":"East North Central","yf":"High School or Less"},{".x_plot":"East North Central",".y_plot":"Master's or Higher",".value_plot":1.852941176470588,"x":1,"y":4,"value":1.852941176470588,"xf":"East North Central","yf":"Master's or Higher"},{".x_plot":"Mid-Atlantic",".y_plot":"Associate/Junior College",".value_plot":1.636363636363636,"x":2,"y":0,"value":1.636363636363636,"xf":"Mid-Atlantic","yf":"Associate/Junior College"},{".x_plot":"Mid-Atlantic",".y_plot":"Bachelor's",".value_plot":1.704545454545455,"x":2,"y":1,"value":1.704545454545455,"xf":"Mid-Atlantic","yf":"Bachelor's"},{".x_plot":"Mid-Atlantic",".y_plot":"High School",".value_plot":1.705882352941176,"x":2,"y":2,"value":1.705882352941176,"xf":"Mid-Atlantic","yf":"High School"},{".x_plot":"Mid-Atlantic",".y_plot":"High School or Less",".value_plot":1.294117647058824,"x":2,"y":3,"value":1.294117647058824,"xf":"Mid-Atlantic","yf":"High School or Less"},{".x_plot":"Mid-Atlantic",".y_plot":"Master's or Higher",".value_plot":1.838709677419355,"x":2,"y":4,"value":1.838709677419355,"xf":"Mid-Atlantic","yf":"Master's or Higher"},{".x_plot":"Mountain",".y_plot":"Associate/Junior College",".value_plot":1.75,"x":3,"y":0,"value":1.75,"xf":"Mountain","yf":"Associate/Junior College"},{".x_plot":"Mountain",".y_plot":"Bachelor's",".value_plot":1.935483870967742,"x":3,"y":1,"value":1.935483870967742,"xf":"Mountain","yf":"Bachelor's"},{".x_plot":"Mountain",".y_plot":"High School",".value_plot":1.540229885057471,"x":3,"y":2,"value":1.540229885057471,"xf":"Mountain","yf":"High School"},{".x_plot":"Mountain",".y_plot":"High School or Less",".value_plot":1.411764705882353,"x":3,"y":3,"value":1.411764705882353,"xf":"Mountain","yf":"High School or Less"},{".x_plot":"Mountain",".y_plot":"Master's or Higher",".value_plot":2,"x":3,"y":4,"value":2,"xf":"Mountain","yf":"Master's or Higher"},{".x_plot":"New England",".y_plot":"Associate/Junior College",".value_plot":1.6,"x":4,"y":0,"value":1.6,"xf":"New England","yf":"Associate/Junior College"},{".x_plot":"New England",".y_plot":"Bachelor's",".value_plot":1.785714285714286,"x":4,"y":1,"value":1.785714285714286,"xf":"New England","yf":"Bachelor's"},{".x_plot":"New England",".y_plot":"High School",".value_plot":1.66,"x":4,"y":2,"value":1.66,"xf":"New England","yf":"High School"},{".x_plot":"New England",".y_plot":"High School or Less",".value_plot":1.454545454545455,"x":4,"y":3,"value":1.454545454545455,"xf":"New England","yf":"High School or Less"},{".x_plot":"New England",".y_plot":"Master's or Higher",".value_plot":2,"x":4,"y":4,"value":2,"xf":"New England","yf":"Master's or Higher"},{".x_plot":"South Atlantic",".y_plot":"Associate/Junior College",".value_plot":1.6875,"x":5,"y":0,"value":1.6875,"xf":"South Atlantic","yf":"Associate/Junior College"},{".x_plot":"South Atlantic",".y_plot":"Bachelor's",".value_plot":1.712121212121212,"x":5,"y":1,"value":1.712121212121212,"xf":"South Atlantic","yf":"Bachelor's"},{".x_plot":"South Atlantic",".y_plot":"High School",".value_plot":1.537688442211055,"x":5,"y":2,"value":1.537688442211055,"xf":"South Atlantic","yf":"High School"},{".x_plot":"South Atlantic",".y_plot":"High School or Less",".value_plot":1.485714285714286,"x":5,"y":3,"value":1.485714285714286,"xf":"South Atlantic","yf":"High School or Less"},{".x_plot":"South Atlantic",".y_plot":"Master's or Higher",".value_plot":1.947368421052632,"x":5,"y":4,"value":1.947368421052632,"xf":"South Atlantic","yf":"Master's or Higher"},{".x_plot":"West Coast",".y_plot":"Associate/Junior College",".value_plot":1.608695652173913,"x":6,"y":0,"value":1.608695652173913,"xf":"West Coast","yf":"Associate/Junior College"},{".x_plot":"West Coast",".y_plot":"Bachelor's",".value_plot":1.773584905660377,"x":6,"y":1,"value":1.773584905660377,"xf":"West Coast","yf":"Bachelor's"},{".x_plot":"West Coast",".y_plot":"High School",".value_plot":1.547826086956522,"x":6,"y":2,"value":1.547826086956522,"xf":"West Coast","yf":"High School"},{".x_plot":"West Coast",".y_plot":"High School or Less",".value_plot":1.675675675675676,"x":6,"y":3,"value":1.675675675675676,"xf":"West Coast","yf":"High School or Less"},{".x_plot":"West Coast",".y_plot":"Master's or Higher",".value_plot":1.875,"x":6,"y":4,"value":1.875,"xf":"West Coast","yf":"Master's or Higher"},{".x_plot":"West North Central",".y_plot":"Associate/Junior College",".value_plot":1.75,"x":7,"y":0,"value":1.75,"xf":"West North Central","yf":"Associate/Junior College"},{".x_plot":"West North Central",".y_plot":"Bachelor's",".value_plot":1.666666666666667,"x":7,"y":1,"value":1.666666666666667,"xf":"West North Central","yf":"Bachelor's"},{".x_plot":"West North Central",".y_plot":"High School",".value_plot":1.753246753246753,"x":7,"y":2,"value":1.753246753246753,"xf":"West North Central","yf":"High School"},{".x_plot":"West North Central",".y_plot":"High School or Less",".value_plot":1.444444444444444,"x":7,"y":3,"value":1.444444444444444,"xf":"West North Central","yf":"High School or Less"},{".x_plot":"West North Central",".y_plot":"Master's or Higher",".value_plot":2.222222222222222,"x":7,"y":4,"value":2.222222222222222,"xf":"West North Central","yf":"Master's or Higher"},{".x_plot":"West South Central",".y_plot":"Associate/Junior College",".value_plot":1.578947368421053,"x":8,"y":0,"value":1.578947368421053,"xf":"West South Central","yf":"Associate/Junior College"},{".x_plot":"West South Central",".y_plot":"Bachelor's",".value_plot":1.833333333333333,"x":8,"y":1,"value":1.833333333333333,"xf":"West South Central","yf":"Bachelor's"},{".x_plot":"West South Central",".y_plot":"High School",".value_plot":1.522935779816514,"x":8,"y":2,"value":1.522935779816514,"xf":"West South Central","yf":"High School"},{".x_plot":"West South Central",".y_plot":"High School or Less",".value_plot":1.352941176470588,"x":8,"y":3,"value":1.352941176470588,"xf":"West South Central","yf":"High School or Less"},{".x_plot":"West South Central",".y_plot":"Master's or Higher",".value_plot":1.916666666666667,"x":8,"y":4,"value":1.916666666666667,"xf":"West South Central","yf":"Master's or Higher"}],"type":"heatmap","name":"Fairness Rating","plotOptions":{"heatmap":{"dataLabels":{"enabled":true,"format":"{point.value:.2f}","color":"#000000","style":{"textOutline":"none"}},"nullColor":"#f0f0f0"}}}],"tooltip":{"formatter":"function() {\n      // Access categories using this.series.xAxis.categories and this.series.yAxis.categories\n      // this.point.x and this.point.y are the numerical indices\n      var x_cat = this.series.xAxis.categories[this.point.x];\n      var y_cat = this.series.yAxis.categories[this.point.y];\n      var value = this.point.value;\n\n      var value_str = Highcharts.numberFormat(value, 0); // Format value (e.g., 0 decimals)\n      if (value === null) {\n          value_str = 'N/A'; // Display N/A for null values in tooltip\n      }\n\n      return '<b>' + 'Region: ' + x_cat + '<\/b><br/>' + // Using x_tooltip_prefix here\n             '<b>' + 'Education: ' + y_cat + '<\/b><br/>' + // Using y_tooltip_prefix here\n             '<b>Fairness Rating: <\/b>' + '' + value_str + ' (1-3 scale)';\n    }","valueDecimals":0}},"theme":{"chart":{"backgroundColor":"transparent"},"colors":["#7cb5ec","#434348","#90ed7d","#f7a35c","#8085e9","#f15c80","#e4d354","#2b908f","#f45b5b","#91e8e1"]},"conf_opts":{"global":{"Date":null,"VMLRadialGradientURL":"http =//code.highcharts.com/list(version)/gfx/vml-radial-gradient.png","canvasToolsURL":"http =//code.highcharts.com/list(version)/modules/canvas-tools.js","getTimezoneOffset":null,"timezoneOffset":0,"useUTC":true},"lang":{"contextButtonTitle":"Chart context menu","decimalPoint":".","downloadCSV":"Download CSV","downloadJPEG":"Download JPEG image","downloadPDF":"Download PDF document","downloadPNG":"Download PNG image","downloadSVG":"Download SVG vector image","downloadXLS":"Download XLS","drillUpText":"◁ Back to {series.name}","exitFullscreen":"Exit from full screen","exportData":{"annotationHeader":"Annotations","categoryDatetimeHeader":"DateTime","categoryHeader":"Category"},"hideData":"Hide data table","invalidDate":null,"loading":"Loading...","months":["January","February","March","April","May","June","July","August","September","October","November","December"],"noData":"No data to display","numericSymbolMagnitude":1000,"numericSymbols":["k","M","G","T","P","E"],"printChart":"Print chart","resetZoom":"Reset zoom","resetZoomTitle":"Reset zoom level 1:1","shortMonths":["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],"shortWeekdays":["Sat","Sun","Mon","Tue","Wed","Thu","Fri"],"thousandsSep":" ","viewData":"View data table","viewFullscreen":"View in full screen","weekdays":["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]}},"type":"chart","fonts":[],"debug":false},"evals":["hc_opts.tooltip.formatter"],"jsHooks":[]}</script>
+</div>
+<div class="section level3">
+<h3 id="labels-and-tooltips-reference">Labels and Tooltips Reference<a class="anchor" aria-label="anchor" href="#labels-and-tooltips-reference"></a>
+</h3>
+<p>Heatmaps support extensive label and tooltip customization:</p>
+<table class="table">
+<thead><tr class="header">
+<th>Parameter</th>
+<th>Description</th>
+<th>Example</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td><code>x_label</code></td>
+<td>X-axis title</td>
+<td><code>"Age Group"</code></td>
+</tr>
+<tr class="even">
+<td><code>y_label</code></td>
+<td>Y-axis title</td>
+<td><code>"Education Level"</code></td>
+</tr>
+<tr class="odd">
+<td><code>value_label</code></td>
+<td>Color legend title</td>
+<td><code>"Average Score"</code></td>
+</tr>
+<tr class="even">
+<td><code>tooltip_prefix</code></td>
+<td>Text before value</td>
+<td><code>"Score: "</code></td>
+</tr>
+<tr class="odd">
+<td><code>tooltip_suffix</code></td>
+<td>Text after value</td>
+<td><code>" points"</code></td>
+</tr>
+<tr class="even">
+<td><code>x_tooltip_prefix</code></td>
+<td>Text before x in tooltip</td>
+<td><code>"Age: "</code></td>
+</tr>
+<tr class="odd">
+<td><code>x_tooltip_suffix</code></td>
+<td>Text after x in tooltip</td>
+<td><code>" years"</code></td>
+</tr>
+<tr class="even">
+<td><code>y_tooltip_prefix</code></td>
+<td>Text before y in tooltip</td>
+<td><code>"Education: "</code></td>
+</tr>
+<tr class="odd">
+<td><code>y_tooltip_suffix</code></td>
+<td>Text after y in tooltip</td>
+<td><code>level</code></td>
+</tr>
+<tr class="even">
+<td><code>tooltip_labels_format</code></td>
+<td>Number format</td>
+<td><code>"{point.value:.1f}"</code></td>
+</tr>
+</tbody>
+</table>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Demonstrate all tooltip options</span></span>
+<span><span class="fu"><a href="../reference/viz_heatmap.html">viz_heatmap</a></span><span class="op">(</span></span>
+<span>  data <span class="op">=</span> <span class="va">income_data</span>,</span>
+<span>  x_var <span class="op">=</span> <span class="st">"age_group"</span>,</span>
+<span>  y_var <span class="op">=</span> <span class="st">"degree_1a"</span>,</span>
+<span>  y_map_values <span class="op">=</span> <span class="va">edu_map</span>,</span>
+<span>  value_var <span class="op">=</span> <span class="st">"avg_income"</span>,</span>
+<span>  title <span class="op">=</span> <span class="st">"Income by Demographics"</span>,</span>
+<span>  <span class="co"># Axis labels</span></span>
+<span>  x_label <span class="op">=</span> <span class="st">"Age Group"</span>,</span>
+<span>  y_label <span class="op">=</span> <span class="st">"Education"</span>,</span>
+<span>  value_label <span class="op">=</span> <span class="st">"Income Index"</span>,</span>
+<span>  <span class="co"># Tooltip formatting</span></span>
+<span>  tooltip_prefix <span class="op">=</span> <span class="st">"Income: "</span>,</span>
+<span>  tooltip_suffix <span class="op">=</span> <span class="st">" (scale 1-25)"</span>,</span>
+<span>  x_tooltip_prefix <span class="op">=</span> <span class="st">"Age: "</span>,</span>
+<span>  y_tooltip_prefix <span class="op">=</span> <span class="st">"Education: "</span>,</span>
+<span>  tooltip_labels_format <span class="op">=</span> <span class="st">"{point.value:.1f}"</span>,</span>
+<span>  x_order <span class="op">=</span> <span class="va">age_order</span>,</span>
+<span>  y_order <span class="op">=</span> <span class="va">education_order</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<div class="highchart html-widget html-fill-item" id="htmlwidget-1fb4450895fe099f74a1" style="width:672px;height:480px;"></div>
+<script type="application/json" data-for="htmlwidget-1fb4450895fe099f74a1">{"x":{"hc_opts":{"chart":{"reflow":true,"type":"heatmap"},"title":{"text":"Income by Demographics"},"yAxis":{"title":{"text":"Education"},"categories":["High School or Less","High School","Associate/Junior College","Bachelor's","Master's or Higher"]},"credits":{"enabled":false},"exporting":{"enabled":false},"boost":{"enabled":false},"plotOptions":{"series":{"label":{"enabled":false},"turboThreshold":0},"treemap":{"layoutAlgorithm":"squarified"}},"subtitle":{"text":null},"xAxis":{"categories":["18-29","30-44","45-59","60-74","75+"],"title":{"text":"Age Group"},"opposite":false},"colorAxis":{"min":8.75,"max":11.92,"stops":[[0,"#FFFFFF"],[1,"#7CB5EC"]],"title":{"text":"Income Index"}},"series":[{"group":"group","data":[{".x_plot":"18-29",".y_plot":"High School or Less",".value_plot":8.75,"x":0,"y":0,"value":8.75,"xf":"18-29","yf":"High School or Less"},{".x_plot":"18-29",".y_plot":"High School",".value_plot":10.63018867924528,"x":0,"y":1,"value":10.63018867924528,"xf":"18-29","yf":"High School"},{".x_plot":"18-29",".y_plot":"Associate/Junior College",".value_plot":10.6969696969697,"x":0,"y":2,"value":10.6969696969697,"xf":"18-29","yf":"Associate/Junior College"},{".x_plot":"18-29",".y_plot":"Bachelor's",".value_plot":11.046875,"x":0,"y":3,"value":11.046875,"xf":"18-29","yf":"Bachelor's"},{".x_plot":"18-29",".y_plot":"Master's or Higher",".value_plot":11.25,"x":0,"y":4,"value":11.25,"xf":"18-29","yf":"Master's or Higher"},{".x_plot":"30-44",".y_plot":"High School or Less",".value_plot":9.794520547945206,"x":1,"y":0,"value":9.794520547945206,"xf":"30-44","yf":"High School or Less"},{".x_plot":"30-44",".y_plot":"High School",".value_plot":10.96529968454259,"x":1,"y":1,"value":10.96529968454259,"xf":"30-44","yf":"High School"},{".x_plot":"30-44",".y_plot":"Associate/Junior College",".value_plot":11.01754385964912,"x":1,"y":2,"value":11.01754385964912,"xf":"30-44","yf":"Associate/Junior College"},{".x_plot":"30-44",".y_plot":"Bachelor's",".value_plot":11.84375,"x":1,"y":3,"value":11.84375,"xf":"30-44","yf":"Bachelor's"},{".x_plot":"30-44",".y_plot":"Master's or Higher",".value_plot":11.68493150684932,"x":1,"y":4,"value":11.68493150684932,"xf":"30-44","yf":"Master's or Higher"},{".x_plot":"45-59",".y_plot":"High School or Less",".value_plot":10.08219178082192,"x":2,"y":0,"value":10.08219178082192,"xf":"45-59","yf":"High School or Less"},{".x_plot":"45-59",".y_plot":"High School",".value_plot":10.72910662824208,"x":2,"y":1,"value":10.72910662824208,"xf":"45-59","yf":"High School"},{".x_plot":"45-59",".y_plot":"Associate/Junior College",".value_plot":11.15384615384615,"x":2,"y":2,"value":11.15384615384615,"xf":"45-59","yf":"Associate/Junior College"},{".x_plot":"45-59",".y_plot":"Bachelor's",".value_plot":11.61475409836066,"x":2,"y":3,"value":11.61475409836066,"xf":"45-59","yf":"Bachelor's"},{".x_plot":"45-59",".y_plot":"Master's or Higher",".value_plot":11.70491803278689,"x":2,"y":4,"value":11.70491803278689,"xf":"45-59","yf":"Master's or Higher"},{".x_plot":"60-74",".y_plot":"High School or Less",".value_plot":9.387755102040817,"x":3,"y":0,"value":9.387755102040817,"xf":"60-74","yf":"High School or Less"},{".x_plot":"60-74",".y_plot":"High School",".value_plot":11,"x":3,"y":1,"value":11,"xf":"60-74","yf":"High School"},{".x_plot":"60-74",".y_plot":"Associate/Junior College",".value_plot":11.025,"x":3,"y":2,"value":11.025,"xf":"60-74","yf":"Associate/Junior College"},{".x_plot":"60-74",".y_plot":"Bachelor's",".value_plot":11.71590909090909,"x":3,"y":3,"value":11.71590909090909,"xf":"60-74","yf":"Bachelor's"},{".x_plot":"60-74",".y_plot":"Master's or Higher",".value_plot":11.8169014084507,"x":3,"y":4,"value":11.8169014084507,"xf":"60-74","yf":"Master's or Higher"},{".x_plot":"75+",".y_plot":"High School or Less",".value_plot":9.390243902439025,"x":4,"y":0,"value":9.390243902439025,"xf":"75+","yf":"High School or Less"},{".x_plot":"75+",".y_plot":"High School",".value_plot":10.90909090909091,"x":4,"y":1,"value":10.90909090909091,"xf":"75+","yf":"High School"},{".x_plot":"75+",".y_plot":"Associate/Junior College",".value_plot":11.6,"x":4,"y":2,"value":11.6,"xf":"75+","yf":"Associate/Junior College"},{".x_plot":"75+",".y_plot":"Bachelor's",".value_plot":11.13793103448276,"x":4,"y":3,"value":11.13793103448276,"xf":"75+","yf":"Bachelor's"},{".x_plot":"75+",".y_plot":"Master's or Higher",".value_plot":11.92,"x":4,"y":4,"value":11.92,"xf":"75+","yf":"Master's or Higher"}],"type":"heatmap","name":"Income Index","plotOptions":{"heatmap":{"dataLabels":{"enabled":true,"format":"{point.value:.1f}","color":"#000000","style":{"textOutline":"none"}},"nullColor":"transparent"}}}],"tooltip":{"formatter":"function() {\n      // Access categories using this.series.xAxis.categories and this.series.yAxis.categories\n      // this.point.x and this.point.y are the numerical indices\n      var x_cat = this.series.xAxis.categories[this.point.x];\n      var y_cat = this.series.yAxis.categories[this.point.y];\n      var value = this.point.value;\n\n      var value_str = Highcharts.numberFormat(value, 0); // Format value (e.g., 0 decimals)\n      if (value === null) {\n          value_str = 'N/A'; // Display N/A for null values in tooltip\n      }\n\n      return '<b>' + 'Age: ' + x_cat + '<\/b><br/>' + // Using x_tooltip_prefix here\n             '<b>' + 'Education: ' + y_cat + '<\/b><br/>' + // Using y_tooltip_prefix here\n             '<b>Income Index: <\/b>' + 'Income: ' + value_str + ' (scale 1-25)';\n    }","valueDecimals":0}},"theme":{"chart":{"backgroundColor":"transparent"},"colors":["#7cb5ec","#434348","#90ed7d","#f7a35c","#8085e9","#f15c80","#e4d354","#2b908f","#f45b5b","#91e8e1"]},"conf_opts":{"global":{"Date":null,"VMLRadialGradientURL":"http =//code.highcharts.com/list(version)/gfx/vml-radial-gradient.png","canvasToolsURL":"http =//code.highcharts.com/list(version)/modules/canvas-tools.js","getTimezoneOffset":null,"timezoneOffset":0,"useUTC":true},"lang":{"contextButtonTitle":"Chart context menu","decimalPoint":".","downloadCSV":"Download CSV","downloadJPEG":"Download JPEG image","downloadPDF":"Download PDF document","downloadPNG":"Download PNG image","downloadSVG":"Download SVG vector image","downloadXLS":"Download XLS","drillUpText":"◁ Back to {series.name}","exitFullscreen":"Exit from full screen","exportData":{"annotationHeader":"Annotations","categoryDatetimeHeader":"DateTime","categoryHeader":"Category"},"hideData":"Hide data table","invalidDate":null,"loading":"Loading...","months":["January","February","March","April","May","June","July","August","September","October","November","December"],"noData":"No data to display","numericSymbolMagnitude":1000,"numericSymbols":["k","M","G","T","P","E"],"printChart":"Print chart","resetZoom":"Reset zoom","resetZoomTitle":"Reset zoom level 1:1","shortMonths":["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],"shortWeekdays":["Sat","Sun","Mon","Tue","Wed","Thu","Fri"],"thousandsSep":" ","viewData":"View data table","viewFullscreen":"View in full screen","weekdays":["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]}},"type":"chart","fonts":[],"debug":false},"evals":["hc_opts.tooltip.formatter"],"jsHooks":[]}</script>
 </div>
 </div>
 <div class="section level2">
@@ -470,7 +562,7 @@ emphasis</li>
 <div class="section level3">
 <h3 id="best-practices-for-heatmaps">Best Practices for Heatmaps<a class="anchor" aria-label="anchor" href="#best-practices-for-heatmaps"></a>
 </h3>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># 1. Always check your data structure first!</span></span>
 <span><span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="va">your_data</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">your_data</span><span class="op">$</span><span class="va">x_var</span>, <span class="va">your_data</span><span class="op">$</span><span class="va">y_var</span>, useNA <span class="op">=</span> <span class="st">"always"</span><span class="op">)</span></span>
@@ -498,7 +590,7 @@ emphasis</li>
 <div class="section level3">
 <h3 id="conclusion">Conclusion<a class="anchor" aria-label="anchor" href="#conclusion"></a>
 </h3>
-<p>The <code><a href="../reference/create_heatmap.html">create_heatmap()</a></code> function provides a powerful and
+<p>The <code><a href="../reference/viz_heatmap.html">viz_heatmap()</a></code> function provides a powerful and
 flexible way to visualize bivariate relationships in survey data. By
 leveraging the rich GSS Panel 2020 dataset, we’ve demonstrated how
 heatmaps can reveal patterns in:</p>

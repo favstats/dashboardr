@@ -1,12 +1,12 @@
-# Getting Started With \`create_stackedbars()\`
+# Getting Started With \`viz_stackedbars()\`
 
-Welcome to this comprehensive guide on using the `create_stackedbars`
+Welcome to this comprehensive guide on using the `viz_stackedbars`
 function from the `dashboardr` package. This function is specifically
 designed to handle a common challenge in survey research: visualizing
 responses to multiple Likert-type questions simultaneously.
 
-The `create_stackedbars` function transforms wide survey data (where
-each question is a separate column) into an elegant stacked bar chart
+The `viz_stackedbars` function transforms wide survey data (where each
+question is a separate column) into an elegant stacked bar chart
 where: - Each bar represents a different survey question - Each stack
 within a bar represents a response category (e.g., “Strongly Agree”,
 “Agree”, etc.) - Colors show the distribution of responses across all
@@ -209,7 +209,7 @@ social_labels <- c(
 )
 
 # Create basic multi-question chart
-plot1 <- create_stackedbars(
+plot1 <- viz_stackedbars(
   data = gss_likert,
   x_vars = social_questions,
   x_var_labels = social_labels,
@@ -240,7 +240,7 @@ patterns across questions.
 
 ``` r
 # Create percentage-based chart with custom colors
-plot2 <- create_stackedbars(
+plot2 <- viz_stackedbars(
   data = gss_likert,
   x_vars = social_questions,
   x_var_labels = social_labels,
@@ -318,7 +318,7 @@ response_map <- list(
 response_order <- c("Low Trust/Negative", "Situational/Neutral", "High Trust/Positive")
 
 # Create chart with custom mapping and ordering
-plot3 <- create_stackedbars(
+plot3 <- viz_stackedbars(
   data = gss_likert,
   x_vars = social_questions,
   x_var_labels = social_labels,
@@ -355,7 +355,7 @@ Let’s create a chart that explicitly shows missing data patterns.
 
 ``` r
 # Create chart including NA values
-plot4 <- create_stackedbars(
+plot4 <- viz_stackedbars(
   data = gss_likert,
   x_vars = social_questions,
   x_var_labels = social_labels,
@@ -411,7 +411,7 @@ table(gss_likert$happy_1a, useNA = "always")
 
 ``` r
 # Create happiness chart
-plot5 <- create_stackedbars(
+plot5 <- viz_stackedbars(
   data = gss_likert,
   x_vars = "happy_1a",
   title = "General Happiness Distribution",
@@ -551,7 +551,7 @@ standardized_labels <- c(
 )
 
 # Create comprehensive chart
-plot6 <- create_stackedbars(
+plot6 <- viz_stackedbars(
   data = gss_standardized,
   x_vars = standardized_questions,
   x_var_labels = standardized_labels,
@@ -576,7 +576,7 @@ Let’s create separate charts for different demographic groups.
 
 ``` r
 ## TODO: maybe we dont need the if logic here? I think is confusing for the tutorial.
-# You probably noticed one of the response labels is incorrect. Let's fix that first. We can do this easily using mapping in the `create_barcharts` function.
+# You probably noticed one of the response labels is incorrect. Let's fix that first. We can do this easily using mapping in the `viz_barcharts` function.
 trust_fix_map <- list(
   "can't trust" = "can trust"
   # Add other mappings if needed
@@ -667,7 +667,7 @@ cat("High school data rows:", nrow(high_school_data), "\n")
 ``` r
 # Only create charts if we have sufficient data
 if (nrow(college_data) > 50) {
-  plot8a <- create_stackedbars(
+  plot8a <- viz_stackedbars(
     data = college_data,
     x_vars = social_questions,
     x_var_labels = social_labels,
@@ -702,7 +702,7 @@ if (nrow(college_data) > 50) {
 
 ``` r
 if (nrow(high_school_data) > 50) {
-  plot8b <- create_stackedbars(
+  plot8b <- viz_stackedbars(
     data = high_school_data,
     x_vars = social_questions,
     x_var_labels = social_labels,
@@ -751,7 +751,7 @@ trust_battery_labels <- c(
 )
 
 # Create a comprehensive battery analysis
-plot9 <- create_stackedbars(
+plot9 <- viz_stackedbars(
   data = gss_likert,
   x_vars = trust_battery,
   x_var_labels = trust_battery_labels,
@@ -781,6 +781,46 @@ plot9 <- create_stackedbars(
 plot9
 ```
 
+## Labels and Tooltips Reference
+
+### Summary of Label and Tooltip Options
+
+The
+[`viz_stackedbars()`](https://favstats.github.io/dashboardr/reference/viz_stackedbars.md)
+function offers extensive customization for labels and tooltips:
+
+| Parameter | Description | Example |
+|----|----|----|
+| `x_label` | X-axis title | `"Question"` |
+| `y_label` | Y-axis title (auto-set based on stacked_type) | `"Percentage"` |
+| `stack_label` | Legend title | `"Response Category"` |
+| `x_var_labels` | Custom labels for each question | `c("Trust", "Fairness")` |
+| `tooltip_prefix` | Text before value in tooltip | `"Score: "` |
+| `tooltip_suffix` | Text after value in tooltip | `"%"`, `" respondents"` |
+| `x_tooltip_suffix` | Text after question name in tooltip | `" question"` |
+| `show_var_tooltip` | Show question name in tooltip | `TRUE` |
+
+``` r
+# Example with all label/tooltip options
+viz_stackedbars(
+  data = gss_likert,
+  x_vars = c("trust_1a", "fair_1a"),
+  x_var_labels = c("Trust", "Fairness"),
+  title = "Social Attitudes",
+  x_label = "Attitude Measure",
+  y_label = "Percent of Respondents",
+  stack_label = "Response Level",
+  stacked_type = "percent",
+  tooltip_prefix = "",
+  tooltip_suffix = "% responded",
+  show_var_tooltip = TRUE
+)
+```
+
+    ## Warning: `trust_1a` and `fair_1a` have conflicting value labels.
+    ## ℹ Labels for these values will be taken from `trust_1a`.
+    ## ✖ Values: 1 and 2
+
 ## Best Practices and Tips
 
 ### Example 10: Publication-Ready Chart
@@ -789,7 +829,7 @@ Let’s create a fully customized, publication-ready chart.
 
 ``` r
 # Create the most polished example
-plot10 <- create_stackedbars(
+plot10 <- viz_stackedbars(
   data = gss_likert,
   x_vars = social_questions,
   x_var_labels = c(
@@ -880,7 +920,7 @@ plot10
 ### Conclusion
 
 The
-[`create_stackedbars()`](https://favstats.github.io/dashboardr/reference/create_stackedbars.md)
+[`viz_stackedbars()`](https://favstats.github.io/dashboardr/reference/viz_stackedbars.md)
 function provides a powerful solution for visualizing multiple
 Likert-type survey questions simultaneously. Its key advantages include:
 
@@ -899,6 +939,6 @@ opinion and social attitudes effectively.
 
 Whether you’re analyzing institutional confidence, social trust, life
 satisfaction, or any other multi-item survey construct,
-[`create_stackedbars()`](https://favstats.github.io/dashboardr/reference/create_stackedbars.md)
+[`viz_stackedbars()`](https://favstats.github.io/dashboardr/reference/viz_stackedbars.md)
 provides the flexibility and polish needed for both exploratory analysis
 and publication-ready visualizations.

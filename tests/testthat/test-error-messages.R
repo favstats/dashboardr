@@ -42,70 +42,70 @@ test_that("create_dashboard suggests theme corrections", {
   expect_true(grepl("modern", err, ignore.case = TRUE))
 })
 
-test_that("create_histogram shows helpful error for missing x_var", {
+test_that("viz_histogram shows helpful error for missing x_var", {
   data <- data.frame(age = rnorm(100))
   
   err <- tryCatch(
-    create_histogram(data = data),
+    viz_histogram(data = data),
     error = function(e) e$message
   )
   
   expect_true(grepl("x_var.*required", err))
 })
 
-test_that("create_bar shows helpful error for missing x_var", {
+test_that("viz_bar shows helpful error for missing x_var", {
   data <- data.frame(category = letters[1:10])
   
   err <- tryCatch(
-    create_bar(data = data),
+    viz_bar(data = data),
     error = function(e) e$message
   )
   
   expect_true(grepl("x_var.*required", err))
 })
 
-test_that("create_stackedbar shows helpful error for missing parameters", {
+test_that("viz_stackedbar shows helpful error for missing parameters", {
   data <- data.frame(x = letters[1:10], y = 1:10)
   
   # Missing x_var
   err1 <- tryCatch(
-    create_stackedbar(data = data, stack_var = "y"),
+    viz_stackedbar(data = data, stack_var = "y"),
     error = function(e) e$message
   )
   expect_true(grepl("x_var.*required", err1))
   
   # Missing stack_var
   err2 <- tryCatch(
-    create_stackedbar(data = data, x_var = "x"),
+    viz_stackedbar(data = data, x_var = "x"),
     error = function(e) e$message
   )
   expect_true(grepl("stack_var.*required", err2))
 })
 
-test_that("create_timeline shows helpful error for missing parameters", {
+test_that("viz_timeline shows helpful error for missing parameters", {
   data <- data.frame(year = 2020:2024, score = rnorm(5))
   
   # Missing time_var
   err1 <- tryCatch(
-    create_timeline(data = data, response_var = "score"),
+    viz_timeline(data = data, y_var = "score"),
     error = function(e) e$message
   )
   expect_true(grepl("time_var.*required", err1))
   
-  # Missing response_var
+  # Missing y_var
   err2 <- tryCatch(
-    create_timeline(data = data, time_var = "year"),
+    viz_timeline(data = data, time_var = "year"),
     error = function(e) e$message
   )
-  expect_true(grepl("response_var.*required", err2))
+  expect_true(grepl("y_var.*required", err2))
 })
 
-test_that("create_heatmap shows helpful error for missing parameters", {
+test_that("viz_heatmap shows helpful error for missing parameters", {
   data <- data.frame(x = 1:10, y = 1:10, z = rnorm(10))
   
   # Missing x_var
   err1 <- tryCatch(
-    create_heatmap(data = data, y_var = "y", value_var = "z"),
+    viz_heatmap(data = data, y_var = "y", value_var = "z"),
     error = function(e) e$message
   )
   expect_true(grepl("x_var.*required", err1))
@@ -129,7 +129,7 @@ test_that("invalid parameter values show suggestions", {
   
   # Invalid bar_type
   err <- tryCatch(
-    create_bar(data = data, x_var = "x", bar_type = "countt"),
+    viz_bar(data = data, x_var = "x", bar_type = "countt"),
     error = function(e) e$message
   )
   
@@ -141,7 +141,7 @@ test_that("invalid color palette shows helpful message", {
   
   # Too few colors for categories
   result <- tryCatch(
-    create_histogram(data = data, x_var = "x", color_palette = c("red", "blue")),
+    viz_histogram(data = data, x_var = "x", color_palette = c("red", "blue")),
     warning = function(w) w$message,
     error = function(e) e$message
   )

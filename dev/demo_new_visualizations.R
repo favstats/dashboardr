@@ -56,7 +56,7 @@ viz_collection <- create_viz() %>%
   # --- Timeline Section ---
   add_viz(type = "timeline",
           time_var = "year",
-          response_var = "happiness",
+          y_var = "happiness",
           chart_type = "stacked_area",
           title = "Happiness Trends Over Time",
           subtitle = "Stacked area chart showing distribution of happiness levels",
@@ -67,7 +67,7 @@ viz_collection <- create_viz() %>%
           data = "survey") %>%
   add_viz(type = "timeline",
           time_var = "year",
-          response_var = "trust",
+          y_var = "trust",
           group_var = "gender",
           chart_type = "line",
           response_filter = "Can Trust",

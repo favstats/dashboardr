@@ -28,7 +28,7 @@ test_that("print.viz_collection works with combine_viz", {
   viz1 <- create_viz(type = "histogram", x_var = "value") %>%
     add_viz(title = "Chart 1")
   
-  viz2 <- create_viz(type = "timeline", time_var = "year", response_var = "score") %>%
+  viz2 <- create_viz(type = "timeline", time_var = "year", y_var = "score") %>%
     add_viz(title = "Chart 2")
   
   combined <- combine_viz(viz1, viz2)

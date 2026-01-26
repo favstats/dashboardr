@@ -46,7 +46,7 @@ How happy are you with your life right now?
 
 ```{r demographics}
 # Happiness Distribution Across Education Levels
-result <- create_stackedbar(
+result <- viz_stackedbar(
   data = data,
   title = "Happiness Distribution Across Education Levels",
   x_var = "degree_1a",
@@ -75,7 +75,7 @@ result
 
 ```{r demographics-2}
 # Happiness Distribution by Gender
-result <- create_stackedbar(
+result <- viz_stackedbar(
   data = data,
   title = "Happiness Distribution by Gender",
   x_var = "sex_1a",
@@ -116,7 +116,7 @@ This shows how party identification aligns with political ideology.
 
 ```{r politics}
 # Party ID by Political Views
-result <- create_stackedbar(
+result <- viz_stackedbar(
   data = data,
   title = "Party ID by Political Views",
   x_var = "polviews_1a",
@@ -143,7 +143,7 @@ result
 
 ```{r politics-2}
 # Trust Levels by US Region
-result <- create_stackedbar(
+result <- viz_stackedbar(
   data = data,
   title = "Trust Levels by US Region",
   x_var = "region_1a",
@@ -177,7 +177,7 @@ Gender distribution across different social class categories.
 
 ```{r politics-3}
 # Gender Distribution Across Social Classes
-result <- create_stackedbar(
+result <- viz_stackedbar(
   data = data,
   title = "Gender Distribution Across Social Classes",
   x_var = "class_1a",
@@ -213,7 +213,7 @@ result
 
 ```{r social}
 # Trust by Education and Age
-result <- create_heatmap(
+result <- viz_heatmap(
   data = data,
   title = "Trust by Education and Age",
   x_var = "degree_1a",
@@ -249,7 +249,7 @@ Educational and regional patterns in trust distribution.
 
 ```{r social-2}
 # Trust by Region and Education
-result <- create_heatmap(
+result <- viz_heatmap(
   data = data,
   title = "Trust by Region and Education",
   x_var = "region_1a",

@@ -41,7 +41,7 @@ cat('Dataset loaded:', nrow(data), 'rows,', ncol(data), 'columns\n')
 
 ```{r treemap}
 # treemap visualization
-result <- create_treemap(
+result <- viz_treemap(
   data = data,
   title = NULL,
   group_var = "region_1a",

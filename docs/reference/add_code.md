@@ -19,7 +19,7 @@ add_code(
 
 - content:
 
-  A content_collection or viz_collection object
+  A content_collection, viz_collection, or page_object
 
 - code:
 
@@ -44,4 +44,4 @@ add_code(
 
 ## Value
 
-Updated content_collection
+Updated object (same type as input)

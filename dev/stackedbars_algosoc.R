@@ -34,7 +34,7 @@ print(algosoc_factored)
 
 
 # Step 3: Call the function
-hc <- create_stackedbars(
+hc <- viz_stackedbars(
   data            = algosoc_factored,
   questions       = c("ADSV1", "ADSV2", "ADSV3", "ADSV4"),
   title       = "In welke mate zijn de volgende waarden van belang voor u bij het ontwikkelen en gebruiken van automatische besluitvormingssystemen?",

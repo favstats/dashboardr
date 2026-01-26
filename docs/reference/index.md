@@ -61,6 +61,7 @@ Functions for creating visualizations
 - [`merge_collections()`](https://favstats.github.io/dashboardr/reference/merge_collections.md)
   : Merge two content/viz collections
 - [`add_pagination()`](https://favstats.github.io/dashboardr/reference/add_pagination.md)
+  [`add_pagination.page_object()`](https://favstats.github.io/dashboardr/reference/add_pagination.md)
   : Create a sidebar group for hybrid navigation
 - [`set_tabgroup_labels()`](https://favstats.github.io/dashboardr/reference/set_tabgroup_labels.md)
   : Set or update tabgroup display labels
@@ -71,23 +72,23 @@ Functions for creating visualizations
 
 Functions for different chart types
 
-- [`create_histogram()`](https://favstats.github.io/dashboardr/reference/create_histogram.md)
+- [`viz_histogram()`](https://favstats.github.io/dashboardr/reference/viz_histogram.md)
   : Create an Histogram
-- [`create_bar()`](https://favstats.github.io/dashboardr/reference/create_bar.md)
+- [`viz_bar()`](https://favstats.github.io/dashboardr/reference/viz_bar.md)
   : Create Bar Chart
-- [`create_stackedbar()`](https://favstats.github.io/dashboardr/reference/create_stackedbar.md)
+- [`viz_stackedbar()`](https://favstats.github.io/dashboardr/reference/viz_stackedbar.md)
   : Create a Stacked Bar Chart
-- [`create_stackedbars()`](https://favstats.github.io/dashboardr/reference/create_stackedbars.md)
+- [`viz_stackedbars()`](https://favstats.github.io/dashboardr/reference/viz_stackedbars.md)
   : Stacked Bar Charts (Multiple Variables)
-- [`create_timeline()`](https://favstats.github.io/dashboardr/reference/create_timeline.md)
+- [`viz_timeline()`](https://favstats.github.io/dashboardr/reference/viz_timeline.md)
   : Create a Timeline Chart
-- [`create_heatmap()`](https://favstats.github.io/dashboardr/reference/create_heatmap.md)
+- [`viz_heatmap()`](https://favstats.github.io/dashboardr/reference/viz_heatmap.md)
   : Create a Heatmap
-- [`create_scatter()`](https://favstats.github.io/dashboardr/reference/create_scatter.md)
+- [`viz_scatter()`](https://favstats.github.io/dashboardr/reference/viz_scatter.md)
   : Create Scatter Plot
-- [`create_map()`](https://favstats.github.io/dashboardr/reference/create_map.md)
+- [`viz_map()`](https://favstats.github.io/dashboardr/reference/viz_map.md)
   : Create an interactive map visualization
-- [`create_treemap()`](https://favstats.github.io/dashboardr/reference/create_treemap.md)
+- [`viz_treemap()`](https://favstats.github.io/dashboardr/reference/viz_treemap.md)
   : Create a treemap visualization
 
 ## Navigation & Layout

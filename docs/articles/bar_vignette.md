@@ -1,9 +1,9 @@
-# Creating Bar Charts with create_bar()
+# Creating Bar Charts with viz_bar()
 
 ## Introduction
 
 The
-[`create_bar()`](https://favstats.github.io/dashboardr/reference/create_bar.md)
+[`viz_bar()`](https://favstats.github.io/dashboardr/reference/viz_bar.md)
 function creates grouped/clustered bar charts, perfect for comparing
 categories across different groups or segments. Unlike histograms (which
 show distributions) or stacked bars (which show composition), bar charts
@@ -25,7 +25,7 @@ data <- data.frame(
 )
 
 # Create bar chart
-plot <- create_bar(
+plot <- viz_bar(
   data = data,
   x_var = "category"
 )
@@ -36,7 +36,7 @@ plot
 ### With Custom Labels
 
 ``` r
-plot <- create_bar(
+plot <- viz_bar(
   data = data,
   x_var = "category",
   title = "Category Distribution",
@@ -57,7 +57,7 @@ survey_data <- data.frame(
 )
 
 # Grouped bar chart
-plot <- create_bar(
+plot <- viz_bar(
   data = survey_data,
   x_var = "question",
   group_var = "score_range",
@@ -71,7 +71,7 @@ plot
 ### With Custom Colors
 
 ``` r
-plot <- create_bar(
+plot <- viz_bar(
   data = survey_data,
   x_var = "question",
   group_var = "score_range",
@@ -91,7 +91,7 @@ plot <- create_bar(
 ### Vertical Bars
 
 ``` r
-plot <- create_bar(
+plot <- viz_bar(
   data = data,
   x_var = "category",
   group_var = "segment",
@@ -111,7 +111,7 @@ data <- data.frame(
   response = sample(c("Agree", "Disagree"), 120, replace = TRUE)
 )
 
-plot <- create_bar(
+plot <- viz_bar(
   data = data,
   x_var = "question",
   group_var = "response",
@@ -125,7 +125,7 @@ plot <- create_bar(
 ### Count
 
 ``` r
-plot <- create_bar(
+plot <- viz_bar(
   data = data,
   x_var = "category",
   group_var = "segment",
@@ -137,7 +137,7 @@ plot <- create_bar(
 ### Percent
 
 ``` r
-plot <- create_bar(
+plot <- viz_bar(
   data = data,
   x_var = "category",
   group_var = "segment",
@@ -145,6 +145,46 @@ plot <- create_bar(
   y_label = "Percentage"
 )
 ```
+
+## Labels and Tooltips
+
+### Axis Labels
+
+``` r
+plot <- viz_bar(
+  data = survey_data,
+  x_var = "question",
+  group_var = "score_range",
+  title = "Survey Results",
+  x_label = "Question",
+  y_label = "Percentage of Respondents"
+)
+```
+
+### Tooltip Customization
+
+Add prefix/suffix text to make tooltips more informative:
+
+``` r
+plot <- viz_bar(
+  data = survey_data,
+  x_var = "question",
+  group_var = "score_range",
+  bar_type = "percent",
+  title = "Score Distribution",
+  tooltip_prefix = "",
+  tooltip_suffix = "% of responses",
+  x_tooltip_suffix = ""
+)
+```
+
+| Parameter          | Description                   | Example                   |
+|--------------------|-------------------------------|---------------------------|
+| `x_label`          | X-axis title                  | `"Category"`              |
+| `y_label`          | Y-axis title                  | `"Count"`, `"Percentage"` |
+| `tooltip_prefix`   | Text before value in tooltip  | `"N = "`                  |
+| `tooltip_suffix`   | Text after value in tooltip   | `"%"`, `" respondents"`   |
+| `x_tooltip_suffix` | Text after x value in tooltip | `" category"`             |
 
 ## Working with Numeric Variables
 
@@ -157,7 +197,7 @@ age_data <- data.frame(
 )
 
 # Automatically bins numeric values
-plot <- create_bar(
+plot <- viz_bar(
   data = age_data,
   x_var = "age"
 )
@@ -166,7 +206,7 @@ plot <- create_bar(
 ### Custom Binning
 
 ``` r
-plot <- create_bar(
+plot <- viz_bar(
   data = age_data,
   x_var = "age",
   x_breaks = c(18, 25, 35, 50, 65),
@@ -185,7 +225,7 @@ data <- data.frame(
                        100, replace = TRUE)
 )
 
-plot <- create_bar(
+plot <- viz_bar(
   data = data,
   x_var = "satisfaction",
   x_order = c("Very Dissatisfied", "Dissatisfied", "Neutral", 
@@ -201,7 +241,7 @@ data <- data.frame(
   category = c("A", "B", "C", "D")
 )
 
-plot <- create_bar(
+plot <- viz_bar(
   data = data,
   x_var = "category",
   color_palette = c("#3498DB", "#E74C3C", "#F39C12", "#27AE60")
@@ -221,7 +261,7 @@ knowledge_data <- data.frame(
                       400, replace = TRUE)
 )
 
-plot <- create_bar(
+plot <- viz_bar(
   data = knowledge_data,
   x_var = "topic",
   group_var = "proficiency",
@@ -245,7 +285,7 @@ demo_data <- data.frame(
   device_type = sample(c("Mobile", "Desktop", "Tablet"), 400, replace = TRUE)
 )
 
-plot <- create_bar(
+plot <- viz_bar(
   data = demo_data,
   x_var = "age_group",
   group_var = "device_type",
@@ -334,23 +374,23 @@ viz <- create_viz(
 ### When to Use Bar Charts
 
 **Use
-[`create_bar()`](https://favstats.github.io/dashboardr/reference/create_bar.md)
+[`viz_bar()`](https://favstats.github.io/dashboardr/reference/viz_bar.md)
 when:** - Comparing categories across groups - Showing side-by-side
 comparisons - Displaying survey responses by demographics - You want
 grouped/clustered bars
 
 **Use
-[`create_stackedbar()`](https://favstats.github.io/dashboardr/reference/create_stackedbar.md)
+[`viz_stackedbar()`](https://favstats.github.io/dashboardr/reference/viz_stackedbar.md)
 when:** - Showing composition (parts of a whole) - Displaying Likert
 scale responses - Emphasizing proportions within categories
 
 **Use
-[`create_histogram()`](https://favstats.github.io/dashboardr/reference/create_histogram.md)
+[`viz_histogram()`](https://favstats.github.io/dashboardr/reference/viz_histogram.md)
 when:** - Showing distributions of continuous variables - Displaying
 frequency distributions - Analyzing data spread and shape
 
 **Use
-[`create_timeline()`](https://favstats.github.io/dashboardr/reference/create_timeline.md)
+[`viz_timeline()`](https://favstats.github.io/dashboardr/reference/viz_timeline.md)
 when:** - Showing changes over time - Displaying trends - Comparing time
 series
 
@@ -364,7 +404,7 @@ series
 
 ## See Also
 
-- [`?create_bar`](https://favstats.github.io/dashboardr/reference/create_bar.md) -
+- [`?viz_bar`](https://favstats.github.io/dashboardr/reference/viz_bar.md) -
   Full function documentation
 - [`vignette("stackedbar_vignette")`](https://favstats.github.io/dashboardr/articles/stackedbar_vignette.md) -
   For stacked/composed bars

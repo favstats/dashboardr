@@ -25,11 +25,12 @@ generate_dashboard(dashboard, render = TRUE, open = "browser")
 | `histogram` | `x_var`, `bins`, `bin_breaks`, `bin_labels`, `histogram_type` |
 | `bar` | `x_var`, `horizontal`, `bar_type`, `group_var` |
 | `stackedbar` | `x_var`, `stack_var`, `stacked_type`, `stack_breaks`, `stack_bin_labels` |
-| `stackedbars` | `questions`, `question_labels`, (same stack params) |
-| `timeline` | `time_var`, `response_var`, `group_var`, `chart_type`, `response_filter` |
+| `stackedbars` | `x_vars`, `x_var_labels`, (same stack params) |
+| `timeline` | `time_var`, `y_var`, `group_var`, `chart_type`, `y_filter` |
 | `heatmap` | `x_var`, `y_var`, `value_var`, `agg_fun` |
-| `treemap` | `x_var`, `size_var`, `color_var` |
-| `scatter` | `x_var`, `y_var`, `group_var` |
+| `treemap` | `group_var`, `value_var`, `color_var` |
+| `scatter` | `x_var`, `y_var`, `color_var`, `size_var` |
+| `map` | `location_var`, `value_var`, `map_type` |
 
 ---
 
@@ -157,8 +158,8 @@ add_viz(
 ```r
 add_viz(
   type = "stackedbars",
-  questions = c("q1", "q2", "q3"),
-  question_labels = c("Trust", "Value", "Recommend"),
+  x_vars = c("q1", "q2", "q3"),
+  x_var_labels = c("Trust", "Value", "Recommend"),
   stacked_type = "percent",
   horizontal = TRUE,
   stack_breaks = c(0.5, 1.5, 2.5, 3.5, 4.5, 5.5),
@@ -174,14 +175,19 @@ add_viz(
 add_viz(
   type = "timeline",
   time_var = "year",
-  response_var = "satisfaction",
+  y_var = "satisfaction",
   group_var = "department",       # Multiple lines
-  chart_type = "line",            # "line", "area", "stacked_area"
+  chart_type = "line",            # "line", "stacked_area"
   
-  # Response filtering
-  response_filter = c(4, 5),
-  response_filter_combine = TRUE,
-  response_filter_label = "High Satisfaction",
+  # Response filtering (NEW y_* parameters!)
+  y_filter = c(4, 5),             # Which values to show
+  y_filter_combine = TRUE,        # Combine into single line
+  y_filter_label = "High Satisfaction",
+  
+  # Response binning
+  y_breaks = c(0.5, 2.5, 4.5, 5.5),
+  y_bin_labels = c("Low", "Medium", "High"),
+  y_levels = c("Low", "Medium", "High"),  # Order categories
   
   # Time binning
   time_breaks = c(1970, 1980, 1990, 2000),

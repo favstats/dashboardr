@@ -74,7 +74,7 @@ viz <- create_viz() %>%
   add_viz(
     type = "timeline",
     time_var = "decade",
-    response_var = "pct_female",
+    y_var = "pct_female",
     group_var = "country",  # This creates series named by country!
     chart_type = "line",
     title = "% Female Authorship Over Time",
@@ -87,7 +87,7 @@ viz <- create_viz() %>%
   add_viz(
     type = "timeline",
     time_var = "decade",
-    response_var = "pct_weird",
+    y_var = "pct_weird",
     group_var = "country",
     chart_type = "line",
     title = "% WEIRD Country Studies Over Time",
@@ -176,7 +176,7 @@ dashboard <- create_dashboard(
       "```",
       "",
       "The key is that `filter_var = \"country\"` must match the `group_var = \"country\"` ",
-      "used in your `create_timeline()` or other visualization functions."
+      "used in your `viz_timeline()` or other visualization functions."
     ),
     icon = "ph:info"
   )

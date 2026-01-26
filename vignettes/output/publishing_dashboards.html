@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+<title>Publishing Dashboards to GitHub Pages</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Publishing Dashboards to GitHub Pages</h1>
+
+
+
+<p>This vignette will take you from zero to publishing your dashboard
+online in under 10 minutes. No prior Git or GitHub knowledge
+required!</p>
+<blockquote>
+<p>⚠️ <strong>IMPORTANT: Data Privacy Warning</strong></p>
+<p>When you publish a dashboard, <strong>all data embedded in your
+visualizations becomes publicly accessible</strong>. Before publishing,
+verify that your dashboard does not contain:</p>
+<ul>
+<li><strong>Personal identifiable information (PII)</strong> - names,
+emails, addresses, ID numbers</li>
+<li><strong>Sensitive survey responses</strong> - individual-level data
+that could identify respondents</li>
+<li><strong>Confidential research data</strong> - unpublished findings,
+proprietary information</li>
+<li><strong>Location data</strong> - precise coordinates that could
+identify individuals</li>
+</ul>
+<p><strong>How dashboardr protects you:</strong></p>
+<ul>
+<li>Data is aggregated for visualizations (counts, percentages,
+means)</li>
+<li>Individual-level microdata is not exported to the final HTML</li>
+<li>Only the summary statistics needed to render charts are
+included</li>
+</ul>
+<p><strong>Best practices:</strong></p>
+<ol style="list-style-type: decimal">
+<li><strong>Review before publishing</strong> - Open your generated HTML
+files and inspect what data is visible</li>
+<li><strong>Use aggregated data</strong> - Pass pre-summarized data
+rather than raw individual records</li>
+<li><strong>Remove identifying variables</strong> - Drop columns like
+names, IDs, or exact dates before creating visualizations</li>
+<li><strong>Test with
+<code>render = TRUE, open = &quot;browser&quot;</code></strong> - Review the full
+dashboard locally before pushing to GitHub</li>
+<li><strong>Consider access controls</strong> - For sensitive data, use
+private repositories or institutional hosting instead of public GitHub
+Pages</li>
+</ol>
+</blockquote>
+<div id="what-youll-learn" class="section level2">
+<h2>What You’ll Learn</h2>
+<p>By the end of this guide, you’ll be able to:</p>
+<ul>
+<li>Publish your dashboard to GitHub Pages (completely free)</li>
+<li>Update your published dashboard whenever you make changes</li>
+<li>Share your dashboard URL with anyone</li>
+</ul>
+</div>
+<div id="prerequisites" class="section level2">
+<h2>Prerequisites</h2>
+<p>You need:</p>
+<ul>
+<li>R and RStudio installed</li>
+<li>The <code>dashboardr</code> package installed</li>
+<li>A dashboard you want to publish (see the
+<code>getting-started</code> vignette if you need to create one)</li>
+</ul>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="co"># Install packages if you don&#39;t have them</span></span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="fu">c</span>(<span class="st">&quot;usethis&quot;</span>, <span class="st">&quot;gert&quot;</span>))</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="fu">library</span>(dashboardr)</span></code></pre></div>
+<blockquote>
+<p><strong>⚡ Already have Git and GitHub set up?</strong></p>
+<p>If you already have Git installed, a GitHub account, and a Personal
+Access Token configured, you can skip directly to <a href="#part-2-publishing-your-dashboard">Part 2: Publishing Your
+Dashboard</a>.</p>
+</blockquote>
+</div>
+<div id="part-1-one-time-setup-do-this-once" class="section level1">
+<h1>Part 1: One-Time Setup (Do This Once)</h1>
+<div id="step-1-install-git-on-your-computer" class="section level2">
+<h2>Step 1: Install Git on Your Computer</h2>
+<p>Git is the tool that tracks changes to your files. It needs to be
+installed before R can use it.</p>
+<div id="windows" class="section level3">
+<h3>Windows</h3>
+<ol style="list-style-type: decimal">
+<li>Download Git from <a href="https://git-scm.com/download/win" class="uri">https://git-scm.com/download/win</a></li>
+<li>Run the installer (accept all defaults)</li>
+<li>Restart RStudio after installation</li>
+</ol>
+</div>
+<div id="macos" class="section level3">
+<h3>macOS</h3>
+<p>Git usually comes pre-installed. To check or update:</p>
+<ol style="list-style-type: decimal">
+<li>Open Terminal (find it in Applications &gt; Utilities)</li>
+<li>Type: <code>xcode-select --install</code></li>
+<li>Follow the prompts</li>
+</ol>
+</div>
+<div id="linux" class="section level3">
+<h3>Linux</h3>
+<p>Open terminal and run:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="co"># Ubuntu/Debian:</span></span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="fu">sudo</span> apt install git</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a><span class="co"># Fedora:</span></span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a><span class="fu">sudo</span> dnf install git</span></code></pre></div>
+</div>
+</div>
+<div id="step-2-tell-git-who-you-are" class="section level2">
+<h2>Step 2: Tell Git Who You Are</h2>
+<p>Git needs to know your name and email. Run this in R with
+<strong>your</strong> information:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">library</span>(usethis)</span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a><span class="fu">use_git_config</span>(</span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>  <span class="at">user.name =</span> <span class="st">&quot;Your Name&quot;</span>,          <span class="co"># Your actual name</span></span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a>  <span class="at">user.email =</span> <span class="st">&quot;you@example.com&quot;</span>    <span class="co"># Your actual email</span></span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a>)</span></code></pre></div>
+<p><strong>Important:</strong> Use the same email you’ll use for
+GitHub.</p>
+</div>
+<div id="step-3-check-everything-works" class="section level2">
+<h2>Step 3: Check Everything Works</h2>
+<p>Run this command to verify your setup:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">git_sitrep</span>()</span></code></pre></div>
+<p>You should see:</p>
+<ul>
+<li>✓ Your name and email</li>
+<li>✓ Git version number</li>
+<li>Some other information (warnings are okay for now)</li>
+</ul>
+</div>
+<div id="step-4-create-a-github-account" class="section level2">
+<h2>Step 4: Create a GitHub Account</h2>
+<p>GitHub will host your dashboard for free.</p>
+<ol style="list-style-type: decimal">
+<li>Go to <a href="https://github.com" class="uri">https://github.com</a></li>
+<li>Click “Sign up”</li>
+<li>Follow the steps (choose a username you like - it will be in your
+dashboard URL!)</li>
+<li>Verify your email address</li>
+</ol>
+</div>
+<div id="step-5-set-up-authentication" class="section level2">
+<h2>Step 5: Set Up Authentication</h2>
+<p>GitHub needs a way to verify it’s really you. We’ll create a Personal
+Access Token (PAT).</p>
+<div id="create-your-token" class="section level3">
+<h3>Create Your Token</h3>
+<p>Run this command in R:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a>usethis<span class="sc">::</span><span class="fu">create_github_token</span>()</span></code></pre></div>
+<p>This will:</p>
+<ol style="list-style-type: decimal">
+<li>Open GitHub in your browser</li>
+<li>Pre-fill a token creation form</li>
+</ol>
+<p>On the GitHub page:</p>
+<ol style="list-style-type: decimal">
+<li>Add a note like “dashboardr publishing” (to remember what it’s
+for)</li>
+<li>Click the green “Generate token” button at the bottom</li>
+<li><strong>IMPORTANT:</strong> Copy the token that appears (it looks
+like <code>ghp_xxxxxxxxxxxx</code>)</li>
+<li>Save it somewhere safe - you won’t be able to see it again!</li>
+</ol>
+</div>
+<div id="store-your-token" class="section level3">
+<h3>Store Your Token</h3>
+<p>Now tell R about your token:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>gitcreds<span class="sc">::</span><span class="fu">gitcreds_set</span>()</span></code></pre></div>
+<p>When prompted, paste your token and press Enter.</p>
+<p><strong>That’s it!</strong> You’ve completed the one-time setup. You
+never have to do these steps again.</p>
+</div>
+</div>
+</div>
+<div id="part-2-publishing-your-dashboard" class="section level1">
+<h1>Part 2: Publishing Your Dashboard</h1>
+<p>Now comes the fun part - publishing your dashboard!</p>
+<div id="step-1-generate-your-dashboard" class="section level2">
+<h2>Step 1: Generate Your Dashboard</h2>
+<p>First, create and render your dashboard as usual:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="co"># Example dashboard</span></span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>my_data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a>  <span class="at">category =</span> <span class="fu">c</span>(<span class="st">&quot;A&quot;</span>, <span class="st">&quot;B&quot;</span>, <span class="st">&quot;C&quot;</span>, <span class="st">&quot;D&quot;</span>),</span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a>  <span class="at">value =</span> <span class="fu">c</span>(<span class="dv">23</span>, <span class="dv">45</span>, <span class="dv">67</span>, <span class="dv">34</span>)</span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a>)</span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a></span>
+<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a>viz <span class="ot">&lt;-</span> <span class="fu">create_viz</span>(<span class="at">type =</span> <span class="st">&quot;bar&quot;</span>, <span class="at">x_var =</span> <span class="st">&quot;category&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a>  <span class="fu">add_viz</span>()</span>
+<span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a></span>
+<span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a>dashboard <span class="ot">&lt;-</span> <span class="fu">create_dashboard</span>(</span>
+<span id="cb7-11"><a href="#cb7-11" tabindex="-1"></a>  <span class="at">output_dir =</span> <span class="st">&quot;my_dashboard&quot;</span>,</span>
+<span id="cb7-12"><a href="#cb7-12" tabindex="-1"></a>  <span class="at">title =</span> <span class="st">&quot;My First Dashboard&quot;</span></span>
+<span id="cb7-13"><a href="#cb7-13" tabindex="-1"></a>) <span class="sc">%&gt;%</span></span>
+<span id="cb7-14"><a href="#cb7-14" tabindex="-1"></a>  <span class="fu">add_page</span>(</span>
+<span id="cb7-15"><a href="#cb7-15" tabindex="-1"></a>    <span class="at">name =</span> <span class="st">&quot;Analysis&quot;</span>,</span>
+<span id="cb7-16"><a href="#cb7-16" tabindex="-1"></a>    <span class="at">data =</span> my_data,</span>
+<span id="cb7-17"><a href="#cb7-17" tabindex="-1"></a>    <span class="at">visualizations =</span> viz</span>
+<span id="cb7-18"><a href="#cb7-18" tabindex="-1"></a>  )</span>
+<span id="cb7-19"><a href="#cb7-19" tabindex="-1"></a></span>
+<span id="cb7-20"><a href="#cb7-20" tabindex="-1"></a><span class="co"># Generate the dashboard files</span></span>
+<span id="cb7-21"><a href="#cb7-21" tabindex="-1"></a><span class="fu">generate_dashboard</span>(dashboard, <span class="at">render =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+</div>
+<div id="step-2-publish" class="section level2">
+<h2>Step 2: Publish!</h2>
+<p>Now for the magic command with the key arguments shown
+explicitly:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="fu">publish_dashboard</span>(</span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>  <span class="at">message =</span> <span class="st">&quot;Initial commit&quot;</span>,  <span class="co"># Your commit message</span></span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a>  <span class="at">path =</span> <span class="st">&quot;/docs&quot;</span>               <span class="co"># Folder with your dashboard (default)</span></span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a>)</span></code></pre></div>
+<p>Or simply:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="fu">publish_dashboard</span>()  <span class="co"># Uses defaults above</span></span></code></pre></div>
+<div id="key-arguments" class="section level3">
+<h3>Key Arguments</h3>
+<p><strong>Important:</strong> <code>publish_dashboard()</code> works
+from <strong>your current working directory</strong>. It will:</p>
+<ul>
+<li>Look for your dashboard files in the current folder</li>
+<li>Create a git repository in that folder</li>
+<li>Publish the contents of the <code>/docs</code> folder to GitHub
+Pages</li>
+</ul>
+<p><strong>Main arguments you might want to customize:</strong></p>
+<ul>
+<li><strong><code>message</code></strong> - Your initial commit message
+(default: <code>&quot;Initial commit&quot;</code>)
+<ul>
+<li>Example:
+<code>publish_dashboard(message = &quot;Launch my analysis dashboard&quot;)</code></li>
+<li>This appears in your git history and helps you track what was
+published</li>
+</ul></li>
+<li><strong><code>private</code></strong> - Create a private repository
+(default: <code>FALSE</code>)
+<ul>
+<li>Example: <code>publish_dashboard(private = TRUE)</code></li>
+<li>Use this if your dashboard (code) contains sensitive
+information</li>
+</ul></li>
+<li><strong><code>path</code></strong> - Which folder contains your site
+files (default: <code>&quot;/docs&quot;</code>)
+<ul>
+<li>The <code>/docs</code> (with leading slash) tells GitHub Pages to
+serve from the <code>docs/</code> folder in your repository root</li>
+<li>This is where <code>generate_dashboard()</code> creates your HTML
+files</li>
+</ul></li>
+</ul>
+</div>
+<div id="what-happens" class="section level3">
+<h3>What happens:</h3>
+<ol style="list-style-type: decimal">
+<li>Git is initialized in your dashboard folder</li>
+<li>A comprehensive <code>.gitignore</code> file is created
+(automatically excludes data files, large files &gt;10MB, and temporary
+files)</li>
+<li>You’ll be asked to confirm committing your files</li>
+<li>A GitHub repository is created</li>
+<li>GitHub Pages is configured</li>
+<li>Your dashboard is pushed online</li>
+</ol>
+<p><strong>Important notes:</strong></p>
+<ul>
+<li>You will see prompts asking for confirmation - just type the number
+to proceed</li>
+<li>Your browser may open showing your GitHub repository</li>
+<li>The function will display your dashboard URL at the end</li>
+<li>GitHub Pages takes <strong>2-5 minutes</strong> to build your site
+the first time</li>
+</ul>
+<p><strong>Your dashboard URL will be shown in the output and will look
+like:</strong></p>
+<pre><code>https://YOUR-USERNAME.github.io/your-dashboard-name/</code></pre>
+<p>Copy this URL and wait 2-5 minutes, then visit it to see your live
+dashboard!</p>
+</div>
+</div>
+<div id="additional-options" class="section level2">
+<h2>Additional Options</h2>
+<p>For more advanced scenarios:</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a><span class="co"># Publish to an organization instead of your personal account</span></span>
+<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a><span class="fu">publish_dashboard</span>(<span class="at">organisation =</span> <span class="st">&quot;my-organization&quot;</span>)</span>
+<span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a></span>
+<span id="cb11-4"><a href="#cb11-4" tabindex="-1"></a><span class="co"># Use SSH instead of HTTPS (requires SSH keys set up)</span></span>
+<span id="cb11-5"><a href="#cb11-5" tabindex="-1"></a><span class="fu">publish_dashboard</span>(<span class="at">protocol =</span> <span class="st">&quot;ssh&quot;</span>)</span>
+<span id="cb11-6"><a href="#cb11-6" tabindex="-1"></a></span>
+<span id="cb11-7"><a href="#cb11-7" tabindex="-1"></a><span class="co"># Custom branch (advanced - usually not needed)</span></span>
+<span id="cb11-8"><a href="#cb11-8" tabindex="-1"></a><span class="fu">publish_dashboard</span>(<span class="at">branch =</span> <span class="st">&quot;gh-pages&quot;</span>)</span></code></pre></div>
+</div>
+</div>
+<div id="part-3-updating-your-dashboard" class="section level1">
+<h1>Part 3: Updating Your Dashboard</h1>
+<p>Made changes to your dashboard? Here’s how to update the published
+version.</p>
+<div id="step-1-regenerate-your-dashboard" class="section level2">
+<h2>Step 1: Regenerate Your Dashboard</h2>
+<p>Make your changes and regenerate:</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a><span class="co"># Make changes to your dashboard</span></span>
+<span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a>dashboard <span class="ot">&lt;-</span> <span class="fu">create_dashboard</span>(</span>
+<span id="cb12-3"><a href="#cb12-3" tabindex="-1"></a>  <span class="at">output_dir =</span> <span class="st">&quot;my_dashboard&quot;</span>,</span>
+<span id="cb12-4"><a href="#cb12-4" tabindex="-1"></a>  <span class="at">title =</span> <span class="st">&quot;My Updated Dashboard&quot;</span></span>
+<span id="cb12-5"><a href="#cb12-5" tabindex="-1"></a>) <span class="sc">%&gt;%</span></span>
+<span id="cb12-6"><a href="#cb12-6" tabindex="-1"></a>  <span class="fu">add_page</span>(</span>
+<span id="cb12-7"><a href="#cb12-7" tabindex="-1"></a>    <span class="at">name =</span> <span class="st">&quot;Analysis&quot;</span>,</span>
+<span id="cb12-8"><a href="#cb12-8" tabindex="-1"></a>    <span class="at">data =</span> my_data,</span>
+<span id="cb12-9"><a href="#cb12-9" tabindex="-1"></a>    <span class="at">visualizations =</span> viz,</span>
+<span id="cb12-10"><a href="#cb12-10" tabindex="-1"></a>    <span class="at">text =</span> <span class="st">&quot;Now with more insights!&quot;</span>  <span class="co"># Added new content</span></span>
+<span id="cb12-11"><a href="#cb12-11" tabindex="-1"></a>  )</span>
+<span id="cb12-12"><a href="#cb12-12" tabindex="-1"></a></span>
+<span id="cb12-13"><a href="#cb12-13" tabindex="-1"></a><span class="co"># Regenerate</span></span>
+<span id="cb12-14"><a href="#cb12-14" tabindex="-1"></a><span class="fu">generate_dashboard</span>(dashboard, <span class="at">render =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+</div>
+<div id="step-2-push-your-updates" class="section level2">
+<h2>Step 2: Push Your Updates</h2>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a><span class="fu">update_dashboard</span>()</span></code></pre></div>
+<p><strong>What happens:</strong></p>
+<ol style="list-style-type: decimal">
+<li>All your changed files are staged</li>
+<li>Changes are committed with your message</li>
+<li><strong>You’ll be asked to confirm</strong> before pushing (shows
+list of files)</li>
+<li>Changes are pushed to GitHub</li>
+</ol>
+<p><strong>Safety feature:</strong> By default,
+<code>update_dashboard()</code> will show you what files will be pushed
+and ask for confirmation. Type <code>yes</code> or <code>y</code> to
+proceed.</p>
+<p><strong>That’s it!</strong> Your changes will be live in 1-2 minutes.
+The function will display your dashboard URL - just refresh the page to
+see your updates.</p>
+<div id="update-options" class="section level3">
+<h3>Update Options</h3>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a><span class="co"># Custom commit message</span></span>
+<span id="cb14-2"><a href="#cb14-2" tabindex="-1"></a><span class="fu">update_dashboard</span>(<span class="at">message =</span> <span class="st">&quot;Added new visualizations&quot;</span>)</span>
+<span id="cb14-3"><a href="#cb14-3" tabindex="-1"></a></span>
+<span id="cb14-4"><a href="#cb14-4" tabindex="-1"></a><span class="co"># Update specific files only</span></span>
+<span id="cb14-5"><a href="#cb14-5" tabindex="-1"></a><span class="fu">update_dashboard</span>(</span>
+<span id="cb14-6"><a href="#cb14-6" tabindex="-1"></a>  <span class="at">files =</span> <span class="fu">c</span>(<span class="st">&quot;docs/index.html&quot;</span>, <span class="st">&quot;docs/analysis.html&quot;</span>),</span>
+<span id="cb14-7"><a href="#cb14-7" tabindex="-1"></a>  <span class="at">message =</span> <span class="st">&quot;Updated main pages&quot;</span></span>
+<span id="cb14-8"><a href="#cb14-8" tabindex="-1"></a>)</span>
+<span id="cb14-9"><a href="#cb14-9" tabindex="-1"></a></span>
+<span id="cb14-10"><a href="#cb14-10" tabindex="-1"></a><span class="co"># Update all HTML files</span></span>
+<span id="cb14-11"><a href="#cb14-11" tabindex="-1"></a><span class="fu">update_dashboard</span>(</span>
+<span id="cb14-12"><a href="#cb14-12" tabindex="-1"></a>  <span class="at">files =</span> <span class="st">&quot;docs/*.html&quot;</span>,</span>
+<span id="cb14-13"><a href="#cb14-13" tabindex="-1"></a>  <span class="at">message =</span> <span class="st">&quot;Regenerated all pages&quot;</span></span>
+<span id="cb14-14"><a href="#cb14-14" tabindex="-1"></a>)</span>
+<span id="cb14-15"><a href="#cb14-15" tabindex="-1"></a></span>
+<span id="cb14-16"><a href="#cb14-16" tabindex="-1"></a><span class="co"># Skip confirmation prompt (not recommended!)</span></span>
+<span id="cb14-17"><a href="#cb14-17" tabindex="-1"></a><span class="fu">update_dashboard</span>(<span class="at">ask =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
+</div>
+</div>
+</div>
+<div id="complete-workflow-example" class="section level1">
+<h1>Complete Workflow Example</h1>
+<p>Here’s a full example from start to finish:</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a><span class="fu">library</span>(dashboardr)</span>
+<span id="cb15-2"><a href="#cb15-2" tabindex="-1"></a></span>
+<span id="cb15-3"><a href="#cb15-3" tabindex="-1"></a><span class="co"># 1. Create your dashboard</span></span>
+<span id="cb15-4"><a href="#cb15-4" tabindex="-1"></a>my_data <span class="ot">&lt;-</span> mtcars</span>
+<span id="cb15-5"><a href="#cb15-5" tabindex="-1"></a></span>
+<span id="cb15-6"><a href="#cb15-6" tabindex="-1"></a>viz <span class="ot">&lt;-</span> <span class="fu">create_viz</span>(<span class="at">type =</span> <span class="st">&quot;bar&quot;</span>, <span class="at">x_var =</span> <span class="st">&quot;cyl&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb15-7"><a href="#cb15-7" tabindex="-1"></a>  <span class="fu">add_viz</span>(<span class="at">text =</span> <span class="st">&quot;Cars by Cylinder Count&quot;</span>)</span>
+<span id="cb15-8"><a href="#cb15-8" tabindex="-1"></a></span>
+<span id="cb15-9"><a href="#cb15-9" tabindex="-1"></a>dashboard <span class="ot">&lt;-</span> <span class="fu">create_dashboard</span>(</span>
+<span id="cb15-10"><a href="#cb15-10" tabindex="-1"></a>  <span class="at">output_dir =</span> <span class="st">&quot;mtcars_dashboard&quot;</span>,</span>
+<span id="cb15-11"><a href="#cb15-11" tabindex="-1"></a>  <span class="at">title =</span> <span class="st">&quot;Motor Trends Car Analysis&quot;</span></span>
+<span id="cb15-12"><a href="#cb15-12" tabindex="-1"></a>) <span class="sc">%&gt;%</span></span>
+<span id="cb15-13"><a href="#cb15-13" tabindex="-1"></a>  <span class="fu">add_page</span>(</span>
+<span id="cb15-14"><a href="#cb15-14" tabindex="-1"></a>    <span class="at">name =</span> <span class="st">&quot;Overview&quot;</span>,</span>
+<span id="cb15-15"><a href="#cb15-15" tabindex="-1"></a>    <span class="at">data =</span> my_data,</span>
+<span id="cb15-16"><a href="#cb15-16" tabindex="-1"></a>    <span class="at">visualizations =</span> viz</span>
+<span id="cb15-17"><a href="#cb15-17" tabindex="-1"></a>  )</span>
+<span id="cb15-18"><a href="#cb15-18" tabindex="-1"></a></span>
+<span id="cb15-19"><a href="#cb15-19" tabindex="-1"></a><span class="co"># 2. Generate the dashboard</span></span>
+<span id="cb15-20"><a href="#cb15-20" tabindex="-1"></a><span class="fu">generate_dashboard</span>(dashboard, <span class="at">render =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb15-21"><a href="#cb15-21" tabindex="-1"></a></span>
+<span id="cb15-22"><a href="#cb15-22" tabindex="-1"></a><span class="co"># 3. Publish (only needed once!)</span></span>
+<span id="cb15-23"><a href="#cb15-23" tabindex="-1"></a><span class="fu">publish_dashboard</span>(<span class="at">message =</span> <span class="st">&quot;Initial publication&quot;</span>)</span>
+<span id="cb15-24"><a href="#cb15-24" tabindex="-1"></a></span>
+<span id="cb15-25"><a href="#cb15-25" tabindex="-1"></a><span class="co"># ... time passes, you make changes ...</span></span>
+<span id="cb15-26"><a href="#cb15-26" tabindex="-1"></a></span>
+<span id="cb15-27"><a href="#cb15-27" tabindex="-1"></a><span class="co"># 4. Regenerate with changes</span></span>
+<span id="cb15-28"><a href="#cb15-28" tabindex="-1"></a><span class="fu">generate_dashboard</span>(dashboard, <span class="at">render =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb15-29"><a href="#cb15-29" tabindex="-1"></a></span>
+<span id="cb15-30"><a href="#cb15-30" tabindex="-1"></a><span class="co"># 5. Push updates</span></span>
+<span id="cb15-31"><a href="#cb15-31" tabindex="-1"></a><span class="fu">update_dashboard</span>(<span class="at">message =</span> <span class="st">&quot;Updated car analysis&quot;</span>)</span></code></pre></div>
+</div>
+<div id="troubleshooting" class="section level1">
+<h1>Troubleshooting</h1>
+<div id="error-no-github-token" class="section level2">
+<h2>“Error: No GitHub token”</h2>
+<p><strong>Problem:</strong> R can’t find your GitHub token.</p>
+<p><strong>Solution:</strong> Run <code>gitcreds::gitcreds_set()</code>
+and paste your token again.</p>
+</div>
+<div id="error-git-is-not-installed" class="section level2">
+<h2>“Error: Git is not installed”</h2>
+<p><strong>Problem:</strong> Git isn’t installed or R can’t find it.</p>
+<p><strong>Solution:</strong> 1. Install Git (see Step 1) 2. Restart
+RStudio 3. Run <code>git_sitrep()</code> to verify</p>
+</div>
+<div id="repository-already-exists" class="section level2">
+<h2>“Repository already exists”</h2>
+<p><strong>Problem:</strong> You’re trying to publish a second time.</p>
+<p><strong>Solution:</strong> Use <code>update_dashboard()</code>
+instead of <code>publish_dashboard()</code>.</p>
+</div>
+<div id="error-not-a-git-repository" class="section level2">
+<h2>“Error: not a git repository”</h2>
+<p><strong>Problem:</strong> Git wasn’t initialized properly, or you’re
+trying to update before publishing.</p>
+<p><strong>Solution:</strong> 1. Make sure you’ve run
+<code>publish_dashboard()</code> at least once 2. Run
+<code>publish_dashboard()</code> first to initialize Git and create the
+repository</p>
+</div>
+<div id="github-pages-shows-404" class="section level2">
+<h2>GitHub Pages shows 404</h2>
+<p><strong>Problem:</strong> Your site isn’t deployed yet, or Pages
+isn’t configured.</p>
+<p><strong>Solution:</strong> 1. Wait 2-5 minutes after first publish 2.
+Check your repository settings on GitHub 3. Make sure “Pages” is enabled
+and set to deploy from <code>/docs</code> folder</p>
+</div>
+<div id="data-files-are-being-committed" class="section level2">
+<h2>Data files are being committed</h2>
+<p><strong>Problem:</strong> Your data files are being uploaded to
+GitHub.</p>
+<p><strong>Solution:</strong> The <code>.gitignore</code> file should
+automatically exclude data files. Check: 1. Look for a
+<code>.gitignore</code> file in your dashboard folder 2. Make sure your
+data files match the patterns (<em>.csv, </em>.rds, etc.) 3. Large files
+(&gt;10MB) are automatically detected and ignored</p>
+</div>
+</div>
+<div id="tips-and-best-practices" class="section level1">
+<h1>Tips and Best Practices</h1>
+<div id="keep-data-out-of-git" class="section level2">
+<h2>1. Keep Data Out of Git</h2>
+<p>The publishing functions automatically exclude: - All common data
+file formats (CSV, RDS, Excel, etc.) - Large files (&gt;10MB) - Data
+directories</p>
+<p>This keeps your repository small and protects sensitive data.</p>
+</div>
+<div id="write-descriptive-commit-messages" class="section level2">
+<h2>2. Write Descriptive Commit Messages</h2>
+<p>Instead of:</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a><span class="fu">update_dashboard</span>(<span class="at">message =</span> <span class="st">&quot;update&quot;</span>)</span></code></pre></div>
+<p>Do this:</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" tabindex="-1"></a><span class="fu">update_dashboard</span>(<span class="at">message =</span> <span class="st">&quot;Added new bar chart for regional analysis&quot;</span>)</span></code></pre></div>
+</div>
+<div id="test-locally-first" class="section level2">
+<h2>3. Test Locally First</h2>
+<p>Always run
+<code>generate_dashboard(dashboard, render = TRUE, open = &quot;browser&quot;)</code>
+to preview your changes before publishing.</p>
+</div>
+<div id="update-regularly" class="section level2">
+<h2>4. Update Regularly</h2>
+<p>It’s easier to push small, frequent updates than large, infrequent
+ones. Update after each significant change.</p>
+</div>
+<div id="check-your-site" class="section level2">
+<h2>5. Check Your Site</h2>
+<p>After updating, wait 1-2 minutes then visit your dashboard URL to
+verify the changes appear correctly.</p>
+</div>
+</div>
+<div id="next-steps" class="section level1">
+<h1>Next Steps</h1>
+<p>Now that your dashboard is published, you can:</p>
+<ul>
+<li>Share the URL with colleagues, clients, or the public</li>
+<li>Add more pages and visualizations</li>
+<li>Customize your dashboard theme</li>
+<li>Set up custom domains (see GitHub Pages documentation)</li>
+</ul>
+<p><strong>Happy publishing!</strong> 🎉</p>
+<p>For more advanced features, see: -
+<code>vignette(&quot;advanced-features&quot;, package = &quot;dashboardr&quot;)</code> -
+GitHub Pages documentation: <a href="https://docs.github.com/pages" class="uri">https://docs.github.com/pages</a></p>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

@@ -32,12 +32,20 @@
 ### Visualization Types
 
 - [Creating Bar Charts with
-  create_bar()](https://favstats.github.io/dashboardr/articles/bar_vignette.md):
+  viz_bar()](https://favstats.github.io/dashboardr/articles/bar_vignette.md):
 - [Getting Started With
-  \`create_timeline()\`](https://favstats.github.io/dashboardr/articles/timeline_vignette.md):
+  \`viz_timeline()\`](https://favstats.github.io/dashboardr/articles/timeline_vignette.md):
 - [Creating Interactive Stacked Bar Charts with
-  \`create_stackedbar\`](https://favstats.github.io/dashboardr/articles/stackedbar_vignette.md):
+  \`viz_stackedbar\`](https://favstats.github.io/dashboardr/articles/stackedbar_vignette.md):
 - [Getting Started With
-  \`create_stackedbars()\`](https://favstats.github.io/dashboardr/articles/stackedbars_vignette.md):
+  \`viz_stackedbars()\`](https://favstats.github.io/dashboardr/articles/stackedbars_vignette.md):
 - [Creating Interactive Heatmaps with
-  \`create_heatmap\`](https://favstats.github.io/dashboardr/articles/heatmap_vignette.md):
+  \`viz_heatmap\`](https://favstats.github.io/dashboardr/articles/heatmap_vignette.md):
+- [Creating Histograms with
+  viz_histogram()](https://favstats.github.io/dashboardr/articles/histogram_vignette.md):
+- [Creating Scatter Plots with
+  viz_scatter()](https://favstats.github.io/dashboardr/articles/scatter_vignette.md):
+- [Creating Treemaps with
+  viz_treemap()](https://favstats.github.io/dashboardr/articles/treemap_vignette.md):
+- [Creating Maps with
+  viz_map()](https://favstats.github.io/dashboardr/articles/map_vignette.md):

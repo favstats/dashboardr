@@ -1,8 +1,8 @@
-# Creating Interactive Stacked Bar Charts with \`create_stackedbar\`
+# Creating Interactive Stacked Bar Charts with \`viz_stackedbar\`
 
 ### Introduction
 
-Welcome to this comprehensive guide on using the `create_stackedbar`
+Welcome to this comprehensive guide on using the `viz_stackedbar`
 function from the `dashboardr` package. This function is designed to
 create highly customizable interactive stacked bar charts from survey
 data, making it particularly valuable for communication science
@@ -14,8 +14,8 @@ allow you to see both the overall patterns and the composition within
 each category, making them ideal for displaying survey responses,
 demographic breakdowns, and attitude distributions.
 
-The `create_stackedbar` function handles many common data preparation
-tasks automatically, including:
+The `viz_stackedbar` function handles many common data preparation tasks
+automatically, including:
 
 - Converting `haven_labelled` columns (from SPSS imports) to R factors
 - Mapping raw values to descriptive labels
@@ -101,7 +101,7 @@ attainment by gender.
 
 ``` r
 # Create basic stacked bar chart
-plot1 <- create_stackedbar(
+plot1 <- viz_stackedbar(
   data = gss_clean,
   x_var = "degree_1a",
   stack_var = "sex_1a",
@@ -126,7 +126,7 @@ distribution across education levels.
 education_order <- c("less than high school", "high school", "associate/junior college", "bachelor's", "graduate")
 
 # Create percentage stacked bar chart
-plot2 <- create_stackedbar(
+plot2 <- viz_stackedbar(
   data = gss_clean,
   x_var = "degree_1a",
   stack_var = "happy_1a",
@@ -198,7 +198,7 @@ polviews_order <- list("Ext. Liberal", "Liberal", "Sl. Liberal",
 
 
 # Create chart with age binning and value mapping using the numeric age
-plot3 <- create_stackedbar(
+plot3 <- viz_stackedbar(
   data = gss_clean_age,
   x_var = "age_numeric",  # Use the numeric version
   stack_var = "polviews_1a",
@@ -229,7 +229,7 @@ Let’s create a chart that explicitly shows missing data patterns.
 # Let's create a chart that explicitly shows missing data patterns.
 
 # Create chart including NA values (using default "(Missing)" labels)
-plot4 <- create_stackedbar(
+plot4 <- viz_stackedbar(
   data = gss_clean,
   x_var = "race_1a",
   stack_var = "attend_1a",
@@ -263,7 +263,7 @@ class_map <- list(
 )
 
 # Create chart with custom mappings
-plot5 <- create_stackedbar(
+plot5 <- viz_stackedbar(
   data = gss_panel20,
   x_var = "class_1a",
   stack_var = "sex_1a",
@@ -299,7 +299,7 @@ trust_map <- list(
 )
 
 # Create regional trust analysis
-plot6 <- create_stackedbar(
+plot6 <- viz_stackedbar(
   data = gss_panel20,
   x_var = "region_1a",
   stack_var = "trust_1a",
@@ -373,7 +373,7 @@ plot6
 
 ### Common Use Cases
 
-The `create_stackedbar` function is particularly useful for:
+The `viz_stackedbar` function is particularly useful for:
 
 - **Survey response analysis**: Displaying Likert scale responses across
   demographics
@@ -388,7 +388,7 @@ The `create_stackedbar` function is particularly useful for:
 ### Conclusion
 
 The
-[`create_stackedbar()`](https://favstats.github.io/dashboardr/reference/create_stackedbar.md)
+[`viz_stackedbar()`](https://favstats.github.io/dashboardr/reference/viz_stackedbar.md)
 function provides a comprehensive solution for creating
 publication-ready stacked bar charts from survey data. Its extensive
 customization options, automatic data handling capabilities, and

@@ -120,7 +120,7 @@ viz <- create_viz() %>%
   add_viz(
     type = "timeline",
     time_var = "period",
-    response_var = "value",
+    y_var = "value",
     group_var = "region",
     chart_type = "line",
     title = "Regional Performance Dashboard",

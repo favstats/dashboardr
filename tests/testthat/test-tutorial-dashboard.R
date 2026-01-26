@@ -54,13 +54,13 @@ test_that("tutorial_dashboard generates valid QMD with curly braces", {
   expect_true(length(chunk_starts) > 0)
   expect_true(length(chunk_ends) > 0)
   
-  # Test parsing of chunks with create_heatmap
+  # Test parsing of chunks with viz_heatmap
   for (i in seq_along(chunk_starts)) {
     if (i > length(chunk_ends)) break
     
     chunk_code <- qmd_content[(chunk_starts[i] + 1):(chunk_ends[i] - 1)]
     
-    if (any(grepl("create_heatmap", chunk_code))) {
+    if (any(grepl("viz_heatmap", chunk_code))) {
       chunk_text <- paste(chunk_code, collapse = "\n")
       # This should parse without error (was failing before fix)
       expect_silent(parse(text = chunk_text))
@@ -126,13 +126,13 @@ test_that("showcase_dashboard generates valid QMD with curly braces", {
   
   expect_true(length(chunk_starts) > 0)
   
-  # Test parsing of chunks with create_heatmap
+  # Test parsing of chunks with viz_heatmap
   for (i in seq_along(chunk_starts)) {
     if (i > length(chunk_ends)) break
     
     chunk_code <- qmd_content[(chunk_starts[i] + 1):(chunk_ends[i] - 1)]
     
-    if (any(grepl("create_heatmap", chunk_code))) {
+    if (any(grepl("viz_heatmap", chunk_code))) {
       chunk_text <- paste(chunk_code, collapse = "\n")
       # This should parse without error
       expect_silent(parse(text = chunk_text))

@@ -56,8 +56,8 @@ pu1_days_mapping <- list(
 pu1_days_order <- c("0 dagen", "1 dag", "2 dagen", "3 dagen", "4 dagen", "5 dagen", "6 dagen", "7 dagen")
 
 
-# Step 3: Call the general create_stackedbar function
-algosoc_plot1 <- create_stackedbar(
+# Step 3: Call the general viz_stackedbar function
+algosoc_plot1 <- viz_stackedbar(
   data = algosoc,
   x_var = "PU1",           # X-axis will be 'days per week'
   stack_var = "geslacht", # Stacks/legend will be 'gender'
@@ -105,7 +105,7 @@ age_order <- age_bins # Order should follow the labels
 
 
 # Call the function
-algosoc_kai5 <- create_stackedbar(
+algosoc_kai5 <- viz_stackedbar(
   data = algosoc,
   x_var = "KAI5", # X-axis will be familiarity with chatbots
   stack_var = "leeftijd",   # Age to be stacked and binned

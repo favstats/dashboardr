@@ -8,10 +8,10 @@ test_data <- data.frame(
 )
 
 #simple call
-simple_plot <- create_timeline(
+simple_plot <- viz_timeline(
   data = test_data,
   time_var = "year",
-  response_var = "response",
+  y_var = "response",
   chart_type = "stacked_area"
 )
 
@@ -23,10 +23,10 @@ simple_plot
 data(gss_all)
 
 # Basic timeline - confidence in institutions over time
-plot1 <- create_timeline(
+plot1 <- viz_timeline(
   data = gss_all,
   time_var = "year",
-  response_var = "confinan",
+  y_var = "confinan",
   chart_type = "stacked_area",
   title = "Confidence in Financial Institutions Over Time",
   response_levels = c("A Great Deal", "Only Some", "Hardly Any")
@@ -37,28 +37,28 @@ plot1
 
 # debug
 # first, let's check what the aggregated data looks like
-debug_timeline <- function(data, time_var, response_var) {
+debug_timeline <- function(data, time_var, y_var) {
 
   # Step 1: Check raw data
   cat("Step 1 - Raw data sample:\n")
   raw_sample <- data %>%
-    select(all_of(c(time_var, response_var))) %>%
+    select(all_of(c(time_var, y_var))) %>%
     slice_head(n = 10)
   print(raw_sample)
 
   # Step 2: After filtering NAs
   cat("\nStep 2 - After filtering NAs:\n")
   filtered_data <- data %>%
-    select(all_of(c(time_var, response_var))) %>%
-    filter(!is.na(!!sym(time_var)), !is.na(!!sym(response_var)))
+    select(all_of(c(time_var, y_var))) %>%
+    filter(!is.na(!!sym(time_var)), !is.na(!!sym(y_var)))
   cat("Rows remaining:", nrow(filtered_data), "\n")
   print(head(filtered_data))
 
   # Step 3: Handle haven_labelled
   if (requireNamespace("haven", quietly = TRUE)) {
-    if (inherits(filtered_data[[response_var]], "haven_labelled")) {
+    if (inherits(filtered_data[[y_var]], "haven_labelled")) {
       filtered_data <- filtered_data %>%
-        mutate(!!sym(response_var) := haven::as_factor(!!sym(response_var), levels = "labels"))
+        mutate(!!sym(y_var) := haven::as_factor(!!sym(y_var), levels = "labels"))
       cat("\nStep 3 - After converting haven_labelled:\n")
       print(head(filtered_data))
     }
@@ -67,7 +67,7 @@ debug_timeline <- function(data, time_var, response_var) {
   # Step 4: Check aggregated data
   cat("\nStep 4 - Aggregated data:\n")
   agg_data <- filtered_data %>%
-    count(!!sym(time_var), !!sym(response_var), name = "count") %>%
+    count(!!sym(time_var), !!sym(y_var), name = "count") %>%
     group_by(!!sym(time_var)) %>%
     mutate(percentage = round(count / sum(count) * 100, 1)) %>%
     ungroup()
@@ -81,12 +81,12 @@ debug_timeline <- function(data, time_var, response_var) {
 debug_data <- debug_timeline(gss_all, "year", "confinan")
 
 
-create_timeline_fixed <- function(data, time_var, response_var, chart_type = "stacked_area", title = NULL, y_max = NULL) {
+viz_timeline_fixed <- function(data, time_var, y_var, chart_type = "stacked_area", title = NULL, y_max = NULL) {
 
   # Basic data processing
   plot_data <- data %>%
-    select(all_of(c(time_var, response_var))) %>%
-    filter(!is.na(!!sym(time_var)), !is.na(!!sym(response_var)))
+    select(all_of(c(time_var, y_var))) %>%
+    filter(!is.na(!!sym(time_var)), !is.na(!!sym(y_var)))
 
   # Handle haven_labelled variables for BOTH time and response variables
   if (requireNamespace("haven", quietly = TRUE)) {
@@ -94,15 +94,15 @@ create_timeline_fixed <- function(data, time_var, response_var, chart_type = "st
       plot_data <- plot_data %>%
         mutate(!!sym(time_var) := as.numeric(!!sym(time_var)))
     }
-    if (inherits(plot_data[[response_var]], "haven_labelled")) {
+    if (inherits(plot_data[[y_var]], "haven_labelled")) {
       plot_data <- plot_data %>%
-        mutate(!!sym(response_var) := haven::as_factor(!!sym(response_var), levels = "labels"))
+        mutate(!!sym(y_var) := haven::as_factor(!!sym(y_var), levels = "labels"))
     }
   }
 
   # Aggregate data
   agg_data <- plot_data %>%
-    count(!!sym(time_var), !!sym(response_var), name = "count") %>%
+    count(!!sym(time_var), !!sym(y_var), name = "count") %>%
     group_by(!!sym(time_var)) %>%
     mutate(percentage = round(count / sum(count) * 100, 1)) %>%
     ungroup()
@@ -116,11 +116,11 @@ create_timeline_fixed <- function(data, time_var, response_var, chart_type = "st
     hc_xAxis(title = list(text = "Year"))
 
   # Add each response category as a separate series
-  response_levels <- unique(agg_data[[response_var]])
+  response_levels <- unique(agg_data[[y_var]])
 
   for(level in response_levels) {
     series_data <- agg_data %>%
-      filter(!!sym(response_var) == level) %>%
+      filter(!!sym(y_var) == level) %>%
       arrange(!!sym(time_var)) %>%
       select(x = !!sym(time_var), y = percentage)
 
@@ -136,10 +136,10 @@ create_timeline_fixed <- function(data, time_var, response_var, chart_type = "st
 }
 
 # Test with y_max set to 100
-plot1 <- create_timeline_fixed(
+plot1 <- viz_timeline_fixed(
   data = gss_all,
   time_var = "year",
-  response_var = "confinan",
+  y_var = "confinan",
   title = "Confidence in Financial Institutions Over Time",
   y_max = 100
 )
@@ -147,10 +147,10 @@ plot1 <- create_timeline_fixed(
 plot1
 
 # Test the fixed function
-plot1 <- create_timeline_fixed(
+plot1 <- viz_timeline_fixed(
   data = gss_all,
   time_var = "year",
-  response_var = "confinan",
+  y_var = "confinan",
   title = "Confidence in Financial Institutions Over Time"
 )
 
@@ -158,17 +158,17 @@ plot1
 
 # Now let's try to add support for grouping variables, different chart types, and response level ordering
 
-create_timeline_fixed <- function(data, time_var, response_var, group_var = NULL,
+viz_timeline_fixed <- function(data, time_var, y_var, group_var = NULL,
                                   chart_type = "stacked_area", title = NULL, y_max = NULL,
                                   response_levels = NULL) {
 
   # Basic data processing
-  vars_to_select <- c(time_var, response_var)
+  vars_to_select <- c(time_var, y_var)
   if (!is.null(group_var)) vars_to_select <- c(vars_to_select, group_var)
 
   plot_data <- data %>%
     select(all_of(vars_to_select)) %>%
-    filter(!is.na(!!sym(time_var)), !is.na(!!sym(response_var)))
+    filter(!is.na(!!sym(time_var)), !is.na(!!sym(y_var)))
 
   if (!is.null(group_var)) {
     plot_data <- plot_data %>% filter(!is.na(!!sym(group_var)))
@@ -180,9 +180,9 @@ create_timeline_fixed <- function(data, time_var, response_var, group_var = NULL
       plot_data <- plot_data %>%
         mutate(!!sym(time_var) := as.numeric(!!sym(time_var)))
     }
-    if (inherits(plot_data[[response_var]], "haven_labelled")) {
+    if (inherits(plot_data[[y_var]], "haven_labelled")) {
       plot_data <- plot_data %>%
-        mutate(!!sym(response_var) := haven::as_factor(!!sym(response_var), levels = "labels"))
+        mutate(!!sym(y_var) := haven::as_factor(!!sym(y_var), levels = "labels"))
     }
     if (!is.null(group_var) && inherits(plot_data[[group_var]], "haven_labelled")) {
       plot_data <- plot_data %>%
@@ -193,19 +193,19 @@ create_timeline_fixed <- function(data, time_var, response_var, group_var = NULL
   # Apply response level ordering if specified
   if (!is.null(response_levels)) {
     plot_data <- plot_data %>%
-      mutate(!!sym(response_var) := factor(!!sym(response_var), levels = response_levels))
+      mutate(!!sym(y_var) := factor(!!sym(y_var), levels = response_levels))
   }
 
   # Aggregate data
   if (is.null(group_var)) {
     agg_data <- plot_data %>%
-      count(!!sym(time_var), !!sym(response_var), name = "count") %>%
+      count(!!sym(time_var), !!sym(y_var), name = "count") %>%
       group_by(!!sym(time_var)) %>%
       mutate(percentage = round(count / sum(count) * 100, 1)) %>%
       ungroup()
   } else {
     agg_data <- plot_data %>%
-      count(!!sym(time_var), !!sym(response_var), !!sym(group_var), name = "count") %>%
+      count(!!sym(time_var), !!sym(y_var), !!sym(group_var), name = "count") %>%
       group_by(!!sym(time_var), !!sym(group_var)) %>%
       mutate(percentage = round(count / sum(count) * 100, 1)) %>%
       ungroup()
@@ -225,10 +225,10 @@ create_timeline_fixed <- function(data, time_var, response_var, group_var = NULL
 
     if (is.null(group_var)) {
       # Simple stacked area
-      response_levels_to_use <- if (!is.null(response_levels)) response_levels else unique(agg_data[[response_var]])
+      response_levels_to_use <- if (!is.null(response_levels)) response_levels else unique(agg_data[[y_var]])
       for(level in response_levels_to_use) {
         series_data <- agg_data %>%
-          filter(!!sym(response_var) == level) %>%
+          filter(!!sym(y_var) == level) %>%
           arrange(!!sym(time_var)) %>%
           select(x = !!sym(time_var), y = percentage)
 
@@ -246,10 +246,10 @@ create_timeline_fixed <- function(data, time_var, response_var, group_var = NULL
 
     if (is.null(group_var)) {
       # Simple line chart by response
-      response_levels_to_use <- if (!is.null(response_levels)) response_levels else unique(agg_data[[response_var]])
+      response_levels_to_use <- if (!is.null(response_levels)) response_levels else unique(agg_data[[y_var]])
       for(level in response_levels_to_use) {
         series_data <- agg_data %>%
-          filter(!!sym(response_var) == level) %>%
+          filter(!!sym(y_var) == level) %>%
           arrange(!!sym(time_var)) %>%
           select(x = !!sym(time_var), y = percentage)
 
@@ -262,13 +262,13 @@ create_timeline_fixed <- function(data, time_var, response_var, group_var = NULL
       }
     } else {
       # Line chart with grouping - create series for each response-group combination
-      response_levels_to_use <- if (!is.null(response_levels)) response_levels else unique(agg_data[[response_var]])
+      response_levels_to_use <- if (!is.null(response_levels)) response_levels else unique(agg_data[[y_var]])
       group_levels <- unique(agg_data[[group_var]])
 
       for(resp_level in response_levels_to_use) {
         for(group_level in group_levels) {
           series_data <- agg_data %>%
-            filter(!!sym(response_var) == resp_level, !!sym(group_var) == group_level) %>%
+            filter(!!sym(y_var) == resp_level, !!sym(group_var) == group_level) %>%
             arrange(!!sym(time_var)) %>%
             select(x = !!sym(time_var), y = percentage)
 
@@ -289,10 +289,10 @@ create_timeline_fixed <- function(data, time_var, response_var, group_var = NULL
 }
 
 # Test the line chart with grouping
-plot2 <- create_timeline_fixed(
+plot2 <- viz_timeline_fixed(
   data = gss_all,
   time_var = "year",
-  response_var = "happy",
+  y_var = "happy",
   group_var = "sex",
   chart_type = "line",
   title = "Happiness Trends by Gender",
@@ -303,18 +303,18 @@ plot2
 # works
 
 # now let's add support for a diverging bar chart
-create_timeline_fixed <- function(data, time_var, response_var, group_var = NULL,
+viz_timeline_fixed <- function(data, time_var, y_var, group_var = NULL,
                                   chart_type = "stacked_area", title = NULL, y_max = NULL,
                                   response_levels = NULL, diverging_center = NULL,
                                   time_breaks = NULL, time_bin_labels = NULL) {
 
   # Basic data processing
-  vars_to_select <- c(time_var, response_var)
+  vars_to_select <- c(time_var, y_var)
   if (!is.null(group_var)) vars_to_select <- c(vars_to_select, group_var)
 
   plot_data <- data %>%
     select(all_of(vars_to_select)) %>%
-    filter(!is.na(!!sym(time_var)), !is.na(!!sym(response_var)))
+    filter(!is.na(!!sym(time_var)), !is.na(!!sym(y_var)))
 
   if (!is.null(group_var)) {
     plot_data <- plot_data %>% filter(!is.na(!!sym(group_var)))
@@ -326,9 +326,9 @@ create_timeline_fixed <- function(data, time_var, response_var, group_var = NULL
       plot_data <- plot_data %>%
         mutate(!!sym(time_var) := as.numeric(!!sym(time_var)))
     }
-    if (inherits(plot_data[[response_var]], "haven_labelled")) {
+    if (inherits(plot_data[[y_var]], "haven_labelled")) {
       plot_data <- plot_data %>%
-        mutate(!!sym(response_var) := haven::as_factor(!!sym(response_var), levels = "labels"))
+        mutate(!!sym(y_var) := haven::as_factor(!!sym(y_var), levels = "labels"))
     }
     if (!is.null(group_var) && inherits(plot_data[[group_var]], "haven_labelled")) {
       plot_data <- plot_data %>%
@@ -357,19 +357,19 @@ create_timeline_fixed <- function(data, time_var, response_var, group_var = NULL
   # Apply response level ordering if specified
   if (!is.null(response_levels)) {
     plot_data <- plot_data %>%
-      mutate(!!sym(response_var) := factor(!!sym(response_var), levels = response_levels))
+      mutate(!!sym(y_var) := factor(!!sym(y_var), levels = response_levels))
   }
 
   # Aggregate data
   if (is.null(group_var)) {
     agg_data <- plot_data %>%
-      count(!!sym(time_var_plot), !!sym(response_var), name = "count") %>%
+      count(!!sym(time_var_plot), !!sym(y_var), name = "count") %>%
       group_by(!!sym(time_var_plot)) %>%
       mutate(percentage = round(count / sum(count) * 100, 1)) %>%
       ungroup()
   } else {
     agg_data <- plot_data %>%
-      count(!!sym(time_var_plot), !!sym(response_var), !!sym(group_var), name = "count") %>%
+      count(!!sym(time_var_plot), !!sym(y_var), !!sym(group_var), name = "count") %>%
       group_by(!!sym(time_var_plot), !!sym(group_var)) %>%
       mutate(percentage = round(count / sum(count) * 100, 1)) %>%
       ungroup()
@@ -388,10 +388,10 @@ create_timeline_fixed <- function(data, time_var, response_var, group_var = NULL
       hc_plotOptions(area = list(stacking = "normal"))
 
     if (is.null(group_var)) {
-      response_levels_to_use <- if (!is.null(response_levels)) response_levels else unique(agg_data[[response_var]])
+      response_levels_to_use <- if (!is.null(response_levels)) response_levels else unique(agg_data[[y_var]])
       for(level in response_levels_to_use) {
         series_data <- agg_data %>%
-          filter(!!sym(response_var) == level) %>%
+          filter(!!sym(y_var) == level) %>%
           arrange(!!sym(time_var_plot)) %>%
           select(x = !!sym(time_var_plot), y = percentage)
 
@@ -408,10 +408,10 @@ create_timeline_fixed <- function(data, time_var, response_var, group_var = NULL
     hc <- hc %>% hc_chart(type = "line")
 
     if (is.null(group_var)) {
-      response_levels_to_use <- if (!is.null(response_levels)) response_levels else unique(agg_data[[response_var]])
+      response_levels_to_use <- if (!is.null(response_levels)) response_levels else unique(agg_data[[y_var]])
       for(level in response_levels_to_use) {
         series_data <- agg_data %>%
-          filter(!!sym(response_var) == level) %>%
+          filter(!!sym(y_var) == level) %>%
           arrange(!!sym(time_var_plot)) %>%
           select(x = !!sym(time_var_plot), y = percentage)
 
@@ -423,13 +423,13 @@ create_timeline_fixed <- function(data, time_var, response_var, group_var = NULL
           )
       }
     } else {
-      response_levels_to_use <- if (!is.null(response_levels)) response_levels else unique(agg_data[[response_var]])
+      response_levels_to_use <- if (!is.null(response_levels)) response_levels else unique(agg_data[[y_var]])
       group_levels <- unique(agg_data[[group_var]])
 
       for(resp_level in response_levels_to_use) {
         for(group_level in group_levels) {
           series_data <- agg_data %>%
-            filter(!!sym(response_var) == resp_level, !!sym(group_var) == group_level) %>%
+            filter(!!sym(y_var) == resp_level, !!sym(group_var) == group_level) %>%
             arrange(!!sym(time_var_plot)) %>%
             select(x = !!sym(time_var_plot), y = percentage)
 
@@ -452,7 +452,7 @@ create_timeline_fixed <- function(data, time_var, response_var, group_var = NULL
 
     # For diverging bars, we need to transform the data
     if (!is.null(diverging_center)) {
-      response_levels_to_use <- if (!is.null(response_levels)) response_levels else unique(agg_data[[response_var]])
+      response_levels_to_use <- if (!is.null(response_levels)) response_levels else unique(agg_data[[y_var]])
       center_index <- which(response_levels_to_use == diverging_center)
 
       if (length(center_index) > 0) {
@@ -463,7 +463,7 @@ create_timeline_fixed <- function(data, time_var, response_var, group_var = NULL
         # Add negative values (make them negative for diverging effect)
         for(level in negative_levels) {
           series_data <- agg_data %>%
-            filter(!!sym(response_var) == level) %>%
+            filter(!!sym(y_var) == level) %>%
             arrange(!!sym(time_var_plot)) %>%
             mutate(y = -percentage) %>%  # Make negative
             select(x = !!sym(time_var_plot), y)
@@ -479,7 +479,7 @@ create_timeline_fixed <- function(data, time_var, response_var, group_var = NULL
         # Add positive values
         for(level in positive_levels) {
           series_data <- agg_data %>%
-            filter(!!sym(response_var) == level) %>%
+            filter(!!sym(y_var) == level) %>%
             arrange(!!sym(time_var_plot)) %>%
             select(x = !!sym(time_var_plot), y = percentage)
 
@@ -503,10 +503,10 @@ create_timeline_fixed <- function(data, time_var, response_var, group_var = NULL
 }
 
 # Test the diverging bar chart
-plot3 <- create_timeline_fixed(
+plot3 <- viz_timeline_fixed(
   data = gss_all,
   time_var = "year",
-  response_var = "polviews",
+  y_var = "polviews",
   chart_type = "diverging_bar",
   title = "Political Views Over Time",
   diverging_center = "moderate, middle of the road",

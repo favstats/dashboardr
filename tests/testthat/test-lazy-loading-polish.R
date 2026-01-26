@@ -94,8 +94,8 @@ test_that("charts render even without JavaScript (R chunks preserved)", {
   expect_true(any(grepl("```\\{r", qmd_file)),
               info = "R chunks should be preserved for no-JS fallback")
   
-  # Chart creation code should be present
-  expect_true(any(grepl("create_", qmd_file)),
+  # Chart creation code should be present (viz_* functions)
+  expect_true(any(grepl("viz_", qmd_file)),
               info = "Chart creation code should be present")
   
   # Cleanup

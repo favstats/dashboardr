@@ -1,0 +1,1707 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>dashboardr Workshop - Day 2</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="    Fabio Votta     favstats     @favstats     www.favstats.eu   favstats.github.io/dashboardr   2026-01-26" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link href="libs/remark-css/default.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@iconify/iconify@2.2.1/dist/iconify.min.css">
+    <script src="https://code.iconify.design/2/2.2.1/iconify.min.js"></script>
+    <link rel="stylesheet" href="custom.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# dashboardr Workshop - Day 2
+]
+.subtitle[
+## Advanced Features &amp; Publishing
+]
+.author[
+### <br><br><br><br>Fabio Votta <br><br> <a href="http://github.com/favstats"><i class="fa fa-github fa-fw"></i> favstats</a> <br> <a href="https://twitter.com/favstats"> <i class="fa fa-twitter fa-fw"></i> <span class="citation">@favstats</span></a> <br> <a href="http://www.favstats.eu/"><i class="fa fa-address-card"></i>  www.favstats.eu</a><br> <a href="https://favstats.github.io/dashboardr/"><i class="fa fa-paper-plane fa-fw"></i> favstats.github.io/dashboardr</a> <br><br>2026-01-26
+]
+
+---
+
+
+&lt;style&gt;
+.onehundredtwenty {
+  font-size: 120%;
+}
+
+.ninety {
+  font-size: 90%;
+}
+
+.eightyfive {
+  font-size: 85%;
+}
+   
+.eighty {
+  font-size: 80%;
+}
+   
+.seventyfive {
+  font-size: 75%;
+}
+   
+.seventy {
+  font-size: 70%;
+}
+   
+.sixty {
+  font-size: 60%;
+}
+
+.fivty {
+  font-size: 50%;
+}
+
+.remark-code {
+  font-size: 80%;
+}
+
+.pull-left code, .pull-right code {
+  font-size: 75%;
+}
+
+.small-code .remark-code {
+  font-size: 70%;
+}
+
+.tiny-code .remark-code {
+  font-size: 60%;
+}
+
+.inverse {
+  background-color: #272822;
+  color: #f3f3f3;
+}
+
+.tip-box {
+  background-color: #e8f4e8;
+  border-left: 4px solid #27ae60;
+  padding: 10px 15px;
+  margin: 10px 0;
+  border-radius: 4px;
+}
+
+.warning-box {
+  background-color: #fef3e2;
+  border-left: 4px solid #f39c12;
+  padding: 10px 15px;
+  margin: 10px 0;
+  border-radius: 4px;
+}
+
+.key-point {
+  background-color: #e8f0fe;
+  border-left: 4px solid #3498db;
+  padding: 10px 15px;
+  margin: 10px 0;
+  border-radius: 4px;
+}
+&lt;/style&gt;
+
+
+
+## Welcome Back! 
+
+&lt;img src="https://media.giphy.com/media/xT9IgG50Fb7Mi0prBC/giphy.gif" alt="" width="60%" style="display: block; margin: auto;" /&gt;
+
+--
+
+### Day 2: Taking Your Dashboards to the Next Level!
+
++ Advanced visualization techniques
++ The powerful content system
++ Interactive inputs &amp; filtering
++ Theming like a pro
++ Publishing to the world
+
+---
+
+## Quick Recap: Day 1
+
+.pull-left[
+### The Core Pattern
+
+
+``` r
+# 1. Create visualizations
+viz &lt;- create_viz(type = "histogram") %&gt;%
+  add_viz(x_var = "age", tabgroup = "demo")
+
+# 2. Build dashboard
+dashboard &lt;- create_dashboard(
+  title = "My Dashboard",
+  output_dir = "output"
+) %&gt;%
+  add_page("Analysis", 
+           data = my_data, 
+           visualizations = viz)
+
+# 3. Generate!
+generate_dashboard(dashboard, 
+                   render = TRUE)
+```
+]
+
+.pull-right[
+### Key Concepts
+
+✅ `create_viz()` sets defaults
+
+✅ `add_viz()` adds individual charts
+
+✅ `tabgroup` organizes into tabs
+
+✅ `filter = ~ condition` subsets data
+
+✅ `+` operator combines collections
+
+✅ `print()` is your best friend!
+]
+
+---
+
+class: center, middle, inverse
+
+## Part 1: Advanced Visualization Techniques
+
+![](https://media.giphy.com/media/3o7btPCcdNniyf0ArS/giphy.gif)
+
+---
+
+## All 9 Visualization Types
+
+.pull-left[
+| Type | Best For |
+|------|----------|
+| `histogram` | Distributions |
+| `bar` | Categories |
+| `stackedbar` | Single composition |
+| `stackedbars` | Multiple Likert |
+| `timeline` | Trends over time |
+]
+
+.pull-right[
+| Type | Best For |
+|------|----------|
+| `heatmap` | 2D patterns |
+| `treemap` | Hierarchies |
+| `scatter` | Relationships |
+| `map` | Geographic data |
+]
+
+--
+
+&lt;br&gt;
+
+.center[
+.key-point[
+**Pro tip:** Use `create_*()` functions to preview charts before adding to dashboards!
+]
+]
+
+---
+
+## Timeline: The Swiss Army Knife
+
+.pull-left[
+
+### Basic Line Chart
+
+``` r
+create_timeline(
+  data = survey_data,
+  time_var = "year",
+  y_var = "satisfaction",
+  chart_type = "line",
+  title = "Satisfaction Over Time"
+)
+```
+
+### With Groups
+
+``` r
+create_timeline(
+  data = survey_data,
+  time_var = "year",
+  y_var = "satisfaction",
+*  group_var = "department",
+  chart_type = "line"
+)
+```
+]
+
+.pull-right[
+### Stacked Area
+
+``` r
+create_timeline(
+  data = survey_data,
+  time_var = "year",
+  y_var = "rating",
+*  chart_type = "stacked_area",
+  y_levels = c("Low", "Medium", "High")
+)
+```
+
+.tip-box[
+Use `y_levels` to control the stacking order!
+]
+]
+
+---
+
+## Timeline: Response Filtering (New!)
+
+### Show only specific response values
+
+
+``` r
+create_timeline(
+  data = survey_data,
+  time_var = "year",
+  y_var = "satisfaction",  # 1-5 scale
+  group_var = "age_group",
+  chart_type = "line",
+  
+  # Filter to "top box" responses
+* y_filter = 4:5,
+* y_filter_combine = TRUE,
+* y_filter_label = "High Satisfaction (4-5)"
+)
+```
+
+--
+
+.key-point[
+**Key insight:** Percentages are calculated from *all* responses, not just filtered ones.
+This shows the *true proportion* of highly satisfied respondents!
+]
+
+---
+
+## Timeline: Binning Options
+
+.pull-left[
+### Response Binning
+
+Collapse numeric responses into categories:
+
+
+``` r
+add_viz(
+  type = "timeline",
+  time_var = "year",
+  y_var = "score",  # 1-7 scale
+  
+* y_breaks = c(0.5, 3.5, 5.5, 7.5),
+* y_bin_labels = c("Low", "Medium", "High")
+)
+```
+
+]
+
+.pull-right[
+### Time Binning
+
+Group years into decades:
+
+
+``` r
+add_viz(
+  type = "timeline",
+  time_var = "year",
+  y_var = "satisfaction",
+  
+* time_breaks = c(1970, 1980, 1990, 
+*               2000, 2010, 2020),
+* time_bin_labels = c("1970s", "1980s",
+*                    "1990s", "2000s", 
+*                    "2010s")
+)
+```
+]
+
+---
+
+## Vectorized Creation with `add_vizzes()`
+
+### Create many visualizations at once!
+
+
+``` r
+viz &lt;- create_viz(type = "bar", horizontal = TRUE, bar_type = "percent") %&gt;%
+* add_vizzes(
+*   x_var = c("q1_trust", "q2_value", "q3_recommend"),
+*   title = c("Trust in Company", "Feeling Valued", "Would Recommend"),
+*   .tabgroup_template = "questions/{title}"
+* )
+```
+
+--
+
+### Any parameter can be vectorized!
+
+
+``` r
+add_vizzes(
+  x_var = c("age", "income", "score"),
+  title = c("Age Distribution", "Income Distribution", "Score Distribution"),
+{{ bins = c(20, 30, 25),}}  # Different bins for each
+* color_palette = list(c("#3498DB"), c("#E74C3C"), c("#27AE60"))
+)
+```
+
+.warning-box[
+Use `list()` for parameters that are themselves vectors (like `color_palette`).
+]
+
+---
+
+## Map Visualization
+
+
+``` r
+create_map(
+  data = country_data,
+{{ location_var = "country",}}     # Country names or ISO codes
+{{ value_var = "satisfaction",}}   # Numeric value to display
+  title = "Satisfaction by Country",
+  map_type = "world",            # "world", "usa", "europe", etc.
+  color_palette = c("#f7fbff", "#08306b")  # Low to high gradient
+)
+```
+
+--
+
+.pull-left[
+### Map Types Available
+- `"world"` - Global map
+- `"usa"` - US states
+- `"europe"` - European countries
+- Custom GeoJSON supported!
+]
+
+.pull-right[
+.tip-box[
+Maps work best with:
+- Country/state names
+- ISO country codes (US, DE, FR)
+- Consistent naming in your data
+]
+]
+
+---
+
+class: center, middle, inverse
+
+## Part 2: The Content System
+
+### Mix visualizations with rich content!
+
+![](https://media.giphy.com/media/l0IylOPCNkiqOgMyA/giphy.gif)
+
+---
+
+## Content Types Overview
+
+.pull-left[
+### Visualizations
+- `add_viz()` - Charts
+
+### Text &amp; Structure
+- `add_text()` - Markdown
+- `add_callout()` - Highlighted boxes
+- `add_accordion()` - Collapsible sections
+- `add_card()` - Card containers
+- `add_spacer()` / `add_divider()`
+]
+
+.pull-right[
+### Metrics &amp; Data
+- `add_value_box()` - KPI metrics
+- `add_table()` / `add_gt()` / `add_DT()`
+- `add_metric()` - Inline metrics
+
+### Media
+- `add_image()` - Images
+- `add_video()` - Videos
+- `add_iframe()` - Embedded content
+- `add_code()` - Code blocks
+]
+
+---
+
+## Creating Rich Content
+
+
+``` r
+content &lt;- create_content() %&gt;%
+  add_text("# Survey Results", "",
+           "This section presents our **key findings**.") %&gt;%
+  
+  add_callout(
+    text = "Data collected from 500 respondents.",
+    type = "note",
+    title = "Sample Information"
+  ) %&gt;%
+  
+  add_viz(
+    type = "histogram",
+    x_var = "age",
+    title = "Age Distribution"
+  ) %&gt;%
+  
+  add_accordion(
+    title = "Methodology",
+    text = md_text("- Survey conducted online",
+                   "- Random sampling method"),
+    open = FALSE
+  )
+```
+
+---
+
+## Value Boxes: Show Key Metrics
+
+
+``` r
+content &lt;- create_content() %&gt;%
+  add_text("# Dashboard Overview") %&gt;%
+  
+* add_value_box_row() %&gt;%
+    add_value_box(
+      title = "Total Responses",
+      value = "1,234",
+      logo_text = "📊",
+      bg_color = "#3498DB"
+    ) %&gt;%
+    add_value_box(
+      title = "Avg Satisfaction",
+      value = "4.2 / 5",
+      logo_text = "⭐",
+      bg_color = "#27AE60"
+    ) %&gt;%
+    add_value_box(
+      title = "Response Rate",
+      value = "85%",
+      logo_text = "📈",
+      bg_color = "#9B59B6"
+    ) %&gt;%
+* end_value_box_row()
+```
+
+---
+
+## Callout Types
+
+.pull-left[
+
+``` r
+add_callout(
+  text = "General information",
+{{ type = "note"}}  # Blue
+)
+
+add_callout(
+  text = "Helpful suggestion",
+{{ type = "tip"}}   # Green
+)
+
+add_callout(
+  text = "Be careful!",
+{{ type = "warning"}}  # Orange
+)
+```
+]
+
+.pull-right[
+
+``` r
+add_callout(
+  text = "Critical point",
+{{ type = "important"}}  # Purple
+)
+
+add_callout(
+  text = "Danger zone!",
+{{ type = "caution"}}  # Red
+)
+```
+
+.tip-box[
+Callouts are great for methodology notes, data caveats, and key insights!
+]
+]
+
+---
+
+## Combining Visualizations + Content
+
+### The `+` operator preserves order!
+
+
+``` r
+# Create intro content
+intro &lt;- create_content() %&gt;%
+  add_text("# Analysis Results") %&gt;%
+  add_callout("Sample: n = 1,000", type = "note")
+
+# Create visualizations
+charts &lt;- create_viz(type = "histogram") %&gt;%
+  add_viz(x_var = "age", tabgroup = "demographics") %&gt;%
+  add_viz(x_var = "income", tabgroup = "demographics")
+
+# Combine them!
+* combined &lt;- intro + charts
+
+# Use in dashboard
+dashboard %&gt;%
+  add_page("Analysis", data = my_data, 
+           visualizations = combined)
+```
+
+---
+
+class: center, middle, inverse
+
+## Part 3: Interactive Inputs
+
+### Let users filter your visualizations!
+
+![](https://media.giphy.com/media/3o7btNhMBytxAM6YBa/giphy.gif)
+
+---
+
+## Input Types Available
+
+| Type | Description | Best For |
+|------|-------------|----------|
+| `select_multiple` | Multi-select dropdown | Categories with many options |
+| `select_single` | Single dropdown | Choose one from many |
+| `checkbox` | Checkbox group | Toggle multiple options |
+| `radio` | Radio buttons | Mutually exclusive choices |
+| `switch` | Toggle switch | On/off controls |
+| `slider` | Range slider | Numeric ranges |
+| `button_group` | Segmented buttons | Few clear options |
+| `text` | Text input | Search/filter by text |
+
+---
+
+## Adding Interactive Filters
+
+
+``` r
+content &lt;- create_content() %&gt;%
+  add_text("## Regional Analysis") %&gt;%
+  
+* add_input_row(style = "boxed") %&gt;%
+    add_input(
+      input_id = "region_filter",
+      label = "Select Regions",
+      type = "select_multiple",
+*     filter_var = "region",
+      options = c("North", "South", "East", "West"),
+      default_selected = c("North", "South", "East", "West")
+    ) %&gt;%
+* end_input_row() %&gt;%
+  
+  add_viz(
+    type = "timeline",
+    time_var = "year",
+    y_var = "value",
+{{   group_var = "region"}}  # Must match filter_var!
+  )
+```
+
+---
+
+## Input Row Styling
+
+.pull-left[
+### Boxed Style (with background)
+
+``` r
+add_input_row(
+* style = "boxed",
+  align = "center"
+) %&gt;%
+  add_input(...) %&gt;%
+  add_input(...) %&gt;%
+end_input_row()
+```
+
+Best for: prominent filter sections
+]
+
+.pull-right[
+### Inline Style (compact)
+
+``` r
+add_input_row(
+* style = "inline",
+  align = "left"
+) %&gt;%
+  add_input(...) %&gt;%
+end_input_row()
+```
+
+Best for: subtle, space-saving filters
+]
+
+---
+
+## Switch: Toggle Series Visibility
+
+
+``` r
+add_input(
+  input_id = "show_average",
+  label = "Show Average Line",
+* type = "switch",
+  filter_var = "group",
+{{ toggle_series = "Average",}}  # Series name to toggle
+{{ override = TRUE,}}            # Keep visible when toggled ON
+  value = TRUE                 # Start in ON state
+)
+```
+
+--
+
+.key-point[
+Use `override = TRUE` to keep a benchmark/average line always visible when the switch is ON, regardless of other filters.
+]
+
+---
+
+## Slider with Custom Labels
+
+
+``` r
+add_input(
+  input_id = "decade_slider",
+  label = "Select Decade",
+* type = "slider",
+  filter_var = "decade_num",
+  min = 1, 
+  max = 6, 
+  step = 1, 
+  value = 1,
+* labels = c("1970s", "1980s", "1990s", "2000s", "2010s", "2020s")
+)
+```
+
+--
+
+.tip-box[
+Sliders are perfect for time series navigation and numeric range filtering!
+]
+
+---
+
+## Grouped Options in Dropdowns
+
+
+``` r
+add_input(
+  input_id = "country_filter",
+  type = "select_multiple",
+  filter_var = "country",
+* options = list(
+*   "Europe" = c("Germany", "France", "UK", "Spain"),
+*   "Asia" = c("China", "Japan", "Korea", "India"),
+*   "Americas" = c("USA", "Canada", "Brazil", "Mexico")
+* )
+)
+```
+
+--
+
+This creates a dropdown with grouped options - much easier to navigate when you have many choices!
+
+---
+
+class: center, middle, inverse
+
+## Part 4: Theming &amp; Styling
+
+### Make your dashboard beautiful!
+
+![](https://media.giphy.com/media/l46CyJmS9KUbokzsI/giphy.gif)
+
+---
+
+## Two Levels of Theming
+
+.pull-left[
+### 1. Bootswatch Themes
+Overall look and feel
+
+
+``` r
+create_dashboard(
+  ...,
+* theme = "flatly"
+)
+```
+
+Options: `cosmo`, `flatly`, `journal`, `darkly`, `minty`, `yeti`, `united`, `slate`, `cyborg`, `vapor`, and more!
+
+Browse: https://bootswatch.com/
+]
+
+.pull-right[
+### 2. Tabset Themes
+Tab styling
+
+
+``` r
+create_dashboard(
+  ...,
+* tabset_theme = "modern"
+)
+```
+
+Options:
+- `modern` - Clean with shadows
+- `minimal` - Simple (default)
+- `pills` - Rounded buttons
+- `classic` - Traditional tabs
+- `underline` - Bottom border
+- `segmented` - iOS-style
+]
+
+---
+
+## Built-in Theme Functions
+
+
+``` r
+dashboard %&gt;%
+* apply_theme(theme_modern())
+```
+
+| Function | Style |
+|----------|-------|
+| `theme_modern()` | Tech/startup feel |
+| `theme_academic()` | Research/scholarly |
+| `theme_clean()` | Minimal, professional |
+| `theme_ascor()` | UvA ASCoR branding |
+
+--
+
+### With Color Variants
+
+
+``` r
+apply_theme(theme_modern("purple"))  # Purple accent
+apply_theme(theme_modern("green"))   # Green accent
+apply_theme(theme_academic(accent_color = "#8B0000"))  # Custom
+```
+
+---
+
+## Deep Customization
+
+
+``` r
+dashboard %&gt;%
+  apply_theme(
+    theme_modern("purple"),
+    
+    # Typography
+*   mainfont = "Inter",
+*   fontsize = "18px",
+*   fontcolor = "#1f2937",
+*   linkcolor = "#2563eb",
+    
+    # Code styling
+*   monofont = "Fira Code",
+*   monobackgroundcolor = "#f8fafc",
+    
+    # Layout
+*   navbar_bg_color = "#1e40af",
+*   navbar_text_color = "#ffffff",
+*   max_width = "1400px",
+    
+    # Spacing
+    margin_left = "2rem",
+    margin_right = "2rem"
+  )
+```
+
+---
+
+## Custom Tab Colors
+
+
+``` r
+create_dashboard(
+  ...,
+  tabset_theme = "modern",
+* tabset_colors = list(
+*   active_bg = "#3498DB",
+*   active_text = "#FFFFFF",
+*   inactive_bg = "#ECF0F1",
+*   inactive_text = "#7F8C8D",
+*   hover_bg = "#BDC3C7"
+* )
+)
+```
+
+--
+
+.tip-box[
+Match your tabset colors to your organization's brand colors for a cohesive look!
+]
+
+---
+
+## Icons Everywhere!
+
+### Format: `"set:icon-name"`
+
+.pull-left[
+**Phosphor (`ph:`)** - Recommended!
+- `ph:house-fill` - Home
+- `ph:chart-bar-fill` - Bar chart
+- `ph:users-fill` - Users
+- `ph:heart-fill` - Heart
+- `ph:gear-fill` - Settings
+- `ph:sparkle-fill` - Sparkle
+]
+
+.pull-right[
+**Bootstrap (`bi:`)**
+- `bi:graph-up` - Graph
+- `bi:people-fill` - People
+
+**Font Awesome (`fa:`)**
+- `fa:chart-bar` - Chart
+- `fa:users` - Users
+]
+
+--
+
+### Browse 200,000+ icons: https://icon-sets.iconify.design/
+
+---
+
+## Using Icons
+
+
+``` r
+# In pages
+add_page("Home", icon = "ph:house-fill")
+
+# In text
+md_text("## Features {{&lt; iconify ph:sparkle-fill &gt;}}")
+
+# In tab labels
+set_tabgroup_labels(list(
+* demographics = "{{&lt; iconify ph:users-fill &gt;}} Demographics",
+* feedback = "{{&lt; iconify ph:heart-fill &gt;}} Feedback"
+))
+```
+
+---
+
+class: center, middle, inverse
+
+## Part 5: Publishing Your Dashboard
+
+### Share your work with the world!
+
+![](https://media.giphy.com/media/Is1O1TWV0LEJi/giphy.gif)
+
+---
+
+## The Publishing Workflow
+
+### Step 1: Generate
+
+
+``` r
+generate_dashboard(dashboard, render = TRUE)
+```
+
+### Step 2: Publish (First Time)
+
+
+``` r
+publish_dashboard(message = "Initial commit")
+```
+
+### Step 3: Update (Subsequent Changes)
+
+
+``` r
+# Make changes, then:
+generate_dashboard(dashboard, render = TRUE)
+update_dashboard(message = "Added new charts")
+```
+
+--
+
+.key-point[
+Your dashboard will be available at:
+`https://USERNAME.github.io/REPO-NAME/`
+]
+
+---
+
+## One-Time Git Setup
+
+
+``` r
+# 1. Install packages
+install.packages(c("usethis", "gert", "gitcreds"))
+
+# 2. Configure Git
+usethis::use_git_config(
+  user.name = "Your Name",
+  user.email = "you@example.com"
+)
+
+# 3. Create GitHub token
+usethis::create_github_token()
+# Copy the token!
+
+# 4. Store token
+gitcreds::gitcreds_set()
+# Paste when prompted
+```
+
+--
+
+.tip-box[
+This only needs to be done **once** per computer!
+]
+
+---
+
+## Page Performance Options
+
+### For pages with many visualizations:
+
+
+``` r
+add_page(
+  name = "Heavy Analysis",
+  data = large_data,
+  visualizations = complex_viz,
+  
+  # Loading animation
+* overlay = TRUE,
+* overlay_theme = "glass",
+* overlay_duration = 1.5,
+  
+  # Lazy loading (renders on scroll)
+* lazy_load_charts = TRUE,
+* lazy_load_tabs = TRUE
+)
+```
+
+--
+
+.key-point[
+Lazy loading can dramatically improve initial page load time for dashboards with 20+ charts!
+]
+
+---
+
+## Pagination: Break Long Pages
+
+
+``` r
+combined &lt;- demographics_viz %&gt;%
+  combine_viz(satisfaction_viz) %&gt;%
+{{ add_pagination() %&gt;%}}        # Page break here!
+  combine_viz(trends_viz) %&gt;%
+{{ add_pagination() %&gt;%}}        # Another break!
+  combine_viz(summary_viz)
+```
+
+--
+
+Users will see navigation like:
+
+```
+◀ Previous    1 of 3    Next ▶
+```
+
+--
+
+.tip-box[
+Use pagination when you have logical sections that users should view sequentially.
+]
+
+---
+
+## Multi-Dataset Pages
+
+### Use multiple datasets on one page
+
+
+``` r
+dashboard %&gt;%
+  add_page(
+    name = "Multi Analysis",
+*   data = list(
+*     sales = sales_data,
+*     customers = customer_data,
+*     products = product_data
+*   ),
+    visualizations = viz
+  )
+```
+
+### Reference in viz:
+
+
+``` r
+add_viz(
+  x_var = "revenue", 
+* data_name = "sales"
+)
+```
+
+---
+
+class: center, middle, inverse
+
+## Part 6: Best Practices &amp; Debugging
+
+### Avoid common pitfalls!
+
+![](https://media.giphy.com/media/3o6Mbfs1f28MIrfAY0/giphy.gif)
+
+---
+
+## Tip #1: Always `print()`!
+
+
+``` r
+viz &lt;- create_viz(type = "histogram") %&gt;%
+  add_viz(x_var = "age", tabgroup = "demo") %&gt;%
+  add_viz(x_var = "income", tabgroup = "demo")
+
+* print(viz)
+```
+
+```
+╔══════════════════════════════════════════════════
+║ 📊 VISUALIZATION COLLECTION
+╠══════════════════════════════════════════════════
+║ Total visualizations: 2
+║
+║ STRUCTURE:
+║ └─ 📁 demo
+║    ├─ 📉 HISTOGRAM: age
+║    └─ 📉 HISTOGRAM: income
+╚══════════════════════════════════════════════════
+```
+
+--
+
+.key-point[
+`print()` is your **debugging superpower**! Use it after every major step.
+]
+
+---
+
+## Tip #2: Smart Defaults (DRY Principle)
+
+.pull-left[
+### ❌ Don't Repeat Yourself
+
+
+``` r
+viz &lt;- create_viz() %&gt;%
+  add_viz(
+    x_var = "q1",
+    color_palette = c("#3498DB"),
+    bins = 20
+  ) %&gt;%
+  add_viz(
+    x_var = "q2",
+    color_palette = c("#3498DB"),
+    bins = 20
+  )
+```
+]
+
+.pull-right[
+### ✅ Set Defaults Once
+
+
+``` r
+viz &lt;- create_viz(
+* color_palette = c("#3498DB"),
+* bins = 20
+) %&gt;%
+  add_viz(x_var = "q1") %&gt;%
+  add_viz(x_var = "q2")
+```
+]
+
+---
+
+## Tip #3: Preview Before Building
+
+
+``` r
+# Test chart appearance BEFORE adding to dashboard
+* create_histogram(
+*   data = my_data,
+*   x_var = "age",
+*   bins = 15,
+*   color_palette = c("#3498DB")
+* )
+```
+
+--
+
+Same parameters work in both:
+- `create_histogram()` (preview)
+- `add_viz(type = "histogram")` (dashboard)
+
+---
+
+## Tip #4: Test Without Rendering
+
+
+``` r
+# Fast iteration - files only, no HTML
+generate_dashboard(dashboard, render = FALSE)
+
+# Check the .qmd files look right, then:
+generate_dashboard(dashboard, render = TRUE)
+```
+
+--
+
+.warning-box[
+Rendering can take 30+ seconds for large dashboards. 
+Only render when you're ready to see the final result!
+]
+
+---
+
+## Common Mistakes &amp; Fixes
+
+| Problem | Fix |
+|---------|-----|
+| Variable not found | Check `names(data)` |
+| Filter not working | Use `~ condition` (with tilde!) |
+| Wrong bin label count | `length(labels) = length(breaks) - 1` |
+| Tabs in wrong order | Reorder `add_viz()` calls |
+| Input not filtering | `filter_var` must match `group_var` |
+| Chart not showing | Check `data_name` for multi-dataset pages |
+
+---
+
+## Filter Syntax
+
+.warning-box[
+Always use `~` before the condition! This is formula syntax.
+]
+
+.pull-left[
+### ❌ Wrong
+
+``` r
+filter = wave == 1
+# Missing ~
+```
+]
+
+.pull-right[
+### ✅ Correct
+
+``` r
+filter = ~ wave == 1
+```
+]
+
+--
+
+### More Examples:
+
+
+``` r
+# Single condition
+filter = ~ department == "Sales"
+filter = ~ age &gt; 30
+
+# Multiple conditions (AND)
+filter = ~ department == "Sales" &amp; age &gt; 30
+
+# Multiple values (OR with %in%)
+filter = ~ department %in% c("Sales", "Marketing")
+```
+
+---
+
+## Debugging Data Issues
+
+
+``` r
+# Check what columns exist
+names(my_data)
+
+# Check for NA values
+summary(my_data$age)
+table(is.na(my_data$age))
+
+# Check data types
+class(my_data$satisfaction)
+
+# See unique values
+unique(my_data$department)
+```
+
+--
+
+.tip-box[
+Run these checks BEFORE building your dashboard to avoid surprises!
+]
+
+---
+
+## Handling Missing Data
+
+
+``` r
+# Option 1: Drop NAs automatically
+viz &lt;- create_viz(
+  type = "histogram",
+* drop_na_vars = TRUE
+)
+
+# Option 2: Include NA as a category
+add_viz(
+  x_var = "education",
+* include_na = TRUE,
+* na_label = "Not Reported"
+)
+```
+
+---
+
+class: center, middle, inverse
+
+## Putting It All Together
+
+### A Complete Example
+
+---
+
+## Complete Dashboard Example
+
+.small-code[
+
+``` r
+library(dashboardr)
+library(dplyr)
+
+# Sample data
+survey &lt;- data.frame(
+  age = sample(18:80, 500, TRUE),
+  department = sample(c("Sales", "Engineering", "Marketing"), 500, TRUE),
+  satisfaction = sample(1:5, 500, TRUE),
+  year = sample(2020:2024, 500, TRUE)
+)
+
+# Create visualizations
+viz &lt;- create_viz(type = "histogram", color_palette = c("#3498DB"), bins = 15) %&gt;%
+  add_viz(x_var = "age", tabgroup = "demo", title = "Age Distribution") %&gt;%
+  add_viz(x_var = "satisfaction", tabgroup = "feedback", title = "Satisfaction") %&gt;%
+  set_tabgroup_labels(list(
+    demo = "{{&lt; iconify ph:users-fill &gt;}} Demographics",
+    feedback = "{{&lt; iconify ph:heart-fill &gt;}} Feedback"
+  ))
+```
+]
+
+---
+
+## Complete Dashboard Example (continued)
+
+.small-code[
+
+``` r
+# Build dashboard
+dashboard &lt;- create_dashboard(
+  title = "Survey Dashboard",
+  output_dir = "survey_dashboard"
+) %&gt;%
+  apply_theme(theme_modern()) %&gt;%
+  add_page(
+    "Home",
+    icon = "ph:house-fill",
+    is_landing_page = TRUE,
+    text = md_text(
+      "# Welcome! {{&lt; iconify ph:sparkle-fill &gt;}}",
+      "",
+      "This dashboard presents our **employee survey** results.",
+      "",
+      "- {{&lt; iconify ph:check-circle-fill &gt;}} 500 respondents",
+      "- {{&lt; iconify ph:check-circle-fill &gt;}} 3 departments"
+    )
+  ) %&gt;%
+  add_page("Analysis", data = survey, visualizations = viz, icon = "ph:chart-bar-fill")
+
+# Generate!
+generate_dashboard(dashboard, render = TRUE, open = "browser")
+```
+]
+
+---
+
+## Quick Reference Card
+
+.pull-left[
+### Core Functions
+```
+create_viz()        # Start collection
+add_viz()           # Add visualization
+add_vizzes()        # Add multiple at once
+create_dashboard()  # Start dashboard
+add_page()          # Add page
+generate_dashboard() # Build it!
+```
+
+### Content Functions
+```
+add_text()          # Markdown text
+add_callout()       # Highlighted box
+add_value_box()     # KPI metric
+add_accordion()     # Collapsible
+add_spacer()        # Vertical space
+```
+]
+
+.pull-right[
+### Input Functions
+```
+add_input_row()     # Start row
+add_input()         # Add control
+end_input_row()     # End row
+```
+
+### Key Parameters
+```
+tabgroup = "a/b"    # Nested tabs
+filter = ~ cond     # Data filter
+color_palette       # Colors
+drop_na_vars        # Remove NAs
+weight_var          # Survey weights
+```
+]
+
+---
+
+## Resources
+
+.pull-left[
+### Documentation
+- 📚 Package site: https://favstats.github.io/dashboardr/
+- 📖 Vignettes: `vignette(package = "dashboardr")`
+- ❓ Function help: `?create_dashboard`
+]
+
+.pull-right[
+### External Tools
+- 🎨 Icons: https://icon-sets.iconify.design/
+- 🖌️ Themes: https://bootswatch.com/
+- 🌈 Colors: https://colorbrewer2.org/
+]
+
+--
+
+&lt;br&gt;
+
+### Getting Help
+
+- 🐛 Report bugs: https://github.com/favstats/dashboardr/issues
+- 💬 Discussions: GitHub Discussions
+- 📧 Email: [Your email]
+
+---
+
+class: center, middle, inverse
+
+## Exercises Time!
+
+### Open `workshop/exercises.R` and try:
+
+1. **Exercise 8**: Apply themes and icons
+2. **Exercise 9**: Mixed content types
+3. **Exercise 11**: Interactive inputs
+4. **BONUS 1**: Timeline filtering with `y_filter`
+
+---
+
+class: center, middle, inverse
+
+## Thank You!
+
+### Now go build something amazing! 🚀
+
+&lt;br&gt;
+
+.fivty[
+Remember: `print()` is your friend!
+]
+
+&lt;br&gt;
+
+![](https://media.giphy.com/media/3oz8xIsloV7zOmt81G/giphy.gif)
+
+---
+
+## Appendix: All Timeline Parameters
+
+```
+time_var          # Time/date column (required)
+y_var             # Response variable (required)
+group_var         # Grouping variable
+chart_type        # "line" or "stacked_area"
+
+# Axis labels
+x_label           # X-axis label
+y_label           # Y-axis label
+y_min / y_max     # Axis limits
+
+# Response filtering
+y_filter          # Which values to show (e.g., 5:7)
+y_filter_combine  # Combine into single line? (TRUE/FALSE)
+y_filter_label    # Custom legend label
+
+# Response binning
+y_breaks          # Bin boundaries
+y_bin_labels      # Labels for bins
+y_levels          # Order of categories
+
+# Time binning
+time_breaks       # Time period boundaries
+time_bin_labels   # Labels for periods
+```
+
+---
+
+## Appendix: All Input Parameters
+
+```
+input_id        # Unique ID (required)
+label           # Display label
+type            # Input type (required)
+filter_var      # Column to filter (required)
+options         # Choices (for dropdowns, etc.)
+default_selected # Pre-selected value(s)
+placeholder     # Placeholder text
+width           # CSS width
+size            # sm, md, lg
+help            # Help text below input
+disabled        # TRUE/FALSE
+
+# For switches
+toggle_series   # Series name to show/hide
+override        # Keep visible when ON
+
+# For sliders
+min / max       # Range limits
+step            # Increment
+labels          # Custom tick labels
+```
+
+---
+
+## Appendix: Dashboard Creation Parameters
+
+.tiny-code[
+```
+# Basic
+title             # Dashboard title
+output_dir        # Output directory
+
+# Branding
+logo              # Logo file
+favicon           # Favicon file
+author            # Author name
+description       # SEO description
+
+# Social links
+github            # GitHub URL
+twitter           # Twitter URL
+linkedin          # LinkedIn URL
+email             # Email address
+
+# Features
+search            # Enable search (TRUE/FALSE)
+sidebar           # Enable sidebar (TRUE/FALSE)
+breadcrumbs       # Show breadcrumbs (TRUE/FALSE)
+back_to_top       # Back to top button (TRUE/FALSE)
+
+# Theming
+theme             # Bootswatch theme
+tabset_theme      # Tab style
+tabset_colors     # Custom tab colors
+
+# Typography
+mainfont          # Main font
+fontsize          # Base font size
+monofont          # Code font
+
+# Performance
+lazy_load_charts  # Lazy load visualizations
+lazy_load_tabs    # Lazy load tab content
+```
+]
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+  "highlightStyle": "github",
+  "highlightLines": true,
+  "countIncrementalSlides": false,
+  "slideNumberFormat": "%current%<br>",
+  "ratio": "16:9"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

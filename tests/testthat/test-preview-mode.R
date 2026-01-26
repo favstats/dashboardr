@@ -190,7 +190,7 @@ test_that("preview mode works with visualizations", {
   
   # Check that visualization code is in the generated QMD (landing page is index.qmd)
   qmd_content <- readLines(file.path(temp_dir, "index.qmd"))
-  expect_true(any(grepl("create_histogram", qmd_content)))
+  expect_true(any(grepl("viz_histogram", qmd_content)))
 })
 
 test_that("preview mode respects incremental builds", {

@@ -363,7 +363,7 @@ survey_data <- data.frame(
 #   )
 # 
 # # Preview (if you have data attached)
-# # create_histogram(
+# # viz_histogram(
 # #   data = survey_data,
 # #   x_var = "age",
 # #   bin_breaks = c(18, 30, 45, 60, 75, Inf),
@@ -669,7 +669,7 @@ input_data <- survey_data %>%
 #   add_viz(
 #     type = "timeline",
 #     time_var = "year",
-#     response_var = "value",
+#     y_var = "value",
 #     group_var = "region",
 #     chart_type = "line",
 #     title = "Trend Over Time"
@@ -856,6 +856,42 @@ timeline_data <- survey_data %>%
 # YOUR CODE HERE:
 
 
+# -- SOLUTION --
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+# viz <- create_viz(
+#   type = "timeline",
+#   time_var = "year",
+#   y_var = "satisfaction",
+#   chart_type = "line"
+# ) %>%
+#   add_viz(
+#     title = "High Satisfaction (4-5)",
+#     y_filter = 4:5,              # Filter to only responses 4 and 5
+#     y_filter_combine = TRUE,     # Combine into single line
+#     y_filter_label = "Highly Satisfied"  # Custom legend label
+#   )
+# 
+# # Preview directly
+# viz_timeline(
+#   data = timeline_data,
+#   time_var = "year",
+#   y_var = "satisfaction",
+#   chart_type = "line",
+#   title = "High Satisfaction Over Time",
+#   y_filter = 4:5,
+#   y_filter_combine = TRUE,
+#   y_filter_label = "Highly Satisfied (4-5)"
+# )
+
 # =============================================================================
 # BONUS 2: Grouped Bar Chart
 # =============================================================================
@@ -905,6 +941,12 @@ timeline_data <- survey_data %>%
 # 8. Content system allows mixing text, charts, callouts, etc.
 # 9. Interactive inputs can filter your visualizations
 # 10. Vectorized creation with add_vizzes() for efficiency
+# 11. Timeline filtering: y_filter, y_filter_combine, y_filter_label
+# 12. Response binning: y_breaks, y_bin_labels for timelines
+#
+# Available visualization types:
+# - histogram, bar, stackedbar, stackedbars
+# - timeline, heatmap, treemap, scatter, map
 #
 # Next steps:
 # - Explore vignettes: vignette(package = "dashboardr")

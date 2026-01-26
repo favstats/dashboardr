@@ -35,20 +35,19 @@ First, let’s load the packages and prepare our data:
 library(dashboardr)
 library(dplyr)
 library(gssr)
-#> Warning: package 'gssr' was built under R version 4.4.3
 
-# Load GSS data and select relevant variables
+# Load GSS data and select relevant variables (latest wave only)
 data(gss_all)
 gss <- gss_all %>%
   select(year, age, sex, race, degree, happy, polviews) %>%
-  filter(year >= 2010, !is.na(age), !is.na(sex), !is.na(race), !is.na(degree))
+  filter(year == max(year, na.rm = TRUE), !is.na(age), !is.na(sex), !is.na(race), !is.na(degree))
 ```
 
 We now have a dataset with about 22,000 respondents from 2010 onwards,
 with variables for demographics (age, sex, race, education) and
 attitudes (happiness, political views).
 
-## The Three Layers
+## Core Concepts
 
 Just as ggplot2 builds plots from layers (data, aesthetics, geoms),
 dashboardr builds dashboards from three layers:
@@ -57,6 +56,8 @@ dashboardr builds dashboards from three layers:
 into Page, and Pages flow into Dashboard.](workflow_example.png)
 
 dashboardr workflow: Content flows to Page flows to Dashboard
+
+  
 
 | Layer | Purpose | Key Functions |
 |----|----|----|
@@ -67,7 +68,9 @@ dashboardr workflow: Content flows to Page flows to Dashboard
 Each layer flows into the next using pipes (`%>%`), making your code
 readable and modular.
 
-## Layer 1: Content
+  
+
+### Layer 1: Content
 
 Content collections hold your visualizations and text. You create one
 with
@@ -80,7 +83,7 @@ demographics <- create_content(data = gss, type = "bar") %>%
 
 print(demographics)
 #> -- Content Collection ──────────────────────────────────────────────────────────
-#> 1 items | ✔ data: 21788 rows x 7 cols
+#> 1 items | ✔ data: 3139 rows x 7 cols
 #> 
 #> • [Viz] Education (bar) x=degree
 ```
@@ -112,26 +115,23 @@ charts into tabs:
 
 ``` r
 demographics <- create_content(data = gss, type = "bar") %>%
-  add_viz(x_var = "degree", title = "Education", tabgroup = "demographics") %>%
-  add_viz(x_var = "race", title = "Race", tabgroup = "demographics") %>%
-  add_viz(x_var = "happy", title = "Happiness", tabgroup = "attitudes")
+  add_viz(x_var = "degree", title = "Education", tabgroup = "Demographics") %>%
+  add_viz(x_var = "happy", title = "Happiness", tabgroup = "Attitudes")
 
 demographics %>% preview()
 ```
 
 Preview
 
-demographics
+Demographics
 
-attitudes
+Attitudes
 
 Education
 
-Race
-
 Happiness
 
-## Layer 2: Pages
+### Layer 2: Pages
 
 Pages organize content and define your dashboard’s navigation. Each page
 becomes a separate HTML file.
@@ -164,14 +164,13 @@ analysis <- create_page("Analysis", data = gss) %>%
 
 print(analysis)
 #> -- Page: Analysis ───────────────────────────────────────────────
-#> ✔ data: 21788 rows x 7 cols 
-#> 4 items
+#> ✔ data: 3139 rows x 7 cols 
+#> 3 items
 #> 
 #> ℹ [Text]
-#> ❯ [Tab] demographics (2 vizs)
+#> ❯ [Tab] Demographics (1 viz)
 #>   • [Viz] Education (bar) x=degree
-#>   • [Viz] Race (bar) x=race
-#> ❯ [Tab] attitudes (1 viz)
+#> ❯ [Tab] Attitudes (1 viz)
 #>   • [Viz] Happiness (bar) x=happy
 ```
 
@@ -191,13 +190,11 @@ Demographic Overview
 
 Explore how GSS respondents break down by key categories.
 
-demographics
+Demographics
 
-attitudes
+Attitudes
 
 Education
-
-Race
 
 Happiness
 
@@ -218,7 +215,7 @@ Quick Analysis
 
 Happiness Levels
 
-## Layer 3: Dashboard
+### Layer 3: Dashboard
 
 The dashboard brings pages together and configures the final output. You
 specify where to save files, pick a theme, and add your pages:
@@ -227,36 +224,26 @@ specify where to save files, pick a theme, and add your pages:
 my_dashboard <- create_dashboard(
   title = "GSS Explorer", 
   output_dir = "my_dashboard",
-  theme = "flatly"
+  theme = "cosmo"
 ) %>%
   add_pages(home, analysis) 
 
-my_dashboard
+print(my_dashboard)
+#> 
+#> 📊 DASHBOARD PROJECT ====================================================
+#> │ 🏷️  Title: GSS Explorer
+#> │ 📁 Output: /Users/favstats/Dropbox/postdoc/my_dashboard
+#> │
+#> │ ⚙️  FEATURES:
+#> │    • 🔍 Search
+#> │    • 🎨 Theme: cosmo
+#> │    • 📑 Tabs: minimal
+#> │
+#> │ 📄 PAGES (2):
+#> │ ├─ 📄 Home [🏠 Landing]
+#> │ └─ 📄 Analysis [💾 1 dataset]
+#> ══ ═════════════════════════════════════════════════════════════════════════
 ```
-
-Dashboard Preview: GSS Explorer
-
-Home
-
-Analysis
-
-Welcome!
-
-Explore the General Social Survey data.
-
-Demographic Overview
-
-Explore how GSS respondents break down by key categories.
-
-demographics
-
-attitudes
-
-Education
-
-Race
-
-Happiness
 
 Pages appear in the navbar in the order you add them.
 
@@ -291,30 +278,29 @@ Demographic Overview
 
 Explore how GSS respondents break down by key categories.
 
-demographics
+Demographics
 
-attitudes
+Attitudes
 
 Education
 
-Race
-
 Happiness
 
-## Complete Example
+## Your first Dashboard in 1 Minute
 
-Here’s everything together, from data to published dashboard:
+Here’s everything together, from data to published dashboard. Just copy
+paste, run it, and you will have your first dashboard:
 
 ``` r
 library(dashboardr)
 library(dplyr)
 library(gssr)
 
-# Prepare data
+# Prepare data (latest wave only)
 data(gss_all)
 gss <- gss_all %>%
   select(year, age, sex, race, degree, happy, polviews) %>%
-  filter(year >= 2010, !is.na(age), !is.na(sex), !is.na(race), !is.na(degree))
+  filter(year == max(year, na.rm = TRUE), !is.na(age), !is.na(sex), !is.na(race), !is.na(degree))
 
 # LAYER 1: Build content collections
 demographics <- create_content(type = "bar") %>%
@@ -362,23 +348,57 @@ Here’s what the *one minute* dashboard structure looks like:
 ``` r
 print(onemin_dashboard)
 #> 
-#> +==============================================================================
-#> | [*] DASHBOARD PROJECT
-#> +==============================================================================
-#> | [T] Title: GSS Data Explorer
-#> | [>] Output: /Users/favstats/Dropbox/postdoc/gss_dashboard
-#> |
-#> | [+] FEATURES:
-#> |    * [?] Search
-#> |    * [#] Theme: flatly
-#> |    * [~] Tabs: minimal
-#> |
-#> | [P] PAGES (3):
-#> | +- [P] Home [[H] Landing]
-#> | +- [P] Analysis [[i] Icon, [d] 1 dataset]
-#> | +- [P] About [[i] Icon, -> Right]
-#> +==============================================================================
+#> 📊 DASHBOARD PROJECT ====================================================
+#> │ 🏷️  Title: GSS Data Explorer
+#> │ 📁 Output: /Users/favstats/Dropbox/postdoc/gss_dashboard
+#> │
+#> │ ⚙️  FEATURES:
+#> │    • 🔍 Search
+#> │    • 🎨 Theme: flatly
+#> │    • 📑 Tabs: minimal
+#> │
+#> │ 📄 PAGES (3):
+#> │ ├─ 📄 Home [🏠 Landing]
+#> │ ├─ 📄 Analysis [🏷️ Icon, 💾 1 dataset]
+#> │ └─ 📄 About [🏷️ Icon, ➡️ Right]
+#> ══ ═════════════════════════════════════════════════════════════════════════
 ```
+
+``` r
+preview(onemin_dashboard)
+```
+
+Dashboard Preview: GSS Data Explorer
+
+Home
+
+Analysis
+
+About
+
+GSS Explorer
+
+Explore trends in American society using the General Social Survey.
+
+Navigate using the tabs above.
+
+overview
+
+analysis
+
+Education
+
+Race
+
+Gender
+
+Happiness by Education
+
+Happiness by Politics
+
+About This Dashboard
+
+Created with dashboardr. Data from the GSS (2010-2024).
 
 ## Tips
 
@@ -387,10 +407,47 @@ print(onemin_dashboard)
 2.  **Preview as you go**: use
     [`preview()`](https://favstats.github.io/dashboardr/reference/preview.md)
     to see charts without building everything
-3.  **Start simple**: build one page first, then expand
+3.  **Start simple**: build one piece of content first, then the page,
+    then expand
 4.  **Use tabgroups**: they make complex dashboards navigable
 5.  **Build content separately**: create reusable collections, attach to
     multiple pages
+
+## Function Overview
+
+dashboardr uses consistent naming conventions so you always know what a
+function does:
+
+| Prefix | Purpose | Examples |
+|----|----|----|
+| `create_*` | **Create containers** - Start a new dashboard, page, or content collection that holds other elements | [`create_dashboard()`](https://favstats.github.io/dashboardr/reference/create_dashboard.md), [`create_page()`](https://favstats.github.io/dashboardr/reference/create_page.md), [`create_content()`](https://favstats.github.io/dashboardr/reference/create_content.md) |
+| `add_*` | **Add to containers** - Insert visualizations, text, pages, or other content into an existing object | [`add_viz()`](https://favstats.github.io/dashboardr/reference/add_viz.md), [`add_text()`](https://favstats.github.io/dashboardr/reference/add_text.md), [`add_page()`](https://favstats.github.io/dashboardr/reference/add_page.md), [`add_content()`](https://favstats.github.io/dashboardr/reference/add_content.md), [`add_callout()`](https://favstats.github.io/dashboardr/reference/add_callout.md) |
+| `viz_*` | **Build visualizations** - Create individual charts directly (histogram, bar, timeline, etc.) | [`viz_bar()`](https://favstats.github.io/dashboardr/reference/viz_bar.md), [`viz_histogram()`](https://favstats.github.io/dashboardr/reference/viz_histogram.md), [`viz_timeline()`](https://favstats.github.io/dashboardr/reference/viz_timeline.md), [`viz_heatmap()`](https://favstats.github.io/dashboardr/reference/viz_heatmap.md) |
+| `set_*` | **Modify properties** - Change settings on an existing object, like custom tab labels | [`set_tabgroup_labels()`](https://favstats.github.io/dashboardr/reference/set_tabgroup_labels.md) |
+| `generate_*` | **Produce output** - Create the final Quarto files and optionally render to HTML | [`generate_dashboard()`](https://favstats.github.io/dashboardr/reference/generate_dashboard.md) |
+| `theme_*` | **Apply styling** - Set visual themes for colors, fonts, and overall appearance | [`theme_modern()`](https://favstats.github.io/dashboardr/reference/theme_modern.md), [`theme_clean()`](https://favstats.github.io/dashboardr/reference/theme_clean.md), [`theme_academic()`](https://favstats.github.io/dashboardr/reference/theme_academic.md) |
+| `combine_*` | **Merge collections** - Join multiple content or viz collections into one | [`combine_content()`](https://favstats.github.io/dashboardr/reference/combine_content.md), [`combine_viz()`](https://favstats.github.io/dashboardr/reference/combine_viz.md) |
+| [`preview()`](https://favstats.github.io/dashboardr/reference/preview.md) | **Quick look** - See how content, pages, or dashboards will look without generating files | [`preview()`](https://favstats.github.io/dashboardr/reference/preview.md) |
+
+### The Typical Pattern
+
+Most dashboardr code follows this pattern:
+
+``` r
+# 1. CREATE a container
+create_content(data = my_data, type = "bar") %>%
+  # 2. ADD elements to it
+  add_viz(x_var = "category", title = "My Chart") %>%
+  add_text("## Summary", "Key findings here.")
+```
+
+The container functions (`create_*`) start the chain, then `add_*`
+functions build it up. This works at every layer:
+
+- **Content**: `create_content() %>% add_viz() %>% add_text()`
+- **Page**: `create_page() %>% add_content() %>% add_viz()`
+- **Dashboard**:
+  `create_dashboard() %>% add_pages() %>% generate_dashboard()`
 
 ## Learn More
 

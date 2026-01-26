@@ -903,12 +903,12 @@ add_viz.default <- function(x, type = NULL, ..., tabgroup = NULL, title = NULL, 
 #'   values will be applied to all visualizations.
 #' @param .tabgroup_template Optional. Template string for tabgroup with `{i}` placeholder
 #'   for the iteration index (e.g., `"skills/age/item{i}"`). You can also use
-#'   parameter names in the template (e.g., `"skills/{response_var}"`).
+#'   parameter names in the template (e.g., `"skills/{y_var}"`).
 #'   If NULL, tabgroup must be provided as a vector of the same length as expandable parameters.
 #' @param .title_template Optional. Template string for title with `{i}` placeholder.
 #'
 #' @details
-#' The function identifies "expandable" parameters (response_var, x_var, y_var,
+#' The function identifies "expandable" parameters (y_var, x_var, y_var,
 #' stack_var, questions) and creates one visualization per value. Other parameters
 #' are applied to all visualizations. All expandable vector parameters must have
 #' the same length.
@@ -926,7 +926,7 @@ add_viz.default <- function(x, type = NULL, ..., tabgroup = NULL, title = NULL, 
 #' # Basic expansion - create 3 timeline visualizations
 #' viz <- create_viz(type = "timeline", time_var = "wave", chart_type = "line") |>
 #'   add_vizzes(
-#'     response_var = c("SInfo1", "SInfo2", "SInfo3"),
+#'     y_var = c("SInfo1", "SInfo2", "SInfo3"),
 #'     group_var = "AgeGroup",  # Same for all
 #'     .tabgroup_template = "skills/age/item{i}"
 #'   )
@@ -942,15 +942,15 @@ add_viz.default <- function(x, type = NULL, ..., tabgroup = NULL, title = NULL, 
 #' # Use variable names in template
 #' viz <- create_viz(type = "timeline") |>
 #'   add_vizzes(
-#'     response_var = c("SInfo1", "SInfo2", "SInfo3"),
-#'     .tabgroup_template = "skills/{response_var}"
+#'     y_var = c("SInfo1", "SInfo2", "SInfo3"),
+#'     .tabgroup_template = "skills/{y_var}"
 #'   )
 #'
 #' # Helper function pattern
 #' add_all_questions <- function(viz, vars, group_var, tbgrp, demographic, wave) {
 #'   wave_path <- tolower(gsub(" ", "", wave))
 #'   viz |> add_vizzes(
-#'     response_var = vars,
+#'     y_var = vars,
 #'     group_var = group_var,
 #'     .tabgroup_template = glue::glue("{tbgrp}/{wave_path}/{demographic}/item{{i}}")
 #'   )
@@ -981,12 +981,12 @@ add_viz.default <- function(x, type = NULL, ..., tabgroup = NULL, title = NULL, 
 #'   values will be applied to all visualizations.
 #' @param .tabgroup_template Optional. Template string for tabgroup with `{i}` placeholder
 #'   for the iteration index (e.g., `"skills/age/item{i}"`). You can also use
-#'   parameter names in the template (e.g., `"skills/{response_var}"`).
+#'   parameter names in the template (e.g., `"skills/{y_var}"`).
 #'   If NULL, tabgroup must be provided as a vector of the same length as expandable parameters.
 #' @param .title_template Optional. Template string for title with `{i}` placeholder.
 #'
 #' @details
-#' The function identifies "expandable" parameters (response_var, x_var, y_var,
+#' The function identifies "expandable" parameters (y_var, x_var, y_var,
 #' stack_var, questions) and creates one visualization per value. Other parameters
 #' are applied to all visualizations. All expandable vector parameters must have
 #' the same length.
@@ -1004,7 +1004,7 @@ add_viz.default <- function(x, type = NULL, ..., tabgroup = NULL, title = NULL, 
 #' # Basic expansion - create 3 timeline visualizations
 #' viz <- create_viz(type = "timeline", time_var = "wave", chart_type = "line") |>
 #'   add_vizzes(
-#'     response_var = c("SInfo1", "SInfo2", "SInfo3"),
+#'     y_var = c("SInfo1", "SInfo2", "SInfo3"),
 #'     group_var = "AgeGroup",  # Same for all
 #'     .tabgroup_template = "skills/age/item{i}"
 #'   )
@@ -1020,15 +1020,15 @@ add_viz.default <- function(x, type = NULL, ..., tabgroup = NULL, title = NULL, 
 #' # Use variable names in template
 #' viz <- create_viz(type = "timeline") |>
 #'   add_vizzes(
-#'     response_var = c("SInfo1", "SInfo2", "SInfo3"),
-#'     .tabgroup_template = "skills/{response_var}"
+#'     y_var = c("SInfo1", "SInfo2", "SInfo3"),
+#'     .tabgroup_template = "skills/{y_var}"
 #'   )
 #'
 #' # Helper function pattern
 #' add_all_questions <- function(viz, vars, group_var, tbgrp, demographic, wave) {
 #'   wave_path <- tolower(gsub(" ", "", wave))
 #'   viz |> add_vizzes(
-#'     response_var = vars,
+#'     y_var = vars,
 #'     group_var = group_var,
 #'     .tabgroup_template = glue::glue("{tbgrp}/{wave_path}/{demographic}/item{{i}}")
 #'   )
@@ -1056,7 +1056,7 @@ add_vizzes <- function(viz_collection, ...,
   params <- list(...)
 
   # Define which parameters trigger expansion (primary viz parameters)
-  EXPANDABLE_PARAMS <- c("response_var", "x_var", "y_var", "stack_var",
+  EXPANDABLE_PARAMS <- c("y_var", "x_var", "y_var", "stack_var",
                          "questions", "group_var", "title")
 
   # Find expandable params that have vectors (length > 1)
@@ -1651,9 +1651,14 @@ print.viz_collection <- function(x, render = FALSE, ...) {
 #' }
 add_pagination <- function(viz_collection, position = NULL) {
 
+  # Handle page_object
+  if (inherits(viz_collection, "page_object")) {
+    return(add_pagination.page_object(viz_collection, position = position))
+  }
+
   # Validate first argument
   if (!is_content(viz_collection)) {
-    stop("First argument must be a content collection", call. = FALSE)
+    stop("First argument must be a content collection or page_object", call. = FALSE)
   }
 
   # Validate position if provided (NULL means use dashboard default)
@@ -1671,6 +1676,28 @@ add_pagination <- function(viz_collection, position = NULL) {
 
   # Add to items
   viz_collection$items <- c(viz_collection$items, list(pagination_item))
+
+  viz_collection
+}
+
+#' @rdname add_pagination
+#' @export
+add_pagination.page_object <- function(viz_collection, position = NULL) {
+  # Validate position if provided
+  if (!is.null(position)) {
+    position <- match.arg(position, c("bottom", "top", "both"))
+  }
+
+  # Create pagination item
+  pagination_item <- list(
+    type = "pagination",
+    pagination_break = TRUE,
+    pagination_position = position
+
+)
+
+  # Add to page items
+  viz_collection$.items <- c(viz_collection$.items, list(pagination_item))
 
   viz_collection
 }
@@ -1963,6 +1990,10 @@ preview <- function(collection, title = "Preview", open = TRUE, clean = FALSE,
       htmltools::tags$script(
         src = "https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
       ),
+      # Iconify for icons
+      htmltools::tags$script(
+        src = "https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"
+      ),
       # Choices.js for inputs
       if (has_inputs) htmltools::tagList(
         htmltools::tags$link(
@@ -2201,15 +2232,15 @@ preview <- function(collection, title = "Preview", open = TRUE, clean = FALSE,
   
   # Call the appropriate visualization function
   viz_fn <- switch(viz_type,
-    "histogram" = create_histogram,
-    "stackedbar" = create_stackedbar,
-    "stackedbars" = create_stackedbars,
-    "heatmap" = create_heatmap,
-    "bar" = create_bar,
-    "scatter" = create_scatter,
-    "timeline" = create_timeline,
-    "map" = create_map,
-    "treemap" = create_treemap,
+    "histogram" = viz_histogram,
+    "stackedbar" = viz_stackedbar,
+    "stackedbars" = viz_stackedbars,
+    "heatmap" = viz_heatmap,
+    "bar" = viz_bar,
+    "scatter" = viz_scatter,
+    "timeline" = viz_timeline,
+    "map" = viz_map,
+    "treemap" = viz_treemap,
     NULL
   )
   
@@ -2345,19 +2376,21 @@ preview <- function(collection, title = "Preview", open = TRUE, clean = FALSE,
   lang <- block$language %||% "r"
   code <- block$code %||% ""
   
+  base_style <- "text-align: left; background: #f5f5f5; padding: 12px; border-radius: 4px; overflow-x: auto;"
+  
   htmltools::tagList(
     if (!is.null(block$filename)) {
       htmltools::div(
-        style = "background: #e0e0e0; padding: 5px 10px; border-radius: 4px 4px 0 0; font-size: 12px;",
+        style = "background: #e0e0e0; padding: 5px 10px; border-radius: 4px 4px 0 0; font-size: 12px; text-align: left;",
         block$filename
       )
     },
     htmltools::tags$pre(
-      style = if (!is.null(block$filename)) "margin-top: 0; border-radius: 0 0 4px 4px;",
-      htmltools::tags$code(class = paste0("language-", lang), code)
+      style = paste0(base_style, if (!is.null(block$filename)) " margin-top: 0; border-radius: 0 0 4px 4px;"),
+      htmltools::tags$code(class = paste0("language-", lang), style = "text-align: left;", code)
     ),
     if (!is.null(block$caption)) {
-      htmltools::div(style = "font-size: 12px; color: #666; margin-top: 5px;", block$caption)
+      htmltools::div(style = "font-size: 12px; color: #666; margin-top: 5px; text-align: left;", block$caption)
     }
   )
 }
@@ -2484,10 +2517,37 @@ preview <- function(collection, title = "Preview", open = TRUE, clean = FALSE,
 #' Render metric block
 #' @noRd
 .render_metric_block_direct <- function(block) {
+  bg_color <- block$color %||% "linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
+  
+  # Handle icon - render as iconify-icon element
+  icon_html <- NULL
+  if (!is.null(block$icon) && nchar(block$icon) > 0) {
+    # Check if it's an iconify format (collection:name)
+    if (grepl("^[a-zA-Z0-9_-]+:[a-zA-Z0-9_-]+$", block$icon)) {
+      icon_html <- htmltools::HTML(sprintf(
+        '<iconify-icon icon="%s" style="font-size: 2em; margin-bottom: 10px;"></iconify-icon>',
+        block$icon
+      ))
+    } else {
+      # Treat as emoji or text
+      icon_html <- htmltools::div(style = "font-size: 2em; margin-bottom: 10px;", block$icon)
+    }
+  }
+  
   htmltools::div(
     class = "metric",
-    htmltools::div(class = "metric-value", block$value),
-    htmltools::div(class = "metric-label", block$label %||% block$title %||% "")
+    style = paste0(
+      "background: ", bg_color, "; ",
+      "color: white; padding: 20px; border-radius: 12px; text-align: center; ",
+      "box-shadow: 0 4px 15px rgba(0,0,0,0.1);"
+    ),
+    icon_html,
+    htmltools::div(class = "metric-value", style = "font-size: 2.5em; font-weight: bold;", block$value),
+    htmltools::div(class = "metric-label", style = "font-size: 1em; opacity: 0.9; margin-top: 5px;", 
+                   block$label %||% block$title %||% ""),
+    if (!is.null(block$subtitle)) {
+      htmltools::div(style = "font-size: 0.85em; opacity: 0.7; margin-top: 5px;", block$subtitle)
+    }
   )
 }
 
@@ -2497,13 +2557,53 @@ preview <- function(collection, title = "Preview", open = TRUE, clean = FALSE,
 .render_value_box_block_direct <- function(block) {
   bg_color <- block$color %||% block$bg_color %||% "#007bff"
   
+  # Handle logo/icon - could be URL, iconify format, or emoji
+  logo_html <- NULL
+  if (!is.null(block$logo_url) && nchar(block$logo_url) > 0) {
+    logo_html <- htmltools::tags$img(
+      src = block$logo_url,
+      style = "height: 40px; margin-bottom: 10px;"
+    )
+  } else if (!is.null(block$logo_text) && nchar(block$logo_text) > 0) {
+    # Check if it's an iconify format (collection:name)
+    if (grepl("^[a-zA-Z0-9_-]+:[a-zA-Z0-9_-]+$", block$logo_text)) {
+      logo_html <- htmltools::HTML(sprintf(
+        '<iconify-icon icon="%s" style="font-size: 2.5em; margin-bottom: 10px;"></iconify-icon>',
+        block$logo_text
+      ))
+    } else {
+      # Treat as emoji or text
+      logo_html <- htmltools::div(style = "font-size: 2em; margin-bottom: 10px;", block$logo_text)
+    }
+  } else if (!is.null(block$icon) && nchar(block$icon) > 0) {
+    # Also check icon field
+    if (grepl("^[a-zA-Z0-9_-]+:[a-zA-Z0-9_-]+$", block$icon)) {
+      logo_html <- htmltools::HTML(sprintf(
+        '<iconify-icon icon="%s" style="font-size: 2.5em; margin-bottom: 10px;"></iconify-icon>',
+        block$icon
+      ))
+    } else {
+      logo_html <- htmltools::div(style = "font-size: 2em; margin-bottom: 10px;", block$icon)
+    }
+  }
+  
   htmltools::div(
     class = "value-box",
-    style = paste0("background: ", bg_color, ";"),
-    htmltools::div(class = "value-box-value", block$value),
-    htmltools::div(class = "value-box-label", block$title %||% block$label %||% ""),
+    style = paste0(
+      "background: ", bg_color, "; ",
+      "color: white; padding: 25px; border-radius: 12px; text-align: center; ",
+      "box-shadow: 0 4px 15px rgba(0,0,0,0.1);"
+    ),
+    logo_html,
+    htmltools::div(class = "value-box-value", style = "font-size: 2.5em; font-weight: bold;", block$value),
+    htmltools::div(class = "value-box-label", style = "font-size: 1em; opacity: 0.9; margin-top: 5px;", 
+                   block$title %||% block$label %||% ""),
     if (!is.null(block$caption)) {
-      htmltools::div(style = "font-size: 0.8em; opacity: 0.8; margin-top: 5px;", block$caption)
+      htmltools::div(style = "font-size: 0.85em; opacity: 0.7; margin-top: 5px;", block$caption)
+    },
+    if (!is.null(block$description)) {
+      htmltools::div(style = "font-size: 0.8em; opacity: 0.8; margin-top: 10px; text-align: left;", 
+                     htmltools::HTML(commonmark::markdown_html(block$description)))
     }
   )
 }
@@ -3024,6 +3124,11 @@ preview <- function(collection, title = "Preview", open = TRUE, clean = FALSE,
     # Attach data to collection
     page_content$data <- page_data
     
+    # Attach tabgroup_labels if present in page
+    if (!is.null(page$tabgroup_labels)) {
+      page_content$tabgroup_labels <- page$tabgroup_labels
+    }
+    
     # Render page content using unified logic
     if (length(page_content$items) > 0) {
       has_tabgroups <- any(sapply(page_content$items, function(item) {
@@ -3108,6 +3213,10 @@ preview <- function(collection, title = "Preview", open = TRUE, clean = FALSE,
       ),
       htmltools::tags$script(
         src = "https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+      ),
+      # Iconify for icons
+      htmltools::tags$script(
+        src = "https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"
       ),
       # Choices.js for inputs
       if (has_inputs) htmltools::tagList(
@@ -3911,6 +4020,14 @@ knit_print.content_collection <- function(x, ..., options = NULL) {
     html_output <- .render_stacked_knitr(x, options)
   }
 
+  # Create iconify dependency for icons in metrics/value boxes
+  iconify_dep <- htmltools::htmlDependency(
+    name = "iconify",
+    version = "1.0.7",
+    src = c(href = "https://code.iconify.design/iconify-icon/1.0.7/"),
+    script = "iconify-icon.min.js"
+  )
+  
   # Wrap output in a bordered preview container for visual distinction
   wrapped_output <- htmltools::div(
     style = paste0(
@@ -3935,6 +4052,9 @@ knit_print.content_collection <- function(x, ..., options = NULL) {
     ),
     html_output
   )
+  
+  # Attach iconify dependency
+  wrapped_output <- htmltools::attachDependencies(wrapped_output, iconify_dep, append = TRUE)
 
   # Use knitr's built-in handling for shiny.tag.list
   knitr::knit_print(wrapped_output, options = options, ...)
@@ -3972,21 +4092,23 @@ knit_print.content_collection <- function(x, ..., options = NULL) {
     # Callout - content is stored in 'content' field (from add_callout)
     callout_type <- item$callout_type %||% "note"
     callout_colors <- list(
-      note = list(bg = "#e7f3ff", border = "#0969da", icon = "ℹ️"),
-      tip = list(bg = "#d4edda", border = "#28a745", icon = "💡"),
-      warning = list(bg = "#fff3cd", border = "#ffc107", icon = "⚠️"),
-      caution = list(bg = "#fff3cd", border = "#fd7e14", icon = "⚠️"),
-      important = list(bg = "#f8d7da", border = "#dc3545", icon = "❗")
+      note = list(bg = "#e7f3ff", border = "#0969da", icon = "NOTE"),
+      tip = list(bg = "#d4edda", border = "#28a745", icon = "TIP"),
+      warning = list(bg = "#fff3cd", border = "#ffc107", icon = "WARNING"),
+      caution = list(bg = "#fff3cd", border = "#fd7e14", icon = "CAUTION"),
+      important = list(bg = "#f8d7da", border = "#dc3545", icon = "IMPORTANT")
     )
     colors <- callout_colors[[callout_type]] %||% callout_colors$note
     callout_title <- item$title %||% toupper(callout_type)
     callout_text <- item$content %||% item$text %||% ""
     if (is.list(callout_text)) callout_text <- paste(unlist(callout_text), collapse = " ")
     
+    # Use title if provided, otherwise use the type label
+    display_title <- if (!is.null(item$title) && nchar(item$title) > 0) item$title else colors$icon
     return(htmltools::tags$div(
       style = sprintf("background: %s; border-left: 4px solid %s; padding: 12px 16px; margin: 15px 0; border-radius: 4px;", 
                       colors$bg, colors$border),
-      htmltools::tags$strong(paste(colors$icon, callout_title)),
+      htmltools::tags$strong(display_title),
       htmltools::tags$p(style = "margin: 8px 0 0 0;", callout_text)
     ))
     
@@ -4189,10 +4311,12 @@ knit_print.content_collection <- function(x, ..., options = NULL) {
 }
 
 #' Render tabbed widgets - simple approach that works with Highcharts
+#' Supports nested tabgroups (e.g., "Demographics/Education")
 #' All panes render visible first, then JS hides inactive ones after charts load
 #' @noRd
 .render_tabbed_simple <- function(collection, options = NULL) {
   data <- collection$data
+  tabgroup_labels <- collection$tabgroup_labels
 
   # Separate viz items (which go into tabs) from other content (rendered before tabs)
   viz_items <- list()
@@ -4217,59 +4341,236 @@ knit_print.content_collection <- function(x, ..., options = NULL) {
     return(do.call(htmltools::tagList, other_html))
   }
   
-  # Group viz items by tabgroup
-  groups <- list()
+  # Build nested tab tree structure
+  tab_tree <- .build_tab_tree(viz_items)
+  
+  # Render the nested tabs recursively (pass tabgroup_labels for custom display names)
+  tabs_html <- .render_nested_tabs(tab_tree, data, options, depth = 0, 
+                                    tabgroup_labels = tabgroup_labels)
+  
+  # Combine: other content first, then tabbed viz
+  htmltools::tagList(
+    do.call(htmltools::tagList, other_html),
+    tabs_html
+  )
+}
+
+#' Build a tree structure from tabgroups
+#' @noRd
+.build_tab_tree <- function(viz_items) {
+  tree <- list(.items = list(), .children = list())
+  
   for (item in viz_items) {
     tabgroup <- item$tabgroup %||% "(ungrouped)"
-    # Handle vector tabgroups (take first level for simple rendering)
-    if (length(tabgroup) > 1) tabgroup <- tabgroup[1]
-    if (is.null(groups[[tabgroup]])) groups[[tabgroup]] <- list()
-    groups[[tabgroup]] <- c(groups[[tabgroup]], list(item))
+    
+    # Ensure tabgroup is a vector
+    # Could be: a vector like c("Demographics", "Education")
+    # Or: a string like "Demographics/Education"
+    if (is.character(tabgroup) && length(tabgroup) == 1 && grepl("/", tabgroup)) {
+      tabgroup <- strsplit(tabgroup, "/")[[1]]
+    }
+    # If tabgroup is already a vector with multiple elements, use as-is
+    
+    # Navigate/create tree path using a proper reference approach
+    # Since R doesn't have reference semantics, we'll use a different strategy:
+    # Build the path string and assign at the end
+    path <- tabgroup
+    
+    # Walk tree, creating nodes as needed
+    .add_to_tree <- function(tree, path, item) {
+      if (length(path) == 0) {
+        tree$.items <- c(tree$.items, list(item))
+        return(tree)
+      }
+      
+      level <- path[1]
+      rest <- path[-1]
+      
+      if (is.null(tree$.children[[level]])) {
+        tree$.children[[level]] <- list(.items = list(), .children = list())
+      }
+      
+      tree$.children[[level]] <- .add_to_tree(tree$.children[[level]], rest, item)
+      return(tree)
+    }
+    
+    tree <- .add_to_tree(tree, path, item)
   }
+  
+  tree
+}
 
-  # Use unique ID AND unique class prefix to avoid conflicts with parent tabs
-  tab_id <- paste0("vtabs-", substr(digest::digest(Sys.time()), 1, 8))
-  btn_class <- paste0("vtab-btn-", substr(tab_id, 7, 14))
-  pane_class <- paste0("vtab-pane-", substr(tab_id, 7, 14))
-
-  # Tab buttons
-  tab_buttons <- lapply(seq_along(groups), function(i) {
+#' Render nested tabs recursively
+#' @param tabgroup_labels Named list mapping tabgroup IDs to display labels
+#' @noRd
+.render_nested_tabs <- function(tree, data, options, depth = 0, tabgroup_labels = NULL) {
+  # Generate unique IDs based on depth and time
+  base_id <- paste0("vtabs-d", depth, "-", substr(digest::digest(runif(1)), 1, 6))
+  btn_class <- paste0("vtab-btn-", substr(base_id, 8, 14))
+  pane_class <- paste0("vtab-pane-", substr(base_id, 8, 14))
+  
+  # Get child tab names
+  child_names <- names(tree$.children)
+  
+  # If no children and no items, return empty
+  if (length(child_names) == 0 && length(tree$.items) == 0) {
+    return(htmltools::tagList())
+  }
+  
+  # If no children but has items (leaf node)
+  if (length(child_names) == 0) {
+    # Check if any items have title_tabset - if so, create sub-tabs for them
+    has_title_tabset <- any(sapply(tree$.items, function(x) !is.null(x$title_tabset)))
+    
+    if (has_title_tabset && length(tree$.items) > 1) {
+      # Create sub-tabs for items with title_tabset
+      sub_base_id <- paste0("vtabs-leaf-d", depth, "-", substr(digest::digest(runif(1)), 1, 6))
+      sub_btn_class <- paste0("vtab-btn-", substr(sub_base_id, 8, 14))
+      sub_pane_class <- paste0("vtab-pane-", substr(sub_base_id, 8, 14))
+      
+      # Build tab buttons for each item
+      sub_tab_buttons <- lapply(seq_along(tree$.items), function(i) {
+        item <- tree$.items[[i]]
+        tab_label <- item$title_tabset %||% item$title %||% paste0("Tab ", i)
+        htmltools::tags$button(
+          type = "button",
+          class = if (i == 1) paste0(sub_btn_class, " ", sub_btn_class, "-active") else sub_btn_class,
+          `data-tab` = paste0(sub_base_id, "-", i),
+          htmltools::HTML(tab_label)
+        )
+      })
+      
+      # Build tab panes
+      sub_tab_panes <- lapply(seq_along(tree$.items), function(i) {
+        item <- tree$.items[[i]]
+        htmltools::tags$div(
+          class = sub_pane_class,
+          id = paste0(sub_base_id, "-", i),
+          `data-visible` = if (i == 1) "true" else "false",
+          .render_item_html(item, data, options)
+        )
+      })
+      
+      # Styling for sub-tabs
+      sub_btn_size <- "0.85em"
+      sub_styles <- htmltools::tags$style(htmltools::HTML(sprintf("
+        #%s > .vtab-buttons .%s {
+          padding: 6px 14px; margin-right: 4px; border: 1px solid #dee2e6;
+          background: #f1f3f5; cursor: pointer; border-radius: 4px 4px 0 0;
+          font-size: %s;
+        }
+        #%s > .vtab-buttons .%s-active { background: white; border-bottom-color: white; font-weight: bold; }
+        #%s > .vtab-content > .%s { padding: 10px 0; }
+        #%s > .vtab-content > .%s[data-visible='false'] { display: none; }
+      ", sub_base_id, sub_btn_class, sub_btn_size,
+         sub_base_id, sub_btn_class, sub_base_id, sub_pane_class, sub_base_id, sub_pane_class)))
+      
+      # JavaScript for sub-tabs
+      sub_script <- htmltools::tags$script(htmltools::HTML(sprintf("
+        (function() {
+          var container = document.getElementById('%s');
+          if (!container) return;
+          setTimeout(function() {
+            container.querySelectorAll(':scope > .vtab-content > .%s[data-visible=\"false\"]').forEach(function(p) {
+              p.style.display = 'none';
+            });
+          }, 500);
+          container.querySelectorAll(':scope > .vtab-buttons > .%s').forEach(function(btn) {
+            btn.addEventListener('click', function(e) {
+              e.stopPropagation();
+              var tabId = this.getAttribute('data-tab');
+              container.querySelectorAll(':scope > .vtab-buttons > .%s').forEach(function(b) { 
+                b.classList.remove('%s-active'); 
+              });
+              this.classList.add('%s-active');
+              container.querySelectorAll(':scope > .vtab-content > .%s').forEach(function(p) {
+                p.style.display = p.id === tabId ? 'block' : 'none';
+                p.setAttribute('data-visible', p.id === tabId ? 'true' : 'false');
+              });
+              if (typeof Highcharts !== 'undefined') {
+                Highcharts.charts.forEach(function(c) { if (c) c.reflow(); });
+              }
+            });
+          });
+        })();
+      ", sub_base_id, sub_pane_class, sub_btn_class, sub_btn_class, sub_btn_class, sub_btn_class, sub_pane_class)))
+      
+      return(htmltools::tags$div(
+        id = sub_base_id,
+        sub_styles,
+        htmltools::tags$div(
+          class = "vtab-buttons",
+          style = "margin-bottom: 10px; border-bottom: 1px solid #dee2e6; padding-bottom: 5px;",
+          do.call(htmltools::tagList, sub_tab_buttons)
+        ),
+        htmltools::tags$div(
+          class = "vtab-content",
+          do.call(htmltools::tagList, sub_tab_panes)
+        ),
+        sub_script
+      ))
+    }
+    
+    # No title_tabset - just render items sequentially
+    pane_content <- lapply(tree$.items, function(item) {
+      .render_item_html(item, data, options)
+    })
+    return(do.call(htmltools::tagList, pane_content))
+  }
+  
+  # Helper to get display label for a tab name
+  get_display_label <- function(name) {
+    if (!is.null(tabgroup_labels) && name %in% names(tabgroup_labels)) {
+      return(tabgroup_labels[[name]])
+    }
+    name
+  }
+  
+  # Build tab buttons with custom labels if available
+  tab_buttons <- lapply(seq_along(child_names), function(i) {
+    display_label <- get_display_label(child_names[i])
     htmltools::tags$button(
       type = "button",
       class = if (i == 1) paste0(btn_class, " ", btn_class, "-active") else btn_class,
-      `data-tab` = paste0(tab_id, "-", i),
-      names(groups)[i]
+      `data-tab` = paste0(base_id, "-", i),
+      htmltools::HTML(display_label)  # Use HTML() to allow iconify shortcodes etc.
     )
   })
-
-  # Tab panes - ALL visible initially so Highcharts can render
-  tab_panes <- lapply(seq_along(groups), function(i) {
-    items <- groups[[names(groups)[i]]]
-
-    pane_content <- lapply(items, function(item) {
-      .render_item_html(item, data, options)
-    })
-
+  
+  # Build tab panes (recursively render children, passing tabgroup_labels)
+  tab_panes <- lapply(seq_along(child_names), function(i) {
+    child_tree <- tree$.children[[child_names[i]]]
+    
+    # Recursively render nested content
+    child_content <- .render_nested_tabs(child_tree, data, options, depth = depth + 1,
+                                          tabgroup_labels = tabgroup_labels)
+    
     htmltools::tags$div(
       class = pane_class,
-      id = paste0(tab_id, "-", i),
+      id = paste0(base_id, "-", i),
       `data-visible` = if (i == 1) "true" else "false",
-      pane_content
+      child_content
     )
   })
-
-  # CSS and JS for tabs - use specific class names to avoid conflicts
+  
+  # Styling - indent nested tabs slightly
+  indent_style <- if (depth > 0) "margin-left: 10px; border-left: 2px solid #e9ecef; padding-left: 15px;" else ""
+  btn_size <- if (depth > 0) "0.85em" else "0.9em"
+  
+  # CSS for this level
   styles <- htmltools::tags$style(htmltools::HTML(sprintf("
-    #%s .%s {
-      padding: 8px 16px; margin-right: 4px; border: 1px solid #dee2e6;
-      background: #f8f9fa; cursor: pointer; border-radius: 4px 4px 0 0;
-      font-size: 0.9em;
+    #%s > .vtab-buttons .%s {
+      padding: 6px 14px; margin-right: 4px; border: 1px solid #dee2e6;
+      background: %s; cursor: pointer; border-radius: 4px 4px 0 0;
+      font-size: %s;
     }
-    #%s .%s-active { background: white; border-bottom-color: white; font-weight: bold; }
-    #%s .%s { padding: 15px 0; }
-    #%s .%s[data-visible='false'] { display: none; }
-  ", tab_id, btn_class, tab_id, btn_class, tab_id, pane_class, tab_id, pane_class)))
-
+    #%s > .vtab-buttons .%s-active { background: white; border-bottom-color: white; font-weight: bold; }
+    #%s > .vtab-content > .%s { padding: 10px 0; }
+    #%s > .vtab-content > .%s[data-visible='false'] { display: none; }
+  ", base_id, btn_class, if (depth > 0) "#f1f3f5" else "#f8f9fa", btn_size,
+     base_id, btn_class, base_id, pane_class, base_id, pane_class)))
+  
+  # JavaScript for this level's tabs
   script <- htmltools::tags$script(htmltools::HTML(sprintf("
     (function() {
       var container = document.getElementById('%s');
@@ -4277,23 +4578,23 @@ knit_print.content_collection <- function(x, ..., options = NULL) {
       
       // Wait for Highcharts to render, then hide inactive panes
       setTimeout(function() {
-        container.querySelectorAll('.%s[data-visible=\"false\"]').forEach(function(p) {
+        container.querySelectorAll(':scope > .vtab-content > .%s[data-visible=\"false\"]').forEach(function(p) {
           p.style.display = 'none';
         });
       }, 500);
 
-      // Tab click handler - only target buttons within THIS container
-      container.querySelectorAll('.%s').forEach(function(btn) {
+      // Tab click handler - only target DIRECT child buttons
+      container.querySelectorAll(':scope > .vtab-buttons > .%s').forEach(function(btn) {
         btn.addEventListener('click', function(e) {
-          e.stopPropagation(); // Prevent bubbling to parent tabs
+          e.stopPropagation();
           var tabId = this.getAttribute('data-tab');
-          // Update buttons within this container only
-          container.querySelectorAll('.%s').forEach(function(b) { 
+          // Update only direct child buttons
+          container.querySelectorAll(':scope > .vtab-buttons > .%s').forEach(function(b) { 
             b.classList.remove('%s-active'); 
           });
           this.classList.add('%s-active');
-          // Update panes within this container only
-          container.querySelectorAll('.%s').forEach(function(p) {
+          // Update only direct child panes
+          container.querySelectorAll(':scope > .vtab-content > .%s').forEach(function(p) {
             p.style.display = p.id === tabId ? 'block' : 'none';
             p.setAttribute('data-visible', p.id === tabId ? 'true' : 'false');
           });
@@ -4304,15 +4605,15 @@ knit_print.content_collection <- function(x, ..., options = NULL) {
         });
       });
     })();
-  ", tab_id, pane_class, btn_class, btn_class, btn_class, btn_class, pane_class)))
-
-  # Combine: other content first, then tabbed viz
+  ", base_id, pane_class, btn_class, btn_class, btn_class, btn_class, pane_class)))
+  
+  # Combine into tab structure
   htmltools::tagList(
-    do.call(htmltools::tagList, other_html),
     htmltools::tags$div(
-      id = tab_id,
-      style = "margin: 20px 0;",
-      htmltools::tags$div(class = "vtab-buttons", style = "border-bottom: 1px solid #dee2e6; margin-bottom: 10px;", tab_buttons),
+      id = base_id,
+      class = "vtab-container",
+      style = paste0("margin: 15px 0;", indent_style),
+      htmltools::tags$div(class = "vtab-buttons", style = "border-bottom: 1px solid #dee2e6; margin-bottom: 8px;", tab_buttons),
       htmltools::tags$div(class = "vtab-content", tab_panes)
     ),
     styles,
@@ -4646,6 +4947,10 @@ knit_print.dashboard_project <- function(x, ..., options = NULL) {
           # Create a collection from viz specs and render
           collection <- create_viz(data = page_data)
           collection$items <- viz_items
+          # Add tabgroup_labels from the page if present
+          if (!is.null(page$tabgroup_labels)) {
+            collection$tabgroup_labels <- page$tabgroup_labels
+          }
           
           has_tabgroups <- any(sapply(viz_items, function(item) {
             !is.null(item$tabgroup) && length(item$tabgroup) > 0 && nchar(item$tabgroup[1]) > 0
@@ -4757,7 +5062,7 @@ knit_print.dashboard_project <- function(x, ..., options = NULL) {
 #' hierarchical structure (tabgroups with children). This helper extracts the
 #' original flat viz items for simpler rendering.
 #' @param viz_list List of processed viz items (may contain tabgroups)
-#' @param parent_tabgroup Parent tabgroup name for nested items
+#' @param parent_tabgroup Parent tabgroup path (character vector) for nested items
 #' @noRd
 .extract_flat_viz_items <- function(viz_list, parent_tabgroup = NULL) {
   result <- list()
@@ -4769,47 +5074,57 @@ knit_print.dashboard_project <- function(x, ..., options = NULL) {
     
     if (item_type == "tabgroup") {
       # This is a processed tabgroup - extract its visualizations
-      tabgroup_name <- item$tabgroup %||% item$title %||% parent_tabgroup
+      # Dashboard uses $name field for tabgroup name
+      current_name <- item$name %||% item$tabgroup %||% item$title
       
-      # Get direct visualizations in this tabgroup
-      if (!is.null(item$visualizations)) {
-        for (viz in item$visualizations) {
-          viz$tabgroup <- tabgroup_name
-          result <- c(result, list(viz))
-        }
+      # Build full tabgroup path: c("parent", "current")
+      full_tabgroup <- if (!is.null(parent_tabgroup)) {
+        c(parent_tabgroup, current_name)
+      } else {
+        current_name
+      }
+      
+      # Process visualizations in this tabgroup (may include nested tabgroups)
+      if (!is.null(item$visualizations) && length(item$visualizations) > 0) {
+        # Recursively process - visualizations can contain nested tabgroups!
+        nested <- .extract_flat_viz_items(item$visualizations, full_tabgroup)
+        result <- c(result, nested)
       }
       
       # Recursively process nested children
       if (!is.null(item$children) && length(item$children) > 0) {
-        nested <- .extract_flat_viz_items(item$children, tabgroup_name)
+        nested <- .extract_flat_viz_items(item$children, full_tabgroup)
         result <- c(result, nested)
       }
       
       # Also check for nested_children field
       if (!is.null(item$nested_children) && length(item$nested_children) > 0) {
-        nested <- .extract_flat_viz_items(item$nested_children, tabgroup_name)
+        nested <- .extract_flat_viz_items(item$nested_children, full_tabgroup)
         result <- c(result, nested)
       }
       
     } else if (item_type == "viz" || !is.null(item$viz_type)) {
-      # Direct viz item - preserve or set tabgroup
-      if (is.null(item$tabgroup) && !is.null(parent_tabgroup)) {
+      # Direct viz item - set tabgroup from parent path
+      if (!is.null(parent_tabgroup)) {
         item$tabgroup <- parent_tabgroup
       }
       result <- c(result, list(item))
     } else if (!is.null(item$visualizations) || !is.null(item$children)) {
       # Tabgroup without explicit type = "tabgroup" (older format)
-      tabgroup_name <- item$tabgroup %||% item$title %||% parent_tabgroup
+      current_name <- item$name %||% item$tabgroup %||% item$title
+      full_tabgroup <- if (!is.null(parent_tabgroup)) {
+        c(parent_tabgroup, current_name)
+      } else {
+        current_name
+      }
       
       if (!is.null(item$visualizations)) {
-        for (viz in item$visualizations) {
-          viz$tabgroup <- tabgroup_name
-          result <- c(result, list(viz))
-        }
+        nested <- .extract_flat_viz_items(item$visualizations, full_tabgroup)
+        result <- c(result, nested)
       }
       
       if (!is.null(item$children) && length(item$children) > 0) {
-        nested <- .extract_flat_viz_items(item$children, tabgroup_name)
+        nested <- .extract_flat_viz_items(item$children, full_tabgroup)
         result <- c(result, nested)
       }
     }

@@ -49,7 +49,7 @@ test_that("pagination survives ALL layers in complex real-world use case", {
     type = "timeline",
     time_var = "wave_time_label",
     chart_type = "line",
-    response_var = "disp"
+    y_var = "disp"
   ) %>%
     add_viz(
       title = "Critical Info Over Time",
@@ -313,7 +313,7 @@ test_that("complex nested tabgroups preserve pagination", {
     add_viz(title = "T2", tabgroup = "dimension1/wave1/age/item1")
   
   viz2 <- create_viz(type = "timeline", time_var = "cyl") %>%
-    add_viz(title = "T3", response_var = "disp", tabgroup = "dimension2/overtime/overall")
+    add_viz(title = "T3", y_var = "disp", tabgroup = "dimension2/overtime/overall")
   
   viz3 <- create_viz(type = "bar") %>%
     add_viz(title = "T4", x_var = "hp", tabgroup = "dimension3/wave2/gender/item1")

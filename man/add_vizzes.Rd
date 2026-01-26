@@ -20,7 +20,7 @@ values will be applied to all visualizations.}
 
 \item{.tabgroup_template}{Optional. Template string for tabgroup with \code{{i}} placeholder
 for the iteration index (e.g., \code{"skills/age/item{i}"}). You can also use
-parameter names in the template (e.g., \code{"skills/{response_var}"}).
+parameter names in the template (e.g., \code{"skills/{y_var}"}).
 If NULL, tabgroup must be provided as a vector of the same length as expandable parameters.}
 
 \item{.title_template}{Optional. Template string for title with \code{{i}} placeholder.}
@@ -42,7 +42,7 @@ to create multiple visualizations. This is useful when creating many similar
 visualizations that differ only in one or two parameters.
 }
 \details{
-The function identifies "expandable" parameters (response_var, x_var, y_var,
+The function identifies "expandable" parameters (y_var, x_var, y_var,
 stack_var, questions) and creates one visualization per value. Other parameters
 are applied to all visualizations. All expandable vector parameters must have
 the same length.
@@ -53,7 +53,7 @@ Templates use glue syntax:
 \item \code{{param_name}} is replaced with the current value of that parameter
 }
 
-The function identifies "expandable" parameters (response_var, x_var, y_var,
+The function identifies "expandable" parameters (y_var, x_var, y_var,
 stack_var, questions) and creates one visualization per value. Other parameters
 are applied to all visualizations. All expandable vector parameters must have
 the same length.
@@ -69,7 +69,7 @@ Templates use glue syntax:
 # Basic expansion - create 3 timeline visualizations
 viz <- create_viz(type = "timeline", time_var = "wave", chart_type = "line") |>
   add_vizzes(
-    response_var = c("SInfo1", "SInfo2", "SInfo3"),
+    y_var = c("SInfo1", "SInfo2", "SInfo3"),
     group_var = "AgeGroup",  # Same for all
     .tabgroup_template = "skills/age/item{i}"
   )
@@ -85,15 +85,15 @@ viz <- create_viz(type = "stackedbar") |>
 # Use variable names in template
 viz <- create_viz(type = "timeline") |>
   add_vizzes(
-    response_var = c("SInfo1", "SInfo2", "SInfo3"),
-    .tabgroup_template = "skills/{response_var}"
+    y_var = c("SInfo1", "SInfo2", "SInfo3"),
+    .tabgroup_template = "skills/{y_var}"
   )
 
 # Helper function pattern
 add_all_questions <- function(viz, vars, group_var, tbgrp, demographic, wave) {
   wave_path <- tolower(gsub(" ", "", wave))
   viz |> add_vizzes(
-    response_var = vars,
+    y_var = vars,
     group_var = group_var,
     .tabgroup_template = glue::glue("{tbgrp}/{wave_path}/{demographic}/item{{i}}")
   )
@@ -114,7 +114,7 @@ Add Multiple Visualizations at Once
 # Basic expansion - create 3 timeline visualizations
 viz <- create_viz(type = "timeline", time_var = "wave", chart_type = "line") |>
   add_vizzes(
-    response_var = c("SInfo1", "SInfo2", "SInfo3"),
+    y_var = c("SInfo1", "SInfo2", "SInfo3"),
     group_var = "AgeGroup",  # Same for all
     .tabgroup_template = "skills/age/item{i}"
   )
@@ -130,15 +130,15 @@ viz <- create_viz(type = "stackedbar") |>
 # Use variable names in template
 viz <- create_viz(type = "timeline") |>
   add_vizzes(
-    response_var = c("SInfo1", "SInfo2", "SInfo3"),
-    .tabgroup_template = "skills/{response_var}"
+    y_var = c("SInfo1", "SInfo2", "SInfo3"),
+    .tabgroup_template = "skills/{y_var}"
   )
 
 # Helper function pattern
 add_all_questions <- function(viz, vars, group_var, tbgrp, demographic, wave) {
   wave_path <- tolower(gsub(" ", "", wave))
   viz |> add_vizzes(
-    response_var = vars,
+    y_var = vars,
     group_var = group_var,
     .tabgroup_template = glue::glue("{tbgrp}/{wave_path}/{demographic}/item{{i}}")
   )

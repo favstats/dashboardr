@@ -32,7 +32,7 @@ algosoc <- algosoc %>%
 
 
 # Call the function
-create_histogram(
+viz_histogram(
   data           = algosoc,
   x_var          = "KAI5_clean",
   bin_breaks = c(0.5, 3.5, 4.5, 7.5),

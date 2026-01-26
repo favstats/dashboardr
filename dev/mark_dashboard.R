@@ -276,7 +276,7 @@ viz <- create_viz() %>%
   add_viz(
     type = "timeline",
     time_var = "decade",
-    response_var = "value",
+    y_var = "value",
     group_var = "country",
     chart_type = "line",
     title = "Publication Trends by Country",

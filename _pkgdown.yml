@@ -81,6 +81,14 @@ navbar:
         href: articles/stackedbars_vignette.html
       - text: "- Heatmaps"
         href: articles/heatmap_vignette.html
+      - text: "- Histograms"
+        href: articles/histogram_vignette.html
+      - text: "- Scatter Plots"
+        href: articles/scatter_vignette.html
+      - text: "- Treemaps"
+        href: articles/treemap_vignette.html
+      - text: "- Maps"
+        href: articles/map_vignette.html
     demos_menu:
       text: 🎯 Live Demos
       menu:
@@ -128,6 +136,10 @@ articles:
   - stackedbar_vignette
   - stackedbars_vignette
   - heatmap_vignette
+  - histogram_vignette
+  - scatter_vignette
+  - treemap_vignette
+  - map_vignette
 
 reference:
 - title: Dashboard Creation
@@ -171,15 +183,15 @@ reference:
 - title: Visualization Types
   desc: Functions for different chart types
   contents:
-  - create_histogram
-  - create_bar
-  - create_stackedbar
-  - create_stackedbars
-  - create_timeline
-  - create_heatmap
-  - create_scatter
-  - create_map
-  - create_treemap
+  - viz_histogram
+  - viz_bar
+  - viz_stackedbar
+  - viz_stackedbars
+  - viz_timeline
+  - viz_heatmap
+  - viz_scatter
+  - viz_map
+  - viz_treemap
 
 - title: Navigation & Layout
   desc: Functions for dashboard navigation and structure

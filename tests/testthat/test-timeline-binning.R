@@ -5,7 +5,7 @@ test_that("response_breaks bins numeric values", {
   viz <- create_viz(
     type = "timeline",
     time_var = "year",
-    response_var = "score",
+    y_var = "score",
     response_breaks = c(0.5, 4.5, 7.5),
     response_bin_labels = c("Low", "High")
   ) %>%
@@ -19,7 +19,7 @@ test_that("response_filter with range syntax", {
   viz <- create_viz(
     type = "timeline",
     time_var = "year",
-    response_var = "score",
+    y_var = "score",
     response_filter = 5:7
   ) %>%
     add_viz(title = "Filtered Timeline")
@@ -31,7 +31,7 @@ test_that("response_filter_combine combines filtered responses", {
   viz <- create_viz(
     type = "timeline",
     time_var = "year",
-    response_var = "score",
+    y_var = "score",
     response_filter = 5:7,
     response_filter_combine = TRUE
   ) %>%
@@ -44,7 +44,7 @@ test_that("response_filter_label customizes legend", {
   viz <- create_viz(
     type = "timeline",
     time_var = "year",
-    response_var = "score",
+    y_var = "score",
     response_filter = 5:7,
     response_filter_combine = TRUE,
     response_filter_label = "High Scores"
@@ -58,7 +58,7 @@ test_that("timeline binning generates correct code", {
   viz <- create_viz(
     type = "timeline",
     time_var = "year",
-    response_var = "satisfaction",
+    y_var = "satisfaction",
     response_breaks = c(0.5, 2.5, 4.5),
     response_bin_labels = c("Low", "High")
   ) %>%
@@ -93,7 +93,7 @@ test_that("timeline filtering generates correct code", {
   viz <- create_viz(
     type = "timeline",
     time_var = "year",
-    response_var = "score",
+    y_var = "score",
     response_filter = 5:7,
     response_filter_combine = TRUE,
     response_filter_label = "High"
@@ -129,7 +129,7 @@ test_that("binning and filtering can be combined", {
   viz <- create_viz(
     type = "timeline",
     time_var = "year",
-    response_var = "rating",
+    y_var = "rating",
     response_breaks = c(0.5, 3.5, 7.5),
     response_bin_labels = c("Low", "High"),
     response_filter = 5:7
@@ -144,7 +144,7 @@ test_that("response_filter with group_var", {
   viz <- create_viz(
     type = "timeline",
     time_var = "year",
-    response_var = "score",
+    y_var = "score",
     group_var = "category",
     response_filter = 5:7,
     response_filter_combine = TRUE
@@ -159,7 +159,7 @@ test_that("empty response_filter_label with group_var shows only group", {
   viz <- create_viz(
     type = "timeline",
     time_var = "year",
-    response_var = "score",
+    y_var = "score",
     group_var = "age_group",
     response_filter = 5:7,
     response_filter_combine = TRUE,
@@ -177,14 +177,14 @@ test_that("response percentages calculated from total not filtered", {
   viz <- create_viz(
     type = "timeline",
     time_var = "year",
-    response_var = "score",
+    y_var = "score",
     response_filter = 5:7,  # Filter to high scores
     response_filter_combine = TRUE
   ) %>%
     add_viz(title = "High Score %")
   
   # The visualization should calculate % out of 1-7, not 5-7
-  # This is tested behaviorally in the create_timeline function
+  # This is tested behaviorally in the viz_timeline function
   expect_equal(viz$items[[1]]$response_filter, 5:7)
   expect_true(viz$items[[1]]$response_filter_combine)
 })
@@ -195,14 +195,14 @@ test_that("multiple timelines with different filters", {
     time_var = "year"
   ) %>%
     add_viz(
-      response_var = "score",
+      y_var = "score",
       response_filter = 1:3,
       response_filter_combine = TRUE,
       response_filter_label = "Low",
       title = "Low Scores"
     ) %>%
     add_viz(
-      response_var = "score",
+      y_var = "score",
       response_filter = 5:7,
       response_filter_combine = TRUE,
       response_filter_label = "High",
@@ -219,7 +219,7 @@ test_that("timeline binning works with defaults", {
   viz <- create_viz(
     type = "timeline",
     time_var = "year",
-    response_var = "score",
+    y_var = "score",
     response_breaks = c(0.5, 3.5, 7.5),
     response_bin_labels = c("Low", "High")
   ) %>%
@@ -235,7 +235,7 @@ test_that("response_filter can be overridden in add_viz", {
   viz <- create_viz(
     type = "timeline",
     time_var = "year",
-    response_var = "score",
+    y_var = "score",
     response_filter = 1:3  # Default: low scores
   ) %>%
     add_viz(title = "Low", response_filter_label = "Low") %>%
@@ -253,7 +253,7 @@ test_that("timeline with all features combined", {
   viz <- create_viz(
     type = "timeline",
     time_var = "year",
-    response_var = "satisfaction",
+    y_var = "satisfaction",
     group_var = "age_group",
     response_breaks = c(0.5, 2.5, 4.5, 7.5),
     response_bin_labels = c("Low", "Medium", "High"),
@@ -266,7 +266,7 @@ test_that("timeline with all features combined", {
   
   v <- viz$items[[1]]
   expect_equal(v$time_var, "year")
-  expect_equal(v$response_var, "satisfaction")
+  expect_equal(v$y_var, "satisfaction")
   expect_equal(v$group_var, "age_group")
   expect_equal(v$response_breaks, c(0.5, 2.5, 4.5, 7.5))
   expect_equal(v$response_bin_labels, c("Low", "Medium", "High"))
@@ -281,7 +281,7 @@ test_that("response_filter works with filter parameter", {
   viz <- create_viz(
     type = "timeline",
     time_var = "year",
-    response_var = "score",
+    y_var = "score",
     response_filter = 5:7
   ) %>%
     add_viz(
@@ -297,14 +297,14 @@ test_that("NULL response_filter_label shows default behavior", {
   viz <- create_viz(
     type = "timeline",
     time_var = "year",
-    response_var = "score",
+    y_var = "score",
     response_filter = 5:7,
     response_filter_combine = TRUE,
     response_filter_label = NULL  # Explicit NULL
   ) %>%
     add_viz(title = "Default Label")
   
-  # Should allow NULL (create_timeline will use default like "5-7")
+  # Should allow NULL (viz_timeline will use default like "5-7")
   expect_null(viz$items[[1]]$response_filter_label)
 })
 

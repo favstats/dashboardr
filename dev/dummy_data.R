@@ -133,7 +133,7 @@ ggplot(survey_data, aes(x = age_group, fill = socioeconomic_status)) +
 
 
 # Try the function
-dummy1 <- create_stackedbar(
+dummy1 <- viz_stackedbar(
   data = survey_data,
   x_var = "satisfaction_likert",
   stack_var = "socioeconomic_status",

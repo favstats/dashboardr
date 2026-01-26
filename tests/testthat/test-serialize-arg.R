@@ -98,10 +98,10 @@ test_that("tutorial_dashboard generates valid QMD with curly braces", {
       chunk_ends <- which(grepl("^```$", qmd_content))
       
       if (length(chunk_starts) > 0 && length(chunk_ends) > 0) {
-        # Test first chunk that contains create_heatmap
+        # Test first chunk that contains viz_heatmap
         for (i in seq_along(chunk_starts)) {
           chunk_code <- qmd_content[(chunk_starts[i] + 1):(chunk_ends[i] - 1)]
-          if (any(grepl("create_heatmap", chunk_code))) {
+          if (any(grepl("viz_heatmap", chunk_code))) {
             chunk_text <- paste(chunk_code, collapse = "\n")
             # This should parse without error
             expect_silent(parse(text = chunk_text))

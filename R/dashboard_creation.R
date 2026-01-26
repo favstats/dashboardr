@@ -931,6 +931,16 @@ add_dashboard_page <- function(proj, name, data = NULL, data_path = NULL,
     needs_metric_data <- TRUE
   }
   
+  # Extract tabgroup_labels from visualizations or combined_input
+  page_tabgroup_labels <- NULL
+  if (!is.null(visualizations) && !is.null(visualizations$tabgroup_labels)) {
+    page_tabgroup_labels <- visualizations$tabgroup_labels
+  } else if (!is.null(combined_input) && !is.null(combined_input$tabgroup_labels)) {
+    page_tabgroup_labels <- combined_input$tabgroup_labels
+  } else if (!is.null(content) && is_content(content) && !is.null(content$tabgroup_labels)) {
+    page_tabgroup_labels <- content$tabgroup_labels
+  }
+  
   # Create page record
   page <- list(
     name = name,
@@ -959,7 +969,8 @@ add_dashboard_page <- function(proj, name, data = NULL, data_path = NULL,
     lazy_load_margin = lazy_load_margin %||% proj$lazy_load_margin,
     lazy_load_tabs = lazy_load_tabs %||% proj$lazy_load_tabs,
     lazy_debug = lazy_debug %||% proj$lazy_debug,
-    pagination_separator = pagination_separator %||% proj$pagination_separator %||% "of"
+    pagination_separator = pagination_separator %||% proj$pagination_separator %||% "of",
+    tabgroup_labels = page_tabgroup_labels
   )
 
   proj$pages[[name]] <- page
@@ -1030,74 +1041,79 @@ add_page <- add_dashboard_page
 #'
 #' @export
 print.dashboard_project <- function(x, ...) {
+  # Helper to safely print UTF-8 text
+  .cat_utf8 <- function(..., sep = "") {
+    text <- paste(..., sep = sep)
+    text <- enc2utf8(text)
+    cat(text, sep = "")
+  }
+  
   # Helper function to print page badges
   .print_page_badges <- function(page) {
     badges <- c()
-    if (!is.null(page$is_landing_page) && page$is_landing_page) badges <- c(badges, "🏠 Landing")
-    if (!is.null(page$icon)) badges <- c(badges, paste0("🎯 Icon"))
-    if (!is.null(page$overlay) && page$overlay) badges <- c(badges, paste0("⏳ Overlay"))
-    if (!is.null(page$navbar_align) && page$navbar_align == "right") badges <- c(badges, "→ Right")
+    if (!is.null(page$is_landing_page) && page$is_landing_page) badges <- c(badges, "\U0001F3E0 Landing")
+    if (!is.null(page$icon)) badges <- c(badges, "\U0001F3F7\uFE0F Icon")
+    if (!is.null(page$overlay) && page$overlay) badges <- c(badges, "\U0001F504 Overlay")
+    if (!is.null(page$navbar_align) && page$navbar_align == "right") badges <- c(badges, "\u27A1\uFE0F Right")
     if (!is.null(page$data_path)) {
       num_datasets <- if (is.list(page$data_path)) length(page$data_path) else 1
-      badges <- c(badges, paste0("💾 ", num_datasets, " dataset", if (num_datasets > 1) "s" else ""))
+      badges <- c(badges, paste0("\U0001F4BE ", num_datasets, " dataset", if (num_datasets > 1) "s" else ""))
     }
 
     if (length(badges) > 0) {
-      cat(" [", paste(badges, collapse = ", "), "]", sep = "")
+      .cat_utf8(" [", paste(badges, collapse = ", "), "]")
     }
   }
 
-  cat("\n")
-  cat("╔══════════════════════════════════════════════════════════════════════════\n")
-  cat("║ 🎨 DASHBOARD PROJECT\n")
-  cat("╠══════════════════════════════════════════════════════════════════════════\n")
-  cat("║ 📝 Title: ", x$title, "\n", sep = "")
+  .cat_utf8("\n")
+  .cat_utf8("\U0001F4CA DASHBOARD PROJECT ", strrep("=", 52), "\n")
+  .cat_utf8("\u2502 \U0001F3F7\uFE0F  Title: ", x$title, "\n")
 
   if (!is.null(x$author)) {
-    cat("║ 👤 Author: ", x$author, "\n", sep = "")
+    .cat_utf8("\u2502 \U0001F464 Author: ", x$author, "\n")
   }
 
   if (!is.null(x$description)) {
-    cat("║ 📄 Description: ", x$description, "\n", sep = "")
+    .cat_utf8("\u2502 \U0001F4DD Description: ", x$description, "\n")
   }
 
-  cat("║ 📁 Output: ", .resolve_output_dir(x$output_dir, x$allow_inside_pkg), "\n", sep = "")
+  .cat_utf8("\u2502 \U0001F4C1 Output: ", .resolve_output_dir(x$output_dir, x$allow_inside_pkg), "\n")
 
   # Show key features in a compact grid
   features <- c()
-  if (x$sidebar) features <- c(features, "📚 Sidebar")
-  if (x$search) features <- c(features, "🔍 Search")
-  if (!is.null(x$theme)) features <- c(features, paste0("🎨 Theme: ", x$theme))
-  if (!is.null(x$tabset_theme)) features <- c(features, paste0("🗂️  Tabs: ", x$tabset_theme))
-  if (x$shiny) features <- c(features, "⚡ Shiny")
-  if (x$observable) features <- c(features, "👁️  Observable")
+  if (x$sidebar) features <- c(features, "\U0001F5C2\uFE0F Sidebar")
+  if (x$search) features <- c(features, "\U0001F50D Search")
+  if (!is.null(x$theme)) features <- c(features, paste0("\U0001F3A8 Theme: ", x$theme))
+  if (!is.null(x$tabset_theme)) features <- c(features, paste0("\U0001F4D1 Tabs: ", x$tabset_theme))
+  if (x$shiny) features <- c(features, "\u2728 Shiny")
+  if (x$observable) features <- c(features, "\U0001F441\uFE0F Observable")
 
   if (length(features) > 0) {
-    cat("║\n")
-    cat("║ ⚙️  FEATURES:\n")
+    .cat_utf8("\u2502\n")
+    .cat_utf8("\u2502 \u2699\uFE0F  FEATURES:\n")
     for (feat in features) {
-      cat("║    • ", feat, "\n", sep = "")
+      .cat_utf8("\u2502    \u2022 ", feat, "\n")
     }
   }
 
   # Show social/analytics
   links <- c()
-  if (!is.null(x$github)) links <- c(links, paste0("🔗 GitHub"))
-  if (!is.null(x$twitter)) links <- c(links, paste0("🐦 Twitter"))
-  if (!is.null(x$linkedin)) links <- c(links, paste0("💼 LinkedIn"))
-  if (!is.null(x$google_analytics)) links <- c(links, paste0("📊 Analytics"))
+  if (!is.null(x$github)) links <- c(links, "\U0001F4BB GitHub")
+  if (!is.null(x$twitter)) links <- c(links, "\U0001F426 Twitter")
+  if (!is.null(x$linkedin)) links <- c(links, "\U0001F4BC LinkedIn")
+  if (!is.null(x$google_analytics)) links <- c(links, "\U0001F4CA Analytics")
 
   if (length(links) > 0) {
-    cat("║\n")
-    cat("║ 🌐 INTEGRATIONS: ", paste(links, collapse = ", "), "\n", sep = "")
+    .cat_utf8("\u2502\n")
+    .cat_utf8("\u2502 \U0001F517 INTEGRATIONS: ", paste(links, collapse = ", "), "\n")
   }
 
   # Build page structure tree
-  cat("║\n")
-  cat("║ 📄 PAGES (", length(x$pages), "):\n", sep = "")
+  .cat_utf8("\u2502\n")
+  .cat_utf8("\u2502 \U0001F4C4 PAGES (", length(x$pages), "):\n")
 
   if (length(x$pages) == 0) {
-    cat("║    (no pages yet)\n")
+    .cat_utf8("\u2502    (no pages yet)\n")
   } else {
     # Check if there are navbar sections/menus with actual pages
     has_navbar_structure <- FALSE
@@ -1129,8 +1145,8 @@ print.dashboard_project <- function(x, ...) {
 
         if (section$type == "sidebar") {
           # Sidebar group - find the actual sidebar group by ID
-          cat("║ ", if (is_last_section) "└─" else "├─", " 📚 ", section$text, " (Sidebar)\n", sep = "")
-          section_prefix <- paste0("║ ", if (is_last_section) "   " else "│  ")
+          .cat_utf8("\u2502 ", if (is_last_section) "\u2514\u2500" else "\u251C\u2500", " \U0001F5C2\uFE0F ", section$text, " (Sidebar)\n")
+          section_prefix <- paste0("\u2502 ", if (is_last_section) "   " else "\u2502  ")
 
           # Find the sidebar group with matching ID
           sidebar_group <- NULL
@@ -1151,15 +1167,15 @@ print.dashboard_project <- function(x, ...) {
               page <- x$pages[[page_name]]
               is_last_page <- (j == length(sidebar_group$pages))
 
-              cat(section_prefix, if (is_last_page) "└─" else "├─", " 📄 ", page_name, sep = "")
+              .cat_utf8(section_prefix, if (is_last_page) "\u2514\u2500" else "\u251C\u2500", " \U0001F4C4 ", page_name)
               .print_page_badges(page)
-              cat("\n")
+              .cat_utf8("\n")
             }
           }
         } else if (section$type == "menu") {
           # Dropdown menu
-          cat("║ ", if (is_last_section) "└─" else "├─", " 📑 ", section$text, " (Menu)\n", sep = "")
-          section_prefix <- paste0("║ ", if (is_last_section) "   " else "│  ")
+          .cat_utf8("\u2502 ", if (is_last_section) "\u2514\u2500" else "\u251C\u2500", " \U0001F4C2 ", section$text, " (Menu)\n")
+          section_prefix <- paste0("\u2502 ", if (is_last_section) "   " else "\u2502  ")
 
           for (j in seq_along(section$menu_pages)) {
             page_name <- section$menu_pages[j]
@@ -1167,9 +1183,9 @@ print.dashboard_project <- function(x, ...) {
             page <- x$pages[[page_name]]
             is_last_page <- (j == length(section$menu_pages))
 
-            cat(section_prefix, if (is_last_page) "└─" else "├─", " 📄 ", page_name, sep = "")
+            .cat_utf8(section_prefix, if (is_last_page) "\u2514\u2500" else "\u251C\u2500", " \U0001F4C4 ", page_name)
             .print_page_badges(page)
-            cat("\n")
+            .cat_utf8("\n")
           }
         }
       }
@@ -1184,9 +1200,9 @@ print.dashboard_project <- function(x, ...) {
           page <- x$pages[[page_name]]
           is_last <- (i == length(pages_not_in_structure)) && length(x$navbar_sections) == 0
 
-          cat("║ ", if (is_last) "└─" else "├─", " 📄 ", page_name, sep = "")
+          .cat_utf8("\u2502 ", if (is_last) "\u2514\u2500" else "\u251C\u2500", " \U0001F4C4 ", page_name)
           .print_page_badges(page)
-          cat("\n")
+          .cat_utf8("\n")
         }
       }
     } else {
@@ -1200,16 +1216,16 @@ print.dashboard_project <- function(x, ...) {
 
         # Page branch
         if (is_last_page) {
-          cat("║ └─ 📄 ", page_name, sep = "")
-          page_prefix <- "║    "
+          .cat_utf8("\u2502 \u2514\u2500 \U0001F4C4 ", page_name)
+          page_prefix <- "\u2502    "
         } else {
-          cat("║ ├─ 📄 ", page_name, sep = "")
-          page_prefix <- "║ │  "
+          .cat_utf8("\u2502 \u251C\u2500 \U0001F4C4 ", page_name)
+          page_prefix <- "\u2502 \u2502  "
         }
 
         # Page badges
         .print_page_badges(page)
-        cat("\n")
+        .cat_utf8("\n")
 
       # Show visualizations
       viz_list <- page$items %||% list()
@@ -1258,11 +1274,11 @@ print.dashboard_project <- function(x, ...) {
             # Only show tabgroup folders if not root
             if (name != "(root)") {
               if (is_last) {
-                cat(prefix, "└─ 📁 ", name, "\n", sep = "")
+                .cat_utf8(prefix, "\u2514\u2500 \U0001F4C1 ", name, "\n")
                 new_prefix <- paste0(prefix, "   ")
               } else {
-                cat(prefix, "├─ 📁 ", name, "\n", sep = "")
-                new_prefix <- paste0(prefix, "│  ")
+                .cat_utf8(prefix, "\u251C\u2500 \U0001F4C1 ", name, "\n")
+                new_prefix <- paste0(prefix, "\u2502  ")
               }
             } else {
               new_prefix <- prefix
@@ -1278,24 +1294,14 @@ print.dashboard_project <- function(x, ...) {
                 v <- items[[m]]
                 is_last_item <- (m == length(items)) && !has_children
 
-                type_icon <- switch(v$type,
-                  "timeline" = "📈",
-                  "stackedbar" = "📊",
-                  "stackedbars" = "📊",
-                  "heatmap" = "🗺️",
-                  "histogram" = "📉",
-                  "bar" = "📊",
-                  "📊"
-                )
-
-                type_label <- v$type
+                type_label <- v$type %||% "viz"
                 title_text <- if (!is.null(v$title)) paste0(": ", substr(v$title, 1, 40)) else ""
                 if (!is.null(v$title) && nchar(v$title) > 40) title_text <- paste0(title_text, "...")
 
                 if (is_last_item) {
-                  cat(new_prefix, "└─ ", type_icon, " ", type_label, title_text, "\n", sep = "")
+                  .cat_utf8(new_prefix, "\u2514\u2500 \U0001F4CA [", type_label, "]", title_text, "\n")
                 } else {
-                  cat(new_prefix, "├─ ", type_icon, " ", type_label, title_text, "\n", sep = "")
+                  .cat_utf8(new_prefix, "\u251C\u2500 \U0001F4CA [", type_label, "]", title_text, "\n")
                 }
               }
             }
@@ -1313,7 +1319,7 @@ print.dashboard_project <- function(x, ...) {
     }
   }
 
-  cat("╚══════════════════════════════════════════════════════════════════════════\n\n")
+  .cat_utf8("\u2550\u2550 ", strrep("\u2550", 73), "\n\n")
   invisible(x)
 }
 

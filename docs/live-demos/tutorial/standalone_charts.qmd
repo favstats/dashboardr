@@ -45,7 +45,7 @@ This standalone chart shows the overall distribution of happiness across educati
 
 ```{r stackedbar-degree-1a-happy-1a}
 # This is a standalone chart.
-result <- create_stackedbar(
+result <- viz_stackedbar(
   data = data,
   title = "This is a standalone chart.",
   x_var = "degree_1a",
@@ -73,7 +73,7 @@ result
 
 ```{r heatmap-partyid-1a-polviews-1a}
 # Here's another summary chart
-result <- create_heatmap(
+result <- viz_heatmap(
   data = {point.value:.2f},
   title = "Here's another summary chart",
   x_var = "partyid_1a",

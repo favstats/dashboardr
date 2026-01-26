@@ -1,7 +1,7 @@
 # =================================================================
 # Demo: Map Visualization Type
 # =================================================================
-# Demonstrates the new create_map() function and add_viz(type = "map")
+# Demonstrates the new viz_map() function and add_viz(type = "map")
 # for creating interactive choropleth maps with click navigation.
 # =================================================================
 

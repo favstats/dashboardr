@@ -12,7 +12,7 @@ add_divider(content, style = "default", tabgroup = NULL)
 
 - content:
 
-  A content_collection or viz_collection object
+  A content_collection, viz_collection, or page_object
 
 - style:
 
@@ -25,4 +25,4 @@ add_divider(content, style = "default", tabgroup = NULL)
 
 ## Value
 
-Updated content_collection
+Updated object (same type as input)

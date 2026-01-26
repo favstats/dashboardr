@@ -1,166 +1,236 @@
 # Pages: Deep Dive
 
+This vignette covers **pages** - the second layer of dashboardr’s
+architecture. For a quick overview, see
+[`vignette("getting-started")`](https://favstats.github.io/dashboardr/articles/getting-started.md).
+
+Throughout this vignette, we use the [General Social Survey
+(GSS)](https://gssr.io/) as example data. Click below to see the data
+loading code.
+
+📦 **Data Loading Code** (click to expand)
+
 ``` r
 library(dashboardr)
 library(dplyr)
 library(gssr)
-#> Warning: package 'gssr' was built under R version 4.4.3
+library(haven)
+
+# Load latest wave only
 data(gss_all)
 gss <- gss_all %>%
   select(year, age, sex, race, degree, happy, polviews) %>%
-  filter(year >= 2010, !is.na(age), !is.na(sex), !is.na(race), !is.na(degree))
+  filter(year == max(year, na.rm = TRUE)) %>%
+  # Filter to substantive responses (removes "don't know", "no answer", etc.)
+  filter(
+    happy %in% 1:3,        # very happy, pretty happy, not too happy
+    polviews %in% 1:7,     # extremely liberal to extremely conservative
+    !is.na(age), !is.na(sex), !is.na(race), !is.na(degree)
+  ) %>%
+  mutate(
+    sex = droplevels(as_factor(sex)),
+    race = droplevels(as_factor(race)),
+    degree = droplevels(as_factor(degree)),
+    happy = droplevels(as_factor(happy)),
+    polviews = droplevels(as_factor(polviews))
+  )
 ```
 
-This vignette goes deep into pages - the second layer of dashboardr’s
-architecture. For a quick overview, see
-[`vignette("getting-started")`](https://favstats.github.io/dashboardr/articles/getting-started.md).
+## 📄 What is create_page()?
 
-## What Pages Do
-
-Pages serve as **containers** that:
-
-1.  Hold content collections
-2.  Associate data with visualizations
-3.  Configure page-specific settings (icons, overlays, lazy loading)
-4.  Define position in the dashboard navbar
-
-Think of pages as “destinations” in your dashboard - each page is a
-separate HTML file that users navigate to.
-
-## Creating Pages
-
-### The create_page() Function
+The
+[`create_page()`](https://favstats.github.io/dashboardr/reference/create_page.md)
+function creates a **page object** - a named destination in your
+dashboard that users can navigate to. Every dashboard needs at least one
+page.
 
 ``` r
-page <- create_page(
-  "Analysis",
+# Create a simple page
+my_page <- create_page(
+  name = "Home",
   data = gss,
-  type = "bar"  # Default viz type for this page
-) %>%
-  add_viz(x_var = "degree", title = "Education")
+  type = "bar"
+)
 
-print(page)
-#> -- Page: Analysis ───────────────────────────────────────────────
-#> ✔ data: 21788 rows x 7 cols | default: bar 
-#> 1 items
+print(my_page)
+#> -- Page: Home ───────────────────────────────────────────────────
+#> ✔ data: 2997 rows x 7 cols | default: bar 
 #> 
-#> • [Viz] Education (bar) x=degree
+#> No content added yet
+#>   Tip: Use add_viz(), add_text(), or add_content()
 ```
 
+Pages can hold all the same content as
+[`create_content()`](https://favstats.github.io/dashboardr/reference/create_content.md)
+(visualizations, text, callouts, etc.), but they also carry **page-level
+metadata** like the page name, icon, and navbar position.
+
+### 🆚 create_page() vs create_content()
+
+Both functions create containers for visualizations and content, but
+they serve different purposes:
+
+|  | [`create_content()`](https://favstats.github.io/dashboardr/reference/create_content.md) | [`create_page()`](https://favstats.github.io/dashboardr/reference/create_page.md) |
+|----|----|----|
+| **Purpose** | Build reusable content blocks | Create a dashboard page |
+| **Page metadata** | No | Yes (icons, navbar position, overlays) |
+| **Data defaults** | Yes | Yes |
+| **Use with [`create_dashboard()`](https://favstats.github.io/dashboardr/reference/create_dashboard.md)** | Must be added to a page first | Can be added directly |
+
+**Think of it this way:**
+
+- [`create_content()`](https://favstats.github.io/dashboardr/reference/create_content.md)
+  = building blocks (reusable pieces)
+- [`create_page()`](https://favstats.github.io/dashboardr/reference/create_page.md)
+  = the destination (what users navigate to)
+
+## 🔀 Two Workflows
+
+### Workflow 1: Simple Dashboards (Direct)
+
+For straightforward dashboards, add content directly to pages:
+
 ``` r
-page %>% preview()
-```
+# Everything in one chain
+simple_page <- create_page("Analysis", data = gss, type = "bar") %>%
+  add_text("## Education Distribution", "", "How education levels are distributed.") %>%
+  add_viz(x_var = "degree", title = "Education Levels") %>%
+  add_callout("Data from GSS 2022", type = "note")
 
-Preview
-
-Education
-
-### Adding Content to Pages
-
-There are two ways to add content:
-
-**Method 1: Add pre-built content collections**
-
-``` r
-# Build content separately
-demographics <- create_content(type = "bar") %>%
-  add_viz(x_var = "degree", title = "Education", tabgroup = "demo") %>%
-  add_viz(x_var = "race", title = "Race", tabgroup = "demo")
-
-# Add to page
-page1 <- create_page("Analysis", data = gss) %>%
-  add_content(demographics)
-
-print(page1)
+print(simple_page)
 #> -- Page: Analysis ───────────────────────────────────────────────
-#> ✔ data: 21788 rows x 7 cols 
-#> 2 items
-#> 
-#> ❯ [Tab] demo (2 vizs)
-#>   • [Viz] Education (bar) x=degree
-#>   • [Viz] Race (bar) x=race
-```
-
-``` r
-page1 %>% preview()
-```
-
-Preview
-
-demo
-
-Education
-
-Race
-
-**Method 2: Add content directly to the page**
-
-``` r
-# Build content directly on the page
-page2 <- create_page("Analysis", data = gss, type = "bar") %>%
-  add_viz(x_var = "degree", title = "Education", tabgroup = "demo") %>%
-  add_viz(x_var = "race", title = "Race", tabgroup = "demo") %>%
-  add_text("## Summary", "", "Key findings from the analysis.")
-
-print(page2)
-#> -- Page: Analysis ───────────────────────────────────────────────
-#> ✔ data: 21788 rows x 7 cols | default: bar 
+#> ✔ data: 2997 rows x 7 cols | default: bar 
 #> 3 items
 #> 
-#> ❯ [Tab] demo (2 vizs)
-#>   • [Viz] Education (bar) x=degree
-#>   • [Viz] Race (bar) x=race
 #> ℹ [Text]
+#> • [Viz] Education Levels (bar) x=degree
+#> ⚠ [Callout]
 ```
 
 ``` r
-page2 %>% preview()
+simple_page %>% preview()
 ```
 
 Preview
 
-Summary
+Education Distribution
 
-Key findings from the analysis.
+How education levels are distributed.
 
-demo
+Education Levels
+
+**NOTE**
+
+Data from GSS 2022
+
+**When to use:** Quick dashboards, single-topic pages, prototyping.
+
+### Workflow 2: Complex Dashboards (Modular)
+
+For complex dashboards, build content separately, then assemble with
+[`add_content()`](https://favstats.github.io/dashboardr/reference/add_content.md):
+
+``` r
+# Step 1: Build content pieces separately
+intro_text <- create_content() %>%
+  add_text("## Overview", "", "Key findings from the General Social Survey.")
+
+demographic_charts <- create_content(type = "bar") %>%
+  add_viz(x_var = "degree", title = "Education", tabgroup = "Demographics") %>%
+  add_viz(x_var = "race", title = "Race", tabgroup = "Demographics")
+
+attitude_charts <- create_content(type = "bar") %>%
+  add_viz(x_var = "happy", title = "Happiness", tabgroup = "Attitudes") %>%
+  add_viz(x_var = "polviews", title = "Political Views", tabgroup = "Attitudes")
+
+# Step 2: Assemble into page
+complex_page <- create_page("Full Analysis", data = gss) %>%
+  add_content(intro_text) %>%
+  add_content(demographic_charts) %>%
+  add_content(attitude_charts)
+
+print(complex_page)
+#> -- Page: Full Analysis ──────────────────────────────────────────
+#> ✔ data: 2997 rows x 7 cols 
+#> 5 items
+#> 
+#> ℹ [Text]
+#> ❯ [Tab] Demographics (2 vizs)
+#>   • [Viz] Education (bar) x=degree
+#>   • [Viz] Race (bar) x=race
+#> ❯ [Tab] Attitudes (2 vizs)
+#>   • [Viz] Happiness (bar) x=happy
+#>   • [Viz] Political Views (bar) x=polviews
+```
+
+``` r
+complex_page %>% preview()
+```
+
+Preview
+
+Overview
+
+Key findings from the General Social Survey.
+
+Demographics
+
+Attitudes
 
 Education
 
 Race
 
-Both methods work - use whichever fits your workflow better.
+Happiness
 
-## Page Types
+Political Views
+
+**When to use:** Multi-section pages, reusable content, team
+collaboration, complex layouts.
+
+**Why this approach?**
+
+1.  **Modularity** - Each content piece is self-contained and testable
+2.  **Reusability** - Share content across multiple pages
+
+**Rule of thumb:**
+
+- Same viz type, same styling → build directly on
+  [`create_page()`](https://favstats.github.io/dashboardr/reference/create_page.md)
+- Different viz types, different defaults → use
+  [`create_content()`](https://favstats.github.io/dashboardr/reference/create_content.md)
+  first
+
+3.  **Clarity** - Easier to understand page structure
+4.  **Maintainability** - Update one section without touching others
+
+## 📄 Page Types
+
+There’s only one special page type in the API: **landing pages**
+(`is_landing_page = TRUE`). All other “page types” below are just
+examples of how you might configure pages with different content - the
+possibilities depend entirely on what you add!
 
 ### Landing Pages
 
-Full-width pages without sidebar, ideal for welcome screens:
+The only true page type distinction. Landing pages are full-width
+welcome screens without sidebars:
 
 ``` r
-home <- create_page(
-  "Home",
-  is_landing_page = TRUE
-) %>%
+home <- create_page("Home", is_landing_page = TRUE) %>%
   add_text(
     "# Welcome to the GSS Dashboard",
     "",
-    "Explore insights from the General Social Survey (2010-2024).",
+    "Explore insights from the General Social Survey.",
     "",
     "## What You'll Find",
     "",
-    "This dashboard presents analysis of:",
-    "",
     "- **Demographics** - Age, education, race distributions",
-    "- **Attitudes** - Happiness, political views, social trust",
-    "- **Trends** - Changes over time in key indicators",
+    "- **Attitudes** - Happiness, political views",
     "",
-    "## Getting Started",
-    "",
-    "Click on the **Analysis** tab above to begin exploring the data.",
-    "Use the tabs within each page to navigate between different views."
+    "Click the tabs above to begin exploring!"
   ) %>%
-  add_callout("Data source: General Social Survey, NORC at University of Chicago", type = "note")
+  add_callout("Data source: General Social Survey, NORC", type = "note")
 
 print(home)
 #> -- Page: Home ───────────────────────────────────────────────────
@@ -171,35 +241,48 @@ print(home)
 #> ⚠ [Callout]
 ```
 
-### Analysis Pages
+``` r
+home %>% preview()
+```
 
-Standard pages with data and visualizations:
+Preview
+
+Welcome to the GSS Dashboard
+
+Explore insights from the General Social Survey.
+
+What You'll Find
+
+- **Demographics** - Age, education, race distributions
+
+- **Attitudes** - Happiness, political views
+
+Click the tabs above to begin exploring!
+
+**NOTE**
+
+Data source: General Social Survey, NORC
+
+### Example: Analysis Pages
+
+Standard pages with data and visualizations - just add charts!
 
 ``` r
-# Create content
-charts <- create_content(type = "bar") %>%
-  add_viz(x_var = "degree", title = "Education", tabgroup = "overview") %>%
-  add_viz(x_var = "happy", title = "Happiness", tabgroup = "overview")
-
-trends <- create_content(type = "stackedbar") %>%
-  add_viz(x_var = "degree", stack_var = "happy", title = "Happiness by Education",
-          tabgroup = "crosstabs", stacked_type = "percent")
-
-# Create page with content
-analysis <- create_page("Analysis", data = gss) %>%
-  add_content(charts) %>%
-  add_content(trends)
+analysis <- create_page("Analysis", data = gss, type = "bar") %>%
+  add_viz(x_var = "degree", title = "Education", tabgroup = "Demographics") %>%
+  add_viz(x_var = "race", title = "Race", tabgroup = "Demographics") %>%
+  add_viz(x_var = "happy", title = "Happiness", tabgroup = "Attitudes")
 
 print(analysis)
 #> -- Page: Analysis ───────────────────────────────────────────────
-#> ✔ data: 21788 rows x 7 cols 
+#> ✔ data: 2997 rows x 7 cols | default: bar 
 #> 3 items
 #> 
-#> ❯ [Tab] overview (2 vizs)
+#> ❯ [Tab] Demographics (2 vizs)
 #>   • [Viz] Education (bar) x=degree
+#>   • [Viz] Race (bar) x=race
+#> ❯ [Tab] Attitudes (1 viz)
 #>   • [Viz] Happiness (bar) x=happy
-#> ❯ [Tab] crosstabs (1 viz)
-#>   • [Viz] Happiness by Education (stackedbar) x=degree, stack=happy
 ```
 
 ``` r
@@ -208,246 +291,9 @@ analysis %>% preview()
 
 Preview
 
-overview
+Demographics
 
-crosstabs
-
-Education
-
-Happiness
-
-Happiness by Education
-
-### Text-Only Pages
-
-For documentation, methodology, or about sections:
-
-``` r
-about <- create_page("About") %>%
-  add_text(
-    "## About This Dashboard",
-    "",
-    "This dashboard was created using [dashboardr](https://github.com/favstats/dashboardr).",
-    "",
-    "### Methodology",
-    "",
-    "The General Social Survey (GSS) is a nationally representative survey of adults",
-    "in the United States, conducted by NORC at the University of Chicago.",
-    "",
-    "### Data Processing",
-    "",
-    "- Filtered to years 2010-2024",
-    "- Removed cases with missing demographic data",
-    "- Applied survey weights where appropriate",
-    "",
-    "### Contact",
-    "",
-    "For questions about this dashboard, please contact the research team."
-  ) %>%
-  add_callout("Last updated: January 2025", type = "note")
-
-print(about)
-#> -- Page: About ──────────────────────────────────────────────────
-#> 2 items
-#> 
-#> ℹ [Text]
-#> ⚠ [Callout]
-```
-
-## Page Settings
-
-### Icons
-
-Icons appear in the navbar next to page names:
-
-``` r
-page <- create_page("Analysis", icon = "ph:chart-bar-fill")
-```
-
-Popular icons from [Phosphor Icons](https://phosphoricons.com/):
-
-| Icon       | Code                |
-|------------|---------------------|
-| Home       | `ph:house-fill`     |
-| Chart      | `ph:chart-bar-fill` |
-| Line chart | `ph:chart-line`     |
-| Users      | `ph:users-fill`     |
-| Info       | `ph:info-fill`      |
-| Settings   | `ph:gear-fill`      |
-
-### Navbar Alignment
-
-Put pages on the right side of the navbar:
-
-``` r
-about <- create_page("About", navbar_align = "right")
-settings <- create_page("Settings", navbar_align = "right")
-```
-
-### Page-Level Defaults
-
-Set visualization defaults at the page level:
-
-``` r
-page <- create_page(
-  "Survey Results",
-  data = gss,
-  type = "bar",                    # Default viz type
-  color_palette = c("#3498DB"),    # Default colors
-  drop_na_vars = TRUE              # Default NA handling
-) %>%
-  add_viz(x_var = "degree", title = "Education") %>%
-  add_viz(x_var = "happy", title = "Happiness", color_palette = c("#E74C3C"))
-
-print(page)
-#> -- Page: Survey Results ─────────────────────────────────────────
-#> ✔ data: 21788 rows x 7 cols | default: bar 
-#> 2 items
-#> 
-#> • [Viz] Education (bar) x=degree
-#> • [Viz] Happiness (bar) x=happy
-```
-
-``` r
-page %>% preview()
-```
-
-Preview
-
-Education
-
-Happiness
-
-## Performance Settings
-
-### Loading Overlays
-
-Show a spinner while the page loads:
-
-``` r
-heavy_page <- create_page(
-  "Heavy Analysis",
-  data = gss,
-  overlay = TRUE,
-  overlay_theme = "glass",      # Options: "glass", "light", "dark", "accent"
-  overlay_text = "Loading analysis...",
-  overlay_duration = 1500       # Milliseconds
-)
-```
-
-This is especially useful for pages with many visualizations or large
-datasets.
-
-### Lazy Loading
-
-Load charts only as the user scrolls to them:
-
-``` r
-large_page <- create_page(
-  "Large Dashboard",
-  data = gss,
-  lazy_load_charts = TRUE,       # Load charts on scroll
-  lazy_load_margin = "300px",    # Start loading 300px before visible
-  lazy_load_tabs = TRUE          # Load tab content only when clicked
-)
-```
-
-**When to use lazy loading:**
-
-- Pages with 10+ visualizations
-- Pages with complex charts (heatmaps, timelines)
-- Dashboards with many tabs
-
-### Combining Performance Settings
-
-``` r
-optimized_page <- create_page(
-  "Optimized",
-  data = gss,
-  overlay = TRUE,
-  overlay_theme = "glass",
-  overlay_duration = 1000,
-  lazy_load_charts = TRUE,
-  lazy_load_margin = "200px",
-  lazy_load_tabs = TRUE
-)
-```
-
-## Tab Styling
-
-Customize tab appearance at the page level:
-
-``` r
-styled_page <- create_page(
-  "Styled Tabs",
-  data = gss,
-  tabset_theme = "modern",
-  tabset_colors = list(
-    active_bg = "#3498DB",
-    active_text = "#FFFFFF",
-    inactive_bg = "#ECF0F1",
-    inactive_text = "#7F8C8D",
-    hover_bg = "#BDC3C7"
-  )
-)
-```
-
-Available themes: `"default"`, `"modern"`, `"pills"`, `"minimal"`
-
-## Combining Multiple Content Collections
-
-A single page can hold multiple content collections:
-
-``` r
-# Demographics section
-demographics <- create_content(type = "bar") %>%
-  add_viz(x_var = "degree", title = "Education", tabgroup = "demo") %>%
-  add_viz(x_var = "race", title = "Race", tabgroup = "demo")
-
-# Attitudes section
-attitudes <- create_content(type = "bar") %>%
-  add_viz(x_var = "happy", title = "Happiness", tabgroup = "attitudes") %>%
-  add_viz(x_var = "polviews", title = "Politics", tabgroup = "attitudes")
-
-# Cross-tabs section
-crosstabs <- create_content(type = "stackedbar") %>%
-  add_viz(x_var = "degree", stack_var = "happy", title = "Happiness by Education",
-          tabgroup = "crosstabs", stacked_type = "percent")
-
-# Combine all into one page
-full_analysis <- create_page("Full Analysis", data = gss) %>%
-  add_content(demographics) %>%
-  add_content(attitudes) %>%
-  add_content(crosstabs)
-
-print(full_analysis)
-#> -- Page: Full Analysis ──────────────────────────────────────────
-#> ✔ data: 21788 rows x 7 cols 
-#> 5 items
-#> 
-#> ❯ [Tab] demo (2 vizs)
-#>   • [Viz] Education (bar) x=degree
-#>   • [Viz] Race (bar) x=race
-#> ❯ [Tab] attitudes (2 vizs)
-#>   • [Viz] Happiness (bar) x=happy
-#>   • [Viz] Politics (bar) x=polviews
-#> ❯ [Tab] crosstabs (1 viz)
-#>   • [Viz] Happiness by Education (stackedbar) x=degree, stack=happy
-```
-
-Preview the combined page:
-
-``` r
-full_analysis %>% preview()
-```
-
-Preview
-
-demo
-
-attitudes
-
-crosstabs
+Attitudes
 
 Education
 
@@ -455,60 +301,345 @@ Race
 
 Happiness
 
-Politics
+### Example: Text-Only Pages
 
-Happiness by Education
-
-## Previewing Pages
-
-Test pages before adding to a dashboard:
+For documentation, methodology, or about sections - just add text!
 
 ``` r
-# Quick preview
-page %>% preview()
+about <- create_page("About") %>%
+  add_text(
+    "## About This Dashboard",
+    "",
+    "Created using [dashboardr](https://github.com/favstats/dashboardr).",
+    "",
+    "### Methodology",
+    "",
+    "The GSS is a nationally representative survey conducted by NORC.",
+    "",
+    "### Contact",
+    "",
+    "For questions, contact the research team."
+  ) %>%
+  add_accordion(
+    title = "Technical Details",
+    text = "Margin of error: +/- 3%. Confidence level: 95%."
+  )
 
-# Full Quarto preview
-page %>% preview(quarto = TRUE)
-
-# Save to file
-page %>% preview(path = "page_preview.html")
+print(about)
+#> -- Page: About ──────────────────────────────────────────────────
+#> 2 items
+#> 
+#> ℹ [Text]
+#> ☰ [Accordion] Technical Details
 ```
 
-## Data Inheritance
+``` r
+about %>% preview()
+```
 
-When you set `data` on a page, all visualizations in that page’s content
-collections inherit it:
+Preview
+
+About This Dashboard
+
+Created using [dashboardr](https://github.com/favstats/dashboardr).
+
+Methodology
+
+The GSS is a nationally representative survey conducted by NORC.
+
+Contact
+
+For questions, contact the research team.
+
+Technical Details
+
+Margin of error: +/- 3%. Confidence level: 95%.
+
+### Example: Dashboard-Style Pages
+
+Metrics at top, charts below - combine value boxes with visualizations!
 
 ``` r
-# Content collection WITHOUT data
-charts <- create_content(type = "bar") %>%
+# Build dashboard content
+dashboard_content <- create_content(data = gss, type = "bar") %>%
+  add_value_box_row() %>%
+    add_value_box(title = "Respondents", value = format(nrow(gss), big.mark = ","), bg_color = "#3498DB") %>%
+    add_value_box(title = "Variables", value = "7", bg_color = "#27AE60") %>%
+  end_value_box_row() %>%
+  add_divider() %>%
+  add_viz(x_var = "degree", title = "Education Distribution")
+
+# Assemble page
+dashboard_page <- create_page("Dashboard") %>%
+  add_content(dashboard_content)
+
+print(dashboard_page)
+#> -- Page: Dashboard ──────────────────────────────────────────────
+#> 3 items
+#> 
+#> • [value_box_row]
+#> ─ [Divider]
+#> • [Viz] Education Distribution (bar) x=degree
+```
+
+``` r
+dashboard_page %>% preview()
+```
+
+Preview
+
+Respondents
+
+2,997
+
+Variables
+
+7
+
+------------------------------------------------------------------------
+
+Education Distribution
+
+## ⚙️ Page Settings
+
+### Icons
+
+Icons appear in the navbar next to page names, helping users quickly
+identify different sections of your dashboard. Use the `icon` parameter
+with an icon code from any [Iconify](https://icon-sets.iconify.design/)
+icon set:
+
+``` r
+page_with_icon <- create_page("Charts", icon = "ph:chart-bar-fill", data = gss, type = "bar") %>%
   add_viz(x_var = "degree", title = "Education")
 
-# Page WITH data - charts will use the page's data
-page <- create_page("Analysis", data = gss) %>%
-  add_content(charts)
-
-print(page)
-#> -- Page: Analysis ───────────────────────────────────────────────
-#> ✔ data: 21788 rows x 7 cols 
+print(page_with_icon)
+#> -- Page: Charts ─────────────────────────────────────────────────
+#> ✔ data: 2997 rows x 7 cols | default: bar 
 #> 1 items
 #> 
 #> • [Viz] Education (bar) x=degree
 ```
 
-If content collections have their own data, it takes precedence:
+Popular icons from [Phosphor Icons](https://phosphoricons.com/):
+
+| Icon | Code                |
+|:----:|---------------------|
+|      | `ph:house-fill`     |
+|      | `ph:chart-bar-fill` |
+|      | `ph:chart-line`     |
+|      | `ph:users-fill`     |
+|      | `ph:info-fill`      |
+|      | `ph:gear-fill`      |
+
+See
+[`vignette("advanced-features")`](https://favstats.github.io/dashboardr/articles/advanced-features.md)
+for more icon options and styling.
+
+### Navbar Alignment
+
+By default, pages appear on the left side of the navbar. Use
+`navbar_align = "right"` to push pages to the right side - useful for
+utility pages like “Settings”, “About”, or “Help” that shouldn’t be the
+main focus:
 
 ``` r
-# Content collection WITH its own data
-specific_charts <- create_content(data = gss %>% filter(year == 2020), type = "bar") %>%
-  add_viz(x_var = "degree", title = "Education (2020 only)")
+settings_page <- create_page("Settings", navbar_align = "right") %>%
+  add_text("This page appears on the right side of the navbar.")
 
-# Page data is ignored for this content
-page <- create_page("Analysis", data = gss) %>%
-  add_content(specific_charts)
+print(settings_page)
+#> -- Page: Settings ───────────────────────────────────────────────
+#> 1 items
+#> 
+#> ℹ [Text]
 ```
 
-## Next Steps
+### Page-Level Defaults
+
+Just like with
+[`create_content()`](https://favstats.github.io/dashboardr/reference/create_content.md),
+you can set visualization defaults that apply to all charts on the page.
+Set them once in
+[`create_page()`](https://favstats.github.io/dashboardr/reference/create_page.md),
+and they flow through to all
+[`add_viz()`](https://favstats.github.io/dashboardr/reference/add_viz.md)
+calls. Individual visualizations can still override these defaults:
+
+``` r
+styled_page <- create_page(
+  "Survey Results",
+  data = gss,
+  type = "bar",
+  color_palette = c("#3498DB"),
+  drop_na_vars = TRUE
+) %>%
+  add_viz(x_var = "degree", title = "Education (default blue)") %>%
+  add_viz(x_var = "happy", title = "Happiness (custom red)", color_palette = c("#E74C3C"))
+
+print(styled_page)
+#> -- Page: Survey Results ─────────────────────────────────────────
+#> ✔ data: 2997 rows x 7 cols | default: bar 
+#> 2 items
+#> 
+#> • [Viz] Education (default blue) (bar) x=degree
+#> • [Viz] Happiness (custom red) (bar) x=happy
+```
+
+``` r
+styled_page %>% preview()
+```
+
+Preview
+
+Education (default blue)
+
+Happiness (custom red)
+
+### Loading Overlays
+
+For pages with many charts or complex visualizations, loading overlays
+provide visual feedback while content renders. The overlay covers the
+page with a spinner and optional message, then fades out once charts are
+ready. This improves perceived performance and prevents users from
+seeing partially-loaded content.
+
+> **See it in action:** Check out the [Loading Overlay
+> Demo](https://favstats.github.io/dashboardr/live-demos/overlay/index.md)
+> to see all four overlay themes. Reload each page to see the overlay
+> effect.
+
+**Note:** Loading overlays are only visible when viewing the generated
+dashboard (not in
+[`preview()`](https://favstats.github.io/dashboardr/reference/preview.md)).
+To see them in action, generate a dashboard with
+[`generate_dashboard()`](https://favstats.github.io/dashboardr/reference/generate_dashboard.md)
+and open it in a browser.
+
+``` r
+overlay_page <- create_page(
+  "With Overlay",
+  data = gss,
+  type = "bar",
+  overlay = TRUE,
+  overlay_theme = "glass",
+  overlay_text = "Loading visualizations...",
+  overlay_duration = 1500
+) %>%
+  add_viz(x_var = "degree", title = "Education")
+
+print(overlay_page)
+#> -- Page: With Overlay ───────────────────────────────────────────
+#> ✔ data: 2997 rows x 7 cols | default: bar 
+#> 1 items
+#> 
+#> • [Viz] Education (bar) x=degree
+```
+
+#### Overlay Themes
+
+| Theme      | Description                                      |
+|------------|--------------------------------------------------|
+| `"glass"`  | Semi-transparent frosted glass effect (default)  |
+| `"light"`  | Clean white background with subtle shadow        |
+| `"dark"`   | Dark background, good for dark-themed dashboards |
+| `"accent"` | Uses your dashboard’s accent color               |
+
+#### Overlay Options
+
+| Parameter          | Description                    | Default        |
+|--------------------|--------------------------------|----------------|
+| `overlay`          | Enable/disable loading overlay | `FALSE`        |
+| `overlay_theme`    | Visual style                   | `"glass"`      |
+| `overlay_text`     | Message shown during loading   | `"Loading..."` |
+| `overlay_duration` | Minimum display time (ms)      | `1000`         |
+
+## 📑 Pagination
+
+Pagination creates **page breaks** within a single navbar page,
+splitting content into scrollable sections.
+
+``` r
+paginated <- create_page("Long Report", data = gss, type = "bar") %>%
+  add_text("## Section 1: Demographics") %>%
+  add_viz(x_var = "degree", title = "Education") %>%
+  add_viz(x_var = "race", title = "Race") %>%
+  add_pagination() %>%
+  
+  add_text("## Section 2: Attitudes") %>%
+  add_viz(x_var = "happy", title = "Happiness") %>%
+  add_pagination() %>%
+  
+  add_text("## Section 3: Summary") %>%
+  add_text("Key findings from this analysis...")
+
+print(paginated)
+#> -- Page: Long Report ────────────────────────────────────────────
+#> ✔ data: 2997 rows x 7 cols | default: bar 
+#> 9 items
+#> 
+#> ℹ [Text]
+#> • [Viz] Education (bar) x=degree
+#> • [Viz] Race (bar) x=race
+#> → [PageBreak]
+#> ℹ [Text]
+#> • [Viz] Happiness (bar) x=happy
+#> → [PageBreak]
+#> ℹ [Text]
+#> ℹ [Text]
+```
+
+| Context | Behavior |
+|----|----|
+| [`preview()`](https://favstats.github.io/dashboardr/reference/preview.md) | Content appears continuously (no breaks) |
+| Generated dashboard | Creates separate scrollable sections |
+
+**When to use:**
+
+- Long analysis pages with distinct sections
+- Report-style dashboards
+- Sequential workflows
+
+> **Note:** For truly separate pages in the navbar, use multiple
+> [`create_page()`](https://favstats.github.io/dashboardr/reference/create_page.md)
+> calls instead.
+
+## 👁️ Previewing Pages
+
+Preview pages the same way as content collections:
+
+``` r
+page %>% preview()
+```
+
+The same [preview
+limitations](https://favstats.github.io/dashboardr/articles/content-collections.html#previewing-content)
+apply.
+
+## 📊 Data Inheritance
+
+When you set `data` on a page, content collections inherit it:
+
+``` r
+# Content WITHOUT data
+charts <- create_content(type = "bar") %>%
+  add_viz(x_var = "degree", title = "Education")
+
+# Page WITH data - charts will use page's data
+page <- create_page("Analysis", data = gss) %>%
+  add_content(charts)
+
+print(page)
+#> -- Page: Analysis ───────────────────────────────────────────────
+#> ✔ data: 2997 rows x 7 cols 
+#> 1 items
+#> 
+#> • [Viz] Education (bar) x=degree
+```
+
+If a content collection has its own data, it takes precedence over page
+data.
+
+## ➡️ Next Steps
 
 Once you have pages, add them to a dashboard:
 
@@ -520,4 +651,6 @@ create_dashboard(title = "GSS Explorer", output_dir = "output") %>%
 
 See
 [`vignette("dashboards")`](https://favstats.github.io/dashboardr/articles/dashboards.md)
-for dashboard creation details.
+for dashboard creation details, and
+[`vignette("advanced-features")`](https://favstats.github.io/dashboardr/articles/advanced-features.md)
+for tab styling and navbar customization.

@@ -1,0 +1,43 @@
+project:
+  type: website
+  output-dir: docs
+  resources:
+    - assets/
+
+website:
+  title: "Loading Overlay Demo"
+  navbar:
+    left:
+      - href: glass_theme.qmd
+        text: "{{< iconify ph sparkle-fill >}} Glass Theme"
+      - href: light_theme.qmd
+        text: "{{< iconify ph sun-fill >}} Light Theme"
+      - href: dark_theme.qmd
+        text: "{{< iconify ph moon-fill >}} Dark Theme"
+      - href: accent_theme.qmd
+        text: "{{< iconify ph paint-brush-fill >}} Accent Theme"
+    search: true
+  bread-crumbs: true
+  page-navigation: false
+  back-to-top-navigation: false
+  reader-mode: false
+
+format:
+  html:
+    prefer-html: true
+    theme:
+      - flatly
+      - _tabset_modern.scss
+
+    css:
+      - assets/modal.css
+      - assets/pagination.css
+    mainfont: "Fira Sans"
+    fontsize: 16px
+    monofont: "Fira Code"
+    page-layout: full
+    include-in-header:
+      text: |
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Fira+Sans:wght@300;400;500;600;700&family=Fira+Code:wght@300;400;500;600;700&display=swap" rel="stylesheet">

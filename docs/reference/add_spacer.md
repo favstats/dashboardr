@@ -12,7 +12,7 @@ add_spacer(content, height = "2rem", tabgroup = NULL)
 
 - content:
 
-  A content_collection or viz_collection object
+  A content_collection, viz_collection, or page_object
 
 - height:
 
@@ -25,4 +25,4 @@ add_spacer(content, height = "2rem", tabgroup = NULL)
 
 ## Value
 
-Updated content_collection
+Updated object (same type as input)

@@ -182,7 +182,7 @@ create_viz(data = heatmap_data) %>%
 # Example 10: Stackedbar with clean defaults
 # -----------------------------------------------------------------------------
 
-# create_stackedbar() now has cleaner defaults:
+# viz_stackedbar() now has cleaner defaults:
 # - stacked_type = "counts" (the default)
 # - y_label = "Count" (auto-set based on stacked_type)
 create_viz(data = mtcars) %>%

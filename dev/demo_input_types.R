@@ -66,7 +66,7 @@ viz <- create_viz() %>%
   add_viz(
     type = "timeline",
     time_var = "year",
-    response_var = "value",
+    y_var = "value",
     group_var = "country",
     chart_type = "line",
     title = "GDP Index by Country",

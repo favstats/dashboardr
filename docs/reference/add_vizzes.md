@@ -39,9 +39,9 @@ add_vizzes(
 
   Optional. Template string for tabgroup with `{i}` placeholder for the
   iteration index (e.g., `"skills/age/item{i}"`). You can also use
-  parameter names in the template (e.g., `"skills/{response_var}"`). If
-  NULL, tabgroup must be provided as a vector of the same length as
-  expandable parameters.
+  parameter names in the template (e.g., `"skills/{y_var}"`). If NULL,
+  tabgroup must be provided as a vector of the same length as expandable
+  parameters.
 
 - .title_template:
 
@@ -55,10 +55,10 @@ The updated viz_collection object with multiple visualizations added
 
 ## Details
 
-The function identifies "expandable" parameters (response_var, x_var,
-y_var, stack_var, questions) and creates one visualization per value.
-Other parameters are applied to all visualizations. All expandable
-vector parameters must have the same length.
+The function identifies "expandable" parameters (y_var, x_var, y_var,
+stack_var, questions) and creates one visualization per value. Other
+parameters are applied to all visualizations. All expandable vector
+parameters must have the same length.
 
 Templates use glue syntax:
 
@@ -66,10 +66,10 @@ Templates use glue syntax:
 
 - `{param_name}` is replaced with the current value of that parameter
 
-The function identifies "expandable" parameters (response_var, x_var,
-y_var, stack_var, questions) and creates one visualization per value.
-Other parameters are applied to all visualizations. All expandable
-vector parameters must have the same length.
+The function identifies "expandable" parameters (y_var, x_var, y_var,
+stack_var, questions) and creates one visualization per value. Other
+parameters are applied to all visualizations. All expandable vector
+parameters must have the same length.
 
 Templates use glue syntax:
 

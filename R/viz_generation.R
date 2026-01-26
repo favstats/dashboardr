@@ -223,7 +223,7 @@
 #' @keywords internal
 #' @details
 #' This function:
-#' - Maps visualization types to function names (e.g., "stackedbar" → "create_stackedbar")
+#' - Maps visualization types to function names (e.g., "stackedbar" → "viz_stackedbar")
 #' - Excludes internal parameters (type, data_path, tabgroup, text, icon, text_position)
 #' - Serializes all other parameters using .serialize_arg()
 
@@ -239,7 +239,7 @@
 #' @keywords internal
 #' @details
 #' This function:
-#' - Maps visualization types to function names (e.g., "stackedbar" → "create_stackedbar")
+#' - Maps visualization types to function names (e.g., "stackedbar" → "viz_stackedbar")
 #' - Excludes internal parameters (type, data_path, tabgroup, text, icon, text_position)
 #' - Serializes all other parameters using .serialize_arg()
 #' - Formats the function call with proper indentation
@@ -249,15 +249,15 @@
   ## TODO: this needs to create from some list of available visualizations (maybe!)
   # Map type to function name
   viz_function <- switch(spec$viz_type,
-                         "map" = "create_map",
-                         "treemap" = "create_treemap",
-                         "stackedbars" = "create_stackedbars",
-                         "stackedbar" = "create_stackedbar",
-                         "histogram" = "create_histogram",
-                         "heatmap" = "create_heatmap",
-                         "timeline" = "create_timeline",
-                         "bar" = "create_bar",
-                         "scatter" = "create_scatter",
+                         "map" = "viz_map",
+                         "treemap" = "viz_treemap",
+                         "stackedbars" = "viz_stackedbars",
+                         "stackedbar" = "viz_stackedbar",
+                         "histogram" = "viz_histogram",
+                         "heatmap" = "viz_heatmap",
+                         "timeline" = "viz_timeline",
+                         "bar" = "viz_bar",
+                         "scatter" = "viz_scatter",
                          spec$viz_type
   )
 
@@ -291,9 +291,11 @@
         if (!is.null(spec$x_var)) vars_to_clean <- c(vars_to_clean, spec$x_var)
         if (!is.null(spec$stack_var)) vars_to_clean <- c(vars_to_clean, spec$stack_var)
       } else if (spec$viz_type == "stackedbars") {
-        if (!is.null(spec$questions)) vars_to_clean <- c(vars_to_clean, spec$questions)
+        # Support x_vars (preferred), x_var, and questions (legacy)
+        stackedbars_vars <- spec$x_vars %||% spec$x_var %||% spec$questions
+        if (!is.null(stackedbars_vars)) vars_to_clean <- c(vars_to_clean, stackedbars_vars)
       } else if (spec$viz_type == "timeline") {
-        if (!is.null(spec$response_var)) vars_to_clean <- c(vars_to_clean, spec$response_var)
+        if (!is.null(spec$y_var)) vars_to_clean <- c(vars_to_clean, spec$y_var)
         if (!is.null(spec$group_var)) vars_to_clean <- c(vars_to_clean, spec$group_var)
         if (!is.null(spec$time_var)) vars_to_clean <- c(vars_to_clean, spec$time_var)
       } else if (spec$viz_type == "histogram") {
@@ -464,22 +466,30 @@
   }
 
   # Infer function name from parameters
-  if ("questions" %in% names(spec)) {
-    fn_name <- "create_stackedbars"
+  # Support x_vars (preferred), x_var, and questions (legacy) for stackedbars
+  if ("questions" %in% names(spec) || "x_vars" %in% names(spec) ||
+      (spec$viz_type == "stackedbars" && "x_var" %in% names(spec))) {
+    fn_name <- "viz_stackedbars"
   } else if ("x_var" %in% names(spec) && "stack_var" %in% names(spec)) {
-    fn_name <- "create_stackedbar"
+    fn_name <- "viz_stackedbar"
   } else if ("x_var" %in% names(spec) && "y_var" %in% names(spec) && "value_var" %in% names(spec)) {
-    fn_name <- "create_heatmap"
+    fn_name <- "viz_heatmap"
   } else if ("time_var" %in% names(spec)) {
-    fn_name <- "create_timeline"
+    fn_name <- "viz_timeline"
   } else if ("x_var" %in% names(spec)) {
-    fn_name <- "create_histogram"
+    fn_name <- "viz_histogram"
   } else {
     fn_name <- spec_name
   }
 
   # Clean up arguments
   args <- spec
+  
+  # Map parameter names for stackedbars (x_var -> x_vars, x_var_labels -> x_var_labels stays same)
+  if (fn_name == "viz_stackedbars" && "x_var" %in% names(args) && !"x_vars" %in% names(args)) {
+    args$x_vars <- args$x_var
+    args$x_var <- NULL
+  }
   
   # Add or replace data argument if page has data
   if (("data_path" %in% names(args) && !is.null(args$data_path)) || 
@@ -1057,11 +1067,13 @@
         if (!is.null(spec$stack_var)) vars <- c(vars, spec$stack_var)
         if (!is.null(spec$group_var)) vars <- c(vars, spec$group_var)
       } else if (viz_type == "stackedbars") {
-        if (isTRUE(!is.null(spec$questions) && length(spec$questions)) > 0) {
-          vars <- c(vars, spec$questions[1])  # Use first question
+        # Support x_vars (preferred), x_var, and questions (legacy)
+        stackedbars_vars <- spec$x_vars %||% spec$x_var %||% spec$questions
+        if (isTRUE(!is.null(stackedbars_vars) && length(stackedbars_vars) > 0)) {
+          vars <- c(vars, stackedbars_vars[1])  # Use first variable
         }
       } else if (viz_type == "timeline") {
-        if (!is.null(spec$response_var)) vars <- c(vars, spec$response_var)
+        if (!is.null(spec$y_var)) vars <- c(vars, spec$y_var)
         if (!is.null(spec$group_var)) vars <- c(vars, spec$group_var)
       } else if (viz_type == "histogram") {
         if (!is.null(spec$x_var)) vars <- c(vars, spec$x_var)

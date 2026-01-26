@@ -52,7 +52,7 @@ If you want to add text within the tab, you can do so here.
 
 ```{r demographics}
 # Change the title here...
-result <- create_stackedbar(
+result <- viz_stackedbar(
   data = data,
   title = "Change the title here...",
   x_var = "degree_1a",
@@ -81,7 +81,7 @@ result
 
 ```{r demographics-2}
 # Tabset #2
-result <- create_stackedbar(
+result <- viz_stackedbar(
   data = data,
   title = "Tabset #2",
   x_var = "sex_1a",
@@ -122,7 +122,7 @@ Here's another example of the kind of plots you can generate in your dashboard.
 
 ```{r social}
 # Trust by Education and Age
-result <- create_heatmap(
+result <- viz_heatmap(
   data = data,
   title = "Trust by Education and Age",
   x_var = "degree_1a",
@@ -155,7 +155,7 @@ Educational and regional patterns in trust distribution.
 
 ```{r social-2}
 # Trust by Region and Education
-result <- create_heatmap(
+result <- viz_heatmap(
   data = data,
   title = "Trust by Region and Education",
   x_var = "region_1a",

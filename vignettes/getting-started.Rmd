@@ -68,6 +68,9 @@ Just as ggplot2 builds plots from layers (data, aesthetics, geoms), dashboardr b
 
 ![dashboardr workflow: Content flows to Page flows to Dashboard](workflow_example.png){alt="Diagram showing the three layers: Content (visualizations, text) flows into Page, and Pages flow into Dashboard."}
 
+
+<br>
+
 | Layer | Purpose | Key Functions |
 |-------|---------|---------------|
 | **Content** | What to show (charts, text) | `create_content()`, `add_viz()`, `add_text()` |
@@ -75,6 +78,8 @@ Just as ggplot2 builds plots from layers (data, aesthetics, geoms), dashboardr b
 | **Dashboard** | Final output + config | `create_dashboard()`, `add_pages()` |
 
 Each layer flows into the next using pipes (`%>%`), making your code readable and modular.
+
+<br>
 
 ### Layer 1: Content
 
@@ -101,7 +106,6 @@ You can keep adding to content collections. Use `tabgroup` to organize charts in
 ```{r}
 demographics <- create_content(data = gss, type = "bar") %>%
   add_viz(x_var = "degree", title = "Education", tabgroup = "Demographics") %>%
-  add_viz(x_var = "race", title = "Race", tabgroup = "Demographics") %>%
   add_viz(x_var = "happy", title = "Happiness", tabgroup = "Attitudes")
 
 demographics %>% preview()
@@ -295,6 +299,39 @@ preview(onemin_dashboard)
 3. **Start simple**: build one piece of content first, then the page, then expand
 4. **Use tabgroups**: they make complex dashboards navigable
 5. **Build content separately**: create reusable collections, attach to multiple pages
+
+## Function Overview
+
+dashboardr uses consistent naming conventions so you always know what a function does:
+
+| Prefix | Purpose | Examples |
+|--------|---------|----------|
+| `create_*` | **Create containers** - Start a new dashboard, page, or content collection that holds other elements | `create_dashboard()`, `create_page()`, `create_content()` |
+| `add_*` | **Add to containers** - Insert visualizations, text, pages, or other content into an existing object | `add_viz()`, `add_text()`, `add_page()`, `add_content()`, `add_callout()` |
+| `viz_*` | **Build visualizations** - Create individual charts directly (histogram, bar, timeline, etc.) | `viz_bar()`, `viz_histogram()`, `viz_timeline()`, `viz_heatmap()` |
+| `set_*` | **Modify properties** - Change settings on an existing object, like custom tab labels | `set_tabgroup_labels()` |
+| `generate_*` | **Produce output** - Create the final Quarto files and optionally render to HTML | `generate_dashboard()` |
+| `theme_*` | **Apply styling** - Set visual themes for colors, fonts, and overall appearance | `theme_modern()`, `theme_clean()`, `theme_academic()` |
+| `combine_*` | **Merge collections** - Join multiple content or viz collections into one | `combine_content()`, `combine_viz()` |
+| `preview()` | **Quick look** - See how content, pages, or dashboards will look without generating files | `preview()` |
+
+### The Typical Pattern
+
+Most dashboardr code follows this pattern:
+
+```r
+# 1. CREATE a container
+create_content(data = my_data, type = "bar") %>%
+  # 2. ADD elements to it
+  add_viz(x_var = "category", title = "My Chart") %>%
+  add_text("## Summary", "Key findings here.")
+```
+
+The container functions (`create_*`) start the chain, then `add_*` functions build it up. This works at every layer:
+
+- **Content**: `create_content() %>% add_viz() %>% add_text()`
+- **Page**: `create_page() %>% add_content() %>% add_viz()`
+- **Dashboard**: `create_dashboard() %>% add_pages() %>% generate_dashboard()`
 
 ## Learn More
 

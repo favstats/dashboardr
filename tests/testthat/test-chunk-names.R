@@ -5,7 +5,7 @@ test_that("chunk names use tabgroup as highest priority", {
   viz <- create_viz(
     type = "timeline",
     time_var = "year",
-    response_var = "value"
+    y_var = "value"
   ) %>%
     add_viz(
       title = "Trend Over Time",
@@ -49,11 +49,11 @@ test_that("chunk names extract relevant variables for each viz type", {
       x_vars = c("q1_trust", "q2_safety"),
       title = "Survey"
     ) %>%
-    # Timeline: response_var
+    # Timeline: y_var
     add_viz(
       type = "timeline",
       time_var = "year",
-      response_var = "metric",
+      y_var = "metric",
       title = "Timeline"
     ) %>%
     # Histogram: x_var
@@ -110,7 +110,7 @@ test_that("chunk names sanitize special characters", {
   viz <- create_viz(
     type = "timeline",
     time_var = "date",
-    response_var = "metric"
+    y_var = "metric"
   ) %>%
     add_viz(
       title = "Metric Trend",
@@ -184,7 +184,7 @@ test_that("chunk names are limited to reasonable length", {
   viz <- create_viz(
     type = "timeline",
     time_var = "x",
-    response_var = "y"
+    y_var = "y"
   ) %>%
     add_viz(title = "Long Path", tabgroup = long_path)
   
@@ -228,7 +228,7 @@ test_that("chunk names work correctly in complex nested dashboards", {
   viz2 <- create_viz(
     type = "timeline",
     time_var = "year",
-    response_var = "metric"
+    y_var = "metric"
   ) %>%
     add_viz(title = "Trends", tabgroup = "trends/overall")
   

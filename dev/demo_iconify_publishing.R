@@ -37,7 +37,7 @@ bar_viz <- create_viz(
 timeline_viz <- create_viz(
   type = "timeline",
   time_var = "time",
-  response_var = "value",
+  y_var = "value",
   chart_type = "line"
 ) %>%
   add_viz(

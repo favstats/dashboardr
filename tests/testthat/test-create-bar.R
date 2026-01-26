@@ -1,12 +1,12 @@
-# Tests for create_bar function (grouped/clustered bar charts)
+# Tests for viz_bar function (grouped/clustered bar charts)
 library(testthat)
 
-test_that("create_bar basic functionality", {
+test_that("viz_bar basic functionality", {
   data <- data.frame(
     category = c("A", "B", "C", "A", "B", "B")
   )
   
-  result <- create_bar(
+  result <- viz_bar(
     data = data,
     x_var = "category"
   )
@@ -14,13 +14,13 @@ test_that("create_bar basic functionality", {
   expect_s3_class(result, "highchart")
 })
 
-test_that("create_bar with group_var creates grouped bars", {
+test_that("viz_bar with group_var creates grouped bars", {
   data <- data.frame(
     category = rep(c("A", "B", "C"), each = 4),
     group = rep(c("Group1", "Group2"), 6)
   )
   
-  result <- create_bar(
+  result <- viz_bar(
     data = data,
     x_var = "category",
     group_var = "group"
@@ -29,12 +29,12 @@ test_that("create_bar with group_var creates grouped bars", {
   expect_s3_class(result, "highchart")
 })
 
-test_that("create_bar horizontal orientation", {
+test_that("viz_bar horizontal orientation", {
   data <- data.frame(
     category = c("A", "B", "C", "A", "B")
   )
   
-  result <- create_bar(
+  result <- viz_bar(
     data = data,
     x_var = "category",
     horizontal = TRUE
@@ -43,13 +43,13 @@ test_that("create_bar horizontal orientation", {
   expect_s3_class(result, "highchart")
 })
 
-test_that("create_bar percent type", {
+test_that("viz_bar percent type", {
   data <- data.frame(
     category = rep(c("A", "B"), each = 5),
     group = rep(c("X", "Y"), 5)
   )
   
-  result <- create_bar(
+  result <- viz_bar(
     data = data,
     x_var = "category",
     group_var = "group",
@@ -59,7 +59,7 @@ test_that("create_bar percent type", {
   expect_s3_class(result, "highchart")
 })
 
-test_that("create_bar with color_palette", {
+test_that("viz_bar with color_palette", {
   data <- data.frame(
     category = rep(c("A", "B"), each = 5),
     group = rep(c("X", "Y"), 5)
@@ -67,7 +67,7 @@ test_that("create_bar with color_palette", {
   
   colors <- c("#FF0000", "#00FF00")
   
-  result <- create_bar(
+  result <- viz_bar(
     data = data,
     x_var = "category",
     group_var = "group",
@@ -77,12 +77,12 @@ test_that("create_bar with color_palette", {
   expect_s3_class(result, "highchart")
 })
 
-test_that("create_bar with numeric x_var", {
+test_that("viz_bar with numeric x_var", {
   data <- data.frame(
     score = sample(1:10, 100, replace = TRUE)
   )
   
-  result <- create_bar(
+  result <- viz_bar(
     data = data,
     x_var = "score"
   )
@@ -90,12 +90,12 @@ test_that("create_bar with numeric x_var", {
   expect_s3_class(result, "highchart")
 })
 
-test_that("create_bar aggregates counts automatically", {
+test_that("viz_bar aggregates counts automatically", {
   data <- data.frame(
     category = c("A", "A", "B", "B", "B", "C")
   )
   
-  result <- create_bar(
+  result <- viz_bar(
     data = data,
     x_var = "category"
   )
@@ -103,12 +103,12 @@ test_that("create_bar aggregates counts automatically", {
   expect_s3_class(result, "highchart")
 })
 
-test_that("create_bar with title", {
+test_that("viz_bar with title", {
   data <- data.frame(
     category = c("A", "B", "C", "A", "B")
   )
   
-  result <- create_bar(
+  result <- viz_bar(
     data = data,
     x_var = "category",
     title = "My Bar Chart"
@@ -117,12 +117,12 @@ test_that("create_bar with title", {
   expect_s3_class(result, "highchart")
 })
 
-test_that("create_bar with custom labels", {
+test_that("viz_bar with custom labels", {
   data <- data.frame(
     category = c("A", "B", "C", "A")
   )
   
-  result <- create_bar(
+  result <- viz_bar(
     data = data,
     x_var = "category",
     x_label = "Categories",
@@ -132,13 +132,13 @@ test_that("create_bar with custom labels", {
   expect_s3_class(result, "highchart")
 })
 
-test_that("create_bar with group_order", {
+test_that("viz_bar with group_order", {
   data <- data.frame(
     category = rep(c("A", "B"), each = 6),
     group = rep(c("High", "Medium", "Low"), 4)
   )
   
-  result <- create_bar(
+  result <- viz_bar(
     data = data,
     x_var = "category",
     group_var = "group",
@@ -148,7 +148,7 @@ test_that("create_bar with group_order", {
   expect_s3_class(result, "highchart")
 })
 
-test_that("create_bar works in viz_collection", {
+test_that("viz_bar works in viz_collection", {
   viz <- create_viz(
     type = "bar",
     x_var = "category"
@@ -159,7 +159,7 @@ test_that("create_bar works in viz_collection", {
   expect_equal(viz$items[[1]]$x_var, "category")
 })
 
-test_that("create_bar in dashboard generation", {
+test_that("viz_bar in dashboard generation", {
   viz <- create_viz(
     type = "bar",
     x_var = "category"
@@ -184,19 +184,19 @@ test_that("create_bar in dashboard generation", {
   qmd_file <- file.path(dashboard$output_dir, "index.qmd")
   qmd_content <- paste(readLines(qmd_file, warn = FALSE), collapse = "\n")
   
-  # Should contain create_bar call
-  expect_true(grepl("create_bar", qmd_content))
+  # Should contain viz_bar call
+  expect_true(grepl("viz_bar", qmd_content))
   expect_true(grepl("x_var", qmd_content))
   
 })
 
-test_that("create_bar with all parameters", {
+test_that("viz_bar with all parameters", {
   data <- data.frame(
     question = rep(c("Q1", "Q2", "Q3"), each = 10),
     score_range = rep(c("Low", "High"), 15)
   )
   
-  result <- create_bar(
+  result <- viz_bar(
     data = data,
     x_var = "question",
     group_var = "score_range",
@@ -212,12 +212,12 @@ test_that("create_bar with all parameters", {
   expect_s3_class(result, "highchart")
 })
 
-test_that("create_bar color works without group_var", {
+test_that("viz_bar color works without group_var", {
   data <- data.frame(
     category = c("A", "B", "C", "D", "A", "B", "C")
   )
   
-  result <- create_bar(
+  result <- viz_bar(
     data = data,
     x_var = "category",
     color_palette = c("#FF0000", "#00FF00", "#0000FF", "#FFFF00")
@@ -226,12 +226,12 @@ test_that("create_bar color works without group_var", {
   expect_s3_class(result, "highchart")
 })
 
-test_that("create_bar with numeric binning", {
+test_that("viz_bar with numeric binning", {
   data <- data.frame(
     age = sample(18:65, 100, replace = TRUE)
   )
   
-  result <- create_bar(
+  result <- viz_bar(
     data = data,
     x_var = "age"
   )
@@ -239,12 +239,12 @@ test_that("create_bar with numeric binning", {
   expect_s3_class(result, "highchart")
 })
 
-test_that("create_bar with x_breaks for binning", {
+test_that("viz_bar with x_breaks for binning", {
   data <- data.frame(
     age = sample(18:65, 100, replace = TRUE)
   )
   
-  result <- create_bar(
+  result <- viz_bar(
     data = data,
     x_var = "age",
     x_breaks = c(18, 30, 45, 65),
@@ -254,7 +254,7 @@ test_that("create_bar with x_breaks for binning", {
   expect_s3_class(result, "highchart")
 })
 
-test_that("create_bar with defaults in create_viz", {
+test_that("viz_bar with defaults in create_viz", {
   viz <- create_viz(
     type = "bar",
     horizontal = TRUE,
@@ -279,7 +279,7 @@ test_that("create_bar with defaults in create_viz", {
   expect_equal(viz$items[[2]]$bar_type, "percent")
 })
 
-test_that("create_bar with filter parameter", {
+test_that("viz_bar with filter parameter", {
   viz <- create_viz(
     type = "bar",
     x_var = "category"
@@ -293,12 +293,12 @@ test_that("create_bar with filter parameter", {
   expect_equal(as.character(viz$items[[1]]$filter)[2], "wave == 1")
 })
 
-test_that("create_bar with x_order", {
+test_that("viz_bar with x_order", {
   data <- data.frame(
     category = c("Z", "A", "M", "Z", "A", "A")
   )
   
-  result <- create_bar(
+  result <- viz_bar(
     data = data,
     x_var = "category",
     x_order = c("A", "M", "Z")
@@ -307,12 +307,12 @@ test_that("create_bar with x_order", {
   expect_s3_class(result, "highchart")
 })
 
-test_that("create_bar with include_na", {
+test_that("viz_bar with include_na", {
   data <- data.frame(
     category = c("A", "B", NA, "A", NA, "B")
   )
   
-  result <- create_bar(
+  result <- viz_bar(
     data = data,
     x_var = "category",
     include_na = TRUE,
@@ -322,12 +322,12 @@ test_that("create_bar with include_na", {
   expect_s3_class(result, "highchart")
 })
 
-test_that("create_bar count type", {
+test_that("viz_bar count type", {
   data <- data.frame(
     category = rep(c("A", "B", "C"), each = 3)
   )
   
-  result <- create_bar(
+  result <- viz_bar(
     data = data,
     x_var = "category",
     bar_type = "count"
@@ -336,18 +336,18 @@ test_that("create_bar count type", {
   expect_s3_class(result, "highchart")
 })
 
-test_that("create_bar error handling for missing x_var", {
+test_that("viz_bar error handling for missing x_var", {
   data <- data.frame(
     category = c("A", "B", "C")
   )
   
   expect_error(
-    create_bar(data = data),
+    viz_bar(data = data),
     "x_var"
   )
 })
 
-test_that("create_bar works with drop_na_vars", {
+test_that("viz_bar works with drop_na_vars", {
   viz <- create_viz(
     type = "bar",
     x_var = "category"

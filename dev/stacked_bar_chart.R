@@ -12,7 +12,7 @@ library(roxygen2)
 }
 
 # --------------------------------------------------------------------------
-# Function: create_stackedbar
+# Function: viz_stackedbar
 # --------------------------------------------------------------------------
 #' @export
 #' @title Create a Stacked Bar Chart
@@ -129,7 +129,7 @@ library(roxygen2)
 #' #       Both variables are transformed: Species names are mapped, Petal.Length is binned.
 #' #       Missing values (NAs) are explicitly shown for comprehensive reporting.
 #'
-#' plot_ex1 <- create_stackedbar(
+#' plot_ex1 <- viz_stackedbar(
 #'   data = iris_data,
 #'   x_var = "Species",         # The original variable for X-axis
 #'   stack_var = "Petal.Length", # The original variable for stack categories
@@ -160,7 +160,7 @@ library(roxygen2)
 #' #       Both X-axis and Stack variables are continuous and require binning.
 #' #       The chart will show percentages, and the tooltip will show a custom suffix for X-axis.
 #'
-#' plot_ex2 <- create_stackedbar(
+#' plot_ex2 <- viz_stackedbar(
 #'   data = iris_data,
 #'   x_var = "Petal.Width",  # Continuous variable for X-axis
 #'   stack_var = "Sepal.Width", # Continuous variable for stacks
@@ -212,7 +212,7 @@ library(roxygen2)
 #'     Petal_Length_Binned = factor(Petal_Length_Binned, levels = petal_length_display_order, ordered = TRUE)
 #'   )
 #'
-#' plot_ex3 <- create_stackedbar(
+#' plot_ex3 <- viz_stackedbar(
 #'   data = pre_aggregated_iris, # Use the already aggregated data
 #'   x_var = "Species",
 #'   y_var = "total_sepal_length", # IMPORTANT: Specify the column that contains the pre-calculated sums/counts
@@ -254,7 +254,7 @@ library(roxygen2)
 ########################################################################
 
 # General function
-create_stackedbar <- function(data,
+viz_stackedbar <- function(data,
                               x_var,
                               y_var = NULL,
                               stack_var,

@@ -16,7 +16,7 @@ create_dashboard(
   publish_dir = "test_viewport_1_responsive"
 ) %>%
   add_page(name = "Home", description = "**Default responsive behavior**\n\nNo viewport set. Mobile browsers optimize for mobile.") %>%
-  add_viz_content(create_bar(data = data, x_var = "cyl", title = "Cars by Cylinder")) %>%
+  add_viz_content(viz_bar(data = data, x_var = "cyl", title = "Cars by Cylinder")) %>%
   generate_dashboard(render = TRUE, open = FALSE)
 
 # ===== OPTION 2: Fixed Desktop Width =====
@@ -27,7 +27,7 @@ create_dashboard(
   publish_dir = "test_viewport_2_fixed"
 ) %>%
   add_page(name = "Home", description = "**Fixed desktop width: 1200px**\n\nMobile renders at 1200px like desktop. Users can pinch-zoom.") %>%
-  add_viz_content(create_bar(data = data, x_var = "cyl", title = "Cars by Cylinder")) %>%
+  add_viz_content(viz_bar(data = data, x_var = "cyl", title = "Cars by Cylinder")) %>%
   generate_dashboard(render = TRUE, open = FALSE)
 
 # ===== OPTION 3: Fixed Width + Zoom Out =====
@@ -39,7 +39,7 @@ create_dashboard(
   publish_dir = "test_viewport_3_zoomed"
 ) %>%
   add_page(name = "Home", description = "**Desktop width with zoom: 1200px @ 0.3 scale**\n\nShows whole page on mobile, users can zoom in to details.") %>%
-  add_viz_content(create_bar(data = data, x_var = "cyl", title = "Cars by Cylinder")) %>%
+  add_viz_content(viz_bar(data = data, x_var = "cyl", title = "Cars by Cylinder")) %>%
   generate_dashboard(render = TRUE, open = FALSE)
 
 # ===== OPTION 4: Ultra-Wide =====
@@ -50,7 +50,7 @@ create_dashboard(
   publish_dir = "test_viewport_4_ultrawide"
 ) %>%
   add_page(name = "Home", description = "**Ultra-wide: 1600px**\n\nFor really wide dashboards.") %>%
-  add_viz_content(create_bar(data = data, x_var = "cyl", title = "Cars by Cylinder")) %>%
+  add_viz_content(viz_bar(data = data, x_var = "cyl", title = "Cars by Cylinder")) %>%
   generate_dashboard(render = TRUE, open = FALSE)
 
 # ===== OPTION 5: Advanced Custom String =====
@@ -61,7 +61,7 @@ create_dashboard(
   publish_dir = "test_viewport_5_custom"
 ) %>%
   add_page(name = "Home", description = "**Custom viewport string**\n\nFull control: `width=1200, minimum-scale=0.5, maximum-scale=2.0`") %>%
-  add_viz_content(create_bar(data = data, x_var = "cyl", title = "Cars by Cylinder")) %>%
+  add_viz_content(viz_bar(data = data, x_var = "cyl", title = "Cars by Cylinder")) %>%
   generate_dashboard(render = TRUE, open = FALSE)
 
 # ===== OPTION 6: With Mobile TOC =====
@@ -73,9 +73,9 @@ create_dashboard(
   publish_dir = "test_viewport_6_with_toc"
 ) %>%
   add_page(name = "Home", description = "**Desktop width + Mobile TOC**\n\nCombines desktop rendering with collapsible navigation button (📑).") %>%
-  add_viz_content(create_bar(data = data, x_var = "cyl", title = "Cars by Cylinder")) %>%
+  add_viz_content(viz_bar(data = data, x_var = "cyl", title = "Cars by Cylinder")) %>%
   add_page(name = "Page 2", description = "Second page for testing navigation") %>%
-  add_viz_content(create_histogram(data = data, x_var = "mpg", title = "MPG Distribution")) %>%
+  add_viz_content(viz_histogram(data = data, x_var = "mpg", title = "MPG Distribution")) %>%
   generate_dashboard(render = TRUE, open = FALSE)
 
 cat("\n✅ All test dashboards created!\n\n")

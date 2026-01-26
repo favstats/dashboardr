@@ -1,9 +1,9 @@
-# Getting Started With \`create_timeline()\`
+# Getting Started With \`viz_timeline()\`
 
 ## Introduction
 
 The
-[`create_timeline()`](https://favstats.github.io/dashboardr/reference/create_timeline.md)
+[`viz_timeline()`](https://favstats.github.io/dashboardr/reference/viz_timeline.md)
 function creates interactive timeline visualizations for survey data,
 particularly useful for showing changes in Likert-type responses over
 time. Furthermore, the function has been designed to handle SPSS (.sav)
@@ -37,10 +37,10 @@ Let’s start with a simple stacked area chart showing confidence in
 financial institutions over time:
 
 ``` r
-plot1 <- create_timeline(
+plot1 <- viz_timeline(
   data = gss_all,
   time_var = "year",
-  response_var = "confinan",
+  y_var = "confinan",
   chart_type = "stacked_area",
   title = "Confidence in Financial Institutions Over Time",
   y_max = 100
@@ -58,14 +58,14 @@ representing a different level of confidence.
 Now let’s create a line chart showing happiness trends by gender:
 
 ``` r
-plot2 <- create_timeline(
+plot2 <- viz_timeline(
   data = gss_all,
   time_var = "year",
-  response_var = "happy",
+  y_var = "happy",
   group_var = "sex",
   chart_type = "line",
   title = "Happiness Trends by Gender",
-  response_levels = c("very happy", "pretty happy", "not too happy")
+  y_levels = c("very happy", "pretty happy", "not too happy")
 )
 
 plot2
@@ -80,10 +80,10 @@ and women over time.
 For data spanning many years, we can bin the time variable into decades:
 
 ``` r
-plot3 <- create_timeline(
+plot3 <- viz_timeline(
   data = gss_all,
   time_var = "year",
-  response_var = "satfin",
+  y_var = "satfin",
   chart_type = "stacked_area",
   title = "Financial Satisfaction by Decade",
   time_breaks = c(1970, 1980, 1990, 2000, 2010, 2020),
@@ -103,21 +103,21 @@ You can control the order of response categories to ensure logical
 ordering:
 
 ``` r
-plot4 <- create_timeline(
+plot4 <- viz_timeline(
   data = gss_all,
   time_var = "year",
-  response_var = "health",
+  y_var = "health",
   chart_type = "stacked_area",
   title = "Self-Reported Health Over Time",
-  response_levels = c("poor", "fair", "good", "excellent"),
+  y_levels = c("poor", "fair", "good", "excellent"),
   y_max = 100
 )
 
 plot4
 ```
 
-By specifying `response_levels`, we ensure that health categories are
-ordered from worst to best, making the chart more intuitive to read.
+By specifying `y_levels`, we ensure that health categories are ordered
+from worst to best, making the chart more intuitive to read.
 
 ## Tips for Using the Function
 
@@ -176,6 +176,33 @@ The resulting charts are interactive Highcharts objects that support:
 - **Zooming and panning** for detailed exploration
 - **Exporting** charts as images or data
 
+### 4. Labels and Tooltips
+
+Customize axis labels for publication-ready charts:
+
+``` r
+plot_labeled <- viz_timeline(
+  data = gss_all,
+  time_var = "year",
+  y_var = "happy",
+  chart_type = "stacked_area",
+  title = "Happiness Trends in America",
+  x_label = "Survey Year",
+  y_label = "Percentage of Respondents",
+  y_max = 100
+)
+
+plot_labeled
+```
+
+| Parameter | Description         | Default                    |
+|-----------|---------------------|----------------------------|
+| `x_label` | Custom x-axis label | Variable name (`time_var`) |
+| `y_label` | Custom y-axis label | `"Percentage"`             |
+
+The tooltips in timeline charts automatically show the year, category,
+and percentage when hovering over data points.
+
 ## Advanced Features
 
 ### Response Binning
@@ -184,14 +211,14 @@ Bin numeric responses into categories for clearer visualization:
 
 ``` r
 # Bin responses into positive/neutral/negative
-plot5 <- create_timeline(
+plot5 <- viz_timeline(
   data = gss_all,
   time_var = "year",
-  response_var = "satfin",  # Financial satisfaction (1-3 scale)
+  y_var = "satfin",  # Financial satisfaction (1-3 scale)
   chart_type = "stacked_area",
   title = "Financial Satisfaction (Binned)",
-  response_breaks = c(0.5, 1.5, 2.5, 3.5),
-  response_bin_labels = c("Not satisfied", "More or less", "Satisfied"),
+  y_breaks = c(0.5, 1.5, 2.5, 3.5),
+  y_bin_labels = c("Not satisfied", "More or less", "Satisfied"),
   y_max = 100
 )
 
@@ -207,13 +234,13 @@ Focus on specific response values:
 
 ``` r
 # Show only "very happy" and "pretty happy" responses
-plot6 <- create_timeline(
+plot6 <- viz_timeline(
   data = gss_all,
   time_var = "year",
-  response_var = "happy",
+  y_var = "happy",
   chart_type = "line",
   title = "Positive Happiness Trends",
-  response_filter = c("very happy", "pretty happy")
+  y_filter = c("very happy", "pretty happy")
 )
 
 plot6
@@ -223,23 +250,23 @@ For numeric scales, use range notation:
 
 ``` r
 # Show only top-box scores (5-7 on 1-7 scale)
-create_timeline(
+viz_timeline(
   data = survey_data,
   time_var = "wave",
-  response_var = "satisfaction",
-  response_filter = 5:7,
-  response_filter_combine = TRUE,
-  response_filter_label = "Top 3 Box (5-7)"
+  y_var = "satisfaction",
+  y_filter = 5:7,
+  y_filter_combine = TRUE,
+  y_filter_label = "Top 3 Box (5-7)"
 )
 ```
 
-**Parameters:** - `response_filter`: Which values to include -
-`response_filter_combine`: Combine filtered values into single line
-(default: FALSE) - `response_filter_label`: Custom label when combined
-(default: auto-generated)
+**Parameters:** - `y_filter`: Which values to include -
+`y_filter_combine`: Combine filtered values into single line (default:
+TRUE) - `y_filter_label`: Custom label when combined (default:
+auto-generated)
 
-**Calculation Note:** When `response_filter_combine = TRUE`, percentages
-are calculated out of the *total* responses (not just filtered ones),
+**Calculation Note:** When `y_filter_combine = TRUE`, percentages are
+calculated out of the *total* responses (not just filtered ones),
 showing the true proportion of top-box scores.
 
 ### Combining Filters with Groups
@@ -248,14 +275,14 @@ Show filtered responses across multiple groups:
 
 ``` r
 # Top-box satisfaction by age group
-create_timeline(
+viz_timeline(
   data = survey_data,
   time_var = "year",
-  response_var = "satisfaction",
+  y_var = "satisfaction",
   group_var = "age_group",
-  response_filter = 5:7,
-  response_filter_combine = TRUE,
-  response_filter_label = "Highly Satisfied",
+  y_filter = 5:7,
+  y_filter_combine = TRUE,
+  y_filter_label = "Highly Satisfied",
   title = "High Satisfaction by Age Group"
 )
 ```
@@ -266,7 +293,7 @@ highly satisfied responses.
 ## Integration with Dashboards
 
 The
-[`create_timeline()`](https://favstats.github.io/dashboardr/reference/create_timeline.md)
+[`viz_timeline()`](https://favstats.github.io/dashboardr/reference/viz_timeline.md)
 function works seamlessly with `dashboardr`:
 
 ``` r
@@ -277,7 +304,7 @@ timeline_viz <- create_viz() %>%
   add_viz(
     type = "timeline",
     time_var = "year",
-    response_var = "happy",
+    y_var = "happy",
     chart_type = "line",
     title = "Happiness Trends",
     tabgroup = "trends"
@@ -285,7 +312,7 @@ timeline_viz <- create_viz() %>%
   add_viz(
     type = "timeline",
     time_var = "year",
-    response_var = "satfin",
+    y_var = "satfin",
     chart_type = "stacked_area",
     title = "Financial Satisfaction",
     tabgroup = "trends"
@@ -315,7 +342,7 @@ Use dashboard filters to compare different time periods or demographics:
 timeline_viz <- create_viz(
   type = "timeline",
   time_var = "year",
-  response_var = "happy",
+  y_var = "happy",
   chart_type = "line"
 ) %>%
   add_viz(title = "All Respondents") %>%
@@ -337,7 +364,7 @@ compare trends across groups.
 ## Conclusion
 
 The
-[`create_timeline()`](https://favstats.github.io/dashboardr/reference/create_timeline.md)
+[`viz_timeline()`](https://favstats.github.io/dashboardr/reference/viz_timeline.md)
 function provides a flexible way to visualize survey data trends over
 time. The function handles the data processing and creates interactive
 visualizations that are perfect for exploring temporal patterns in

@@ -2,9 +2,12 @@
 % Please edit documentation in R/viz_collection.R
 \name{add_pagination}
 \alias{add_pagination}
+\alias{add_pagination.page_object}
 \title{Create a sidebar group for hybrid navigation}
 \usage{
 add_pagination(viz_collection, position = NULL)
+
+add_pagination.page_object(viz_collection, position = NULL)
 }
 \arguments{
 \item{viz_collection}{A viz_collection object}

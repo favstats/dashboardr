@@ -66,8 +66,8 @@ test_that("defaults work with different viz types", {
     chart_type = "line",
     time_var = "year"
   ) %>%
-    add_viz(response_var = "sales") %>%
-    add_viz(response_var = "profit")
+    add_viz(y_var = "sales") %>%
+    add_viz(y_var = "profit")
   
   expect_equal(viz_timeline$items[[1]]$time_var, "year")
   expect_equal(viz_timeline$items[[1]]$chart_type, "line")
@@ -124,8 +124,9 @@ test_that("defaults work with complex stackedbars parameters", {
   # Both should have all the complex defaults
   for (i in 1:2) {
     expect_equal(viz$items[[1]]$viz_type, "stackedbars")
-    expect_equal(viz$items[[i]]$questions, c("q1", "q2", "q3"))
-    expect_equal(viz$items[[i]]$question_labels, 
+    # For stackedbars, x_vars is stored as x_vars (plural) matching viz_stackedbars signature
+    expect_equal(viz$items[[i]]$x_vars, c("q1", "q2", "q3"))
+    expect_equal(viz$items[[i]]$x_var_labels, 
                  c("Question 1", "Question 2", "Question 3"))
     expect_equal(viz$items[[i]]$stacked_type, "percent")
     expect_equal(viz$items[[i]]$horizontal, TRUE)
@@ -188,8 +189,8 @@ test_that("defaults work in dashboard generation", {
   qmd_file <- file.path(dashboard$output_dir, "index.qmd")
   qmd_content <- paste(readLines(qmd_file, warn = FALSE), collapse = "\n")
   
-  # Should contain create_histogram call with bins parameter
-  expect_true(grepl("create_histogram", qmd_content))
+  # Should contain viz_histogram call with bins parameter
+  expect_true(grepl("viz_histogram", qmd_content))
   expect_true(grepl("bins = 25", qmd_content))
   
 })
@@ -212,7 +213,7 @@ test_that("defaults preserve all parameter types", {
     type = "timeline",
     # String parameters
     time_var = "year",
-    response_var = "value",
+    y_var = "value",
     # Numeric parameters
     response_breaks = c(1.5, 3.5, 5.5),
     # Character vector
@@ -226,7 +227,7 @@ test_that("defaults preserve all parameter types", {
   
   v <- viz$items[[1]]
   expect_equal(v$time_var, "year")
-  expect_equal(v$response_var, "value")
+  expect_equal(v$y_var, "value")
   expect_equal(v$response_breaks, c(1.5, 3.5, 5.5))
   expect_equal(v$response_bin_labels, c("Low", "Medium", "High"))
   expect_equal(v$response_filter_combine, TRUE)

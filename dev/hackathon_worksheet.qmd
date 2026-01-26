@@ -86,7 +86,7 @@ Before we start actually creating the visualizations that are dashboard-ready, w
 
 ```{r, eval=FALSE}
 # Use the similar parameters as above to replicate the visualization
-create_histogram(
+viz_histogram(
   data=survey_data,
   x_var="age",
   title = "Summary of Age Distribution",
@@ -97,7 +97,7 @@ create_histogram(
 )
 ```
 
-It's the same! The `create_histogram()` function is the function that is actually used under the hood. The same holds for all other visualization types. For instance, the visualization function that renders heat maps is `create_heatmap()`. It is worth reading through each of the visualization function documentation and vignettes, especially if you plan to use `dashboardr` for deeper or more complex work.
+It's the same! The `viz_histogram()` function is the function that is actually used under the hood. The same holds for all other visualization types. For instance, the visualization function that renders heat maps is `viz_heatmap()`. It is worth reading through each of the visualization function documentation and vignettes, especially if you plan to use `dashboardr` for deeper or more complex work.
 
 Now that we're happy with the result, we can set up the dashboard objects. We can create a collection of charts that share common properties. Think of it like setting up a "template" that all your charts will follow.
 
@@ -304,7 +304,7 @@ Using the same independent variables as Challenge #1, plot the density of your d
 
 ### Challenge #3: BONUS
 
-If your data set has any time-sensitive variables, plot them using `create_timeline()` here!
+If your data set has any time-sensitive variables, plot them using `viz_timeline()` here!
 
 ```{r}
 # Your solution goes here

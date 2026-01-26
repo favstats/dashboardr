@@ -64,19 +64,23 @@
 <li><a class="dropdown-item" href="../articles/getting-started.html">🚀 Getting Started</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>📖 Core Concepts</h6></li>
-    <li><a class="dropdown-item" href="../articles/content-collections.html">→ Content Collections</a></li>
-    <li><a class="dropdown-item" href="../articles/pages.html">→ Pages</a></li>
-    <li><a class="dropdown-item" href="../articles/dashboards.html">→ Dashboards</a></li>
+    <li><a class="dropdown-item" href="../articles/content-collections.html">- Content</a></li>
+    <li><a class="dropdown-item" href="../articles/pages.html">- Pages</a></li>
+    <li><a class="dropdown-item" href="../articles/dashboards.html">- Dashboards</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><a class="dropdown-item" href="../articles/advanced-features.html">⚙️ Advanced Features</a></li>
     <li><a class="dropdown-item" href="../articles/publishing_dashboards.html">🌐 Publishing Dashboards</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>📊 Visualization Types</h6></li>
-    <li><a class="dropdown-item" href="../articles/bar_vignette.html">→ Bar Charts</a></li>
-    <li><a class="dropdown-item" href="../articles/timeline_vignette.html">→ Timelines</a></li>
-    <li><a class="dropdown-item" href="../articles/stackedbar_vignette.html">→ Stacked Bars</a></li>
-    <li><a class="dropdown-item" href="../articles/stackedbars_vignette.html">→ Stacked Bars (Multiple)</a></li>
-    <li><a class="dropdown-item" href="../articles/heatmap_vignette.html">→ Heatmaps</a></li>
+    <li><a class="dropdown-item" href="../articles/bar_vignette.html">- Bar Charts</a></li>
+    <li><a class="dropdown-item" href="../articles/timeline_vignette.html">- Timelines</a></li>
+    <li><a class="dropdown-item" href="../articles/stackedbar_vignette.html">- Stacked Bars</a></li>
+    <li><a class="dropdown-item" href="../articles/stackedbars_vignette.html">- Stacked Bars (Multiple)</a></li>
+    <li><a class="dropdown-item" href="../articles/heatmap_vignette.html">- Heatmaps</a></li>
+    <li><a class="dropdown-item" href="../articles/histogram_vignette.html">- Histograms</a></li>
+    <li><a class="dropdown-item" href="../articles/scatter_vignette.html">- Scatter Plots</a></li>
+    <li><a class="dropdown-item" href="../articles/treemap_vignette.html">- Treemaps</a></li>
+    <li><a class="dropdown-item" href="../articles/map_vignette.html">- Maps</a></li>
   </ul>
 </li>
 <li class="nav-item dropdown">
@@ -88,6 +92,7 @@
     <li><a class="dropdown-item" href="../live-demos/showcase/docs/index.html">🚀 Showcase Dashboard</a></li>
   </ul>
 </li>
+<li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul>
 <ul class="navbar-nav">
 <li class="nav-item"><form class="form-inline" role="search">
@@ -115,28 +120,63 @@
 
     
     
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<p>This vignette covers <strong>dashboards</strong> - the third layer of
+dashboardr’s architecture. For a quick overview, see
+<code><a href="../articles/getting-started.html">vignette("getting-started")</a></code>.</p>
+<p>Throughout this vignette, we use the <a href="https://gssr.io/" class="external-link">General Social Survey (GSS)</a> as example data.
+Click below to see the data loading code.</p>
+<details><summary>
+📦 <strong>Data Loading Code</strong> (click to expand)
+</summary><div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://favstats.github.io/dashboardr/">dashboardr</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/kjhealy/gssr" class="external-link">gssr</a></span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning: package 'gssr' was built under R version 4.4.3</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://haven.tidyverse.org" class="external-link">haven</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Load latest wave only</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">gss_all</span><span class="op">)</span></span>
 <span><span class="va">gss</span> <span class="op">&lt;-</span> <span class="va">gss_all</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">year</span>, <span class="va">age</span>, <span class="va">sex</span>, <span class="va">race</span>, <span class="va">degree</span>, <span class="va">happy</span>, <span class="va">polviews</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">year</span> <span class="op">&gt;=</span> <span class="fl">2010</span>, <span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">age</span><span class="op">)</span>, <span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">sex</span><span class="op">)</span>, <span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">race</span><span class="op">)</span>, <span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">degree</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p>This vignette goes deep into dashboards - the third layer of
-dashboardr’s architecture. For a quick overview, see
-<code><a href="../articles/getting-started.html">vignette("getting-started")</a></code>.</p>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">year</span> <span class="op">==</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">year</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="co"># Filter to substantive responses (removes "don't know", "no answer", etc.)</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span></span>
+<span>    <span class="va">happy</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fl">1</span><span class="op">:</span><span class="fl">3</span>,        <span class="co"># very happy, pretty happy, not too happy</span></span>
+<span>    <span class="va">polviews</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fl">1</span><span class="op">:</span><span class="fl">7</span>,     <span class="co"># extremely liberal to extremely conservative</span></span>
+<span>    <span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">age</span><span class="op">)</span>, <span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">sex</span><span class="op">)</span>, <span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">race</span><span class="op">)</span>, <span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">degree</span><span class="op">)</span></span>
+<span>  <span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
+<span>    sex <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/droplevels.html" class="external-link">droplevels</a></span><span class="op">(</span><span class="fu"><a href="https://forcats.tidyverse.org/reference/as_factor.html" class="external-link">as_factor</a></span><span class="op">(</span><span class="va">sex</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>    race <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/droplevels.html" class="external-link">droplevels</a></span><span class="op">(</span><span class="fu"><a href="https://forcats.tidyverse.org/reference/as_factor.html" class="external-link">as_factor</a></span><span class="op">(</span><span class="va">race</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>    degree <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/droplevels.html" class="external-link">droplevels</a></span><span class="op">(</span><span class="fu"><a href="https://forcats.tidyverse.org/reference/as_factor.html" class="external-link">as_factor</a></span><span class="op">(</span><span class="va">degree</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>    happy <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/droplevels.html" class="external-link">droplevels</a></span><span class="op">(</span><span class="fu"><a href="https://forcats.tidyverse.org/reference/as_factor.html" class="external-link">as_factor</a></span><span class="op">(</span><span class="va">happy</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>    polviews <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/droplevels.html" class="external-link">droplevels</a></span><span class="op">(</span><span class="fu"><a href="https://forcats.tidyverse.org/reference/as_factor.html" class="external-link">as_factor</a></span><span class="op">(</span><span class="va">polviews</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span></code></pre></div>
+</details><blockquote>
+<p><strong>See it in action:</strong> Check out the <a href="../live-demos/showcase/index.html">live demo dashboard</a> to see
+what a complete dashboard looks like.</p>
+</blockquote>
 <div class="section level2">
-<h2 id="what-dashboards-do">What Dashboards Do<a class="anchor" aria-label="anchor" href="#what-dashboards-do"></a>
+<h2 id="what-the-dashboard-object-does">What the Dashboard Object Does<a class="anchor" aria-label="anchor" href="#what-the-dashboard-object-does"></a>
 </h2>
-<p>Dashboards are the <strong>assembly layer</strong> that:</p>
+<p>The <code><a href="../reference/create_dashboard.html">create_dashboard()</a></code> function returns a
+<strong>dashboard project object</strong> - the container that assembles
+everything into a final website. It:</p>
 <ol style="list-style-type: decimal">
-<li>Collect pages into a single website</li>
-<li>Configure global appearance (themes, navbar, colors)</li>
-<li>Add navigation features (search, breadcrumbs, dropdowns)</li>
-<li>Handle publishing (output directories, metadata)</li>
-<li>Generate the final HTML output</li>
+<li>
+<strong>Collects pages</strong> into a single navigable website</li>
+<li>
+<strong>Configures global appearance</strong> (themes, navbar
+styling, colors)</li>
+<li>
+<strong>Adds navigation features</strong> (search, breadcrumbs,
+dropdown menus)</li>
+<li>
+<strong>Handles publishing settings</strong> (output directories,
+metadata, analytics)</li>
+<li>
+<strong>Generates the final HTML</strong> when you call
+<code><a href="../reference/generate_dashboard.html">generate_dashboard()</a></code>
+</li>
 </ol>
 </div>
 <div class="section level2">
@@ -153,19 +193,17 @@ dashboardr’s architecture. For a quick overview, see
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">dashboard</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; +==============================================================================</span></span>
-<span><span class="co">#&gt; | [*] DASHBOARD PROJECT</span></span>
-<span><span class="co">#&gt; +==============================================================================</span></span>
-<span><span class="co">#&gt; | [T] Title: My Dashboard</span></span>
-<span><span class="co">#&gt; | [&gt;] Output: /Users/favstats/Dropbox/postdoc/my_dashboard</span></span>
-<span><span class="co">#&gt; |</span></span>
-<span><span class="co">#&gt; | [+] FEATURES:</span></span>
-<span><span class="co">#&gt; |    * [?] Search</span></span>
-<span><span class="co">#&gt; |    * [~] Tabs: minimal</span></span>
-<span><span class="co">#&gt; |</span></span>
-<span><span class="co">#&gt; | [P] PAGES (0):</span></span>
-<span><span class="co">#&gt; |    (no pages yet)</span></span>
-<span><span class="co">#&gt; +==============================================================================</span></span></code></pre></div>
+<span><span class="co">#&gt; 📊 DASHBOARD PROJECT ====================================================</span></span>
+<span><span class="co">#&gt; │ 🏷️  Title: My Dashboard</span></span>
+<span><span class="co">#&gt; │ 📁 Output: /Users/favstats/Dropbox/postdoc/my_dashboard</span></span>
+<span><span class="co">#&gt; │</span></span>
+<span><span class="co">#&gt; │ ⚙️  FEATURES:</span></span>
+<span><span class="co">#&gt; │    • 🔍 Search</span></span>
+<span><span class="co">#&gt; │    • 📑 Tabs: minimal</span></span>
+<span><span class="co">#&gt; │</span></span>
+<span><span class="co">#&gt; │ 📄 PAGES (0):</span></span>
+<span><span class="co">#&gt; │    (no pages yet)</span></span>
+<span><span class="co">#&gt; ══ ═════════════════════════════════════════════════════════════════════════</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="key-parameters">Key Parameters<a class="anchor" aria-label="anchor" href="#key-parameters"></a>
@@ -236,21 +274,19 @@ dashboardr’s architecture. For a quick overview, see
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">dashboard</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; +==============================================================================</span></span>
-<span><span class="co">#&gt; | [*] DASHBOARD PROJECT</span></span>
-<span><span class="co">#&gt; +==============================================================================</span></span>
-<span><span class="co">#&gt; | [T] Title: GSS Explorer</span></span>
-<span><span class="co">#&gt; | [&gt;] Output: /Users/favstats/Dropbox/postdoc/output</span></span>
-<span><span class="co">#&gt; |</span></span>
-<span><span class="co">#&gt; | [+] FEATURES:</span></span>
-<span><span class="co">#&gt; |    * [?] Search</span></span>
-<span><span class="co">#&gt; |    * [~] Tabs: minimal</span></span>
-<span><span class="co">#&gt; |</span></span>
-<span><span class="co">#&gt; | [P] PAGES (3):</span></span>
-<span><span class="co">#&gt; | +- [P] Home [[H] Landing]</span></span>
-<span><span class="co">#&gt; | +- [P] Analysis [[d] 1 dataset]</span></span>
-<span><span class="co">#&gt; | +- [P] About [-&gt; Right]</span></span>
-<span><span class="co">#&gt; +==============================================================================</span></span></code></pre></div>
+<span><span class="co">#&gt; 📊 DASHBOARD PROJECT ====================================================</span></span>
+<span><span class="co">#&gt; │ 🏷️  Title: GSS Explorer</span></span>
+<span><span class="co">#&gt; │ 📁 Output: /Users/favstats/Dropbox/postdoc/output</span></span>
+<span><span class="co">#&gt; │</span></span>
+<span><span class="co">#&gt; │ ⚙️  FEATURES:</span></span>
+<span><span class="co">#&gt; │    • 🔍 Search</span></span>
+<span><span class="co">#&gt; │    • 📑 Tabs: minimal</span></span>
+<span><span class="co">#&gt; │</span></span>
+<span><span class="co">#&gt; │ 📄 PAGES (3):</span></span>
+<span><span class="co">#&gt; │ ├─ 📄 Home [🏠 Landing]</span></span>
+<span><span class="co">#&gt; │ ├─ 📄 Analysis [💾 1 dataset]</span></span>
+<span><span class="co">#&gt; │ └─ 📄 About [➡️ Right]</span></span>
+<span><span class="co">#&gt; ══ ═════════════════════════════════════════════════════════════════════════</span></span></code></pre></div>
 <p>Pages appear in the navbar in the order they’re added.</p>
 </div>
 </div>
@@ -260,6 +296,73 @@ dashboardr’s architecture. For a quick overview, see
 <div class="section level3">
 <h3 id="built-in-quarto-themes">Built-in Quarto Themes<a class="anchor" aria-label="anchor" href="#built-in-quarto-themes"></a>
 </h3>
+<p>dashboardr uses <a href="https://bootswatch.com/" class="external-link">Bootswatch</a>
+themes via Quarto. <strong>Preview all themes at <a href="https://bootswatch.com/" class="external-link">bootswatch.com</a></strong> before
+choosing!</p>
+<table class="table">
+<colgroup>
+<col width="30%">
+<col width="30%">
+<col width="39%">
+</colgroup>
+<thead><tr class="header">
+<th>Theme</th>
+<th>Style</th>
+<th>Preview</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td><code>flatly</code></td>
+<td>Clean and modern (recommended)</td>
+<td><a href="https://bootswatch.com/flatly/" class="external-link">View</a></td>
+</tr>
+<tr class="even">
+<td><code>cosmo</code></td>
+<td>Professional and corporate</td>
+<td><a href="https://bootswatch.com/cosmo/" class="external-link">View</a></td>
+</tr>
+<tr class="odd">
+<td><code>journal</code></td>
+<td>Academic and scholarly</td>
+<td><a href="https://bootswatch.com/journal/" class="external-link">View</a></td>
+</tr>
+<tr class="even">
+<td><code>lux</code></td>
+<td>Luxurious and elegant</td>
+<td><a href="https://bootswatch.com/lux/" class="external-link">View</a></td>
+</tr>
+<tr class="odd">
+<td><code>simplex</code></td>
+<td>Simple and minimal</td>
+<td><a href="https://bootswatch.com/simplex/" class="external-link">View</a></td>
+</tr>
+<tr class="even">
+<td><code>litera</code></td>
+<td>Clean and readable</td>
+<td><a href="https://bootswatch.com/litera/" class="external-link">View</a></td>
+</tr>
+<tr class="odd">
+<td><code>minty</code></td>
+<td>Fresh and friendly</td>
+<td><a href="https://bootswatch.com/minty/" class="external-link">View</a></td>
+</tr>
+<tr class="even">
+<td><code>slate</code></td>
+<td>Dark professional</td>
+<td><a href="https://bootswatch.com/slate/" class="external-link">View</a></td>
+</tr>
+<tr class="odd">
+<td><code>darkly</code></td>
+<td>Full dark mode</td>
+<td><a href="https://bootswatch.com/darkly/" class="external-link">View</a></td>
+</tr>
+<tr class="even">
+<td><code>cerulean</code></td>
+<td>Blue corporate</td>
+<td><a href="https://bootswatch.com/cerulean/" class="external-link">View</a></td>
+</tr>
+</tbody>
+</table>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Clean and modern (recommended)</span></span>
 <span><span class="fu"><a href="../reference/create_dashboard.html">create_dashboard</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Clean"</span>, output_dir <span class="op">=</span> <span class="st">"out"</span>, theme <span class="op">=</span> <span class="st">"flatly"</span><span class="op">)</span></span>
@@ -270,11 +373,13 @@ dashboardr’s architecture. For a quick overview, see
 <span><span class="co"># Academic and scholarly</span></span>
 <span><span class="fu"><a href="../reference/create_dashboard.html">create_dashboard</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Academic"</span>, output_dir <span class="op">=</span> <span class="st">"out"</span>, theme <span class="op">=</span> <span class="st">"journal"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Luxurious and elegant</span></span>
-<span><span class="fu"><a href="../reference/create_dashboard.html">create_dashboard</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Elegant"</span>, output_dir <span class="op">=</span> <span class="st">"out"</span>, theme <span class="op">=</span> <span class="st">"lux"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Simple and minimal</span></span>
-<span><span class="fu"><a href="../reference/create_dashboard.html">create_dashboard</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Minimal"</span>, output_dir <span class="op">=</span> <span class="st">"out"</span>, theme <span class="op">=</span> <span class="st">"simplex"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="co"># Dark mode</span></span>
+<span><span class="fu"><a href="../reference/create_dashboard.html">create_dashboard</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Dark"</span>, output_dir <span class="op">=</span> <span class="st">"out"</span>, theme <span class="op">=</span> <span class="st">"darkly"</span><span class="op">)</span></span></code></pre></div>
+<blockquote>
+<p><strong>Tip:</strong> The Bootswatch preview shows Bootstrap
+components. Your dashboard will look similar but with dashboardr’s
+specific layout and styling applied.</p>
+</blockquote>
 </div>
 <div class="section level3">
 <h3 id="custom-themes-with-apply_theme">Custom Themes with apply_theme()<a class="anchor" aria-label="anchor" href="#custom-themes-with-apply_theme"></a>
@@ -353,24 +458,8 @@ dashboardr’s architecture. For a quick overview, see
 <span><span class="op">)</span></span></code></pre></div>
 <p>Available themes: <code>"default"</code>, <code>"modern"</code>,
 <code>"pills"</code>, <code>"minimal"</code></p>
-</div>
-<div class="section level3">
-<h3 id="custom-tab-colors">Custom Tab Colors<a class="anchor" aria-label="anchor" href="#custom-tab-colors"></a>
-</h3>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/create_dashboard.html">create_dashboard</a></span><span class="op">(</span></span>
-<span>  title <span class="op">=</span> <span class="st">"Custom Colors"</span>,</span>
-<span>  output_dir <span class="op">=</span> <span class="st">"out"</span>,</span>
-<span>  tabset_theme <span class="op">=</span> <span class="st">"modern"</span>,</span>
-<span>  tabset_colors <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
-<span>    active_bg <span class="op">=</span> <span class="st">"#3498DB"</span>,       <span class="co"># Active tab background</span></span>
-<span>    active_text <span class="op">=</span> <span class="st">"#FFFFFF"</span>,     <span class="co"># Active tab text</span></span>
-<span>    inactive_bg <span class="op">=</span> <span class="st">"#ECF0F1"</span>,     <span class="co"># Inactive tab background</span></span>
-<span>    inactive_text <span class="op">=</span> <span class="st">"#7F8C8D"</span>,   <span class="co"># Inactive tab text</span></span>
-<span>    hover_bg <span class="op">=</span> <span class="st">"#BDC3C7"</span>,        <span class="co"># Hover background</span></span>
-<span>    border_color <span class="op">=</span> <span class="st">"#DDDDDD"</span>     <span class="co"># Tab border color</span></span>
-<span>  <span class="op">)</span></span>
-<span><span class="op">)</span></span></code></pre></div>
+<p>For detailed examples and custom colors, see
+<code><a href="../articles/advanced-features.html">vignette("advanced-features")</a></code>.</p>
 </div>
 </div>
 <div class="section level2">
@@ -379,7 +468,7 @@ dashboardr’s architecture. For a quick overview, see
 <div class="section level3">
 <h3 id="enhanced-navigation">Enhanced Navigation<a class="anchor" aria-label="anchor" href="#enhanced-navigation"></a>
 </h3>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/create_dashboard.html">create_dashboard</a></span><span class="op">(</span></span>
 <span>  title <span class="op">=</span> <span class="st">"Enhanced Nav"</span>,</span>
 <span>  output_dir <span class="op">=</span> <span class="st">"out"</span>,</span>
@@ -390,53 +479,17 @@ dashboardr’s architecture. For a quick overview, see
 <span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
-<h3 id="dropdown-menus">Dropdown Menus<a class="anchor" aria-label="anchor" href="#dropdown-menus"></a>
+<h3 id="dropdown-menus-sidebar">Dropdown Menus &amp; Sidebar<a class="anchor" aria-label="anchor" href="#dropdown-menus-sidebar"></a>
 </h3>
-<p>Create dropdown menus in the navbar:</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/create_dashboard.html">create_dashboard</a></span><span class="op">(</span></span>
-<span>  title <span class="op">=</span> <span class="st">"With Dropdowns"</span>,</span>
-<span>  output_dir <span class="op">=</span> <span class="st">"out"</span>,</span>
-<span>  navbar_left <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
-<span>    <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
-<span>      text <span class="op">=</span> <span class="st">"Analysis"</span>,</span>
-<span>      menu <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
-<span>        <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>text <span class="op">=</span> <span class="st">"Demographics"</span>, href <span class="op">=</span> <span class="st">"demographics.html"</span><span class="op">)</span>,</span>
-<span>        <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>text <span class="op">=</span> <span class="st">"Attitudes"</span>, href <span class="op">=</span> <span class="st">"attitudes.html"</span><span class="op">)</span>,</span>
-<span>        <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>text <span class="op">=</span> <span class="st">"Trends"</span>, href <span class="op">=</span> <span class="st">"trends.html"</span><span class="op">)</span>,</span>
-<span>        <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>text <span class="op">=</span> <span class="st">"---"</span><span class="op">)</span>,  <span class="co"># Divider</span></span>
-<span>        <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>text <span class="op">=</span> <span class="st">"Download Data"</span>, href <span class="op">=</span> <span class="st">"data.csv"</span><span class="op">)</span></span>
-<span>      <span class="op">)</span></span>
-<span>    <span class="op">)</span>,</span>
-<span>    <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
-<span>      text <span class="op">=</span> <span class="st">"Reports"</span>,</span>
-<span>      menu <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
-<span>        <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>text <span class="op">=</span> <span class="st">"Monthly Report"</span>, href <span class="op">=</span> <span class="st">"monthly.html"</span><span class="op">)</span>,</span>
-<span>        <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>text <span class="op">=</span> <span class="st">"Quarterly Report"</span>, href <span class="op">=</span> <span class="st">"quarterly.html"</span><span class="op">)</span></span>
-<span>      <span class="op">)</span></span>
-<span>    <span class="op">)</span></span>
-<span>  <span class="op">)</span></span>
-<span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level3">
-<h3 id="sidebar-navigation">Sidebar Navigation<a class="anchor" aria-label="anchor" href="#sidebar-navigation"></a>
-</h3>
-<p>For dashboards with many pages, use sidebar navigation:</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/create_dashboard.html">create_dashboard</a></span><span class="op">(</span></span>
-<span>  title <span class="op">=</span> <span class="st">"Sidebar Nav"</span>,</span>
-<span>  output_dir <span class="op">=</span> <span class="st">"out"</span>,</span>
-<span>  sidebar <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  sidebar_title <span class="op">=</span> <span class="st">"Navigation"</span>,</span>
-<span>  sidebar_style <span class="op">=</span> <span class="st">"floating"</span>  <span class="co"># or "docked"</span></span>
-<span><span class="op">)</span></span></code></pre></div>
+<p>For advanced navbar customization including dropdown menus and
+sidebar navigation, see <code><a href="../articles/advanced-features.html">vignette("advanced-features")</a></code>.</p>
 </div>
 </div>
 <div class="section level2">
 <h2 id="social-links">Social Links<a class="anchor" aria-label="anchor" href="#social-links"></a>
 </h2>
 <p>Add social media and contact links to the navbar:</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/create_dashboard.html">create_dashboard</a></span><span class="op">(</span></span>
 <span>  title <span class="op">=</span> <span class="st">"Social"</span>,</span>
 <span>  output_dir <span class="op">=</span> <span class="st">"out"</span>,</span>
@@ -450,41 +503,35 @@ dashboardr’s architecture. For a quick overview, see
 <div class="section level2">
 <h2 id="publishing">Publishing<a class="anchor" aria-label="anchor" href="#publishing"></a>
 </h2>
-<div class="section level3">
-<h3 id="separate-output-and-publish-directories">Separate Output and Publish Directories<a class="anchor" aria-label="anchor" href="#separate-output-and-publish-directories"></a>
-</h3>
-<p>For GitHub Pages deployment:</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/create_dashboard.html">create_dashboard</a></span><span class="op">(</span></span>
-<span>  title <span class="op">=</span> <span class="st">"For GitHub Pages"</span>,</span>
-<span>  output_dir <span class="op">=</span> <span class="st">"src"</span>,           <span class="co"># Source Quarto files</span></span>
-<span>  publish_dir <span class="op">=</span> <span class="st">"../docs"</span>       <span class="co"># Published HTML (GitHub Pages reads from /docs)</span></span>
-<span><span class="op">)</span></span></code></pre></div>
-</div>
+<p>For deployment to GitHub Pages, Netlify, or other hosting platforms,
+see <code><a href="../articles/publishing_dashboards.html">vignette("publishing_dashboards")</a></code>.</p>
 <div class="section level3">
 <h3 id="metadata">Metadata<a class="anchor" aria-label="anchor" href="#metadata"></a>
 </h3>
 <p>Add metadata for SEO and attribution:</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/create_dashboard.html">create_dashboard</a></span><span class="op">(</span></span>
 <span>  title <span class="op">=</span> <span class="st">"With Metadata"</span>,</span>
 <span>  output_dir <span class="op">=</span> <span class="st">"out"</span>,</span>
 <span>  author <span class="op">=</span> <span class="st">"Dr. Jane Smith"</span>,</span>
 <span>  description <span class="op">=</span> <span class="st">"Comprehensive analysis of survey data with interactive visualizations"</span>,</span>
 <span>  date <span class="op">=</span> <span class="st">"2025-01-15"</span>,</span>
-<span>  page_footer <span class="op">=</span> <span class="st">"© 2025 My Organization. All rights reserved."</span></span>
+<span>  page_footer <span class="op">=</span> <span class="st">"Copyright 2025 My Organization. All rights reserved."</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="analytics">Analytics<a class="anchor" aria-label="anchor" href="#analytics"></a>
 </h3>
-<p>Track dashboard usage with Plausible Analytics:</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<p>Track dashboard usage with <a href="https://plausible.io/" class="external-link">Plausible
+Analytics</a>:</p>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/create_dashboard.html">create_dashboard</a></span><span class="op">(</span></span>
 <span>  title <span class="op">=</span> <span class="st">"With Analytics"</span>,</span>
 <span>  output_dir <span class="op">=</span> <span class="st">"out"</span>,</span>
-<span>  plausible <span class="op">=</span> <span class="st">"yourdomain.com"</span></span>
+<span>  plausible <span class="op">=</span> <span class="st">"yourdomain.com"</span>  <span class="co"># Your Plausible site ID</span></span>
 <span><span class="op">)</span></span></code></pre></div>
+<p>You’ll need to <a href="https://plausible.io/register" class="external-link">set up a
+Plausible account</a> and add your domain first.</p>
 </div>
 </div>
 <div class="section level2">
@@ -493,7 +540,7 @@ dashboardr’s architecture. For a quick overview, see
 <div class="section level3">
 <h3 id="basic-generation">Basic Generation<a class="anchor" aria-label="anchor" href="#basic-generation"></a>
 </h3>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">dashboard</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="../reference/generate_dashboard.html">generate_dashboard</a></span><span class="op">(</span>render <span class="op">=</span> <span class="cn">TRUE</span>, open <span class="op">=</span> <span class="st">"browser"</span><span class="op">)</span></span></code></pre></div>
 </div>
@@ -537,7 +584,7 @@ dashboardr’s architecture. For a quick overview, see
 <h3 id="development-workflow">Development Workflow<a class="anchor" aria-label="anchor" href="#development-workflow"></a>
 </h3>
 <p>During development, iterate quickly by skipping rendering:</p>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Fast iteration: just create QMD files</span></span>
 <span><span class="va">dashboard</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/generate_dashboard.html">generate_dashboard</a></span><span class="op">(</span>render <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span></span>
@@ -553,131 +600,84 @@ dashboardr’s architecture. For a quick overview, see
 <div class="section level2">
 <h2 id="complete-example">Complete Example<a class="anchor" aria-label="anchor" href="#complete-example"></a>
 </h2>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://favstats.github.io/dashboardr/">dashboardr</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/kjhealy/gssr" class="external-link">gssr</a></span><span class="op">)</span></span>
+<p>Here’s a full example putting it all together:</p>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Create a complete survey dashboard</span></span>
+<span><span class="va">survey_dashboard</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_dashboard.html">create_dashboard</a></span><span class="op">(</span></span>
 <span></span>
-<span><span class="co"># Load data</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">gss_all</span><span class="op">)</span></span>
-<span><span class="va">gss</span> <span class="op">&lt;-</span> <span class="va">gss_all</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">year</span>, <span class="va">age</span>, <span class="va">sex</span>, <span class="va">race</span>, <span class="va">degree</span>, <span class="va">happy</span>, <span class="va">polviews</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">year</span> <span class="op">&gt;=</span> <span class="fl">2010</span>, <span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">age</span><span class="op">)</span>, <span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">sex</span><span class="op">)</span>, <span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">race</span><span class="op">)</span>, <span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">degree</span><span class="op">)</span><span class="op">)</span></span>
+<span>title <span class="op">=</span> <span class="st">"GSS Data Explorer"</span>,</span>
+<span>  output_dir <span class="op">=</span> <span class="st">"gss_out"</span>,</span>
+<span>  theme <span class="op">=</span> <span class="st">"flatly"</span>,</span>
+<span>  search <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  breadcrumbs <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  back_to_top <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  github <span class="op">=</span> <span class="st">"https://github.com/example/gss-dashboard"</span></span>
+<span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># === LAYER 1: CONTENT ===</span></span>
-<span></span>
-<span><span class="va">demographics</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_content.html">create_content</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"bar"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span>x_var <span class="op">=</span> <span class="st">"degree"</span>, title <span class="op">=</span> <span class="st">"Education"</span>, tabgroup <span class="op">=</span> <span class="st">"demographics"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span>x_var <span class="op">=</span> <span class="st">"race"</span>, title <span class="op">=</span> <span class="st">"Race"</span>, tabgroup <span class="op">=</span> <span class="st">"demographics"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="../reference/set_tabgroup_labels.html">set_tabgroup_labels</a></span><span class="op">(</span>demographics <span class="op">=</span> <span class="st">"Demographics"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">attitudes</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_content.html">create_content</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"bar"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span>x_var <span class="op">=</span> <span class="st">"happy"</span>, title <span class="op">=</span> <span class="st">"Happiness"</span>, tabgroup <span class="op">=</span> <span class="st">"attitudes"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span>x_var <span class="op">=</span> <span class="st">"polviews"</span>, title <span class="op">=</span> <span class="st">"Politics"</span>, tabgroup <span class="op">=</span> <span class="st">"attitudes"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="../reference/set_tabgroup_labels.html">set_tabgroup_labels</a></span><span class="op">(</span>attitudes <span class="op">=</span> <span class="st">"Attitudes &amp; Values"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">crosstabs</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_content.html">create_content</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"stackedbar"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span>x_var <span class="op">=</span> <span class="st">"degree"</span>, stack_var <span class="op">=</span> <span class="st">"happy"</span>, </span>
-<span>          title <span class="op">=</span> <span class="st">"Happiness by Education"</span>, tabgroup <span class="op">=</span> <span class="st">"crosstabs"</span>,</span>
-<span>          stacked_type <span class="op">=</span> <span class="st">"percent"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="../reference/set_tabgroup_labels.html">set_tabgroup_labels</a></span><span class="op">(</span>crosstabs <span class="op">=</span> <span class="st">"Cross-Tabulations"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># === LAYER 2: PAGES ===</span></span>
-<span></span>
+<span><span class="co"># Landing page</span></span>
 <span><span class="va">home</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_page.html">create_page</a></span><span class="op">(</span><span class="st">"Home"</span>, is_landing_page <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="../reference/add_text.html">add_text</a></span><span class="op">(</span></span>
 <span>    <span class="st">"# GSS Data Explorer"</span>,</span>
 <span>    <span class="st">""</span>,</span>
-<span>    <span class="st">"Explore trends in American society through the General Social Survey (2010-2024)."</span>,</span>
+<span>    <span class="st">"Interactive exploration of General Social Survey data."</span>,</span>
 <span>    <span class="st">""</span>,</span>
-<span>    <span class="st">"## About This Dashboard"</span>,</span>
-<span>    <span class="st">""</span>,</span>
-<span>    <span class="st">"This dashboard presents interactive visualizations of GSS data covering:"</span>,</span>
-<span>    <span class="st">""</span>,</span>
-<span>    <span class="st">"- **Demographics** - Education, race, age distributions"</span>,</span>
-<span>    <span class="st">"- **Attitudes** - Happiness, political views, social trust"</span>,</span>
-<span>    <span class="st">"- **Trends** - Changes over time in key indicators"</span>,</span>
-<span>    <span class="st">""</span>,</span>
-<span>    <span class="st">"Use the navigation above to explore different aspects of the data."</span></span>
+<span>    <span class="st">"Use the navigation above to explore different sections."</span></span>
 <span>  <span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="../reference/add_callout.html">add_callout</a></span><span class="op">(</span><span class="st">"Data source: General Social Survey, NORC at University of Chicago"</span>, type <span class="op">=</span> <span class="st">"note"</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="../reference/add_callout.html">add_callout</a></span><span class="op">(</span><span class="st">"Click Demographics or Attitudes to see visualizations."</span>, type <span class="op">=</span> <span class="st">"tip"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">analysis</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_page.html">create_page</a></span><span class="op">(</span><span class="st">"Analysis"</span>, data <span class="op">=</span> <span class="va">gss</span>, </span>
-<span>                        overlay <span class="op">=</span> <span class="cn">TRUE</span>, lazy_load_charts <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="../reference/add_content.html">add_content</a></span><span class="op">(</span><span class="va">demographics</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="../reference/add_content.html">add_content</a></span><span class="op">(</span><span class="va">attitudes</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="../reference/add_content.html">add_content</a></span><span class="op">(</span><span class="va">crosstabs</span><span class="op">)</span></span>
+<span><span class="co"># Demographics page with charts</span></span>
+<span><span class="va">demographics</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_page.html">create_page</a></span><span class="op">(</span><span class="st">"Demographics"</span>, data <span class="op">=</span> <span class="va">gss</span>, type <span class="op">=</span> <span class="st">"bar"</span>,</span>
+<span>                           icon <span class="op">=</span> <span class="st">"ph:users"</span>, overlay <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/add_text.html">add_text</a></span><span class="op">(</span><span class="st">"## Demographic Distributions"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span>x_var <span class="op">=</span> <span class="st">"degree"</span>, title <span class="op">=</span> <span class="st">"Education"</span>, tabgroup <span class="op">=</span> <span class="st">"Variables"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span>x_var <span class="op">=</span> <span class="st">"race"</span>, title <span class="op">=</span> <span class="st">"Race"</span>, tabgroup <span class="op">=</span> <span class="st">"Variables"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">about</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_page.html">create_page</a></span><span class="op">(</span><span class="st">"About"</span>, navbar_align <span class="op">=</span> <span class="st">"right"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span><span class="co"># Attitudes page</span></span>
+<span><span class="va">attitudes</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_page.html">create_page</a></span><span class="op">(</span><span class="st">"Attitudes"</span>, data <span class="op">=</span> <span class="va">gss</span>, type <span class="op">=</span> <span class="st">"bar"</span>,</span>
+<span>                        icon <span class="op">=</span> <span class="st">"ph:heart"</span>, overlay <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/add_text.html">add_text</a></span><span class="op">(</span><span class="st">"## Attitudes &amp; Values"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span>x_var <span class="op">=</span> <span class="st">"happy"</span>, title <span class="op">=</span> <span class="st">"Happiness"</span>, tabgroup <span class="op">=</span> <span class="st">"Measures"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># About page (right-aligned in navbar)</span></span>
+<span><span class="va">about</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_page.html">create_page</a></span><span class="op">(</span><span class="st">"About"</span>, navbar_align <span class="op">=</span> <span class="st">"right"</span>, icon <span class="op">=</span> <span class="st">"ph:info"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="../reference/add_text.html">add_text</a></span><span class="op">(</span></span>
 <span>    <span class="st">"## About This Dashboard"</span>,</span>
 <span>    <span class="st">""</span>,</span>
 <span>    <span class="st">"Created with [dashboardr](https://github.com/favstats/dashboardr)."</span>,</span>
 <span>    <span class="st">""</span>,</span>
-<span>    <span class="st">"### Methodology"</span>,</span>
-<span>    <span class="st">""</span>,</span>
-<span>    <span class="st">"The General Social Survey (GSS) is a nationally representative survey"</span>,</span>
-<span>    <span class="st">"of adults in the United States, conducted since 1972."</span>,</span>
-<span>    <span class="st">""</span>,</span>
-<span>    <span class="st">"### Contact"</span>,</span>
-<span>    <span class="st">""</span>,</span>
-<span>    <span class="st">"For questions, please contact the research team."</span></span>
+<span>    <span class="st">"Data: General Social Survey (GSS), NORC."</span></span>
 <span>  <span class="op">)</span></span>
 <span></span>
-<span><span class="co"># === LAYER 3: DASHBOARD ===</span></span>
+<span><span class="co"># Assemble dashboard</span></span>
+<span><span class="va">survey_dashboard</span> <span class="op">&lt;-</span> <span class="va">survey_dashboard</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/add_pages.html">add_pages</a></span><span class="op">(</span><span class="va">home</span>, <span class="va">demographics</span>, <span class="va">attitudes</span>, <span class="va">about</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">dashboard</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_dashboard.html">create_dashboard</a></span><span class="op">(</span></span>
-<span>  title <span class="op">=</span> <span class="st">"GSS Data Explorer"</span>,</span>
-<span>  output_dir <span class="op">=</span> <span class="st">"gss_dashboard"</span>,</span>
-<span>  theme <span class="op">=</span> <span class="st">"flatly"</span>,</span>
-<span>  tabset_theme <span class="op">=</span> <span class="st">"modern"</span>,</span>
-<span>  search <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  breadcrumbs <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  back_to_top <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  github <span class="op">=</span> <span class="st">"https://github.com/favstats/dashboardr"</span>,</span>
-<span>  author <span class="op">=</span> <span class="st">"Your Name"</span>,</span>
-<span>  description <span class="op">=</span> <span class="st">"Interactive exploration of General Social Survey data"</span>,</span>
-<span>  page_footer <span class="op">=</span> <span class="st">"Data: General Social Survey (2010-2024)"</span></span>
-<span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="../reference/add_pages.html">add_pages</a></span><span class="op">(</span><span class="va">home</span>, <span class="va">analysis</span>, <span class="va">about</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="../reference/generate_dashboard.html">generate_dashboard</a></span><span class="op">(</span>render <span class="op">=</span> <span class="cn">TRUE</span>, open <span class="op">=</span> <span class="st">"browser"</span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level2">
-<h2 id="debugging">Debugging<a class="anchor" aria-label="anchor" href="#debugging"></a>
-</h2>
-<div class="section level3">
-<h3 id="check-dashboard-structure">Check Dashboard Structure<a class="anchor" aria-label="anchor" href="#check-dashboard-structure"></a>
-</h3>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Print dashboard to see all pages</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">dashboard</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Print individual pages</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">analysis</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Print content collections</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">demographics</span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level3">
-<h3 id="common-issues">Common Issues<a class="anchor" aria-label="anchor" href="#common-issues"></a>
-</h3>
-<p><strong>Pages not appearing:</strong> - Check that you called
-<code><a href="../reference/add_pages.html">add_pages()</a></code> before <code><a href="../reference/generate_dashboard.html">generate_dashboard()</a></code></p>
-<p><strong>Visualizations not rendering:</strong> - Ensure
-<code>data</code> is set on the page or content collection - Check
-variable names match your data columns</p>
-<p><strong>Tabs in wrong order:</strong> - Tabs appear in the order you
-call <code><a href="../reference/add_viz.html">add_viz()</a></code></p>
-</div>
-<div class="section level3">
-<h3 id="test-without-full-render">Test Without Full Render<a class="anchor" aria-label="anchor" href="#test-without-full-render"></a>
-</h3>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Fast test: just create QMD files</span></span>
-<span><span class="va">dashboard</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/generate_dashboard.html">generate_dashboard</a></span><span class="op">(</span>render <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Check the generated .qmd files in output_dir</span></span></code></pre></div>
-</div>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">survey_dashboard</span><span class="op">)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; 📊 DASHBOARD PROJECT ====================================================</span></span>
+<span><span class="co">#&gt; │ 🏷️  Title: GSS Data Explorer</span></span>
+<span><span class="co">#&gt; │ 📁 Output: /Users/favstats/Dropbox/postdoc/gss_out</span></span>
+<span><span class="co">#&gt; │</span></span>
+<span><span class="co">#&gt; │ ⚙️  FEATURES:</span></span>
+<span><span class="co">#&gt; │    • 🔍 Search</span></span>
+<span><span class="co">#&gt; │    • 🎨 Theme: flatly</span></span>
+<span><span class="co">#&gt; │    • 📑 Tabs: minimal</span></span>
+<span><span class="co">#&gt; │</span></span>
+<span><span class="co">#&gt; │ 🔗 INTEGRATIONS: 💻 GitHub</span></span>
+<span><span class="co">#&gt; │</span></span>
+<span><span class="co">#&gt; │ 📄 PAGES (4):</span></span>
+<span><span class="co">#&gt; │ ├─ 📄 Home [🏠 Landing]</span></span>
+<span><span class="co">#&gt; │ ├─ 📄 Demographics [🏷️ Icon, 🔄 Overlay, 💾 1 dataset]</span></span>
+<span><span class="co">#&gt; │ ├─ 📄 Attitudes [🏷️ Icon, 🔄 Overlay, 💾 1 dataset]</span></span>
+<span><span class="co">#&gt; │ └─ 📄 About [🏷️ Icon, ➡️ Right]</span></span>
+<span><span class="co">#&gt; ══ ═════════════════════════════════════════════════════════════════════════</span></span></code></pre></div>
+<p>To generate this dashboard:</p>
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">survey_dashboard</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/generate_dashboard.html">generate_dashboard</a></span><span class="op">(</span>render <span class="op">=</span> <span class="cn">TRUE</span>, open <span class="op">=</span> <span class="st">"browser"</span><span class="op">)</span></span></code></pre></div>
+<blockquote>
+<p><strong>See a live version:</strong> Check out the <a href="../live-demos/showcase/index.html">live demo dashboard</a> for a
+working example with similar structure.</p>
+</blockquote>
 </div>
 <div class="section level2">
 <h2 id="related-vignettes">Related Vignettes<a class="anchor" aria-label="anchor" href="#related-vignettes"></a>
@@ -690,8 +690,11 @@ call <code><a href="../reference/add_viz.html">add_viz()</a></code></p>
 <li>
 <code><a href="../articles/pages.html">vignette("pages")</a></code> - Layer 2: Pages</li>
 <li>
-<code><a href="../articles/advanced-features.html">vignette("advanced-features")</a></code> - Icons, timelines,
-heatmaps</li>
+<code><a href="../articles/advanced-features.html">vignette("advanced-features")</a></code> - Icons, inputs,
+filtering, tab styling</li>
+<li>
+<code><a href="../articles/publishing_dashboards.html">vignette("publishing_dashboards")</a></code> - Deployment
+guide</li>
 </ul>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

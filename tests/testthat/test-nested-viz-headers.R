@@ -203,7 +203,7 @@ test_that("Graphs render correctly in nested tabs (visualization code present)",
       
       # Just check that R chunks and histogram calls exist
       r_chunks_exist <- any(grepl("^```\\{r ", qmd_content))
-      histogram_exists <- any(grepl("create_histogram", qmd_content))
+      histogram_exists <- any(grepl("viz_histogram", qmd_content))
       expect_true(r_chunks_exist && histogram_exists, "Should have R chunks with histogram calls")
     }
   } else {

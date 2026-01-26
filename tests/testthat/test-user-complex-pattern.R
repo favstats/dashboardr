@@ -53,7 +53,7 @@ test_that("USER PATTERN: Complex production use case with all features", {
     type = "timeline",
     time_var = "wave_time_label",
     chart_type = "line",
-    response_var = "disp"
+    y_var = "disp"
   ) %>%
     add_viz(
       title = "Critical Info Over Time",
@@ -131,7 +131,7 @@ test_that("USER PATTERN: Complex production use case with all features", {
     type = "timeline",
     time_var = "wave_time_label",
     chart_type = "line",
-    response_var = "qsec"
+    y_var = "qsec"
   ) %>%
     add_viz(
       title = "Problem Solving Over Time",

@@ -57,7 +57,7 @@ The charts should look great and be fully interactive on mobile!"
     name = "Overview"
   ) %>%
   add_viz_content(
-    create_bar(
+    viz_bar(
       data = data,
       x_var = "cyl",
       title = "Cars by Cylinder Count",
@@ -76,7 +76,7 @@ The charts should look great and be fully interactive on mobile!"
 Miles per gallon (MPG) distribution across all vehicles."
   ) %>%
   add_viz_content(
-    create_histogram(
+    viz_histogram(
       data = data,
       x_var = "mpg",
       title = "Miles Per Gallon Distribution",
@@ -86,7 +86,7 @@ Miles per gallon (MPG) distribution across all vehicles."
   ) %>%
   add_section("### Horsepower Analysis") %>%
   add_viz_content(
-    create_histogram(
+    viz_histogram(
       data = data,
       x_var = "hp",
       title = "Horsepower Distribution",
@@ -96,7 +96,7 @@ Miles per gallon (MPG) distribution across all vehicles."
   ) %>%
   add_section("### MPG by Transmission Type") %>%
   add_viz_content(
-    create_bar(
+    viz_bar(
       data = data,
       x_var = "transmission",
       group_var = "cyl",
@@ -115,7 +115,7 @@ Miles per gallon (MPG) distribution across all vehicles."
 How many cylinders do these classic cars have?"
   ) %>%
   add_viz_content(
-    create_stackedbar(
+    viz_stackedbar(
       data = data,
       x_var = "cyl",
       stack_var = "transmission",
@@ -126,7 +126,7 @@ How many cylinders do these classic cars have?"
   ) %>%
   add_section("### Displacement Analysis") %>%
   add_viz_content(
-    create_histogram(
+    viz_histogram(
       data = data,
       x_var = "disp",
       title = "Engine Displacement (cubic inches)",
@@ -136,7 +136,7 @@ How many cylinders do these classic cars have?"
   ) %>%
   add_section("### Weight Distribution") %>%
   add_viz_content(
-    create_histogram(
+    viz_histogram(
       data = data,
       x_var = "wt",
       title = "Vehicle Weight (1000 lbs)",
@@ -155,7 +155,7 @@ How many cylinders do these classic cars have?"
 #### High MPG Cars (> 25 MPG)"
   ) %>%
   add_viz_content(
-    create_bar(
+    viz_bar(
       data = data %>% filter(mpg > 25),
       x_var = "car",
       title = "Most Fuel Efficient Cars",
@@ -164,7 +164,7 @@ How many cylinders do these classic cars have?"
     )
   ) %>%
   add_viz_content(
-    create_bar(
+    viz_bar(
       data = data %>% filter(hp > 150),
       x_var = "car",
       title = "Most Powerful Cars",

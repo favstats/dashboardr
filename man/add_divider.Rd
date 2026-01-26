@@ -7,14 +7,14 @@
 add_divider(content, style = "default", tabgroup = NULL)
 }
 \arguments{
-\item{content}{A content_collection or viz_collection object}
+\item{content}{A content_collection, viz_collection, or page_object}
 
 \item{style}{Divider style ("default", "thick", "dashed", "dotted")}
 
 \item{tabgroup}{Optional tabgroup for organizing content (character vector for nested tabs)}
 }
 \value{
-Updated content_collection
+Updated object (same type as input)
 }
 \description{
 Add horizontal divider

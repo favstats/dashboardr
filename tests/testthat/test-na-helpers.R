@@ -339,14 +339,14 @@ test_that("handle_na_for_plotting with include_na = FALSE uses only custom_order
   expect_equal(sum(is.na(result)), 3)  # B, D, E become NA
 })
 
-test_that("integration: create_histogram uses NA helpers correctly", {
+test_that("integration: viz_histogram uses NA helpers correctly", {
   df <- data.frame(
     category = c("A", "B", NA, "C", NA, "A", "B"),
     count = 1:7
   )
   
   # Without NA inclusion
-  plot1 <- create_histogram(
+  plot1 <- viz_histogram(
     data = df,
     x_var = "category",
     include_na = FALSE
@@ -354,7 +354,7 @@ test_that("integration: create_histogram uses NA helpers correctly", {
   expect_s3_class(plot1, "highchart")
   
   # With NA inclusion
-  plot2 <- create_histogram(
+  plot2 <- viz_histogram(
     data = df,
     x_var = "category",
     include_na = TRUE,
@@ -363,7 +363,7 @@ test_that("integration: create_histogram uses NA helpers correctly", {
   expect_s3_class(plot2, "highchart")
   
   # With custom ordering and NA
-  plot3 <- create_histogram(
+  plot3 <- viz_histogram(
     data = df,
     x_var = "category",
     include_na = TRUE,
@@ -373,7 +373,7 @@ test_that("integration: create_histogram uses NA helpers correctly", {
   expect_s3_class(plot3, "highchart")
 })
 
-test_that("integration: create_stackedbar uses NA helpers correctly", {
+test_that("integration: viz_stackedbar uses NA helpers correctly", {
   df <- data.frame(
     question = c("Q1", "Q2", NA, "Q1", "Q2", NA),
     response = c("Yes", NA, "No", "Yes", "No", NA),
@@ -381,7 +381,7 @@ test_that("integration: create_stackedbar uses NA helpers correctly", {
   )
   
   # Without NA inclusion
-  plot1 <- create_stackedbar(
+  plot1 <- viz_stackedbar(
     data = df,
     x_var = "question",
     stack_var = "response",
@@ -390,7 +390,7 @@ test_that("integration: create_stackedbar uses NA helpers correctly", {
   expect_s3_class(plot1, "highchart")
   
   # With NA inclusion for both variables
-  plot2 <- create_stackedbar(
+  plot2 <- viz_stackedbar(
     data = df,
     x_var = "question",
     stack_var = "response",
@@ -401,7 +401,7 @@ test_that("integration: create_stackedbar uses NA helpers correctly", {
   expect_s3_class(plot2, "highchart")
   
   # With custom ordering and NA
-  plot3 <- create_stackedbar(
+  plot3 <- viz_stackedbar(
     data = df,
     x_var = "question",
     stack_var = "response",
@@ -421,7 +421,7 @@ test_that("integration: NA helpers work with weight_var", {
   )
   
   # Histogram with weights and NA inclusion
-  plot1 <- create_histogram(
+  plot1 <- viz_histogram(
     data = df,
     x_var = "category",
     weight_var = "weight",
@@ -437,7 +437,7 @@ test_that("integration: NA helpers work with weight_var", {
     weight = c(1.0, 2.0, 1.5, 1.5, 2.5)
   )
   
-  plot2 <- create_stackedbar(
+  plot2 <- viz_stackedbar(
     data = df2,
     x_var = "x",
     stack_var = "stack",

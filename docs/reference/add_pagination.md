@@ -8,6 +8,8 @@ list of pages.
 
 ``` r
 add_pagination(viz_collection, position = NULL)
+
+add_pagination.page_object(viz_collection, position = NULL)
 ```
 
 ## Arguments

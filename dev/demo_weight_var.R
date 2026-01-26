@@ -17,7 +17,7 @@ cat("=== DEMO: Weighted Survey Data Analysis ===\n\n")
 
 # Example 1: Weighted histogram
 cat("1. Weighted histogram of education levels\n")
-weighted_hist <- create_histogram(
+weighted_hist <- viz_histogram(
   data = survey_data,
   x_var = "education",
   weight_var = "weight",
@@ -28,7 +28,7 @@ cat("   ✓ Created weighted histogram\n\n")
 
 # Example 2: Weighted bar chart
 cat("2. Weighted bar chart of satisfaction by age\n")
-weighted_bar <- create_bar(
+weighted_bar <- viz_bar(
   data = survey_data,
   x_var = "satisfaction",
   group_var = "age",
@@ -40,7 +40,7 @@ cat("   ✓ Created weighted bar chart\n\n")
 
 # Example 3: Weighted stacked bar
 cat("3. Weighted stacked bar of satisfaction by education\n")
-weighted_stacked <- create_stackedbar(
+weighted_stacked <- viz_stackedbar(
   data = survey_data,
   x_var = "education",
   stack_var = "satisfaction",
@@ -52,10 +52,10 @@ cat("   ✓ Created weighted stacked bar\n\n")
 
 # Example 4: Weighted timeline
 cat("4. Weighted timeline of satisfaction over years\n")
-weighted_timeline <- create_timeline(
+weighted_timeline <- viz_timeline(
   data = survey_data,
   time_var = "year",
-  response_var = "satisfaction",
+  y_var = "satisfaction",
   weight_var = "weight",
   title = "Satisfaction Trends (Weighted)"
 )
@@ -94,12 +94,12 @@ cat("   ✓ Created visualizations with different weights\n\n")
 
 cat("=== KEY FEATURES ===\n")
 cat("✓ All visualization functions support weight_var:\n")
-cat("  • create_histogram()\n")
-cat("  • create_bar()\n")
-cat("  • create_stackedbar()\n")
-cat("  • create_stackedbars()\n")
-cat("  • create_timeline()\n")
-cat("  • create_heatmap()\n\n")
+cat("  • viz_histogram()\n")
+cat("  • viz_bar()\n")
+cat("  • viz_stackedbar()\n")
+cat("  • viz_stackedbars()\n")
+cat("  • viz_timeline()\n")
+cat("  • viz_heatmap()\n\n")
 
 cat("✓ Weights are applied during aggregation:\n")
 cat("  • Counts become sum of weights\n")

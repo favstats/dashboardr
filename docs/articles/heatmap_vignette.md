@@ -1,14 +1,14 @@
-# Creating Interactive Heatmaps with \`create_heatmap\`
+# Creating Interactive Heatmaps with \`viz_heatmap\`
 
 ### Introduction
 
-Welcome to this guide on how to use the `create_heatmap` function as
-part of the `dashboardr` package. This guide demonstrates how to use
-this function to generate interactive heatmaps. In this demonstration,
-we will use the `gss_2020` dataset from the `gssr` package to walk you
+Welcome to this guide on how to use the `viz_heatmap` function as part
+of the `dashboardr` package. This guide demonstrates how to use this
+function to generate interactive heatmaps. In this demonstration, we
+will use the `gss_2020` dataset from the `gssr` package to walk you
 through how to use the function.
 
-The `create_heatmap` function is designed to simplify the creation of
+The `viz_heatmap` function is designed to simplify the creation of
 highly customizable heatmaps from raw or aggregated data. Heatmaps are
 excellent for visualizing the relationship between two categorical
 variables and a continuous outcome, using color intensity to represent
@@ -28,7 +28,7 @@ It handles common data preparation steps such as:
 - Setting up titles, labels, tooltips, and color scales.
 
 This vignette demonstrates how to use the
-[`create_heatmap()`](https://favstats.github.io/dashboardr/reference/create_heatmap.md)
+[`viz_heatmap()`](https://favstats.github.io/dashboardr/reference/viz_heatmap.md)
 function with the General Social Survey (GSS) Panel 2020 dataset. The
 GSS Panel 2020 dataset follows the same respondents across three waves
 (2016, 2018, 2020), providing rich longitudinal data for understanding
@@ -146,7 +146,7 @@ edu_map = list("0" = "High School or Less",
                "4" = "Master's or Higher")
 
 # Create basic heatmap
-plot1 <- create_heatmap(
+plot1 <- viz_heatmap(
   data = age_education_data,
   x_var = "degree_1a",
   y_var = "sex_1a", 
@@ -189,7 +189,7 @@ age_order <- c("18-29", "30-44", "45-59", "60-74", "75+")
 education_order <- c("High School or Less", "High School", "Associate/Junior College", "Bachelor's", "Master's or Higher")
 
 # Create heatmap with custom ordering
-plot2 <- create_heatmap(
+plot2 <- viz_heatmap(
   data = income_data,
   x_var = "age_group",
   y_var = "degree_1a",
@@ -241,7 +241,7 @@ class_map <- list("1"="Lower Class",
      "4"="Upper Class")
 
 # Create heatmap including NAs
-plot3 <- create_heatmap(
+plot3 <- viz_heatmap(
   data = happiness_data,
   x_var = "race_1a",
   x_map_values = race_map,
@@ -290,7 +290,7 @@ region_map <- list("1" = "New England",
 )
 
 # Create heatmap with custom styling
-plot5 <- create_heatmap(
+plot5 <- viz_heatmap(
   data = gss_panel20,
   x_var = "region_1a", 
   y_var = "degree_1a",
@@ -311,6 +311,47 @@ plot5 <- create_heatmap(
 )
 
 plot5
+```
+
+### Labels and Tooltips Reference
+
+Heatmaps support extensive label and tooltip customization:
+
+| Parameter               | Description              | Example               |
+|-------------------------|--------------------------|-----------------------|
+| `x_label`               | X-axis title             | `"Age Group"`         |
+| `y_label`               | Y-axis title             | `"Education Level"`   |
+| `value_label`           | Color legend title       | `"Average Score"`     |
+| `tooltip_prefix`        | Text before value        | `"Score: "`           |
+| `tooltip_suffix`        | Text after value         | `" points"`           |
+| `x_tooltip_prefix`      | Text before x in tooltip | `"Age: "`             |
+| `x_tooltip_suffix`      | Text after x in tooltip  | `" years"`            |
+| `y_tooltip_prefix`      | Text before y in tooltip | `"Education: "`       |
+| `y_tooltip_suffix`      | Text after y in tooltip  | `level`               |
+| `tooltip_labels_format` | Number format            | `"{point.value:.1f}"` |
+
+``` r
+# Demonstrate all tooltip options
+viz_heatmap(
+  data = income_data,
+  x_var = "age_group",
+  y_var = "degree_1a",
+  y_map_values = edu_map,
+  value_var = "avg_income",
+  title = "Income by Demographics",
+  # Axis labels
+  x_label = "Age Group",
+  y_label = "Education",
+  value_label = "Income Index",
+  # Tooltip formatting
+  tooltip_prefix = "Income: ",
+  tooltip_suffix = " (scale 1-25)",
+  x_tooltip_prefix = "Age: ",
+  y_tooltip_prefix = "Education: ",
+  tooltip_labels_format = "{point.value:.1f}",
+  x_order = age_order,
+  y_order = education_order
+)
 ```
 
 ## Summary and Best Practices
@@ -358,7 +399,7 @@ table(your_data$x_var, your_data$y_var, useNA = "always")
 ### Conclusion
 
 The
-[`create_heatmap()`](https://favstats.github.io/dashboardr/reference/create_heatmap.md)
+[`viz_heatmap()`](https://favstats.github.io/dashboardr/reference/viz_heatmap.md)
 function provides a powerful and flexible way to visualize bivariate
 relationships in survey data. By leveraging the rich GSS Panel 2020
 dataset, we’ve demonstrated how heatmaps can reveal patterns in:

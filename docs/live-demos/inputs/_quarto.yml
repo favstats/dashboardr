@@ -1,0 +1,41 @@
+project:
+  type: website
+  output-dir: docs
+  resources:
+    - assets/
+
+website:
+  title: "Interactive Inputs Demo"
+  navbar:
+    left:
+      - href: select___checkbox.qmd
+        text: "{{< iconify ph list-checks-fill >}} Select & Checkbox"
+      - href: slider___radio.qmd
+        text: "{{< iconify ph sliders-fill >}} Slider & Radio"
+      - href: full_example.qmd
+        text: "{{< iconify ph funnel-fill >}} Full Example"
+    search: true
+  bread-crumbs: true
+  page-navigation: false
+  back-to-top-navigation: false
+  reader-mode: false
+
+format:
+  html:
+    prefer-html: true
+    theme:
+      - flatly
+      - _tabset_modern.scss
+
+    css:
+      - assets/modal.css
+      - assets/pagination.css
+    mainfont: "Fira Sans"
+    fontsize: 16px
+    monofont: "Fira Code"
+    page-layout: full
+    include-in-header:
+      text: |
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Fira+Sans:wght@300;400;500;600;700&family=Fira+Code:wght@300;400;500;600;700&display=swap" rel="stylesheet">

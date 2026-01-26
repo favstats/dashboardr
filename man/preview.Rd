@@ -12,7 +12,8 @@ preview(
   quarto = FALSE,
   theme = "cosmo",
   path = NULL,
-  page = NULL
+  page = NULL,
+  debug = FALSE
 )
 }
 \arguments{
@@ -44,6 +45,8 @@ a file path ending in .html.}
 
 \item{page}{Optional page name to preview (only used for dashboard_project objects).
 When NULL, previews all pages. When specified, previews only the named page.}
+
+\item{debug}{Whether to show debug messages like file paths (default: FALSE).}
 }
 \value{
 Invisibly returns the path to the generated HTML file.
