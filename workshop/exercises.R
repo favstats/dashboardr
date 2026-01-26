@@ -405,8 +405,8 @@ survey_data <- data.frame(
 # 
 # viz <- create_viz(type = "stackedbars") %>%
 #   add_viz(
-#     questions = questions,
-#     question_labels = labels,
+#     x_vars = questions,
+#     x_var_labels = labels,
 #     title = "Employee Sentiment",
 #     stacked_type = "percent",
 #     horizontal = TRUE,

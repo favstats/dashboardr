@@ -810,8 +810,8 @@ labels <- c("I trust the company", "I feel valued", "I would recommend")
 
 add_viz(
   type = "stackedbars",
-* questions = questions,
-* question_labels = labels,
+* x_vars = questions,
+* x_var_labels = labels,
   stacked_type = "percent",
   horizontal = TRUE,
   stack_breaks = c(0.5, 1.5, 2.5, 3.5, 4.5, 5.5),

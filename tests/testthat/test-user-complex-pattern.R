@@ -32,8 +32,8 @@ test_that("USER PATTERN: Complex production use case with all features", {
   # Dimension 1: Strategic Information Skills (stackedbars with Wave 1/2 filters)
   perf_sis_viz <- create_viz(
     type = "stackedbars",
-    questions = c("mpg", "cyl"),
-    question_labels = c("Miles per Gallon", "Cylinders"),
+    x_vars = c("mpg", "cyl"),
+    x_var_labels = c("Miles per Gallon", "Cylinders"),
     stacked_type = "percent",
     horizontal = TRUE
   ) %>%

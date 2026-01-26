@@ -111,8 +111,8 @@ test_that("empty defaults in create_viz still allows add_viz params", {
 test_that("defaults work with complex stackedbars parameters", {
   viz <- create_viz(
     type = "stackedbars",
-    questions = c("q1", "q2", "q3"),
-    question_labels = c("Question 1", "Question 2", "Question 3"),
+    x_vars = c("q1", "q2", "q3"),
+    x_var_labels = c("Question 1", "Question 2", "Question 3"),
     stacked_type = "percent",
     horizontal = TRUE,
     stack_breaks = c(0.5, 2.5, 4.5),

@@ -133,8 +133,8 @@ test_that("create_stackedbars works with multiple questions", {
   
   result <- create_stackedbars(
     data = data,
-    questions = c("q1", "q2", "q3"),
-    question_labels = c("Question 1", "Question 2", "Question 3"),
+    x_vars = c("q1", "q2", "q3"),
+    x_var_labels = c("Question 1", "Question 2", "Question 3"),
     stacked_type = "counts"
   )
   expect_s3_class(result, "highchart")
@@ -150,8 +150,8 @@ test_that("create_stackedbars with percent type", {
   
   result <- create_stackedbars(
     data = data,
-    questions = c("q1", "q2"),
-    question_labels = c("Q1", "Q2"),
+    x_vars = c("q1", "q2"),
+    x_var_labels = c("Q1", "Q2"),
     stacked_type = "percent"
   )
   expect_s3_class(result, "highchart")

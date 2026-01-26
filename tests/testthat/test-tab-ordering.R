@@ -19,7 +19,7 @@ test_that("User scenario: Overall tab appears FIRST, not last (sis/overall, sis/
   saveRDS(test_data, temp_data)
   
   # Create overall stackedbars (added FIRST)
-  sis_viz <- create_viz(type = "stackedbars", questions = c("SInfo5", "SInfo6", "SInfo7")) %>%
+  sis_viz <- create_viz(type = "stackedbars", x_vars = c("SInfo5", "SInfo6", "SInfo7")) %>%
     add_viz(title_tabset = "Wave 1", filter = ~ wave == 1, tabgroup = "cis/overall") %>%
     add_viz(title_tabset = "Wave 2", filter = ~ wave == 2, tabgroup = "cis/overall")
   
@@ -105,7 +105,7 @@ test_that("Tabs preserve insertion order when using combine_viz", {
   saveRDS(test_data, temp_data)
   
   # Order of adding: overall, age, gender, edu
-  sis_viz <- create_viz(type = "stackedbars", questions = "SAI1") %>%
+  sis_viz <- create_viz(type = "stackedbars", x_vars = "SAI1") %>%
     add_viz(title_tabset = "Wave 1", filter = ~ wave == 1, tabgroup = "ais/overall")
   
   sis_age <- create_viz(type = "stackedbar") %>%

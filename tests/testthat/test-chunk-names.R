@@ -46,7 +46,7 @@ test_that("chunk names extract relevant variables for each viz type", {
     # Stackedbars: first question
     add_viz(
       type = "stackedbars",
-      questions = c("q1_trust", "q2_safety"),
+      x_vars = c("q1_trust", "q2_safety"),
       title = "Survey"
     ) %>%
     # Timeline: response_var

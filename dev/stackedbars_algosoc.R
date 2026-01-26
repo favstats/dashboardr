@@ -39,7 +39,7 @@ hc <- create_stackedbars(
   questions       = c("ADSV1", "ADSV2", "ADSV3", "ADSV4"),
   title       = "In welke mate zijn de volgende waarden van belang voor u bij het ontwikkelen en gebruiken van automatische besluitvormingssystemen?",
   subtitle = "Likert-type scale from 1 to 7",
-  question_labels = c(" Respect voor privacy van gebruikers", "Gebruiksvriendelijkheid", "Politiek neutraal", "Vrijheid om te kiezen welke informatie je krijgt"),
+  x_var_labels = c(" Respect voor privacy van gebruikers", "Gebruiksvriendelijkheid", "Politiek neutraal", "Vrijheid om te kiezen welke informatie je krijgt"),
   stacked_type= "percent"
 
 )

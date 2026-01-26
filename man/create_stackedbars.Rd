@@ -2,12 +2,12 @@
 % Please edit documentation in R/create_stackedbars.R
 \name{create_stackedbars}
 \alias{create_stackedbars}
-\title{Stacked Bar Charts}
+\title{Stacked Bar Charts (Multiple Variables)}
 \usage{
 create_stackedbars(
   data,
-  questions,
-  question_labels = NULL,
+  x_vars,
+  x_var_labels = NULL,
   response_levels = NULL,
   title = NULL,
   subtitle = NULL,
@@ -30,33 +30,30 @@ create_stackedbars(
   stack_breaks = NULL,
   stack_bin_labels = NULL,
   stack_map_values = NULL,
-  show_question_tooltip = TRUE,
+  show_var_tooltip = TRUE,
   horizontal = FALSE,
   weight_var = NULL
 )
 }
 \arguments{
-\item{data}{A data frame with one column per survey question (one row per
-respondent).}
+\item{data}{A data frame with one column per variable to compare.}
 
-\item{questions}{Character vector of column names to pivot (the survey
-questions).}
+\item{x_vars}{Character vector of column names to pivot (the variables to compare).}
 
-\item{question_labels}{Optional character vector of labels for the
-questions. Must be the same length as \code{questions}. If \code{NULL}, \code{questions}
-are used as labels.}
+\item{x_var_labels}{Optional character vector of display labels for the variables.
+Must be the same length as \code{x_vars}. If \code{NULL}, column names are used as labels.}
 
 \item{response_levels}{Optional character vector of factor levels for the
-Likert responses (e.g. \verb{c("Strongly Disagree", …, "Strongly Agree")}).}
+response categories (e.g. \code{c("Strongly Disagree", ..., "Strongly Agree")}).}
 
 \item{title}{Optional main title for the chart.}
 
 \item{subtitle}{Optional subtitle for the chart.}
 
-\item{x_label}{Optional label for the X‐axis. Defaults to "Questions".}
+\item{x_label}{Optional label for the X-axis. Defaults to "Variable".}
 
-\item{y_label}{Optional label for the Y‐axis. Defaults to "Number of Respondents" or
-"Percentage of Respondents" if \code{stacked_type = "percent"}.}
+\item{y_label}{Optional label for the Y-axis. Defaults to "Count" or
+"Percentage" if \code{stacked_type = "percent"}.}
 
 \item{stack_label}{Optional title for the stack legend.
 Set to NULL, NA, FALSE, or "" to hide the legend title completely.}
@@ -68,27 +65,27 @@ Set to NULL, NA, FALSE, or "" to hide the legend title completely.}
 
 \item{tooltip_suffix}{Optional string appended to tooltip values.}
 
-\item{x_tooltip_suffix}{Optional string appended to X‐axis tooltip values.}
+\item{x_tooltip_suffix}{Optional string appended to X-axis tooltip values.}
 
 \item{color_palette}{Optional character vector of colors for the stacks.}
 
 \item{stack_order}{Optional character vector specifying the order of response levels.}
 
-\item{x_order}{Optional character vector specifying the order of questions.}
+\item{x_order}{Optional character vector specifying the order of variables on the x-axis.}
 
 \item{include_na}{Logical. If \code{TRUE}, NA values are shown as explicit categories; if \code{FALSE},
-rows with \code{NA} in question or response are dropped. Default \code{FALSE}.}
+rows with \code{NA} are dropped. Default \code{FALSE}.}
 
-\item{na_label_x}{Optional string. Custom label for NA values in questions. Defaults to "(Missing)".}
+\item{na_label_x}{Optional string. Custom label for NA values in variables. Defaults to "(Missing)".}
 
 \item{na_label_stack}{Optional string. Custom label for NA values in responses. Defaults to "(Missing)".}
 
-\item{x_breaks}{Optional numeric vector of cut points to bin the questions
-(if they are numeric). Not typical for Likert.}
+\item{x_breaks}{Optional numeric vector of cut points to bin the variables
+(if they are numeric).}
 
 \item{x_bin_labels}{Optional character vector of labels for \code{x_breaks}.}
 
-\item{x_map_values}{Optional named list to rename question values.}
+\item{x_map_values}{Optional named list to rename variable values.}
 
 \item{stack_breaks}{Optional numeric vector of cut points to bin the responses.}
 
@@ -96,33 +93,39 @@ rows with \code{NA} in question or response are dropped. Default \code{FALSE}.}
 
 \item{stack_map_values}{Optional named list to rename response values.}
 
-\item{show_question_tooltip}{Logical. If \code{TRUE}, shows custom tooltip with question labels.}
+\item{show_var_tooltip}{Logical. If \code{TRUE}, shows custom tooltip with variable labels.}
 
 \item{horizontal}{Logical. If \code{TRUE}, creates a horizontal bar chart (bars extend from left to right).
 If \code{FALSE} (default), creates a vertical column chart (bars extend from bottom to top).
 Note: When horizontal = TRUE, the stack order is automatically reversed so that
 the visual order of the stacks matches the legend order.}
+
+\item{weight_var}{Optional. Column name for weighting observations.}
 }
 \value{
 A \code{highcharter} stacked bar chart object.
 }
 \description{
-Turns wide survey data (one column per question) into long format and then
-creates a stacked‐bar chart where each bar is a question and each stack is
-a Likert‐type response category.
+Turns wide data (one column per variable) into long format and then
+creates a stacked-bar chart where each bar represents a variable and each
+stack segment represents a response category.
+
+This is useful for comparing distributions across multiple related variables,
+such as survey questions, rating scales, or any set of categorical variables
+with shared response options.
 }
 \examples{
 
 # Load GSS data
 data(gss_all)
 
-# Filter to recent years and select Likert-style questions
+# Filter to recent years and select confidence variables
 gss_recent <- gss_all \%>\%
   filter(year >= 2010) \%>\%
   select(year, confinan, confed, conmedic, conjudge, consci, conlegis)
 
-# Example 1: Basic Likert chart - Confidence in institutions
-confidence_questions <- c("confinan", "confed", "conmedic", "conjudge", "consci", "conlegis")
+# Example 1: Basic chart comparing confidence across institutions
+confidence_vars <- c("confinan", "confed", "conmedic", "conjudge", "consci", "conlegis")
 confidence_labels <- c(
   "Financial Institutions",
   "Education",
@@ -137,8 +140,8 @@ confidence_order <- c("A Great Deal", "Only Some", "Hardly Any")
 
 plot1 <- create_stackedbars(
   data = gss_recent,
-  questions = confidence_questions,
-  question_labels = confidence_labels,
+  x_vars = confidence_vars,
+  x_var_labels = confidence_labels,
   title = "Confidence in American Institutions",
   subtitle = "GSS respondents 2010-present",
   x_label = "Institution",
@@ -152,8 +155,8 @@ plot1
 # Example 2: Including NA values with custom labels
 plot2 <- create_stackedbars(
   data = gss_recent,
-  questions = confidence_questions,
-  question_labels = confidence_labels,
+  x_vars = confidence_vars,
+  x_var_labels = confidence_labels,
   title = "Confidence in Institutions (Including Non-Responses)",
   subtitle = "Showing missing data explicitly",
   x_label = "Institution",
@@ -176,8 +179,8 @@ confidence_map <- list(
 
 plot3 <- create_stackedbars(
   data = gss_recent,
-  questions = confidence_questions[1:4],  # Just first 4 institutions
-  question_labels = confidence_labels[1:4],
+  x_vars = confidence_vars[1:4],  # Just first 4 institutions
+  x_var_labels = confidence_labels[1:4],
   title = "Institutional Confidence with Custom Labels",
   subtitle = "Remapped response categories",
   stack_map_values = confidence_map,
@@ -187,9 +190,9 @@ plot3 <- create_stackedbars(
 )
 plot3
 
-# Example 4: Custom question ordering and tooltips
-# Reorder questions by typical confidence levels (highest to lowest)
-custom_question_order <- c(
+# Example 4: Custom ordering and tooltips
+# Reorder by typical confidence levels (highest to lowest)
+custom_order <- c(
   "Scientific Community",
   "Medicine",
   "Education",
@@ -200,11 +203,11 @@ custom_question_order <- c(
 
 plot4 <- create_stackedbars(
   data = gss_recent,
-  questions = confidence_questions,
-  question_labels = confidence_labels,
+  x_vars = confidence_vars,
+  x_var_labels = confidence_labels,
   title = "Institutional Confidence (Reordered)",
   subtitle = "Ordered from typically highest to lowest confidence",
-  x_order = custom_question_order,
+  x_order = custom_order,
   response_levels = confidence_order,
   stacked_type = "percent",
   tooltip_prefix = "Response: ",
@@ -217,35 +220,34 @@ plot4
 # Example 5: Horizontal bar chart
 plot5 <- create_stackedbars(
   data = gss_recent,
-  questions = confidence_questions,
-  question_labels = confidence_labels,
+  x_vars = confidence_vars,
+  x_var_labels = confidence_labels,
   title = "Confidence in American Institutions (Horizontal)",
   subtitle = "GSS respondents 2010-present",
   x_label = "Institution",
   stack_label = "Level of Confidence",
   response_levels = confidence_order,
   stacked_type = "percent",
-  horizontal = TRUE,  # Creates horizontal bars
+  horizontal = TRUE,
   color_palette = c("#2E8B57", "#FFD700", "#CD5C5C")
 )
 plot5
 
-# Example 6: Working with different Likert scales
-# Using happiness and life satisfaction questions if available
+# Example 6: Working with different variable types
+# Using happiness and satisfaction variables
 if (all(c("happy", "satfin", "satjob") \%in\% names(gss_all))) {
   satisfaction_data <- gss_all \%>\%
     filter(year >= 2010) \%>\%
     select(happy, satfin, satjob) \%>\%
-    # Convert to consistent scale for demonstration
     mutate(across(everything(), as.character))
 
-  satisfaction_questions <- c("happy", "satfin", "satjob")
+  satisfaction_vars <- c("happy", "satfin", "satjob")
   satisfaction_labels <- c("General Happiness", "Financial Satisfaction", "Job Satisfaction")
 
   plot6 <- create_stackedbars(
     data = satisfaction_data,
-    questions = satisfaction_questions,
-    question_labels = satisfaction_labels,
+    x_vars = satisfaction_vars,
+    x_var_labels = satisfaction_labels,
     title = "Life Satisfaction Measures",
     subtitle = "Multiple satisfaction domains",
     x_label = "Life Domain",

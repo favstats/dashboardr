@@ -28,8 +28,8 @@ test_that("pagination survives ALL layers in complex real-world use case", {
   # Collection 1: stackedbars (multiple questions)
   perf_sis_viz <- create_viz(
     type = "stackedbars",
-    questions = c("mpg", "cyl"),
-    question_labels = c("Miles per Gallon", "Cylinders"),
+    x_vars = c("mpg", "cyl"),
+    x_var_labels = c("Miles per Gallon", "Cylinders"),
     stacked_type = "percent",
     horizontal = TRUE
   ) %>%
@@ -308,7 +308,7 @@ test_that("multiple pagination markers create multiple pages", {
 test_that("complex nested tabgroups preserve pagination", {
   
   # Deep nesting like user's code: "perf_sis/wave1/overall"
-  viz1 <- create_viz(type = "stackedbars", questions = c("mpg", "cyl")) %>%
+  viz1 <- create_viz(type = "stackedbars", x_vars = c("mpg", "cyl")) %>%
     add_viz(title = "T1", tabgroup = "dimension1/wave1/overall/item1") %>%
     add_viz(title = "T2", tabgroup = "dimension1/wave1/age/item1")
   

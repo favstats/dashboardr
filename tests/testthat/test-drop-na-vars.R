@@ -238,7 +238,7 @@ test_that("drop_na_vars can be overridden in add_viz", {
 test_that("drop_na_vars with stackedbars includes all questions", {
   viz <- create_viz(
     type = "stackedbars",
-    questions = c("q1", "q2", "q3")
+    x_vars = c("q1", "q2", "q3")
   ) %>%
     add_viz(
       title = "Multiple Questions",

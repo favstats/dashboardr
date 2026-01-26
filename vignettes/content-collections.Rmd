@@ -159,11 +159,11 @@ For survey questions with the same response scale, use `type = "stackedbars"`:
 # Within create_content() workflow
 create_content(data = survey_data, type = "stackedbars") %>%
   add_viz(
-    questions = c("q1", "q2", "q3", "q4"),
-    question_labels = c("I trust the company", 
-                        "I feel valued",
-                        "I have opportunities",
-                        "I would recommend"),
+    x_vars = c("q1", "q2", "q3", "q4"),
+    x_var_labels = c("I trust the company", 
+                     "I feel valued",
+                     "I have opportunities",
+                     "I would recommend"),
     title = "Employee Sentiment",
     stacked_type = "percent",
     horizontal = TRUE
