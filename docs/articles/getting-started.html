@@ -64,7 +64,7 @@
 <li><a class="dropdown-item" href="../articles/getting-started.html">Getting Started</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>The Three Layers</h6></li>
-    <li><a class="dropdown-item" href="../articles/content-collections.html">Content Collections</a></li>
+    <li><a class="dropdown-item" href="../articles/content-collections.html">Content</a></li>
     <li><a class="dropdown-item" href="../articles/pages.html">Pages</a></li>
     <li><a class="dropdown-item" href="../articles/dashboards.html">Dashboards</a></li>
     <li><hr class="dropdown-divider"></li>
@@ -234,7 +234,9 @@ type:</p>
 data and says “make bar charts by default.” Then <code><a href="../reference/add_viz.html">add_viz()</a></code>
 adds a bar chart of the <code>degree</code> variable. The print output
 shows what’s inside: one visualization ready to go.</p>
-<p>Use <code><a href="../reference/preview.html">preview()</a></code> to see the actual chart:</p>
+<p>Use <code><a href="../reference/preview.html">preview()</a></code> to see the actual chart. Note this might
+differ slightly from how content will eventually look like in your
+dashboard as it creates a simple preview of your data.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">demographics</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/preview.html">preview</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <div style="border: 2px solid #e1e4e8; border-radius: 8px; padding: 20px; margin: 16px 0; background-color: #fafbfc;">
@@ -254,13 +256,13 @@ to organize charts into tabs:</p>
 <span><span class="va">demographics</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/preview.html">preview</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <div style="border: 2px solid #e1e4e8; border-radius: 8px; padding: 20px; margin: 16px 0; background-color: #fafbfc;">
 <div style="font-size: 0.75em; color: #6a737d; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid #e1e4e8;">Preview</div>
-<div id="dtabs-5b1fe38f" style="margin: 20px 0;">
+<div id="dtabs-ae329297" style="margin: 20px 0;">
 <div class="dtab-buttons" style="border-bottom: 1px solid #dee2e6; margin-bottom: 10px;">
-<button type="button" class="dtab-btn dtab-active" data-tab="dtabs-5b1fe38f-1">demographics</button>
-<button type="button" class="dtab-btn" data-tab="dtabs-5b1fe38f-2">attitudes</button>
+<button type="button" class="dtab-btn dtab-active" data-tab="dtabs-ae329297-1">demographics</button>
+<button type="button" class="dtab-btn" data-tab="dtabs-ae329297-2">attitudes</button>
 </div>
 <div class="dtab-content">
-<div class="dtab-pane" id="dtabs-5b1fe38f-1" data-visible="true">
+<div class="dtab-pane" id="dtabs-ae329297-1" data-visible="true">
 <div class="preview-h4" style="font-size: 1em; font-weight: bold; margin: 10px 0;">Education</div>
 <div class="highchart html-widget html-fill-item" id="htmlwidget-e5c8c404fe174e4c81bd" style="width:672px;height:480px;"></div>
 <script type="application/json" data-for="htmlwidget-e5c8c404fe174e4c81bd">{"x":{"hc_opts":{"chart":{"reflow":true,"type":"column"},"title":{"text":null},"yAxis":{"title":{"text":"Count"}},"credits":{"enabled":false},"exporting":{"enabled":false},"boost":{"enabled":false},"plotOptions":{"series":{"label":{"enabled":false},"turboThreshold":0,"dataLabels":{"enabled":true,"format":"{point.y}"}},"treemap":{"layoutAlgorithm":"squarified"}},"xAxis":{"categories":["less than high school","high school","associate/junior college","bachelor's","graduate"],"title":{"text":"degree"}},"series":[{"data":[2307,10308,1812,4523,2838],"name":"Count","showInLegend":false,"colorByPoint":true}],"tooltip":{"formatter":"function() {\n           var cat = this.point.category || this.series.chart.xAxis[0].categories[this.point.x] || this.x;\n           var val = this.y;\n           var total = 21788;\n           var pct = total > 0 ? (val / total * 100).toFixed(1) : 0;\n           var rank = this.series.data.indexOf(this.point) + 1;\n           var totalItems = this.series.data.length;\n           return '<b>' + cat + '<\/b><br/>' +\n                  '' + val.toLocaleString() + '<br/>' +\n                  '<span style=\"color:#666;font-size:0.9em\">' + pct + '% of total | Rank: #' + rank + ' of ' + totalItems + '<\/span>';\n         }","useHTML":true}},"theme":{"chart":{"backgroundColor":"transparent"},"colors":["#7cb5ec","#434348","#90ed7d","#f7a35c","#8085e9","#f15c80","#e4d354","#2b908f","#f45b5b","#91e8e1"]},"conf_opts":{"global":{"Date":null,"VMLRadialGradientURL":"http =//code.highcharts.com/list(version)/gfx/vml-radial-gradient.png","canvasToolsURL":"http =//code.highcharts.com/list(version)/modules/canvas-tools.js","getTimezoneOffset":null,"timezoneOffset":0,"useUTC":true},"lang":{"contextButtonTitle":"Chart context menu","decimalPoint":".","downloadCSV":"Download CSV","downloadJPEG":"Download JPEG image","downloadPDF":"Download PDF document","downloadPNG":"Download PNG image","downloadSVG":"Download SVG vector image","downloadXLS":"Download XLS","drillUpText":"◁ Back to {series.name}","exitFullscreen":"Exit from full screen","exportData":{"annotationHeader":"Annotations","categoryDatetimeHeader":"DateTime","categoryHeader":"Category"},"hideData":"Hide data table","invalidDate":null,"loading":"Loading...","months":["January","February","March","April","May","June","July","August","September","October","November","December"],"noData":"No data to display","numericSymbolMagnitude":1000,"numericSymbols":["k","M","G","T","P","E"],"printChart":"Print chart","resetZoom":"Reset zoom","resetZoomTitle":"Reset zoom level 1:1","shortMonths":["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],"shortWeekdays":["Sat","Sun","Mon","Tue","Wed","Thu","Fri"],"thousandsSep":" ","viewData":"View data table","viewFullscreen":"View in full screen","weekdays":["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]}},"type":"chart","fonts":[],"debug":false},"evals":["hc_opts.tooltip.formatter"],"jsHooks":[]}</script><div style="margin-bottom: 15px;"></div>
@@ -268,7 +270,7 @@ to organize charts into tabs:</p>
 <div class="highchart html-widget html-fill-item" id="htmlwidget-36aa3d2a04d42bbc2145" style="width:672px;height:480px;"></div>
 <script type="application/json" data-for="htmlwidget-36aa3d2a04d42bbc2145">{"x":{"hc_opts":{"chart":{"reflow":true,"type":"column"},"title":{"text":null},"yAxis":{"title":{"text":"Count"}},"credits":{"enabled":false},"exporting":{"enabled":false},"boost":{"enabled":false},"plotOptions":{"series":{"label":{"enabled":false},"turboThreshold":0,"dataLabels":{"enabled":true,"format":"{point.y}"}},"treemap":{"layoutAlgorithm":"squarified"}},"xAxis":{"categories":["white","black","other"],"title":{"text":"race"}},"series":[{"data":[16169,3356,2263],"name":"Count","showInLegend":false,"colorByPoint":true}],"tooltip":{"formatter":"function() {\n           var cat = this.point.category || this.series.chart.xAxis[0].categories[this.point.x] || this.x;\n           var val = this.y;\n           var total = 21788;\n           var pct = total > 0 ? (val / total * 100).toFixed(1) : 0;\n           var rank = this.series.data.indexOf(this.point) + 1;\n           var totalItems = this.series.data.length;\n           return '<b>' + cat + '<\/b><br/>' +\n                  '' + val.toLocaleString() + '<br/>' +\n                  '<span style=\"color:#666;font-size:0.9em\">' + pct + '% of total | Rank: #' + rank + ' of ' + totalItems + '<\/span>';\n         }","useHTML":true}},"theme":{"chart":{"backgroundColor":"transparent"},"colors":["#7cb5ec","#434348","#90ed7d","#f7a35c","#8085e9","#f15c80","#e4d354","#2b908f","#f45b5b","#91e8e1"]},"conf_opts":{"global":{"Date":null,"VMLRadialGradientURL":"http =//code.highcharts.com/list(version)/gfx/vml-radial-gradient.png","canvasToolsURL":"http =//code.highcharts.com/list(version)/modules/canvas-tools.js","getTimezoneOffset":null,"timezoneOffset":0,"useUTC":true},"lang":{"contextButtonTitle":"Chart context menu","decimalPoint":".","downloadCSV":"Download CSV","downloadJPEG":"Download JPEG image","downloadPDF":"Download PDF document","downloadPNG":"Download PNG image","downloadSVG":"Download SVG vector image","downloadXLS":"Download XLS","drillUpText":"◁ Back to {series.name}","exitFullscreen":"Exit from full screen","exportData":{"annotationHeader":"Annotations","categoryDatetimeHeader":"DateTime","categoryHeader":"Category"},"hideData":"Hide data table","invalidDate":null,"loading":"Loading...","months":["January","February","March","April","May","June","July","August","September","October","November","December"],"noData":"No data to display","numericSymbolMagnitude":1000,"numericSymbols":["k","M","G","T","P","E"],"printChart":"Print chart","resetZoom":"Reset zoom","resetZoomTitle":"Reset zoom level 1:1","shortMonths":["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],"shortWeekdays":["Sat","Sun","Mon","Tue","Wed","Thu","Fri"],"thousandsSep":" ","viewData":"View data table","viewFullscreen":"View in full screen","weekdays":["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]}},"type":"chart","fonts":[],"debug":false},"evals":["hc_opts.tooltip.formatter"],"jsHooks":[]}</script><div style="margin-bottom: 15px;"></div>
 </div>
-<div class="dtab-pane" id="dtabs-5b1fe38f-2" data-visible="false">
+<div class="dtab-pane" id="dtabs-ae329297-2" data-visible="false">
 <div class="preview-h4" style="font-size: 1em; font-weight: bold; margin: 10px 0;">Happiness</div>
 <div class="highchart html-widget html-fill-item" id="htmlwidget-febe03efa1a2d8d52a86" style="width:672px;height:480px;"></div>
 <script type="application/json" data-for="htmlwidget-febe03efa1a2d8d52a86">{"x":{"hc_opts":{"chart":{"reflow":true,"type":"column"},"title":{"text":null},"yAxis":{"title":{"text":"Count"}},"credits":{"enabled":false},"exporting":{"enabled":false},"boost":{"enabled":false},"plotOptions":{"series":{"label":{"enabled":false},"turboThreshold":0,"dataLabels":{"enabled":true,"format":"{point.y}"}},"treemap":{"layoutAlgorithm":"squarified"}},"xAxis":{"categories":["very happy","pretty happy","not too happy"],"title":{"text":"happy"}},"series":[{"data":[5477,12256,3967],"name":"Count","showInLegend":false,"colorByPoint":true}],"tooltip":{"formatter":"function() {\n           var cat = this.point.category || this.series.chart.xAxis[0].categories[this.point.x] || this.x;\n           var val = this.y;\n           var total = 21700;\n           var pct = total > 0 ? (val / total * 100).toFixed(1) : 0;\n           var rank = this.series.data.indexOf(this.point) + 1;\n           var totalItems = this.series.data.length;\n           return '<b>' + cat + '<\/b><br/>' +\n                  '' + val.toLocaleString() + '<br/>' +\n                  '<span style=\"color:#666;font-size:0.9em\">' + pct + '% of total | Rank: #' + rank + ' of ' + totalItems + '<\/span>';\n         }","useHTML":true}},"theme":{"chart":{"backgroundColor":"transparent"},"colors":["#7cb5ec","#434348","#90ed7d","#f7a35c","#8085e9","#f15c80","#e4d354","#2b908f","#f45b5b","#91e8e1"]},"conf_opts":{"global":{"Date":null,"VMLRadialGradientURL":"http =//code.highcharts.com/list(version)/gfx/vml-radial-gradient.png","canvasToolsURL":"http =//code.highcharts.com/list(version)/modules/canvas-tools.js","getTimezoneOffset":null,"timezoneOffset":0,"useUTC":true},"lang":{"contextButtonTitle":"Chart context menu","decimalPoint":".","downloadCSV":"Download CSV","downloadJPEG":"Download JPEG image","downloadPDF":"Download PDF document","downloadPNG":"Download PNG image","downloadSVG":"Download SVG vector image","downloadXLS":"Download XLS","drillUpText":"◁ Back to {series.name}","exitFullscreen":"Exit from full screen","exportData":{"annotationHeader":"Annotations","categoryDatetimeHeader":"DateTime","categoryHeader":"Category"},"hideData":"Hide data table","invalidDate":null,"loading":"Loading...","months":["January","February","March","April","May","June","July","August","September","October","November","December"],"noData":"No data to display","numericSymbolMagnitude":1000,"numericSymbols":["k","M","G","T","P","E"],"printChart":"Print chart","resetZoom":"Reset zoom","resetZoomTitle":"Reset zoom level 1:1","shortMonths":["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],"shortWeekdays":["Sat","Sun","Mon","Tue","Wed","Thu","Fri"],"thousandsSep":" ","viewData":"View data table","viewFullscreen":"View in full screen","weekdays":["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]}},"type":"chart","fonts":[],"debug":false},"evals":["hc_opts.tooltip.formatter"],"jsHooks":[]}</script><div style="margin-bottom: 15px;"></div>
@@ -276,32 +278,32 @@ to organize charts into tabs:</p>
 </div>
 </div>
 <style>
-    #dtabs-5b1fe38f .dtab-btn {
+    #dtabs-ae329297 .dtab-btn {
       padding: 8px 16px; margin-right: 4px; border: 1px solid #dee2e6;
       background: #f8f9fa; cursor: pointer; border-radius: 4px 4px 0 0;
     }
-    #dtabs-5b1fe38f .dtab-btn.dtab-active { background: white; border-bottom-color: white; font-weight: bold; }
-    #dtabs-5b1fe38f .dtab-pane { padding: 15px 0; }
-    #dtabs-5b1fe38f .dtab-pane[data-visible='false'] { display: none; }
+    #dtabs-ae329297 .dtab-btn.dtab-active { background: white; border-bottom-color: white; font-weight: bold; }
+    #dtabs-ae329297 .dtab-pane { padding: 15px 0; }
+    #dtabs-ae329297 .dtab-pane[data-visible='false'] { display: none; }
   </style>
 <script>
     (function() {
       // Wait for Highcharts to render, then hide inactive panes
       setTimeout(function() {
-        document.querySelectorAll('#dtabs-5b1fe38f .dtab-pane[data-visible="false"]').forEach(function(p) {
+        document.querySelectorAll('#dtabs-ae329297 .dtab-pane[data-visible="false"]').forEach(function(p) {
           p.style.display = 'none';
         });
       }, 500);
 
       // Tab click handler
-      document.querySelectorAll('#dtabs-5b1fe38f .dtab-btn').forEach(function(btn) {
+      document.querySelectorAll('#dtabs-ae329297 .dtab-btn').forEach(function(btn) {
         btn.addEventListener('click', function() {
           var tabId = this.getAttribute('data-tab');
           // Update buttons
-          document.querySelectorAll('#dtabs-5b1fe38f .dtab-btn').forEach(function(b) { b.classList.remove('dtab-active'); });
+          document.querySelectorAll('#dtabs-ae329297 .dtab-btn').forEach(function(b) { b.classList.remove('dtab-active'); });
           this.classList.add('dtab-active');
           // Update panes
-          document.querySelectorAll('#dtabs-5b1fe38f .dtab-pane').forEach(function(p) {
+          document.querySelectorAll('#dtabs-ae329297 .dtab-pane').forEach(function(p) {
             p.style.display = p.id === tabId ? 'block' : 'none';
             p.setAttribute('data-visible', p.id === tabId ? 'true' : 'false');
           });
@@ -358,13 +360,13 @@ visualizations that need it.</p>
 <code class="sourceCode R"><span><span class="va">analysis</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/preview.html">preview</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <div style="border: 2px solid #e1e4e8; border-radius: 8px; padding: 20px; margin: 16px 0; background-color: #fafbfc;">
 <div style="font-size: 0.75em; color: #6a737d; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid #e1e4e8;">Preview</div>
-<div id="dtabs-2b80e73a" style="margin: 20px 0;">
+<div id="dtabs-8fd35117" style="margin: 20px 0;">
 <div class="dtab-buttons" style="border-bottom: 1px solid #dee2e6; margin-bottom: 10px;">
-<button type="button" class="dtab-btn dtab-active" data-tab="dtabs-2b80e73a-1">demographics</button>
-<button type="button" class="dtab-btn" data-tab="dtabs-2b80e73a-2">attitudes</button>
+<button type="button" class="dtab-btn dtab-active" data-tab="dtabs-8fd35117-1">demographics</button>
+<button type="button" class="dtab-btn" data-tab="dtabs-8fd35117-2">attitudes</button>
 </div>
 <div class="dtab-content">
-<div class="dtab-pane" id="dtabs-2b80e73a-1" data-visible="true">
+<div class="dtab-pane" id="dtabs-8fd35117-1" data-visible="true">
 <div class="preview-h4" style="font-size: 1em; font-weight: bold; margin: 10px 0;">Education</div>
 <div class="highchart html-widget html-fill-item" id="htmlwidget-1fb4450895fe099f74a1" style="width:672px;height:480px;"></div>
 <script type="application/json" data-for="htmlwidget-1fb4450895fe099f74a1">{"x":{"hc_opts":{"chart":{"reflow":true,"type":"column"},"title":{"text":null},"yAxis":{"title":{"text":"Count"}},"credits":{"enabled":false},"exporting":{"enabled":false},"boost":{"enabled":false},"plotOptions":{"series":{"label":{"enabled":false},"turboThreshold":0,"dataLabels":{"enabled":true,"format":"{point.y}"}},"treemap":{"layoutAlgorithm":"squarified"}},"xAxis":{"categories":["less than high school","high school","associate/junior college","bachelor's","graduate"],"title":{"text":"degree"}},"series":[{"data":[2307,10308,1812,4523,2838],"name":"Count","showInLegend":false,"colorByPoint":true}],"tooltip":{"formatter":"function() {\n           var cat = this.point.category || this.series.chart.xAxis[0].categories[this.point.x] || this.x;\n           var val = this.y;\n           var total = 21788;\n           var pct = total > 0 ? (val / total * 100).toFixed(1) : 0;\n           var rank = this.series.data.indexOf(this.point) + 1;\n           var totalItems = this.series.data.length;\n           return '<b>' + cat + '<\/b><br/>' +\n                  '' + val.toLocaleString() + '<br/>' +\n                  '<span style=\"color:#666;font-size:0.9em\">' + pct + '% of total | Rank: #' + rank + ' of ' + totalItems + '<\/span>';\n         }","useHTML":true}},"theme":{"chart":{"backgroundColor":"transparent"},"colors":["#7cb5ec","#434348","#90ed7d","#f7a35c","#8085e9","#f15c80","#e4d354","#2b908f","#f45b5b","#91e8e1"]},"conf_opts":{"global":{"Date":null,"VMLRadialGradientURL":"http =//code.highcharts.com/list(version)/gfx/vml-radial-gradient.png","canvasToolsURL":"http =//code.highcharts.com/list(version)/modules/canvas-tools.js","getTimezoneOffset":null,"timezoneOffset":0,"useUTC":true},"lang":{"contextButtonTitle":"Chart context menu","decimalPoint":".","downloadCSV":"Download CSV","downloadJPEG":"Download JPEG image","downloadPDF":"Download PDF document","downloadPNG":"Download PNG image","downloadSVG":"Download SVG vector image","downloadXLS":"Download XLS","drillUpText":"◁ Back to {series.name}","exitFullscreen":"Exit from full screen","exportData":{"annotationHeader":"Annotations","categoryDatetimeHeader":"DateTime","categoryHeader":"Category"},"hideData":"Hide data table","invalidDate":null,"loading":"Loading...","months":["January","February","March","April","May","June","July","August","September","October","November","December"],"noData":"No data to display","numericSymbolMagnitude":1000,"numericSymbols":["k","M","G","T","P","E"],"printChart":"Print chart","resetZoom":"Reset zoom","resetZoomTitle":"Reset zoom level 1:1","shortMonths":["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],"shortWeekdays":["Sat","Sun","Mon","Tue","Wed","Thu","Fri"],"thousandsSep":" ","viewData":"View data table","viewFullscreen":"View in full screen","weekdays":["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]}},"type":"chart","fonts":[],"debug":false},"evals":["hc_opts.tooltip.formatter"],"jsHooks":[]}</script><div style="margin-bottom: 15px;"></div>
@@ -372,7 +374,7 @@ visualizations that need it.</p>
 <div class="highchart html-widget html-fill-item" id="htmlwidget-10b3b7155e8045a1b2ad" style="width:672px;height:480px;"></div>
 <script type="application/json" data-for="htmlwidget-10b3b7155e8045a1b2ad">{"x":{"hc_opts":{"chart":{"reflow":true,"type":"column"},"title":{"text":null},"yAxis":{"title":{"text":"Count"}},"credits":{"enabled":false},"exporting":{"enabled":false},"boost":{"enabled":false},"plotOptions":{"series":{"label":{"enabled":false},"turboThreshold":0,"dataLabels":{"enabled":true,"format":"{point.y}"}},"treemap":{"layoutAlgorithm":"squarified"}},"xAxis":{"categories":["white","black","other"],"title":{"text":"race"}},"series":[{"data":[16169,3356,2263],"name":"Count","showInLegend":false,"colorByPoint":true}],"tooltip":{"formatter":"function() {\n           var cat = this.point.category || this.series.chart.xAxis[0].categories[this.point.x] || this.x;\n           var val = this.y;\n           var total = 21788;\n           var pct = total > 0 ? (val / total * 100).toFixed(1) : 0;\n           var rank = this.series.data.indexOf(this.point) + 1;\n           var totalItems = this.series.data.length;\n           return '<b>' + cat + '<\/b><br/>' +\n                  '' + val.toLocaleString() + '<br/>' +\n                  '<span style=\"color:#666;font-size:0.9em\">' + pct + '% of total | Rank: #' + rank + ' of ' + totalItems + '<\/span>';\n         }","useHTML":true}},"theme":{"chart":{"backgroundColor":"transparent"},"colors":["#7cb5ec","#434348","#90ed7d","#f7a35c","#8085e9","#f15c80","#e4d354","#2b908f","#f45b5b","#91e8e1"]},"conf_opts":{"global":{"Date":null,"VMLRadialGradientURL":"http =//code.highcharts.com/list(version)/gfx/vml-radial-gradient.png","canvasToolsURL":"http =//code.highcharts.com/list(version)/modules/canvas-tools.js","getTimezoneOffset":null,"timezoneOffset":0,"useUTC":true},"lang":{"contextButtonTitle":"Chart context menu","decimalPoint":".","downloadCSV":"Download CSV","downloadJPEG":"Download JPEG image","downloadPDF":"Download PDF document","downloadPNG":"Download PNG image","downloadSVG":"Download SVG vector image","downloadXLS":"Download XLS","drillUpText":"◁ Back to {series.name}","exitFullscreen":"Exit from full screen","exportData":{"annotationHeader":"Annotations","categoryDatetimeHeader":"DateTime","categoryHeader":"Category"},"hideData":"Hide data table","invalidDate":null,"loading":"Loading...","months":["January","February","March","April","May","June","July","August","September","October","November","December"],"noData":"No data to display","numericSymbolMagnitude":1000,"numericSymbols":["k","M","G","T","P","E"],"printChart":"Print chart","resetZoom":"Reset zoom","resetZoomTitle":"Reset zoom level 1:1","shortMonths":["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],"shortWeekdays":["Sat","Sun","Mon","Tue","Wed","Thu","Fri"],"thousandsSep":" ","viewData":"View data table","viewFullscreen":"View in full screen","weekdays":["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]}},"type":"chart","fonts":[],"debug":false},"evals":["hc_opts.tooltip.formatter"],"jsHooks":[]}</script><div style="margin-bottom: 15px;"></div>
 </div>
-<div class="dtab-pane" id="dtabs-2b80e73a-2" data-visible="false">
+<div class="dtab-pane" id="dtabs-8fd35117-2" data-visible="false">
 <div class="preview-h4" style="font-size: 1em; font-weight: bold; margin: 10px 0;">Happiness</div>
 <div class="highchart html-widget html-fill-item" id="htmlwidget-4018eef1a407a0df6b52" style="width:672px;height:480px;"></div>
 <script type="application/json" data-for="htmlwidget-4018eef1a407a0df6b52">{"x":{"hc_opts":{"chart":{"reflow":true,"type":"column"},"title":{"text":null},"yAxis":{"title":{"text":"Count"}},"credits":{"enabled":false},"exporting":{"enabled":false},"boost":{"enabled":false},"plotOptions":{"series":{"label":{"enabled":false},"turboThreshold":0,"dataLabels":{"enabled":true,"format":"{point.y}"}},"treemap":{"layoutAlgorithm":"squarified"}},"xAxis":{"categories":["very happy","pretty happy","not too happy"],"title":{"text":"happy"}},"series":[{"data":[5477,12256,3967],"name":"Count","showInLegend":false,"colorByPoint":true}],"tooltip":{"formatter":"function() {\n           var cat = this.point.category || this.series.chart.xAxis[0].categories[this.point.x] || this.x;\n           var val = this.y;\n           var total = 21700;\n           var pct = total > 0 ? (val / total * 100).toFixed(1) : 0;\n           var rank = this.series.data.indexOf(this.point) + 1;\n           var totalItems = this.series.data.length;\n           return '<b>' + cat + '<\/b><br/>' +\n                  '' + val.toLocaleString() + '<br/>' +\n                  '<span style=\"color:#666;font-size:0.9em\">' + pct + '% of total | Rank: #' + rank + ' of ' + totalItems + '<\/span>';\n         }","useHTML":true}},"theme":{"chart":{"backgroundColor":"transparent"},"colors":["#7cb5ec","#434348","#90ed7d","#f7a35c","#8085e9","#f15c80","#e4d354","#2b908f","#f45b5b","#91e8e1"]},"conf_opts":{"global":{"Date":null,"VMLRadialGradientURL":"http =//code.highcharts.com/list(version)/gfx/vml-radial-gradient.png","canvasToolsURL":"http =//code.highcharts.com/list(version)/modules/canvas-tools.js","getTimezoneOffset":null,"timezoneOffset":0,"useUTC":true},"lang":{"contextButtonTitle":"Chart context menu","decimalPoint":".","downloadCSV":"Download CSV","downloadJPEG":"Download JPEG image","downloadPDF":"Download PDF document","downloadPNG":"Download PNG image","downloadSVG":"Download SVG vector image","downloadXLS":"Download XLS","drillUpText":"◁ Back to {series.name}","exitFullscreen":"Exit from full screen","exportData":{"annotationHeader":"Annotations","categoryDatetimeHeader":"DateTime","categoryHeader":"Category"},"hideData":"Hide data table","invalidDate":null,"loading":"Loading...","months":["January","February","March","April","May","June","July","August","September","October","November","December"],"noData":"No data to display","numericSymbolMagnitude":1000,"numericSymbols":["k","M","G","T","P","E"],"printChart":"Print chart","resetZoom":"Reset zoom","resetZoomTitle":"Reset zoom level 1:1","shortMonths":["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],"shortWeekdays":["Sat","Sun","Mon","Tue","Wed","Thu","Fri"],"thousandsSep":" ","viewData":"View data table","viewFullscreen":"View in full screen","weekdays":["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]}},"type":"chart","fonts":[],"debug":false},"evals":["hc_opts.tooltip.formatter"],"jsHooks":[]}</script><div style="margin-bottom: 15px;"></div>
@@ -380,32 +382,32 @@ visualizations that need it.</p>
 </div>
 </div>
 <style>
-    #dtabs-2b80e73a .dtab-btn {
+    #dtabs-8fd35117 .dtab-btn {
       padding: 8px 16px; margin-right: 4px; border: 1px solid #dee2e6;
       background: #f8f9fa; cursor: pointer; border-radius: 4px 4px 0 0;
     }
-    #dtabs-2b80e73a .dtab-btn.dtab-active { background: white; border-bottom-color: white; font-weight: bold; }
-    #dtabs-2b80e73a .dtab-pane { padding: 15px 0; }
-    #dtabs-2b80e73a .dtab-pane[data-visible='false'] { display: none; }
+    #dtabs-8fd35117 .dtab-btn.dtab-active { background: white; border-bottom-color: white; font-weight: bold; }
+    #dtabs-8fd35117 .dtab-pane { padding: 15px 0; }
+    #dtabs-8fd35117 .dtab-pane[data-visible='false'] { display: none; }
   </style>
 <script>
     (function() {
       // Wait for Highcharts to render, then hide inactive panes
       setTimeout(function() {
-        document.querySelectorAll('#dtabs-2b80e73a .dtab-pane[data-visible="false"]').forEach(function(p) {
+        document.querySelectorAll('#dtabs-8fd35117 .dtab-pane[data-visible="false"]').forEach(function(p) {
           p.style.display = 'none';
         });
       }, 500);
 
       // Tab click handler
-      document.querySelectorAll('#dtabs-2b80e73a .dtab-btn').forEach(function(btn) {
+      document.querySelectorAll('#dtabs-8fd35117 .dtab-btn').forEach(function(btn) {
         btn.addEventListener('click', function() {
           var tabId = this.getAttribute('data-tab');
           // Update buttons
-          document.querySelectorAll('#dtabs-2b80e73a .dtab-btn').forEach(function(b) { b.classList.remove('dtab-active'); });
+          document.querySelectorAll('#dtabs-8fd35117 .dtab-btn').forEach(function(b) { b.classList.remove('dtab-active'); });
           this.classList.add('dtab-active');
           // Update panes
-          document.querySelectorAll('#dtabs-2b80e73a .dtab-pane').forEach(function(p) {
+          document.querySelectorAll('#dtabs-8fd35117 .dtab-pane').forEach(function(p) {
             p.style.display = p.id === tabId ? 'block' : 'none';
             p.setAttribute('data-visible', p.id === tabId ? 'true' : 'false');
           });
@@ -459,12 +461,65 @@ You specify where to save files, pick a theme, and add your pages:</p>
 <button class="dtab-btn" data-target="dashboard-preview-6292-page-2" style="padding: 8px 16px; border: none; background: #f1f3f5; color: #333; cursor: pointer; border-radius: 4px; margin-right: 4px; font-size: 0.9em;">Analysis</button>
 </div>
 <div class="dtab-pane" id="dashboard-preview-6292-page-1" data-visible="true" style="">
-<div style="margin: 15px 0;">
+<div>
 <div class="preview-h1" style="font-size: 2em; font-weight: bold; margin: 0.67em 0;">Welcome!</div>
 <p>Explore the General Social Survey data.</p>
 </div>
 </div>
-<div class="dtab-pane" id="dashboard-preview-6292-page-2" data-visible="false" style="display: none;"><p>No content to render.</p></div>
+<div class="dtab-pane" id="dashboard-preview-6292-page-2" data-visible="false" style="display: none;">
+<div id="dtabs-19b371ee" style="margin: 20px 0;">
+<div class="dtab-buttons" style="border-bottom: 1px solid #dee2e6; margin-bottom: 10px;">
+<button type="button" class="dtab-btn dtab-active" data-tab="dtabs-19b371ee-1">(ungrouped)</button>
+<button type="button" class="dtab-btn" data-tab="dtabs-19b371ee-2">attitudes</button>
+</div>
+<div class="dtab-content">
+<div class="dtab-pane" id="dtabs-19b371ee-1" data-visible="true"></div>
+<div class="dtab-pane" id="dtabs-19b371ee-2" data-visible="false">
+<div class="preview-h4" style="font-size: 1em; font-weight: bold; margin: 10px 0;">Happiness</div>
+<div class="highchart html-widget html-fill-item" id="htmlwidget-25c3e940e6859592f801" style="width:672px;height:480px;"></div>
+<script type="application/json" data-for="htmlwidget-25c3e940e6859592f801">{"x":{"hc_opts":{"chart":{"reflow":true,"type":"column"},"title":{"text":null},"yAxis":{"title":{"text":"Count"}},"credits":{"enabled":false},"exporting":{"enabled":false},"boost":{"enabled":false},"plotOptions":{"series":{"label":{"enabled":false},"turboThreshold":0,"dataLabels":{"enabled":true,"format":"{point.y}"}},"treemap":{"layoutAlgorithm":"squarified"}},"xAxis":{"categories":["very happy","pretty happy","not too happy"],"title":{"text":"happy"}},"series":[{"data":[5477,12256,3967],"name":"Count","showInLegend":false,"colorByPoint":true}],"tooltip":{"formatter":"function() {\n           var cat = this.point.category || this.series.chart.xAxis[0].categories[this.point.x] || this.x;\n           var val = this.y;\n           var total = 21700;\n           var pct = total > 0 ? (val / total * 100).toFixed(1) : 0;\n           var rank = this.series.data.indexOf(this.point) + 1;\n           var totalItems = this.series.data.length;\n           return '<b>' + cat + '<\/b><br/>' +\n                  '' + val.toLocaleString() + '<br/>' +\n                  '<span style=\"color:#666;font-size:0.9em\">' + pct + '% of total | Rank: #' + rank + ' of ' + totalItems + '<\/span>';\n         }","useHTML":true}},"theme":{"chart":{"backgroundColor":"transparent"},"colors":["#7cb5ec","#434348","#90ed7d","#f7a35c","#8085e9","#f15c80","#e4d354","#2b908f","#f45b5b","#91e8e1"]},"conf_opts":{"global":{"Date":null,"VMLRadialGradientURL":"http =//code.highcharts.com/list(version)/gfx/vml-radial-gradient.png","canvasToolsURL":"http =//code.highcharts.com/list(version)/modules/canvas-tools.js","getTimezoneOffset":null,"timezoneOffset":0,"useUTC":true},"lang":{"contextButtonTitle":"Chart context menu","decimalPoint":".","downloadCSV":"Download CSV","downloadJPEG":"Download JPEG image","downloadPDF":"Download PDF document","downloadPNG":"Download PNG image","downloadSVG":"Download SVG vector image","downloadXLS":"Download XLS","drillUpText":"◁ Back to {series.name}","exitFullscreen":"Exit from full screen","exportData":{"annotationHeader":"Annotations","categoryDatetimeHeader":"DateTime","categoryHeader":"Category"},"hideData":"Hide data table","invalidDate":null,"loading":"Loading...","months":["January","February","March","April","May","June","July","August","September","October","November","December"],"noData":"No data to display","numericSymbolMagnitude":1000,"numericSymbols":["k","M","G","T","P","E"],"printChart":"Print chart","resetZoom":"Reset zoom","resetZoomTitle":"Reset zoom level 1:1","shortMonths":["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],"shortWeekdays":["Sat","Sun","Mon","Tue","Wed","Thu","Fri"],"thousandsSep":" ","viewData":"View data table","viewFullscreen":"View in full screen","weekdays":["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]}},"type":"chart","fonts":[],"debug":false},"evals":["hc_opts.tooltip.formatter"],"jsHooks":[]}</script><div style="margin-bottom: 15px;"></div>
+</div>
+</div>
+</div>
+<style>
+    #dtabs-19b371ee .dtab-btn {
+      padding: 8px 16px; margin-right: 4px; border: 1px solid #dee2e6;
+      background: #f8f9fa; cursor: pointer; border-radius: 4px 4px 0 0;
+    }
+    #dtabs-19b371ee .dtab-btn.dtab-active { background: white; border-bottom-color: white; font-weight: bold; }
+    #dtabs-19b371ee .dtab-pane { padding: 15px 0; }
+    #dtabs-19b371ee .dtab-pane[data-visible='false'] { display: none; }
+  </style>
+<script>
+    (function() {
+      // Wait for Highcharts to render, then hide inactive panes
+      setTimeout(function() {
+        document.querySelectorAll('#dtabs-19b371ee .dtab-pane[data-visible="false"]').forEach(function(p) {
+          p.style.display = 'none';
+        });
+      }, 500);
+
+      // Tab click handler
+      document.querySelectorAll('#dtabs-19b371ee .dtab-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          var tabId = this.getAttribute('data-tab');
+          // Update buttons
+          document.querySelectorAll('#dtabs-19b371ee .dtab-btn').forEach(function(b) { b.classList.remove('dtab-active'); });
+          this.classList.add('dtab-active');
+          // Update panes
+          document.querySelectorAll('#dtabs-19b371ee .dtab-pane').forEach(function(p) {
+            p.style.display = p.id === tabId ? 'block' : 'none';
+            p.setAttribute('data-visible', p.id === tabId ? 'true' : 'false');
+          });
+          // Reflow Highcharts
+          if (typeof Highcharts !== 'undefined') {
+            Highcharts.charts.forEach(function(c) { if (c) c.reflow(); });
+          }
+        });
+      });
+    })();
+  </script>
+</div>
 <script>
     (function() {
       var container = document.getElementById('dashboard-preview-6292');
@@ -517,12 +572,65 @@ Quarto:</p>
 <button class="dtab-btn" data-target="dashboard-preview-6526-page-2" style="padding: 8px 16px; border: none; background: #f1f3f5; color: #333; cursor: pointer; border-radius: 4px; margin-right: 4px; font-size: 0.9em;">Analysis</button>
 </div>
 <div class="dtab-pane" id="dashboard-preview-6526-page-1" data-visible="true" style="">
-<div style="margin: 15px 0;">
+<div>
 <div class="preview-h1" style="font-size: 2em; font-weight: bold; margin: 0.67em 0;">Welcome!</div>
 <p>Explore the General Social Survey data.</p>
 </div>
 </div>
-<div class="dtab-pane" id="dashboard-preview-6526-page-2" data-visible="false" style="display: none;"><p>No content to render.</p></div>
+<div class="dtab-pane" id="dashboard-preview-6526-page-2" data-visible="false" style="display: none;">
+<div id="dtabs-3e3e604b" style="margin: 20px 0;">
+<div class="dtab-buttons" style="border-bottom: 1px solid #dee2e6; margin-bottom: 10px;">
+<button type="button" class="dtab-btn dtab-active" data-tab="dtabs-3e3e604b-1">(ungrouped)</button>
+<button type="button" class="dtab-btn" data-tab="dtabs-3e3e604b-2">attitudes</button>
+</div>
+<div class="dtab-content">
+<div class="dtab-pane" id="dtabs-3e3e604b-1" data-visible="true"></div>
+<div class="dtab-pane" id="dtabs-3e3e604b-2" data-visible="false">
+<div class="preview-h4" style="font-size: 1em; font-weight: bold; margin: 10px 0;">Happiness</div>
+<div class="highchart html-widget html-fill-item" id="htmlwidget-3f27c09be0c60bb52829" style="width:672px;height:480px;"></div>
+<script type="application/json" data-for="htmlwidget-3f27c09be0c60bb52829">{"x":{"hc_opts":{"chart":{"reflow":true,"type":"column"},"title":{"text":null},"yAxis":{"title":{"text":"Count"}},"credits":{"enabled":false},"exporting":{"enabled":false},"boost":{"enabled":false},"plotOptions":{"series":{"label":{"enabled":false},"turboThreshold":0,"dataLabels":{"enabled":true,"format":"{point.y}"}},"treemap":{"layoutAlgorithm":"squarified"}},"xAxis":{"categories":["very happy","pretty happy","not too happy"],"title":{"text":"happy"}},"series":[{"data":[5477,12256,3967],"name":"Count","showInLegend":false,"colorByPoint":true}],"tooltip":{"formatter":"function() {\n           var cat = this.point.category || this.series.chart.xAxis[0].categories[this.point.x] || this.x;\n           var val = this.y;\n           var total = 21700;\n           var pct = total > 0 ? (val / total * 100).toFixed(1) : 0;\n           var rank = this.series.data.indexOf(this.point) + 1;\n           var totalItems = this.series.data.length;\n           return '<b>' + cat + '<\/b><br/>' +\n                  '' + val.toLocaleString() + '<br/>' +\n                  '<span style=\"color:#666;font-size:0.9em\">' + pct + '% of total | Rank: #' + rank + ' of ' + totalItems + '<\/span>';\n         }","useHTML":true}},"theme":{"chart":{"backgroundColor":"transparent"},"colors":["#7cb5ec","#434348","#90ed7d","#f7a35c","#8085e9","#f15c80","#e4d354","#2b908f","#f45b5b","#91e8e1"]},"conf_opts":{"global":{"Date":null,"VMLRadialGradientURL":"http =//code.highcharts.com/list(version)/gfx/vml-radial-gradient.png","canvasToolsURL":"http =//code.highcharts.com/list(version)/modules/canvas-tools.js","getTimezoneOffset":null,"timezoneOffset":0,"useUTC":true},"lang":{"contextButtonTitle":"Chart context menu","decimalPoint":".","downloadCSV":"Download CSV","downloadJPEG":"Download JPEG image","downloadPDF":"Download PDF document","downloadPNG":"Download PNG image","downloadSVG":"Download SVG vector image","downloadXLS":"Download XLS","drillUpText":"◁ Back to {series.name}","exitFullscreen":"Exit from full screen","exportData":{"annotationHeader":"Annotations","categoryDatetimeHeader":"DateTime","categoryHeader":"Category"},"hideData":"Hide data table","invalidDate":null,"loading":"Loading...","months":["January","February","March","April","May","June","July","August","September","October","November","December"],"noData":"No data to display","numericSymbolMagnitude":1000,"numericSymbols":["k","M","G","T","P","E"],"printChart":"Print chart","resetZoom":"Reset zoom","resetZoomTitle":"Reset zoom level 1:1","shortMonths":["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],"shortWeekdays":["Sat","Sun","Mon","Tue","Wed","Thu","Fri"],"thousandsSep":" ","viewData":"View data table","viewFullscreen":"View in full screen","weekdays":["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]}},"type":"chart","fonts":[],"debug":false},"evals":["hc_opts.tooltip.formatter"],"jsHooks":[]}</script><div style="margin-bottom: 15px;"></div>
+</div>
+</div>
+</div>
+<style>
+    #dtabs-3e3e604b .dtab-btn {
+      padding: 8px 16px; margin-right: 4px; border: 1px solid #dee2e6;
+      background: #f8f9fa; cursor: pointer; border-radius: 4px 4px 0 0;
+    }
+    #dtabs-3e3e604b .dtab-btn.dtab-active { background: white; border-bottom-color: white; font-weight: bold; }
+    #dtabs-3e3e604b .dtab-pane { padding: 15px 0; }
+    #dtabs-3e3e604b .dtab-pane[data-visible='false'] { display: none; }
+  </style>
+<script>
+    (function() {
+      // Wait for Highcharts to render, then hide inactive panes
+      setTimeout(function() {
+        document.querySelectorAll('#dtabs-3e3e604b .dtab-pane[data-visible="false"]').forEach(function(p) {
+          p.style.display = 'none';
+        });
+      }, 500);
+
+      // Tab click handler
+      document.querySelectorAll('#dtabs-3e3e604b .dtab-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          var tabId = this.getAttribute('data-tab');
+          // Update buttons
+          document.querySelectorAll('#dtabs-3e3e604b .dtab-btn').forEach(function(b) { b.classList.remove('dtab-active'); });
+          this.classList.add('dtab-active');
+          // Update panes
+          document.querySelectorAll('#dtabs-3e3e604b .dtab-pane').forEach(function(p) {
+            p.style.display = p.id === tabId ? 'block' : 'none';
+            p.setAttribute('data-visible', p.id === tabId ? 'true' : 'false');
+          });
+          // Reflow Highcharts
+          if (typeof Highcharts !== 'undefined') {
+            Highcharts.charts.forEach(function(c) { if (c) c.reflow(); });
+          }
+        });
+      });
+    })();
+  </script>
+</div>
 <script>
     (function() {
       var container = document.getElementById('dashboard-preview-6526');

@@ -4207,29 +4207,83 @@ knit_print.dashboard_project <- function(x, ..., options = NULL) {
     page <- x$pages[[page_name]]
     is_active <- i == 1
     
-    # Convert page to content and render
-    collection <- .page_to_content(page)
+    # Dashboard pages have different structure than page_objects:
+    # - visualizations (list of viz specs)
+    # - content_blocks (list of content blocks)
+    # - text (raw markdown text)
+    # - data_path (path to data, not actual data)
     
-    page_html <- if (has_viz_needing_data(collection) && is.null(collection$data)) {
-      # Text-only page
-      if (!is.null(page$text) && nzchar(page$text)) {
-        htmltools::HTML(.render_markdown_to_html(page$text))
-      } else if (length(collection$items) > 0) {
-        .render_stacked_knitr(collection, options)
-      } else {
-        htmltools::HTML("<p><em>Empty page</em></p>")
+    page_html_parts <- list()
+    
+    # Render text content first
+    if (!is.null(page$text) && nzchar(page$text)) {
+      page_html_parts <- c(page_html_parts, list(
+        htmltools::div(
+          style = "margin-bottom: 15px;",
+          htmltools::HTML(.render_markdown_to_html(page$text))
+        )
+      ))
+    }
+    
+    # Render content blocks
+    if (!is.null(page$content_blocks) && length(page$content_blocks) > 0) {
+      for (block in page$content_blocks) {
+        if (is.null(block)) next
+        block_html <- .render_content_block_direct(block)
+        if (!is.null(block_html)) {
+          page_html_parts <- c(page_html_parts, list(block_html))
+        }
       }
-    } else {
-      # Page with data
-      has_tabgroups <- any(sapply(collection$items, function(item) {
-        !is.null(item$tabgroup) && nchar(item$tabgroup) > 0
-      }))
+    }
+    
+    # Render visualizations (need data from data_path or embedded)
+    if (!is.null(page$visualizations) && length(page$visualizations) > 0) {
+      # Try to load data if data_path exists
+      page_data <- NULL
+      if (!is.null(page$data_path)) {
+        data_file <- if (is.list(page$data_path)) page$data_path[[1]] else page$data_path
+        # Data files are stored in the dashboard's output directory
+        if (!is.null(x$output_dir)) {
+          full_data_path <- file.path(x$output_dir, data_file)
+          if (file.exists(full_data_path)) {
+            page_data <- tryCatch(readRDS(full_data_path), error = function(e) NULL)
+          }
+        }
+        # Also try the path directly in case it's already absolute
+        if (is.null(page_data) && file.exists(data_file)) {
+          page_data <- tryCatch(readRDS(data_file), error = function(e) NULL)
+        }
+      }
       
-      if (has_tabgroups) {
-        .render_tabbed_simple(collection, options)
+      if (!is.null(page_data)) {
+        # Create a collection from viz specs and render
+        collection <- create_viz(data = page_data)
+        collection$items <- page$visualizations
+        
+        has_tabgroups <- any(sapply(page$visualizations, function(item) {
+          !is.null(item$tabgroup) && nchar(item$tabgroup) > 0
+        }))
+        
+        viz_html <- if (has_tabgroups) {
+          .render_tabbed_simple(collection, options)
+        } else {
+          .render_stacked_knitr(collection, options)
+        }
+        page_html_parts <- c(page_html_parts, list(viz_html))
       } else {
-        .render_stacked_knitr(collection, options)
+        # No data available - show placeholder
+        page_html_parts <- c(page_html_parts, list(
+          htmltools::div(
+            style = "padding: 20px; background: #f8f9fa; border-radius: 8px; text-align: center; color: #666;",
+            htmltools::em(paste0(length(page$visualizations), " visualization(s) - data not available for inline preview"))
+          )
+        ))
       }
+    }
+    
+    # If nothing to render
+    if (length(page_html_parts) == 0) {
+      page_html_parts <- list(htmltools::HTML("<p><em>Empty page</em></p>"))
     }
     
     htmltools::tags$div(
@@ -4237,7 +4291,7 @@ knit_print.dashboard_project <- function(x, ..., options = NULL) {
       id = paste0(tab_id, "-page-", i),
       `data-visible` = if (is_active) "true" else "false",
       style = if (!is_active) "display: none;" else "",
-      page_html
+      do.call(htmltools::tagList, page_html_parts)
     )
   })
   

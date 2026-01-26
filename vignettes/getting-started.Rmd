@@ -86,7 +86,8 @@ print(demographics)
 
 Here `create_content()` sets up a container with the GSS data and says "make bar charts by default." Then `add_viz()` adds a bar chart of the `degree` variable. The print output shows what's inside: one visualization ready to go.
 
-Use `preview()` to see the actual chart:
+Use `preview()` to see the actual chart. Note this might differ slightly from how content will eventually look like in your dashboard as it creates a simple preview of your data.
+
 
 ```{r}
 demographics %>% preview()
