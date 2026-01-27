@@ -205,17 +205,34 @@ cross_tabs <- create_content(type = "stackedbar") %>%
 
 # LAYER 2: Create pages
 home <- create_page("Home", is_landing_page = TRUE) %>%
-  add_text("# GSS Explorer", "", 
-           "Explore trends in American society using the General Social Survey.",
-           "", "Navigate using the tabs above.")
+  add_text(
+    "# General Social Survey Explorer",
+    "",
+    "Interactive visualizations of American attitudes and demographics.",
+    "",
+    "**What's inside:**",
+    "",
+    "- **Analysis** — Demographics breakdowns and cross-tabulations",
+    "- **About** — Data sources and methodology",
+    "",
+    "*Select a page from the navigation bar to begin.*"
+  )
 
 analysis <- create_page("Analysis", data = gss, icon = "ph:chart-bar") %>%
   add_content(demographics) %>%
   add_content(cross_tabs)
 
 about <- create_page("About", navbar_align = "right", icon = "ph:info") %>%
-  add_text("## About This Dashboard", "",
-           "Created with dashboardr. Data from the GSS (2010-2024).")
+  add_text(
+    "## About",
+    "",
+    "This dashboard explores data from the [General Social Survey](https://gss.norc.org/) (GSS), ",
+    "a nationally representative survey of American adults conducted since 1972.",
+    "",
+    "**Data:** GSS cumulative file, filtered to most recent wave.",
+    "",
+    "**Built with:** [dashboardr](https://github.com/favstats/dashboardr)"
+  )
 
 # LAYER 3: Assemble and generate
 onemin_dashboard <- create_dashboard(
@@ -254,17 +271,34 @@ cross_tabs <- create_content(type = "stackedbar") %>%
 
 # LAYER 2: Create pages
 home <- create_page("Home", is_landing_page = TRUE) %>%
-  add_text("# GSS Explorer", "", 
-           "Explore trends in American society using the General Social Survey.",
-           "", "Navigate using the tabs above.")
+  add_text(
+    "# General Social Survey Explorer",
+    "",
+    "Interactive visualizations of American attitudes and demographics.",
+    "",
+    "**What's inside:**",
+    "",
+    "- **Analysis** — Demographics breakdowns and cross-tabulations",
+    "- **About** — Data sources and methodology",
+    "",
+    "*Select a page from the navigation bar to begin.*"
+  )
 
 analysis <- create_page("Analysis", data = gss, icon = "ph:chart-bar") %>%
   add_content(demographics) %>%
   add_content(cross_tabs)
 
 about <- create_page("About", navbar_align = "right", icon = "ph:info") %>%
-  add_text("## About This Dashboard", "",
-           "Created with dashboardr. Data from the GSS (2010-2024).")
+  add_text(
+    "## About",
+    "",
+    "This dashboard explores data from the [General Social Survey](https://gss.norc.org/) (GSS), ",
+    "a nationally representative survey of American adults conducted since 1972.",
+    "",
+    "**Data:** GSS cumulative file, filtered to most recent wave.",
+    "",
+    "**Built with:** [dashboardr](https://github.com/favstats/dashboardr)"
+  )
 
 # LAYER 3: Assemble and generate
 onemin_dashboard <- create_dashboard(
