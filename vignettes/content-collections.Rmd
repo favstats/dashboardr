@@ -183,31 +183,6 @@ create_content(data = gss, type = "bar", color_palette = c("#3498DB"), bar_type 
   add_viz(x_var = "race")
 ```
 
-### How Defaults Work
-
-When you call `create_content()`, any parameters you provide become **defaults** for subsequent `add_viz()` calls:
-
-```{r}
-# These defaults apply to ALL add_viz() calls
-content <- create_content(
-  data = gss,
-  type = "bar",
-  color_palette = c("#3498DB"),
-  drop_na_vars = TRUE,
-  bar_type = "percent"
-)
-
-# This viz inherits all defaults (type=bar, color=#3498DB, percent bars)
-content <- content %>%
-  add_viz(x_var = "degree", title = "Education (defaults)")
-
-# This viz overrides color_palette but keeps other defaults
-content <- content %>%
-  add_viz(x_var = "race", title = "Race (green)", color_palette = c("#2ECC71"))
-
-print(content)
-```
-
 ### Override Hierarchy
 
 Parameters are resolved in this order (later wins):

@@ -394,33 +394,26 @@ viz_bar <- function(data,
   
   # Format tooltip based on bar type and whether grouped
   if (is.null(group_var)) {
-    # Simple bars - single series with enhanced tooltips
+    # Simple bars - single series
     if (bar_type == "percent") {
-      # For percent bars, calculate dollar amount if weight_var was used (spending data)
-      # Calculate total from all data points: sum of all percentages = 100, so we need raw totals
-      # If weight_var was used, we can estimate: percentage represents share of total
+      # For percent bars, show percentage
       tooltip_fn <- sprintf(
         "function() {
            var cat = this.point.category || this.series.chart.xAxis[0].categories[this.point.x] || this.x;
            var pct = this.y.toFixed(1);
-           var rank = this.series.data.indexOf(this.point) + 1;
-           var totalItems = this.series.data.length;
-           var percentile = Math.round((rank - 1) / totalItems * 100);
            
-           // Try to get raw value if available (for dollar amounts)
+           // Try to get raw value if available (for weighted data)
            var rawVal = this.point.rawValue || this.point.options.rawValue;
            var tooltipText = '<b>' + cat + '%s</b><br/>';
            
            if (rawVal !== undefined && rawVal !== null) {
-             // Show both dollar amount and percentage
+             // Show both raw value and percentage
              tooltipText += '%s' + rawVal.toLocaleString('en-US', {maximumFractionDigits: 1}) + '%s<br/>';
-             tooltipText += '<span style=\"color:#666;font-size:0.9em\">' + pct + '%% of total budget</span><br/>';
+             tooltipText += '<span style=\"color:#666;font-size:0.9em\">' + pct + '%% of total</span>';
            } else {
              // Just show percentage
-             tooltipText += '%s' + pct + '%s<br/>';
+             tooltipText += '%s' + pct + '%%' + '%s';
            }
-           
-           tooltipText += '<span style=\"color:#666;font-size:0.9em\">Rank: #' + rank + ' of ' + totalItems + ' (' + percentile + 'th percentile)</span>';
            return tooltipText;
          }",
         xsuf, # x_tooltip_suffix
@@ -430,18 +423,16 @@ viz_bar <- function(data,
         suf   # tooltip_suffix (for percentage if no raw value)
       )
     } else {
-      # For count bars, show value, percentage, and rank
+      # For count bars, show value and percentage of total
       tooltip_fn <- sprintf(
         "function() {
            var cat = this.point.category || this.series.chart.xAxis[0].categories[this.point.x] || this.x;
            var val = this.y;
            var total = %s;
            var pct = total > 0 ? (val / total * 100).toFixed(1) : 0;
-           var rank = this.series.data.indexOf(this.point) + 1;
-           var totalItems = this.series.data.length;
            return '<b>' + cat + '%s</b><br/>' +
                   '%s' + val.toLocaleString() + '%s<br/>' +
-                  '<span style=\"color:#666;font-size:0.9em\">' + pct + '%% of total | Rank: #' + rank + ' of ' + totalItems + '</span>';
+                  '<span style=\"color:#666;font-size:0.9em\">' + pct + '%% of total</span>';
          }",
         total_value,
         xsuf, # x_tooltip_suffix

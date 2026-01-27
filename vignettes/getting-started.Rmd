@@ -191,22 +191,21 @@ Here's everything together, from data to published dashboard. Just copy paste, r
 
 # LAYER 1: Build content collections
 demographics <- create_content(type = "bar") %>%
-  add_viz(x_var = "degree", title = "Education", tabgroup = "overview") %>%
-  add_viz(x_var = "race", title = "Race", tabgroup = "overview") %>%
-  add_viz(x_var = "sex", title = "Gender", tabgroup = "overview")
+  add_viz(x_var = "degree", title = "Education", tabgroup = "Overview") %>%
+  add_viz(x_var = "race", title = "Race", tabgroup = "Overview") %>%
+  add_viz(x_var = "sex", title = "Gender", tabgroup = "Overview")
 
 cross_tabs <- create_content(type = "stackedbar") %>%
   add_viz(x_var = "degree", stack_var = "happy", 
-          title = "Happiness by Education", tabgroup = "analysis", 
+          title = "Happiness by Education", tabgroup = "Analysis", 
           stacked_type = "percent") %>%
   add_viz(x_var = "polviews", stack_var = "happy",
-          title = "Happiness by Politics", tabgroup = "analysis",
+          title = "Happiness by Politics", tabgroup = "Analysis",
           stacked_type = "percent")
 
 # LAYER 2: Create pages
 home <- create_page("Home", is_landing_page = TRUE) %>%
   add_text(
-    "# General Social Survey Explorer",
     "",
     "Interactive visualizations of American attitudes and demographics.",
     "",
@@ -224,7 +223,6 @@ analysis <- create_page("Analysis", data = gss, icon = "ph:chart-bar") %>%
 
 about <- create_page("About", navbar_align = "right", icon = "ph:info") %>%
   add_text(
-    "## About",
     "",
     "This dashboard explores data from the [General Social Survey](https://gss.norc.org/) (GSS), ",
     "a nationally representative survey of American adults conducted since 1972.",
@@ -257,22 +255,21 @@ gss <- gss_all %>%
 
 # LAYER 1: Build content collections
 demographics <- create_content(type = "bar") %>%
-  add_viz(x_var = "degree", title = "Education", tabgroup = "overview") %>%
-  add_viz(x_var = "race", title = "Race", tabgroup = "overview") %>%
-  add_viz(x_var = "sex", title = "Gender", tabgroup = "overview")
+  add_viz(x_var = "degree", title = "Education", tabgroup = "Overview") %>%
+  add_viz(x_var = "race", title = "Race", tabgroup = "Overview") %>%
+  add_viz(x_var = "sex", title = "Gender", tabgroup = "Overview")
 
 cross_tabs <- create_content(type = "stackedbar") %>%
   add_viz(x_var = "degree", stack_var = "happy", 
-          title = "Happiness by Education", tabgroup = "analysis", 
+          title = "Happiness by Education", tabgroup = "Analysis", 
           stacked_type = "percent") %>%
   add_viz(x_var = "polviews", stack_var = "happy",
-          title = "Happiness by Politics", tabgroup = "analysis",
+          title = "Happiness by Politics", tabgroup = "Analysis",
           stacked_type = "percent")
 
 # LAYER 2: Create pages
 home <- create_page("Home", is_landing_page = TRUE) %>%
   add_text(
-    "# General Social Survey Explorer",
     "",
     "Interactive visualizations of American attitudes and demographics.",
     "",
@@ -290,7 +287,6 @@ analysis <- create_page("Analysis", data = gss, icon = "ph:chart-bar") %>%
 
 about <- create_page("About", navbar_align = "right", icon = "ph:info") %>%
   add_text(
-    "## About",
     "",
     "This dashboard explores data from the [General Social Survey](https://gss.norc.org/) (GSS), ",
     "a nationally representative survey of American adults conducted since 1972.",
