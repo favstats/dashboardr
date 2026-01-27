@@ -4,7 +4,7 @@ This vignette walks you through building your first interactive
 dashboard with dashboardr. By the end, you’ll understand the core
 concepts and have a working dashboard you can customize.
 
-## What is dashboardr?
+## 📦 What is dashboardr?
 
 dashboardr lets you build interactive HTML dashboards from R using a
 simple, composable grammar. Think of it like building with Lego blocks:
@@ -14,7 +14,7 @@ simple, composable grammar. Think of it like building with Lego blocks:
 - **Beautiful themes** from Bootswatch
 - **Flexible layouts** with tabs, pages, and navigation
 
-## Installation
+## 📥 Installation
 
 Install dashboardr from GitHub:
 
@@ -22,7 +22,7 @@ Install dashboardr from GitHub:
 devtools::install_github("favstats/dashboardr")
 ```
 
-## What We’ll Build
+## 🏗️ What We’ll Build
 
 In this tutorial, we’ll create a dashboard exploring the General Social
 Survey (GSS), a long-running survey of American attitudes and
@@ -47,7 +47,7 @@ We now have a dataset with about 22,000 respondents from 2010 onwards,
 with variables for demographics (age, sex, race, education) and
 attitudes (happiness, political views).
 
-## Core Concepts
+## 🧱 Core Concepts
 
 Just as ggplot2 builds plots from layers (data, aesthetics, geoms),
 dashboardr builds dashboards from three layers:
@@ -286,7 +286,7 @@ Education
 
 Happiness
 
-## Your first Dashboard in 1 Minute
+## ⚡ Your first Dashboard in 1 Minute
 
 Here’s everything together, from data to published dashboard. Just copy
 paste, run it, and you will have your first dashboard:
@@ -382,25 +382,13 @@ Explore trends in American society using the General Social Survey.
 
 Navigate using the tabs above.
 
-overview
-
-analysis
-
-Education
-
-Race
-
-Gender
-
-Happiness by Education
-
-Happiness by Politics
+*2 visualization(s) - data not available for inline preview*
 
 About This Dashboard
 
 Created with dashboardr. Data from the GSS (2010-2024).
 
-## Tips
+## 💡 Tips
 
 1.  **Print often**: use [`print()`](https://rdrr.io/r/base/print.html)
     to inspect structure before generating
@@ -413,7 +401,7 @@ Created with dashboardr. Data from the GSS (2010-2024).
 5.  **Build content separately**: create reusable collections, attach to
     multiple pages
 
-## Function Overview
+## 🔧 Function Overview
 
 dashboardr uses consistent naming conventions so you always know what a
 function does:
@@ -449,7 +437,7 @@ functions build it up. This works at every layer:
 - **Dashboard**:
   `create_dashboard() %>% add_pages() %>% generate_dashboard()`
 
-## Learn More
+## 📚 Learn More
 
 | Topic | Vignette |
 |----|----|
