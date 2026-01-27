@@ -198,7 +198,7 @@ add_text.page_object <- function(page, text, ..., tabgroup = NULL) {
   text_spec <- structure(
     list(
       type = "text",
-      text = paste(all_text, collapse = "\n\n"),
+      content = paste(all_text, collapse = "\n\n"),  # Use 'content' for consistency with add_text()
       tabgroup = tabgroup
     ),
     class = "content_block"

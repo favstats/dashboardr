@@ -69,7 +69,7 @@ Just as ggplot2 builds plots from layers (data, aesthetics, geoms), dashboardr b
 
 | Layer | Purpose | Key Functions |
 |-------|---------|---------------|
-| **Content** | What to show (charts, text) | `create_content()`, `add_viz()`, `add_text()` |
+| **Content** | What to show | `create_content()`, `add_viz()`, `add_text()` |
 | **Page** | Where content lives | `create_page()`, `add_content()` |
 | **Dashboard** | Final output + config | `create_dashboard()`, `add_pages()` |
 

@@ -278,7 +278,7 @@
           } else {
             # Process single content item
             item_content <- switch(item_type,
-              "text" = c("", item$content, ""),
+              "text" = c("", item$content %||% item$text, ""),
               "image" = .generate_image_block(item),
               "callout" = .generate_callout_block(item),
               "divider" = .generate_divider_block(item),
@@ -317,7 +317,7 @@
       
       # Dispatch to appropriate generator based on type
       block_content <- switch(block_type,
-        "text" = c("", block$content, ""),
+        "text" = c("", block$content %||% block$text, ""),
         "image" = .generate_image_block(block),
         "callout" = .generate_callout_block(block),
         "divider" = .generate_divider_block(block),
@@ -347,6 +347,56 @@
       }
     }
   }
+  
+  # Handle page$.items (from add_text.page_object, add_callout.page_object, etc.)
+  # These are items added directly to a page_object via piping
+  if (!is.null(page$.items) && length(page$.items) > 0) {
+    for (item in page$.items) {
+      if (is.null(item)) next
+      if (!is.list(item)) next
+      
+      item_type <- item$type %||% ""
+      
+      item_content <- switch(item_type,
+        "text" = c("", item$content %||% item$text, ""),  # Handle both $content and legacy $text
+        "callout" = {
+          # Convert add_callout format to content_block format
+          callout_block <- list(
+            type = "callout",
+            callout_type = item$callout_type %||% "note",
+            text = item$text,
+            title = item$title
+          )
+          .generate_callout_block(callout_block)
+        },
+        "image" = .generate_image_block(item),
+        "divider" = .generate_divider_block(item),
+        "code" = .generate_code_block(item),
+        "card" = .generate_card_block(item),
+        "accordion" = .generate_accordion_block(item),
+        "iframe" = .generate_iframe_block(item),
+        "video" = .generate_video_block(item),
+        "table" = .generate_table_block(item),
+        "gt" = .generate_gt_block(item),
+        "reactable" = .generate_reactable_block(item),
+        "DT" = .generate_DT_block(item),
+        "spacer" = .generate_spacer_block(item),
+        "html" = .generate_html_block(item),
+        "quote" = .generate_quote_block(item),
+        "badge" = .generate_badge_block(item),
+        "metric" = .generate_metric_block(item),
+        "value_box" = .generate_value_box_block(item),
+        "value_box_row" = .generate_value_box_row_block(item),
+        "input" = .generate_input_block(item, page),
+        "input_row" = .generate_input_row_block(item, page),
+        NULL
+      )
+      
+      if (!is.null(item_content)) {
+        content <- c(content, item_content)
+      }
+    }
+  }
 
   # Add visualizations (unless they're already embedded in content_blocks from + operator)
   if (!is.null(page$visualizations) && !isTRUE(page$viz_embedded_in_content)) {
@@ -356,7 +406,10 @@
     viz_content <- .generate_viz_from_specs(page$visualizations, lazy_load_charts, lazy_load_tabs)
     content <- c(content, viz_content)
   } else if (isTRUE(is.null(page$text) || !nzchar(page$text))) {
-    if (isTRUE(is.null(page$content_blocks) || length(page$content_blocks) == 0)) {
+    # Check if there's any content from various sources
+    has_content_blocks <- !is.null(page$content_blocks) && length(page$content_blocks) > 0
+    has_page_items <- !is.null(page$.items) && length(page$.items) > 0
+    if (!has_content_blocks && !has_page_items) {
       content <- c(content, "This page was generated without a template.")
     }
   }

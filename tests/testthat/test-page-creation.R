@@ -54,6 +54,41 @@ test_that("add_callout works on page_object", {
   expect_equal(page$.items[[1]]$callout_type, "warning")
 })
 
+test_that("add_text on landing page appears in generated QMD", {
+  # This test ensures page$.items (from add_text.page_object) are included in output
+  output_dir <- tempfile("test_landing_text_")
+  on.exit(unlink(output_dir, recursive = TRUE), add = TRUE)
+  
+  home <- create_page("Home", is_landing_page = TRUE) %>%
+    add_text("# Welcome to the Dashboard", "", 
+             "This is a test landing page with custom text.")
+  
+  about <- create_page("About") %>%
+    add_text("## About This Project", "",
+             "Created for testing purposes.")
+  
+  dashboard <- create_dashboard(title = "Test", output_dir = output_dir) %>%
+    add_pages(home, about)
+  
+  result <- generate_dashboard(dashboard, render = FALSE, open = FALSE)
+  
+  # Check landing page (index.qmd)
+  index_file <- file.path(output_dir, "index.qmd")
+  expect_true(file.exists(index_file), "Landing page should be generated")
+  index_content <- paste(readLines(index_file), collapse = "\n")
+  expect_true(grepl("Welcome to the Dashboard", index_content), 
+              "Landing page should contain add_text content")
+  expect_true(grepl("test landing page with custom text", index_content),
+              "Landing page should contain all text lines")
+  
+  # Check about page
+  about_file <- file.path(output_dir, "about.qmd")
+  expect_true(file.exists(about_file), "About page should be generated")
+  about_content <- paste(readLines(about_file), collapse = "\n")
+  expect_true(grepl("About This Project", about_content),
+              "About page should contain add_text content")
+})
+
 test_that("page with direct viz converts correctly to dashboard", {
   page <- create_page("Test", data = mtcars, type = "bar") %>%
     add_viz(x_var = "cyl", title = "Cylinders") %>%
