@@ -153,8 +153,12 @@ test_that("pagination survives ALL layers in complex real-world use case", {
   
   # === LAYER 5: add_page() with lazy loading ===
   
+  # Use temp directory to avoid stale files from previous runs
+  output_dir <- tempfile("test_complex_pagination")
+  on.exit(unlink(output_dir, recursive = TRUE), add = TRUE)
+  
   dashboard <- create_dashboard(
-    output_dir = "test_complex_pagination",
+    output_dir = output_dir,
     lazy_load_charts = TRUE,
     lazy_load_margin = "300px",
     lazy_load_tabs = TRUE,
@@ -244,8 +248,12 @@ test_that("lazy loading does not interfere with pagination marker detection", {
                   add_viz(title = "Chart 2", x_var = "cyl"))
   
   # Create dashboard with lazy loading
+  # Use temp directory to avoid stale files
+  test_output_dir <- tempfile("test_lazy_pagination")
+  on.exit(unlink(test_output_dir, recursive = TRUE), add = TRUE)
+  
   dashboard <- create_dashboard(
-    output_dir = "test_lazy_pagination",
+    output_dir = test_output_dir,
     lazy_load_charts = TRUE,
     lazy_debug = TRUE
   ) %>%
@@ -287,7 +295,11 @@ test_that("multiple pagination markers create multiple pages", {
     combine_viz(create_viz(type = "bar") %>% 
                   add_viz(title = "Page 3 Chart", x_var = "hp"))
   
-  dashboard <- create_dashboard(output_dir = "test_multi_pagination") %>%
+  # Use temp directory to avoid stale files
+  test_output_dir <- tempfile("test_multi_pagination")
+  on.exit(unlink(test_output_dir, recursive = TRUE), add = TRUE)
+  
+  dashboard <- create_dashboard(output_dir = test_output_dir) %>%
     add_page(
       name = "Multi",
       data = mtcars,
@@ -337,7 +349,11 @@ test_that("complex nested tabgroups preserve pagination", {
     ))
   
   # Test pagination survives
-  dashboard <- create_dashboard(output_dir = "test_nested_tabgroups") %>%
+  # Use temp directory to avoid stale files
+  test_output_dir <- tempfile("test_nested_tabgroups")
+  on.exit(unlink(test_output_dir, recursive = TRUE), add = TRUE)
+  
+  dashboard <- create_dashboard(output_dir = test_output_dir) %>%
     add_page(name = "Test", data = mtcars, visualizations = combined)
   
   result <- generate_dashboard(dashboard, render = FALSE, open = FALSE)

@@ -12,7 +12,12 @@ specifications. It:
 \item Applies custom tab group labels if provided
 }}
 \usage{
-.process_visualizations(viz_input, data_path, tabgroup_labels = NULL)
+.process_visualizations(
+  viz_input,
+  data_path,
+  tabgroup_labels = NULL,
+  shared_first_level = TRUE
+)
 }
 \description{
 This function handles both viz_collection objects and plain lists of visualization

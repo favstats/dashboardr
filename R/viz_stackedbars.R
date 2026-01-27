@@ -224,6 +224,10 @@ viz_stackedbars <- function(data,
                                show_var_tooltip  = TRUE,
                                horizontal        = FALSE,
                                weight_var        = NULL) {
+  # Convert variable arguments to strings (supports both quoted and unquoted)
+  x_vars <- .as_var_strings(rlang::enquo(x_vars))
+  weight_var <- .as_var_string(rlang::enquo(weight_var))
+  
   stacked_type <- match.arg(stacked_type)
   
   # Normalize "normal" to "counts" for viz_stackedbar

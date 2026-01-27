@@ -28,6 +28,7 @@ create_page(
   weight_var = NULL,
   filter = NULL,
   drop_na_vars = NULL,
+  shared_first_level = TRUE,
   ...
 )
 }
@@ -78,6 +79,10 @@ will automatically use this data (no need to specify data separately).}
 \item{filter}{Filter expression for subsetting data (e.g., ~ year >= 2020)}
 
 \item{drop_na_vars}{Default for dropping NA values in visualizations}
+
+\item{shared_first_level}{Logical. When TRUE (default), multiple first-level
+tabgroups will share a single tabset. When FALSE, each first-level tabgroup
+is rendered as a separate section (stacked vertically).}
 
 \item{...}{Additional default parameters passed to all add_viz() calls}
 }

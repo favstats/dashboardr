@@ -213,8 +213,12 @@ test_that("USER PATTERN: Complex production use case with all features", {
   expect_equal(pagination_count, 2, label = "Should have 2 pagination markers")
   
   # === USER'S DASHBOARD SETUP WITH LAZY LOADING ===
+  # Use temp directory to avoid stale files from previous runs
+  output_dir <- tempfile("test_user_complex_pattern")
+  on.exit(unlink(output_dir, recursive = TRUE), add = TRUE)
+  
   dashboard <- create_dashboard(
-    output_dir = "test_user_complex_pattern",
+    output_dir = output_dir,
     lazy_load_charts = TRUE,
     lazy_load_margin = "300px",
     lazy_load_tabs = TRUE,
@@ -325,8 +329,12 @@ test_that("USER PATTERN: Lazy loading works without pagination", {
     add_viz(title = "Chart 1", x_var = "mpg", tabgroup = "grp1") %>%
     add_viz(title = "Chart 2", x_var = "cyl", tabgroup = "grp2")
   
+  # Use temp directory to avoid stale files
+  test_output_dir <- tempfile("test_lazy_simple")
+  on.exit(unlink(test_output_dir, recursive = TRUE), add = TRUE)
+  
   dashboard <- create_dashboard(
-    output_dir = "test_lazy_simple",
+    output_dir = test_output_dir,
     lazy_load_charts = TRUE,
     lazy_load_tabs = TRUE,
     lazy_debug = TRUE,

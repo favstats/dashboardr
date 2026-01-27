@@ -85,12 +85,17 @@ viz_bar <- function(data,
                        tooltip_suffix = "",
                        x_tooltip_suffix = "") {
   
+  # Convert variable arguments to strings (supports both quoted and unquoted)
+  x_var <- .as_var_string(rlang::enquo(x_var))
+  group_var <- .as_var_string(rlang::enquo(group_var))
+  weight_var <- .as_var_string(rlang::enquo(weight_var))
+  
   # Input validation
   if (!is.data.frame(data)) {
     stop("`data` must be a data frame.", call. = FALSE)
   }
   
-  if (missing(x_var) || is.null(x_var)) {
+  if (is.null(x_var)) {
     dashboardr:::.stop_with_hint("x_var", example = "viz_bar(data, x_var = \"category\")")
   }
   

@@ -218,17 +218,23 @@ viz_heatmap <- function(data,
                            weight_var = NULL
 ) {
 
+  # Convert variable arguments to strings (supports both quoted and unquoted)
+  x_var <- .as_var_string(rlang::enquo(x_var))
+  y_var <- .as_var_string(rlang::enquo(y_var))
+  value_var <- .as_var_string(rlang::enquo(value_var))
+  weight_var <- .as_var_string(rlang::enquo(weight_var))
+
   # Input Validation
   if (!is.data.frame(data)) {
     stop("`data` must be a data frame.", call. = FALSE)
   }
-  if (missing(x_var) || is.null(x_var)) {
+  if (is.null(x_var)) {
     dashboardr:::.stop_with_hint("x_var", example = "viz_heatmap(data, x_var = \"country\", y_var = \"year\", value_var = \"population\")")
   }
-  if (missing(y_var) || is.null(y_var)) {
+  if (is.null(y_var)) {
     dashboardr:::.stop_with_hint("y_var", example = "viz_heatmap(data, x_var = \"country\", y_var = \"year\", value_var = \"population\")")
   }
-  if (missing(value_var) || is.null(value_var)) {
+  if (is.null(value_var)) {
     dashboardr:::.stop_with_hint("value_var", example = "viz_heatmap(data, x_var = \"country\", y_var = \"year\", value_var = \"population\")")
   }
   required_vars <- c(x_var, y_var, value_var)

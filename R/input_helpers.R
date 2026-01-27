@@ -510,6 +510,10 @@ render_input <- function(input_id,
                          help = NULL,
                          disabled = FALSE) {
   
+  # Convert variable arguments to strings (supports both quoted and unquoted)
+  filter_var <- .as_var_string(rlang::enquo(filter_var))
+  options_from <- .as_var_string(rlang::enquo(options_from))
+  
   type <- match.arg(type)
   align <- match.arg(align)
 

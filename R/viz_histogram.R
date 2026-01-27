@@ -174,13 +174,18 @@ viz_histogram <- function(data,
                              x_map_values = NULL,
                              x_order = NULL,
                              weight_var = NULL) {
+  # Convert variable arguments to strings (supports both quoted and unquoted)
+  x_var <- .as_var_string(rlang::enquo(x_var))
+  y_var <- .as_var_string(rlang::enquo(y_var))
+  weight_var <- .as_var_string(rlang::enquo(weight_var))
+  
   histogram_type <- match.arg(histogram_type)
 
   # INPUT VALIDATION
   if (!is.data.frame(data)) {
     stop("`data` must be a data frame.", call. = FALSE)
   }
-  if (missing(x_var) || is.null(x_var)) {
+  if (is.null(x_var)) {
     dashboardr:::.stop_with_hint("x_var", example = "viz_histogram(data, x_var = \"age\")")
   }
   if (!x_var %in% names(data)) {

@@ -82,16 +82,22 @@ viz_scatter <- function(data,
                            jitter = FALSE,
                            jitter_amount = 0.2) {
   
+  # Convert variable arguments to strings (supports both quoted and unquoted)
+  x_var <- .as_var_string(rlang::enquo(x_var))
+  y_var <- .as_var_string(rlang::enquo(y_var))
+  color_var <- .as_var_string(rlang::enquo(color_var))
+  size_var <- .as_var_string(rlang::enquo(size_var))
+  
   # Input validation
   if (!is.data.frame(data)) {
     stop("`data` must be a data frame.", call. = FALSE)
   }
   
-  if (missing(x_var) || is.null(x_var)) {
+  if (is.null(x_var)) {
     dashboardr:::.stop_with_hint("x_var", example = "viz_scatter(data, x_var = \"var1\", y_var = \"var2\")")
   }
   
-  if (missing(y_var) || is.null(y_var)) {
+  if (is.null(y_var)) {
     dashboardr:::.stop_with_hint("y_var", example = "viz_scatter(data, x_var = \"var1\", y_var = \"var2\")")
   }
   

@@ -4,13 +4,22 @@
 \alias{create_content}
 \title{Create a new content/visualization collection (alias for create_viz)}
 \usage{
-create_content(data = NULL, tabgroup_labels = NULL, ...)
+create_content(
+  data = NULL,
+  tabgroup_labels = NULL,
+  shared_first_level = TRUE,
+  ...
+)
 }
 \arguments{
 \item{data}{Optional data frame to use for all visualizations in this collection.
 This data will be used by add_viz() calls and can be used with preview().}
 
 \item{tabgroup_labels}{Named vector/list mapping tabgroup IDs to display names}
+
+\item{shared_first_level}{Logical. When TRUE (default), multiple first-level
+tabgroups will share a single tabset. When FALSE, each first-level tabgroup
+is rendered as a separate section (stacked vertically).}
 
 \item{...}{Default parameters to apply to all subsequent add_viz() calls.
 Common defaults include: type, color_palette, stacked_type, horizontal, etc.

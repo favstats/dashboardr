@@ -33,6 +33,9 @@
 #' @param weight_var Name of weight variable for weighted visualizations (applies to all viz)
 #' @param filter Filter expression for subsetting data (e.g., ~ year >= 2020)
 #' @param drop_na_vars Default for dropping NA values in visualizations
+#' @param shared_first_level Logical. When TRUE (default), multiple first-level
+#'   tabgroups will share a single tabset. When FALSE, each first-level tabgroup
+#'   is rendered as a separate section (stacked vertically).
 #' @param ... Additional default parameters passed to all add_viz() calls
 #'
 #' @return A page_object that can be modified with add_viz(), add_text(), etc.
@@ -88,7 +91,12 @@ create_page <- function(name,
                         weight_var = NULL,
                         filter = NULL,
                         drop_na_vars = NULL,
+                        shared_first_level = TRUE,
                         ...) {
+
+  # Convert variable arguments to strings (supports both quoted and unquoted)
+  time_var <- .as_var_string(rlang::enquo(time_var))
+  weight_var <- .as_var_string(rlang::enquo(weight_var))
 
   if (missing(name) || is.null(name) || !is.character(name) || nchar(name) == 0) {
     stop("'name' is required and must be a non-empty string")
@@ -97,8 +105,35 @@ create_page <- function(name,
   navbar_align <- match.arg(navbar_align)
   overlay_theme <- match.arg(overlay_theme)
 
-  # Capture additional defaults for visualizations
-  extra_defaults <- list(...)
+  # Capture additional defaults for visualizations (with NSE support)
+  call_args <- as.list(match.call(expand.dots = FALSE))
+  dot_args_raw <- call_args[["..."]]
+  if (is.null(dot_args_raw)) dot_args_raw <- list()
+  
+  var_params <- c("x_var", "y_var", "group_var", "stack_var", 
+                  "region_var", "value_var", "color_var", "size_var",
+                  "join_var", "click_var", "subgroup_var")
+  var_vector_params <- c("x_vars", "tooltip_vars")
+  
+  extra_defaults <- lapply(names(dot_args_raw), function(nm) {
+    val <- dot_args_raw[[nm]]
+    if (nm %in% var_params && is.symbol(val)) {
+      as.character(val)
+    } else if (nm %in% var_vector_params) {
+      if (is.symbol(val)) {
+        as.character(val)
+      } else if (is.call(val) && identical(val[[1]], as.symbol("c"))) {
+        vapply(as.list(val)[-1], function(x) {
+          if (is.symbol(x)) as.character(x) else if (is.character(x)) x else eval(x)
+        }, character(1))
+      } else {
+        eval(val)
+      }
+    } else {
+      eval(val)
+    }
+  })
+  names(extra_defaults) <- names(dot_args_raw)
 
   structure(
     list(
@@ -131,6 +166,7 @@ create_page <- function(name,
       # Internal content collection for direct viz additions
       .items = list(),
       .tabgroup_labels = list(),
+      .shared_first_level = shared_first_level,
       # External content collections (from add_content)
       content = list(),
       text = NULL

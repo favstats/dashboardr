@@ -328,7 +328,7 @@
   }
 
   for (param in names(spec)) {
-    if (!param %in% c("type", "viz_type", "data_path", "tabgroup", "text", "icon", "text_position", "text_before_tabset", "text_after_tabset", "text_before_viz", "text_after_viz", "height", "filter", "data", "has_data", "multi_dataset", "title_tabset", "nested_children", "drop_na_vars", "data_is_dataframe", ".insertion_index", ".min_index")) { # Exclude internal parameters
+    if (!param %in% c("type", "viz_type", "data_path", "tabgroup", "text", "icon", "text_position", "text_before_tabset", "text_after_tabset", "text_before_viz", "text_after_viz", "height", "filter", "data", "has_data", "multi_dataset", "title_tabset", "nested_children", "drop_na_vars", "data_is_dataframe", ".insertion_index", ".min_index", ".pagination_section")) { # Exclude internal parameters
       args[[param]] <- .serialize_arg(spec[[param]])
     }
   }

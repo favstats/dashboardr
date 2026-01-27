@@ -11,7 +11,8 @@
 #' - Creates tab group objects for multi-item groups
 #' - Applies custom tab group labels if provided
 #' @keywords internal
-.process_visualizations <- function(viz_input, data_path, tabgroup_labels = NULL) {
+.process_visualizations <- function(viz_input, data_path, tabgroup_labels = NULL,
+                                     shared_first_level = TRUE) {
   # Handle different input types
   if (is_content(viz_input)) {
     if (is.null(viz_input) || length(viz_input$items) == 0) {
@@ -19,6 +20,10 @@
     }
     viz_list <- viz_input$items
     tabgroup_labels <- viz_input$tabgroup_labels
+    # Extract shared_first_level from collection if present
+    if (!is.null(viz_input$shared_first_level)) {
+      shared_first_level <- viz_input$shared_first_level
+    }
   } else if (is.list(viz_input)) {
     if (length(viz_input) == 0) {
       return(NULL)
@@ -43,10 +48,11 @@
     }
   }
 
-  # IMPORTANT: Extract pagination markers BEFORE processing hierarchy
-  # They need to preserve their original sequential position
+  # IMPORTANT: Extract pagination markers and assign section numbers BEFORE processing hierarchy
+  # This ensures items on different sides of pagination don't get grouped together
   pagination_positions <- list()  # Store position and marker for each pagination
   viz_only_list <- list()  # Visualizations without pagination markers
+  current_section <- 1L  # Track which pagination section each item belongs to
   
   for (i in seq_along(viz_list)) {
     viz <- viz_list[[i]]
@@ -54,10 +60,14 @@
       # Store pagination marker with its original position
       pagination_positions[[length(pagination_positions) + 1]] <- list(
         position = i,
-        marker = viz
+        marker = viz,
+        section_before = current_section  # Section number BEFORE this pagination
       )
+      # Items after this pagination belong to the next section
+      current_section <- current_section + 1L
     } else {
-      # Regular viz - add to processing list
+      # Regular viz - add to processing list with section number
+      viz$.pagination_section <- current_section
       viz_only_list <- c(viz_only_list, list(viz))
     }
   }
@@ -168,7 +178,8 @@
     filter_grouped_trees <- list()
     
     # Add standard tree items (roots that don't need filter grouping) to result directly
-    standard_result <- .tree_to_viz_list(standard_tree, tabgroup_labels)
+    standard_result <- .tree_to_viz_list(standard_tree, tabgroup_labels,
+                                          shared_first_level = shared_first_level)
     
     # Now build filter-grouped structures
     for (group_key in names(root_groups)) {
@@ -200,7 +211,8 @@
     }
     
     # Merge standard result with filter-grouped results
-    filter_result <- .merge_filtered_trees(filter_grouped_trees, tabgroup_labels)
+    filter_result <- .merge_filtered_trees(filter_grouped_trees, tabgroup_labels,
+                                            shared_first_level = shared_first_level)
     result <- c(standard_result, filter_result)
     
     # IMPORTANT: Sort combined results by minimum insertion index to preserve sequential order
@@ -214,18 +226,64 @@
     }
   } else {
     # Standard approach - no filter grouping needed
-    tree <- list(visualizations = list(), children = list())
+    # But we need to process each pagination section separately to avoid merging
+    # items from different sections into the same tabgroups
     
-    for (viz in viz_only_list) {
-      tree <- .insert_into_hierarchy(tree, viz$tabgroup, viz)
+    num_sections <- if (length(pagination_positions) > 0) {
+      length(pagination_positions) + 1L
+    } else {
+      1L
     }
     
-    result <- .tree_to_viz_list(tree, tabgroup_labels)
+    if (num_sections > 1) {
+      # Process each pagination section separately
+      result <- list()
+      
+      for (section_num in seq_len(num_sections)) {
+        # Get items for this section
+        section_items <- viz_only_list[sapply(viz_only_list, function(v) {
+          v$.pagination_section == section_num
+        })]
+        
+        if (length(section_items) > 0) {
+          # Build tree for this section
+          section_tree <- list(visualizations = list(), children = list())
+          
+          for (viz in section_items) {
+            section_tree <- .insert_into_hierarchy(section_tree, viz$tabgroup, viz)
+          }
+          
+          section_result <- .tree_to_viz_list(section_tree, tabgroup_labels, 
+                                               shared_first_level = shared_first_level)
+          result <- c(result, section_result)
+        }
+        
+        # Add pagination marker after this section (except for last section)
+        if (section_num <= length(pagination_positions)) {
+          pag_info <- pagination_positions[[section_num]]
+          result <- c(result, list(pag_info$marker))
+        }
+      }
+      
+    } else {
+      # No pagination - standard processing
+      tree <- list(visualizations = list(), children = list())
+      
+      for (viz in viz_only_list) {
+        tree <- .insert_into_hierarchy(tree, viz$tabgroup, viz)
+      }
+      
+      result <- .tree_to_viz_list(tree, tabgroup_labels, 
+                                   shared_first_level = shared_first_level)
+    }
   }
   
   # IMPORTANT: Re-insert pagination markers at their original sequential positions
   # Use insertion indices to determine correct position in transformed result
-  if (length(pagination_positions) > 0) {
+  # Skip if we already handled pagination during section processing (non-filter mode)
+  skip_pagination_reinsertion <- !any(unlist(needs_filter_grouping)) && length(pagination_positions) > 0
+  
+  if (length(pagination_positions) > 0 && !skip_pagination_reinsertion) {
     for (pag_info in pagination_positions) {
       marker <- pag_info$marker
       
@@ -250,11 +308,29 @@
         item_indices <- .extract_all_insertion_indices(result_item)
         
         if (length(item_indices) > 0) {
+          min_item_index <- min(item_indices, na.rm = TRUE)
           max_item_index <- max(item_indices, na.rm = TRUE)
-          # If this result item contains visualizations with indices < pagination index,
-          # the pagination should go after this result item
+          
+          # Case 1: All indices in this item are < pagination index
+          # Pagination should go after this item
           if (max_item_index < pag_insertion_idx) {
             insert_after_idx <- i
+          }
+          # Case 2: Pagination index falls WITHIN this item's range (some < pag, some >= pag)
+          # This means the item spans across the pagination boundary
+          # In this case, pagination should still go after this item because we can't split it
+          # (The actual split should happen at a different level - during page generation)
+          else if (min_item_index < pag_insertion_idx && max_item_index >= pag_insertion_idx) {
+            # Some items are before pagination, some after
+            # Check how many are before vs after to decide placement
+            items_before <- sum(item_indices < pag_insertion_idx)
+            items_after <- sum(item_indices >= pag_insertion_idx)
+            
+            # If more items are before the pagination point, place pagination after this item
+            # This ensures the majority of content is on the correct page
+            if (items_before > 0) {
+              insert_after_idx <- i
+            }
           }
         }
       }
@@ -374,9 +450,77 @@
 #' @param tree Hierarchy tree to convert
 #' @param tabgroup_labels Custom labels for tabgroups
 #' @param is_nested_context Whether we're in a nested context (processing children)
+#' @param shared_first_level When TRUE (default), wrap multiple top-level tabgroups
+#'   into a single invisible parent tabgroup so they share a tabset
 #' @noRd
-.tree_to_viz_list <- function(tree, tabgroup_labels = NULL, is_nested_context = FALSE) {
+.tree_to_viz_list <- function(tree, tabgroup_labels = NULL, is_nested_context = FALSE,
+                               shared_first_level = TRUE) {
   result <- list()
+  
+  # NEW: At root level, if shared_first_level and multiple children with no root items,
+  # wrap all children into a single invisible tabgroup
+  if (!is_nested_context && isTRUE(shared_first_level)) {
+    has_root_viz <- !is.null(tree$visualizations) && length(tree$visualizations) > 0
+    num_children <- if (!is.null(tree$children)) length(tree$children) else 0
+    
+    if (!has_root_viz && num_children > 1) {
+      # Multiple top-level tabgroups with no loose items - create wrapper
+      # Process all children into tabgroups, then wrap in single invisible parent
+      child_names <- names(tree$children)
+      child_indices <- sapply(child_names, function(nm) {
+        tree$children[[nm]]$.min_index %||% Inf
+      })
+      child_names_sorted <- child_names[order(child_indices)]
+      
+      wrapped_children <- list()
+      for (child_name in child_names_sorted) {
+        child_node <- tree$children[[child_name]]
+        
+        # Look up custom display label if provided
+        display_label <- NULL
+        if (!is.null(tabgroup_labels) && length(tabgroup_labels) > 0) {
+          if (!is.null(names(tabgroup_labels))) {
+            display_label <- tabgroup_labels[[child_name]]
+          } else if (is.list(tabgroup_labels)) {
+            display_label <- tabgroup_labels[[child_name]]
+          }
+        }
+        
+        # Process this child into a tabgroup
+        child_result <- .tree_to_viz_list(child_node, tabgroup_labels, 
+                                           is_nested_context = TRUE,
+                                           shared_first_level = shared_first_level)
+        
+        has_children <- !is.null(child_node$children) && length(child_node$children) > 0
+        
+        if (has_children || length(child_result) > 1) {
+          # Create tabgroup for this child
+          wrapped_children <- c(wrapped_children, list(list(
+            type = "tabgroup",
+            name = child_name,
+            label = display_label,
+            visualizations = child_result
+          )))
+        } else if (length(child_result) == 1) {
+          # Single viz - wrap as tabgroup to show in shared tabs
+          single_viz <- child_result[[1]]
+          wrapped_children <- c(wrapped_children, list(list(
+            type = "tabgroup",
+            name = child_name,
+            label = display_label,
+            visualizations = list(single_viz)
+          )))
+        }
+      }
+      
+      # Return single wrapper tabgroup with NULL name (invisible wrapper)
+      return(list(list(
+        type = "tabgroup",
+        name = NULL,  # Invisible wrapper - no header will be shown
+        visualizations = wrapped_children
+      )))
+    }
+  }
   
   # Add standalone visualizations at this level
   if (!is.null(tree$visualizations) && length(tree$visualizations) > 0) {
@@ -456,7 +600,8 @@
           )
           
           # Convert to viz list - this will create nested structures
-          parent_result <- .tree_to_viz_list(parent_tree, tabgroup_labels, is_nested_context = TRUE)
+          parent_result <- .tree_to_viz_list(parent_tree, tabgroup_labels, is_nested_context = TRUE,
+                                              shared_first_level = shared_first_level)
           
           # Add each item from parent_result
           for (item in parent_result) {
@@ -474,7 +619,8 @@
       } else {
         # Standard case - process normally
         # Pass is_nested_context = TRUE since we're processing children
-        child_result <- .tree_to_viz_list(child_node, tabgroup_labels, is_nested_context = TRUE)
+        child_result <- .tree_to_viz_list(child_node, tabgroup_labels, is_nested_context = TRUE,
+                                           shared_first_level = shared_first_level)
         
         if (has_viz || has_children) {
           # In nested contexts (is_nested_context = TRUE), always preserve named levels as tabgroups
@@ -649,14 +795,16 @@
 #'
 #' @param all_trees List of trees grouped by root name, then by filter
 #' @param tabgroup_labels Custom labels for tabgroups
+#' @param shared_first_level Whether first-level tabgroups should share a tabset
 #' @return Final list of visualization specifications with nested tabgroups
 #' @noRd
-.merge_filtered_trees <- function(all_trees, tabgroup_labels = NULL) {
+.merge_filtered_trees <- function(all_trees, tabgroup_labels = NULL, shared_first_level = TRUE) {
   result <- list()
   
   # Handle root-level visualizations first
   if (!is.null(all_trees[["__root__"]])) {
-    root_result <- .tree_to_viz_list(all_trees[["__root__"]], tabgroup_labels)
+    root_result <- .tree_to_viz_list(all_trees[["__root__"]], tabgroup_labels,
+                                      shared_first_level = shared_first_level)
     result <- c(result, root_result)
   }
   
@@ -669,7 +817,8 @@
     # If only one filter group, process normally
     if (is.list(root_data) && !is.null(root_data$visualizations)) {
       # Single tree - process normally
-      root_result <- .tree_to_viz_list(root_data, tabgroup_labels)
+      root_result <- .tree_to_viz_list(root_data, tabgroup_labels,
+                                        shared_first_level = shared_first_level)
       
       # Look up custom display label
       display_label <- NULL
@@ -713,7 +862,8 @@
             # This is a nested structure without a parent viz (like timeline items)
             # We need to create a parent tab for it
             # Convert the tree and wrap it as a parent tab
-            nested_content <- .tree_to_viz_list(filter_tree, tabgroup_labels)
+            nested_content <- .tree_to_viz_list(filter_tree, tabgroup_labels,
+                                                 shared_first_level = shared_first_level)
             
             # Create a virtual parent visualization that will hold these nested items
             # The tab label will be "Over Time" (or can be customized in the future)
@@ -726,7 +876,8 @@
             non_filtered_items <- c(non_filtered_items, list(parent_viz))
           } else {
             # Standard non-filtered items - convert tree directly
-            non_filtered_result <- .tree_to_viz_list(filter_tree, tabgroup_labels)
+            non_filtered_result <- .tree_to_viz_list(filter_tree, tabgroup_labels,
+                                                      shared_first_level = shared_first_level)
             non_filtered_items <- c(non_filtered_items, non_filtered_result)
           }
           next  # Skip to next filter group
@@ -752,7 +903,8 @@
               
               # Convert to viz list - this will handle nested structures correctly
               # We're processing nested children, so pass is_nested_context = TRUE
-              parent_result <- .tree_to_viz_list(parent_tree, tabgroup_labels, is_nested_context = TRUE)
+              parent_result <- .tree_to_viz_list(parent_tree, tabgroup_labels, is_nested_context = TRUE,
+                                                  shared_first_level = shared_first_level)
               
               # If parent_result has the parent viz first, followed by nested tabgroups,
               # attach the nested tabgroups to the parent viz so they appear INSIDE the parent tab

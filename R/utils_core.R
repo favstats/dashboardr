@@ -172,3 +172,133 @@
   }
 }
 
+#' Convert a variable argument to a string (supports both quoted and unquoted syntax)
+#'
+#' Internal helper that enables tidy evaluation for variable parameters.
+#' Accepts both `x_var = "degree"` (quoted) and `x_var = degree` (unquoted).
+#'
+#' @param var A quosure captured with `rlang::enquo()`
+#' @return Character string of the variable name, or NULL if the input was NULL
+#' @keywords internal
+#' @examples
+#' \dontrun{
+#' # Inside a function:
+#' my_func <- function(x_var) {
+#'   x_var <- .as_var_string(rlang::enquo(x_var))
+#'   # x_var is now always a character string
+#' }
+#' 
+#' my_func("degree")  # returns "degree"
+#' my_func(degree)    # returns "degree"
+#' }
+.as_var_string <- function(var) {
+  # Handle NULL/missing
+  if (rlang::quo_is_null(var) || rlang::quo_is_missing(var)) {
+    return(NULL)
+  }
+  
+  expr <- rlang::quo_get_expr(var)
+  
+  # Already a string - return as-is
+  if (is.character(expr)) {
+    return(expr)
+  }
+  
+  # A symbol - first try to evaluate it (handles internal calls with param = param)
+  # If evaluation succeeds, use that value; if fails, convert symbol to string
+  if (rlang::is_symbol(expr)) {
+    result <- tryCatch(
+      rlang::eval_tidy(var),
+      error = function(e) NULL
+    )
+    # If evaluation returned a string, use it
+    if (is.character(result)) {
+      return(result)
+    }
+    # If evaluation returned NULL, return NULL (for internal calls with NULL values)
+    if (is.null(result)) {
+      return(NULL)
+    }
+    # Otherwise, this is a bare column name - convert symbol to string
+    return(rlang::as_string(expr))
+  }
+  
+  # Fallback: evaluate the quosure (handles cases like variables containing strings)
+  result <- rlang::eval_tidy(var)
+  if (is.character(result)) {
+    return(result)
+  }
+  if (is.null(result)) {
+    return(NULL)
+  }
+  
+  # Last resort: deparse the expression
+  deparse(expr)
+}
+
+#' Convert multiple variable arguments to strings (for x_vars vector)
+#'
+#' Internal helper for parameters that accept vectors of variable names.
+#' Supports `x_vars = c("var1", "var2")` and `x_vars = c(var1, var2)`.
+#'
+#' @param vars A quosure captured with `rlang::enquo()`
+#' @return Character vector of variable names, or NULL if input was NULL
+#' @keywords internal
+.as_var_strings <- function(vars) {
+  if (rlang::quo_is_null(vars) || rlang::quo_is_missing(vars)) {
+    return(NULL)
+  }
+  
+  expr <- rlang::quo_get_expr(vars)
+  env <- rlang::quo_get_env(vars)
+  
+  # Already a character vector - return as-is
+  if (is.character(expr)) {
+    return(expr)
+  }
+  
+  # A single symbol - first try to evaluate it (handles internal calls)
+  if (rlang::is_symbol(expr)) {
+    result <- tryCatch(
+      rlang::eval_tidy(vars),
+      error = function(e) NULL
+    )
+    if (is.character(result)) {
+      return(result)
+    }
+    if (is.null(result)) {
+      return(NULL)
+    }
+    # Bare column name - convert symbol to string
+    return(rlang::as_string(expr))
+  }
+  
+  # A c() call - extract each element
+  if (rlang::is_call(expr, "c")) {
+    args <- rlang::call_args(expr)
+    result <- vapply(args, function(arg) {
+      if (is.character(arg)) {
+        return(arg)
+      } else if (rlang::is_symbol(arg)) {
+        # Try to evaluate first
+        val <- tryCatch(eval(arg, envir = env), error = function(e) NULL)
+        if (is.character(val)) return(val)
+        return(rlang::as_string(arg))
+      } else {
+        # Try to evaluate
+        val <- eval(arg, envir = env)
+        if (is.character(val)) return(val)
+        return(deparse(arg))
+      }
+    }, character(1))
+    return(result)
+  }
+  
+  # Fallback: evaluate and hope it's a character vector
+  result <- rlang::eval_tidy(vars)
+  if (is.character(result)) {
+    return(result)
+  }
+  
+  stop("Could not convert variable argument to character string(s)", call. = FALSE)
+}

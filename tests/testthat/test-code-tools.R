@@ -1,6 +1,10 @@
 test_that("code_tools = FALSE does not add code-tools to YAML", {
+  # Use temp directory to avoid stale files
+  output_dir <- tempfile("test_code_tools_false")
+  on.exit(unlink(output_dir, recursive = TRUE), add = TRUE)
+  
   dashboard <- create_dashboard(
-    output_dir = "test_code_tools_false",
+    output_dir = output_dir,
     title = "Test Dashboard",
     code_tools = FALSE
   )
@@ -16,14 +20,15 @@ test_that("code_tools = FALSE does not add code-tools to YAML", {
   
   # Check that code-tools is NOT in the YAML
   expect_false(any(grepl("code-tools:", yaml_content)))
-  
-  # Cleanup
-  unlink(dashboard$output_dir, recursive = TRUE)
 })
 
 test_that("code_tools = TRUE adds code-tools to YAML", {
+  # Use temp directory to avoid stale files
+  output_dir <- tempfile("test_code_tools_true")
+  on.exit(unlink(output_dir, recursive = TRUE), add = TRUE)
+  
   dashboard <- create_dashboard(
-    output_dir = "test_code_tools_true",
+    output_dir = output_dir,
     title = "Test Dashboard",
     code_tools = TRUE
   )
@@ -39,14 +44,15 @@ test_that("code_tools = TRUE adds code-tools to YAML", {
   
   # Check that code-tools IS in the YAML
   expect_true(any(grepl("code-tools: true", yaml_content)))
-  
-  # Cleanup
-  unlink(dashboard$output_dir, recursive = TRUE)
 })
 
 test_that("code_tools = NULL does not add code-tools to YAML", {
+  # Use temp directory to avoid stale files
+  output_dir <- tempfile("test_code_tools_null")
+  on.exit(unlink(output_dir, recursive = TRUE), add = TRUE)
+  
   dashboard <- create_dashboard(
-    output_dir = "test_code_tools_null",
+    output_dir = output_dir,
     title = "Test Dashboard"
     # code_tools not specified (NULL)
   )
@@ -62,14 +68,15 @@ test_that("code_tools = NULL does not add code-tools to YAML", {
   
   # Check that code-tools is NOT in the YAML
   expect_false(any(grepl("code-tools:", yaml_content)))
-  
-  # Cleanup
-  unlink(dashboard$output_dir, recursive = TRUE)
 })
 
 test_that("code_folding = FALSE does not add code-fold to YAML", {
+  # Use temp directory to avoid stale files
+  output_dir <- tempfile("test_code_folding_false")
+  on.exit(unlink(output_dir, recursive = TRUE), add = TRUE)
+  
   dashboard <- create_dashboard(
-    output_dir = "test_code_folding_false",
+    output_dir = output_dir,
     title = "Test Dashboard",
     code_folding = FALSE
   )
@@ -85,14 +92,15 @@ test_that("code_folding = FALSE does not add code-fold to YAML", {
   
   # Check that code-fold is NOT in the YAML
   expect_false(any(grepl("code-fold:", yaml_content)))
-  
-  # Cleanup
-  unlink(dashboard$output_dir, recursive = TRUE)
 })
 
 test_that("code_folding = TRUE adds code-fold to YAML", {
+  # Use temp directory to avoid stale files
+  output_dir <- tempfile("test_code_folding_true")
+  on.exit(unlink(output_dir, recursive = TRUE), add = TRUE)
+  
   dashboard <- create_dashboard(
-    output_dir = "test_code_folding_true",
+    output_dir = output_dir,
     title = "Test Dashboard",
     code_folding = TRUE
   )
@@ -108,17 +116,16 @@ test_that("code_folding = TRUE adds code-fold to YAML", {
   
   # Check that code-fold IS in the YAML
   expect_true(any(grepl("code-fold: true", yaml_content)))
-  
-  # Cleanup
-  unlink(dashboard$output_dir, recursive = TRUE)
 })
 
 test_that("both code_tools and code_folding work together correctly", {
   # Test all combinations
   
   # Both TRUE
+  output_dir1 <- tempfile("test_both_true")
+  on.exit(unlink(output_dir1, recursive = TRUE), add = TRUE)
   dashboard1 <- create_dashboard(
-    output_dir = "test_both_true",
+    output_dir = output_dir1,
     title = "Test",
     code_tools = TRUE,
     code_folding = TRUE,
@@ -128,11 +135,12 @@ test_that("both code_tools and code_folding work together correctly", {
   yaml1 <- readLines(file.path(dashboard1$output_dir, "_quarto.yml"))
   expect_true(any(grepl("code-tools: true", yaml1)))
   expect_true(any(grepl("code-fold: true", yaml1)))
-  unlink(dashboard1$output_dir, recursive = TRUE)
   
   # Both FALSE
+  output_dir2 <- tempfile("test_both_false")
+  on.exit(unlink(output_dir2, recursive = TRUE), add = TRUE)
   dashboard2 <- create_dashboard(
-    output_dir = "test_both_false",
+    output_dir = output_dir2,
     title = "Test",
     code_tools = FALSE,
     code_folding = FALSE,
@@ -142,11 +150,12 @@ test_that("both code_tools and code_folding work together correctly", {
   yaml2 <- readLines(file.path(dashboard2$output_dir, "_quarto.yml"))
   expect_false(any(grepl("code-tools:", yaml2)))
   expect_false(any(grepl("code-fold:", yaml2)))
-  unlink(dashboard2$output_dir, recursive = TRUE)
   
   # Mixed: tools TRUE, folding FALSE
+  output_dir3 <- tempfile("test_mixed1")
+  on.exit(unlink(output_dir3, recursive = TRUE), add = TRUE)
   dashboard3 <- create_dashboard(
-    output_dir = "test_mixed1",
+    output_dir = output_dir3,
     title = "Test",
     code_tools = TRUE,
     code_folding = FALSE,
@@ -156,11 +165,12 @@ test_that("both code_tools and code_folding work together correctly", {
   yaml3 <- readLines(file.path(dashboard3$output_dir, "_quarto.yml"))
   expect_true(any(grepl("code-tools: true", yaml3)))
   expect_false(any(grepl("code-fold:", yaml3)))
-  unlink(dashboard3$output_dir, recursive = TRUE)
   
   # Mixed: tools FALSE, folding TRUE
+  output_dir4 <- tempfile("test_mixed2")
+  on.exit(unlink(output_dir4, recursive = TRUE), add = TRUE)
   dashboard4 <- create_dashboard(
-    output_dir = "test_mixed2",
+    output_dir = output_dir4,
     title = "Test",
     code_tools = FALSE,
     code_folding = TRUE,
@@ -170,7 +180,6 @@ test_that("both code_tools and code_folding work together correctly", {
   yaml4 <- readLines(file.path(dashboard4$output_dir, "_quarto.yml"))
   expect_false(any(grepl("code-tools:", yaml4)))
   expect_true(any(grepl("code-fold: true", yaml4)))
-  unlink(dashboard4$output_dir, recursive = TRUE)
 })
 
 test_that("code_tools parameter is stored correctly in dashboard object", {
@@ -199,6 +208,4 @@ test_that("code_folding parameter is stored correctly in dashboard object", {
   # Test NULL (default)
   dash_null <- create_dashboard("test3", "Test")
   expect_null(dash_null$code_folding)
-}
-)
-
+})

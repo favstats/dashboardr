@@ -6,13 +6,8 @@ concepts and have a working dashboard you can customize.
 
 ## 📦 What is dashboardr?
 
-dashboardr lets you build interactive HTML dashboards from R using a
-simple, composable grammar. Think of it like building with Lego blocks:
-
-- **No web development needed**: just R code
-- **Interactive charts** powered by Highcharts
-- **Beautiful themes** from Bootswatch
-- **Flexible layouts** with tabs, pages, and navigation
+dashboardr lets you build *interactive HTML dashboards* from R using a
+simple, composable grammar.
 
 ## 📥 Installation
 
@@ -24,10 +19,11 @@ devtools::install_github("favstats/dashboardr")
 
 ## 🏗️ What We’ll Build
 
-In this tutorial, we’ll create a dashboard exploring the General Social
-Survey (GSS), a long-running survey of American attitudes and
-demographics. We’ll build charts showing education levels, happiness,
-and how they relate to each other.
+To showcase what `dashboardr` can do, we’ll create a dashboard exploring
+the [General Social Survey (GSS)](https://kjhealy.github.io/gssr/), a
+long-running survey of American attitudes and demographics. We’ll build
+charts showing education levels, happiness, and how they relate to each
+other.
 
 First, let’s load the packages and prepare our data:
 
@@ -43,7 +39,7 @@ gss <- gss_all %>%
   filter(year == max(year, na.rm = TRUE), !is.na(age), !is.na(sex), !is.na(race), !is.na(degree))
 ```
 
-We now have a dataset with about 22,000 respondents from 2010 onwards,
+We now have a dataset with about 3139 respondents from 2024 onwards,
 with variables for demographics (age, sex, race, education) and
 attitudes (happiness, political views).
 
@@ -72,8 +68,8 @@ readable and modular.
 
 ### Layer 1: Content
 
-Content collections hold your visualizations and text. You create one
-with
+Content collections hold your visualizations, text, and more (iframes,
+custom HTML). You create one with
 [`create_content()`](https://favstats.github.io/dashboardr/reference/create_content.md),
 passing the data and a default chart type:
 
@@ -90,17 +86,17 @@ print(demographics)
 
 Here
 [`create_content()`](https://favstats.github.io/dashboardr/reference/create_content.md)
-sets up a container with the GSS data and says “make bar charts by
-default.” Then
+sets up a container with the GSS data (`data = gss`) and says “make bar
+charts by default” (`type = "bar"`). Then
 [`add_viz()`](https://favstats.github.io/dashboardr/reference/add_viz.md)
 adds a bar chart of the `degree` variable. The print output shows what’s
 inside: one visualization ready to go.
 
 Use
 [`preview()`](https://favstats.github.io/dashboardr/reference/preview.md)
-to see the actual chart. Note this might differ slightly from how
-content will eventually look like in your dashboard as it creates a
-simple preview of your data.
+to see the actual chart. Note this differs from how content will
+eventually look like in your dashboard as it creates a simple preview of
+your data.
 
 ``` r
 demographics %>% preview()
@@ -111,7 +107,8 @@ Preview
 Education
 
 You can keep adding to content collections. Use `tabgroup` to organize
-charts into tabs:
+charts into tabs. The code below will crate two tabs, one titled
+“Demographics” and one titled “Attitudes”.
 
 ``` r
 demographics <- create_content(data = gss, type = "bar") %>%
@@ -133,14 +130,17 @@ Happiness
 
 ### Layer 2: Pages
 
-Pages organize content and define your dashboard’s navigation. Each page
-becomes a separate HTML file.
+Pages organize content and define your dashboard’s *navigation*. Each
+page becomes a separate HTML file.
 
-A simple landing page with just text:
+Let’s create something every dashboard needs: a simple landing page:
 
 ``` r
 home <- create_page("Home", is_landing_page = TRUE) %>%
-  add_text("# Welcome!", "", "Explore the General Social Survey data.")
+  add_text(
+    "# Welcome!", 
+    "", 
+    "Explore the General Social Survey data.")
 
 home %>% preview()
 ```
@@ -151,11 +151,12 @@ Welcome!
 
 Explore the General Social Survey data.
 
-The `is_landing_page = TRUE` makes this the default page when someone
-opens your dashboard.
+With `add_text` you can just provide a series of markdown code! A `""`
+marks a linebreak. The `is_landing_page = TRUE` makes this the default
+page when someone opens your dashboard.
 
-Now an analysis page that uses our content from Layer 1. You can also
-add text directly to pages:
+Now an analysis page that uses our content from Layer 1. If you like you
+can *also* `add_text` directly to pages:
 
 ``` r
 analysis <- create_page("Analysis", data = gss) %>%
@@ -382,7 +383,9 @@ Explore trends in American society using the General Social Survey.
 
 Navigate using the tabs above.
 
-*2 visualization(s) - data not available for inline preview*
+overview
+
+analysis
 
 About This Dashboard
 

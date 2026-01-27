@@ -226,14 +226,20 @@ viz_stackedbar <- function(data,
                               horizontal = FALSE,
                               weight_var = NULL) {
 
+  # Convert variable arguments to strings (supports both quoted and unquoted)
+  x_var <- .as_var_string(rlang::enquo(x_var))
+  y_var <- .as_var_string(rlang::enquo(y_var))
+  stack_var <- .as_var_string(rlang::enquo(stack_var))
+  weight_var <- .as_var_string(rlang::enquo(weight_var))
+
   # INPUT VALIDATION
   if (!is.data.frame(data)) {
     stop("Input 'data' must be a data frame.", call. = FALSE)
   }
-  if (missing(x_var) || is.null(x_var)) {
+  if (is.null(x_var)) {
     dashboardr:::.stop_with_hint("x_var", example = "viz_stackedbar(data, x_var = \"question\", stack_var = \"response\")")
   }
-  if (missing(stack_var) || is.null(stack_var)) {
+  if (is.null(stack_var)) {
     dashboardr:::.stop_with_hint("stack_var", example = "viz_stackedbar(data, x_var = \"question\", stack_var = \"response\")")
   }
   if (!x_var %in% names(data)) {

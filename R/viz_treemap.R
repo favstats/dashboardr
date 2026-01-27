@@ -61,14 +61,20 @@ viz_treemap <- function(
     credits = FALSE,
     ...
 ) {
+  # Convert variable arguments to strings (supports both quoted and unquoted)
+  group_var <- .as_var_string(rlang::enquo(group_var))
+  subgroup_var <- .as_var_string(rlang::enquo(subgroup_var))
+  value_var <- .as_var_string(rlang::enquo(value_var))
+  color_var <- .as_var_string(rlang::enquo(color_var))
+  
   # Validate required parameters
   if (missing(data) || is.null(data)) {
     stop("data is required for viz_treemap()", call. = FALSE)
   }
-  if (missing(group_var) || is.null(group_var)) {
+  if (is.null(group_var)) {
     stop("group_var is required for viz_treemap()", call. = FALSE)
   }
-  if (missing(value_var) || is.null(value_var)) {
+  if (is.null(value_var)) {
     stop("value_var is required for viz_treemap()", call. = FALSE)
   }
   

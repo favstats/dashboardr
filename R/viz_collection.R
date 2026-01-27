@@ -14,6 +14,9 @@
 #'   Can also be passed to add_page() which will use this as fallback if no
 #'   page-level data is provided.
 #' @param tabgroup_labels Named vector/list mapping tabgroup IDs to display names
+#' @param shared_first_level Logical. When TRUE (default), multiple first-level
+#'   tabgroups will share a single tabset. When FALSE, each first-level tabgroup
+#'   is rendered as a separate section (stacked vertically).
 #' @param ... Default parameters to apply to all subsequent add_viz() calls.
 #'   Any parameter specified in add_viz() will override the default.
 #'   Useful for setting common parameters like type, color_palette, stacked_type, etc.
@@ -41,12 +44,42 @@
 #'   add_viz(title = "Wave 1", filter = ~ wave == 1) %>%  # Uses defaults
 #'   add_viz(title = "Wave 2", filter = ~ wave == 2, horizontal = FALSE)  # Overrides horizontal
 #' }
-create_viz <- function(data = NULL, tabgroup_labels = NULL, ...) {
-  defaults <- list(...)
+create_viz <- function(data = NULL, tabgroup_labels = NULL, shared_first_level = TRUE, ...) {
+  # Capture defaults unevaluated to support NSE for variable parameters
+  call_args <- as.list(match.call(expand.dots = FALSE))
+  dot_args_raw <- call_args[["..."]]
+  if (is.null(dot_args_raw)) dot_args_raw <- list()
+  
+  # Convert variable parameters from symbols to strings (NSE support)
+  var_params <- c("x_var", "y_var", "group_var", "stack_var", "weight_var", 
+                  "time_var", "region_var", "value_var", "color_var", "size_var",
+                  "join_var", "click_var", "subgroup_var")
+  var_vector_params <- c("x_vars", "tooltip_vars")
+  
+  defaults <- lapply(names(dot_args_raw), function(nm) {
+    val <- dot_args_raw[[nm]]
+    if (nm %in% var_params && is.symbol(val)) {
+      as.character(val)
+    } else if (nm %in% var_vector_params) {
+      if (is.symbol(val)) {
+        as.character(val)
+      } else if (is.call(val) && identical(val[[1]], as.symbol("c"))) {
+        vapply(as.list(val)[-1], function(x) {
+          if (is.symbol(x)) as.character(x) else if (is.character(x)) x else eval(x)
+        }, character(1))
+      } else {
+        eval(val)
+      }
+    } else {
+      eval(val)
+    }
+  })
+  names(defaults) <- names(dot_args_raw)
 
   structure(list(
     items = list(),
     tabgroup_labels = tabgroup_labels,
+    shared_first_level = shared_first_level,
     defaults = defaults,
     data = data
   ), class = c("content_collection", "viz_collection"))
@@ -619,6 +652,39 @@ add_viz.page_object <- function(x, type = NULL, ..., tabgroup = NULL, title = NU
   # Build viz spec by merging with page defaults
   defaults <- page$viz_defaults
   
+  # Get unevaluated call args for NSE support
+  call_args <- as.list(match.call())[-1]
+  extra_names <- setdiff(names(call_args), c("x", "type", "tabgroup", "title", 
+    "title_tabset", "text", "icon", "text_position", "text_before_tabset",
+    "text_after_tabset", "text_before_viz", "text_after_viz", "height", 
+    "filter", "data", "drop_na_vars"))
+  
+  # Convert variable parameters from symbols to strings (NSE support)
+  var_params <- c("x_var", "y_var", "group_var", "stack_var", "weight_var", 
+                  "time_var", "region_var", "value_var", "color_var", "size_var",
+                  "join_var", "click_var", "subgroup_var")
+  var_vector_params <- c("x_vars", "tooltip_vars")
+  
+  extra <- lapply(extra_names, function(nm) {
+    val <- call_args[[nm]]
+    if (nm %in% var_params && is.symbol(val)) {
+      as.character(val)
+    } else if (nm %in% var_vector_params) {
+      if (is.symbol(val)) {
+        as.character(val)
+      } else if (is.call(val) && identical(val[[1]], as.symbol("c"))) {
+        vapply(as.list(val)[-1], function(x) {
+          if (is.symbol(x)) as.character(x) else if (is.character(x)) x else eval(x)
+        }, character(1))
+      } else {
+        eval(val)
+      }
+    } else {
+      eval(val)
+    }
+  })
+  names(extra) <- extra_names
+  
   viz_spec <- list(
     type = "viz",
     viz_type = type %||% defaults$type %||% "bar",
@@ -641,7 +707,6 @@ add_viz.page_object <- function(x, type = NULL, ..., tabgroup = NULL, title = NU
   )
   
   # Add any extra parameters from ...
-  extra <- list(...)
   for (nm in names(extra)) {
     viz_spec[[nm]] <- extra[[nm]]
   }
@@ -659,9 +724,9 @@ add_viz.default <- function(x, type = NULL, ..., tabgroup = NULL, title = NULL, 
     stop("First argument must be a content collection or page_object")
   }
 
-  # Get explicitly provided arguments (not defaults)
+  # Get explicitly provided arguments (not defaults) - UNEVALUATED
   call_args <- as.list(match.call())[-1]  # Remove function name
-  call_args$viz_collection <- NULL  # Remove viz_collection from the list
+  call_args$x <- NULL  # Remove x from the list (first arg)
 
   # Get defaults from viz_collection
   # Note: Don't use %||% as it may have unexpected behavior with lists
@@ -671,8 +736,38 @@ add_viz.default <- function(x, type = NULL, ..., tabgroup = NULL, title = NULL, 
     defaults <- viz_collection$defaults
   }
 
-  # Get additional parameters from ...
-  dot_args <- list(...)
+  # Get additional parameters from ... 
+  # Use match.call to capture unevaluated expressions, then convert var params
+  dot_args_raw <- call_args[!names(call_args) %in% c("type", "tabgroup", "title", 
+    "title_tabset", "text", "icon", "text_position", "text_before_tabset",
+    "text_after_tabset", "text_before_viz", "text_after_viz", "height", 
+    "filter", "data", "drop_na_vars")]
+  
+  # Convert variable parameters from symbols to strings (NSE support)
+  var_params <- c("x_var", "y_var", "group_var", "stack_var", "weight_var", 
+                  "time_var", "region_var", "value_var", "color_var", "size_var",
+                  "join_var", "click_var", "subgroup_var")
+  var_vector_params <- c("x_vars", "tooltip_vars")
+  
+  dot_args <- lapply(names(dot_args_raw), function(nm) {
+    val <- dot_args_raw[[nm]]
+    if (nm %in% var_params && is.symbol(val)) {
+      as.character(val)
+    } else if (nm %in% var_vector_params) {
+      if (is.symbol(val)) {
+        as.character(val)
+      } else if (is.call(val) && identical(val[[1]], as.symbol("c"))) {
+        vapply(as.list(val)[-1], function(x) {
+          if (is.symbol(x)) as.character(x) else if (is.character(x)) x else eval(x)
+        }, character(1))
+      } else {
+        eval(val)
+      }
+    } else {
+      eval(val)
+    }
+  })
+  names(dot_args) <- names(dot_args_raw)
 
   # Merge parameters: explicitly provided > dots > defaults
   # Start with defaults
@@ -2221,7 +2316,8 @@ preview <- function(collection, title = "Preview", open = TRUE, clean = FALSE,
                        "text", "icon", "text_position", "text_before_tabset", 
                        "text_after_tabset", "text_before_viz", "text_after_viz",
                        "height", "filter", "has_data", "data_path", "data_is_dataframe",
-                       ".insertion_index", ".min_index", "nested_children", "drop_na_vars")
+                       ".insertion_index", ".min_index", ".pagination_section", 
+                       "nested_children", "drop_na_vars")
   
   viz_args <- item[!names(item) %in% internal_params]
   

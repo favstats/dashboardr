@@ -87,10 +87,15 @@ viz_map <- function(
     credits = FALSE,
     ...
 ) {
+  # Convert variable arguments to strings (supports both quoted and unquoted)
+  value_var <- .as_var_string(rlang::enquo(value_var))
+  join_var <- .as_var_string(rlang::enquo(join_var))
+  click_var <- .as_var_string(rlang::enquo(click_var))
+  tooltip_vars <- .as_var_strings(rlang::enquo(tooltip_vars))
+  
   # Validate required parameters
 
-
-  if (missing(value_var) || is.null(value_var)) {
+  if (is.null(value_var)) {
     stop("value_var is required for viz_map()")
   }
 

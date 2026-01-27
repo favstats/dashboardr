@@ -170,14 +170,20 @@ viz_timeline <- function(data,
                             na_label_y = "(Missing)",
                             na_label_group = "(Missing)") {
 
+  # Convert variable arguments to strings (supports both quoted and unquoted)
+  time_var <- .as_var_string(rlang::enquo(time_var))
+  y_var <- .as_var_string(rlang::enquo(y_var))
+  group_var <- .as_var_string(rlang::enquo(group_var))
+  weight_var <- .as_var_string(rlang::enquo(weight_var))
+
   # INPUT VALIDATION
   if (!is.data.frame(data)) {
     stop("`data` must be a data frame.", call. = FALSE)
   }
-  if (missing(time_var) || is.null(time_var)) {
+  if (is.null(time_var)) {
     dashboardr:::.stop_with_hint("time_var", example = "viz_timeline(data, time_var = \"year\", y_var = \"score\")")
   }
-  if (missing(y_var) || is.null(y_var)) {
+  if (is.null(y_var)) {
     dashboardr:::.stop_with_hint("y_var", example = "viz_timeline(data, time_var = \"year\", y_var = \"score\")")
   }
 

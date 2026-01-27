@@ -260,7 +260,8 @@
             viz_coll <- structure(list(
               items = viz_items,
               defaults = block$defaults,
-              tabgroup_labels = block$tabgroup_labels
+              tabgroup_labels = block$tabgroup_labels,
+              shared_first_level = block$shared_first_level
             ), class = c("content_collection", "viz_collection"))
             
             # First process through viz_processing to handle tabgroup hierarchy

@@ -4,7 +4,7 @@
 \alias{create_viz}
 \title{Create a new visualization collection}
 \usage{
-create_viz(data = NULL, tabgroup_labels = NULL, ...)
+create_viz(data = NULL, tabgroup_labels = NULL, shared_first_level = TRUE, ...)
 }
 \arguments{
 \item{data}{Optional data frame to use for all visualizations in this collection.
@@ -13,6 +13,10 @@ Can also be passed to add_page() which will use this as fallback if no
 page-level data is provided.}
 
 \item{tabgroup_labels}{Named vector/list mapping tabgroup IDs to display names}
+
+\item{shared_first_level}{Logical. When TRUE (default), multiple first-level
+tabgroups will share a single tabset. When FALSE, each first-level tabgroup
+is rendered as a separate section (stacked vertically).}
 
 \item{...}{Default parameters to apply to all subsequent add_viz() calls.
 Any parameter specified in add_viz() will override the default.

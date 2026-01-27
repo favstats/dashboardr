@@ -128,20 +128,8 @@ concepts and have a working dashboard you can customize.</p>
 <div class="section level2">
 <h2 id="what-is-dashboardr">📦 What is dashboardr?<a class="anchor" aria-label="anchor" href="#what-is-dashboardr"></a>
 </h2>
-<p>dashboardr lets you build interactive HTML dashboards from R using a
-simple, composable grammar. Think of it like building with Lego
-blocks:</p>
-<ul>
-<li>
-<strong>No web development needed</strong>: just R code</li>
-<li>
-<strong>Interactive charts</strong> powered by Highcharts</li>
-<li>
-<strong>Beautiful themes</strong> from Bootswatch</li>
-<li>
-<strong>Flexible layouts</strong> with tabs, pages, and
-navigation</li>
-</ul>
+<p>dashboardr lets you build <em>interactive HTML dashboards</em> from R
+using a simple, composable grammar.</p>
 </div>
 <div class="section level2">
 <h2 id="installation">📥 Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
@@ -153,10 +141,11 @@ navigation</li>
 <div class="section level2">
 <h2 id="what-well-build">🏗️ What We’ll Build<a class="anchor" aria-label="anchor" href="#what-well-build"></a>
 </h2>
-<p>In this tutorial, we’ll create a dashboard exploring the General
-Social Survey (GSS), a long-running survey of American attitudes and
-demographics. We’ll build charts showing education levels, happiness,
-and how they relate to each other.</p>
+<p>To showcase what <code>dashboardr</code> can do, we’ll create a
+dashboard exploring the <a href="https://kjhealy.github.io/gssr/" class="external-link">General Social Survey (GSS)</a>,
+a long-running survey of American attitudes and demographics. We’ll
+build charts showing education levels, happiness, and how they relate to
+each other.</p>
 <p>First, let’s load the packages and prepare our data:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://favstats.github.io/dashboardr/">dashboardr</a></span><span class="op">)</span></span>
@@ -168,8 +157,8 @@ and how they relate to each other.</p>
 <span><span class="va">gss</span> <span class="op">&lt;-</span> <span class="va">gss_all</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">year</span>, <span class="va">age</span>, <span class="va">sex</span>, <span class="va">race</span>, <span class="va">degree</span>, <span class="va">happy</span>, <span class="va">polviews</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">year</span> <span class="op">==</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">year</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>, <span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">age</span><span class="op">)</span>, <span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">sex</span><span class="op">)</span>, <span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">race</span><span class="op">)</span>, <span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">degree</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p>We now have a dataset with about 22,000 respondents from 2010
-onwards, with variables for demographics (age, sex, race, education) and
+<p>We now have a dataset with about 3139 respondents from 2024 onwards,
+with variables for demographics (age, sex, race, education) and
 attitudes (happiness, political views).</p>
 </div>
 <div class="section level2">
@@ -224,8 +213,9 @@ making your code readable and modular.</p>
 <div class="section level3">
 <h3 id="layer-1-content">Layer 1: Content<a class="anchor" aria-label="anchor" href="#layer-1-content"></a>
 </h3>
-<p>Content collections hold your visualizations and text. You create one
-with <code><a href="../reference/create_content.html">create_content()</a></code>, passing the data and a default chart
+<p>Content collections hold your visualizations, text, and more
+(iframes, custom HTML). You create one with
+<code><a href="../reference/create_content.html">create_content()</a></code>, passing the data and a default chart
 type:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">demographics</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_content.html">create_content</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">gss</span>, type <span class="op">=</span> <span class="st">"bar"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
@@ -237,12 +227,13 @@ type:</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; • <span style="color: #00BB00;">[Viz]</span> <span style="font-weight: bold;">Education</span> <span style="color: #555555;">(</span><span style="color: #BB00BB;">bar</span><span style="color: #555555;">)</span> <span style="color: #555555;">x=degree</span></span></span></code></pre></div>
 <p>Here <code><a href="../reference/create_content.html">create_content()</a></code> sets up a container with the GSS
-data and says “make bar charts by default.” Then <code><a href="../reference/add_viz.html">add_viz()</a></code>
-adds a bar chart of the <code>degree</code> variable. The print output
-shows what’s inside: one visualization ready to go.</p>
-<p>Use <code><a href="../reference/preview.html">preview()</a></code> to see the actual chart. Note this might
-differ slightly from how content will eventually look like in your
-dashboard as it creates a simple preview of your data.</p>
+data (<code>data = gss</code>) and says “make bar charts by default”
+(<code>type = "bar"</code>). Then <code><a href="../reference/add_viz.html">add_viz()</a></code> adds a bar
+chart of the <code>degree</code> variable. The print output shows what’s
+inside: one visualization ready to go.</p>
+<p>Use <code><a href="../reference/preview.html">preview()</a></code> to see the actual chart. Note this differs
+from how content will eventually look like in your dashboard as it
+creates a simple preview of your data.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">demographics</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/preview.html">preview</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <div style="border: 2px solid #e1e4e8; border-radius: 8px; padding: 20px; margin: 16px 0; background-color: #fafbfc;">
@@ -252,7 +243,8 @@ dashboard as it creates a simple preview of your data.</p>
 <script type="application/json" data-for="htmlwidget-ac96cb3ee4656e2e9ec3">{"x":{"hc_opts":{"chart":{"reflow":true,"type":"column"},"title":{"text":null},"yAxis":{"title":{"text":"Count"}},"credits":{"enabled":false},"exporting":{"enabled":false},"boost":{"enabled":false},"plotOptions":{"series":{"label":{"enabled":false},"turboThreshold":0,"dataLabels":{"enabled":true,"format":"{point.y:.0f}"}},"treemap":{"layoutAlgorithm":"squarified"}},"xAxis":{"categories":["less than high school","high school","associate/junior college","bachelor's","graduate"],"title":{"text":"degree"}},"series":[{"data":[275,1444,286,688,446],"name":"Count","showInLegend":false,"colorByPoint":true}],"tooltip":{"formatter":"function() {\n           var cat = this.point.category || this.series.chart.xAxis[0].categories[this.point.x] || this.x;\n           var val = this.y;\n           var total = 3139;\n           var pct = total > 0 ? (val / total * 100).toFixed(1) : 0;\n           var rank = this.series.data.indexOf(this.point) + 1;\n           var totalItems = this.series.data.length;\n           return '<b>' + cat + '<\/b><br/>' +\n                  '' + val.toLocaleString() + '<br/>' +\n                  '<span style=\"color:#666;font-size:0.9em\">' + pct + '% of total | Rank: #' + rank + ' of ' + totalItems + '<\/span>';\n         }","useHTML":true}},"theme":{"chart":{"backgroundColor":"transparent"},"colors":["#7cb5ec","#434348","#90ed7d","#f7a35c","#8085e9","#f15c80","#e4d354","#2b908f","#f45b5b","#91e8e1"]},"conf_opts":{"global":{"Date":null,"VMLRadialGradientURL":"http =//code.highcharts.com/list(version)/gfx/vml-radial-gradient.png","canvasToolsURL":"http =//code.highcharts.com/list(version)/modules/canvas-tools.js","getTimezoneOffset":null,"timezoneOffset":0,"useUTC":true},"lang":{"contextButtonTitle":"Chart context menu","decimalPoint":".","downloadCSV":"Download CSV","downloadJPEG":"Download JPEG image","downloadPDF":"Download PDF document","downloadPNG":"Download PNG image","downloadSVG":"Download SVG vector image","downloadXLS":"Download XLS","drillUpText":"◁ Back to {series.name}","exitFullscreen":"Exit from full screen","exportData":{"annotationHeader":"Annotations","categoryDatetimeHeader":"DateTime","categoryHeader":"Category"},"hideData":"Hide data table","invalidDate":null,"loading":"Loading...","months":["January","February","March","April","May","June","July","August","September","October","November","December"],"noData":"No data to display","numericSymbolMagnitude":1000,"numericSymbols":["k","M","G","T","P","E"],"printChart":"Print chart","resetZoom":"Reset zoom","resetZoomTitle":"Reset zoom level 1:1","shortMonths":["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],"shortWeekdays":["Sat","Sun","Mon","Tue","Wed","Thu","Fri"],"thousandsSep":" ","viewData":"View data table","viewFullscreen":"View in full screen","weekdays":["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]}},"type":"chart","fonts":[],"debug":false},"evals":["hc_opts.tooltip.formatter"],"jsHooks":[]}</script><div style="margin-bottom: 15px;"></div>
 </div>
 <p>You can keep adding to content collections. Use <code>tabgroup</code>
-to organize charts into tabs:</p>
+to organize charts into tabs. The code below will crate two tabs, one
+titled “Demographics” and one titled “Attitudes”.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">demographics</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_content.html">create_content</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">gss</span>, type <span class="op">=</span> <span class="st">"bar"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span>x_var <span class="op">=</span> <span class="st">"degree"</span>, title <span class="op">=</span> <span class="st">"Education"</span>, tabgroup <span class="op">=</span> <span class="st">"Demographics"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
@@ -329,12 +321,16 @@ to organize charts into tabs:</p>
 <div class="section level3">
 <h3 id="layer-2-pages">Layer 2: Pages<a class="anchor" aria-label="anchor" href="#layer-2-pages"></a>
 </h3>
-<p>Pages organize content and define your dashboard’s navigation. Each
-page becomes a separate HTML file.</p>
-<p>A simple landing page with just text:</p>
+<p>Pages organize content and define your dashboard’s
+<em>navigation</em>. Each page becomes a separate HTML file.</p>
+<p>Let’s create something every dashboard needs: a simple landing
+page:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">home</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_page.html">create_page</a></span><span class="op">(</span><span class="st">"Home"</span>, is_landing_page <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="../reference/add_text.html">add_text</a></span><span class="op">(</span><span class="st">"# Welcome!"</span>, <span class="st">""</span>, <span class="st">"Explore the General Social Survey data."</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="../reference/add_text.html">add_text</a></span><span class="op">(</span></span>
+<span>    <span class="st">"# Welcome!"</span>, </span>
+<span>    <span class="st">""</span>, </span>
+<span>    <span class="st">"Explore the General Social Survey data."</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">home</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/preview.html">preview</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <div style="border: 2px solid #e1e4e8; border-radius: 8px; padding: 20px; margin: 16px 0; background-color: #fafbfc;">
@@ -344,10 +340,12 @@ page becomes a separate HTML file.</p>
 <p>Explore the General Social Survey data.</p>
 </div>
 </div>
-<p>The <code>is_landing_page = TRUE</code> makes this the default page
-when someone opens your dashboard.</p>
-<p>Now an analysis page that uses our content from Layer 1. You can also
-add text directly to pages:</p>
+<p>With <code>add_text</code> you can just provide a series of markdown
+code! A <code>""</code> marks a linebreak. The
+<code>is_landing_page = TRUE</code> makes this the default page when
+someone opens your dashboard.</p>
+<p>Now an analysis page that uses our content from Layer 1. If you like
+you can <em>also</em> <code>add_text</code> directly to pages:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">analysis</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_page.html">create_page</a></span><span class="op">(</span><span class="st">"Analysis"</span>, data <span class="op">=</span> <span class="va">gss</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="../reference/add_text.html">add_text</a></span><span class="op">(</span><span class="st">"## Demographic Overview"</span>, <span class="st">"Explore how GSS respondents break down by key categories."</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
@@ -704,9 +702,61 @@ like:</p>
 </div>
 </div>
 <div class="dtab-pane" id="dashboard-preview-3244-page-2" data-visible="false" style="display: none;">
-<div style="padding: 20px; background: #f8f9fa; border-radius: 8px; text-align: center; color: #666;">
-<em>2 visualization(s) - data not available for inline preview</em>
+<div id="vtabs-d0-cf20f3" class="vtab-container" style="margin: 15px 0;">
+<div class="vtab-buttons" style="border-bottom: 1px solid #dee2e6; margin-bottom: 8px;">
+<button type="button" class="vtab-btn-0-cf20f vtab-btn-0-cf20f-active" data-tab="vtabs-d0-cf20f3-1">overview</button>
+<button type="button" class="vtab-btn-0-cf20f" data-tab="vtabs-d0-cf20f3-2">analysis</button>
 </div>
+<div class="vtab-content">
+<div class="vtab-pane-0-cf20f" id="vtabs-d0-cf20f3-1" data-visible="true"></div>
+<div class="vtab-pane-0-cf20f" id="vtabs-d0-cf20f3-2" data-visible="false"></div>
+</div>
+</div>
+<style>
+    #vtabs-d0-cf20f3 > .vtab-buttons .vtab-btn-0-cf20f {
+      padding: 6px 14px; margin-right: 4px; border: 1px solid #dee2e6;
+      background: #f8f9fa; cursor: pointer; border-radius: 4px 4px 0 0;
+      font-size: 0.9em;
+    }
+    #vtabs-d0-cf20f3 > .vtab-buttons .vtab-btn-0-cf20f-active { background: white; border-bottom-color: white; font-weight: bold; }
+    #vtabs-d0-cf20f3 > .vtab-content > .vtab-pane-0-cf20f { padding: 10px 0; }
+    #vtabs-d0-cf20f3 > .vtab-content > .vtab-pane-0-cf20f[data-visible='false'] { display: none; }
+  </style>
+<script>
+    (function() {
+      var container = document.getElementById('vtabs-d0-cf20f3');
+      if (!container) return;
+      
+      // Wait for Highcharts to render, then hide inactive panes
+      setTimeout(function() {
+        container.querySelectorAll(':scope > .vtab-content > .vtab-pane-0-cf20f[data-visible="false"]').forEach(function(p) {
+          p.style.display = 'none';
+        });
+      }, 500);
+
+      // Tab click handler - only target DIRECT child buttons
+      container.querySelectorAll(':scope > .vtab-buttons > .vtab-btn-0-cf20f').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          var tabId = this.getAttribute('data-tab');
+          // Update only direct child buttons
+          container.querySelectorAll(':scope > .vtab-buttons > .vtab-btn-0-cf20f').forEach(function(b) { 
+            b.classList.remove('vtab-btn-0-cf20f-active'); 
+          });
+          this.classList.add('vtab-btn-0-cf20f-active');
+          // Update only direct child panes
+          container.querySelectorAll(':scope > .vtab-content > .vtab-pane-0-cf20f').forEach(function(p) {
+            p.style.display = p.id === tabId ? 'block' : 'none';
+            p.setAttribute('data-visible', p.id === tabId ? 'true' : 'false');
+          });
+          // Reflow Highcharts
+          if (typeof Highcharts !== 'undefined') {
+            Highcharts.charts.forEach(function(c) { if (c) c.reflow(); });
+          }
+        });
+      });
+    })();
+  </script>
 </div>
 <div class="dtab-pane" id="dashboard-preview-3244-page-3" data-visible="false" style="display: none;">
 <div>
