@@ -1,0 +1,172 @@
+---
+title: "{{< iconify ph chart-pie >}} Summary Charts"
+format: html
+---
+
+```{r}
+#| include: false
+library(dashboardr)
+```
+
+```{=html}
+<style>
+/* Ensure chart containers expand to fit content - aggressive overrides */
+.cell-output-display,
+.cell-output,
+.panel-tabset-tabby > .tab-content,
+.panel-tabset > .tab-content,
+.tab-pane,
+.tab-pane.active,
+.card-body,
+.quarto-figure,
+section {
+  overflow: visible !important;
+  height: auto !important;
+  max-height: none !important;
+}
+/* Ensure highcharts containers respect their set height */
+.highcharts-container,
+.html-widget,
+.htmlwidget {
+  overflow: visible !important;
+}
+</style>
+<script>
+// Aggressive reflow for Highcharts - multiple attempts to catch widget initialization
+(function() {
+  function reflowCharts() {
+    if (typeof Highcharts !== 'undefined' && Highcharts.charts) {
+      Highcharts.charts.forEach(function(chart) {
+        if (chart) {
+          try { chart.reflow(); } catch(e) {}
+        }
+      });
+    }
+  }
+  
+  // Try multiple times at different intervals
+  [0, 100, 250, 500, 1000, 2000].forEach(function(delay) {
+    setTimeout(function() {
+      window.dispatchEvent(new Event('resize'));
+      requestAnimationFrame(reflowCharts);
+    }, delay);
+  });
+  
+  // Also reflow on any tab click
+  document.addEventListener('click', function(e) {
+    if (e.target.matches('.nav-link, [data-bs-toggle="tab"]')) {
+      setTimeout(reflowCharts, 50);
+    }
+  });
+})();
+</script>
+```
+
+# Summary Charts
+
+This page demonstrates standalone charts (no tabsets) for key findings.
+
+## Overview
+
+These charts provide a high-level summary of the most important patterns in the data.
+
+```{r setup}
+#| echo: false
+#| warning: false
+#| message: false
+#| error: false
+#| results: 'hide'
+
+# Load required libraries
+library(dashboardr)
+library(dplyr)
+library(highcharter)
+
+# Global chunk options
+knitr::opts_chunk$set(
+  echo = FALSE,
+  warning = FALSE,
+  message = FALSE,
+  error = FALSE,
+  fig.width = 12,
+  fig.height = 8,
+  dpi = 300
+)
+
+# Load data
+data <- readRDS('dataset_2867obs.rds')
+
+# Data summary
+cat('Dataset loaded:', nrow(data), 'rows,', ncol(data), 'columns\n')
+
+```
+
+## {{< iconify ph chart-bar >}} Overall Happiness by Education
+
+
+How happy are you?
+
+```{r stackedbar-degree-1a-happy-1a}
+# Overall Happiness by Education
+result <- viz_stackedbar(
+  data = data,
+  title = "Overall Happiness by Education",
+  x_var = "degree_1a",
+  stack_var = "happy_1a",
+  subtitle = "Complete distribution of happiness across education levels",
+  x_label = "Education Level",
+  y_label = "Percentage of Respondents",
+  stack_label = "Happiness Level",
+  stacked_type = "percent",
+  x_order = c("Lt High School", "High School", "Junior College", "Bachelor", "Graduate"),
+  stack_order = c("Very Happy", "Pretty Happy", "Not Too Happy"),
+  tooltip_suffix = "%",
+  color_palette = c("#2E86AB", "#A23B72", "#F18F01")
+)
+
+# Force container height with explicit wrapper
+if (inherits(result, 'highchart')) {
+  result <- highcharter::hc_size(result, height = 600)
+}
+result <- htmltools::div(
+  style = 'height: 600px !important; min-height: 600px !important; width: 100%; overflow: visible;',
+  result
+)
+
+result
+```
+
+## {{< iconify ph shield-check >}} Overall Trust by Politics
+
+```{r heatmap-partyid-1a-polviews-1a}
+# Overall Trust by Politics
+result <- viz_heatmap(
+  data = data,
+  title = "Overall Trust by Politics",
+  x_var = "partyid_1a",
+  y_var = "polviews_1a",
+  value_var = "trust_1a",
+  subtitle = "Complete trust patterns across political groups",
+  x_label = "Party Identification",
+  y_label = "Political Views",
+  value_label = "Trust Level",
+  x_order = c("Strong Democrat", "Not Very Strong Democrat", "Independent, Close to Democrat", "Independent", "Independent, Close to Republican", "Not Very Strong Republican", "Strong Republican"),
+  y_order = c("Extremely Liberal", "Liberal", "Slightly Liberal", "Moderate", "Slightly Conservative", "Conservative", "Extremely Conservative"),
+  color_palette = c("#d7191c", "#fdae61", "#ffffbf", "#abdda4", "#2b83ba"),
+  tooltip_prefix = "Trust: ",
+  tooltip_suffix = "/3",
+  tooltip_labels_format = "{point.value:.2f}"
+)
+
+# Force container height with explicit wrapper
+if (inherits(result, 'highchart')) {
+  result <- highcharter::hc_size(result, height = 700)
+}
+result <- htmltools::div(
+  style = 'height: 700px !important; min-height: 700px !important; width: 100%; overflow: visible;',
+  result
+)
+
+result
+```
+

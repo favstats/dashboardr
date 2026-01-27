@@ -1,9 +1,8 @@
 #!/usr/bin/env Rscript
-# Build demo dashboards for pkgdown site
-# This script generates tutorial and showcase dashboards
-# and places them in the pkgdown docs folder
+# Build Tutorial & Showcase Demo Dashboards for pkgdown site
+# Run from package root: source("pkgdown/build-demos.R")
 
-cat("Building demo dashboards for pkgdown site...\n\n")
+cat("📊 Building Tutorial & Showcase Dashboards...\n\n")
 
 # Load package
 suppressPackageStartupMessages({
@@ -18,20 +17,59 @@ if (!requireNamespace("gssr", quietly = TRUE)) {
   quit(status = 0)
 }
 
-# Create output directory for demos
-demo_dir <- "../docs/live-demos/docs"
-if (!dir.exists(demo_dir)) {
-  dir.create(demo_dir, recursive = TRUE)
+# Find package root
+find_pkg_root <- function() {
+  dir <- getwd()
+  for (i in 1:10) {
+    if (file.exists(file.path(dir, "DESCRIPTION"))) {
+      return(dir)
+    }
+    parent <- dirname(dir)
+    if (parent == dir) break
+    dir <- parent
+  }
+  if (requireNamespace("here", quietly = TRUE)) {
+    return(here::here())
+  }
+  stop("Could not find package root. Please run from the package directory.")
 }
 
+pkg_root <- find_pkg_root()
+cat("   Package root:", pkg_root, "\n")
+
+tutorial_dir <- file.path(pkg_root, "docs", "live-demos", "tutorial")
+showcase_dir <- file.path(pkg_root, "docs", "live-demos", "showcase")
+
+# Clean up old directories
+if (dir.exists(tutorial_dir)) unlink(tutorial_dir, recursive = TRUE)
+if (dir.exists(showcase_dir)) unlink(showcase_dir, recursive = TRUE)
+dir.create(tutorial_dir, recursive = TRUE, showWarnings = FALSE)
+dir.create(showcase_dir, recursive = TRUE, showWarnings = FALSE)
+
 cat("📊 Generating Tutorial Dashboard...\n")
-# QMD files go to live-demos/tutorial, Quarto renders HTML to live-demos/tutorial/docs
-tutorial_dashboard(directory = "../docs/live-demos/tutorial/docs", open = FALSE)
+tryCatch({
+  tutorial_dashboard(directory = tutorial_dir, open = FALSE)
+  if (file.exists(file.path(tutorial_dir, "index.html")) || 
+      file.exists(file.path(tutorial_dir, "docs", "index.html"))) {
+    cat("   ✅ Tutorial created\n")
+  } else {
+    cat("   ⚠️  QMD created, needs Quarto render\n")
+  }
+}, error = function(e) {
+  cat("   ❌ Error:", e$message, "\n")
+})
 
 cat("📊 Generating Showcase Dashboard...\n")
-# QMD files go to live-demos/showcase, Quarto renders HTML to live-demos/showcase/docs
-showcase_dashboard(directory = "../docs/live-demos/showcase/docs", open = FALSE)
+tryCatch({
+  showcase_dashboard(directory = showcase_dir, open = FALSE)
+  if (file.exists(file.path(showcase_dir, "index.html")) ||
+      file.exists(file.path(showcase_dir, "docs", "index.html"))) {
+    cat("   ✅ Showcase created\n")
+  } else {
+    cat("   ⚠️  QMD created, needs Quarto render\n")
+  }
+}, error = function(e) {
+  cat("   ❌ Error:", e$message, "\n")
+})
 
-cat("✨ Demo dashboard generation complete!\n")
-cat("   Tutorial: docs/live-demos/tutorial/docs/index.html\n")
-cat("   Showcase: docs/live-demos/showcase/docs/index.html\n")
+cat("\n✨ Tutorial & Showcase generation complete!\n")

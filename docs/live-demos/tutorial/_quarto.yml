@@ -1,6 +1,8 @@
 project:
   type: website
-  output-dir: docs/live-demos/tutorial
+  output-dir: /Users/favstats/Dropbox/postdoc/dashboardr/docs/live-demos/tutorial
+  resources:
+    - assets/
 
 website:
   title: "Tutorial Dashboard"
@@ -23,28 +25,40 @@ website:
   bread-crumbs: true
   page-navigation: true
   back-to-top-navigation: true
-  reader-mode: true
-  repo-url: https://github.com/username/dashboardr
-  repo-actions: [edit, source, issue]
-  page-footer: "© 2025 dashboardr Package - All Rights Reserved"
+  reader-mode: false
+  repo-url: https://github.com/favstats/dashboardr
+  page-footer:
+    left: "© 2025 dashboardr Package - All Rights Reserved"
+    right: |
+      <a href="https://favstats.github.io/dashboardr/" target="_blank" rel="noopener" style="display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.25rem 0.5rem; background: rgba(0, 0, 0, 0.05); border-radius: 4px; font-size: 1rem; color: inherit; text-decoration: none; opacity: 0.8; transition: opacity 0.2s ease, background 0.2s ease;" onmouseover="this.style.opacity='1'; this.style.background='rgba(0, 0, 0, 0.08)';" onmouseout="this.style.opacity='0.8'; this.style.background='rgba(0, 0, 0, 0.05)';"><img src="https://raw.githubusercontent.com/favstats/dashboardr/refs/heads/main/man/figures/logo.svg" alt="dashboardr logo" style="width: 24px; height: 24px; object-fit: contain;" /><span style="font-weight: 500;">Powered by dashboardr</span></a>
 
 format:
   html:
+    prefer-html: true
     theme:
       - default
-      - _tabset_modern.scss
+      - _tabset_minimal.scss
 
+    css:
+      - assets/modal.css
+      - assets/pagination.css
+    mainfont: "Fira Sans"
+    fontsize: 16px
+    monofont: "Fira Code"
     math:
       engine: katex
-    code-fold: true
     code-tools: true
     value-boxes: true
     page-layout: full
-    shiny: true
     google-analytics:
       id: "GA-XXXXXXXXX"
     plausible:
       domain: "example.com"
+    include-in-header:
+      text: |
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Fira+Sans:wght@300;400;500;600;700&family=Fira+Code:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     gtag:
       id: "GTM-XXXXXXX"
     github-pages:

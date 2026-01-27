@@ -88,8 +88,9 @@
   <ul class="dropdown-menu" aria-labelledby="dropdown--live-demos">
 <li><a class="dropdown-item" href="../articles/demos.html">📚 About the Demos</a></li>
     <li><hr class="dropdown-divider"></li>
-    <li><a class="dropdown-item" href="../live-demos/tutorial/docs/index.html">🎓 Tutorial Dashboard</a></li>
-    <li><a class="dropdown-item" href="../live-demos/showcase/docs/index.html">🚀 Showcase Dashboard</a></li>
+    <li><a class="dropdown-item" href="../live-demos/features/index.html">⭐ Features Demo (Recommended)</a></li>
+    <li><a class="dropdown-item" href="../live-demos/tutorial/index.html">🎓 Tutorial Dashboard</a></li>
+    <li><a class="dropdown-item" href="../live-demos/showcase/index.html">🚀 Showcase Dashboard</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -143,20 +144,93 @@
 <div class="section level2">
 <h2 id="overview">Overview<a class="anchor" aria-label="anchor" href="#overview"></a>
 </h2>
-<p><code>dashboardr</code> includes two built-in demo dashboards that
+<p><code>dashboardr</code> includes several live demo dashboards that
 showcase its capabilities:</p>
-<ol style="list-style-type: decimal">
+<table class="table">
+<colgroup>
+<col width="24%">
+<col width="52%">
+<col width="24%">
+</colgroup>
+<thead><tr class="header">
+<th>Demo</th>
+<th>Description</th>
+<th>Link</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td><strong>Features Demo</strong></td>
+<td>Comprehensive showcase of tab styling, inputs, and overlays</td>
+<td><a href="../live-demos/features/index.html">View Demo</a></td>
+</tr>
+<tr class="even">
+<td><strong>Tutorial Dashboard</strong></td>
+<td>Beginner-friendly dashboard demonstrating basic features</td>
+<td><a href="../live-demos/tutorial/index.html">View Demo</a></td>
+</tr>
+<tr class="odd">
+<td><strong>Showcase Dashboard</strong></td>
+<td>Advanced dashboard with multiple pages and tabsets</td>
+<td><a href="../live-demos/showcase/index.html">View Demo</a></td>
+</tr>
+</tbody>
+</table>
+<p>All demos use real data from the General Social Survey (GSS) and can
+be generated with a single function call!</p>
+</div>
+<div class="section level2">
+<h2 id="features-demo-recommended">Features Demo (Recommended)<a class="anchor" aria-label="anchor" href="#features-demo-recommended"></a>
+</h2>
+<p>The <strong>Features Demo</strong> is the best place to explore
+dashboardr’s interactive capabilities:</p>
+<ul>
 <li>
-<a href="https://favstats.github.io/dashboardr/live-demos/tutorial/docs/index.html"><strong>Tutorial
-Dashboard</strong></a> - A beginner-friendly dashboard demonstrating
-basic features</li>
+<strong>Tab Styling</strong> - See different
+<code>tabset_theme</code> options (modern, pills) and custom
+<code>tabset_colors</code>
+</li>
 <li>
-<a href="https://favstats.github.io/dashboardr/live-demos/showcase/docs/index.html"><strong>Showcase
-Dashboard</strong></a> - A comprehensive dashboard showcasing advanced
-features</li>
-</ol>
-<p>Both dashboards use real data from the General Social Survey (GSS)
-and can be generated with a single function call!</p>
+<strong>Interactive Inputs</strong> - Try select dropdowns,
+checkboxes, sliders, and radio buttons</li>
+<li>
+<strong>Loading Overlays</strong> - See the glass overlay effect
+(reload the page!)</li>
+<li>
+<strong>Page Alignment</strong> - Notice the “About” page aligned to
+the right</li>
+</ul>
+<div class="section level3">
+<h3 id="what-generates-it">What Generates It<a class="anchor" aria-label="anchor" href="#what-generates-it"></a>
+</h3>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Tab styling page</span></span>
+<span><span class="fu"><a href="../reference/create_page.html">create_page</a></span><span class="op">(</span><span class="st">"Corporate Colors"</span>, data <span class="op">=</span> <span class="va">gss</span>, type <span class="op">=</span> <span class="st">"bar"</span>,</span>
+<span>  tabset_theme <span class="op">=</span> <span class="st">"pills"</span>,</span>
+<span>  tabset_colors <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>    active_bg <span class="op">=</span> <span class="st">"#2C3E50"</span>,</span>
+<span>    active_text <span class="op">=</span> <span class="st">"#FFFFFF"</span>,</span>
+<span>    inactive_bg <span class="op">=</span> <span class="st">"#ECF0F1"</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span>x_var <span class="op">=</span> <span class="st">"degree"</span>, title <span class="op">=</span> <span class="st">"Education"</span>, tabgroup <span class="op">=</span> <span class="st">"Section A"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Interactive inputs page</span></span>
+<span><span class="fu"><a href="../reference/create_page.html">create_page</a></span><span class="op">(</span><span class="st">"Interactive Inputs"</span>, data <span class="op">=</span> <span class="va">gss</span>, type <span class="op">=</span> <span class="st">"bar"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/add_input_row.html">add_input_row</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>    <span class="fu"><a href="../reference/add_input.html">add_input</a></span><span class="op">(</span>input_id <span class="op">=</span> <span class="st">"edu"</span>, label <span class="op">=</span> <span class="st">"Education"</span>, </span>
+<span>              type <span class="op">=</span> <span class="st">"select_multiple"</span>, filter_var <span class="op">=</span> <span class="st">"degree"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/end_input_row.html">end_input_row</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span>x_var <span class="op">=</span> <span class="st">"happy"</span>, title <span class="op">=</span> <span class="st">"Happiness"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Loading overlay page</span></span>
+<span><span class="fu"><a href="../reference/create_page.html">create_page</a></span><span class="op">(</span><span class="st">"Loading Overlay"</span>, data <span class="op">=</span> <span class="va">gss</span>, type <span class="op">=</span> <span class="st">"bar"</span>,</span>
+<span>  overlay <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  overlay_theme <span class="op">=</span> <span class="st">"glass"</span>,</span>
+<span>  overlay_text <span class="op">=</span> <span class="st">"Loading visualizations..."</span>,</span>
+<span>  overlay_duration <span class="op">=</span> <span class="fl">2000</span></span>
+<span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span>x_var <span class="op">=</span> <span class="st">"degree"</span>, title <span class="op">=</span> <span class="st">"Education"</span><span class="op">)</span></span></code></pre></div>
+</div>
 </div>
 <div class="section level2">
 <h2 id="tutorial-dashboard">Tutorial Dashboard<a class="anchor" aria-label="anchor" href="#tutorial-dashboard"></a>
@@ -192,9 +266,9 @@ visualizations</li>
 <div class="section level3">
 <h3 id="running-the-tutorial-dashboard">Running the Tutorial Dashboard<a class="anchor" aria-label="anchor" href="#running-the-tutorial-dashboard"></a>
 </h3>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://favstats.github.io/dashboardr/">dashboardr</a></span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://favstats.github.io/dashboardr/">dashboardr</a></span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Requires the 'gssr' package</span></span>
 <span><span class="co"># install.packages("gssr")</span></span>
 <span></span>
@@ -235,7 +309,7 @@ showcase</li>
 <h3 id="code-example">Code Example<a class="anchor" aria-label="anchor" href="#code-example"></a>
 </h3>
 <p>Here’s what the tutorial dashboard does internally:</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Create visualization collection with tabsets</span></span>
 <span><span class="va">analysis_vizzes</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_viz.html">create_viz</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span></span>
@@ -310,7 +384,7 @@ folding)</li>
 <div class="section level3">
 <h3 id="running-the-showcase-dashboard">Running the Showcase Dashboard<a class="anchor" aria-label="anchor" href="#running-the-showcase-dashboard"></a>
 </h3>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Requires the 'gssr' package</span></span>
 <span><span class="co"># install.packages("gssr")</span></span>
 <span></span>
@@ -356,7 +430,7 @@ insights</li>
 <h3 id="advanced-features">Advanced Features<a class="anchor" aria-label="anchor" href="#advanced-features"></a>
 </h3>
 <p>The showcase demonstrates:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Multiple tabset groups</span></span>
 <span><span class="va">analysis_viz</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_viz.html">create_viz</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span><span class="va">...</span>, tabgroup <span class="op">=</span> <span class="st">"demographics"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
@@ -468,7 +542,7 @@ dashboards</li>
 <h3 id="extracting-the-code">Extracting the Code<a class="anchor" aria-label="anchor" href="#extracting-the-code"></a>
 </h3>
 <p>Want to see the full code? Both functions are fully documented:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># View the tutorial dashboard code</span></span>
 <span><span class="op">?</span><span class="va">tutorial_dashboard</span></span>
 <span></span>
@@ -489,7 +563,7 @@ dashboards</li>
 <li><p><strong>Quarto CLI</strong> installed on your system</p></li>
 <li>
 <p><strong>gssr package</strong> for GSS data:</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"gssr"</span><span class="op">)</span></span></code></pre></div>
 </li>
 </ol>
@@ -523,7 +597,7 @@ your projects!</li>
 <div class="section level3">
 <h3 id="for-presentations">For Presentations<a class="anchor" aria-label="anchor" href="#for-presentations"></a>
 </h3>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Generate without opening (for presentations)</span></span>
 <span><span class="va">dashboard</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/tutorial_dashboard.html">tutorial_dashboard</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
@@ -533,7 +607,7 @@ your projects!</li>
 <div class="section level3">
 <h3 id="for-learning">For Learning<a class="anchor" aria-label="anchor" href="#for-learning"></a>
 </h3>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Generate the tutorial</span></span>
 <span><span class="fu"><a href="../reference/tutorial_dashboard.html">tutorial_dashboard</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
@@ -546,7 +620,7 @@ your projects!</li>
 <div class="section level3">
 <h3 id="for-inspiration">For Inspiration<a class="anchor" aria-label="anchor" href="#for-inspiration"></a>
 </h3>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Generate the showcase</span></span>
 <span><span class="fu"><a href="../reference/showcase_dashboard.html">showcase_dashboard</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
@@ -571,14 +645,14 @@ your projects!</li>
 </h3>
 <pre><code>Error: package 'gssr' not found</code></pre>
 <p><strong>Solution:</strong></p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"gssr"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="port-already-in-use">Port Already in Use<a class="anchor" aria-label="anchor" href="#port-already-in-use"></a>
 </h3>
 <p>If the dashboard doesn’t open, the port might be busy. Try:</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Generate without opening</span></span>
 <span><span class="fu"><a href="../reference/tutorial_dashboard.html">tutorial_dashboard</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
@@ -590,7 +664,7 @@ your projects!</li>
 <div class="section level2">
 <h2 id="getting-help">Getting Help<a class="anchor" aria-label="anchor" href="#getting-help"></a>
 </h2>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Function documentation</span></span>
 <span><span class="op">?</span><span class="va">tutorial_dashboard</span></span>
 <span><span class="op">?</span><span class="va">showcase_dashboard</span></span>

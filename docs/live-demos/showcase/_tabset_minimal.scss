@@ -1,0 +1,84 @@
+/*-- scss:rules --*/
+
+/* ============================================
+   MINIMAL THEME - Clean, centered, top tabs with subtle effects
+   ============================================ */
+
+/* Prevent page jump when clicking tabs */
+.panel-tabset {
+  scroll-margin-top: 0;
+}
+
+.panel-tabset .tab-pane {
+  scroll-margin-top: 0;
+}
+
+.panel-tabset .nav-tabs {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  flex-wrap: wrap;
+  list-style: none;
+  padding: 0;
+  margin: 5px 0;  /* Reduced spacing */
+  border-bottom: 2px solid #e5e7eb; /* Subtle bottom border */
+}
+
+.panel-tabset .nav-item {
+  color: #6b7280; /* Gray text */
+  background-color: transparent;
+  border-radius: 0;
+  transition: all 0.3s ease;
+  margin: 0 4px;
+  border: none;
+}
+
+.panel-tabset .nav-item a {
+  display: block;
+  padding: 10px 20px;
+  text-decoration: none;
+  color: inherit;
+  background-color: transparent;
+  border: none;
+}
+
+/* Hover effect */
+.panel-tabset .nav-item:hover {
+  color: #111827;
+  background-color: #f9fafb;
+}
+
+/* Active tab styling */
+.panel-tabset .nav-tabs .nav-link.active {
+  color: #2563eb;
+  background-color: transparent;
+  border-bottom: 2px solid #2563eb;
+  font-weight: 500;
+}
+
+/* Standard top layout */
+.panel-tabset {
+  display: flex;
+  flex-direction: column;
+  border: none !important;  /* Remove all borders */
+  box-shadow: none !important;  /* Remove shadows */
+}
+
+.nav-tabs {
+  order: 1;
+}
+
+.panel-tabset .tab-content {
+  order: 2;
+  padding-top: 5px;  /* Reduced even further */
+  margin-top: 0;  /* No extra margin */
+  border: none !important;  /* Remove content borders */
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .panel-tabset .nav-tabs {
+    justify-content: flex-start;
+  }
+}
+

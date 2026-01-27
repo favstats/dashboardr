@@ -1,0 +1,58 @@
+[
+  {
+    "objectID": "select___checkbox.html",
+    "href": "select___checkbox.html",
+    "title": " Select & Checkbox",
+    "section": "",
+    "text": "Tip"
+  },
+  {
+    "objectID": "select___checkbox.html#results",
+    "href": "select___checkbox.html#results",
+    "title": " Select & Checkbox",
+    "section": "Results",
+    "text": "Results\n\nHappiness by GenderPolitical Views Distribution"
+  },
+  {
+    "objectID": "slider___radio.html",
+    "href": "slider___radio.html",
+    "title": " Slider & Radio",
+    "section": "",
+    "text": "Age Range\n    25\n    65\n  \n  \n    \n    \n    \n      18\n      89\n    \n  \n\n\n\n  Gender\n  \n    \n      \n      \n      female\n    \n    \n      \n      \n      male"
+  },
+  {
+    "objectID": "slider___radio.html#education-distribution",
+    "href": "slider___radio.html#education-distribution",
+    "title": " Slider & Radio",
+    "section": "Education Distribution",
+    "text": "Education Distribution"
+  },
+  {
+    "objectID": "slider___radio.html#happiness-levels",
+    "href": "slider___radio.html#happiness-levels",
+    "title": " Slider & Radio",
+    "section": "Happiness Levels",
+    "text": "Happiness Levels"
+  },
+  {
+    "objectID": "full_example.html",
+    "href": "full_example.html",
+    "title": " Full Example",
+    "section": "",
+    "text": "Survey Year\n  \n    2010\n    2012\n    2014\n    2016\n    2018\n    2021\n    2022\n  \n\n\n\n  Education\n  \n    associate/junior college\n    bachelor's\n    graduate\n    high school\n    less than high school"
+  },
+  {
+    "objectID": "full_example.html#analysis",
+    "href": "full_example.html#analysis",
+    "title": " Full Example",
+    "section": "Analysis",
+    "text": "Analysis\n\nHappiness by GenderPolitical Views"
+  },
+  {
+    "objectID": "full_example.html#demographics",
+    "href": "full_example.html#demographics",
+    "title": " Full Example",
+    "section": "Demographics",
+    "text": "Demographics\n\nEducation BreakdownRace Distribution"
+  }
+]

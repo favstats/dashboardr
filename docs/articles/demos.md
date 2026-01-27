@@ -11,18 +11,61 @@
 
 ## Overview
 
-`dashboardr` includes two built-in demo dashboards that showcase its
+`dashboardr` includes several live demo dashboards that showcase its
 capabilities:
 
-1.  [**Tutorial
-    Dashboard**](https://favstats.github.io/dashboardr/live-demos/tutorial/docs/index.html) -
-    A beginner-friendly dashboard demonstrating basic features
-2.  [**Showcase
-    Dashboard**](https://favstats.github.io/dashboardr/live-demos/showcase/docs/index.html) -
-    A comprehensive dashboard showcasing advanced features
+| Demo | Description | Link |
+|----|----|----|
+| **Features Demo** | Comprehensive showcase of tab styling, inputs, and overlays | [View Demo](https://favstats.github.io/dashboardr/live-demos/features/index.md) |
+| **Tutorial Dashboard** | Beginner-friendly dashboard demonstrating basic features | [View Demo](https://favstats.github.io/dashboardr/live-demos/tutorial/index.md) |
+| **Showcase Dashboard** | Advanced dashboard with multiple pages and tabsets | [View Demo](https://favstats.github.io/dashboardr/live-demos/showcase/index.md) |
 
-Both dashboards use real data from the General Social Survey (GSS) and
-can be generated with a single function call!
+All demos use real data from the General Social Survey (GSS) and can be
+generated with a single function call!
+
+## Features Demo (Recommended)
+
+The **Features Demo** is the best place to explore dashboardr’s
+interactive capabilities:
+
+- **Tab Styling** - See different `tabset_theme` options (modern, pills)
+  and custom `tabset_colors`
+- **Interactive Inputs** - Try select dropdowns, checkboxes, sliders,
+  and radio buttons
+- **Loading Overlays** - See the glass overlay effect (reload the page!)
+- **Page Alignment** - Notice the “About” page aligned to the right
+
+### What Generates It
+
+``` r
+# Tab styling page
+create_page("Corporate Colors", data = gss, type = "bar",
+  tabset_theme = "pills",
+  tabset_colors = list(
+    active_bg = "#2C3E50",
+    active_text = "#FFFFFF",
+    inactive_bg = "#ECF0F1"
+  )
+) %>%
+  add_viz(x_var = "degree", title = "Education", tabgroup = "Section A")
+
+# Interactive inputs page
+create_page("Interactive Inputs", data = gss, type = "bar") %>%
+  add_input_row() %>%
+    add_input(input_id = "edu", label = "Education", 
+              type = "select_multiple", filter_var = "degree") %>%
+  end_input_row() %>%
+  add_viz(x_var = "happy", title = "Happiness")
+
+# Loading overlay page
+create_page("Loading Overlay", data = gss, type = "bar",
+  overlay = TRUE,
+  overlay_theme = "glass",
+  overlay_text = "Loading visualizations...",
+  overlay_duration = 2000
+) %>%
+  add_viz(x_var = "degree", title = "Education")
+```
 
 ## Tutorial Dashboard
 

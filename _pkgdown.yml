@@ -4,7 +4,7 @@ favicon: false
 
 # Build live demos after building the site
 after_build:
-  - Rscript pkgdown/build-demos.R
+  - Rscript pkgdown/build-all-demos.R
 
 template:
   bootstrap: 5
@@ -95,10 +95,12 @@ navbar:
       - text: "📚 About the Demos"
         href: articles/demos.html
       - text: -------
+      - text: "⭐ Features Demo (Recommended)"
+        href: live-demos/features/index.html
       - text: "🎓 Tutorial Dashboard"
-        href: live-demos/tutorial/docs/index.html
+        href: live-demos/tutorial/index.html
       - text: "🚀 Showcase Dashboard"
-        href: live-demos/showcase/docs/index.html
+        href: live-demos/showcase/index.html
 
 articles:
 - title: Getting Started

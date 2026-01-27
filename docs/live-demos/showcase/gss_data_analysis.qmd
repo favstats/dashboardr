@@ -1,0 +1,366 @@
+---
+title: "{{< iconify ph chart-line >}} GSS Data Analysis"
+format: html
+---
+
+```{r}
+#| include: false
+library(dashboardr)
+```
+
+```{=html}
+<style>
+/* Ensure chart containers expand to fit content - aggressive overrides */
+.cell-output-display,
+.cell-output,
+.panel-tabset-tabby > .tab-content,
+.panel-tabset > .tab-content,
+.tab-pane,
+.tab-pane.active,
+.card-body,
+.quarto-figure,
+section {
+  overflow: visible !important;
+  height: auto !important;
+  max-height: none !important;
+}
+/* Ensure highcharts containers respect their set height */
+.highcharts-container,
+.html-widget,
+.htmlwidget {
+  overflow: visible !important;
+}
+</style>
+<script>
+// Aggressive reflow for Highcharts - multiple attempts to catch widget initialization
+(function() {
+  function reflowCharts() {
+    if (typeof Highcharts !== 'undefined' && Highcharts.charts) {
+      Highcharts.charts.forEach(function(chart) {
+        if (chart) {
+          try { chart.reflow(); } catch(e) {}
+        }
+      });
+    }
+  }
+  
+  // Try multiple times at different intervals
+  [0, 100, 250, 500, 1000, 2000].forEach(function(delay) {
+    setTimeout(function() {
+      window.dispatchEvent(new Event('resize'));
+      requestAnimationFrame(reflowCharts);
+    }, delay);
+  });
+  
+  // Also reflow on any tab click
+  document.addEventListener('click', function(e) {
+    if (e.target.matches('.nav-link, [data-bs-toggle="tab"]')) {
+      setTimeout(reflowCharts, 50);
+    }
+  });
+})();
+</script>
+```
+
+```{r setup}
+#| echo: false
+#| warning: false
+#| message: false
+#| error: false
+#| results: 'hide'
+
+# Load required libraries
+library(dashboardr)
+library(dplyr)
+library(highcharter)
+
+# Global chunk options
+knitr::opts_chunk$set(
+  echo = FALSE,
+  warning = FALSE,
+  message = FALSE,
+  error = FALSE,
+  fig.width = 12,
+  fig.height = 8,
+  dpi = 300
+)
+
+# Load data
+data <- readRDS('dataset_2867obs.rds')
+
+# Data summary
+cat('Dataset loaded:', nrow(data), 'rows,', ncol(data), 'columns\n')
+
+```
+
+## Demographics & Education
+
+
+::: {.panel-tabset}
+
+### {{< iconify ph chart-bar >}} Happiness Distribution Across Education Levels
+
+
+How happy are you with your life right now?
+
+```{r demographics}
+# Happiness Distribution Across Education Levels
+result <- viz_stackedbar(
+  data = data,
+  title = "Happiness Distribution Across Education Levels",
+  x_var = "degree_1a",
+  stack_var = "happy_1a",
+  subtitle = "Percentage breakdown within each education category",
+  x_label = "Education Level",
+  y_label = "Percentage of Respondents",
+  stack_label = "Happiness Level",
+  stacked_type = "percent",
+  x_order = c("Lt High School", "High School", "Junior College", "Bachelor", "Graduate"),
+  stack_order = c("Very Happy", "Pretty Happy", "Not Too Happy"),
+  tooltip_suffix = "%",
+  color_palette = c("#2E86AB", "#A23B72", "#F18F01")
+)
+
+# Force container height with explicit wrapper
+if (inherits(result, 'highchart')) {
+  result <- highcharter::hc_size(result, height = 500)
+}
+result <- htmltools::div(
+  style = 'height: 500px !important; min-height: 500px !important; width: 100%; overflow: visible;',
+  result
+)
+
+result
+```
+
+
+### {{< iconify ph gender-intersex >}} Happiness Distribution by Gender
+
+```{r demographics-2}
+# Happiness Distribution by Gender
+result <- viz_stackedbar(
+  data = data,
+  title = "Happiness Distribution by Gender",
+  x_var = "sex_1a",
+  stack_var = "happy_1a",
+  subtitle = "Gender differences in reported happiness levels",
+  x_label = "Gender",
+  y_label = "Percentage of Respondents",
+  stack_label = "Happiness Level",
+  stacked_type = "percent",
+  stack_order = c("Very Happy", "Pretty Happy", "Not Too Happy"),
+  tooltip_suffix = "%",
+  color_palette = c("#2E86AB", "#A23B72", "#F18F01")
+)
+
+# Force container height with explicit wrapper
+if (inherits(result, 'highchart')) {
+  result <- highcharter::hc_size(result, height = 450)
+}
+result <- htmltools::div(
+  style = 'height: 450px !important; min-height: 450px !important; width: 100%; overflow: visible;',
+  result
+)
+
+result
+```
+
+How happy are you with your life right now?
+
+
+
+:::
+
+## Political Attitudes
+
+
+::: {.panel-tabset}
+
+### {{< iconify ph users-three >}} Party ID by Political Views
+
+
+This shows how party identification aligns with political ideology.
+
+```{r politics}
+# Party ID by Political Views
+result <- viz_stackedbar(
+  data = data,
+  title = "Party ID by Political Views",
+  x_var = "polviews_1a",
+  stack_var = "partyid_1a",
+  subtitle = "Distribution of party identification across political ideology",
+  x_label = "Political Views",
+  y_label = "Percentage of Respondents",
+  stack_label = "Party ID",
+  stacked_type = "percent",
+  tooltip_suffix = "%",
+  color_palette = c("#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b", "#e377c2")
+)
+
+# Force container height with explicit wrapper
+if (inherits(result, 'highchart')) {
+  result <- highcharter::hc_size(result, height = 550)
+}
+result <- htmltools::div(
+  style = 'height: 550px !important; min-height: 550px !important; width: 100%; overflow: visible;',
+  result
+)
+
+result
+```
+
+
+### {{< iconify ph map-pin >}} Trust Levels by US Region
+
+```{r politics-2}
+# Trust Levels by US Region
+result <- viz_stackedbar(
+  data = data,
+  title = "Trust Levels by US Region",
+  x_var = "region_1a",
+  stack_var = "trust_1a",
+  subtitle = "Regional variation in interpersonal trust",
+  x_label = "US Region",
+  y_label = "Percentage of Respondents",
+  stack_label = "Trust Level",
+  stack_order = c("Can Trust", "Can't Be Too Careful", "Depends"),
+  stacked_type = "percent",
+  tooltip_suffix = "%",
+  color_palette = c("#2E8B57", "#DAA520", "#CD5C5C")
+)
+
+# Force container height with explicit wrapper
+if (inherits(result, 'highchart')) {
+  result <- highcharter::hc_size(result, height = 500)
+}
+result <- htmltools::div(
+  style = 'height: 500px !important; min-height: 500px !important; width: 100%; overflow: visible;',
+  result
+)
+
+result
+```
+
+Do you think you can usually trust strangers?
+
+
+
+### {{< iconify ph chart-pie >}} Gender Distribution Across Social Classes
+
+
+Gender distribution across different social class categories.
+
+```{r politics-3}
+# Gender Distribution Across Social Classes
+result <- viz_stackedbar(
+  data = data,
+  title = "Gender Distribution Across Social Classes",
+  x_var = "class_1a",
+  stack_var = "sex_1a",
+  subtitle = "With custom labels and ordering",
+  x_label = "Self-Reported Social Class",
+  y_label = "Number of Respondents",
+  stack_label = "Gender",
+  x_order = c("Lower Class", "Working Class", "Middle Class", "Upper Class"),
+  stack_order = c("Female", "Male"),
+  stacked_type = "counts",
+  tooltip_prefix = "Count: ",
+  color_palette = c("#E07A5F", "#3D5A80")
+)
+
+# Force container height with explicit wrapper
+if (inherits(result, 'highchart')) {
+  result <- highcharter::hc_size(result, height = 450)
+}
+result <- htmltools::div(
+  style = 'height: 450px !important; min-height: 450px !important; width: 100%; overflow: visible;',
+  result
+)
+
+result
+```
+
+
+:::
+
+## Social Issues
+
+
+::: {.panel-tabset}
+
+### {{< iconify ph heatmap >}} Trust by Education and Age
+
+```{r social}
+# Trust by Education and Age
+result <- viz_heatmap(
+  data = data,
+  title = "Trust by Education and Age",
+  x_var = "degree_1a",
+  y_var = "age_1a",
+  value_var = "trust_1a",
+  subtitle = "Average trust levels across education and age groups",
+  x_label = "Education Level",
+  y_label = "Age Group",
+  value_label = "Trust Level",
+  x_order = c("Lt High School", "High School", "Junior College", "Bachelor", "Graduate"),
+  color_palette = c("#d7191c", "#fdae61", "#ffffbf", "#abdda4", "#2b83ba"),
+  tooltip_prefix = "Trust: ",
+  tooltip_suffix = "/3",
+  tooltip_labels_format = "{point.value:.2f}"
+)
+
+# Force container height with explicit wrapper
+if (inherits(result, 'highchart')) {
+  result <- highcharter::hc_size(result, height = 600)
+}
+result <- htmltools::div(
+  style = 'height: 600px !important; min-height: 600px !important; width: 100%; overflow: visible;',
+  result
+)
+
+result
+```
+
+This heatmap reveals trust patterns across education and age groups.
+
+
+
+### {{< iconify ph chart-pie >}} Trust by Region and Education
+
+
+Educational and regional patterns in trust distribution.
+
+```{r social-2}
+# Trust by Region and Education
+result <- viz_heatmap(
+  data = data,
+  title = "Trust by Region and Education",
+  x_var = "region_1a",
+  y_var = "degree_1a",
+  value_var = "trust_1a",
+  subtitle = "Educational and regional patterns in trust levels",
+  x_label = "Region",
+  y_label = "Education Level",
+  value_label = "Trust Level",
+  y_order = c("Lt High School", "High School", "Junior College", "Bachelor", "Graduate"),
+  color_palette = c("#d7191c", "#fdae61", "#ffffbf", "#abdda4", "#2b83ba"),
+  tooltip_prefix = "Trust: ",
+  tooltip_suffix = "/3",
+  tooltip_labels_format = "{point.value:.2f}"
+)
+
+# Force container height with explicit wrapper
+if (inherits(result, 'highchart')) {
+  result <- highcharter::hc_size(result, height = 550)
+}
+result <- htmltools::div(
+  style = 'height: 550px !important; min-height: 550px !important; width: 100%; overflow: visible;',
+  result
+)
+
+result
+```
+
+
+:::
+

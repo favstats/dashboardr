@@ -21,7 +21,7 @@ Sys.setlocale("LC_ALL", "en_US.UTF-8")
 
 This vignette walks you through building your first interactive dashboard with dashboardr. By the end, you'll understand the core concepts and have a working dashboard you can customize.
 
-## What is dashboardr?
+## 📦 What is dashboardr?
 
 dashboardr lets you build interactive HTML dashboards from R using a simple, composable grammar. Think of it like building with Lego blocks:
 
@@ -30,7 +30,7 @@ dashboardr lets you build interactive HTML dashboards from R using a simple, com
 - **Beautiful themes** from Bootswatch
 - **Flexible layouts** with tabs, pages, and navigation
 
-## Installation
+## 📥 Installation
 
 Install dashboardr from GitHub:
 
@@ -38,7 +38,7 @@ Install dashboardr from GitHub:
 devtools::install_github("favstats/dashboardr")
 ```
 
-## What We'll Build
+## 🏗️ What We'll Build
 
 In this tutorial, we'll create a dashboard exploring the General Social Survey (GSS), a long-running survey of American attitudes and demographics. We'll build charts showing education levels, happiness, and how they relate to each other.
 
@@ -62,7 +62,7 @@ devtools::load_all()
 
 We now have a dataset with about 22,000 respondents from 2010 onwards, with variables for demographics (age, sex, race, education) and attitudes (happiness, political views).
 
-## Core Concepts
+## 🧱 Core Concepts
 
 Just as ggplot2 builds plots from layers (data, aesthetics, geoms), dashboardr builds dashboards from three layers:
 
@@ -184,7 +184,7 @@ You can also preview dashboards without generating everything with Quarto:
 my_dashboard %>% preview()
 ```
 
-## Your first Dashboard in 1 Minute
+## ⚡ Your first Dashboard in 1 Minute
 
 Here's everything together, from data to published dashboard. Just copy paste, run it, and you will have your first dashboard:
 
@@ -292,7 +292,7 @@ preview(onemin_dashboard)
 ```
 
 
-## Tips
+## 💡 Tips
 
 1. **Print often**: use `print()` to inspect structure before generating
 2. **Preview as you go**: use `preview()` to see charts without building everything
@@ -300,7 +300,7 @@ preview(onemin_dashboard)
 4. **Use tabgroups**: they make complex dashboards navigable
 5. **Build content separately**: create reusable collections, attach to multiple pages
 
-## Function Overview
+## 🔧 Function Overview
 
 dashboardr uses consistent naming conventions so you always know what a function does:
 
@@ -333,7 +333,7 @@ The container functions (`create_*`) start the chain, then `add_*` functions bui
 - **Page**: `create_page() %>% add_content() %>% add_viz()`
 - **Dashboard**: `create_dashboard() %>% add_pages() %>% generate_dashboard()`
 
-## Learn More
+## 📚 Learn More
 
 | Topic | Vignette |
 |-------|----------|

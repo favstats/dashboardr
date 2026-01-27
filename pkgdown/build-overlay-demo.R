@@ -1,10 +1,12 @@
 # Build Loading Overlay Demo Dashboard
-# Run this script to generate the overlay demo for the docs
+# Run from package root: source("pkgdown/build-overlay-demo.R")
 
 library(dashboardr)
 library(dplyr)
 library(gssr)
 library(haven)
+
+cat("📊 Building Overlay Demo Dashboard...\n\n")
 
 # Prepare data
 data(gss_all)
@@ -14,6 +16,9 @@ gss <- gss_all %>%
   filter(happy %in% 1:3, polviews %in% 1:7,
          !is.na(age), !is.na(sex), !is.na(race), !is.na(degree)) %>%
   mutate(
+    # Convert ALL haven_labelled variables to factors or plain types
+    year = as.integer(year),
+    age = as.integer(age),
     sex = droplevels(as_factor(sex)),
     race = droplevels(as_factor(race)),
     degree = droplevels(as_factor(degree)),
@@ -41,7 +46,6 @@ glass_page <- create_page(
   add_viz(x_var = "polviews", title = "Political Views", tabgroup = "Attitudes")
 
 light_page <- create_page(
-
   "Light Theme",
   data = gss,
   type = "bar",
@@ -89,18 +93,81 @@ accent_page <- create_page(
   add_viz(x_var = "degree", title = "Education Levels") %>%
   add_viz(x_var = "happy", title = "Happiness Levels")
 
-# Create and generate dashboard
-# Output to docs/live-demos/overlay within the package
-# Note: Run this script from the package root directory
-output_dir <- here::here("docs", "live-demos", "overlay")
+# ============================================================
+# Find package root and set output directory
+# ============================================================
+find_pkg_root <- function() {
+  dir <- getwd()
+  for (i in 1:10) {
+    if (file.exists(file.path(dir, "DESCRIPTION"))) {
+      return(dir)
+    }
+    parent <- dirname(dir)
+    if (parent == dir) break
+    dir <- parent
+  }
+  if (requireNamespace("here", quietly = TRUE)) {
+    return(here::here())
+  }
+  stop("Could not find package root. Run from package directory.")
+}
 
-create_dashboard(
+pkg_root <- find_pkg_root()
+output_dir <- file.path(pkg_root, "docs", "live-demos", "overlay")
+
+cat("   Package root:", pkg_root, "\n")
+cat("   Output dir:", output_dir, "\n")
+
+# Clean up old files
+if (dir.exists(output_dir)) {
+  unlink(output_dir, recursive = TRUE)
+}
+dir.create(output_dir, recursive = TRUE, showWarnings = FALSE)
+
+dashboard <- create_dashboard(
   title = "Loading Overlay Demo",
   output_dir = output_dir,
   theme = "flatly",
-  tabset_theme = "modern"
+  tabset_theme = "modern",
+  allow_inside_pkg = TRUE  # Required for pkgdown demos
 ) %>%
-  add_pages(glass_page, light_page, dark_page, accent_page) %>%
-  generate_dashboard(render = TRUE)
+  add_pages(glass_page, light_page, dark_page, accent_page)
 
-cat("\n✅ Overlay demo generated at:", output_dir, "\n")
+# Generate
+result <- tryCatch(
+  generate_dashboard(dashboard, render = TRUE, open = FALSE),
+  error = function(e) {
+    cat("   ⚠️  generate_dashboard error:", e$message, "\n")
+    NULL
+  }
+)
+
+# Check for HTML and move if in docs/ subdirectory
+html_locations <- c(
+  file.path(output_dir, "index.html"),
+  file.path(output_dir, "docs", "index.html")
+)
+
+html_found <- FALSE
+for (loc in html_locations) {
+  if (file.exists(loc)) {
+    cat("   ✅ Overlay demo HTML found at:", loc, "\n")
+    html_found <- TRUE
+    
+    if (grepl("/docs/index.html$", loc)) {
+      docs_dir <- dirname(loc)
+      files_to_move <- list.files(docs_dir, full.names = TRUE)
+      for (f in files_to_move) {
+        file.copy(f, output_dir, recursive = TRUE, overwrite = TRUE)
+      }
+      unlink(docs_dir, recursive = TRUE)
+      cat("   📁 Moved HTML files to root of output_dir\n")
+    }
+    break
+  }
+}
+
+if (!html_found) {
+  cat("   ⚠️  QMD files created but HTML not rendered\n")
+  cat("   📁 To render manually: cd", output_dir, "&& quarto render .\n")
+}

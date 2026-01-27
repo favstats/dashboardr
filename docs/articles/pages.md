@@ -503,10 +503,10 @@ page with a spinner and optional message, then fades out once charts are
 ready. This improves perceived performance and prevents users from
 seeing partially-loaded content.
 
-> **See it in action:** Check out the [Loading Overlay
-> Demo](https://favstats.github.io/dashboardr/live-demos/overlay/index.md)
-> to see all four overlay themes. Reload each page to see the overlay
-> effect.
+> **See it in action:** Check out the [Features
+> Demo](https://favstats.github.io/dashboardr/live-demos/features/index.md) -
+> navigate to the “Loading Overlay” page and reload to see all overlay
+> themes in action.
 
 **Note:** Loading overlays are only visible when viewing the generated
 dashboard (not in

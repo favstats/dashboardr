@@ -40,9 +40,23 @@ into an **exploratory data tool**. Users can filter data, adjust
 parameters, and see visualizations update in real-time - all without
 writing code.
 
-> **🔗 See it in action:** Check out the [Interactive Inputs
-> Demo](https://favstats.github.io/dashboardr/live-demos/inputs/index.md)
-> to try all input types with real GSS data!
+> **🔗 See it in action:** Check out the [Features
+> Demo](https://favstats.github.io/dashboardr/live-demos/features/index.md)
+> to try all input types, tab styling, and loading overlays with real
+> GSS data!
+
+Here’s what the demo code looks like:
+
+``` r
+create_page("Interactive Inputs", data = gss, type = "bar") %>%
+  add_input_row() %>%
+    add_input(input_id = "edu", label = "Education", 
+              type = "select_multiple", filter_var = "degree", options_from = "degree") %>%
+    add_input(input_id = "race", label = "Race",
+              type = "checkbox", filter_var = "race", options_from = "race") %>%
+  end_input_row() %>%
+  add_viz(x_var = "happy", title = "Happiness by Selection")
+```
 
 ### How It Works
 
@@ -1141,9 +1155,10 @@ Loading overlays provide visual feedback while content renders. They
 display a spinner or animation that disappears once the page is ready,
 creating a polished user experience.
 
-> **See it in action:** Check out the [Loading Overlay
-> Demo](https://favstats.github.io/dashboardr/live-demos/overlay/glass_theme.md)
-> to experience different overlay themes.
+> **See it in action:** Check out the [Features
+> Demo](https://favstats.github.io/dashboardr/live-demos/features/index.md)
+> to experience loading overlays - navigate to the “Loading Overlay”
+> page and reload to see the effect.
 
 | Parameter | Description | Options |
 |----|----|----|

@@ -3,6 +3,65 @@ title: "{{< iconify ph chart-line >}} Example Dashboard"
 format: html
 ---
 
+```{r}
+#| include: false
+library(dashboardr)
+```
+
+```{=html}
+<style>
+/* Ensure chart containers expand to fit content - aggressive overrides */
+.cell-output-display,
+.cell-output,
+.panel-tabset-tabby > .tab-content,
+.panel-tabset > .tab-content,
+.tab-pane,
+.tab-pane.active,
+.card-body,
+.quarto-figure,
+section {
+  overflow: visible !important;
+  height: auto !important;
+  max-height: none !important;
+}
+/* Ensure highcharts containers respect their set height */
+.highcharts-container,
+.html-widget,
+.htmlwidget {
+  overflow: visible !important;
+}
+</style>
+<script>
+// Aggressive reflow for Highcharts - multiple attempts to catch widget initialization
+(function() {
+  function reflowCharts() {
+    if (typeof Highcharts !== 'undefined' && Highcharts.charts) {
+      Highcharts.charts.forEach(function(chart) {
+        if (chart) {
+          try { chart.reflow(); } catch(e) {}
+        }
+      });
+    }
+  }
+  
+  // Try multiple times at different intervals
+  [0, 100, 250, 500, 1000, 2000].forEach(function(delay) {
+    setTimeout(function() {
+      window.dispatchEvent(new Event('resize'));
+      requestAnimationFrame(reflowCharts);
+    }, delay);
+  });
+  
+  // Also reflow on any tab click
+  document.addEventListener('click', function(e) {
+    if (e.target.matches('.nav-link, [data-bs-toggle="tab"]')) {
+      setTimeout(reflowCharts, 50);
+    }
+  });
+})();
+</script>
+```
+
 Here, you can see how to add text within a dashboard.
 
 ## Add a new heading like this
@@ -32,7 +91,7 @@ knitr::opts_chunk$set(
   dpi = 300
 )
 
-# Load data from dataset_2867obs.rds
+# Load data
 data <- readRDS('dataset_2867obs.rds')
 
 # Data summary
@@ -68,10 +127,14 @@ result <- viz_stackedbar(
   color_palette = c("#2E86AB", "#A23B72", "#F18F01")
 )
 
-# Apply height to highcharter object
+# Force container height with explicit wrapper
 if (inherits(result, 'highchart')) {
-  result <- highcharter::hc_chart(result, height = 500)
+  result <- highcharter::hc_size(result, height = 500)
 }
+result <- htmltools::div(
+  style = 'height: 500px !important; min-height: 500px !important; width: 100%; overflow: visible;',
+  result
+)
 
 result
 ```
@@ -96,10 +159,14 @@ result <- viz_stackedbar(
   color_palette = c("#2E86AB", "#A23B72", "#F18F01")
 )
 
-# Apply height to highcharter object
+# Force container height with explicit wrapper
 if (inherits(result, 'highchart')) {
-  result <- highcharter::hc_chart(result, height = 450)
+  result <- highcharter::hc_size(result, height = 450)
 }
+result <- htmltools::div(
+  style = 'height: 450px !important; min-height: 450px !important; width: 100%; overflow: visible;',
+  result
+)
 
 result
 ```
@@ -123,7 +190,7 @@ Here's another example of the kind of plots you can generate in your dashboard.
 ```{r social}
 # Trust by Education and Age
 result <- viz_heatmap(
-  data = {point.value:.2f},
+  data = data,
   title = "Trust by Education and Age",
   x_var = "degree_1a",
   y_var = "age_1a",
@@ -136,13 +203,17 @@ result <- viz_heatmap(
   color_palette = c("#d7191c", "#fdae61", "#ffffbf", "#abdda4", "#2b83ba"),
   tooltip_prefix = "Trust: ",
   tooltip_suffix = "/3",
-  data_labels_format = "{point.value:.2f}"
+  tooltip_labels_format = "{point.value:.2f}"
 )
 
-# Apply height to highcharter object
+# Force container height with explicit wrapper
 if (inherits(result, 'highchart')) {
-  result <- highcharter::hc_chart(result, height = 600)
+  result <- highcharter::hc_size(result, height = 600)
 }
+result <- htmltools::div(
+  style = 'height: 600px !important; min-height: 600px !important; width: 100%; overflow: visible;',
+  result
+)
 
 result
 ```
@@ -156,7 +227,7 @@ Educational and regional patterns in trust distribution.
 ```{r social-2}
 # Trust by Region and Education
 result <- viz_heatmap(
-  data = {point.value:.2f},
+  data = data,
   title = "Trust by Region and Education",
   x_var = "region_1a",
   y_var = "degree_1a",
@@ -169,13 +240,17 @@ result <- viz_heatmap(
   color_palette = c("#d7191c", "#fdae61", "#ffffbf", "#abdda4", "#2b83ba"),
   tooltip_prefix = "Trust: ",
   tooltip_suffix = "/3",
-  data_labels_format = "{point.value:.2f}"
+  tooltip_labels_format = "{point.value:.2f}"
 )
 
-# Apply height to highcharter object
+# Force container height with explicit wrapper
 if (inherits(result, 'highchart')) {
-  result <- highcharter::hc_chart(result, height = 550)
+  result <- highcharter::hc_size(result, height = 550)
 }
+result <- htmltools::div(
+  style = 'height: 550px !important; min-height: 550px !important; width: 100%; overflow: visible;',
+  result
+)
 
 result
 ```
