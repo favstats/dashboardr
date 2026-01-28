@@ -2302,10 +2302,21 @@ preview <- function(collection, title = "Preview", open = TRUE, clean = FALSE,
 #' Render a single visualization directly
 #' @noRd
 .render_viz_direct <- function(item, data) {
+
   viz_type <- item$viz_type %||% item$type
   
   # Apply filter if present
   if (!is.null(item$filter)) {
+    # Auto-convert haven_labelled columns to factors before filtering
+    # This handles GSS and other SPSS/Stata data gracefully
+    if (requireNamespace("haven", quietly = TRUE)) {
+      for (col in names(data)) {
+        if (inherits(data[[col]], "haven_labelled")) {
+          data[[col]] <- haven::as_factor(data[[col]])
+        }
+      }
+    }
+    
     filter_expr <- item$filter[[2]]
     data <- dplyr::filter(data, !!filter_expr)
   }

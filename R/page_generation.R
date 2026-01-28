@@ -1165,6 +1165,18 @@
       lines <- c(lines,
         "# Create filtered datasets",
         "# Each filter is applied once and reused across visualizations",
+        "",
+        "# Helper: convert haven_labelled columns to factors for filtering",
+        ".convert_haven <- function(df) {",
+        "  if (requireNamespace('haven', quietly = TRUE)) {",
+        "    for (col in names(df)) {",
+        "      if (inherits(df[[col]], 'haven_labelled')) {",
+        "        df[[col]] <- haven::as_factor(df[[col]])",
+        "      }",
+        "    }",
+        "  }",
+        "  df",
+        "}",
         ""
       )
       
@@ -1178,8 +1190,9 @@
           source_dataset <- "data"
         }
         
+        # Apply haven conversion before filtering
         lines <- c(lines,
-          paste0(filter_info$name, " <- ", source_dataset, " %>% dplyr::filter(", filter_expr, ")")
+          paste0(filter_info$name, " <- .convert_haven(", source_dataset, ") %>% dplyr::filter(", filter_expr, ")")
         )
       }
       
