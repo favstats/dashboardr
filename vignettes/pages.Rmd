@@ -55,7 +55,7 @@ gss <- gss_all %>%
 
 ## 📄 What is create_page()?
 
-The `create_page()` function creates a **page object** - a named destination in your dashboard that users can navigate to. Every dashboard needs at least one page.
+The `create_page()` function creates a **page object** - a named destination in your dashboard that users can navigate to. Every dashboard needs at least one page: the landing page.
 
 ```{r}
 # Create a simple page
@@ -138,7 +138,7 @@ print(complex_page)
 complex_page %>% preview()
 ```
 
-**When to use:** Multi-section pages, reusable content, team collaboration, complex layouts.
+**When to use:** Multi-section pages, reusable content, complex layouts.
 
 **Why this approach?**
 
