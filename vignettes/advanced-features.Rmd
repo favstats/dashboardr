@@ -56,177 +56,212 @@ devtools::load_all()
 
 ## 🎚️ Interactive Inputs
 
-Interactive input widgets transform your dashboard from a static report into an **exploratory data tool**. Users can filter data, adjust parameters, and see visualizations update in real-time - all without writing code.
+Interactive input widgets transform your dashboard from a static report into an **exploratory data tool**. Users can filter data, adjust parameters, and see visualizations update in real-time.
 
-> **🔗 See it in action:** Check out the [Features Demo](../live-demos/features/index.html) to try all input types, tab styling, and loading overlays with real GSS data!
+> **🔗 See it in action:** Check out the [Features Demo](../live-demos/features/index.html) to try all input types with real GSS data!
 
-Here's what the demo code looks like:
+### How Inputs Work
+
+The input system connects **user controls** to **data columns**:
+
+```
+User selects "Bachelor's" in dropdown
+        ↓
+filter_var = "degree" tells dashboardr which column to filter
+        ↓
+Data is filtered to rows where degree == "Bachelor's"
+        ↓
+All visualizations on the page update automatically
+```
+
+**Basic pattern:**
 
 ```r
-create_page("Interactive Inputs", data = gss, type = "bar") %>%
+create_page("Analysis", data = my_data, type = "bar") %>%
   add_input_row() %>%
     add_input(input_id = "edu", label = "Education", 
-              type = "select_multiple", filter_var = "degree", options_from = "degree") %>%
-    add_input(input_id = "race", label = "Race",
-              type = "checkbox", filter_var = "race", options_from = "race") %>%
+              filter_var = "degree", options_from = "degree") %>%
   end_input_row() %>%
-  add_viz(x_var = "happy", title = "Happiness by Selection")
+  add_viz(x_var = "happy", title = "Happiness")  # Automatically filtered!
 ```
 
-### How It Works
-
-The input system follows a simple pattern:
-
-1. **Create an input row** with `add_input_row()` - this is the container
-2. **Add inputs** with `add_input()` - specify what controls users see
-3. **Close the row** with `end_input_row()`
-4. **Add visualizations** - they automatically respond to the filters
-
-Each input is linked to a variable in your data via `filter_var`. When users interact with the input, the data is filtered and all visualizations on the page update.
-
-```
-add_input_row()
-  └── add_input(filter_var = "degree")    ← Links to column in data
-  └── add_input(filter_var = "race")      ← Links to another column
-end_input_row()
-  └── add_viz()                           ← Automatically filtered!
-```
-
-> **Note:** Inputs appear as placeholders in `preview()`. They become fully interactive when you run `generate_dashboard(render = TRUE)` and view in a browser.
+> **Note:** Inputs show as placeholders in `preview()`. They become fully interactive when you run `generate_dashboard(render = TRUE)` and view in a browser.
 
 ### Input Types
 
-dashboardr supports four input types, each suited for different data types:
-
-| Type | Best For | Options |
-|------|----------|---------|
-| `select` / `select_multiple` | Many categories, or when space is limited | Single or multiple selection |
-| `checkbox` | Few categories (3-6), when you want all visible | Multiple selection |
-| `radio` | Mutually exclusive choices | Single selection only |
-| `slider` | Numeric ranges | Continuous or stepped values |
+| Type | Best For | Selection |
+|------|----------|-----------|
+| `select_multiple` | Many categories (10+) | Multiple |
+| `select_single` | Many categories, pick one | Single |
+| `checkbox` | Few categories (3-6) | Multiple |
+| `radio` | Mutually exclusive choices | Single |
+| `slider` | Numeric ranges or ordered categories | Single value |
+| `switch` | Toggle a series on/off | Boolean |
 
 ### Select Dropdowns
 
-Dropdown menus allow users to select one or more values to filter the data. Use `select` for single choice, `select_multiple` for multiple:
-
 ```{r, eval=FALSE}
-select_example <- create_content(data = gss, type = "bar") %>%
-  add_input_row() %>%
-    add_input(
-      input_id = "degree_filter",
-      label = "Education Level",
-      type = "select_multiple",
-      filter_var = "degree",
-      options_from = "degree"  # Populate options from column values
-    ) %>%
-  end_input_row() %>%
-  add_viz(x_var = "happy", group_var = "degree", title = "Happiness by Education")
+# Single selection
+add_input(
+  input_id = "metric",
+  label = "Select Metric",
+  type = "select_single",
+  filter_var = "metric",
+  options = c("Sales", "Revenue", "Profit"),
+  default_selected = "Sales"
+)
 
-print(select_example)
-select_example %>% preview()
+# Multiple selection
+add_input(
+  input_id = "countries",
+  label = "Select Countries",
+  type = "select_multiple",
+  filter_var = "country",
+  options_from = "country",  # Get options from data column
+  placeholder = "Choose countries..."
+)
 ```
 
-### Checkbox Groups
+#### Grouped Options
 
-Checkboxes display all options at once, ideal when there are few categories. Use `inline = TRUE` to display horizontally:
+For long lists, organize options into groups:
 
 ```{r, eval=FALSE}
-checkbox_example <- create_content(data = gss, type = "bar") %>%
-  add_input_row() %>%
-    add_input(
-      input_id = "race_filter",
-      label = "Race",
-      type = "checkbox",
-      filter_var = "race",
-      options_from = "race",
-      inline = TRUE  # Display horizontally instead of stacked
-    ) %>%
-  end_input_row() %>%
-  add_viz(x_var = "happy", group_var = "race", title = "Happiness by Race")
+# Create grouped options (named list)
+countries_by_region <- list(
+  "Europe" = c("Germany", "France", "UK", "Spain"),
+  "Asia" = c("China", "Japan", "India", "Korea"),
+  "Americas" = c("USA", "Canada", "Brazil", "Mexico")
+)
+
+add_input(
+  input_id = "country",
+  label = "Select Country",
+  type = "select_multiple",
+  filter_var = "country",
+  options = countries_by_region,  # Grouped!
+  default_selected = c("USA", "Germany")
+)
+```
+
+### Checkbox & Radio Buttons
+
+```{r, eval=FALSE}
+# Checkboxes - multiple selection, all visible
+add_input(
+  input_id = "race",
+  label = "Race",
+  type = "checkbox",
+  filter_var = "race",
+  options_from = "race",
+  inline = TRUE  # Horizontal layout
+)
+
+# Radio buttons - single selection
+add_input(
+  input_id = "sex",
+  label = "Gender",
+  type = "radio",
+  filter_var = "sex",
+  options_from = "sex",
+  inline = TRUE
+)
 ```
 
 ### Sliders
 
-Sliders work for numeric variables, letting users select a value or range:
-
+Sliders work for numeric data or ordered categories:
 ```{r, eval=FALSE}
-slider_example <- create_content(data = gss, type = "histogram") %>%
-  add_input_row() %>%
-    add_input(
-      input_id = "year_slider",
-      label = "Year",
-      type = "slider",
-      filter_var = "year",
-      min = 2010,
-      max = 2022,
-      step = 1,      # Increment by whole years
-      value = 2015   # Default starting value
-    ) %>%
-  end_input_row() %>%
-  add_viz(x_var = "age", title = "Age Distribution")
+# Numeric slider
+add_input(
+  input_id = "year",
+  label = "Year",
+  type = "slider",
+  filter_var = "year",
+  min = 2010,
+  max = 2024,
+  step = 1,
+  value = 2020,
+  show_value = TRUE
+)
+
+# Slider with custom labels (for ordered categories)
+add_input(
+  input_id = "decade",
+  label = "Starting Decade",
+  type = "slider",
+  filter_var = "decade",
+  min = 1,
+  max = 6,
+  step = 1,
+  value = 1,
+  labels = c("1970s", "1980s", "1990s", "2000s", "2010s", "2020s")
+)
 ```
 
-### Radio Buttons
-
-Radio buttons for single-choice selection:
+### Switch (Toggle Series)
+Switches toggle a specific data series on/off. Unlike other inputs that filter data, a switch with `toggle_series` controls visibility of a named series in your chart:
 
 ```{r, eval=FALSE}
-radio_example <- create_content(data = gss, type = "bar") %>%
+add_input(
+  input_id = "show_avg",
+  label = "Show Global Average",
+  type = "switch",
+  filter_var = "country",
+  toggle_series = "Global Average",  # Must match a value in your data
+  value = TRUE,  # Start with it shown
+  override = TRUE
+)
+```
+
+### Input Layout
+
+Use `add_input_row()` to organize inputs horizontally:
+
+```{r, eval=FALSE}
+create_page("Analysis", data = gss, type = "bar") %>%
+  # First row: main filters
+  add_input_row(style = "inline", align = "center") %>%
+    add_input(input_id = "edu", label = "Education", 
+              filter_var = "degree", options_from = "degree",
+              width = "300px") %>%
+    add_input(input_id = "race", label = "Race",
+              type = "checkbox", filter_var = "race", 
+              options_from = "race", inline = TRUE) %>%
+  end_input_row() %>%
+  # Second row: additional controls
   add_input_row() %>%
-    add_input(
-      input_id = "sex_filter",
-      label = "Gender",
-      type = "radio",
-      filter_var = "sex",
-      options_from = "sex"
-    ) %>%
+    add_input(input_id = "sex", label = "Gender",
+              type = "radio", filter_var = "sex",
+              options_from = "sex", inline = TRUE) %>%
   end_input_row() %>%
   add_viz(x_var = "happy", title = "Happiness Distribution")
 ```
 
-### Multiple Inputs in a Row
-
-Combine multiple inputs for complex filtering:
-
-```{r, eval=FALSE}
-multi_input <- create_content(data = gss, type = "bar") %>%
-  add_input_row() %>%
-    add_input(
-      input_id = "degree_filter",
-      label = "Education",
-      type = "select_multiple",
-      filter_var = "degree",
-      options_from = "degree"
-    ) %>%
-    add_input(
-      input_id = "race_filter",
-      label = "Race",
-      type = "checkbox",
-      filter_var = "race",
-      options_from = "race",
-      inline = TRUE
-    ) %>%
-  end_input_row() %>%
-  add_viz(x_var = "happy", title = "Happiness (Filtered)")
-```
-
 ### Input Parameters Reference
 
-| Parameter | Description | Required |
-|-----------|-------------|----------|
-| `input_id` | Unique identifier for this input | Yes |
-| `label` | Display label shown to users | Yes |
-| `type` | Input type: `"select"`, `"select_multiple"`, `"checkbox"`, `"radio"`, `"slider"` | Yes |
-| `filter_var` | Column name in data to filter | Yes |
-| `options_from` | Column to get dropdown/checkbox options from | For select/checkbox/radio |
-| `min`, `max` | Range for sliders | For slider |
-| `step` | Increment for sliders | For slider |
-| `value` | Default value(s) | Optional |
-| `inline` | Display checkboxes/radios horizontally | Optional |
+| Parameter | Description | Used With |
+|-----------|-------------|-----------|
+| `input_id` | Unique identifier | All |
+| `label` | Display label | All |
+| `type` | Input type | All |
+| `filter_var` | Column to filter | All |
+| `options` | Manual list of options | select, checkbox, radio |
+| `options_from` | Column to get options from | select, checkbox, radio |
+| `default_selected` | Pre-selected values | select, checkbox, radio |
+| `min`, `max`, `step` | Range settings | slider |
+| `value` | Default value | slider, switch |
+| `labels` | Custom labels for slider positions | slider |
+| `toggle_series` | Series name to show/hide | switch |
+| `override` | Override other filters | switch |
+| `inline` | Horizontal layout | checkbox, radio |
+| `width` | Input width (CSS) | select |
+| `placeholder` | Placeholder text | select |
+| `help` | Help text below input | All |
 
-### Complete Example: Generate and Try
+### Complete Example
 
-Copy this code to create and view an interactive inputs dashboard. This example combines multiple input types to create a comprehensive data exploration tool:
+Here's a full working example with multiple input types:
 
 ```{r, eval=FALSE}
 library(dashboardr)
@@ -234,38 +269,29 @@ library(dplyr)
 library(gssr)
 library(haven)
 
-# Step 1: Prepare data with multiple years for richer filtering
+# Prepare data
 data(gss_all)
 gss_inputs <- gss_all %>%
   select(year, age, sex, race, degree, happy, polviews) %>%
-  filter(
-    year >= 2010 & year <= 2022,
-    happy %in% 1:3,
-    !is.na(age), !is.na(sex), !is.na(race), !is.na(degree)
-  ) %>%
+  filter(year >= 2010, happy %in% 1:3,
+         !is.na(age), !is.na(sex), !is.na(race), !is.na(degree)) %>%
   mutate(across(c(happy, degree, sex, race), ~droplevels(as_factor(.))))
 
-# Step 2: Create page with inputs
-# Note: Each input's filter_var links to a column in gss_inputs
-inputs_page <- create_page(
-  "Interactive Demo", 
-  data = gss_inputs, 
-  type = "bar"
-) %>%
+# Create page with inputs
+inputs_page <- create_page("Explorer", data = gss_inputs, type = "bar") %>%
   add_text(
-    "## Explore GSS Data",
+    "## GSS Data Explorer",
     "",
-    "Use the filters below to explore how happiness varies across demographics.",
-    "All charts update automatically when you change the filters."
+    "Filter the data using the controls below. All charts update automatically."
   ) %>%
-  # First row: Education dropdown + Race checkboxes
   add_input_row() %>%
     add_input(
       input_id = "edu",
       label = "Education Level",
       type = "select_multiple",
       filter_var = "degree",
-      options_from = "degree"
+      options_from = "degree",
+      width = "250px"
     ) %>%
     add_input(
       input_id = "race",
@@ -276,7 +302,6 @@ inputs_page <- create_page(
       inline = TRUE
     ) %>%
   end_input_row() %>%
-  # Second row: Gender radio buttons
   add_input_row() %>%
     add_input(
       input_id = "sex",
@@ -287,30 +312,14 @@ inputs_page <- create_page(
       inline = TRUE
     ) %>%
   end_input_row() %>%
-  # Visualizations - these respond to the filters automatically
-  add_viz(
-    x_var = "happy", 
-    title = "Happiness Distribution",
-    tabgroup = "Results"
-  ) %>%
-  add_viz(
-    x_var = "polviews", 
-    title = "Political Views",
-    tabgroup = "Results"
-  )
+  add_viz(x_var = "happy", title = "Happiness", tabgroup = "Results") %>%
+  add_viz(x_var = "polviews", title = "Political Views", tabgroup = "Results")
 
-# Step 3: Generate the dashboard
-create_dashboard(
-  title = "Interactive GSS Explorer",
-  output_dir = "gss_explorer"
-) %>%
+# Generate
+create_dashboard(title = "GSS Explorer", output_dir = "gss_explorer") %>%
   add_pages(inputs_page) %>%
   generate_dashboard(render = TRUE, open = "browser")
 ```
-
-After running this code, a browser window will open with your interactive dashboard. Try selecting different education levels, checking/unchecking races, and toggling genders to see how the charts update!
-
-This will open a browser window where you can interact with the dropdowns and checkboxes to filter the chart in real-time.
 
 ## 🔍 Filtering Data
 
