@@ -47,6 +47,18 @@
 #' }
 generate_dashboard <- function(proj, render = TRUE, open = "browser", incremental = FALSE, preview = NULL, 
                               show_progress = TRUE, quiet = FALSE) {
+  # Check Quarto version (>= 1.4 required) only if rendering
+  quarto_available <- TRUE
+  if (render) {
+    quarto_available <- check_quarto_version()
+    if (!quarto_available) {
+      render <- FALSE
+      if (!quiet) {
+        message("Skipping render step (Quarto not available). QMD files will still be generated.")
+      }
+    }
+  }
+  
   # Start timing
   start_time <- Sys.time()
   

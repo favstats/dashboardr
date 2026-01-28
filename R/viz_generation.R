@@ -327,8 +327,43 @@
     }
   }
 
+  # Map legacy parameter names to modern names (backward compatibility)
+  # stackedbars: questions -> x_vars, question_labels -> x_var_labels
+  if (!is.null(spec$questions) && is.null(spec$x_vars)) {
+    spec$x_vars <- spec$questions
+  }
+  if (!is.null(spec$question_labels) && is.null(spec$x_var_labels)) {
+    spec$x_var_labels <- spec$question_labels
+  }
+  # timeline: response_* -> y_*
+  if (!is.null(spec$response_var) && is.null(spec$y_var)) {
+    spec$y_var <- spec$response_var
+  }
+  if (!is.null(spec$response_filter) && is.null(spec$y_filter)) {
+    spec$y_filter <- spec$response_filter
+  }
+  if (!is.null(spec$response_filter_label) && is.null(spec$y_filter_label)) {
+    spec$y_filter_label <- spec$response_filter_label
+  }
+  if (!is.null(spec$response_filter_combine) && is.null(spec$y_filter_combine)) {
+    spec$y_filter_combine <- spec$response_filter_combine
+  }
+  
+  # Parameters to exclude: internal params and legacy parameter names
+  exclude_params <- c(
+    # Internal parameters
+    "type", "viz_type", "data_path", "tabgroup", "text", "icon", "text_position", 
+    "text_before_tabset", "text_after_tabset", "text_before_viz", "text_after_viz", 
+    "height", "filter", "data", "has_data", "multi_dataset", "title_tabset", 
+    "nested_children", "drop_na_vars", "data_is_dataframe", 
+    ".insertion_index", ".min_index", ".pagination_section",
+    # Legacy parameter names (already mapped to modern names above)
+    "questions", "question_labels",  # Use x_vars, x_var_labels
+    "response_var", "response_filter", "response_filter_label", "response_filter_combine"  # Use y_var, y_filter, etc.
+  )
+  
   for (param in names(spec)) {
-    if (!param %in% c("type", "viz_type", "data_path", "tabgroup", "text", "icon", "text_position", "text_before_tabset", "text_after_tabset", "text_before_viz", "text_after_viz", "height", "filter", "data", "has_data", "multi_dataset", "title_tabset", "nested_children", "drop_na_vars", "data_is_dataframe", ".insertion_index", ".min_index", ".pagination_section")) { # Exclude internal parameters
+    if (!param %in% exclude_params) {
       args[[param]] <- .serialize_arg(spec[[param]])
     }
   }

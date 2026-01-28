@@ -135,7 +135,7 @@ plot
 ```
 
 | Parameter | Description | Example |
-|-----------|-------------|---------|
+|----|----|----|
 | `x_label` | Custom x-axis label | `"Age (years)"` |
 | `y_label` | Custom y-axis label | `"Frequency"`, `"Percentage"` |
 | `tooltip_prefix` | Text before tooltip value | `"Count: "` |
@@ -196,34 +196,29 @@ content %>% preview()
 
 ### Distribution Shapes
 
-| Shape | Meaning | Example |
-|-------|---------|---------|
-| Normal (bell) | Symmetric around mean | Test scores, heights |
-| Right-skewed | Long tail to the right | Income, response times |
-| Left-skewed | Long tail to the left | Age at retirement |
-| Bimodal | Two peaks | Mixed populations |
-| Uniform | Flat, equal frequencies | Random numbers |
+| Shape         | Meaning                 | Example                |
+|---------------|-------------------------|------------------------|
+| Normal (bell) | Symmetric around mean   | Test scores, heights   |
+| Right-skewed  | Long tail to the right  | Income, response times |
+| Left-skewed   | Long tail to the left   | Age at retirement      |
+| Bimodal       | Two peaks               | Mixed populations      |
+| Uniform       | Flat, equal frequencies | Random numbers         |
 
 ### What to Look For
 
-1. **Center** - Where is the middle of the distribution?
-2. **Spread** - How wide is the distribution?
-3. **Shape** - Is it symmetric, skewed, or multimodal?
-4. **Outliers** - Are there unusual values far from the center?
+1.  **Center** - Where is the middle of the distribution?
+2.  **Spread** - How wide is the distribution?
+3.  **Shape** - Is it symmetric, skewed, or multimodal?
+4.  **Outliers** - Are there unusual values far from the center?
 
 ## When to Use Histograms
 
-**Use `viz_histogram()` when:**
-- Showing distribution of a continuous variable
-- Analyzing spread and shape of data
-- Looking for outliers or unusual patterns
+**Use `viz_histogram()` when:** - Showing distribution of a continuous variable - Analyzing spread and shape of data - Looking for outliers or unusual patterns
 
-**Use `viz_bar()` when:**
-- Counting categorical values
-- Comparing groups side-by-side
+**Use `viz_bar()` when:** - Counting categorical values - Comparing groups side-by-side
 
 ## See Also
 
-- `?viz_histogram` - Full function documentation
-- `vignette("bar_vignette")` - For categorical data
-- `vignette("content-collections")` - For dashboard integration
+-   `?viz_histogram` - Full function documentation
+-   `vignette("bar_vignette")` - For categorical data
+-   `vignette("content-collections")` - For dashboard integration

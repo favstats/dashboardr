@@ -45,33 +45,42 @@
 #'   add_viz(title = "Wave 2", filter = ~ wave == 2, horizontal = FALSE)  # Overrides horizontal
 #' }
 create_viz <- function(data = NULL, tabgroup_labels = NULL, shared_first_level = TRUE, ...) {
+
+  # Capture the calling environment for proper evaluation of symbols
+  call_env <- parent.frame()
+  
   # Capture defaults unevaluated to support NSE for variable parameters
   call_args <- as.list(match.call(expand.dots = FALSE))
   dot_args_raw <- call_args[["..."]]
   if (is.null(dot_args_raw)) dot_args_raw <- list()
   
-  # Convert variable parameters from symbols to strings (NSE support)
+  # Convert SINGLE variable parameters from symbols to strings (NSE support)
+  # e.g., x_var = mpg becomes x_var = "mpg"
   var_params <- c("x_var", "y_var", "group_var", "stack_var", "weight_var", 
                   "time_var", "region_var", "value_var", "color_var", "size_var",
                   "join_var", "click_var", "subgroup_var")
+  # Vector params should be evaluated, not converted to strings
+  # e.g., x_vars = my_vec evaluates to the actual vector
   var_vector_params <- c("x_vars", "tooltip_vars")
   
   defaults <- lapply(names(dot_args_raw), function(nm) {
     val <- dot_args_raw[[nm]]
     if (nm %in% var_params && is.symbol(val)) {
+      # NSE for single column params: convert symbol to string
       as.character(val)
     } else if (nm %in% var_vector_params) {
-      if (is.symbol(val)) {
-        as.character(val)
-      } else if (is.call(val) && identical(val[[1]], as.symbol("c"))) {
+      # Vector params: always evaluate to get actual vector
+      if (is.call(val) && identical(val[[1]], as.symbol("c"))) {
+        # Handle c() with NSE elements: c(col1, col2) -> c("col1", "col2")
         vapply(as.list(val)[-1], function(x) {
-          if (is.symbol(x)) as.character(x) else if (is.character(x)) x else eval(x)
+          if (is.symbol(x)) as.character(x) else if (is.character(x)) x else eval(x, envir = call_env)
         }, character(1))
       } else {
-        eval(val)
+        # Evaluate symbols and other expressions in caller's environment
+        eval(val, envir = call_env)
       }
     } else {
-      eval(val)
+      eval(val, envir = call_env)
     }
   })
   names(defaults) <- names(dot_args_raw)
@@ -647,6 +656,9 @@ add_viz <- function(x, type = NULL, ..., tabgroup = NULL, title = NULL, title_ta
 
 #' @export
 add_viz.page_object <- function(x, type = NULL, ..., tabgroup = NULL, title = NULL, title_tabset = NULL, text = NULL, icon = NULL, text_position = NULL, text_before_tabset = NULL, text_after_tabset = NULL, text_before_viz = NULL, text_after_viz = NULL, height = NULL, filter = NULL, data = NULL, drop_na_vars = FALSE) {
+  # Capture the calling environment for proper evaluation of symbols
+  call_env <- parent.frame()
+  
   page <- x
   
   # Build viz spec by merging with page defaults
@@ -659,7 +671,7 @@ add_viz.page_object <- function(x, type = NULL, ..., tabgroup = NULL, title = NU
     "text_after_tabset", "text_before_viz", "text_after_viz", "height", 
     "filter", "data", "drop_na_vars"))
   
-  # Convert variable parameters from symbols to strings (NSE support)
+  # Convert SINGLE variable parameters from symbols to strings (NSE support)
   var_params <- c("x_var", "y_var", "group_var", "stack_var", "weight_var", 
                   "time_var", "region_var", "value_var", "color_var", "size_var",
                   "join_var", "click_var", "subgroup_var")
@@ -670,17 +682,15 @@ add_viz.page_object <- function(x, type = NULL, ..., tabgroup = NULL, title = NU
     if (nm %in% var_params && is.symbol(val)) {
       as.character(val)
     } else if (nm %in% var_vector_params) {
-      if (is.symbol(val)) {
-        as.character(val)
-      } else if (is.call(val) && identical(val[[1]], as.symbol("c"))) {
+      if (is.call(val) && identical(val[[1]], as.symbol("c"))) {
         vapply(as.list(val)[-1], function(x) {
-          if (is.symbol(x)) as.character(x) else if (is.character(x)) x else eval(x)
+          if (is.symbol(x)) as.character(x) else if (is.character(x)) x else eval(x, envir = call_env)
         }, character(1))
       } else {
-        eval(val)
+        eval(val, envir = call_env)
       }
     } else {
-      eval(val)
+      eval(val, envir = call_env)
     }
   })
   names(extra) <- extra_names
@@ -717,6 +727,9 @@ add_viz.page_object <- function(x, type = NULL, ..., tabgroup = NULL, title = NU
 
 #' @export
 add_viz.default <- function(x, type = NULL, ..., tabgroup = NULL, title = NULL, title_tabset = NULL, text = NULL, icon = NULL, text_position = NULL, text_before_tabset = NULL, text_after_tabset = NULL, text_before_viz = NULL, text_after_viz = NULL, height = NULL, filter = NULL, data = NULL, drop_na_vars = FALSE) {
+  # Capture the calling environment for proper evaluation of symbols
+  call_env <- parent.frame()
+  
   viz_collection <- x
   
   # Validate first argument
@@ -743,7 +756,7 @@ add_viz.default <- function(x, type = NULL, ..., tabgroup = NULL, title = NULL, 
     "text_after_tabset", "text_before_viz", "text_after_viz", "height", 
     "filter", "data", "drop_na_vars")]
   
-  # Convert variable parameters from symbols to strings (NSE support)
+  # Convert SINGLE variable parameters from symbols to strings (NSE support)
   var_params <- c("x_var", "y_var", "group_var", "stack_var", "weight_var", 
                   "time_var", "region_var", "value_var", "color_var", "size_var",
                   "join_var", "click_var", "subgroup_var")
@@ -754,17 +767,15 @@ add_viz.default <- function(x, type = NULL, ..., tabgroup = NULL, title = NULL, 
     if (nm %in% var_params && is.symbol(val)) {
       as.character(val)
     } else if (nm %in% var_vector_params) {
-      if (is.symbol(val)) {
-        as.character(val)
-      } else if (is.call(val) && identical(val[[1]], as.symbol("c"))) {
+      if (is.call(val) && identical(val[[1]], as.symbol("c"))) {
         vapply(as.list(val)[-1], function(x) {
-          if (is.symbol(x)) as.character(x) else if (is.character(x)) x else eval(x)
+          if (is.symbol(x)) as.character(x) else if (is.character(x)) x else eval(x, envir = call_env)
         }, character(1))
       } else {
-        eval(val)
+        eval(val, envir = call_env)
       }
     } else {
-      eval(val)
+      eval(val, envir = call_env)
     }
   })
   names(dot_args) <- names(dot_args_raw)
@@ -1832,8 +1843,12 @@ add_pagination.page_object <- function(viz_collection, position = NULL) {
 #' @param page Optional page name to preview (only used for dashboard_project objects).
 #'   When NULL, previews all pages. When specified, previews only the named page.
 #' @param debug Whether to show debug messages like file paths (default: FALSE).
+#' @param output Output mode: "viewer" (default) opens in RStudio viewer/browser,
+#'   "widget" returns an htmltools widget that can be saved as self-contained HTML
+#'   with \code{save_widget()} or embedded in R Markdown/Quarto documents.
 #'
-#' @return Invisibly returns the path to the generated HTML file.
+#' @return For output="viewer": invisibly returns the path to the generated HTML file.
+#'   For output="widget": returns a dashboardr_widget object that can be saved or embedded.
 #'
 #' @details
 #' The preview function has two modes:
@@ -1900,10 +1915,25 @@ add_pagination.page_object <- function(viz_collection, position = NULL) {
 #'
 #' # Preview without opening (just render)
 #' html_path <- my_viz %>% preview(open = FALSE)
+#'
+#' # Return as widget (for embedding in R Markdown or saving as self-contained HTML)
+#' widget <- my_viz %>% preview(output = "widget")
+#' htmltools::save_html(widget, "my_chart.html", selfcontained = TRUE)
+#'
+#' # In R Markdown/Quarto, widgets display inline automatically
+#' my_viz %>% preview(output = "widget")
 #' }
 preview <- function(collection, title = "Preview", open = TRUE, clean = FALSE,
                     quarto = FALSE, theme = "cosmo", path = NULL, page = NULL,
-                    debug = FALSE) {
+                    debug = FALSE, output = c("viewer", "widget")) {
+  
+  # Match output argument
+  output <- match.arg(output)
+  
+  # If output = "widget", return as htmltools widget for embedding/self-contained saving
+  if (output == "widget") {
+    return(.preview_as_widget(collection, title = title, debug = debug))
+  }
   
   # If we're in a knitr context, render inline using knit_print
   # This ensures preview() works the same in Quarto documents as in Viewer
@@ -2010,6 +2040,145 @@ preview <- function(collection, title = "Preview", open = TRUE, clean = FALSE,
   }
 
   invisible(html_file)
+}
+
+#' Create a self-contained HTML widget from a preview
+#' 
+#' Returns an htmltools tagList that can be saved as self-contained HTML
+#' or displayed inline in R Markdown/Quarto documents.
+#' @noRd
+.preview_as_widget <- function(collection, title = "Preview", debug = FALSE) {
+  
+  # Handle content_block objects
+  if (is_content_block(collection)) {
+    collection <- .wrap_content_block(collection)
+  }
+  
+  # Handle page_objects
+  if (inherits(collection, "page_object")) {
+    collection <- .page_to_content(collection)
+  }
+  
+  # Handle dashboard_project - use first page or specified
+  if (inherits(collection, "dashboard_project")) {
+    if (length(collection$pages) == 0) {
+      stop("Dashboard has no pages.", call. = FALSE)
+    }
+    # Convert first page to content
+    first_page <- collection$pages[[1]]
+    collection <- .page_to_content(first_page)
+  }
+  
+  # Validate
+  if (!is_content(collection)) {
+    stop("Cannot convert to widget: unsupported object type", call. = FALSE)
+  }
+  
+  if (length(collection$items) == 0) {
+    stop("Collection is empty.", call. = FALSE)
+  }
+  
+  # Render all items to HTML
+  rendered_items <- list()
+  
+  for (item in collection$items) {
+    # Handle visualizations
+    if (!is.null(item$viz_type) || (!is.null(item$type) && item$type == "viz")) {
+      viz_html <- .render_viz_direct(item, collection$data)
+      if (!is.null(viz_html)) {
+        rendered_items <- c(rendered_items, list(viz_html))
+      }
+    } 
+    # Handle text/content blocks
+    else if (!is.null(item$type)) {
+      content_html <- .render_content_block_direct(item)
+      if (!is.null(content_html)) {
+        rendered_items <- c(rendered_items, list(content_html))
+      }
+    }
+  }
+  
+  # Build the widget with all dependencies
+  css <- .get_preview_css()
+  
+  widget <- htmltools::tagList(
+    htmltools::tags$head(
+      htmltools::tags$style(htmltools::HTML(css)),
+      # Include Bootstrap for tabs
+      htmltools::tags$link(
+        rel = "stylesheet",
+        href = "https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      ),
+      htmltools::tags$script(
+        src = "https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+      )
+    ),
+    htmltools::div(
+      class = "dashboardr-widget",
+      style = "max-width: 1200px; margin: 0 auto; padding: 20px;",
+      if (title != "Preview") htmltools::h2(title),
+      htmltools::tagList(rendered_items)
+    )
+  )
+  
+  # Add browsable class so it displays in viewer when printed
+  class(widget) <- c("dashboardr_widget", class(widget))
+  attr(widget, "browsable_html") <- TRUE
+  
+  widget
+}
+
+#' Print method for dashboardr_widget - opens in viewer
+#' @export
+print.dashboardr_widget <- function(x, ...) {
+  # Save to temp file and open
+  temp_file <- tempfile(fileext = ".html")
+  htmltools::save_html(x, temp_file)
+  
+  if (requireNamespace("rstudioapi", quietly = TRUE) && 
+      rstudioapi::isAvailable() && 
+      rstudioapi::hasFun("viewer")) {
+    rstudioapi::viewer(temp_file)
+  } else {
+    utils::browseURL(temp_file)
+  }
+  
+  invisible(x)
+}
+
+#' Save widget as self-contained HTML
+#' 
+#' @param widget A dashboardr widget created with preview(output = "widget")
+#' @param file Path to save the HTML file
+#' @param selfcontained Whether to embed all dependencies (default: TRUE)
+#' @return Invisibly returns the file path
+#' @export
+#' @examples
+#' \dontrun{
+#' widget <- my_viz %>% preview(output = "widget")
+#' save_widget(widget, "my_chart.html")
+#' }
+save_widget <- function(widget, file, selfcontained = TRUE) {
+  if (!inherits(widget, "dashboardr_widget")) {
+    stop("widget must be created with preview(output = 'widget')", call. = FALSE)
+  }
+  
+  file <- normalizePath(path.expand(file), mustWork = FALSE)
+  
+  # Ensure directory exists
+ dir.create(dirname(file), recursive = TRUE, showWarnings = FALSE)
+  
+  if (selfcontained) {
+    # Use htmltools to save with dependencies inlined
+    htmltools::save_html(widget, file = file)
+    message("Saved self-contained HTML to: ", file)
+  } else {
+    # Save with external dependencies
+    htmltools::save_html(widget, file = file, libdir = paste0(tools::file_path_sans_ext(file), "_files"))
+    message("Saved HTML to: ", file)
+  }
+  
+  invisible(file)
 }
 
 #' Direct preview using htmltools (no Quarto required)

@@ -7,6 +7,7 @@ Description: What the package does (one paragraph).
 License: MIT + file LICENSE
 URL: https://favstats.github.io/dashboardr/
 Encoding: UTF-8
+SystemRequirements: Quarto (>= 1.4) - https://quarto.org/docs/download/
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
 Imports: 
@@ -36,5 +37,6 @@ Suggests:
   testthat (>= 3.0.0),
   withr
 Config/testthat/edition: 3
+Additional_repositories: https://kjhealy.r-universe.dev
 Remotes: 
     kjhealy/gssr

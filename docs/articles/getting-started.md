@@ -17,6 +17,16 @@ Install dashboardr from GitHub:
 devtools::install_github("favstats/dashboardr")
 ```
 
+This tutorial uses the `gssr` package for General Social Survey data.
+Install it from r-universe:
+
+``` r
+install.packages('gssr', repos = c('https://kjhealy.r-universe.dev', 'https://cloud.r-project.org'))
+
+# Also recommended: install gssrdoc for documentation
+install.packages('gssrdoc', repos = c('https://kjhealy.r-universe.dev', 'https://cloud.r-project.org'))
+```
+
 ## 🏗️ What We’ll Build
 
 To showcase what `dashboardr` can do, we’ll create a dashboard exploring
@@ -57,7 +67,7 @@ dashboardr workflow: Content flows to Page flows to Dashboard
 
 | Layer | Purpose | Key Functions |
 |----|----|----|
-| **Content** | What to show (charts, text) | [`create_content()`](https://favstats.github.io/dashboardr/reference/create_content.md), [`add_viz()`](https://favstats.github.io/dashboardr/reference/add_viz.md), [`add_text()`](https://favstats.github.io/dashboardr/reference/add_text.md) |
+| **Content** | What to show | [`create_content()`](https://favstats.github.io/dashboardr/reference/create_content.md), [`add_viz()`](https://favstats.github.io/dashboardr/reference/add_viz.md), [`add_text()`](https://favstats.github.io/dashboardr/reference/add_text.md) |
 | **Page** | Where content lives | [`create_page()`](https://favstats.github.io/dashboardr/reference/create_page.md), [`add_content()`](https://favstats.github.io/dashboardr/reference/add_content.md) |
 | **Dashboard** | Final output + config | [`create_dashboard()`](https://favstats.github.io/dashboardr/reference/create_dashboard.md), [`add_pages()`](https://favstats.github.io/dashboardr/reference/add_pages.md) |
 
@@ -305,31 +315,46 @@ gss <- gss_all %>%
 
 # LAYER 1: Build content collections
 demographics <- create_content(type = "bar") %>%
-  add_viz(x_var = "degree", title = "Education", tabgroup = "overview") %>%
-  add_viz(x_var = "race", title = "Race", tabgroup = "overview") %>%
-  add_viz(x_var = "sex", title = "Gender", tabgroup = "overview")
+  add_viz(x_var = "degree", title = "Education", tabgroup = "Overview") %>%
+  add_viz(x_var = "race", title = "Race", tabgroup = "Overview") %>%
+  add_viz(x_var = "sex", title = "Gender", tabgroup = "Overview")
 
 cross_tabs <- create_content(type = "stackedbar") %>%
   add_viz(x_var = "degree", stack_var = "happy", 
-          title = "Happiness by Education", tabgroup = "analysis", 
+          title = "Happiness by Education", tabgroup = "Analysis", 
           stacked_type = "percent") %>%
   add_viz(x_var = "polviews", stack_var = "happy",
-          title = "Happiness by Politics", tabgroup = "analysis",
+          title = "Happiness by Politics", tabgroup = "Analysis",
           stacked_type = "percent")
 
 # LAYER 2: Create pages
 home <- create_page("Home", is_landing_page = TRUE) %>%
-  add_text("# GSS Explorer", "", 
-           "Explore trends in American society using the General Social Survey.",
-           "", "Navigate using the tabs above.")
+  add_text(
+    "",
+    "Interactive visualizations of American attitudes and demographics.",
+    "",
+    "**What's inside:**",
+    "",
+    "- **Analysis** — Demographics breakdowns and cross-tabulations",
+    "- **About** — Data sources and methodology",
+    "",
+    "*Select a page from the navigation bar to begin.*"
+  )
 
 analysis <- create_page("Analysis", data = gss, icon = "ph:chart-bar") %>%
   add_content(demographics) %>%
   add_content(cross_tabs)
 
 about <- create_page("About", navbar_align = "right", icon = "ph:info") %>%
-  add_text("## About This Dashboard", "",
-           "Created with dashboardr. Data from the GSS (2010-2024).")
+  add_text(
+    "",
+    "This dashboard explores data from the [General Social Survey](https://gss.norc.org/) (GSS), ",
+    "a nationally representative survey of American adults conducted since 1972.",
+    "",
+    "**Data:** GSS cumulative file, filtered to most recent wave.",
+    "",
+    "**Built with:** [dashboardr](https://github.com/favstats/dashboardr)"
+  )
 
 # LAYER 3: Assemble and generate
 onemin_dashboard <- create_dashboard(
@@ -377,19 +402,39 @@ Analysis
 
 About
 
-GSS Explorer
+Interactive visualizations of American attitudes and demographics.
 
-Explore trends in American society using the General Social Survey.
+**What's inside:**
 
-Navigate using the tabs above.
+- **Analysis** — Demographics breakdowns and cross-tabulations
 
-overview
+- **About** — Data sources and methodology
 
-analysis
+*Select a page from the navigation bar to begin.*
 
-About This Dashboard
+Overview
 
-Created with dashboardr. Data from the GSS (2010-2024).
+Analysis
+
+Education
+
+Race
+
+Gender
+
+Happiness by Education
+
+Happiness by Politics
+
+This dashboard explores data from the [General Social
+Survey](https://gss.norc.org/) (GSS),
+
+a nationally representative survey of American adults conducted since
+1972.
+
+**Data:** GSS cumulative file, filtered to most recent wave.
+
+**Built with:** [dashboardr](https://github.com/favstats/dashboardr)
 
 ## 💡 Tips
 

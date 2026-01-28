@@ -54,6 +54,197 @@ gss <- gss_all %>%
 devtools::load_all()
 ```
 
+## 🔍 Filtering Data
+
+Filters let you create multiple visualizations from the same dataset, each showing a different subset. Instead of manually splitting your data into separate data frames, you define the filter condition directly in `add_viz()`.
+
+### Why Use Filters?
+
+**Without filters**, you'd need to create separate datasets:
+
+```r
+# Tedious approach - don't do this
+males <- gss %>% filter(sex == 1)
+females <- gss %>% filter(sex == 2)
+
+create_content(data = males, type = "bar") %>%
+  add_viz(x_var = "happy", title = "Male")
+
+create_content(data = females, type = "bar") %>%
+  add_viz(x_var = "happy", title = "Female")
+```
+
+**With filters**, one dataset serves all visualizations:
+
+```r
+# Clean approach - do this!
+create_content(data = gss, type = "bar") %>%
+  add_viz(x_var = "happy", title = "Male", filter = ~ sex == "male") %>%
+  add_viz(x_var = "happy", title = "Female", filter = ~ sex == "female")
+```
+
+### Filter Syntax
+
+Filters use R's formula syntax with a tilde (`~`). The expression after `~` is evaluated against your data:
+
+| Filter | Meaning |
+|--------|---------|
+| `~ sex == 1` | Rows where sex equals 1 |
+| `~ age > 30` | Rows where age is greater than 30 |
+| `~ race == "white"` | Rows where race is "white" |
+| `~ age >= 18 & age <= 35` | Rows where age is between 18 and 35 |
+| `~ degree %in% c("bachelor", "graduate")` | Rows where degree is bachelor or graduate |
+
+### Basic Example: Comparing Groups
+
+Show the same variable for different subgroups side by side:
+
+```{r}
+filtered <- create_content(data = gss, type = "bar") %>%
+  add_viz(x_var = "happy", title = "Male", filter = ~ sex == "male", tabgroup = "Male") %>%
+  add_viz(x_var = "happy", title = "Female", filter = ~ sex == "female", tabgroup = "Female")
+
+print(filtered)
+```
+
+```{r}
+filtered %>% preview()
+```
+
+This creates two charts in the same tabgroup - one filtered to males, one to females. Users can switch between them to compare happiness distributions.
+
+### Complex Filters: Multiple Conditions
+
+Combine conditions with `&` (and) and `|` (or). Here we create one tabgroup ("age_groups") with three tabs, each showing happiness for a different age range:
+
+```{r}
+complex <- create_content(data = gss, type = "bar") %>%
+  add_viz(x_var = "happy", title = "Young Adults (18-35)", 
+          filter = ~ age >= 18 & age <= 35, tabgroup = "Youngsters") %>%
+  add_viz(x_var = "happy", title = "Middle Age (36-55)", 
+          filter = ~ age > 35 & age <= 55, tabgroup = "Middlers") %>%
+  add_viz(x_var = "happy", title = "Older Adults (55+)", 
+          filter = ~ age > 55, tabgroup = "Olders")
+
+print(complex)
+```
+
+```{r}
+complex %>% preview()
+```
+
+### Filters vs. group_var
+
+**When to use `filter`:**
+- You want completely separate charts for each group
+- Groups need different titles, settings, or tabgroups
+- You're comparing the same variable across subsets
+
+**When to use `group_var`:**
+- You want grouped bars within a single chart
+- Direct visual comparison in one view
+
+```{r}
+# Using filter: separate charts per group
+create_content(data = gss, type = "bar") %>%
+  add_viz(x_var = "happy", title = "Happiness (Male)", filter = ~ sex == "male", tabgroup = "separate") %>%
+  add_viz(x_var = "happy", title = "Happiness (Female)", filter = ~ sex == "female", tabgroup = "separate") %>%
+  preview()
+```
+
+```{r}
+# Using group_var: one chart with grouped bars
+create_content(data = gss, type = "bar") %>%
+  add_viz(x_var = "happy", group_var = "sex", title = "Happiness by Sex") %>%
+  preview()
+```
+
+### Filter + title_tabset: Organized Comparisons
+
+When you're comparing the **same variable across multiple groups**, `title_tabset` creates a second level of tabs:
+
+- `tabgroup` = the **category** (e.g., "Happiness", "Education")
+- `title_tabset` = the **variant** within that category (e.g., "Male", "Female")
+
+```{r}
+gender_comparison <- create_content(data = gss, type = "bar") %>%
+  # Happiness tabgroup with Male/Female sub-tabs
+  add_viz(x_var = "happy", title = "Happiness", 
+          filter = ~ sex == "male", title_tabset = "Male", tabgroup = "happiness") %>%
+  add_viz(x_var = "happy", title = "Happiness", 
+          filter = ~ sex == "female", title_tabset = "Female", tabgroup = "happiness") %>%
+  # Education tabgroup with Male/Female sub-tabs
+  add_viz(x_var = "degree", title = "Education", 
+          filter = ~ sex == "male", title_tabset = "Male", tabgroup = "education") %>%
+  add_viz(x_var = "degree", title = "Education", 
+          filter = ~ sex == "female", title_tabset = "Female", tabgroup = "education")
+
+print(gender_comparison)
+```
+
+```{r}
+gender_comparison %>% preview()
+```
+
+## 📚 Batch Creation with add_vizzes()
+
+When you need to create many similar visualizations, `add_vizzes()` lets you do it in one call instead of repeating `add_viz()` multiple times.
+
+### The Problem: Repetitive Code
+
+```r
+# Tedious and error-prone
+create_content(data = gss, type = "bar") %>%
+  add_viz(x_var = "degree", title = "Education", tabgroup = "survey") %>%
+  add_viz(x_var = "race", title = "Race", tabgroup = "survey") %>%
+  add_viz(x_var = "happy", title = "Happiness", tabgroup = "survey") %>%
+  add_viz(x_var = "polviews", title = "Politics", tabgroup = "survey")
+```
+
+### The Solution: Vector Parameters
+
+With `add_vizzes()`, pass vectors for the parameters that vary, and single values for parameters that stay the same:
+
+```{r}
+vars <- c("degree", "race", "happy", "polviews")
+labels <- c("Education", "Race", "Happiness", "Politics")
+
+batch <- create_content(data = gss, type = "bar") %>%
+  add_vizzes(x_var = vars, title = labels, tabgroup = "survey")
+
+print(batch)
+```
+
+```{r}
+batch %>% preview()
+```
+
+### How It Works
+
+**Vector parameters** (vary per visualization):
+- `x_var`, `y_var`, `stack_var`, `group_var`, `title`, `questions`
+- Must all have the same length
+
+**Scalar parameters** (shared across all):
+- `type`, `color_palette`, `bar_type`, `horizontal`, `tabgroup` (if single value), etc.
+- Applied to every visualization
+
+### Different Tabgroups Per Viz
+
+Pass `tabgroup` as a vector to put each visualization in a different tab:
+
+```{r}
+create_content(data = gss, type = "bar") %>%
+  add_vizzes(
+    x_var = c("degree", "happy", "polviews"),
+    title = c("Education", "Happiness", "Politics"),
+    tabgroup = c("demographics", "wellbeing", "attitudes")
+  ) %>%
+  preview()
+```
+
+
+
 ## 🎚️ Interactive Inputs
 
 Interactive input widgets transform your dashboard from a static report into an **exploratory data tool**. Users can filter data, adjust parameters, and see visualizations update in real-time.
@@ -321,194 +512,6 @@ create_dashboard(title = "GSS Explorer", output_dir = "gss_explorer") %>%
   generate_dashboard(render = TRUE, open = "browser")
 ```
 
-## 🔍 Filtering Data
-
-Filters let you create multiple visualizations from the same dataset, each showing a different subset. Instead of manually splitting your data into separate data frames, you define the filter condition directly in `add_viz()`.
-
-### Why Use Filters?
-
-**Without filters**, you'd need to create separate datasets:
-
-```r
-# Tedious approach - don't do this
-males <- gss %>% filter(sex == 1)
-females <- gss %>% filter(sex == 2)
-
-create_content(data = males, type = "bar") %>%
-  add_viz(x_var = "happy", title = "Male")
-
-create_content(data = females, type = "bar") %>%
-  add_viz(x_var = "happy", title = "Female")
-```
-
-**With filters**, one dataset serves all visualizations:
-
-```r
-# Clean approach - do this!
-create_content(data = gss, type = "bar") %>%
-  add_viz(x_var = "happy", title = "Male", filter = ~ sex == "male") %>%
-  add_viz(x_var = "happy", title = "Female", filter = ~ sex == "female")
-```
-
-### Filter Syntax
-
-Filters use R's formula syntax with a tilde (`~`). The expression after `~` is evaluated against your data:
-
-| Filter | Meaning |
-|--------|---------|
-| `~ sex == 1` | Rows where sex equals 1 |
-| `~ age > 30` | Rows where age is greater than 30 |
-| `~ race == "white"` | Rows where race is "white" |
-| `~ age >= 18 & age <= 35` | Rows where age is between 18 and 35 |
-| `~ degree %in% c("bachelor", "graduate")` | Rows where degree is bachelor or graduate |
-
-### Basic Example: Comparing Groups
-
-Show the same variable for different subgroups side by side:
-
-```{r}
-filtered <- create_content(data = gss, type = "bar") %>%
-  add_viz(x_var = "happy", title = "Male", filter = ~ sex == "male", tabgroup = "by_sex") %>%
-  add_viz(x_var = "happy", title = "Female", filter = ~ sex == "female", tabgroup = "by_sex")
-
-print(filtered)
-```
-
-```{r}
-filtered %>% preview()
-```
-
-This creates two charts in the same tabgroup - one filtered to males, one to females. Users can switch between them to compare happiness distributions.
-
-### Complex Filters: Multiple Conditions
-
-Combine conditions with `&` (and) and `|` (or). Here we create one tabgroup ("age_groups") with three tabs, each showing happiness for a different age range:
-
-```{r}
-complex <- create_content(data = gss, type = "bar") %>%
-  add_viz(x_var = "happy", title = "Young Adults (18-35)", 
-          filter = ~ age >= 18 & age <= 35, tabgroup = "age_groups") %>%
-  add_viz(x_var = "happy", title = "Middle Age (36-55)", 
-          filter = ~ age > 35 & age <= 55, tabgroup = "age_groups") %>%
-  add_viz(x_var = "happy", title = "Older Adults (55+)", 
-          filter = ~ age > 55, tabgroup = "age_groups")
-
-print(complex)
-```
-
-```{r}
-complex %>% preview()
-```
-
-### Filters vs. group_var
-
-**When to use `filter`:**
-- You want completely separate charts for each group
-- Groups need different titles, settings, or tabgroups
-- You're comparing the same variable across subsets
-
-**When to use `group_var`:**
-- You want grouped bars within a single chart
-- Direct visual comparison in one view
-
-```{r}
-# Using filter: separate charts per group
-create_content(data = gss, type = "bar") %>%
-  add_viz(x_var = "happy", title = "Happiness (Male)", filter = ~ sex == "male", tabgroup = "separate") %>%
-  add_viz(x_var = "happy", title = "Happiness (Female)", filter = ~ sex == "female", tabgroup = "separate") %>%
-  preview()
-```
-
-```{r}
-# Using group_var: one chart with grouped bars
-create_content(data = gss, type = "bar") %>%
-  add_viz(x_var = "happy", group_var = "sex", title = "Happiness by Sex") %>%
-  preview()
-```
-
-### Filter + title_tabset: Organized Comparisons
-
-When you're comparing the **same variable across multiple groups**, `title_tabset` creates a second level of tabs:
-
-- `tabgroup` = the **category** (e.g., "Happiness", "Education")
-- `title_tabset` = the **variant** within that category (e.g., "Male", "Female")
-
-```{r}
-gender_comparison <- create_content(data = gss, type = "bar") %>%
-  # Happiness tabgroup with Male/Female sub-tabs
-  add_viz(x_var = "happy", title = "Happiness", 
-          filter = ~ sex == "male", title_tabset = "Male", tabgroup = "happiness") %>%
-  add_viz(x_var = "happy", title = "Happiness", 
-          filter = ~ sex == "female", title_tabset = "Female", tabgroup = "happiness") %>%
-  # Education tabgroup with Male/Female sub-tabs
-  add_viz(x_var = "degree", title = "Education", 
-          filter = ~ sex == "male", title_tabset = "Male", tabgroup = "education") %>%
-  add_viz(x_var = "degree", title = "Education", 
-          filter = ~ sex == "female", title_tabset = "Female", tabgroup = "education")
-
-print(gender_comparison)
-```
-
-```{r}
-gender_comparison %>% preview()
-```
-
-## 📚 Batch Creation with add_vizzes()
-
-When you need to create many similar visualizations, `add_vizzes()` lets you do it in one call instead of repeating `add_viz()` multiple times.
-
-### The Problem: Repetitive Code
-
-```r
-# Tedious and error-prone
-create_content(data = gss, type = "bar") %>%
-  add_viz(x_var = "degree", title = "Education", tabgroup = "survey") %>%
-  add_viz(x_var = "race", title = "Race", tabgroup = "survey") %>%
-  add_viz(x_var = "happy", title = "Happiness", tabgroup = "survey") %>%
-  add_viz(x_var = "polviews", title = "Politics", tabgroup = "survey")
-```
-
-### The Solution: Vector Parameters
-
-With `add_vizzes()`, pass vectors for the parameters that vary, and single values for parameters that stay the same:
-
-```{r}
-vars <- c("degree", "race", "happy", "polviews")
-labels <- c("Education", "Race", "Happiness", "Politics")
-
-batch <- create_content(data = gss, type = "bar") %>%
-  add_vizzes(x_var = vars, title = labels, tabgroup = "survey")
-
-print(batch)
-```
-
-```{r}
-batch %>% preview()
-```
-
-### How It Works
-
-**Vector parameters** (vary per visualization):
-- `x_var`, `y_var`, `stack_var`, `group_var`, `title`, `questions`
-- Must all have the same length
-
-**Scalar parameters** (shared across all):
-- `type`, `color_palette`, `bar_type`, `horizontal`, `tabgroup` (if single value), etc.
-- Applied to every visualization
-
-### Different Tabgroups Per Viz
-
-Pass `tabgroup` as a vector to put each visualization in a different tab:
-
-```{r}
-create_content(data = gss, type = "bar") %>%
-  add_vizzes(
-    x_var = c("degree", "happy", "polviews"),
-    title = c("Education", "Happiness", "Politics"),
-    tabgroup = c("demographics", "wellbeing", "attitudes")
-  ) %>%
-  preview()
-```
 
 ## ⚖️ Survey Weights
 

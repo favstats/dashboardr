@@ -140,40 +140,6 @@ create_content(data = gss, type = "bar", color_palette = c("#3498DB"), bar_type 
   add_viz(x_var = "race")
 ```
 
-### How Defaults Work
-
-When you call
-[`create_content()`](https://favstats.github.io/dashboardr/reference/create_content.md),
-any parameters you provide become **defaults** for subsequent
-[`add_viz()`](https://favstats.github.io/dashboardr/reference/add_viz.md)
-calls:
-
-``` r
-# These defaults apply to ALL add_viz() calls
-content <- create_content(
-  data = gss,
-  type = "bar",
-  color_palette = c("#3498DB"),
-  drop_na_vars = TRUE,
-  bar_type = "percent"
-)
-
-# This viz inherits all defaults (type=bar, color=#3498DB, percent bars)
-content <- content %>%
-  add_viz(x_var = "degree", title = "Education (defaults)")
-
-# This viz overrides color_palette but keeps other defaults
-content <- content %>%
-  add_viz(x_var = "race", title = "Race (green)", color_palette = c("#2ECC71"))
-
-print(content)
-#> -- Content Collection ──────────────────────────────────────────────────────────
-#> 2 items | ✔ data: 2997 rows x 15 cols
-#> 
-#> • [Viz] Education (defaults) (bar) x=degree
-#> • [Viz] Race (green) (bar) x=race
-```
-
 ### Override Hierarchy
 
 Parameters are resolved in this order (later wins):
@@ -248,12 +214,12 @@ Common ones include:
 See the [Visualization Types](#visualization-types) section for all
 parameters available for each chart type.
 
-### 🏷️ Custom Labels and Tooltips
+## 🏷️ Custom Labels and Tooltips
 
 Every visualization supports custom axis labels and tooltip formatting.
 These help make your charts clearer and more professional.
 
-#### Axis Labels
+### Axis Labels
 
 By default, `dashboardr` uses your variable names as axis labels.
 Override them with `x_label` and `y_label`:
@@ -305,7 +271,7 @@ Preview
 
 Education by Gender
 
-#### Tooltip Customization
+### Tooltip Customization
 
 Tooltips are the interactive popups that appear when users hover over
 data points. Customize them with prefix and suffix options:
@@ -433,7 +399,7 @@ print(all_content)
 #>   • [Viz] Happiness (bar) x=happy
 ```
 
-## 📊 Visualization Types
+## 📊 Visualization Collections
 
 dashboardr supports 9 visualization types. Each is optimized for
 different data patterns.
@@ -938,7 +904,7 @@ nested <- create_content(data = gss, type = "bar") %>%
   add_viz(x_var = "degree", title = "Education Level", 
           tabgroup = "Demographics/Education") %>%
   add_viz(x_var = "race", title = "Race Distribution", 
-          tabgroup = "Demographics/Education") %>%
+          tabgroup = "Demographics/Race") %>%
   add_viz(x_var = "age", title = "Age Distribution", 
           tabgroup = "Demographics/Age") %>%
   # Top-level: "Attitudes" with sub-tabs
@@ -951,9 +917,10 @@ print(nested)
 #> -- Content Collection ──────────────────────────────────────────────────────────
 #> 5 items | ✔ data: 2997 rows x 15 cols
 #> 
-#> ❯ [Tab] Demographics (2 tabs)
-#>   ❯ [Tab] Education (2 vizs)
+#> ❯ [Tab] Demographics (3 tabs)
+#>   ❯ [Tab] Education (1 viz)
 #>     • [Viz] Education Level (bar) x=degree
+#>   ❯ [Tab] Race (1 viz)
 #>     • [Viz] Race Distribution (bar) x=race
 #>   ❯ [Tab] Age (1 viz)
 #>     • [Viz] Age Distribution (bar) x=age
@@ -975,6 +942,8 @@ Demographics
 Attitudes
 
 Education
+
+Race
 
 Age
 
@@ -1516,7 +1485,7 @@ ensure they display on GitHub Pages:
 ``` r
 image_example <- create_content() %>%
   add_image(
-    src = "https://raw.githubusercontent.com/favstats/dashboardr/main/man/figures/logo.png",
+    src = "https://favstats.github.io/dashboardr/reference/figures/logo.svg",
     alt = "dashboardr Logo",
     caption = "The dashboardr package logo",
     width = "200px"
@@ -1533,7 +1502,7 @@ image_example %>% preview()
 Preview
 
 ![The dashboardr package
-logo](https://raw.githubusercontent.com/favstats/dashboardr/main/man/figures/logo.png)
+logo](https://favstats.github.io/dashboardr/reference/figures/logo.svg)
 
 The dashboardr package logo
 
@@ -1542,6 +1511,19 @@ The dashboardr package logo
 > development but won’t display on GitHub Pages or pkgdown sites.
 
 ### Videos
+
+For local video files, use
+[`add_video()`](https://favstats.github.io/dashboardr/reference/add_video.md) -
+but note these won’t work on GitHub Pages unless hosted elsewhere:
+
+``` r
+# Local video (works locally, not on GitHub)
+create_content() %>%
+  add_video(
+    src = "presentation.mp4",
+    caption = "Project overview video"
+  )
+```
 
 For video content, use YouTube or Vimeo embeds via
 [`add_iframe()`](https://favstats.github.io/dashboardr/reference/add_iframe.md) -
@@ -1568,19 +1550,6 @@ Preview
 # Ein Fehler ist aufgetreten.
 
 JavaScript kann nicht ausgeführt werden.
-
-For local video files, use
-[`add_video()`](https://favstats.github.io/dashboardr/reference/add_video.md) -
-but note these won’t work on GitHub Pages unless hosted elsewhere:
-
-``` r
-# Local video (works locally, not on GitHub)
-create_content() %>%
-  add_video(
-    src = "presentation.mp4",
-    caption = "Project overview video"
-  )
-```
 
 ### iframes
 

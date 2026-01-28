@@ -32,6 +32,7 @@ create_page(
   weight_var = NULL,
   filter = NULL,
   drop_na_vars = NULL,
+  shared_first_level = TRUE,
   ...
 )
 ```
@@ -133,6 +134,12 @@ create_page(
 - drop_na_vars:
 
   Default for dropping NA values in visualizations
+
+- shared_first_level:
+
+  Logical. When TRUE (default), multiple first-level tabgroups will
+  share a single tabset. When FALSE, each first-level tabgroup is
+  rendered as a separate section (stacked vertically).
 
 - ...:
 

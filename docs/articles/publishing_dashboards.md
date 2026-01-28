@@ -121,8 +121,8 @@ information:
 library(usethis)
 
 use_git_config(
-  user.name = "Your Name",          # Your actual name
-  user.email = "you@example.com"    # Your actual email
+  user.name = "Your Username",
+  user.email = "you@example.com"
 )
 ```
 

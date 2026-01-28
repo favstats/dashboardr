@@ -1,4 +1,7 @@
 test_that("detects remnant .rmarkdown files with helpful error", {
+  # Skip if Quarto is not available (rendering won't happen, so error won't be thrown)
+  skip_if(Sys.which("quarto") == "", "Quarto not available")
+  
   temp_dir <- tempfile()
   dir.create(temp_dir)
   on.exit(unlink(temp_dir, recursive = TRUE), add = TRUE)

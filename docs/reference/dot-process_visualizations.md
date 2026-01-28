@@ -30,5 +30,10 @@ visualization specifications. It:
 ## Usage
 
 ``` r
-.process_visualizations(viz_input, data_path, tabgroup_labels = NULL)
+.process_visualizations(
+  viz_input,
+  data_path,
+  tabgroup_labels = NULL,
+  shared_first_level = TRUE
+)
 ```

@@ -94,7 +94,7 @@ tab groups and default parameters that apply to all visualizations.</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">create_viz</span><span class="op">(</span>data <span class="op">=</span> <span class="cn">NULL</span>, tabgroup_labels <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">create_viz</span><span class="op">(</span>data <span class="op">=</span> <span class="cn">NULL</span>, tabgroup_labels <span class="op">=</span> <span class="cn">NULL</span>, shared_first_level <span class="op">=</span> <span class="cn">TRUE</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -110,6 +110,12 @@ page-level data is provided.</p></dd>
 
 <dt id="arg-tabgroup-labels">tabgroup_labels<a class="anchor" aria-label="anchor" href="#arg-tabgroup-labels"></a></dt>
 <dd><p>Named vector/list mapping tabgroup IDs to display names</p></dd>
+
+
+<dt id="arg-shared-first-level">shared_first_level<a class="anchor" aria-label="anchor" href="#arg-shared-first-level"></a></dt>
+<dd><p>Logical. When TRUE (default), multiple first-level
+tabgroups will share a single tabset. When FALSE, each first-level tabgroup
+is rendered as a separate section (stacked vertically).</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>

@@ -40,7 +40,7 @@ gss <- gss_all %>%
 > dashboard](https://favstats.github.io/dashboardr/live-demos/showcase/index.md)
 > to see what a complete dashboard looks like.
 
-## What the Dashboard Object Does
+## 📦 What the Dashboard Object Does
 
 The
 [`create_dashboard()`](https://favstats.github.io/dashboardr/reference/create_dashboard.md)
@@ -55,7 +55,7 @@ assembles everything into a final website. It:
 5.  **Generates the final HTML** when you call
     [`generate_dashboard()`](https://favstats.github.io/dashboardr/reference/generate_dashboard.md)
 
-## Creating Dashboards
+## 🏗️ Creating Dashboards
 
 ### Basic Creation
 
@@ -135,7 +135,7 @@ print(dashboard)
 
 Pages appear in the navbar in the order they’re added.
 
-## Themes
+## 🎨 Themes
 
 ### Built-in Quarto Themes
 
@@ -212,7 +212,7 @@ dashboard %>% apply_theme(
 )
 ```
 
-## Navbar Styling
+## 🧭 Navbar Styling
 
 ### Basic Navbar Colors
 
@@ -236,7 +236,7 @@ create_dashboard(title = "Dark", output_dir = "out", navbar_style = "dark")
 create_dashboard(title = "Light", output_dir = "out", navbar_style = "light")
 ```
 
-## Tab Styling
+## 📑 Tab Styling
 
 ### Tab Themes
 
@@ -253,7 +253,7 @@ Available themes: `"default"`, `"modern"`, `"pills"`, `"minimal"`
 For detailed examples and custom colors, see
 [`vignette("advanced-features")`](https://favstats.github.io/dashboardr/articles/advanced-features.md).
 
-## Navigation Features
+## 🔀 Navigation Features
 
 ### Enhanced Navigation
 
@@ -274,7 +274,7 @@ For advanced navbar customization including dropdown menus and sidebar
 navigation, see
 [`vignette("advanced-features")`](https://favstats.github.io/dashboardr/articles/advanced-features.md).
 
-## Social Links
+## 🔗 Social Links
 
 Add social media and contact links to the navbar:
 
@@ -290,7 +290,7 @@ create_dashboard(
 )
 ```
 
-## Publishing
+## 🚀 Publishing
 
 For deployment to GitHub Pages, Netlify, or other hosting platforms, see
 [`vignette("publishing_dashboards")`](https://favstats.github.io/dashboardr/articles/publishing_dashboards.md).
@@ -325,7 +325,7 @@ create_dashboard(
 You’ll need to [set up a Plausible
 account](https://plausible.io/register) and add your domain first.
 
-## Generating Output
+## ⚙️ Generating Output
 
 ### Basic Generation
 
@@ -361,7 +361,7 @@ dashboard %>% generate_dashboard(render = TRUE, open = "browser")
 dashboard %>% generate_dashboard(render = TRUE, clean = TRUE)
 ```
 
-## Complete Example
+## 📋 Complete Example
 
 Here’s a full example putting it all together:
 
@@ -447,7 +447,7 @@ survey_dashboard %>% generate_dashboard(render = TRUE, open = "browser")
 > dashboard](https://favstats.github.io/dashboardr/live-demos/showcase/index.md)
 > for a working example with similar structure.
 
-## Related Vignettes
+## 📚 Related Vignettes
 
 - [`vignette("getting-started")`](https://favstats.github.io/dashboardr/articles/getting-started.md) -
   Quick overview

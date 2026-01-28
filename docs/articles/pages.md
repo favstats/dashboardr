@@ -42,7 +42,7 @@ The
 [`create_page()`](https://favstats.github.io/dashboardr/reference/create_page.md)
 function creates a **page object** - a named destination in your
 dashboard that users can navigate to. Every dashboard needs at least one
-page.
+page: the landing page.
 
 ``` r
 # Create a simple page
@@ -185,8 +185,7 @@ Happiness
 
 Political Views
 
-**When to use:** Multi-section pages, reusable content, team
-collaboration, complex layouts.
+**When to use:** Multi-section pages, reusable content, complex layouts.
 
 **Why this approach?**
 

@@ -94,6 +94,9 @@ create_page <- function(name,
                         shared_first_level = TRUE,
                         ...) {
 
+  # Capture the calling environment for proper evaluation of symbols
+  call_env <- parent.frame()
+  
   # Convert variable arguments to strings (supports both quoted and unquoted)
   time_var <- .as_var_string(rlang::enquo(time_var))
   weight_var <- .as_var_string(rlang::enquo(weight_var))
@@ -120,17 +123,15 @@ create_page <- function(name,
     if (nm %in% var_params && is.symbol(val)) {
       as.character(val)
     } else if (nm %in% var_vector_params) {
-      if (is.symbol(val)) {
-        as.character(val)
-      } else if (is.call(val) && identical(val[[1]], as.symbol("c"))) {
+      if (is.call(val) && identical(val[[1]], as.symbol("c"))) {
         vapply(as.list(val)[-1], function(x) {
-          if (is.symbol(x)) as.character(x) else if (is.character(x)) x else eval(x)
+          if (is.symbol(x)) as.character(x) else if (is.character(x)) x else eval(x, envir = call_env)
         }, character(1))
       } else {
-        eval(val)
+        eval(val, envir = call_env)
       }
     } else {
-      eval(val)
+      eval(val, envir = call_env)
     }
   })
   names(extra_defaults) <- names(dot_args_raw)

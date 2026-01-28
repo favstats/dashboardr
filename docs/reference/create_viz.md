@@ -7,7 +7,7 @@ tab groups and default parameters that apply to all visualizations.
 ## Usage
 
 ``` r
-create_viz(data = NULL, tabgroup_labels = NULL, ...)
+create_viz(data = NULL, tabgroup_labels = NULL, shared_first_level = TRUE, ...)
 ```
 
 ## Arguments
@@ -22,6 +22,12 @@ create_viz(data = NULL, tabgroup_labels = NULL, ...)
 - tabgroup_labels:
 
   Named vector/list mapping tabgroup IDs to display names
+
+- shared_first_level:
+
+  Logical. When TRUE (default), multiple first-level tabgroups will
+  share a single tabset. When FALSE, each first-level tabgroup is
+  rendered as a separate section (stacked vertically).
 
 - ...:
 

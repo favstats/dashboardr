@@ -119,9 +119,9 @@ test_that("timeline filtering generates correct code", {
   qmd_file <- file.path(dashboard$output_dir, "index.qmd")
   qmd_content <- paste(readLines(qmd_file, warn = FALSE), collapse = "\n")
   
-  # Should have response_filter parameter
-  expect_true(grepl("response_filter", qmd_content))
-  expect_true(grepl("response_filter_combine", qmd_content))
+  # Should have y_filter parameter (response_filter is mapped to y_filter in code generation)
+  expect_true(grepl("y_filter", qmd_content))
+  expect_true(grepl("y_filter_combine", qmd_content))
   
 })
 

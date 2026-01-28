@@ -114,8 +114,8 @@ Git needs to know your name and email. Run this in R with **your** information:
 library(usethis)
 
 use_git_config(
-  user.name = "Your Name",          # Your actual name
-  user.email = "you@example.com"    # Your actual email
+  user.name = "Your Username",
+  user.email = "you@example.com"
 )
 ```
 

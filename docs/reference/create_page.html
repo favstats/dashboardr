@@ -121,6 +121,7 @@ the simplest way to build dashboards.</p>
 <span>  weight_var <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  filter <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  drop_na_vars <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  shared_first_level <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -220,6 +221,12 @@ will automatically use this data (no need to specify data separately).</p></dd>
 
 <dt id="arg-drop-na-vars">drop_na_vars<a class="anchor" aria-label="anchor" href="#arg-drop-na-vars"></a></dt>
 <dd><p>Default for dropping NA values in visualizations</p></dd>
+
+
+<dt id="arg-shared-first-level">shared_first_level<a class="anchor" aria-label="anchor" href="#arg-shared-first-level"></a></dt>
+<dd><p>Logical. When TRUE (default), multiple first-level
+tabgroups will share a single tabset. When FALSE, each first-level tabgroup
+is rendered as a separate section (stacked vertically).</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
