@@ -1,0 +1,199 @@
+---
+title: "dashboardr_worksheet"
+author: "Alexandra Pafford"
+date: "2026-01-29"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+```{r installation}
+#install.packages("remotes")
+#remotes::install_github("kjhealy/gssr")
+library(dashboardr)
+library(dplyr)
+library(gssr)
+library(haven)
+
+# Load GSS data and select relevant variables (latest wave only)
+data(gss_all)
+gss <- gss_all %>%
+  select(year, age, sex, race, degree, happy, polviews) %>%
+  filter(year == max(year, na.rm = TRUE), !is.na(age), !is.na(sex), !is.na(race), !is.na(degree))
+```
+
+1. Use `create_content` and `add_viz()` to make a bar chart for the variable of race. Make sure you change the title and tabgroup names as well. Preview it.
+
+```{r 1}
+
+```
+
+2. Build on your create_content pipeline to also include a bar chart on education. Call this tabgroup `'School of Rock'`, and add the object `first_collection`.
+
+```{r 2}
+
+```
+
+3. Create a home page that includes a Taylor Swift lyric. Remember to preview it!
+
+```{r 3}
+
+```
+
+4. Can you create a PAGE that bring in your `first_collection` object. Add a funny nickname for yourself at the top in big bold letters. Call it `analysis_page`.
+
+```{r 4}
+
+```
+
+5. Now, let's create a final page with 3 tabs:
+a. Graph 1: a bar chart of political views
+b. Graph 2: a histogram of the happiness variable
+c. Graph 3: a scatterplot of the happiness and political views.
+Add a trend line to the plot. BONUS: add a color variable!
+Use the scatter vignette to guide you: http://favstats.github.io/dashboardr/articles/scatter_vignette.html
+
+```{r 5}
+
+```
+
+#6. Now write this new collection of plots to its own page! Remember to give it its own name!
+
+```{r 6}
+
+```
+
+7. Now, let's combine our homepage, and two analysis page into our first dashboard! Use the create_dashboard to do this, and preview it!
+
+```{r 7}
+
+```
+
+8. Now use the generate_dashboard() command to render it. Make sure to to use the `render = TRUE`, `open = "browser"` arguments
+
+```{r 8}
+
+```
+
+#Easy, right?! Now we get to some of the more complex tasks. 
+
+#One of the cool things about dashboardr is that it makes it super easy to
+#present the breakdown of a specific variable or survey battery across other relevant 
+#variables. For instance, take a look at our AI Opinion Monitor. You can explore variables 
+#by breaking it down by age, gender, education, and politics, allowing you to 
+#drill into the crosstabs in an easy and intuitive way. 
+
+
+#We will do this with the polview variable of gss. Let's break down political views
+#by age and gender.
+
+#Here, we will be creating stackedbars. These require formating our data 
+#Check out the vignette for this:
+#https://favstats.github.io/dashboardr/articles/stackedbars_vignette.html
+#Pro-tip: copy it into an LLM and ask it to format your variables accordingly ;)
+
+``` {r}
+colnames(gss)
+```
+
+First, let's clean our data:
+
+``` {r}
+
+gss_clean <- gss %>%
+  transmute(
+    polviews = polviews,
+    sex      = sex,
+    age      = age
+  ) %>%
+  # keep only rows that have the variables we need
+  filter(!is.na(polviews), !is.na(sex), !is.na(age)) %>%
+  # convert labelled -> factor, then drop "don't know"/iap-style categories if present
+  mutate(
+    polviews = as_factor(polviews),
+    sex      = as_factor(sex),
+    age_num  = as.numeric(age)
+  ) %>%
+  filter(
+    !tolower(sex) %in% c("don't know", "dk", "iap", "na", "refused", "not applicable"),
+    !tolower(polviews) %in% c("don't know", "dk", "iap", "na", "refused", "not applicable"),
+    age_num >= 18
+  )
+
+# Define age bins for the first plot
+age_breaks <- c(18, 30, 45, 60, 75, Inf)
+age_labels <- c("18–29", "30–44", "45–59", "60–74", "75+")
+
+# Optional: shorten polviews labels for cleaner legend
+polviews_map <- list(
+  "extremely liberal"                = "Ext. Liberal",
+  "liberal"                          = "Liberal",
+  "slightly liberal"                 = "Sl. Liberal",
+  "moderate, middle of the road"     = "Moderate",
+  "slightly conservative"            = "Sl. Conservative",
+  "conservative"                     = "Conservative",
+  "extremely conservative"           = "Ext. Conservative"
+)
+
+polviews_order <- c(
+  "Ext. Liberal", "Liberal", "Sl. Liberal",
+  "Moderate",
+  "Sl. Conservative", "Conservative", "Ext. Conservative"
+)
+
+sex_map <- list("male" = "Men", "female" = "Women")
+sex_order <- c("Women", "Men")
+```
+
+
+Now let's create the collection:
+
+``` {r}
+political_views_collection <- create_content(data = gss, type = "bar") %>%
+  #Our first plot with political views distributions
+  add_viz(x_var = "polviews", title = "Overall Views", tabgroup = "Political Views") %>% 
+  add_viz(tabgroup = "By Gender", type = 'stackedbar', #Our gender breakdown
+          data = gss_clean,
+          x_var = "sex",
+          stack_var = "polviews",
+          title = "Political Views by Gender",
+          subtitle = "Percent within each gender",
+          x_label = "Gender",
+          y_label = "Percent",
+          stack_label = "Political views",
+          x_map_values = sex_map,
+          x_order = sex_order,
+          stack_map_values = polviews_map,
+          stack_order = polviews_order,
+          stacked_type = "percent",
+          tooltip_suffix = "%") %>%
+  add_viz(data = gss_clean, tabgroup = "By Age", type = 'stackedbar', #Our age breakdown
+        x_var = "age_num",            # continuous -> we bin it
+        stack_var = "polviews",
+        title = "Political Views by Age Group",
+        subtitle = "Percent within each age group",
+        x_label = "Age group",
+        y_label = "Percent",
+        stack_label = "Political views",
+        x_breaks = age_breaks,
+        x_bin_labels = age_labels,
+        stack_map_values = polviews_map,
+        stack_order = polviews_order,
+        stacked_type = "percent",
+        tooltip_suffix = "%",
+        x_tooltip_suffix = " years"
+        )
+  
+
+political_views_collection %>% preview()
+```
+
+9. Now break polviews down by race and include it in the collection. You are on your own here! 
+
+```{r 9}
+
+```
