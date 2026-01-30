@@ -292,6 +292,14 @@ create_dashboard <- function(output_dir = "site",
     }
   }
 
+  # Warn if output directory already exists (but don't create it - that happens in generate_dashboard)
+  if (dir.exists(output_dir) && warn_before_overwrite && !isTRUE(getOption("knitr.in.progress"))) {
+    message(
+      "Output directory already exists: ", output_dir, "\n",
+      "Files may be overwritten when generate_dashboard() is called."
+    )
+  }
+
   # Return project object for piping
   # Note: Output directory is created in generate_dashboard(), not here
   structure(list(
