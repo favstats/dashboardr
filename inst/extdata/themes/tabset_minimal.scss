@@ -4,13 +4,30 @@
    MINIMAL THEME - Clean, centered, top tabs with subtle effects
    ============================================ */
 
-/* Prevent page jump when clicking tabs */
+/* Comprehensive fix to prevent page jump when clicking tabs */
+/* Addresses: scroll-margin, scroll anchoring, focus scrolling */
 .panel-tabset {
   scroll-margin-top: 0;
+  overflow-anchor: none;  /* Prevent browser scroll anchoring */
 }
 
 .panel-tabset .tab-pane {
   scroll-margin-top: 0;
+  overflow-anchor: none;
+}
+
+.panel-tabset .tab-content {
+  overflow-anchor: none;
+}
+
+/* Disable scroll-into-view behavior for tab links */
+.panel-tabset .nav-link {
+  scroll-margin: 0;
+  scroll-padding: 0;
+}
+
+.panel-tabset .nav-link:focus {
+  scroll-margin: 0;
 }
 
 .panel-tabset .nav-tabs {

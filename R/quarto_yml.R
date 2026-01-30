@@ -1044,6 +1044,87 @@
     }
   }
   
+  # Add tab-jump prevention script (always included)
+  # This prevents page jumping when clicking tabs by:
+  # 1. Saving scroll position before tab switch
+  # 2. Preventing focus scrolling with preventScroll
+  # 3. Preventing URL hash updates
+  # 4. Restoring scroll position after tab switch
+  tab_jump_fix_script <- c(
+    "        <script>",
+    "        (function() {",
+    "          document.addEventListener('DOMContentLoaded', function() {",
+    "            // Prevent tab clicks from causing page jumps",
+    "            document.querySelectorAll('.panel-tabset [role=\"tab\"], .panel-tabset .nav-link').forEach(function(tab) {",
+    "              tab.addEventListener('click', function(e) {",
+    "                // Save current scroll position",
+    "                var scrollX = window.scrollX || window.pageXOffset;",
+    "                var scrollY = window.scrollY || window.pageYOffset;",
+    "                ",
+    "                // Prevent default hash navigation",
+    "                e.preventDefault();",
+    "                ",
+    "                // Manually trigger Bootstrap tab (without hash change)",
+    "                var targetId = this.getAttribute('data-bs-target') || this.getAttribute('href');",
+    "                if (targetId && targetId.startsWith('#')) {",
+    "                  // Activate tab using Bootstrap's API if available",
+    "                  if (typeof bootstrap !== 'undefined' && bootstrap.Tab) {",
+    "                    var bsTab = new bootstrap.Tab(this);",
+    "                    bsTab.show();",
+    "                  } else {",
+    "                    // Fallback: manual tab switching",
+    "                    var tabset = this.closest('.panel-tabset');",
+    "                    if (tabset) {",
+    "                      // Deactivate all tabs and panes",
+    "                      tabset.querySelectorAll('[role=\"tab\"]').forEach(function(t) {",
+    "                        t.classList.remove('active');",
+    "                        t.setAttribute('aria-selected', 'false');",
+    "                      });",
+    "                      tabset.querySelectorAll('.tab-pane').forEach(function(p) {",
+    "                        p.classList.remove('show', 'active');",
+    "                      });",
+    "                      // Activate clicked tab and its pane",
+    "                      this.classList.add('active');",
+    "                      this.setAttribute('aria-selected', 'true');",
+    "                      var pane = document.querySelector(targetId);",
+    "                      if (pane) {",
+    "                        pane.classList.add('show', 'active');",
+    "                      }",
+    "                    }",
+    "                  }",
+    "                }",
+    "                ",
+    "                // Focus without scrolling",
+    "                try {",
+    "                  this.focus({ preventScroll: true });",
+    "                } catch(err) {",
+    "                  this.focus();",
+    "                }",
+    "                ",
+    "                // Restore scroll position after a brief delay",
+    "                requestAnimationFrame(function() {",
+    "                  window.scrollTo(scrollX, scrollY);",
+    "                  // Double-check after any animations",
+    "                  setTimeout(function() {",
+    "                    window.scrollTo(scrollX, scrollY);",
+    "                  }, 50);",
+    "                });",
+    "              }, { capture: true });",
+    "            });",
+    "            ",
+    "            // Also handle Bootstrap's shown.bs.tab event to prevent post-switch jumps",
+    "            document.querySelectorAll('.panel-tabset').forEach(function(tabset) {",
+    "              tabset.addEventListener('shown.bs.tab', function(e) {",
+    "                // Prevent any scroll adjustment after tab is shown",
+    "                e.stopPropagation();",
+    "              });",
+    "            });",
+    "          });",
+    "        })();",
+    "        </script>"
+  )
+  header_content <- c(header_content, tab_jump_fix_script)
+  
   # Write the collected header content once
   if (length(header_content) > 0) {
     yaml_lines <- c(yaml_lines, "    include-in-header:")
