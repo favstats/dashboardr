@@ -791,7 +791,7 @@ add_dashboard_page <- function(proj, name, data = NULL, data_path = NULL,
   }
 
   if (is_multi_dataset) {
-    # Multiple datasets - save each one
+    # Multiple datasets - defer saving to generate_dashboard
     if (is.null(data_path)) {
       data_path <- list()
 
@@ -803,7 +803,7 @@ add_dashboard_page <- function(proj, name, data = NULL, data_path = NULL,
           stop("Dataset '", dataset_name, "' must be a data frame, got: ", class(dataset)[1])
         }
 
-        # Check if we've already saved this exact dataset
+        # Check if we've already queued this exact dataset
         data_hash <- digest::digest(dataset)
         existing_data <- proj$data_files %||% list()
 
@@ -825,22 +825,21 @@ add_dashboard_page <- function(proj, name, data = NULL, data_path = NULL,
             proj$data_files <- list()
           }
           proj$data_files[[dataset_path]] <- data_hash
+          
+          # Queue data for saving during generate_dashboard
+          if (is.null(proj$pending_data)) {
+            proj$pending_data <- list()
+          }
+          proj$pending_data[[dataset_path]] <- dataset
         }
-
-        # Save the data file
-        output_dir <- .resolve_output_dir(proj$output_dir, proj$allow_inside_pkg)
-        if (!dir.exists(output_dir)) {
-          dir.create(output_dir, recursive = TRUE)
-        }
-        saveRDS(dataset, file.path(output_dir, basename(dataset_path)))
 
         data_path[[dataset_name]] <- basename(dataset_path)
       }
     }
   } else if (!is.null(data)) {
-    # Single dataset (original logic)
+    # Single dataset - defer saving to generate_dashboard
     if (is.null(data_path)) {
-      # Check if we've already saved this exact dataset
+      # Check if we've already queued this exact dataset
       data_hash <- digest::digest(data)
       existing_data <- proj$data_files %||% list()
 
@@ -868,15 +867,14 @@ add_dashboard_page <- function(proj, name, data = NULL, data_path = NULL,
           proj$data_files <- list()
         }
         proj$data_files[[data_path]] <- data_hash
+        
+        # Queue data for saving during generate_dashboard
+        if (is.null(proj$pending_data)) {
+          proj$pending_data <- list()
+        }
+        proj$pending_data[[data_path]] <- data
       }
     }
-
-    # Save the data file
-    output_dir <- .resolve_output_dir(proj$output_dir, proj$allow_inside_pkg)
-    if (!dir.exists(output_dir)) {
-      dir.create(output_dir, recursive = TRUE)
-    }
-    saveRDS(data, file.path(output_dir, basename(data_path)))
     data_path <- basename(data_path)
   }
 

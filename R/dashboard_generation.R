@@ -118,6 +118,16 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
     dir.create(output_dir, recursive = TRUE)
   }
   
+  # Save any pending data files (deferred from add_page)
+  if (!is.null(proj$pending_data) && length(proj$pending_data) > 0) {
+    for (data_path in names(proj$pending_data)) {
+      saveRDS(proj$pending_data[[data_path]], file.path(output_dir, basename(data_path)))
+    }
+    if (!quiet) {
+      message("Saved ", length(proj$pending_data), " data file(s)")
+    }
+  }
+  
   # Load previous build manifest for incremental builds
   manifest <- if (incremental) .load_manifest(output_dir) else NULL
   new_manifest <- list(
