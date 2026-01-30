@@ -93,7 +93,7 @@
   # Group pages by alignment
   for (page_name in names(proj$pages)) {
     page <- proj$pages[[page_name]]
-    # Skip landing page as it becomes "Home"
+    # Skip landing page as it's added separately with href: index.qmd
     if (page$is_landing_page) {
       next
     }
@@ -115,12 +115,25 @@
   # Left navigation
   yaml_lines <- c(yaml_lines, "    left:")
 
-  # Add Home link if there's a landing page (only if not using navbar sections)
+  # Add landing page link if there's a landing page (only if not using navbar sections)
   if (!is.null(landing_page_name) && (is.null(proj$navbar_sections) || length(proj$navbar_sections) == 0)) {
+    landing_page <- proj$pages[[landing_page_name]]
+    
+    # Build text with icon if provided (same pattern as other pages)
+    landing_text <- paste0("\"", landing_page_name, "\"")
+    if (!is.null(landing_page$icon)) {
+      icon_shortcode <- if (grepl("{{< iconify", landing_page$icon, fixed = TRUE)) {
+        landing_page$icon
+      } else {
+        icon(landing_page$icon)
+      }
+      landing_text <- paste0("\"", icon_shortcode, " ", landing_page_name, "\"")
+    }
+    
     yaml_lines <- c(yaml_lines,
-    "      - href: index.qmd",
-      "        text: \"Home\""
-  )
+      "      - href: index.qmd",
+      paste0("        text: ", landing_text)
+    )
   }
 
   # Add navigation links - support both regular pages and navbar sections
@@ -638,7 +651,20 @@
         }
 
         if (!is.null(landing_page_name)) {
-          yaml_lines <- c(yaml_lines, "      - text: \"Home\"")
+          landing_page <- proj$pages[[landing_page_name]]
+          
+          # Build text with icon if provided
+          landing_text <- paste0("\"", landing_page_name, "\"")
+          if (!is.null(landing_page$icon)) {
+            icon_shortcode <- if (grepl("{{< iconify", landing_page$icon, fixed = TRUE)) {
+              landing_page$icon
+            } else {
+              icon(landing_page$icon)
+            }
+            landing_text <- paste0("\"", icon_shortcode, " ", landing_page_name, "\"")
+          }
+          
+          yaml_lines <- c(yaml_lines, paste0("      - text: ", landing_text))
           yaml_lines <- c(yaml_lines, "        href: index.qmd")
         }
 
