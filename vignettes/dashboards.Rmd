@@ -115,6 +115,42 @@ print(dashboard)
 
 Pages appear in the navbar in the order they're added.
 
+## ⚙️ Generating Output
+
+### Basic Generation
+
+```{r, eval=FALSE}
+dashboard %>%
+  generate_dashboard(render = TRUE, open = "browser")
+```
+
+### Generation Options
+
+| Parameter | Description |
+|-----------|-------------|
+| `render = FALSE` | Only create Quarto (.qmd) files, don't render to HTML |
+| `render = TRUE` | Render to HTML (slower but complete) |
+| `open = "browser"` | Open in default web browser |
+| `open = "viewer"` | Open in RStudio Viewer pane |
+| `clean = TRUE` | Remove intermediate files after rendering |
+
+### Development Workflow
+
+During development, iterate quickly by skipping rendering:
+
+```{r, eval=FALSE}
+# Fast iteration: just create QMD files
+dashboard %>% generate_dashboard(render = FALSE)
+
+# Check structure, make changes...
+
+# When ready, full render
+dashboard %>% generate_dashboard(render = TRUE, open = "browser")
+
+# Final build with cleanup
+dashboard %>% generate_dashboard(render = TRUE, clean = TRUE)
+```
+
 ## 🎨 Themes
 
 ### Built-in Quarto Themes
@@ -295,42 +331,6 @@ create_dashboard(
 ```
 
 You'll need to [set up a Plausible account](https://plausible.io/register) and add your domain first.
-
-## ⚙️ Generating Output
-
-### Basic Generation
-
-```{r, eval=FALSE}
-dashboard %>%
-  generate_dashboard(render = TRUE, open = "browser")
-```
-
-### Generation Options
-
-| Parameter | Description |
-|-----------|-------------|
-| `render = FALSE` | Only create Quarto (.qmd) files, don't render to HTML |
-| `render = TRUE` | Render to HTML (slower but complete) |
-| `open = "browser"` | Open in default web browser |
-| `open = "viewer"` | Open in RStudio Viewer pane |
-| `clean = TRUE` | Remove intermediate files after rendering |
-
-### Development Workflow
-
-During development, iterate quickly by skipping rendering:
-
-```{r, eval=FALSE}
-# Fast iteration: just create QMD files
-dashboard %>% generate_dashboard(render = FALSE)
-
-# Check structure, make changes...
-
-# When ready, full render
-dashboard %>% generate_dashboard(render = TRUE, open = "browser")
-
-# Final build with cleanup
-dashboard %>% generate_dashboard(render = TRUE, clean = TRUE)
-```
 
 ## 📋 Complete Example
 
