@@ -14,20 +14,19 @@
 - [Dashboards: Deep
   Dive](https://favstats.github.io/dashboardr/articles/dashboards.md):
 
-### Publishing
-
-- [Publishing Dashboards to GitHub
-  Pages](https://favstats.github.io/dashboardr/articles/publishing_dashboards.md):
-
 ### Advanced Features
 
 - [Advanced
   Features](https://favstats.github.io/dashboardr/articles/advanced-features.md):
 
+### Publishing
+
+- [Publishing Dashboards to GitHub
+  Pages](https://favstats.github.io/dashboardr/articles/publishing_dashboards.md):
+
 ### Live Demos
 
-- [UNKNOWN
-  TITLE](https://favstats.github.io/dashboardr/articles/demos.md):
+- [Live Demos](https://favstats.github.io/dashboardr/articles/demos.md):
 
 ### Visualization Types
 

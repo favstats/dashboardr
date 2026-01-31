@@ -87,7 +87,7 @@ Functions for different chart types
 - [`viz_stackedbar()`](https://favstats.github.io/dashboardr/reference/viz_stackedbar.md)
   : Create a Stacked Bar Chart
 - [`viz_stackedbars()`](https://favstats.github.io/dashboardr/reference/viz_stackedbars.md)
-  : Stacked Bar Charts for Multiple Variables (Legacy)
+  : Stacked Bar Charts for Multiple Variables (Superseded)
 - [`viz_timeline()`](https://favstats.github.io/dashboardr/reference/viz_timeline.md)
   : Create a Timeline Chart
 - [`viz_heatmap()`](https://favstats.github.io/dashboardr/reference/viz_heatmap.md)
@@ -122,7 +122,7 @@ is a legacy wrapper that calls
 - [`viz_stackedbar()`](https://favstats.github.io/dashboardr/reference/viz_stackedbar.md)
   : Create a Stacked Bar Chart
 - [`viz_stackedbars()`](https://favstats.github.io/dashboardr/reference/viz_stackedbars.md)
-  : Stacked Bar Charts for Multiple Variables (Legacy)
+  : Stacked Bar Charts for Multiple Variables (Superseded)
 
 ## Navigation & Layout
 

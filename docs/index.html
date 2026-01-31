@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>What the Package Does (One Line, Title Case) • dashboardr</title>
+<title>Build Interactive HTML Dashboards from R • dashboardr</title>
 <!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="favicon-96x96.png">
 <link rel="icon" type="”image/svg+xml”" href="favicon.svg">
 <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
@@ -18,9 +18,10 @@
 <link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><link href="extra.css" rel="stylesheet">
-<meta property="og:title" content="What the Package Does (One Line, Title Case)">
-<meta name="description" content="What the package does (one paragraph).">
-<meta property="og:description" content="What the package does (one paragraph).">
+<meta property="og:title" content="Build Interactive HTML Dashboards from R">
+<meta name="description" content="Build interactive HTML dashboards from R using a simple, composable grammar. Create visualizations, organize them into pages, and generate complete dashboards with navigation, theming, and interactivity. Powered by Highcharts for charts and Quarto for rendering.">
+<meta property="og:description" content="Build interactive HTML dashboards from R using a simple, composable grammar. Create visualizations, organize them into pages, and generate complete dashboards with navigation, theming, and interactivity. Powered by Highcharts for charts and Quarto for rendering.">
+<meta property="og:image" content="https://favstats.github.io/dashboardr/logo.svg">
 <style>
 /* Navbar logo */
 .navbar-brand img {
@@ -50,7 +51,7 @@
 
     <a class="navbar-brand me-2" href="index.html">dashboardr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -69,9 +70,9 @@
     <li><a class="dropdown-item" href="articles/content-collections.html">- Content</a></li>
     <li><a class="dropdown-item" href="articles/pages.html">- Pages</a></li>
     <li><a class="dropdown-item" href="articles/dashboards.html">- Dashboards</a></li>
-    <li><a class="dropdown-item" href="articles/publishing_dashboards.html">🌐 Publishing Dashboards</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><a class="dropdown-item" href="articles/advanced-features.html">⚙️ Advanced Features</a></li>
+    <li><a class="dropdown-item" href="articles/publishing_dashboards.html">🌐 Publishing Dashboards</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>📊 Visualization Types</h6></li>
     <li><a class="dropdown-item" href="articles/bar_vignette.html">- Bar Charts</a></li>
@@ -91,9 +92,18 @@
   <ul class="dropdown-menu" aria-labelledby="dropdown--live-demos">
 <li><a class="dropdown-item" href="articles/demos.html">📚 About the Demos</a></li>
     <li><hr class="dropdown-divider"></li>
-    <li><a class="dropdown-item" href="live-demos/features/index.html">⭐ Features Demo (Recommended)</a></li>
     <li><a class="dropdown-item" href="live-demos/tutorial/index.html">🎓 Tutorial Dashboard</a></li>
     <li><a class="dropdown-item" href="live-demos/showcase/index.html">🚀 Showcase Dashboard</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>🎨 Tabset Themes</h6></li>
+    <li><a class="dropdown-item" href="live-demos/tabsets/pills/index.html">   Pills</a></li>
+    <li><a class="dropdown-item" href="live-demos/tabsets/modern/index.html">   Modern</a></li>
+    <li><a class="dropdown-item" href="live-demos/tabsets/minimal/index.html">   Minimal</a></li>
+    <li><a class="dropdown-item" href="live-demos/tabsets/classic/index.html">   Classic</a></li>
+    <li><a class="dropdown-item" href="live-demos/tabsets/underline/index.html">   Underline</a></li>
+    <li><a class="dropdown-item" href="live-demos/tabsets/segmented/index.html">   Segmented</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><a class="dropdown-item" href="live-demos/overlay/index.html">🎭 Loading Overlays</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="news/index.html">Changelog</a></li>
@@ -110,8 +120,10 @@
 </nav><div class="container template-home">
 <div class="row">
   <main id="main" class="col-md-9"><div class="section level1">
-<div class="page-header"><h1 id="dashboardr-">dashboardr <img src="reference/figures/logo.svg" align="right" height="139" alt=""><a class="anchor" aria-label="anchor" href="#dashboardr-"></a>
-</h1></div>
+<div class="page-header">
+<img src="logo.svg" class="logo" alt=""><h1 id="dashboardr-">dashboardr <a class="anchor" aria-label="anchor" href="#dashboardr-"></a>
+</h1>
+</div>
 <!-- badges: start -->
 
 <p><strong>dashboardr</strong> lets you build interactive HTML dashboards from R using a simple, composable grammar. Think of it like building with Lego blocks:</p>
@@ -131,18 +143,16 @@
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># install.packages("pak")</span></span>
 <span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pak.html" class="external-link">pak</a></span><span class="op">(</span><span class="st">"favstats/dashboardr"</span><span class="op">)</span></span></code></pre></div>
+<div class="section level3">
+<h3 id="optional-install-gssr-for-tutorials">Optional: Install gssr for tutorials<a class="anchor" aria-label="anchor" href="#optional-install-gssr-for-tutorials"></a>
+</h3>
+<p>The tutorials and demos use the <code>gssr</code> package (General Social Survey data). Install it from r-universe:</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">'gssr'</span>, repos <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'https://kjhealy.r-universe.dev'</span>, <span class="st">'https://cloud.r-project.org'</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Also recommended: install gssrdoc for documentation</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">'gssrdoc'</span>, repos <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'https://kjhealy.r-universe.dev'</span>, <span class="st">'https://cloud.r-project.org'</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 </div>
-<div class="section level2">
-<h2 id="live-demos">Live Demos<a class="anchor" aria-label="anchor" href="#live-demos"></a>
-</h2>
-<p>See dashboardr in action:</p>
-<ol style="list-style-type: decimal">
-<li>
-<a href="https://favstats.github.io/dashboardr/live-demos/tutorial/docs/index.html"><strong>Tutorial Dashboard</strong></a> - Beginner-friendly demo</li>
-<li>
-<a href="https://favstats.github.io/dashboardr/live-demos/showcase/docs/index.html"><strong>Showcase Dashboard</strong></a> - Advanced features</li>
-</ol>
-<p>Both use real data from the General Social Survey (GSS).</p>
 </div>
 <div class="section level2">
 <h2 id="the-three-layers">The Three Layers<a class="anchor" aria-label="anchor" href="#the-three-layers"></a>
@@ -188,7 +198,7 @@
 <div class="section level2">
 <h2 id="quick-start">Quick Start<a class="anchor" aria-label="anchor" href="#quick-start"></a>
 </h2>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://favstats.github.io/dashboardr/">dashboardr</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
 <span></span>
@@ -216,20 +226,6 @@
 <span>  <span class="fu"><a href="reference/add_pages.html">add_pages</a></span><span class="op">(</span><span class="va">home</span>, <span class="va">analysis</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="reference/generate_dashboard.html">generate_dashboard</a></span><span class="op">(</span>render <span class="op">=</span> <span class="cn">TRUE</span>, open <span class="op">=</span> <span class="st">"browser"</span><span class="op">)</span></span></code></pre></div>
 <p>That’s it! A complete interactive dashboard.</p>
-</div>
-<div class="section level2">
-<h2 id="features">Features<a class="anchor" aria-label="anchor" href="#features"></a>
-</h2>
-<ul>
-<li>📊 <strong>9 Visualization Types</strong> - Bar, histogram, stacked bar, timeline, heatmap, scatter, treemap, map</li>
-<li>🎨 <strong>Beautiful Themes</strong> - 25+ Bootswatch themes</li>
-<li>🎯 <strong>Smart Defaults</strong> - Set once, reuse everywhere</li>
-<li>🔍 <strong>Data Filtering</strong> - Row-level filters per visualization</li>
-<li>🎭 <strong>Nested Tabs</strong> - Hierarchical tab structures (<code>"parent/child/grandchild"</code>)</li>
-<li>⚡ <strong>Batch Creation</strong> - <code><a href="reference/add_vizzes.html">add_vizzes()</a></code> for multiple charts at once</li>
-<li>🎬 <strong>Loading Overlays</strong> - Visual feedback while content loads</li>
-<li>🧭 <strong>Flexible Navigation</strong> - Navbar, dropdowns, sidebar, icons</li>
-</ul>
 </div>
 <div class="section level2">
 <h2 id="visualization-types">Visualization Types<a class="anchor" aria-label="anchor" href="#visualization-types"></a>
@@ -373,7 +369,7 @@
 <div class="section level3">
 <h3 id="the-typical-pattern">The Typical Pattern<a class="anchor" aria-label="anchor" href="#the-typical-pattern"></a>
 </h3>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># 1. CREATE a container</span></span>
 <span><span class="fu"><a href="reference/create_content.html">create_content</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">my_data</span>, type <span class="op">=</span> <span class="st">"bar"</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="co"># 2. ADD elements to it</span></span>
@@ -418,15 +414,16 @@
 </table>
 </div>
 <div class="section level2">
-<h2 id="use-cases">Use Cases<a class="anchor" aria-label="anchor" href="#use-cases"></a>
+<h2 id="live-demos">Live Demos<a class="anchor" aria-label="anchor" href="#live-demos"></a>
 </h2>
-<ul>
-<li>🎓 <strong>Academic Research</strong> - Present study results interactively</li>
-<li>📊 <strong>Survey Analysis</strong> - Visualize Likert-scale responses across waves</li>
-<li>📈 <strong>Business Analytics</strong> - Track KPIs over time</li>
-<li>💼 <strong>Consulting Reports</strong> - Client-ready dashboards</li>
-<li>📱 <strong>Data Journalism</strong> - Interactive data stories</li>
-</ul>
+<p>See dashboardr in action:</p>
+<ol style="list-style-type: decimal">
+<li>
+<a href="https://favstats.github.io/dashboardr/live-demos/tutorial/docs/index.html"><strong>Tutorial Dashboard</strong></a> - Beginner-friendly demo</li>
+<li>
+<a href="https://favstats.github.io/dashboardr/live-demos/showcase/docs/index.html"><strong>Showcase Dashboard</strong></a> - Advanced features</li>
+</ol>
+<p>Both use real data from the General Social Survey (GSS).</p>
 </div>
 <div class="section level2">
 <h2 id="contributing">Contributing<a class="anchor" aria-label="anchor" href="#contributing"></a>
@@ -458,7 +455,10 @@
 <div class="developers">
 <h2 data-toc-skip>Developers</h2>
 <ul class="list-unstyled">
-<li>First Last <br><small class="roles"> Author, maintainer </small>   </li>
+<li>Fabio Votta <br><small class="roles"> Author, maintainer </small>   </li>
+<li>Alexandra Pafford <br><small class="roles"> Author </small>   </li>
+<li>Max Paulus <br><small class="roles"> Author </small>   </li>
+<li>Ernesto de León <br><small class="roles"> Author </small>   </li>
 </ul>
 </div>
 
@@ -467,6 +467,7 @@
 <ul class="list-unstyled">
 <li><a href="https://lifecycle.r-lib.org/articles/stages.html#experimental" class="external-link"><img src="https://img.shields.io/badge/lifecycle-experimental-orange.svg" alt="Lifecycle: experimental"></a></li>
 <li><a href="https://CRAN.R-project.org/package=dashboardr" class="external-link"><img src="https://www.r-pkg.org/badges/version/dashboardr" alt="CRAN status"></a></li>
+<li><a href="https://app.codecov.io/gh/favstats/dashboardr" class="external-link"><img src="https://codecov.io/gh/favstats/dashboardr/graph/badge.svg" alt="Codecov test coverage"></a></li>
 </ul>
 </div>
 
@@ -475,7 +476,7 @@
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by First Last.</p>
+  <p>Developed by Fabio Votta, Alexandra Pafford, Max Paulus, Ernesto de León.</p>
 </div>
 
 <div class="pkgdown-footer-right">

@@ -832,9 +832,7 @@ modern_page <- create_page("Modern", data = gss, type = "bar", tabset_theme = "m
 print(modern_page)
 ```
 
-```{r}
-modern_page %>% preview()
-```
+> **Note:** Tab themes are fully rendered in the generated dashboard. Use `generate_dashboard(render = TRUE)` to see the complete styling.
 
 ### Custom Colors
 
@@ -873,9 +871,7 @@ blue_tabs <- create_page(
 print(blue_tabs)
 ```
 
-```{r}
-blue_tabs %>% preview()
-```
+> **Note:** Custom tab colors (like `tabset_colors`) are only visible in the generated dashboard, not in `preview()`.
 
 ### Example: Corporate Theme
 

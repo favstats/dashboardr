@@ -97,12 +97,29 @@ navbar:
       - text: "📚 About the Demos"
         href: articles/demos.html
       - text: -------
-      - text: "⭐ Features Demo (Recommended)"
-        href: live-demos/features/index.html
       - text: "🎓 Tutorial Dashboard"
         href: live-demos/tutorial/index.html
       - text: "🚀 Showcase Dashboard"
         href: live-demos/showcase/index.html
+      - text: -------
+      - text: "🎨 Tabset Themes"
+      - text: "   Pills"
+        href: live-demos/tabsets/pills/index.html
+      - text: "   Modern"
+        href: live-demos/tabsets/modern/index.html
+      - text: "   Minimal"
+        href: live-demos/tabsets/minimal/index.html
+      - text: "   Classic"
+        href: live-demos/tabsets/classic/index.html
+      - text: "   Underline"
+        href: live-demos/tabsets/underline/index.html
+      - text: "   Segmented"
+        href: live-demos/tabsets/segmented/index.html
+      - text: -------
+      - text: "🎛️ Interactive Inputs"
+        href: live-demos/inputs/index.html
+      - text: "🎭 Loading Overlays"
+        href: live-demos/overlay/index.html
 
 articles:
 - title: Getting Started

@@ -1,0 +1,128 @@
+/*-- scss:rules --*/
+
+/* ============================================
+   PILLS THEME - Rounded pill buttons with floating look
+   ============================================ */
+
+/* NUCLEAR scroll prevention - bombproof fix for tab jumping */
+html.dashboardr-tab-switching,
+html.dashboardr-tab-switching body {
+  scroll-behavior: auto !important;
+  overflow-anchor: none !important;
+}
+
+.panel-tabset {
+  scroll-margin-top: 0 !important;
+  scroll-padding-top: 0 !important;
+  overflow-anchor: none !important;
+  contain: layout style;  /* Isolate reflow from affecting parent scroll */
+}
+
+.panel-tabset .tab-pane {
+  scroll-margin-top: 0 !important;
+  overflow-anchor: none !important;
+  contain: layout style;  /* Prevent height changes from propagating */
+}
+
+.panel-tabset .tab-content {
+  overflow-anchor: none !important;
+}
+
+.panel-tabset .nav-link {
+  scroll-margin: 0 !important;
+  scroll-padding: 0 !important;
+}
+
+.panel-tabset .nav-link:focus,
+.panel-tabset [role="tab"]:focus,
+.panel-tabset .tab-pane:focus {
+  outline: none;
+  scroll-margin: 0 !important;
+  scroll-padding: 0 !important;
+}
+
+/* Prevent any focus-based scrolling within tabsets */
+.panel-tabset *:focus {
+  scroll-margin: 0 !important;
+}
+
+.panel-tabset .nav-tabs {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  flex-wrap: wrap;
+  list-style: none;
+  padding: 5px 0;  /* Reduced from 10px */
+  margin-bottom: 5px;  /* Tight spacing */
+  border-bottom: none;
+  gap: 8px; /* Modern gap property */
+}
+
+.panel-tabset .nav-item {
+  color: #374151;
+  background-color: #f3f4f6;
+  border-radius: 50px; /* Full pill shape */
+  transition: all 0.3s ease;
+  margin: 0;
+  border: none;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.panel-tabset .nav-item a {
+  display: block;
+  padding: 8px 24px;
+  text-decoration: none;
+  color: inherit;
+  background-color: inherit;
+  border: none;
+  border-radius: 50px;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+/* Hover effect */
+.panel-tabset .nav-item:hover {
+  background-color: #e5e7eb;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transform: translateY(-1px);
+}
+
+/* Active tab styling */
+.panel-tabset .nav-tabs .nav-link.active {
+  color: #fff;
+  background-color: #2563eb;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+  transform: translateY(-1px);
+}
+
+/* Standard layout */
+.panel-tabset {
+  display: flex;
+  flex-direction: column;
+  border: none !important;  /* Remove all borders */
+  box-shadow: none !important;  /* Remove shadows */
+}
+
+.nav-tabs {
+  order: 1;
+}
+
+.panel-tabset .tab-content {
+  order: 2;
+  padding-top: 5px;  /* Reduced even further */
+  margin-top: 0;  /* No extra margin */
+  border: none !important;  /* Remove content borders */
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .panel-tabset .nav-tabs {
+    gap: 6px;
+  }
+  
+  .panel-tabset .nav-item a {
+    padding: 6px 16px;
+    font-size: 0.85rem;
+  }
+}
+

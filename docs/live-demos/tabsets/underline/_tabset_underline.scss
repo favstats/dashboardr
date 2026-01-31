@@ -1,0 +1,157 @@
+/*-- scss:rules --*/
+
+/* ============================================
+   UNDERLINE THEME - Material Design style with animated underline
+   ============================================ */
+
+/* NUCLEAR scroll prevention - bombproof fix for tab jumping */
+html.dashboardr-tab-switching,
+html.dashboardr-tab-switching body {
+  scroll-behavior: auto !important;
+  overflow-anchor: none !important;
+}
+
+.panel-tabset {
+  scroll-margin-top: 0 !important;
+  scroll-padding-top: 0 !important;
+  overflow-anchor: none !important;
+  contain: layout style;  /* Isolate reflow from affecting parent scroll */
+}
+
+.panel-tabset .tab-pane {
+  scroll-margin-top: 0 !important;
+  overflow-anchor: none !important;
+  contain: layout style;  /* Prevent height changes from propagating */
+}
+
+.panel-tabset .tab-content {
+  overflow-anchor: none !important;
+}
+
+.panel-tabset .nav-link {
+  scroll-margin: 0 !important;
+  scroll-padding: 0 !important;
+}
+
+.panel-tabset .nav-link:focus,
+.panel-tabset [role="tab"]:focus,
+.panel-tabset .tab-pane:focus {
+  outline: none;
+  scroll-margin: 0 !important;
+  scroll-padding: 0 !important;
+}
+
+/* Prevent any focus-based scrolling within tabsets */
+.panel-tabset *:focus {
+  scroll-margin: 0 !important;
+}
+
+.panel-tabset .nav-tabs {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  flex-wrap: wrap;
+  list-style: none;
+  padding: 0;
+  margin: 5px 0;  /* Reduced spacing */
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.panel-tabset .nav-item {
+  color: #6b7280;
+  background-color: transparent;
+  border-radius: 0;
+  transition: all 0.3s ease;
+  margin: 0 8px;
+  border: none;
+  position: relative;
+}
+
+.panel-tabset .nav-item a {
+  display: block;
+  padding: 12px 20px;
+  text-decoration: none;
+  color: inherit;
+  background-color: transparent;
+  border: none;
+  font-weight: 500;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  letter-spacing: 0.5px;
+}
+
+/* Animated underline on hover */
+.panel-tabset .nav-item a::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 2px;
+  bottom: -2px;
+  left: 50%;
+  background-color: #2563eb;
+  transition: width 0.3s ease, left 0.3s ease;
+}
+
+.panel-tabset .nav-item:hover a::after {
+  width: 100%;
+  left: 0;
+}
+
+/* Hover effect */
+.panel-tabset .nav-item:hover {
+  color: #111827;
+}
+
+/* Active tab styling */
+.panel-tabset .nav-tabs .nav-link.active {
+  color: #2563eb;
+  background-color: transparent;
+  font-weight: 600;
+}
+
+.panel-tabset .nav-tabs .nav-link.active::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 3px;
+  bottom: -2px;
+  left: 0;
+  background-color: #2563eb;
+  transition: none;
+}
+
+/* Standard layout */
+.panel-tabset {
+  display: flex;
+  flex-direction: column;
+  border: none !important;  /* Remove all borders */
+  box-shadow: none !important;  /* Remove shadows */
+}
+
+.nav-tabs {
+  order: 1;
+}
+
+.panel-tabset .tab-content {
+  order: 2;
+  padding-top: 5px;  /* Reduced even further */
+  margin-top: 0;  /* No extra margin */
+  border: none !important;  /* Remove content borders */
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .panel-tabset .nav-tabs {
+    justify-content: flex-start;
+  }
+  
+  .panel-tabset .nav-item {
+    margin: 0 4px;
+  }
+  
+  .panel-tabset .nav-item a {
+    padding: 10px 14px;
+    font-size: 0.75rem;
+  }
+}
+

@@ -262,7 +262,7 @@ for simple (non-stacked) bar charts
 
 ``` r
 library(gssr)
-#> Warning: package 'gssr' was built under R version 4.4.3
+#> Warning: package ‘gssr’ was built under R version 4.4.3
 #> Package loaded. To attach the GSS data, type data(gss_all) at the console.
 #> For the panel data and documentation, type e.g. data(gss_panel08_long) and data(gss_panel_doc).
 #> For help on a specific GSS variable, type ?varname at the console.
@@ -306,11 +306,11 @@ plot3 <- viz_stackedbar(
   tooltip_suffix = "%"
 )
 #> Warning: `trust_1a` and `fair_1a` have conflicting value labels.
-#> i Labels for these values will be taken from `trust_1a`.
-#> x Values: 1 and 2
+#> ℹ Labels for these values will be taken from `trust_1a`.
+#> ✖ Values: 1 and 2
 #> Warning: `trust_1a` and `helpful_1a` have conflicting value labels.
-#> i Labels for these values will be taken from `trust_1a`.
-#> x Values: 1 and 2
+#> ℹ Labels for these values will be taken from `trust_1a`.
+#> ✖ Values: 1 and 2
 
 # Example 4: Single question horizontal (compact display)
 plot4 <- viz_stackedbar(

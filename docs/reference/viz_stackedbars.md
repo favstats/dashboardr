@@ -1,11 +1,12 @@
-# Stacked Bar Charts for Multiple Variables (Legacy)
+# Stacked Bar Charts for Multiple Variables (Superseded)
 
-soft-deprecated
-
-This function has been superseded by
+**Note:** This function has been superseded by
 [`viz_stackedbar`](https://favstats.github.io/dashboardr/reference/viz_stackedbar.md),
 which now supports both single-variable crosstabs and multi-variable
-comparisons through a unified interface.
+comparisons through a unified interface. This function will continue to
+work but we recommend using
+[`viz_stackedbar()`](https://favstats.github.io/dashboardr/reference/viz_stackedbar.md)
+for new code.
 
 **Migration:** Replace `viz_stackedbars(data, x_vars = ...)` with
 `viz_stackedbar(data, x_vars = ...)`. All parameters work the same way.

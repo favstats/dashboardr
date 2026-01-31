@@ -5,7 +5,7 @@
 # This master script generates all live demo dashboards:
 #   - Tutorial Dashboard (basic features)
 #   - Showcase Dashboard (comprehensive example)
-#   - Features Dashboard (tabsets, inputs, overlays)
+#   - Tabset Theme Dashboards (6 themes: pills, modern, minimal, classic, underline, segmented)
 #   - Inputs Dashboard (interactive widgets focus)
 #   - Overlay Dashboard (loading themes focus)
 #
@@ -43,7 +43,7 @@ setwd(pkg_root)
 on.exit(setwd(original_wd))
 
 # Check required packages
-required_pkgs <- c("dashboardr", "dplyr", "gssr", "haven")
+required_pkgs <- c("dashboardr", "dplyr", "gssr", "haven", "tidyr")
 missing_pkgs <- required_pkgs[!sapply(required_pkgs, requireNamespace, quietly = TRUE)]
 
 if (length(missing_pkgs) > 0) {
@@ -58,6 +58,7 @@ suppressPackageStartupMessages({
   library(dplyr)
   library(gssr)
   library(haven)
+  library(tidyr)
 })
 
 # Track results
@@ -122,20 +123,26 @@ tryCatch({
 })
 
 # -----------------------------------------------------------------------------
-# 3. Features Dashboard
+# 3. Tabset Theme Dashboards (6 themes)
 # -----------------------------------------------------------------------------
-cat("\n📊 [3/5] Building Features Dashboard...\n")
+cat("\n📊 [3/5] Building Tabset Theme Dashboards (6 themes)...\n")
 tryCatch({
-  source(file.path(pkg_root, "pkgdown", "build-features-demo.R"), local = TRUE)
+  source(file.path(pkg_root, "pkgdown", "build-tabsets-demo.R"), local = TRUE)
   
-  features_dir <- file.path(pkg_root, "docs", "live-demos", "features")
-  if (check_html(features_dir)) {
-    results$features <- "✅ Success"
+  # Check if any tabset themes were created
+  tabsets_base <- file.path(pkg_root, "docs", "live-demos", "tabsets")
+  themes <- c("pills", "modern", "minimal", "classic", "underline", "segmented")
+  success_count <- sum(sapply(themes, function(t) check_html(file.path(tabsets_base, t))))
+  
+  if (success_count == 6) {
+    results$tabsets <- "✅ All 6 themes"
+  } else if (success_count > 0) {
+    results$tabsets <- paste0("⚠️  ", success_count, "/6 themes")
   } else {
-    results$features <- "⚠️  QMD only (needs Quarto)"
+    results$tabsets <- "⚠️  QMD only (needs Quarto)"
   }
 }, error = function(e) {
-  results$features <<- paste("❌", e$message)
+  results$tabsets <<- paste("❌", e$message)
   cat("   ❌ Error:", e$message, "\n")
 })
 
@@ -186,7 +193,7 @@ cat("Demo Dashboard      Status\n")
 cat("─────────────────   ──────────────────────────────────────\n")
 cat(sprintf("Tutorial            %s\n", results$tutorial %||% "Not run"))
 cat(sprintf("Showcase            %s\n", results$showcase %||% "Not run"))
-cat(sprintf("Features            %s\n", results$features %||% "Not run"))
+cat(sprintf("Tabset Themes       %s\n", results$tabsets %||% "Not run"))
 cat(sprintf("Inputs              %s\n", results$inputs %||% "Not run"))
 cat(sprintf("Overlay             %s\n", results$overlay %||% "Not run"))
 
@@ -196,13 +203,15 @@ cat("\n📁 Output location:", file.path(pkg_root, "docs", "live-demos"), "\n")
 needs_quarto <- any(grepl("QMD only", unlist(results)))
 if (needs_quarto) {
   cat("\n⚠️  Some demos need Quarto rendering. To render manually:\n")
-  cat("   cd docs/live-demos/features && quarto render .\n")
-  cat("   (repeat for each demo that shows 'QMD only')\n")
+  cat("   cd docs/live-demos/<demo> && quarto render .\n")
 }
 
 cat("\n🔗 Live URLs (after deploying to GitHub Pages):\n")
 cat("   https://favstats.github.io/dashboardr/live-demos/tutorial/index.html\n")
 cat("   https://favstats.github.io/dashboardr/live-demos/showcase/index.html\n")
-cat("   https://favstats.github.io/dashboardr/live-demos/features/index.html\n")
+cat("   Tabset Themes:\n")
+for (theme in c("pills", "modern", "minimal", "classic", "underline", "segmented")) {
+  cat("     https://favstats.github.io/dashboardr/live-demos/tabsets/", theme, "/index.html\n", sep = "")
+}
 cat("   https://favstats.github.io/dashboardr/live-demos/inputs/index.html\n")
 cat("   https://favstats.github.io/dashboardr/live-demos/overlay/index.html\n")

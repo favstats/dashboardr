@@ -48,7 +48,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">dashboardr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -67,9 +67,9 @@
     <li><a class="dropdown-item" href="../articles/content-collections.html">- Content</a></li>
     <li><a class="dropdown-item" href="../articles/pages.html">- Pages</a></li>
     <li><a class="dropdown-item" href="../articles/dashboards.html">- Dashboards</a></li>
-    <li><a class="dropdown-item" href="../articles/publishing_dashboards.html">🌐 Publishing Dashboards</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><a class="dropdown-item" href="../articles/advanced-features.html">⚙️ Advanced Features</a></li>
+    <li><a class="dropdown-item" href="../articles/publishing_dashboards.html">🌐 Publishing Dashboards</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>📊 Visualization Types</h6></li>
     <li><a class="dropdown-item" href="../articles/bar_vignette.html">- Bar Charts</a></li>
@@ -89,9 +89,18 @@
   <ul class="dropdown-menu" aria-labelledby="dropdown--live-demos">
 <li><a class="dropdown-item" href="../articles/demos.html">📚 About the Demos</a></li>
     <li><hr class="dropdown-divider"></li>
-    <li><a class="dropdown-item" href="../live-demos/features/index.html">⭐ Features Demo (Recommended)</a></li>
     <li><a class="dropdown-item" href="../live-demos/tutorial/index.html">🎓 Tutorial Dashboard</a></li>
     <li><a class="dropdown-item" href="../live-demos/showcase/index.html">🚀 Showcase Dashboard</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>🎨 Tabset Themes</h6></li>
+    <li><a class="dropdown-item" href="../live-demos/tabsets/pills/index.html">   Pills</a></li>
+    <li><a class="dropdown-item" href="../live-demos/tabsets/modern/index.html">   Modern</a></li>
+    <li><a class="dropdown-item" href="../live-demos/tabsets/minimal/index.html">   Minimal</a></li>
+    <li><a class="dropdown-item" href="../live-demos/tabsets/classic/index.html">   Classic</a></li>
+    <li><a class="dropdown-item" href="../live-demos/tabsets/underline/index.html">   Underline</a></li>
+    <li><a class="dropdown-item" href="../live-demos/tabsets/segmented/index.html">   Segmented</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><a class="dropdown-item" href="../live-demos/overlay/index.html">🎭 Loading Overlays</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -112,8 +121,7 @@
 
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
-
-      <h1>Dashboards: Deep Dive</h1>
+      <img src="../logo.svg" class="logo" alt=""><h1>Dashboards: Deep Dive</h1>
             
       
 
@@ -195,17 +203,17 @@ metadata, analytics)</li>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">dashboard</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; &lt;U+0001F4CA&gt; DASHBOARD PROJECT ====================================================</span></span>
-<span><span class="co">#&gt; &lt;U+2502&gt; &lt;U+0001F3F7&gt;&lt;U+FE0F&gt;  Title: My Dashboard</span></span>
-<span><span class="co">#&gt; &lt;U+2502&gt; &lt;U+0001F4C1&gt; Output: /Users/favstats/Dropbox/postdoc/my_dashboard</span></span>
-<span><span class="co">#&gt; &lt;U+2502&gt;</span></span>
-<span><span class="co">#&gt; &lt;U+2502&gt; &lt;U+2699&gt;&lt;U+FE0F&gt;  FEATURES:</span></span>
-<span><span class="co">#&gt; &lt;U+2502&gt;    &lt;U+2022&gt; &lt;U+0001F50D&gt; Search</span></span>
-<span><span class="co">#&gt; &lt;U+2502&gt;    &lt;U+2022&gt; &lt;U+0001F4D1&gt; Tabs: minimal</span></span>
-<span><span class="co">#&gt; &lt;U+2502&gt;</span></span>
-<span><span class="co">#&gt; &lt;U+2502&gt; &lt;U+0001F4C4&gt; PAGES (0):</span></span>
-<span><span class="co">#&gt; &lt;U+2502&gt;    (no pages yet)</span></span>
-<span><span class="co">#&gt; &lt;U+2550&gt;&lt;U+2550&gt; &lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;</span></span></code></pre></div>
+<span><span class="co">#&gt; 📊 DASHBOARD PROJECT ====================================================</span></span>
+<span><span class="co">#&gt; │ 🏷️  Title: My Dashboard</span></span>
+<span><span class="co">#&gt; │ 📁 Output: /Users/favstats/Dropbox/postdoc/my_dashboard</span></span>
+<span><span class="co">#&gt; │</span></span>
+<span><span class="co">#&gt; │ ⚙️  FEATURES:</span></span>
+<span><span class="co">#&gt; │    • 🔍 Search</span></span>
+<span><span class="co">#&gt; │    • 📑 Tabs: minimal</span></span>
+<span><span class="co">#&gt; │</span></span>
+<span><span class="co">#&gt; │ 📄 PAGES (0):</span></span>
+<span><span class="co">#&gt; │    (no pages yet)</span></span>
+<span><span class="co">#&gt; ══ ═════════════════════════════════════════════════════════════════════════</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="key-parameters">Key Parameters<a class="anchor" aria-label="anchor" href="#key-parameters"></a>
@@ -276,20 +284,83 @@ metadata, analytics)</li>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">dashboard</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; &lt;U+0001F4CA&gt; DASHBOARD PROJECT ====================================================</span></span>
-<span><span class="co">#&gt; &lt;U+2502&gt; &lt;U+0001F3F7&gt;&lt;U+FE0F&gt;  Title: GSS Explorer</span></span>
-<span><span class="co">#&gt; &lt;U+2502&gt; &lt;U+0001F4C1&gt; Output: /Users/favstats/Dropbox/postdoc/output</span></span>
-<span><span class="co">#&gt; &lt;U+2502&gt;</span></span>
-<span><span class="co">#&gt; &lt;U+2502&gt; &lt;U+2699&gt;&lt;U+FE0F&gt;  FEATURES:</span></span>
-<span><span class="co">#&gt; &lt;U+2502&gt;    &lt;U+2022&gt; &lt;U+0001F50D&gt; Search</span></span>
-<span><span class="co">#&gt; &lt;U+2502&gt;    &lt;U+2022&gt; &lt;U+0001F4D1&gt; Tabs: minimal</span></span>
-<span><span class="co">#&gt; &lt;U+2502&gt;</span></span>
-<span><span class="co">#&gt; &lt;U+2502&gt; &lt;U+0001F4C4&gt; PAGES (3):</span></span>
-<span><span class="co">#&gt; &lt;U+2502&gt; &lt;U+251C&gt;&lt;U+2500&gt; &lt;U+0001F4C4&gt; Home [&lt;U+0001F3E0&gt; Landing]</span></span>
-<span><span class="co">#&gt; &lt;U+2502&gt; &lt;U+251C&gt;&lt;U+2500&gt; &lt;U+0001F4C4&gt; Analysis [&lt;U+0001F4BE&gt; 1 dataset]</span></span>
-<span><span class="co">#&gt; &lt;U+2502&gt; &lt;U+2514&gt;&lt;U+2500&gt; &lt;U+0001F4C4&gt; About [&lt;U+27A1&gt;&lt;U+FE0F&gt; Right]</span></span>
-<span><span class="co">#&gt; &lt;U+2550&gt;&lt;U+2550&gt; &lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;</span></span></code></pre></div>
+<span><span class="co">#&gt; 📊 DASHBOARD PROJECT ====================================================</span></span>
+<span><span class="co">#&gt; │ 🏷️  Title: GSS Explorer</span></span>
+<span><span class="co">#&gt; │ 📁 Output: /Users/favstats/Dropbox/postdoc/output</span></span>
+<span><span class="co">#&gt; │</span></span>
+<span><span class="co">#&gt; │ ⚙️  FEATURES:</span></span>
+<span><span class="co">#&gt; │    • 🔍 Search</span></span>
+<span><span class="co">#&gt; │    • 📑 Tabs: minimal</span></span>
+<span><span class="co">#&gt; │</span></span>
+<span><span class="co">#&gt; │ 📄 PAGES (3):</span></span>
+<span><span class="co">#&gt; │ ├─ 📄 Home [🏠 Landing]</span></span>
+<span><span class="co">#&gt; │ ├─ 📄 Analysis [💾 1 dataset]</span></span>
+<span><span class="co">#&gt; │ └─ 📄 About [➡️ Right]</span></span>
+<span><span class="co">#&gt; ══ ═════════════════════════════════════════════════════════════════════════</span></span></code></pre></div>
 <p>Pages appear in the navbar in the order they’re added.</p>
+</div>
+</div>
+<div class="section level2">
+<h2 id="generating-output">⚙️ Generating Output<a class="anchor" aria-label="anchor" href="#generating-output"></a>
+</h2>
+<div class="section level3">
+<h3 id="basic-generation">Basic Generation<a class="anchor" aria-label="anchor" href="#basic-generation"></a>
+</h3>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">dashboard</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/generate_dashboard.html">generate_dashboard</a></span><span class="op">(</span>render <span class="op">=</span> <span class="cn">TRUE</span>, open <span class="op">=</span> <span class="st">"browser"</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="generation-options">Generation Options<a class="anchor" aria-label="anchor" href="#generation-options"></a>
+</h3>
+<table class="table">
+<colgroup>
+<col width="45%">
+<col width="54%">
+</colgroup>
+<thead><tr class="header">
+<th>Parameter</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td><code>render = FALSE</code></td>
+<td>Only create Quarto (.qmd) files, don’t render to HTML</td>
+</tr>
+<tr class="even">
+<td><code>render = TRUE</code></td>
+<td>Render to HTML (slower but complete)</td>
+</tr>
+<tr class="odd">
+<td><code>open = "browser"</code></td>
+<td>Open in default web browser</td>
+</tr>
+<tr class="even">
+<td><code>open = "viewer"</code></td>
+<td>Open in RStudio Viewer pane</td>
+</tr>
+<tr class="odd">
+<td><code>clean = TRUE</code></td>
+<td>Remove intermediate files after rendering</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section level3">
+<h3 id="development-workflow">Development Workflow<a class="anchor" aria-label="anchor" href="#development-workflow"></a>
+</h3>
+<p>During development, iterate quickly by skipping rendering:</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Fast iteration: just create QMD files</span></span>
+<span><span class="va">dashboard</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/generate_dashboard.html">generate_dashboard</a></span><span class="op">(</span>render <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Check structure, make changes...</span></span>
+<span></span>
+<span><span class="co"># When ready, full render</span></span>
+<span><span class="va">dashboard</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/generate_dashboard.html">generate_dashboard</a></span><span class="op">(</span>render <span class="op">=</span> <span class="cn">TRUE</span>, open <span class="op">=</span> <span class="st">"browser"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Final build with cleanup</span></span>
+<span><span class="va">dashboard</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/generate_dashboard.html">generate_dashboard</a></span><span class="op">(</span>render <span class="op">=</span> <span class="cn">TRUE</span>, clean <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
@@ -365,7 +436,7 @@ choosing!</p>
 </tr>
 </tbody>
 </table>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Clean and modern (recommended)</span></span>
 <span><span class="fu"><a href="../reference/create_dashboard.html">create_dashboard</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Clean"</span>, output_dir <span class="op">=</span> <span class="st">"out"</span>, theme <span class="op">=</span> <span class="st">"flatly"</span><span class="op">)</span></span>
 <span></span>
@@ -387,7 +458,7 @@ specific layout and styling applied.</p>
 <h3 id="custom-themes-with-apply_theme">Custom Themes with apply_theme()<a class="anchor" aria-label="anchor" href="#custom-themes-with-apply_theme"></a>
 </h3>
 <p>dashboardr includes pre-built themes for common use cases:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Academic/research style</span></span>
 <span><span class="va">dashboard</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/apply_theme.html">apply_theme</a></span><span class="op">(</span><span class="fu"><a href="../reference/theme_academic.html">theme_academic</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
@@ -405,7 +476,7 @@ specific layout and styling applied.</p>
 <h3 id="customizing-themes">Customizing Themes<a class="anchor" aria-label="anchor" href="#customizing-themes"></a>
 </h3>
 <p>Override any theme parameter:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">dashboard</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/apply_theme.html">apply_theme</a></span><span class="op">(</span></span>
 <span>  <span class="fu"><a href="../reference/theme_modern.html">theme_modern</a></span><span class="op">(</span><span class="st">"blue"</span><span class="op">)</span>,</span>
 <span>  navbar_bg_color <span class="op">=</span> <span class="st">"#2C3E50"</span>,</span>
@@ -426,7 +497,7 @@ specific layout and styling applied.</p>
 <div class="section level3">
 <h3 id="basic-navbar-colors">Basic Navbar Colors<a class="anchor" aria-label="anchor" href="#basic-navbar-colors"></a>
 </h3>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/create_dashboard.html">create_dashboard</a></span><span class="op">(</span></span>
 <span>  title <span class="op">=</span> <span class="st">"Dark Navbar"</span>,</span>
 <span>  output_dir <span class="op">=</span> <span class="st">"out"</span>,</span>
@@ -438,7 +509,7 @@ specific layout and styling applied.</p>
 <div class="section level3">
 <h3 id="light-vs-dark-navbar">Light vs Dark Navbar<a class="anchor" aria-label="anchor" href="#light-vs-dark-navbar"></a>
 </h3>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Dark navbar (light text on dark background)</span></span>
 <span><span class="fu"><a href="../reference/create_dashboard.html">create_dashboard</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Dark"</span>, output_dir <span class="op">=</span> <span class="st">"out"</span>, navbar_style <span class="op">=</span> <span class="st">"dark"</span><span class="op">)</span></span>
 <span></span>
@@ -452,7 +523,7 @@ specific layout and styling applied.</p>
 <div class="section level3">
 <h3 id="tab-themes">Tab Themes<a class="anchor" aria-label="anchor" href="#tab-themes"></a>
 </h3>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/create_dashboard.html">create_dashboard</a></span><span class="op">(</span></span>
 <span>  title <span class="op">=</span> <span class="st">"Modern Tabs"</span>,</span>
 <span>  output_dir <span class="op">=</span> <span class="st">"out"</span>,</span>
@@ -470,7 +541,7 @@ specific layout and styling applied.</p>
 <div class="section level3">
 <h3 id="enhanced-navigation">Enhanced Navigation<a class="anchor" aria-label="anchor" href="#enhanced-navigation"></a>
 </h3>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/create_dashboard.html">create_dashboard</a></span><span class="op">(</span></span>
 <span>  title <span class="op">=</span> <span class="st">"Enhanced Nav"</span>,</span>
 <span>  output_dir <span class="op">=</span> <span class="st">"out"</span>,</span>
@@ -491,7 +562,7 @@ sidebar navigation, see <code><a href="../articles/advanced-features.html">vigne
 <h2 id="social-links">🔗 Social Links<a class="anchor" aria-label="anchor" href="#social-links"></a>
 </h2>
 <p>Add social media and contact links to the navbar:</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/create_dashboard.html">create_dashboard</a></span><span class="op">(</span></span>
 <span>  title <span class="op">=</span> <span class="st">"Social"</span>,</span>
 <span>  output_dir <span class="op">=</span> <span class="st">"out"</span>,</span>
@@ -511,7 +582,7 @@ see <code><a href="../articles/publishing_dashboards.html">vignette("publishing_
 <h3 id="metadata">Metadata<a class="anchor" aria-label="anchor" href="#metadata"></a>
 </h3>
 <p>Add metadata for SEO and attribution:</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/create_dashboard.html">create_dashboard</a></span><span class="op">(</span></span>
 <span>  title <span class="op">=</span> <span class="st">"With Metadata"</span>,</span>
 <span>  output_dir <span class="op">=</span> <span class="st">"out"</span>,</span>
@@ -526,7 +597,7 @@ see <code><a href="../articles/publishing_dashboards.html">vignette("publishing_
 </h3>
 <p>Track dashboard usage with <a href="https://plausible.io/" class="external-link">Plausible
 Analytics</a>:</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/create_dashboard.html">create_dashboard</a></span><span class="op">(</span></span>
 <span>  title <span class="op">=</span> <span class="st">"With Analytics"</span>,</span>
 <span>  output_dir <span class="op">=</span> <span class="st">"out"</span>,</span>
@@ -534,69 +605,6 @@ Analytics</a>:</p>
 <span><span class="op">)</span></span></code></pre></div>
 <p>You’ll need to <a href="https://plausible.io/register" class="external-link">set up a
 Plausible account</a> and add your domain first.</p>
-</div>
-</div>
-<div class="section level2">
-<h2 id="generating-output">⚙️ Generating Output<a class="anchor" aria-label="anchor" href="#generating-output"></a>
-</h2>
-<div class="section level3">
-<h3 id="basic-generation">Basic Generation<a class="anchor" aria-label="anchor" href="#basic-generation"></a>
-</h3>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">dashboard</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="../reference/generate_dashboard.html">generate_dashboard</a></span><span class="op">(</span>render <span class="op">=</span> <span class="cn">TRUE</span>, open <span class="op">=</span> <span class="st">"browser"</span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level3">
-<h3 id="generation-options">Generation Options<a class="anchor" aria-label="anchor" href="#generation-options"></a>
-</h3>
-<table class="table">
-<colgroup>
-<col width="45%">
-<col width="54%">
-</colgroup>
-<thead><tr class="header">
-<th>Parameter</th>
-<th>Description</th>
-</tr></thead>
-<tbody>
-<tr class="odd">
-<td><code>render = FALSE</code></td>
-<td>Only create Quarto (.qmd) files, don’t render to HTML</td>
-</tr>
-<tr class="even">
-<td><code>render = TRUE</code></td>
-<td>Render to HTML (slower but complete)</td>
-</tr>
-<tr class="odd">
-<td><code>open = "browser"</code></td>
-<td>Open in default web browser</td>
-</tr>
-<tr class="even">
-<td><code>open = "viewer"</code></td>
-<td>Open in RStudio Viewer pane</td>
-</tr>
-<tr class="odd">
-<td><code>clean = TRUE</code></td>
-<td>Remove intermediate files after rendering</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="section level3">
-<h3 id="development-workflow">Development Workflow<a class="anchor" aria-label="anchor" href="#development-workflow"></a>
-</h3>
-<p>During development, iterate quickly by skipping rendering:</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Fast iteration: just create QMD files</span></span>
-<span><span class="va">dashboard</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/generate_dashboard.html">generate_dashboard</a></span><span class="op">(</span>render <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Check structure, make changes...</span></span>
-<span></span>
-<span><span class="co"># When ready, full render</span></span>
-<span><span class="va">dashboard</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/generate_dashboard.html">generate_dashboard</a></span><span class="op">(</span>render <span class="op">=</span> <span class="cn">TRUE</span>, open <span class="op">=</span> <span class="st">"browser"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Final build with cleanup</span></span>
-<span><span class="va">dashboard</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/generate_dashboard.html">generate_dashboard</a></span><span class="op">(</span>render <span class="op">=</span> <span class="cn">TRUE</span>, clean <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
@@ -656,23 +664,23 @@ Plausible account</a> and add your domain first.</p>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">survey_dashboard</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; &lt;U+0001F4CA&gt; DASHBOARD PROJECT ====================================================</span></span>
-<span><span class="co">#&gt; &lt;U+2502&gt; &lt;U+0001F3F7&gt;&lt;U+FE0F&gt;  Title: GSS Data Explorer</span></span>
-<span><span class="co">#&gt; &lt;U+2502&gt; &lt;U+0001F4C1&gt; Output: /Users/favstats/Dropbox/postdoc/gss_out</span></span>
-<span><span class="co">#&gt; &lt;U+2502&gt;</span></span>
-<span><span class="co">#&gt; &lt;U+2502&gt; &lt;U+2699&gt;&lt;U+FE0F&gt;  FEATURES:</span></span>
-<span><span class="co">#&gt; &lt;U+2502&gt;    &lt;U+2022&gt; &lt;U+0001F50D&gt; Search</span></span>
-<span><span class="co">#&gt; &lt;U+2502&gt;    &lt;U+2022&gt; &lt;U+0001F3A8&gt; Theme: flatly</span></span>
-<span><span class="co">#&gt; &lt;U+2502&gt;    &lt;U+2022&gt; &lt;U+0001F4D1&gt; Tabs: minimal</span></span>
-<span><span class="co">#&gt; &lt;U+2502&gt;</span></span>
-<span><span class="co">#&gt; &lt;U+2502&gt; &lt;U+0001F517&gt; INTEGRATIONS: &lt;U+0001F4BB&gt; GitHub</span></span>
-<span><span class="co">#&gt; &lt;U+2502&gt;</span></span>
-<span><span class="co">#&gt; &lt;U+2502&gt; &lt;U+0001F4C4&gt; PAGES (4):</span></span>
-<span><span class="co">#&gt; &lt;U+2502&gt; &lt;U+251C&gt;&lt;U+2500&gt; &lt;U+0001F4C4&gt; Home [&lt;U+0001F3E0&gt; Landing]</span></span>
-<span><span class="co">#&gt; &lt;U+2502&gt; &lt;U+251C&gt;&lt;U+2500&gt; &lt;U+0001F4C4&gt; Demographics [&lt;U+0001F3F7&gt;&lt;U+FE0F&gt; Icon, &lt;U+0001F504&gt; Overlay, &lt;U+0001F4BE&gt; 1 dataset]</span></span>
-<span><span class="co">#&gt; &lt;U+2502&gt; &lt;U+251C&gt;&lt;U+2500&gt; &lt;U+0001F4C4&gt; Attitudes [&lt;U+0001F3F7&gt;&lt;U+FE0F&gt; Icon, &lt;U+0001F504&gt; Overlay, &lt;U+0001F4BE&gt; 1 dataset]</span></span>
-<span><span class="co">#&gt; &lt;U+2502&gt; &lt;U+2514&gt;&lt;U+2500&gt; &lt;U+0001F4C4&gt; About [&lt;U+0001F3F7&gt;&lt;U+FE0F&gt; Icon, &lt;U+27A1&gt;&lt;U+FE0F&gt; Right]</span></span>
-<span><span class="co">#&gt; &lt;U+2550&gt;&lt;U+2550&gt; &lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;&lt;U+2550&gt;</span></span></code></pre></div>
+<span><span class="co">#&gt; 📊 DASHBOARD PROJECT ====================================================</span></span>
+<span><span class="co">#&gt; │ 🏷️  Title: GSS Data Explorer</span></span>
+<span><span class="co">#&gt; │ 📁 Output: /Users/favstats/Dropbox/postdoc/gss_out</span></span>
+<span><span class="co">#&gt; │</span></span>
+<span><span class="co">#&gt; │ ⚙️  FEATURES:</span></span>
+<span><span class="co">#&gt; │    • 🔍 Search</span></span>
+<span><span class="co">#&gt; │    • 🎨 Theme: flatly</span></span>
+<span><span class="co">#&gt; │    • 📑 Tabs: minimal</span></span>
+<span><span class="co">#&gt; │</span></span>
+<span><span class="co">#&gt; │ 🔗 INTEGRATIONS: 💻 GitHub</span></span>
+<span><span class="co">#&gt; │</span></span>
+<span><span class="co">#&gt; │ 📄 PAGES (4):</span></span>
+<span><span class="co">#&gt; │ ├─ 📄 Home [🏠 Landing]</span></span>
+<span><span class="co">#&gt; │ ├─ 📄 Demographics [🏷️ Icon, 🔄 Overlay, 💾 1 dataset]</span></span>
+<span><span class="co">#&gt; │ ├─ 📄 Attitudes [🏷️ Icon, 🔄 Overlay, 💾 1 dataset]</span></span>
+<span><span class="co">#&gt; │ └─ 📄 About [🏷️ Icon, ➡️ Right]</span></span>
+<span><span class="co">#&gt; ══ ═════════════════════════════════════════════════════════════════════════</span></span></code></pre></div>
 <p>To generate this dashboard:</p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">survey_dashboard</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/generate_dashboard.html">generate_dashboard</a></span><span class="op">(</span>render <span class="op">=</span> <span class="cn">TRUE</span>, open <span class="op">=</span> <span class="st">"browser"</span><span class="op">)</span></span></code></pre></div>
@@ -706,7 +714,7 @@ guide</li>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by First Last.</p>
+  <p>Developed by Fabio Votta, Alexandra Pafford, Max Paulus, Ernesto de León.</p>
 </div>
 
 <div class="pkgdown-footer-right">

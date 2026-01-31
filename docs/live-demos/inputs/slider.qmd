@@ -1,0 +1,135 @@
+---
+title: "{{< iconify ph sliders-horizontal >}} Slider"
+format: html
+---
+
+```{r, include=FALSE}
+# Initialize dashboardr page configuration (CSS/JS for charts)
+dashboardr:::.page_config()
+```
+
+```{r, echo=FALSE, results='asis'}
+dashboardr::enable_inputs()
+```
+
+```{r setup}
+#| echo: false
+#| warning: false
+#| message: false
+#| error: false
+#| results: 'hide'
+
+# Load dashboardr (includes dplyr, highcharter as dependencies)
+library(dashboardr)
+library(highcharter)
+
+# Global chunk options
+knitr::opts_chunk$set(
+  echo = FALSE,
+  warning = FALSE,
+  message = FALSE,
+  error = FALSE,
+  fig.width = 12,
+  fig.height = 8,
+  dpi = 300
+)
+
+# Load data
+data <- readRDS('dataset_small_54obs.rds')
+
+# Data summary
+cat('Dataset loaded:', nrow(data), 'rows,', ncol(data), 'columns\n')
+
+```
+
+
+## Slider Input
+
+The **slider** input filters data by a numeric range. Use `labels` to display custom text instead of numbers.
+
+
+```r
+add_input(
+  input_id = "decade_slider",
+  label = "Starting Decade",
+  type = "slider",
+  filter_var = "decade",
+  min = 1,
+  max = 6,
+  step = 1,
+  value = 1,
+  show_value = TRUE,
+  labels = c("1970s", "1980s", "1990s", "2000s", "2010s", "2020s"),
+  width = "500px"
+)
+```
+
+
+<div style='height: 1rem;'></div>
+
+
+```{r}
+#| echo: false
+#| results: 'asis'
+dashboardr::render_input_row(list(
+  list(
+    input_id = "decade_slider",
+    label = "Starting Decade",
+    type = "slider",
+    filter_var = "decade",
+    options = NULL,
+    options_from = NULL,
+    default_selected = NULL,
+    placeholder = "Select...",
+    width = "500px",
+    min = 1,
+    max = 6,
+    step = 1,
+    value = 1,
+    show_value = TRUE,
+    inline = TRUE,
+    toggle_series = NULL,
+    override = FALSE,
+    labels = c("1970s", "1980s", "1990s", "2000s", "2010s", "2020s"),
+    size = "md",
+    help = "Drag to filter data from a specific decade onwards.",
+    disabled = FALSE,
+    mt = NULL,
+    mr = NULL,
+    mb = NULL,
+    ml = NULL
+  )
+), style = "inline", align = "center")
+```
+
+
+<div style='height: 0.5rem;'></div>
+
+## Open Access Adoption
+
+```{r timeline-pct-open-access-country}
+# Open Access Adoption
+result <- viz_timeline(
+  data = data,
+  title = "Open Access Adoption",
+  time_var = "decade",
+  y_var = "pct_open_access",
+  group_var = "country",
+  chart_type = "line",
+  subtitle = "Percentage of publications available as open access",
+  x_label = "Decade",
+  y_label = "% Open Access"
+)
+
+# Force container height with explicit wrapper
+if (inherits(result, 'highchart')) {
+  result <- highcharter::hc_size(result, height = 450)
+}
+result <- htmltools::div(
+  style = 'height: 450px !important; min-height: 450px !important; width: 100%; overflow: visible;',
+  result
+)
+
+result
+```
+

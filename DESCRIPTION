@@ -1,6 +1,6 @@
 Package: dashboardr
 Title: Build Interactive HTML Dashboards from R
-Version: 0.0.0.9000
+Version: 0.1.0
 Authors@R: c(
     person("Fabio", "Votta", , "fabio.votta@gmail.com", role = c("aut", "cre")),
     person("Alexandra", "Pafford", role = "aut"),

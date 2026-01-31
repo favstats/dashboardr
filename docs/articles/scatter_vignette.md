@@ -218,9 +218,9 @@ Preview
 
 Relationships
 
-Education \<U+2192\> Income
+Education → Income
 
-Age \<U+2192\> Income
+Age → Income
 
 ## 🔍 Interpreting Scatter Plots
 

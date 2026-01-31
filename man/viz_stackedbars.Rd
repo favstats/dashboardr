@@ -2,7 +2,7 @@
 % Please edit documentation in R/viz_stackedbars.R
 \name{viz_stackedbars}
 \alias{viz_stackedbars}
-\title{Stacked Bar Charts for Multiple Variables (Legacy)}
+\title{Stacked Bar Charts for Multiple Variables (Superseded)}
 \usage{
 viz_stackedbars(
   data,
@@ -110,11 +110,10 @@ If FALSE (default), rows with NA are excluded.}
 A \code{highcharter} stacked bar chart object.
 }
 \description{
-\lifecycle{soft-deprecated}
-
-This function has been superseded by \code{\link{viz_stackedbar}}, which now
+\strong{Note:} This function has been superseded by \code{\link{viz_stackedbar}}, which now
 supports both single-variable crosstabs and multi-variable comparisons through
-a unified interface.
+a unified interface. This function will continue to work but we recommend
+using \code{viz_stackedbar()} for new code.
 
 \strong{Migration:} Replace \code{viz_stackedbars(data, x_vars = ...)} with
 \code{viz_stackedbar(data, x_vars = ...)}. All parameters work the same way.

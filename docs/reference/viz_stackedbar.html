@@ -19,7 +19,7 @@ Creates a stacked bar chart from wide data where multiple columns become
 the x-axis bars, and their values become the stacks. This is ideal for
 comparing response distributions across multiple survey questions.
 The function automatically detects which mode to use based on the parameters
-provided."><style>
+provided."><meta property="og:image" content="https://favstats.github.io/dashboardr/logo.svg"><style>
 /* Navbar logo */
 .navbar-brand img {
   max-height: 30px;
@@ -46,7 +46,7 @@ provided."><style>
 
     <a class="navbar-brand me-2" href="../index.html">dashboardr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -63,9 +63,9 @@ provided."><style>
     <li><a class="dropdown-item" href="../articles/content-collections.html">- Content</a></li>
     <li><a class="dropdown-item" href="../articles/pages.html">- Pages</a></li>
     <li><a class="dropdown-item" href="../articles/dashboards.html">- Dashboards</a></li>
-    <li><a class="dropdown-item" href="../articles/publishing_dashboards.html">🌐 Publishing Dashboards</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><a class="dropdown-item" href="../articles/advanced-features.html">⚙️ Advanced Features</a></li>
+    <li><a class="dropdown-item" href="../articles/publishing_dashboards.html">🌐 Publishing Dashboards</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>📊 Visualization Types</h6></li>
     <li><a class="dropdown-item" href="../articles/bar_vignette.html">- Bar Charts</a></li>
@@ -83,9 +83,18 @@ provided."><style>
   <button class="nav-link dropdown-toggle" type="button" id="dropdown--live-demos" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">🎯 Live Demos</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown--live-demos"><li><a class="dropdown-item" href="../articles/demos.html">📚 About the Demos</a></li>
     <li><hr class="dropdown-divider"></li>
-    <li><a class="dropdown-item" href="../live-demos/features/index.html">⭐ Features Demo (Recommended)</a></li>
     <li><a class="dropdown-item" href="../live-demos/tutorial/index.html">🎓 Tutorial Dashboard</a></li>
     <li><a class="dropdown-item" href="../live-demos/showcase/index.html">🚀 Showcase Dashboard</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>🎨 Tabset Themes</h6></li>
+    <li><a class="dropdown-item" href="../live-demos/tabsets/pills/index.html">   Pills</a></li>
+    <li><a class="dropdown-item" href="../live-demos/tabsets/modern/index.html">   Modern</a></li>
+    <li><a class="dropdown-item" href="../live-demos/tabsets/minimal/index.html">   Minimal</a></li>
+    <li><a class="dropdown-item" href="../live-demos/tabsets/classic/index.html">   Classic</a></li>
+    <li><a class="dropdown-item" href="../live-demos/tabsets/underline/index.html">   Underline</a></li>
+    <li><a class="dropdown-item" href="../live-demos/tabsets/segmented/index.html">   Segmented</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><a class="dropdown-item" href="../live-demos/overlay/index.html">🎭 Loading Overlays</a></li>
   </ul></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
@@ -97,8 +106,7 @@ provided."><style>
 </nav><div class="container template-reference-topic">
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
-
-      <h1>Create a Stacked Bar Chart</h1>
+      <img src="../logo.svg" class="logo" alt=""><h1>Create a Stacked Bar Chart</h1>
 
       <div class="d-none name"><code>viz_stackedbar.Rd</code></div>
     </div>
@@ -352,7 +360,7 @@ If FALSE (default), rows with NA are excluded.</p></dd>
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/kjhealy/gssr" class="external-link">gssr</a></span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>package 'gssr' was built under R version 4.4.3</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>package ‘gssr’ was built under R version 4.4.3</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Package loaded. To attach the GSS data, type data(gss_all) at the console.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> For the panel data and documentation, type e.g. data(gss_panel08_long) and data(gss_panel_doc).</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> For help on a specific GSS variable, type ?varname at the console.</span>
@@ -396,11 +404,11 @@ If FALSE (default), rows with NA are excluded.</p></dd>
 <span class="r-in"><span>  tooltip_suffix <span class="op">=</span> <span class="st">"%"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>`trust_1a` and `fair_1a` have conflicting value labels.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">i</span> Labels for these values will be taken from `trust_1a`.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #BB0000;">x</span> Values: <span style="color: #0000BB;">1</span> and <span style="color: #0000BB;">2</span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Labels for these values will be taken from `trust_1a`.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #BB0000;">✖</span> Values: <span style="color: #0000BB;">1</span> and <span style="color: #0000BB;">2</span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>`trust_1a` and `helpful_1a` have conflicting value labels.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">i</span> Labels for these values will be taken from `trust_1a`.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #BB0000;">x</span> Values: <span style="color: #0000BB;">1</span> and <span style="color: #0000BB;">2</span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Labels for these values will be taken from `trust_1a`.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #BB0000;">✖</span> Values: <span style="color: #0000BB;">1</span> and <span style="color: #0000BB;">2</span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Example 4: Single question horizontal (compact display)</span></span></span>
 <span class="r-in"><span><span class="va">plot4</span> <span class="op">&lt;-</span> <span class="fu">viz_stackedbar</span><span class="op">(</span></span></span>
@@ -418,7 +426,7 @@ If FALSE (default), rows with NA are excluded.</p></dd>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by First Last.</p>
+  <p>Developed by Fabio Votta, Alexandra Pafford, Max Paulus, Ernesto de León.</p>
 </div>
 
 <div class="pkgdown-footer-right">

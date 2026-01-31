@@ -67,17 +67,17 @@ dashboard <- create_dashboard(
 
 print(dashboard)
 #> 
-#> <U+0001F4CA> DASHBOARD PROJECT ====================================================
-#> <U+2502> <U+0001F3F7><U+FE0F>  Title: My Dashboard
-#> <U+2502> <U+0001F4C1> Output: /Users/favstats/Dropbox/postdoc/my_dashboard
-#> <U+2502>
-#> <U+2502> <U+2699><U+FE0F>  FEATURES:
-#> <U+2502>    <U+2022> <U+0001F50D> Search
-#> <U+2502>    <U+2022> <U+0001F4D1> Tabs: minimal
-#> <U+2502>
-#> <U+2502> <U+0001F4C4> PAGES (0):
-#> <U+2502>    (no pages yet)
-#> <U+2550><U+2550> <U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550>
+#> 📊 DASHBOARD PROJECT ====================================================
+#> │ 🏷️  Title: My Dashboard
+#> │ 📁 Output: /Users/favstats/Dropbox/postdoc/my_dashboard
+#> │
+#> │ ⚙️  FEATURES:
+#> │    • 🔍 Search
+#> │    • 📑 Tabs: minimal
+#> │
+#> │ 📄 PAGES (0):
+#> │    (no pages yet)
+#> ══ ═════════════════════════════════════════════════════════════════════════
 ```
 
 ### Key Parameters
@@ -118,22 +118,58 @@ dashboard <- create_dashboard(title = "GSS Explorer", output_dir = "output") %>%
 
 print(dashboard)
 #> 
-#> <U+0001F4CA> DASHBOARD PROJECT ====================================================
-#> <U+2502> <U+0001F3F7><U+FE0F>  Title: GSS Explorer
-#> <U+2502> <U+0001F4C1> Output: /Users/favstats/Dropbox/postdoc/output
-#> <U+2502>
-#> <U+2502> <U+2699><U+FE0F>  FEATURES:
-#> <U+2502>    <U+2022> <U+0001F50D> Search
-#> <U+2502>    <U+2022> <U+0001F4D1> Tabs: minimal
-#> <U+2502>
-#> <U+2502> <U+0001F4C4> PAGES (3):
-#> <U+2502> <U+251C><U+2500> <U+0001F4C4> Home [<U+0001F3E0> Landing]
-#> <U+2502> <U+251C><U+2500> <U+0001F4C4> Analysis [<U+0001F4BE> 1 dataset]
-#> <U+2502> <U+2514><U+2500> <U+0001F4C4> About [<U+27A1><U+FE0F> Right]
-#> <U+2550><U+2550> <U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550>
+#> 📊 DASHBOARD PROJECT ====================================================
+#> │ 🏷️  Title: GSS Explorer
+#> │ 📁 Output: /Users/favstats/Dropbox/postdoc/output
+#> │
+#> │ ⚙️  FEATURES:
+#> │    • 🔍 Search
+#> │    • 📑 Tabs: minimal
+#> │
+#> │ 📄 PAGES (3):
+#> │ ├─ 📄 Home [🏠 Landing]
+#> │ ├─ 📄 Analysis [💾 1 dataset]
+#> │ └─ 📄 About [➡️ Right]
+#> ══ ═════════════════════════════════════════════════════════════════════════
 ```
 
 Pages appear in the navbar in the order they’re added.
+
+## ⚙️ Generating Output
+
+### Basic Generation
+
+``` r
+dashboard %>%
+  generate_dashboard(render = TRUE, open = "browser")
+```
+
+### Generation Options
+
+| Parameter          | Description                                           |
+|--------------------|-------------------------------------------------------|
+| `render = FALSE`   | Only create Quarto (.qmd) files, don’t render to HTML |
+| `render = TRUE`    | Render to HTML (slower but complete)                  |
+| `open = "browser"` | Open in default web browser                           |
+| `open = "viewer"`  | Open in RStudio Viewer pane                           |
+| `clean = TRUE`     | Remove intermediate files after rendering             |
+
+### Development Workflow
+
+During development, iterate quickly by skipping rendering:
+
+``` r
+# Fast iteration: just create QMD files
+dashboard %>% generate_dashboard(render = FALSE)
+
+# Check structure, make changes...
+
+# When ready, full render
+dashboard %>% generate_dashboard(render = TRUE, open = "browser")
+
+# Final build with cleanup
+dashboard %>% generate_dashboard(render = TRUE, clean = TRUE)
+```
 
 ## 🎨 Themes
 
@@ -325,42 +361,6 @@ create_dashboard(
 You’ll need to [set up a Plausible
 account](https://plausible.io/register) and add your domain first.
 
-## ⚙️ Generating Output
-
-### Basic Generation
-
-``` r
-dashboard %>%
-  generate_dashboard(render = TRUE, open = "browser")
-```
-
-### Generation Options
-
-| Parameter          | Description                                           |
-|--------------------|-------------------------------------------------------|
-| `render = FALSE`   | Only create Quarto (.qmd) files, don’t render to HTML |
-| `render = TRUE`    | Render to HTML (slower but complete)                  |
-| `open = "browser"` | Open in default web browser                           |
-| `open = "viewer"`  | Open in RStudio Viewer pane                           |
-| `clean = TRUE`     | Remove intermediate files after rendering             |
-
-### Development Workflow
-
-During development, iterate quickly by skipping rendering:
-
-``` r
-# Fast iteration: just create QMD files
-dashboard %>% generate_dashboard(render = FALSE)
-
-# Check structure, make changes...
-
-# When ready, full render
-dashboard %>% generate_dashboard(render = TRUE, open = "browser")
-
-# Final build with cleanup
-dashboard %>% generate_dashboard(render = TRUE, clean = TRUE)
-```
-
 ## 📋 Complete Example
 
 Here’s a full example putting it all together:
@@ -418,23 +418,23 @@ survey_dashboard <- survey_dashboard %>%
 
 print(survey_dashboard)
 #> 
-#> <U+0001F4CA> DASHBOARD PROJECT ====================================================
-#> <U+2502> <U+0001F3F7><U+FE0F>  Title: GSS Data Explorer
-#> <U+2502> <U+0001F4C1> Output: /Users/favstats/Dropbox/postdoc/gss_out
-#> <U+2502>
-#> <U+2502> <U+2699><U+FE0F>  FEATURES:
-#> <U+2502>    <U+2022> <U+0001F50D> Search
-#> <U+2502>    <U+2022> <U+0001F3A8> Theme: flatly
-#> <U+2502>    <U+2022> <U+0001F4D1> Tabs: minimal
-#> <U+2502>
-#> <U+2502> <U+0001F517> INTEGRATIONS: <U+0001F4BB> GitHub
-#> <U+2502>
-#> <U+2502> <U+0001F4C4> PAGES (4):
-#> <U+2502> <U+251C><U+2500> <U+0001F4C4> Home [<U+0001F3E0> Landing]
-#> <U+2502> <U+251C><U+2500> <U+0001F4C4> Demographics [<U+0001F3F7><U+FE0F> Icon, <U+0001F504> Overlay, <U+0001F4BE> 1 dataset]
-#> <U+2502> <U+251C><U+2500> <U+0001F4C4> Attitudes [<U+0001F3F7><U+FE0F> Icon, <U+0001F504> Overlay, <U+0001F4BE> 1 dataset]
-#> <U+2502> <U+2514><U+2500> <U+0001F4C4> About [<U+0001F3F7><U+FE0F> Icon, <U+27A1><U+FE0F> Right]
-#> <U+2550><U+2550> <U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550><U+2550>
+#> 📊 DASHBOARD PROJECT ====================================================
+#> │ 🏷️  Title: GSS Data Explorer
+#> │ 📁 Output: /Users/favstats/Dropbox/postdoc/gss_out
+#> │
+#> │ ⚙️  FEATURES:
+#> │    • 🔍 Search
+#> │    • 🎨 Theme: flatly
+#> │    • 📑 Tabs: minimal
+#> │
+#> │ 🔗 INTEGRATIONS: 💻 GitHub
+#> │
+#> │ 📄 PAGES (4):
+#> │ ├─ 📄 Home [🏠 Landing]
+#> │ ├─ 📄 Demographics [🏷️ Icon, 🔄 Overlay, 💾 1 dataset]
+#> │ ├─ 📄 Attitudes [🏷️ Icon, 🔄 Overlay, 💾 1 dataset]
+#> │ └─ 📄 About [🏷️ Icon, ➡️ Right]
+#> ══ ═════════════════════════════════════════════════════════════════════════
 ```
 
 To generate this dashboard:

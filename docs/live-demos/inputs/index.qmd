@@ -1,0 +1,139 @@
+---
+title: "{{< iconify ph list-magnifying-glass >}} Select"
+format: html
+---
+
+```{r, include=FALSE}
+# Initialize dashboardr page configuration (CSS/JS for charts)
+dashboardr:::.page_config()
+```
+
+```{r, echo=FALSE, results='asis'}
+dashboardr::enable_inputs()
+```
+
+```{r setup}
+#| echo: false
+#| warning: false
+#| message: false
+#| error: false
+#| results: 'hide'
+
+# Load dashboardr (includes dplyr, highcharter as dependencies)
+library(dashboardr)
+library(highcharter)
+
+# Global chunk options
+knitr::opts_chunk$set(
+  echo = FALSE,
+  warning = FALSE,
+  message = FALSE,
+  error = FALSE,
+  fig.width = 12,
+  fig.height = 8,
+  dpi = 300
+)
+
+# Load data
+data <- readRDS('dataset_small_54obs.rds')
+
+# Data summary
+cat('Dataset loaded:', nrow(data), 'rows,', ncol(data), 'columns\n')
+
+```
+
+
+## Select Dropdown Input
+
+The **select** input creates a searchable dropdown. Use `select_multiple` for multi-select or `select_single` for single selection.
+
+This example uses **grouped options** to organize countries by region:
+
+
+```r
+add_input(
+  input_id = "country_filter",
+  label = "Select Countries",
+  type = "select_multiple",
+  filter_var = "country",
+  options = list(
+    "Americas" = c("United States", "Brazil"),
+    "Europe" = c("United Kingdom", "Germany", "France"),
+    "Asia-Pacific" = c("Japan", "China", "Australia"),
+    "Benchmarks" = c("Global Average")
+  ),
+  default_selected = c("United States", "Germany"),
+  placeholder = "Choose countries to compare...",
+  width = "500px"
+)
+```
+
+
+<div style='height: 1rem;'></div>
+
+
+```{r}
+#| echo: false
+#| results: 'asis'
+dashboardr::render_input_row(list(
+  list(
+    input_id = "country_filter",
+    label = "Select Countries",
+    type = "select_multiple",
+    filter_var = "country",
+    options = list("Americas" = c("United States", "Brazil"), "Europe" = c("United Kingdom", "Germany", "France"), "Asia-Pacific" = c("Japan", "China", "Australia"), "Benchmarks" = "Global Average"),
+    options_from = NULL,
+    default_selected = c("United States", "United Kingdom", "Germany", "Global Average"),
+    placeholder = "Choose countries to compare...",
+    width = "500px",
+    min = 0,
+    max = 100,
+    step = 1,
+    value = NULL,
+    show_value = TRUE,
+    inline = TRUE,
+    toggle_series = NULL,
+    override = FALSE,
+    labels = NULL,
+    size = "md",
+    help = "Countries are grouped by region. Select multiple to compare.",
+    disabled = FALSE,
+    mt = NULL,
+    mr = NULL,
+    mb = NULL,
+    ml = NULL
+  )
+), style = "inline", align = "center")
+```
+
+
+<div style='height: 0.5rem;'></div>
+
+## Female Authorship Trends
+
+```{r timeline-pct-female-country-3}
+# Female Authorship Trends
+result <- viz_timeline(
+  data = data,
+  title = "Female Authorship Trends",
+  time_var = "decade",
+  y_var = "pct_female",
+  group_var = "country",
+  chart_type = "line",
+  subtitle = "Percentage of publications with female first authors",
+  x_label = "Decade",
+  y_label = "% Female Authors"
+)
+
+# Force container height with explicit wrapper
+if (inherits(result, 'highchart')) {
+  result <- highcharter::hc_size(result, height = 450)
+}
+result <- htmltools::div(
+  style = 'height: 450px !important; min-height: 450px !important; width: 100%; overflow: visible;',
+  result
+)
+
+result
+```
+

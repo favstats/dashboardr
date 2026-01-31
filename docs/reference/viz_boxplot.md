@@ -121,7 +121,7 @@ A `highcharter` boxplot object.
 ``` r
 # Basic boxplot
 data(gss_panel20)
-#> Warning: data set 'gss_panel20' not found
+#> Warning: data set ‘gss_panel20’ not found
 
 # Example 1: Simple boxplot of age
 plot1 <- viz_boxplot(

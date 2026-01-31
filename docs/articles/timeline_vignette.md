@@ -142,7 +142,7 @@ gss_all %>%
   filter(!is.na(happy)) %>%
   mutate(happy = haven::as_factor(happy, levels = "labels")) %>%
   count(happy)
-#> # A tibble: 3 x 2
+#> # A tibble: 3 × 2
 #>   happy             n
 #>   <fct>         <int>
 #> 1 very happy    21069
@@ -164,7 +164,7 @@ gss_all %>%
     happy_missing = sum(is.na(happy)),
     both_available = sum(!is.na(year) & !is.na(happy))
   )
-#> # A tibble: 1 x 4
+#> # A tibble: 1 × 4
 #>   total_rows year_missing happy_missing both_available
 #>        <int>        <int>         <int>          <int>
 #> 1      75699            0          4830          70869

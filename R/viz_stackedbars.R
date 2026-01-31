@@ -1,11 +1,9 @@
-#' @title Stacked Bar Charts for Multiple Variables (Legacy)
+#' @title Stacked Bar Charts for Multiple Variables (Superseded)
 #' @description
-#' \lifecycle{soft-deprecated}
-#'
-#' This function has been superseded by \code{\link{viz_stackedbar}}, which now
-
+#' **Note:** This function has been superseded by \code{\link{viz_stackedbar}}, which now
 #' supports both single-variable crosstabs and multi-variable comparisons through
-#' a unified interface.
+#' a unified interface. This function will continue to work but we recommend
+#' using `viz_stackedbar()` for new code.
 #'
 #' **Migration:** Replace `viz_stackedbars(data, x_vars = ...)` with
 #' `viz_stackedbar(data, x_vars = ...)`. All parameters work the same way.

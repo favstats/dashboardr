@@ -45,7 +45,7 @@ degree_counts <- gss %>%
   count(degree, name = "n")
 
 degree_counts
-#> # A tibble: 5 x 2
+#> # A tibble: 5 × 2
 #>   degree                       n
 #>   <fct>                    <int>
 #> 1 less than high school      287
@@ -96,7 +96,7 @@ degree_by_sex <- gss %>%
   count(sex, degree, name = "n")
 
 degree_by_sex
-#> # A tibble: 10 x 3
+#> # A tibble: 10 × 3
 #>    sex    degree                       n
 #>    <fct>  <fct>                    <int>
 #>  1 male   less than high school      110
@@ -259,7 +259,7 @@ Treemaps need aggregated data. Here’s how to prepare GSS data:
 ``` r
 # Count by one variable
 gss %>% count(degree, name = "n")
-#> # A tibble: 5 x 2
+#> # A tibble: 5 × 2
 #>   degree                       n
 #>   <fct>                    <int>
 #> 1 less than high school      287
@@ -274,7 +274,7 @@ gss %>% count(degree, name = "n")
 ``` r
 # Count by two variables for nested treemap
 gss %>% count(sex, degree, name = "n")
-#> # A tibble: 10 x 3
+#> # A tibble: 10 × 3
 #>    sex    degree                       n
 #>    <fct>  <fct>                    <int>
 #>  1 male   less than high school      110
@@ -296,7 +296,7 @@ gss %>% count(sex, degree, name = "n")
 gss %>%
   group_by(degree) %>%
   summarize(avg_age = mean(age, na.rm = TRUE), .groups = "drop")
-#> # A tibble: 5 x 2
+#> # A tibble: 5 × 2
 #>   degree                   avg_age
 #>   <fct>                      <dbl>
 #> 1 less than high school       49.9

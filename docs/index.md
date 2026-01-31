@@ -1,4 +1,4 @@
-# dashboardr ![](reference/figures/logo.svg)
+# dashboardr
 
 **dashboardr** lets you build interactive HTML dashboards from R using a
 simple, composable grammar. Think of it like building with Lego blocks:
@@ -15,18 +15,17 @@ simple, composable grammar. Think of it like building with Lego blocks:
 pak::pak("favstats/dashboardr")
 ```
 
-## Live Demos
+### Optional: Install gssr for tutorials
 
-See dashboardr in action:
+The tutorials and demos use the `gssr` package (General Social Survey
+data). Install it from r-universe:
 
-1.  [**Tutorial
-    Dashboard**](https://favstats.github.io/dashboardr/live-demos/tutorial/docs/index.html) -
-    Beginner-friendly demo
-2.  [**Showcase
-    Dashboard**](https://favstats.github.io/dashboardr/live-demos/showcase/docs/index.html) -
-    Advanced features
+``` r
+install.packages('gssr', repos = c('https://kjhealy.r-universe.dev', 'https://cloud.r-project.org'))
 
-Both use real data from the General Social Survey (GSS).
+# Also recommended: install gssrdoc for documentation
+install.packages('gssrdoc', repos = c('https://kjhealy.r-universe.dev', 'https://cloud.r-project.org'))
+```
 
 ## The Three Layers
 
@@ -73,21 +72,6 @@ create_dashboard(
 ```
 
 That’s it! A complete interactive dashboard.
-
-## Features
-
-- 📊 **9 Visualization Types** - Bar, histogram, stacked bar, timeline,
-  heatmap, scatter, treemap, map
-- 🎨 **Beautiful Themes** - 25+ Bootswatch themes
-- 🎯 **Smart Defaults** - Set once, reuse everywhere
-- 🔍 **Data Filtering** - Row-level filters per visualization
-- 🎭 **Nested Tabs** - Hierarchical tab structures
-  (`"parent/child/grandchild"`)
-- ⚡ **Batch Creation** -
-  [`add_vizzes()`](https://favstats.github.io/dashboardr/reference/add_vizzes.md)
-  for multiple charts at once
-- 🎬 **Loading Overlays** - Visual feedback while content loads
-- 🧭 **Flexible Navigation** - Navbar, dropdowns, sidebar, icons
 
 ## Visualization Types
 
@@ -140,13 +124,18 @@ create_content(data = my_data, type = "bar") %>%
 | Advanced features | [`vignette("advanced-features")`](https://favstats.github.io/dashboardr/articles/advanced-features.md) |
 | Publishing | [`vignette("publishing_dashboards")`](https://favstats.github.io/dashboardr/articles/publishing_dashboards.md) |
 
-## Use Cases
+## Live Demos
 
-- 🎓 **Academic Research** - Present study results interactively
-- 📊 **Survey Analysis** - Visualize Likert-scale responses across waves
-- 📈 **Business Analytics** - Track KPIs over time
-- 💼 **Consulting Reports** - Client-ready dashboards
-- 📱 **Data Journalism** - Interactive data stories
+See dashboardr in action:
+
+1.  [**Tutorial
+    Dashboard**](https://favstats.github.io/dashboardr/live-demos/tutorial/docs/index.html) -
+    Beginner-friendly demo
+2.  [**Showcase
+    Dashboard**](https://favstats.github.io/dashboardr/live-demos/showcase/docs/index.html) -
+    Advanced features
+
+Both use real data from the General Social Survey (GSS).
 
 ## Contributing
 

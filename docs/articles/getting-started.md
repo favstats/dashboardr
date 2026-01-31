@@ -97,9 +97,9 @@ demographics <- create_content(data = gss, type = "bar") %>%
 
 print(demographics)
 #> -- Content Collection ──────────────────────────────────────────────────────────
-#> 1 items | ✔ data: 3139 rows x 7 colsls
+#> 1 items | ✔ data: 3139 rows x 7 cols
 #> 
-#> • [Viz] Education (bar) x=degree9m
+#> • [Viz] Education (bar) x=degree
 ```
 
 Here
@@ -185,14 +185,14 @@ analysis <- create_page("Analysis", data = gss) %>%
 
 print(analysis)
 #> -- Page: Analysis ───────────────────────────────────────────────
-#> ✔ data: 3139 rows x 7 cols s 
+#> ✔ data: 3139 rows x 7 cols 
 #> 3 items
 #> 
-#> ℹ [Text]9m
-#> ❯ [Tab] Demographics (1 viz)9m
-#>   • [Viz] Education (bar) x=degree9m
-#> ❯ [Tab] Attitudes (1 viz)9m
-#>   • [Viz] Happiness (bar) x=happy9m
+#> ℹ [Text]
+#> ❯ [Tab] Demographics (1 viz)
+#>   • [Viz] Education (bar) x=degree
+#> ❯ [Tab] Attitudes (1 viz)
+#>   • [Viz] Happiness (bar) x=happy
 ```
 
 The

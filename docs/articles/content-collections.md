@@ -84,12 +84,12 @@ content <- create_content(data = gss, type = "bar") %>%
   add_callout(paste0("Sample size: ", nrow(gss)), type = "note")
 
 print(content)
-#> -- Content Collection ----------------------------------------------------------
-#> 3 items | v data: 2997 rows x 15 cols
+#> -- Content Collection ──────────────────────────────────────────────────────────
+#> 3 items | ✔ data: 2997 rows x 15 cols
 #> 
-#> * [Viz] Education (bar) x=degree
-#> i [Text]
-#> ! [Callout]
+#> • [Viz] Education (bar) x=degree
+#> ℹ [Text]
+#> ⚠ [Callout]
 ```
 
 ``` r
@@ -169,12 +169,12 @@ content <- create_content(
   add_viz(x_var = "sex", title = "Sex (count)", bar_type = "count")
 
 print(content)
-#> -- Content Collection ----------------------------------------------------------
-#> 3 items | v data: 2997 rows x 15 cols
+#> -- Content Collection ──────────────────────────────────────────────────────────
+#> 3 items | ✔ data: 2997 rows x 15 cols
 #> 
-#> * [Viz] Education (bar) x=degree
-#> * [Viz] Race (vertical) (bar) x=race
-#> * [Viz] Sex (count) (bar) x=sex
+#> • [Viz] Education (bar) x=degree
+#> • [Viz] Race (vertical) (bar) x=race
+#> • [Viz] Sex (count) (bar) x=sex
 ```
 
 ``` r
@@ -358,13 +358,13 @@ attitudes <- create_content(data = gss, type = "bar") %>%
 
 combined <- demographics + attitudes
 print(combined)
-#> -- Content Collection ----------------------------------------------------------
-#> 2 items | v data: 2997 rows x 15 cols
+#> -- Content Collection ──────────────────────────────────────────────────────────
+#> 2 items | ✔ data: 2997 rows x 15 cols
 #> 
-#> > [Tab] Demo (1 viz)
-#>   * [Viz] Education (bar) x=degree
-#> > [Tab] Attitudes (1 viz)
-#>   * [Viz] Happiness (bar) x=happy
+#> ❯ [Tab] Demo (1 viz)
+#>   • [Viz] Education (bar) x=degree
+#> ❯ [Tab] Attitudes (1 viz)
+#>   • [Viz] Happiness (bar) x=happy
 ```
 
 ``` r
@@ -390,13 +390,13 @@ all_content <- demographics %>%
   combine_viz(attitudes)
 
 print(all_content)
-#> -- Content Collection ----------------------------------------------------------
-#> 2 items | v data: 2997 rows x 15 cols
+#> -- Content Collection ──────────────────────────────────────────────────────────
+#> 2 items | ✔ data: 2997 rows x 15 cols
 #> 
-#> > [Tab] Demo (1 viz)
-#>   * [Viz] Education (bar) x=degree
-#> > [Tab] Attitudes (1 viz)
-#>   * [Viz] Happiness (bar) x=happy
+#> ❯ [Tab] Demo (1 viz)
+#>   • [Viz] Education (bar) x=degree
+#> ❯ [Tab] Attitudes (1 viz)
+#>   • [Viz] Happiness (bar) x=happy
 ```
 
 ## 📊 Visualization Types
@@ -991,15 +991,15 @@ content <- create_content(data = gss, type = "bar") %>%
   add_viz(x_var = "polviews", title = "Politics", tabgroup = "attitudes")
 
 print(content)
-#> -- Content Collection ----------------------------------------------------------
-#> 4 items | v data: 2997 rows x 15 cols
+#> -- Content Collection ──────────────────────────────────────────────────────────
+#> 4 items | ✔ data: 2997 rows x 15 cols
 #> 
-#> > [Tab] demographics (2 vizs)
-#>   * [Viz] Education (bar) x=degree
-#>   * [Viz] Race (bar) x=race
-#> > [Tab] attitudes (2 vizs)
-#>   * [Viz] Happiness (bar) x=happy
-#>   * [Viz] Politics (bar) x=polviews
+#> ❯ [Tab] demographics (2 vizs)
+#>   • [Viz] Education (bar) x=degree
+#>   • [Viz] Race (bar) x=race
+#> ❯ [Tab] attitudes (2 vizs)
+#>   • [Viz] Happiness (bar) x=happy
+#>   • [Viz] Politics (bar) x=polviews
 ```
 
 ### Nested Tabgroups
@@ -1023,21 +1023,21 @@ nested <- create_content(data = gss, type = "bar") %>%
           tabgroup = "Attitudes/Politics")
 
 print(nested)
-#> -- Content Collection ----------------------------------------------------------
-#> 5 items | v data: 2997 rows x 15 cols
+#> -- Content Collection ──────────────────────────────────────────────────────────
+#> 5 items | ✔ data: 2997 rows x 15 cols
 #> 
-#> > [Tab] Demographics (3 tabs)
-#>   > [Tab] Education (1 viz)
-#>     * [Viz] Education Level (bar) x=degree
-#>   > [Tab] Race (1 viz)
-#>     * [Viz] Race Distribution (bar) x=race
-#>   > [Tab] Age (1 viz)
-#>     * [Viz] Age Distribution (bar) x=age
-#> > [Tab] Attitudes (2 tabs)
-#>   > [Tab] Wellbeing (1 viz)
-#>     * [Viz] General Happiness (bar) x=happy
-#>   > [Tab] Politics (1 viz)
-#>     * [Viz] Political Views (bar) x=polviews
+#> ❯ [Tab] Demographics (3 tabs)
+#>   ❯ [Tab] Education (1 viz)
+#>     • [Viz] Education Level (bar) x=degree
+#>   ❯ [Tab] Race (1 viz)
+#>     • [Viz] Race Distribution (bar) x=race
+#>   ❯ [Tab] Age (1 viz)
+#>     • [Viz] Age Distribution (bar) x=age
+#> ❯ [Tab] Attitudes (2 tabs)
+#>   ❯ [Tab] Wellbeing (1 viz)
+#>     • [Viz] General Happiness (bar) x=happy
+#>   ❯ [Tab] Politics (1 viz)
+#>     • [Viz] Political Views (bar) x=polviews
 ```
 
 ``` r
@@ -1085,13 +1085,13 @@ labeled <- create_content(data = gss, type = "bar") %>%
   )
 
 print(labeled)
-#> -- Content Collection ----------------------------------------------------------
-#> 2 items | v data: 2997 rows x 15 cols
+#> -- Content Collection ──────────────────────────────────────────────────────────
+#> 2 items | ✔ data: 2997 rows x 15 cols
 #> 
-#> > [Tab] demo (1 viz)
-#>   * [Viz] Education (bar) x=degree
-#> > [Tab] attitudes (1 viz)
-#>   * [Viz] Happiness (bar) x=happy
+#> ❯ [Tab] demo (1 viz)
+#>   • [Viz] Education (bar) x=degree
+#> ❯ [Tab] attitudes (1 viz)
+#>   • [Viz] Happiness (bar) x=happy
 ```
 
 ``` r
@@ -1186,10 +1186,10 @@ text_example <- create_content() %>%
   )
 
 print(text_example)
-#> -- Content Collection ----------------------------------------------------------
-#> 1 items | x no data
+#> -- Content Collection ──────────────────────────────────────────────────────────
+#> 1 items | ✖ no data
 #> 
-#> i [Text]
+#> ℹ [Text]
 ```
 
 ``` r
@@ -1246,14 +1246,14 @@ callout_gallery <- create_content() %>%
   add_callout("Important highlights critical information.", type = "important", title = "Important")
 
 print(callout_gallery)
-#> -- Content Collection ----------------------------------------------------------
-#> 5 items | x no data
+#> -- Content Collection ──────────────────────────────────────────────────────────
+#> 5 items | ✖ no data
 #> 
-#> ! [Callout] Note
-#> ! [Callout] Pro Tip
-#> ! [Callout] Warning
-#> ! [Callout] Caution
-#> ! [Callout] Important
+#> ⚠ [Callout] Note
+#> ⚠ [Callout] Pro Tip
+#> ⚠ [Callout] Warning
+#> ⚠ [Callout] Caution
+#> ⚠ [Callout] Important
 ```
 
 ``` r
@@ -1335,11 +1335,11 @@ card_example <- create_content() %>%
   )
 
 print(card_example)
-#> -- Content Collection ----------------------------------------------------------
-#> 2 items | x no data
+#> -- Content Collection ──────────────────────────────────────────────────────────
+#> 2 items | ✖ no data
 #> 
-#> [x] [Card] Key Finding
-#> [x] [Card]
+#> ◼ [Card] Key Finding
+#> ◼ [Card]
 ```
 
 ``` r
@@ -1371,11 +1371,11 @@ accordion_example <- create_content() %>%
   )
 
 print(accordion_example)
-#> -- Content Collection ----------------------------------------------------------
-#> 2 items | x no data
+#> -- Content Collection ──────────────────────────────────────────────────────────
+#> 2 items | ✖ no data
 #> 
-#> = [Accordion] Click to expand: Methodology
-#> = [Accordion] Click to expand: Data Sources
+#> ☰ [Accordion] Click to expand: Methodology
+#> ☰ [Accordion] Click to expand: Data Sources
 ```
 
 ``` r
@@ -1405,10 +1405,10 @@ quote_example <- create_content() %>%
   )
 
 print(quote_example)
-#> -- Content Collection ----------------------------------------------------------
-#> 1 items | x no data
+#> -- Content Collection ──────────────────────────────────────────────────────────
+#> 1 items | ✖ no data
 #> 
-#> * [quote]
+#> • [quote]
 ```
 
 ``` r
@@ -1419,7 +1419,7 @@ Preview
 
 > The only true wisdom is in knowing you know nothing.
 >
-> \<U+2014\> Socrates
+> — Socrates
 
 ### Badges
 
@@ -1436,16 +1436,16 @@ badge_example <- create_content() %>%
   add_badge("Secondary", color = "secondary")
 
 print(badge_example)
-#> -- Content Collection ----------------------------------------------------------
-#> 7 items | x no data
+#> -- Content Collection ──────────────────────────────────────────────────────────
+#> 7 items | ✖ no data
 #> 
-#> i [Text]
-#> * [badge]
-#> * [badge]
-#> * [badge]
-#> * [badge]
-#> * [badge]
-#> * [badge]
+#> ℹ [Text]
+#> • [badge]
+#> • [badge]
+#> • [badge]
+#> • [badge]
+#> • [badge]
+#> • [badge]
 ```
 
 ``` r
@@ -1471,10 +1471,10 @@ metric_example <- create_content() %>%
   )
 
 print(metric_example)
-#> -- Content Collection ----------------------------------------------------------
-#> 1 items | x no data
+#> -- Content Collection ──────────────────────────────────────────────────────────
+#> 1 items | ✖ no data
 #> 
-#> * [metric] Total Respondents
+#> • [metric] Total Respondents
 ```
 
 ``` r
@@ -1502,10 +1502,10 @@ value_box_example <- create_content() %>%
   )
 
 print(value_box_example)
-#> -- Content Collection ----------------------------------------------------------
-#> 1 items | x no data
+#> -- Content Collection ──────────────────────────────────────────────────────────
+#> 1 items | ✖ no data
 #> 
-#> * [value_box] Revenue
+#> • [value_box] Revenue
 ```
 
 ``` r
@@ -1531,10 +1531,10 @@ value_row_example <- create_content() %>%
   end_value_box_row()
 
 print(value_row_example)
-#> -- Content Collection ----------------------------------------------------------
-#> 1 items | x no data
+#> -- Content Collection ──────────────────────────────────────────────────────────
+#> 1 items | ✖ no data
 #> 
-#> * [value_box_row]
+#> • [value_box_row]
 ```
 
 ``` r
@@ -1567,10 +1567,10 @@ code_example <- create_content() %>%
   )
 
 print(code_example)
-#> -- Content Collection ----------------------------------------------------------
-#> 1 items | x no data
+#> -- Content Collection ──────────────────────────────────────────────────────────
+#> 1 items | ✖ no data
 #> 
-#> * [Code]
+#> • [Code]
 ```
 
 ``` r
@@ -1601,10 +1601,10 @@ image_example <- create_content() %>%
   )
 
 print(image_example)
-#> -- Content Collection ----------------------------------------------------------
-#> 1 items | x no data
+#> -- Content Collection ──────────────────────────────────────────────────────────
+#> 1 items | ✖ no data
 #> 
-#> (*) [Image]
+#> ◉ [Image]
 image_example %>% preview()
 ```
 
@@ -1647,10 +1647,10 @@ video_example <- create_content() %>%
   )
 
 print(video_example)
-#> -- Content Collection ----------------------------------------------------------
-#> 1 items | x no data
+#> -- Content Collection ──────────────────────────────────────────────────────────
+#> 1 items | ✖ no data
 #> 
-#> * [iframe]
+#> • [iframe]
 video_example %>% preview()
 ```
 
@@ -1673,10 +1673,10 @@ iframe_example <- create_content() %>%
   )
 
 print(iframe_example)
-#> -- Content Collection ----------------------------------------------------------
-#> 1 items | x no data
+#> -- Content Collection ──────────────────────────────────────────────────────────
+#> 1 items | ✖ no data
 #> 
-#> * [iframe]
+#> • [iframe]
 iframe_example %>% preview()
 ```
 
@@ -1693,10 +1693,10 @@ html_example <- create_content() %>%
   add_html('<div style="background: linear-gradient(to right, #667eea, #764ba2); color: white; padding: 20px; border-radius: 8px; text-align: center;"><h3>Custom HTML Block</h3><p>Style anything with raw HTML!</p></div>')
 
 print(html_example)
-#> -- Content Collection ----------------------------------------------------------
-#> 1 items | x no data
+#> -- Content Collection ──────────────────────────────────────────────────────────
+#> 1 items | ✖ no data
 #> 
-#> * [html]
+#> • [html]
 ```
 
 ``` r
@@ -1722,12 +1722,12 @@ divider_content <- create_content(data = gss, type = "bar") %>%
   add_viz(x_var = "happy", title = "Happiness")
 
 print(divider_content)
-#> -- Content Collection ----------------------------------------------------------
-#> 3 items | v data: 2997 rows x 15 cols
+#> -- Content Collection ──────────────────────────────────────────────────────────
+#> 3 items | ✔ data: 2997 rows x 15 cols
 #> 
-#> * [Viz] Education (bar) x=degree
-#> - [Divider]
-#> * [Viz] Happiness (bar) x=happy
+#> • [Viz] Education (bar) x=degree
+#> ─ [Divider]
+#> • [Viz] Happiness (bar) x=happy
 ```
 
 ``` r
@@ -1753,12 +1753,12 @@ spacer_example <- create_content() %>%
   add_text("Content below (after 3rem spacer)")
 
 print(spacer_example)
-#> -- Content Collection ----------------------------------------------------------
-#> 3 items | x no data
+#> -- Content Collection ──────────────────────────────────────────────────────────
+#> 3 items | ✖ no data
 #> 
-#> i [Text]
-#> * [spacer]
-#> i [Text]
+#> ℹ [Text]
+#> • [spacer]
+#> ℹ [Text]
 ```
 
 ``` r

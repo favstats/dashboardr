@@ -2,18 +2,24 @@
 
 ## Authors
 
-- **First Last**. Author, maintainer.
+- **Fabio Votta**. Author, maintainer.
+
+- **Alexandra Pafford**. Author.
+
+- **Max Paulus**. Author.
+
+- **Ernesto de León**. Author.
 
 ## Citation
 
-Last F (2026). *dashboardr: What the Package Does (One Line, Title
-Case)*. R package version 0.0.0.9000,
+Votta F, Pafford A, Paulus M, de León E (2026). *dashboardr: Build
+Interactive HTML Dashboards from R*. R package version 0.1.0,
 <https://favstats.github.io/dashboardr/>.
 
     @Manual{,
-      title = {dashboardr: What the Package Does (One Line, Title Case)},
-      author = {First Last},
+      title = {dashboardr: Build Interactive HTML Dashboards from R},
+      author = {Fabio Votta and Alexandra Pafford and Max Paulus and Ernesto {de León}},
       year = {2026},
-      note = {R package version 0.0.0.9000},
+      note = {R package version 0.1.0},
       url = {https://favstats.github.io/dashboardr/},
     }
