@@ -223,7 +223,7 @@ content %>% preview()
 |-----------|-------------|----------------|
 | `type` | Visualization type | `"bar"`, `"histogram"`, `"stackedbar"`, `"timeline"` |
 | `color_palette` | Colors for charts | `c("#3498DB", "#E74C3C")` |
-| `bar_type` | Bar chart display | `"count"`, `"percent"` |
+| `bar_type` | Bar chart display | `"count"`, `"percent"`, `"mean"` |
 | `horizontal` | Flip chart orientation | `TRUE`, `FALSE` |
 | `weight_var` | Survey weight column | `"wtssps"` |
 | `drop_na_vars` | Remove NA values | `TRUE`, `FALSE` |
@@ -232,6 +232,8 @@ content %>% preview()
 | `x_label` | Custom x-axis label | `"Age (years)"` |
 | `y_label` | Custom y-axis label | `"Number of Respondents"` |
 | `tooltip_suffix` | Text after tooltip values | `"%"`, `" people"` |
+| `error_bars` | Error bar type (for `bar_type = "mean"`) | `"none"`, `"sd"`, `"se"`, `"ci"` |
+| `value_var` | Numeric variable for means | `"score"`, `"income"` |
 
 See the [Visualization Types](#visualization-types) section for all parameters available for each chart type.
 
@@ -407,7 +409,35 @@ create_content(data = gss, type = "bar") %>%
   preview()
 ```
 
-See the [Bar Chart vignette](bar_vignette.html) for more options.
+#### Means with Error Bars
+
+For numeric outcomes, use `bar_type = "mean"` with `error_bars` to show statistical uncertainty:
+  
+```{r}
+# Sample data with numeric scores
+score_data <- data.frame(
+  group = rep(c("Control", "Treatment"), each = 50),
+  score = c(rnorm(50, 70, 10), rnorm(50, 78, 12))
+)
+
+create_content(data = score_data, type = "bar") %>%
+  add_viz(
+    x_var = "group",
+    value_var = "score",
+    bar_type = "mean",
+    error_bars = "ci",           # "sd", "se", or "ci"
+    title = "Mean Scores (95% CI)"
+  ) %>%
+  preview()
+```
+
+| Error Type | Parameter | Shows |
+|------------|-----------|-------|
+| Standard Deviation | `error_bars = "sd"` | Spread of individual values |
+| Standard Error | `error_bars = "se"` | Precision of mean estimate |
+| Confidence Interval | `error_bars = "ci"` | Range likely to contain true mean |
+
+See the [Bar Chart vignette](bar_vignette.html) for more options including grouped means and error bar styling.
 
 ### Stacked Bars
 

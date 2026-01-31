@@ -184,6 +184,113 @@ plot <- viz_bar(
 plot
 ```
 
+## 📊 Means with Error Bars
+
+When analyzing numeric outcomes across categories, use `bar_type = "mean"` with error bars to show statistical uncertainty.
+
+### Basic Mean Chart with Error Bars
+
+```{r}
+# Create sample data with a continuous outcome
+performance_data <- data.frame(
+  group = rep(c("Control", "Treatment A", "Treatment B"), each = 50),
+  score = c(
+    rnorm(50, mean = 70, sd = 10),   # Control
+    rnorm(50, mean = 75, sd = 12),   # Treatment A
+    rnorm(50, mean = 80, sd = 8)     # Treatment B
+  )
+)
+
+# Mean with 95% confidence intervals
+plot <- viz_bar(
+  data = performance_data,
+  x_var = "group",
+  value_var = "score",
+  bar_type = "mean",
+  error_bars = "ci",
+  title = "Performance by Treatment Group",
+  x_label = "Group",
+  y_label = "Mean Score",
+  color_palette = c("#3498DB", "#E74C3C", "#27AE60")
+)
+
+plot
+```
+
+### Error Bar Types
+
+| Type | Parameter | Shows |
+|------|-----------|-------|
+| Standard Deviation | `error_bars = "sd"` | Spread of individual values |
+| Standard Error | `error_bars = "se"` | Precision of the mean estimate |
+| Confidence Interval | `error_bars = "ci"` | Range likely to contain true mean |
+
+```{r}
+# Standard error bars (smaller, shows precision)
+plot_se <- viz_bar(
+  data = performance_data,
+  x_var = "group",
+  value_var = "score",
+  bar_type = "mean",
+  error_bars = "se",
+  title = "Mean ± Standard Error",
+  y_label = "Mean Score"
+)
+
+plot_se
+```
+
+### Grouped Means with Error Bars
+
+```{r}
+# Add a grouping variable
+grouped_data <- data.frame(
+  treatment = rep(c("Placebo", "Drug A", "Drug B"), each = 100),
+  gender = rep(c("Male", "Female"), 150),
+  outcome = rnorm(300, mean = 50, sd = 15)
+)
+
+# Adjust means by group
+grouped_data$outcome <- grouped_data$outcome + 
+  ifelse(grouped_data$treatment == "Drug A", 5, 0) +
+  ifelse(grouped_data$treatment == "Drug B", 10, 0) +
+  ifelse(grouped_data$gender == "Female", 3, 0)
+
+plot <- viz_bar(
+  data = grouped_data,
+  x_var = "treatment",
+  group_var = "gender",
+  value_var = "outcome",
+  bar_type = "mean",
+  error_bars = "ci",
+  ci_level = 0.95,
+  title = "Treatment Effect by Gender",
+  x_label = "Treatment",
+  y_label = "Mean Outcome (95% CI)",
+  color_palette = c("#3498DB", "#E74C3C")
+)
+
+plot
+```
+
+### Customizing Error Bar Appearance
+
+```{r}
+plot <- viz_bar(
+  data = performance_data,
+  x_var = "group",
+  value_var = "score",
+  bar_type = "mean",
+  error_bars = "ci",
+  error_bar_color = "#2C3E50",    # Dark color for visibility
+  error_bar_width = 30,           # Narrower whiskers (0-100)
+  title = "Custom Error Bar Styling",
+  y_label = "Mean Score"
+)
+
+plot
+```
+
 ## 🏷️ Labels and Tooltips
 
 ### Axis Labels
@@ -472,6 +579,7 @@ viz <- create_viz(
 - Showing side-by-side comparisons
 - Displaying survey responses by demographics
 - You want grouped/clustered bars
+- Showing means with error bars (SD, SE, or CI)
 
 **Use `viz_stackedbar()` when:**
 - Showing composition (parts of a whole)
