@@ -194,6 +194,7 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
     choices_css <- system.file("assets", "choices.min.css", package = "dashboardr")
     choices_js <- system.file("assets", "choices.min.js", package = "dashboardr")
     tab_scroll_fix_js <- system.file("assets", "tab-scroll-fix.js", package = "dashboardr")
+    sidebar_css <- system.file("assets", "sidebar.css", package = "dashboardr")
     
     if (file.exists(modal_css)) {
       file.copy(modal_css, file.path(assets_dir, "modal.css"), overwrite = TRUE)
@@ -221,6 +222,9 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
     }
     if (file.exists(tab_scroll_fix_js)) {
       file.copy(tab_scroll_fix_js, file.path(assets_dir, "tab-scroll-fix.js"), overwrite = TRUE)
+    }
+    if (file.exists(sidebar_css)) {
+      file.copy(sidebar_css, file.path(assets_dir, "sidebar.css"), overwrite = TRUE)
     }
 
     # Copy tabset theme SCSS file if using a built-in theme

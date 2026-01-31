@@ -47,7 +47,7 @@
   sections
 }
 
-.generate_viz_from_specs <- function(viz_specs, lazy_load_charts = FALSE, lazy_load_tabs = FALSE) {
+.generate_viz_from_specs <- function(viz_specs, lazy_load_charts = FALSE, lazy_load_tabs = FALSE, heading_level = 2) {
   lines <- character(0)
 
   for (i in seq_along(viz_specs)) {
@@ -79,7 +79,7 @@
       }
     } else if (isTRUE(is.null(spec$type) || !isTRUE(spec$type == "tabgroup"))) {
       # For top-level single charts, apply lazy loading if enabled
-      lines <- c(lines, .generate_single_viz(spec_name, spec, lazy_load = lazy_load_charts))
+      lines <- c(lines, .generate_single_viz(spec_name, spec, lazy_load = lazy_load_charts, heading_level = heading_level))
     } else {
       # Tabgroup
       lines <- c(lines, .generate_tabgroup_viz(spec, lazy_load_tabs = lazy_load_tabs))
@@ -122,13 +122,14 @@
   block_content
 }
 
-.generate_single_viz <- function(spec_name, spec, skip_header = FALSE, lazy_load = FALSE, is_first_tab = TRUE) {
+.generate_single_viz <- function(spec_name, spec, skip_header = FALSE, lazy_load = FALSE, is_first_tab = TRUE, heading_level = 2) {
   lines <- character(0)
 
   # Remove nested_children from spec - it's only for structure, not for visualization generation
   spec <- spec[names(spec) != "nested_children"]
 
   # Add section header with icon if provided (skip if in tabgroup)
+  # Use heading_level parameter (default 2 for regular pages, 3 for dashboard format with sidebar)
   if (isTRUE(!skip_header && !is.null(spec$title))) {
     header_text <- spec$title
     if (!is.null(spec$icon)) {
@@ -139,7 +140,8 @@
       }
       header_text <- paste0(icon_shortcode, " ", spec$title)
     }
-    lines <- c(lines, paste0("## ", header_text), "")
+    heading_prefix <- paste0(rep("#", heading_level), collapse = "")
+    lines <- c(lines, paste0(heading_prefix, " ", header_text), "")
   }
 
   # Add text_before_viz if provided

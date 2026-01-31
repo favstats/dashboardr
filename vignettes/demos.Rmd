@@ -24,6 +24,7 @@ knitr::opts_chunk$set(
 - **Tutorial Dashboard** - Beginner-friendly introduction to dashboardr. [View Demo](../live-demos/tutorial/index.html)
 - **Showcase Dashboard** - Advanced dashboard with multiple pages and tabsets. [View Demo](../live-demos/showcase/index.html)
 - **Interactive Inputs** - Gallery of input types (select, slider, switch, checkbox). [View Demo](../live-demos/inputs/index.html)
+- **Sidebar Demo** - Page sidebars with filters (checkbox, dropdown, slider). [View Demo](../live-demos/sidebar/index.html)
 
 ### Tabset Theme Demos
 
@@ -102,6 +103,35 @@ create_viz() %>%
   add_viz(type = "bar", x_var = "age", tabgroup = "survey/satisfaction/age") %>%
   add_viz(type = "bar", x_var = "education", tabgroup = "survey/demographics/education")
 ```
+
+## Page Sidebars
+
+Sidebars provide a dedicated space for filters that stays visible as users scroll:
+
+```{r}
+create_content(data = my_data) %>%
+  add_sidebar(width = "280px", title = "Filters") %>%
+    add_text("Filter the data:") %>%
+    add_input(
+      input_id = "country",
+      label = "Countries:",
+      type = "checkbox",
+      filter_var = "country",
+      options = c("USA", "UK", "Germany"),
+      columns = 2  # 2-column grid layout
+    ) %>%
+  end_sidebar() %>%
+  add_viz(type = "bar", x_var = "country")
+```
+
+Features:
+
+- Left or right positioning (`position = "right"`)
+- Multiple input types (checkbox, radio, dropdown, slider)
+- Multi-column layouts for checkboxes (`columns = 2, 3, 4`)
+- Mobile-responsive (stacks on small screens)
+
+See the [Sidebar Demo](../live-demos/sidebar/index.html) for live examples.
 
 ## Loading Overlays
 

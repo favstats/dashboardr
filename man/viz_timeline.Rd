@@ -9,6 +9,7 @@ viz_timeline(
   time_var,
   y_var,
   group_var = NULL,
+  agg = c("percentage", "mean", "sum", "none"),
   chart_type = "stacked_area",
   title = NULL,
   subtitle = NULL,
@@ -36,14 +37,24 @@ viz_timeline(
 )
 }
 \arguments{
-\item{data}{A data frame containing survey data with time and response variables.}
+\item{data}{A data frame containing time series data.}
 
 \item{time_var}{Character string. Name of the time variable (e.g., "year", "wave").}
 
-\item{y_var}{Character string. Name of the response variable containing Likert responses.}
+\item{y_var}{Character string. Name of the response/value variable.}
 
 \item{group_var}{Optional character string. Name of grouping variable for separate series
-(e.g., "gender", "education"). Creates separate lines/areas for each group.}
+(e.g., "country", "gender"). Creates separate lines/areas for each group.}
+
+\item{agg}{Character string specifying aggregation method:
+\itemize{
+\item \code{"percentage"} (default): Count responses and calculate percentages per time period.
+Use for survey data with categorical responses.
+\item \code{"mean"}: Calculate mean of y_var per time period (and group if specified).
+\item \code{"sum"}: Calculate sum of y_var per time period (and group if specified).
+\item \code{"none"}: Use values directly without aggregation. Use for pre-aggregated data
+where each row represents one observation per time/group combination.
+}}
 
 \item{chart_type}{Character string. Type of chart: "stacked_area" or "line".}
 
@@ -53,7 +64,8 @@ viz_timeline(
 
 \item{x_label}{Optional character string. Label for the x-axis. Defaults to time_var name.}
 
-\item{y_label}{Optional character string. Label for the y-axis. Defaults to "Percentage".}
+\item{y_label}{Optional character string. Label for the y-axis. Defaults to "Percentage" for
+\code{agg = "percentage"}, or y_var name for other modes.}
 
 \item{y_max}{Optional numeric value. Maximum value for the Y-axis.}
 
@@ -104,8 +116,9 @@ A highcharter plot object.
 }
 \description{
 Creates interactive timeline visualizations showing changes in survey
-responses over time. Supports multiple chart types including stacked areas,
-line charts, and diverging bar charts.
+responses over time, or simple line charts for pre-aggregated time series data.
+Supports multiple chart types including stacked areas, line charts, and
+diverging bar charts.
 }
 \examples{
 # Load GSS data

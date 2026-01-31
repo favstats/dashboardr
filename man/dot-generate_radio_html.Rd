@@ -15,7 +15,8 @@
   inline,
   size = "md",
   help = NULL,
-  disabled = FALSE
+  disabled = FALSE,
+  columns = NULL
 )
 }
 \description{

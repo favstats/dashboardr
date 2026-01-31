@@ -5,19 +5,30 @@
 #' @title Create a Timeline Chart
 #' @description
 #' Creates interactive timeline visualizations showing changes in survey
-#' responses over time. Supports multiple chart types including stacked areas,
-#' line charts, and diverging bar charts.
+#' responses over time, or simple line charts for pre-aggregated time series data.
+#' Supports multiple chart types including stacked areas, line charts, and 
+#' diverging bar charts.
 #'
-#' @param data A data frame containing survey data with time and response variables.
+#' @param data A data frame containing time series data.
 #' @param time_var Character string. Name of the time variable (e.g., "year", "wave").
-#' @param y_var Character string. Name of the response variable containing Likert responses.
+#' @param y_var Character string. Name of the response/value variable.
 #' @param group_var Optional character string. Name of grouping variable for separate series
-#'   (e.g., "gender", "education"). Creates separate lines/areas for each group.
+#'   (e.g., "country", "gender"). Creates separate lines/areas for each group.
+#' @param agg Character string specifying aggregation method:
+#'   \itemize{
+#'     \item \code{"percentage"} (default): Count responses and calculate percentages per time period.
+#'       Use for survey data with categorical responses.
+#'     \item \code{"mean"}: Calculate mean of y_var per time period (and group if specified).
+#'     \item \code{"sum"}: Calculate sum of y_var per time period (and group if specified).
+#'     \item \code{"none"}: Use values directly without aggregation. Use for pre-aggregated data
+#'       where each row represents one observation per time/group combination.
+#'   }
 #' @param chart_type Character string. Type of chart: "stacked_area" or "line".
 #' @param title Optional main title for the chart.
 #' @param subtitle Optional subtitle for the chart.
 #' @param x_label Optional character string. Label for the x-axis. Defaults to time_var name.
-#' @param y_label Optional character string. Label for the y-axis. Defaults to "Percentage".
+#' @param y_label Optional character string. Label for the y-axis. Defaults to "Percentage" for
+#'   \code{agg = "percentage"}, or y_var name for other modes.
 #' @param y_max Optional numeric value. Maximum value for the Y-axis.
 #' @param y_min Optional numeric value. Minimum value for the Y-axis.
 #' @param color_palette Optional character vector of color hex codes for the series.
@@ -154,6 +165,7 @@ viz_timeline <- function(data,
                             time_var,
                             y_var,
                             group_var = NULL,
+                            agg = c("percentage", "mean", "sum", "none"),
                             chart_type = "stacked_area",
                             title = NULL,
                             subtitle = NULL,
@@ -182,8 +194,12 @@ viz_timeline <- function(data,
   # Convert variable arguments to strings (supports both quoted and unquoted)
   time_var <- .as_var_string(rlang::enquo(time_var))
   y_var <- .as_var_string(rlang::enquo(y_var))
+
   group_var <- .as_var_string(rlang::enquo(group_var))
   weight_var <- .as_var_string(rlang::enquo(weight_var))
+  
+  # Validate and set aggregation mode
+  agg <- match.arg(agg)
 
   # INPUT VALIDATION
   if (!is.data.frame(data)) {
@@ -316,40 +332,75 @@ viz_timeline <- function(data,
       mutate(!!sym(y_var) := factor(!!sym(y_var), levels = y_levels))
   }
 
-  # Aggregate data - calculate percentages from ALL data (before filtering)
-  if (is.null(group_var)) {
-    if (!is.null(weight_var)) {
-      if (!weight_var %in% names(plot_data)) {
-        stop("`weight_var` '", weight_var, "' not found in data.", call. = FALSE)
-      }
+  # Aggregate data based on agg mode
+  if (agg == "none") {
+    # No aggregation - use values directly (for pre-aggregated data)
+    # Rename y_var to 'value' for consistency with chart generation
+    if (is.null(group_var)) {
       agg_data <- plot_data %>%
-        count(!!sym(time_var_plot), !!sym(y_var), wt = !!sym(weight_var), name = "count") %>%
-        group_by(!!sym(time_var_plot)) %>%
-        mutate(percentage = round(count / sum(count) * 100, 1)) %>%
-        ungroup()
+        select(!!sym(time_var_plot), value = !!sym(y_var))
     } else {
       agg_data <- plot_data %>%
-        count(!!sym(time_var_plot), !!sym(y_var), name = "count") %>%
+        select(!!sym(time_var_plot), !!sym(group_var), value = !!sym(y_var))
+    }
+  } else if (agg == "mean") {
+    # Calculate mean per time period (and group if specified)
+    if (is.null(group_var)) {
+      agg_data <- plot_data %>%
         group_by(!!sym(time_var_plot)) %>%
-        mutate(percentage = round(count / sum(count) * 100, 1)) %>%
-        ungroup()
+        summarize(value = mean(!!sym(y_var), na.rm = TRUE), .groups = "drop")
+    } else {
+      agg_data <- plot_data %>%
+        group_by(!!sym(time_var_plot), !!sym(group_var)) %>%
+        summarize(value = mean(!!sym(y_var), na.rm = TRUE), .groups = "drop")
+    }
+  } else if (agg == "sum") {
+    # Calculate sum per time period (and group if specified)
+    if (is.null(group_var)) {
+      agg_data <- plot_data %>%
+        group_by(!!sym(time_var_plot)) %>%
+        summarize(value = sum(!!sym(y_var), na.rm = TRUE), .groups = "drop")
+    } else {
+      agg_data <- plot_data %>%
+        group_by(!!sym(time_var_plot), !!sym(group_var)) %>%
+        summarize(value = sum(!!sym(y_var), na.rm = TRUE), .groups = "drop")
     }
   } else {
-    if (!is.null(weight_var)) {
-      if (!weight_var %in% names(plot_data)) {
-        stop("`weight_var` '", weight_var, "' not found in data.", call. = FALSE)
+    # agg == "percentage" - original behavior: count and calculate percentages
+    if (is.null(group_var)) {
+      if (!is.null(weight_var)) {
+        if (!weight_var %in% names(plot_data)) {
+          stop("`weight_var` '", weight_var, "' not found in data.", call. = FALSE)
+        }
+        agg_data <- plot_data %>%
+          count(!!sym(time_var_plot), !!sym(y_var), wt = !!sym(weight_var), name = "count") %>%
+          group_by(!!sym(time_var_plot)) %>%
+          mutate(percentage = round(count / sum(count) * 100, 1)) %>%
+          ungroup()
+      } else {
+        agg_data <- plot_data %>%
+          count(!!sym(time_var_plot), !!sym(y_var), name = "count") %>%
+          group_by(!!sym(time_var_plot)) %>%
+          mutate(percentage = round(count / sum(count) * 100, 1)) %>%
+          ungroup()
       }
-      agg_data <- plot_data %>%
-        count(!!sym(time_var_plot), !!sym(y_var), !!sym(group_var), wt = !!sym(weight_var), name = "count") %>%
-        group_by(!!sym(time_var_plot), !!sym(group_var)) %>%
-        mutate(percentage = round(count / sum(count) * 100, 1)) %>%
-        ungroup()
     } else {
-      agg_data <- plot_data %>%
-        count(!!sym(time_var_plot), !!sym(y_var), !!sym(group_var), name = "count") %>%
-        group_by(!!sym(time_var_plot), !!sym(group_var)) %>%
-        mutate(percentage = round(count / sum(count) * 100, 1)) %>%
-        ungroup()
+      if (!is.null(weight_var)) {
+        if (!weight_var %in% names(plot_data)) {
+          stop("`weight_var` '", weight_var, "' not found in data.", call. = FALSE)
+        }
+        agg_data <- plot_data %>%
+          count(!!sym(time_var_plot), !!sym(y_var), !!sym(group_var), wt = !!sym(weight_var), name = "count") %>%
+          group_by(!!sym(time_var_plot), !!sym(group_var)) %>%
+          mutate(percentage = round(count / sum(count) * 100, 1)) %>%
+          ungroup()
+      } else {
+        agg_data <- plot_data %>%
+          count(!!sym(time_var_plot), !!sym(y_var), !!sym(group_var), name = "count") %>%
+          group_by(!!sym(time_var_plot), !!sym(group_var)) %>%
+          mutate(percentage = round(count / sum(count) * 100, 1)) %>%
+          ungroup()
+      }
     }
   }
 
@@ -396,11 +447,19 @@ viz_timeline <- function(data,
 
   y_axis_title <- if (!is.null(y_label)) {
     y_label
-  } else if (chart_type == "line" && !is.null(group_var) && is.numeric(plot_data[[y_var]])) {
-    "Value"
-  } else {
+  } else if (agg == "percentage") {
     "Percentage"
+  } else if (agg == "mean") {
+    paste0("Mean ", y_var)
+  } else if (agg == "sum") {
+    paste0("Total ", y_var)
+  } else {
+    # agg == "none"
+    y_var
   }
+  
+  # Determine the value column to use for charting
+  value_col <- if (agg == "percentage") "percentage" else "value"
 
   # NA HANDLING - Apply AFTER mapping/filtering/binning
   if (!include_na) {
@@ -484,10 +543,10 @@ viz_timeline <- function(data,
         if (is_time_categorical) {
           series_data <- series_data %>%
             mutate(x = as.character(!!sym(time_var_plot))) %>%
-            select(x, y = percentage)
+            select(x, y = !!sym(value_col))
         } else {
           series_data <- series_data %>%
-            select(x = !!sym(time_var_plot), y = percentage)
+            select(x = !!sym(time_var_plot), y = !!sym(value_col))
         }
 
         hc <- hc %>%
@@ -502,8 +561,9 @@ viz_timeline <- function(data,
   } else if (chart_type == "line") {
     hc <- hc %>% hc_chart(type = "line")
 
-    # SPECIAL CASE: numeric response with grouping -> one series per group (e.g., country)
-    if (!is.null(group_var) && is.numeric(plot_data[[y_var]])) {
+    # SPECIAL CASE: numeric response with grouping in percentage mode -> weighted mean per group
+    # This is ONLY for percentage mode - other modes already have the correct agg_data
+    if (agg == "percentage" && !is.null(group_var) && is.numeric(plot_data[[y_var]])) {
       if (!is.null(weight_var)) {
         if (!weight_var %in% names(plot_data)) {
           stop("`weight_var` '", weight_var, "' not found in data.", call. = FALSE)
@@ -556,7 +616,62 @@ viz_timeline <- function(data,
 
       return(hc)
     }
+    
+    # For non-percentage modes (none, mean, sum), use simpler chart generation
+    if (agg != "percentage") {
+      if (is.null(group_var)) {
+        # Single series - just plot value over time
+        series_data <- agg_data %>%
+          arrange(!!sym(time_var_plot))
+        
+        if (is_time_categorical) {
+          series_data <- series_data %>%
+            mutate(x = as.character(!!sym(time_var_plot))) %>%
+            select(x, y = value)
+        } else {
+          series_data <- series_data %>%
+            select(x = !!sym(time_var_plot), y = value)
+        }
+        
+        hc <- hc %>%
+          hc_add_series(
+            name = y_var,
+            data = list_parse2(series_data),
+            type = "line"
+          )
+      } else {
+        # Multiple series - one per group
+        group_levels <- unique(agg_data[[group_var]])
+        
+        for (group_level in group_levels) {
+          series_data <- agg_data %>%
+            filter(!!sym(group_var) == group_level) %>%
+            arrange(!!sym(time_var_plot))
+          
+          if (nrow(series_data) == 0) next
+          
+          if (is_time_categorical) {
+            series_data <- series_data %>%
+              mutate(x = as.character(!!sym(time_var_plot))) %>%
+              select(x, y = value)
+          } else {
+            series_data <- series_data %>%
+              select(x = !!sym(time_var_plot), y = value)
+          }
+          
+          hc <- hc %>%
+            hc_add_series(
+              name = as.character(group_level),
+              data = list_parse2(series_data),
+              type = "line"
+            )
+        }
+      }
+      
+      return(hc)
+    }
 
+    # Percentage mode: original behavior with y_var levels
     if (is.null(group_var)) {
       y_levels_to_use <- if (!is.null(y_levels)) y_levels else unique(agg_data[[y_var]])
       for(level in y_levels_to_use) {

@@ -514,6 +514,168 @@ create_dashboard(title = "GSS Explorer", output_dir = "gss_explorer") %>%
 ```
 
 
+## 📋 Page Sidebars
+
+Sidebars provide a dedicated space for inputs and controls alongside your visualizations. Instead of placing filters above your charts, a sidebar keeps them visible and accessible as users scroll through content.
+
+### Why Use Sidebars?
+
+- **Persistent controls**: Filters remain visible while scrolling through charts
+- **Better space usage**: Inputs don't take up vertical space in the main content area
+- **Professional look**: Common pattern in data dashboards and analytics tools
+- **Mobile-friendly**: Automatically adapts to smaller screens
+
+### Basic Sidebar
+
+Use `add_sidebar()` and `end_sidebar()` to wrap sidebar content:
+```{r, eval=FALSE}
+page <- create_page("Analysis", data = gss) %>%
+  create_content(data = gss) %>%
+  add_sidebar(width = "280px", title = "Filters") %>%
+    add_text("Filter the data below.") %>%
+    add_divider() %>%
+    add_input(
+      input_id = "edu_filter",
+      label = "Education:",
+      type = "checkbox",
+      filter_var = "degree",
+      options_from = "degree",
+      columns = 2  # Display in 2-column grid
+    ) %>%
+  end_sidebar() %>%
+  add_viz(type = "bar", x_var = "happy", title = "Happiness Distribution")
+```
+
+### Sidebar Position
+
+By default, sidebars appear on the left. Use `position = "right"` for a right-side sidebar:
+
+```{r, eval=FALSE}
+create_content(data = gss) %>%
+  add_sidebar(width = "300px", title = "Options", position = "right") %>%
+    add_input(...) %>%
+  end_sidebar() %>%
+  add_viz(...)
+```
+
+### Sidebar Content
+
+Sidebars can contain any content, not just inputs:
+
+```{r, eval=FALSE}
+add_sidebar(width = "280px", title = "About") %>%
+  add_text("Select options to explore the data.") %>%
+  add_divider() %>%
+  add_input(...) %>%
+  add_spacer(height = "1rem") %>%
+  add_callout("Data source: GSS 2022", type = "note") %>%
+  add_badge("Updated Weekly", color = "primary") %>%
+end_sidebar()
+```
+
+### Multi-Column Inputs
+
+For checkboxes and radio buttons, use the `columns` parameter to display options in a grid layout instead of a vertical list:
+
+```{r, eval=FALSE}
+# 2-column grid (great for sidebars)
+add_input(
+  input_id = "countries",
+  label = "Countries:",
+  type = "checkbox",
+  filter_var = "country",
+  options = c("USA", "UK", "Germany", "France", "Italy"),
+  columns = 2
+)
+
+# 3-column grid (for wider sidebars)
+add_input(..., columns = 3)
+
+# Inline (horizontal wrap)
+add_input(..., inline = TRUE)
+```
+
+### Different Sidebars Per Page
+
+Each page can have its own sidebar with different inputs:
+
+```{r, eval=FALSE}
+# Page 1: Left sidebar with checkboxes
+page1 <- create_page("Demographics", data = gss) %>%
+  create_content(data = gss) %>%
+  add_sidebar(width = "280px", title = "Filter") %>%
+    add_input(type = "checkbox", ...) %>%
+  end_sidebar() %>%
+  add_viz(...)
+
+# Page 2: Right sidebar with dropdown
+page2 <- create_page("Trends", data = gss) %>%
+  create_content(data = gss) %>%
+  add_sidebar(width = "300px", position = "right", title = "Options") %>%
+    add_input(type = "select_multiple", ...) %>%
+  end_sidebar() %>%
+  add_viz(...)
+
+# Page 3: No sidebar
+page3 <- create_page("About") %>%
+  add_text("About this dashboard...")
+```
+
+### Complete Example
+
+```{r, eval=FALSE}
+library(dashboardr)
+
+# Create page with sidebar
+page <- create_page("Explorer", data = gss) %>%
+  create_content(data = gss, type = "bar") %>%
+  add_sidebar(width = "280px", title = "Data Filters") %>%
+    add_text("Select groups to include in the analysis.") %>%
+    add_divider() %>%
+    add_input(
+      input_id = "degree_filter",
+      label = "Education Level:",
+      type = "checkbox",
+      filter_var = "degree",
+      options_from = "degree",
+      columns = 2
+    ) %>%
+    add_spacer(height = "0.5rem") %>%
+    add_input(
+      input_id = "sex_filter",
+      label = "Gender:",
+      type = "radio",
+      filter_var = "sex",
+      options_from = "sex"
+    ) %>%
+    add_divider() %>%
+    add_callout("Charts update automatically when you change filters.", type = "tip") %>%
+  end_sidebar() %>%
+  add_viz(x_var = "happy", title = "Happiness", tabgroup = "Results") %>%
+  add_viz(x_var = "polviews", title = "Political Views", tabgroup = "Results")
+
+# Generate dashboard
+create_dashboard(title = "GSS Explorer", output_dir = "gss_sidebar") %>%
+  add_page(page) %>%
+  generate_dashboard(render = TRUE)
+```
+
+### Sidebar Parameters
+
+| Parameter | Description | Default |
+|-----------|-------------|---------|
+| `width` | Sidebar width (CSS units) | `"280px"` |
+| `title` | Heading text at top of sidebar | `NULL` |
+| `position` | `"left"` or `"right"` | `"left"` |
+
+### Mobile Behavior
+
+On mobile devices (screens < 768px wide), sidebars automatically:
+
+- Stack above/below the main content instead of beside it
+- Take full width of the screen
+- Maintain all functionality
+
 ## ⚖️ Survey Weights
 
 Survey data often requires weighting to produce population-representative estimates. Without weights, your sample might over- or under-represent certain groups.

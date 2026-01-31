@@ -2,6 +2,31 @@
 # Input Filter Helpers for dashboardr
 # =================================================================
 
+#' Enable Sidebar Styling
+#'
+#' Adds modern CSS styling for sidebar panels. Called automatically
+#' when a page includes a sidebar via add_sidebar().
+#'
+#' @return HTML tags to include sidebar CSS
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' # Usually called automatically, but can be added manually:
+#' enable_sidebar()
+#' }
+enable_sidebar <- function() {
+  # Add version parameter to bust cache
+  version <- format(Sys.time(), "%Y%m%d%H%M%S")
+  
+  htmltools::tagList(
+    htmltools::tags$link(
+      rel = "stylesheet",
+      href = paste0("assets/sidebar.css?v=", version)
+    )
+  )
+}
+
 #' Enable Input Filter Functionality
 #'
 #' Adds input filter CSS and JavaScript to enable interactive filtering
@@ -164,9 +189,18 @@ enable_inputs <- function() {
 #' @keywords internal
 .generate_checkbox_html <- function(input_id, label, filter_var, options,
                                      default_selected, width, align, inline,
-                                     size = "md", help = NULL, disabled = FALSE) {
+                                     size = "md", help = NULL, disabled = FALSE,
+                                     columns = NULL) {
   if (is.null(default_selected)) default_selected <- options
-  inline_class <- if (inline) " inline" else ""
+  
+ # Build layout class: inline takes priority, then columns, then default (stacked)
+  layout_class <- ""
+  if (inline) {
+    layout_class <- " inline"
+  } else if (!is.null(columns) && columns %in% c(2, 3, 4)) {
+    layout_class <- paste0(" grid-", columns)
+  }
+  
   size_class <- paste0(" size-", size)
   disabled_attr <- if (disabled) ' disabled' else ''
   
@@ -177,7 +211,7 @@ enable_inputs <- function() {
     html_lines <- c(html_lines, paste0('  <label class="dashboardr-input-label">', label, '</label>'))
   }
   
-  html_lines <- c(html_lines, paste0('  <div id="', input_id, '" class="dashboardr-checkbox-group', inline_class, '" data-filter-var="', filter_var, '" data-input-type="checkbox">'))
+  html_lines <- c(html_lines, paste0('  <div id="', input_id, '" class="dashboardr-checkbox-group', layout_class, '" data-filter-var="', filter_var, '" data-input-type="checkbox">'))
   
   for (i in seq_along(options)) {
     opt <- options[i]
@@ -207,9 +241,18 @@ enable_inputs <- function() {
 #' @keywords internal
 .generate_radio_html <- function(input_id, label, filter_var, options,
                                   default_selected, width, align, inline,
-                                  size = "md", help = NULL, disabled = FALSE) {
+                                  size = "md", help = NULL, disabled = FALSE,
+                                  columns = NULL) {
   if (is.null(default_selected) && length(options) > 0) default_selected <- options[1]
-  inline_class <- if (inline) " inline" else ""
+  
+  # Build layout class: inline takes priority, then columns, then default (stacked)
+  layout_class <- ""
+  if (inline) {
+    layout_class <- " inline"
+  } else if (!is.null(columns) && columns %in% c(2, 3, 4)) {
+    layout_class <- paste0(" grid-", columns)
+  }
+  
   size_class <- paste0(" size-", size)
   disabled_attr <- if (disabled) ' disabled' else ''
   
@@ -220,7 +263,7 @@ enable_inputs <- function() {
     html_lines <- c(html_lines, paste0('  <label class="dashboardr-input-label">', label, '</label>'))
   }
   
-  html_lines <- c(html_lines, paste0('  <div id="', input_id, '" class="dashboardr-radio-group', inline_class, '" data-filter-var="', filter_var, '" data-input-type="radio">'))
+  html_lines <- c(html_lines, paste0('  <div id="', input_id, '" class="dashboardr-radio-group', layout_class, '" data-filter-var="', filter_var, '" data-input-type="radio">'))
   
   for (i in seq_along(options)) {
     opt <- options[i]
@@ -503,6 +546,7 @@ render_input <- function(input_id,
                          value = NULL,
                          show_value = TRUE,
                          inline = TRUE,
+                         columns = NULL,
                          toggle_series = NULL,
                          override = FALSE,
                          labels = NULL,
@@ -536,10 +580,10 @@ render_input <- function(input_id,
                                              size, help, disabled),
     "checkbox" = .generate_checkbox_html(input_id, label, filter_var, options,
                                           default_selected, width, align, inline,
-                                          size, help, disabled),
+                                          size, help, disabled, columns),
     "radio" = .generate_radio_html(input_id, label, filter_var, options,
                                     default_selected, width, align, inline,
-                                    size, help, disabled),
+                                    size, help, disabled, columns),
     "switch" = .generate_switch_html(input_id, label, filter_var, value, width, align,
                                       toggle_series, override, size, help, disabled),
     "slider" = .generate_slider_html(input_id, label, filter_var, min, max, step,
@@ -609,13 +653,13 @@ render_input_row <- function(inputs, style = "boxed", align = "center") {
         input$input_id, input$label, input$filter_var, options,
         input$default_selected, input$width %||% "300px", "center",
         input$inline %||% TRUE, input$size %||% "md", input$help,
-        input$disabled %||% FALSE
+        input$disabled %||% FALSE, input$columns
       ),
       "radio" = .generate_radio_html(
         input$input_id, input$label, input$filter_var, options,
         input$default_selected, input$width %||% "300px", "center",
         input$inline %||% TRUE, input$size %||% "md", input$help,
-        input$disabled %||% FALSE
+        input$disabled %||% FALSE, input$columns
       ),
       "switch" = .generate_switch_html(
         input$input_id, input$label, input$filter_var, input$value,

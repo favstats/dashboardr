@@ -37,10 +37,24 @@
     title_content <- paste0(icon_shortcode, " ", page$name)
   }
 
+  # Check if page has a sidebar - if so, use dashboard format
+  has_page_sidebar <- !is.null(page$sidebar)
+  if (!has_page_sidebar && !is.null(page$content_blocks)) {
+    for (block in page$content_blocks) {
+      if (is_content(block) && !is.null(block$sidebar)) {
+        has_page_sidebar <- TRUE
+        break
+      }
+    }
+  }
+  
+  # Use dashboard format when sidebar is present, otherwise html
+  page_format <- if (has_page_sidebar) "dashboard" else "html"
+
   content <- c(
     "---",
     paste0("title: \"", title_content, "\""),
-    "format: html",
+    paste0("format: ", page_format),
     "---",
     "",
     "```{r, include=FALSE}",
@@ -70,6 +84,27 @@
     content <- c(content,
       "```{r, echo=FALSE, results='asis'}",
       "dashboardr::enable_inputs()",
+      "```",
+      ""
+    )
+  }
+  
+  # Auto-enable sidebar styling if page has a sidebar
+  # Check both page$sidebar and content_blocks for sidebar
+  page_has_sidebar <- !is.null(page$sidebar)
+  if (!page_has_sidebar && !is.null(page$content_blocks)) {
+    for (block in page$content_blocks) {
+      if (is_content(block) && !is.null(block$sidebar)) {
+        page_has_sidebar <- TRUE
+        break
+      }
+    }
+  }
+  
+  if (page_has_sidebar) {
+    content <- c(content,
+      "```{r, echo=FALSE, results='asis'}",
+      "dashboardr::enable_sidebar()",
       "```",
       ""
     )
@@ -140,6 +175,38 @@
     }
     
     content <- c(content, .generate_lazy_load_script(lazy_load_margin, lazy_load_tabs, lazy_load_theme, lazy_debug))
+  }
+
+
+  # Check for sidebar content (from page, or from content_blocks list)
+  sidebar <- page$sidebar
+  
+  # If not on page directly, check content_blocks (which is a list of content collections)
+  if (is.null(sidebar) && !is.null(page$content_blocks)) {
+    for (block in page$content_blocks) {
+      if (is_content(block) && !is.null(block$sidebar)) {
+        sidebar <- block$sidebar
+        break
+      }
+    }
+  }
+  
+  has_sidebar <- !is.null(sidebar)
+  sidebar_position <- if (has_sidebar) (sidebar$position %||% "left") else "left"
+  
+  # In dashboard format (with sidebar), viz titles should use ### instead of ##
+  # to stay within the Column
+  viz_heading_level <- if (has_sidebar) 3 else 2
+  
+  # For left sidebar: output sidebar first, then ## Column marker
+  if (has_sidebar && sidebar_position == "left") {
+    content <- c(content, .generate_sidebar_block(sidebar, page))
+    content <- c(content, "", "## Column", "")
+  }
+  
+  # For right sidebar: output ## Column marker first (sidebar added at end)
+  if (has_sidebar && sidebar_position == "right") {
+    content <- c(content, "", "## Column", "")
   }
 
   # Add content blocks (text, images, and other content types) before visualizations
@@ -217,7 +284,8 @@
             if (!is.null(processed_specs) && length(processed_specs) > 0) {
               viz_content <- .generate_viz_from_specs(processed_specs, 
                                                         page$lazy_load_charts %||% FALSE, 
-                                                        page$lazy_load_tabs %||% FALSE)
+                                                        page$lazy_load_tabs %||% FALSE,
+                                                        heading_level = viz_heading_level)
               content <- c(content, viz_content)
             }
             i <- j
@@ -352,7 +420,7 @@
     # Get lazy load settings
     lazy_load_charts <- page$lazy_load_charts %||% FALSE
     lazy_load_tabs <- page$lazy_load_tabs %||% FALSE
-    viz_content <- .generate_viz_from_specs(page$visualizations, lazy_load_charts, lazy_load_tabs)
+    viz_content <- .generate_viz_from_specs(page$visualizations, lazy_load_charts, lazy_load_tabs, heading_level = viz_heading_level)
     content <- c(content, viz_content)
   } else if (isTRUE(is.null(page$text) || !nzchar(page$text))) {
     # Check if there's any content from various sources
@@ -361,6 +429,11 @@
     if (!has_content_blocks && !has_page_items) {
       content <- c(content, "This page was generated without a template.")
     }
+  }
+
+  # For right sidebar: add sidebar at the end after all main content
+  if (has_sidebar && sidebar_position == "right") {
+    content <- c(content, .generate_sidebar_block(sidebar, page))
   }
 
   content
@@ -956,6 +1029,10 @@
 #' @keywords internal
 .generate_input_block <- function(block, page = NULL) {
   # Generate R chunk that renders the input widget
+  # Note: margin parameters (mt, mr, mb, ml) are only used in render_input_row, not render_input
+  # Use input_type if available (sidebar inputs), otherwise fall back to type
+  input_widget_type <- block$input_type %||% block$type
+  
   lines <- c(
     "",
     "```{r}",
@@ -964,7 +1041,7 @@
     "dashboardr::render_input(",
     paste0("  input_id = ", .serialize_arg(block$input_id), ","),
     paste0("  label = ", .serialize_arg(block$label), ","),
-    paste0("  type = ", .serialize_arg(block$type), ","),
+    paste0("  type = ", .serialize_arg(input_widget_type), ","),
     paste0("  filter_var = ", .serialize_arg(block$filter_var), ","),
     paste0("  options = ", .serialize_arg(block$options), ","),
     paste0("  options_from = ", .serialize_arg(block$options_from), ","),
@@ -982,11 +1059,7 @@
     paste0("  labels = ", .serialize_arg(block$labels), ","),
     paste0("  size = ", .serialize_arg(block$size %||% "md"), ","),
     paste0("  help = ", .serialize_arg(block$help), ","),
-    paste0("  disabled = ", .serialize_arg(block$disabled %||% FALSE), ","),
-    paste0("  mt = ", .serialize_arg(block$mt), ","),
-    paste0("  mr = ", .serialize_arg(block$mr), ","),
-    paste0("  mb = ", .serialize_arg(block$mb), ","),
-    paste0("  ml = ", .serialize_arg(block$ml)),
+    paste0("  disabled = ", .serialize_arg(block$disabled %||% FALSE)),
     ")",
     "```",
     ""
@@ -1058,6 +1131,100 @@
     "```", 
     ""
   )
+  lines
+}
+
+#' Internal function to generate markdown for a sidebar
+#'
+#' @param sidebar Sidebar content block with blocks, width, position, title, and styling
+#' @param page Page object (for data access)
+#' @return Character vector of markdown lines
+#' @keywords internal
+.generate_sidebar_block <- function(sidebar, page = NULL) {
+  lines <- c()
+  
+  # Build sidebar header with attributes
+  attrs <- c(".sidebar")
+  
+  # Width
+  if (!is.null(sidebar$width) && nzchar(sidebar$width)) {
+    attrs <- c(attrs, paste0('width="', sidebar$width, '"'))
+  }
+  
+  # Open state (Quarto uses 'open' attribute)
+  if (isFALSE(sidebar$open)) {
+    attrs <- c(attrs, 'open="false"')
+  }
+  
+  # Additional classes
+  if (!is.null(sidebar$class) && nzchar(sidebar$class)) {
+    attrs <- c(attrs, paste0('.', gsub(" ", " .", sidebar$class)))
+  }
+  
+  # Build the header line
+  header_line <- paste0("## {", paste(attrs, collapse = " "), "}")
+  lines <- c(lines, "", header_line, "")
+  
+
+  # Build custom inline styles only if user specified custom values
+  custom_styles <- c()
+  
+  if (!is.null(sidebar$background) && nzchar(sidebar$background)) {
+    custom_styles <- c(custom_styles, paste0("background-color: ", sidebar$background))
+  }
+  if (!is.null(sidebar$padding) && nzchar(sidebar$padding)) {
+    custom_styles <- c(custom_styles, paste0("padding: ", sidebar$padding))
+  }
+  if (!is.null(sidebar$border)) {
+    if (isFALSE(sidebar$border)) {
+      custom_styles <- c(custom_styles, "border-right: none", "box-shadow: none")
+    } else if (is.character(sidebar$border)) {
+      custom_styles <- c(custom_styles, paste0("border-right: ", sidebar$border))
+    }
+  }
+  
+  # Only add inline style block if user specified custom styles
+  if (length(custom_styles) > 0) {
+    style_css <- paste(custom_styles, collapse = "; ")
+    lines <- c(lines,
+      "",
+      "```{r, echo=FALSE, results='asis'}",
+      paste0("cat('<style>.sidebar { ", style_css, "; }</style>')"),
+      "```",
+      ""
+    )
+  }
+  
+  # Add title if provided
+  if (!is.null(sidebar$title) && nzchar(sidebar$title)) {
+    lines <- c(lines, paste0("### ", sidebar$title), "")
+  }
+  
+  # Generate content for each block in the sidebar
+  for (block in sidebar$blocks) {
+    block_type <- block$type %||% ""
+    
+    block_content <- switch(block_type,
+      "text" = c("", block$content, ""),
+      "input" = .generate_input_block(block, page),
+      "input_row" = .generate_input_row_block(block, page),
+      "image" = .generate_image_block(block),
+      "badge" = .generate_badge_block(block),
+      "metric" = .generate_metric_block(block),
+      "divider" = .generate_divider_block(block),
+      "spacer" = .generate_spacer_block(block),
+      "html" = .generate_html_block(block),
+      "callout" = .generate_callout_block(block),
+      "accordion" = .generate_accordion_block(block),
+      "card" = .generate_card_block(block),
+      NULL
+    )
+    
+    if (!is.null(block_content)) {
+      lines <- c(lines, block_content)
+    }
+  }
+  
   lines
 }
 

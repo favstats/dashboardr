@@ -357,6 +357,16 @@ add_pages <- function(proj, ...) {
   # Add external content collections
   for (ext_content in page$content) {
     content <- combine_content(content, ext_content)
+    
+    # Propagate sidebar from external content
+    if (!is.null(ext_content$sidebar)) {
+      content$sidebar <- ext_content$sidebar
+    }
+  }
+  
+  # Also propagate sidebar from page itself if set
+  if (!is.null(page$sidebar)) {
+    content$sidebar <- page$sidebar
   }
   
   content
@@ -369,8 +379,8 @@ add_pages <- function(proj, ...) {
   # Convert page content to content collection
   combined_content <- .page_to_content(page)
   
-  # If no items, set to NULL
-  if (length(combined_content$items) == 0) {
+  # If no items AND no sidebar, set to NULL
+  if (length(combined_content$items) == 0 && is.null(combined_content$sidebar)) {
     combined_content <- NULL
   }
 

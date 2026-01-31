@@ -22,6 +22,7 @@ add_input(
   value = NULL,
   show_value = TRUE,
   inline = TRUE,
+  columns = NULL,
   toggle_series = NULL,
   override = FALSE,
   labels = NULL,

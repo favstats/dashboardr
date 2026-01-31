@@ -1,0 +1,9 @@
+[
+  {
+    "objectID": "about.html",
+    "href": "about.html",
+    "title": "About",
+    "section": "",
+    "text": "About This Dashboard\nThis dashboard demonstrates the multi-page sidebar feature in dashboardr.\nEach page can have:\n\nIts own sidebar (or none)\nDifferent input types (checkbox, radio, select, etc.)\nLeft or right sidebar position\nIndependent filtering for that page’s visualizations\n\n\nData is simulated for demonstration purposes."
+  }
+]

@@ -917,6 +917,15 @@ add_dashboard_page <- function(proj, name, data = NULL, data_path = NULL,
   if (!is.null(content) && is_content(content) && isTRUE(content$needs_inputs)) {
     needs_inputs <- TRUE
   }
+  # Check sidebar for inputs
+  if (!is.null(combined_input) && is_content(combined_input) && 
+      !is.null(combined_input$sidebar) && isTRUE(combined_input$sidebar$needs_inputs)) {
+    needs_inputs <- TRUE
+  }
+  if (!is.null(content) && is_content(content) && 
+      !is.null(content$sidebar) && isTRUE(content$sidebar$needs_inputs)) {
+    needs_inputs <- TRUE
+  }
   
   # Check if metric data embedding is needed (for filter_var = "metric" inputs)
   needs_metric_data <- FALSE
@@ -924,6 +933,15 @@ add_dashboard_page <- function(proj, name, data = NULL, data_path = NULL,
     needs_metric_data <- TRUE
   }
   if (!is.null(content) && is_content(content) && isTRUE(content$needs_metric_data)) {
+    needs_metric_data <- TRUE
+  }
+  # Check sidebar for needs_metric_data
+  if (!is.null(combined_input) && is_content(combined_input) && 
+      !is.null(combined_input$sidebar) && isTRUE(combined_input$sidebar$needs_metric_data)) {
+    needs_metric_data <- TRUE
+  }
+  if (!is.null(content) && is_content(content) && 
+      !is.null(content$sidebar) && isTRUE(content$sidebar$needs_metric_data)) {
     needs_metric_data <- TRUE
   }
   
@@ -937,6 +955,22 @@ add_dashboard_page <- function(proj, name, data = NULL, data_path = NULL,
     page_tabgroup_labels <- content$tabgroup_labels
   }
   
+  # Extract sidebar from content collections
+  page_sidebar <- NULL
+  if (!is.null(combined_input) && is_content(combined_input) && !is.null(combined_input$sidebar)) {
+    page_sidebar <- combined_input$sidebar
+  } else if (!is.null(content) && is_content(content) && !is.null(content$sidebar)) {
+    page_sidebar <- content$sidebar
+  } else if (!is.null(content_blocks) && length(content_blocks) > 0) {
+    # Check content_blocks for sidebars
+    for (block in content_blocks) {
+      if (is_content(block) && !is.null(block$sidebar)) {
+        page_sidebar <- block$sidebar
+        break
+      }
+    }
+  }
+  
   # Create page record
   page <- list(
     name = name,
@@ -947,6 +981,7 @@ add_dashboard_page <- function(proj, name, data = NULL, data_path = NULL,
     visualizations = viz_specs,
     viz_embedded_in_content = viz_embedded_in_content,
     content_blocks = content_blocks,
+    sidebar = page_sidebar,
     needs_modals = needs_modals,
     needs_inputs = needs_inputs,
     needs_metric_data = needs_metric_data,

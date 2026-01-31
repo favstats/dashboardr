@@ -89,6 +89,22 @@ add_text <- function(x = NULL, text, ..., tabgroup = NULL) {
     return(add_text.page_object(x, text, ..., tabgroup = tabgroup))
   }
   
+  # Handle sidebar_container - add text block to sidebar
+  if (inherits(x, "sidebar_container")) {
+    # Combine all text arguments
+    extra_args <- list(...)
+    if (length(extra_args) > 0) {
+      all_text <- c(text, unlist(extra_args))
+    } else {
+      all_text <- text
+    }
+    final_content <- paste(all_text, collapse = "\n")
+    
+    text_block <- structure(list(type = "text", content = final_content), class = "content_block")
+    x$blocks <- c(x$blocks, list(text_block))
+    return(x)
+  }
+  
   content_collection <- x
   
   # Track if we're in pipeable mode or standalone mode
@@ -116,7 +132,7 @@ add_text <- function(x = NULL, text, ..., tabgroup = NULL) {
     content_collection$items <- list(old_block)
     is_pipeable <- TRUE
   } else {
-    stop("First argument must be a content collection, page_object, content_block, character string, or NULL")
+    stop("First argument must be a content collection, page_object, sidebar_container, content_block, character string, or NULL")
   }
   
   # Combine all text arguments from ...
@@ -205,6 +221,17 @@ add_text <- function(x = NULL, text, ..., tabgroup = NULL) {
 add_image <- function(content_collection = NULL, src, alt = NULL, caption = NULL, 
                       width = NULL, height = NULL, align = c("center", "left", "right"), 
                       link = NULL, class = NULL, tabgroup = NULL) {
+  # Handle sidebar_container
+  if (inherits(content_collection, "sidebar_container")) {
+    align <- match.arg(align)
+    image_block <- structure(list(
+      type = "image", src = src, alt = alt %||% "", caption = caption,
+      width = width, height = height, align = align, link = link, class = class
+    ), class = "content_block")
+    content_collection$blocks <- c(content_collection$blocks, list(image_block))
+    return(content_collection)
+  }
+  
   # Track if we're in pipeable mode or standalone mode
   is_pipeable <- FALSE
   was_null <- FALSE
@@ -222,7 +249,7 @@ add_image <- function(content_collection = NULL, src, alt = NULL, caption = NULL
     content_collection$items <- list(old_block)
     is_pipeable <- TRUE
   } else {
-    stop("First argument must be a content collection, content_block, or NULL")
+    stop("First argument must be a content collection, sidebar_container, content_block, or NULL")
   }
   
   # Validate src
@@ -300,9 +327,20 @@ add_callout <- function(x, text, type = c("note", "tip", "warning", "caution", "
     return(add_callout.page_object(x, text, type = type, title = title, tabgroup = tabgroup))
   }
   
+  # Handle sidebar_container
+  if (inherits(x, "sidebar_container")) {
+    type <- match.arg(type)
+    callout_block <- structure(list(
+      type = "callout", callout_type = type, content = text,
+      title = title, icon = icon, collapse = collapse
+    ), class = "content_block")
+    x$blocks <- c(x$blocks, list(callout_block))
+    return(x)
+  }
+  
   content <- x
   if (!is_content(content)) {
-    stop("First argument must be a content collection or page_object")
+    stop("First argument must be a content collection, sidebar_container, or page_object")
   }
   
   type <- match.arg(type)
@@ -337,13 +375,19 @@ add_divider <- function(content, style = "default", tabgroup = NULL) {
   ), class = "content_block")
   
   # Handle page_object
- if (inherits(content, "page_object")) {
+  if (inherits(content, "page_object")) {
     content$.items <- c(content$.items, list(divider_block))
     return(content)
   }
   
+  # Handle sidebar_container
+  if (inherits(content, "sidebar_container")) {
+    content$blocks <- c(content$blocks, list(divider_block))
+    return(content)
+  }
+  
   if (!is_content(content)) {
-    stop("First argument must be a content collection or page_object")
+    stop("First argument must be a content collection, sidebar_container, or page_object")
   }
   
   insertion_idx <- length(content$items) + 1
@@ -406,8 +450,14 @@ add_spacer <- function(content, height = "2rem", tabgroup = NULL) {
     return(content)
   }
   
+  # Handle sidebar_container
+  if (inherits(content, "sidebar_container")) {
+    content$blocks <- c(content$blocks, list(spacer_block))
+    return(content)
+  }
+  
   if (!is_content(content)) {
-    stop("First argument must be a content collection or page_object")
+    stop("First argument must be a content collection, sidebar_container, or page_object")
   }
   
   insertion_idx <- length(content$items) + 1
@@ -747,8 +797,14 @@ add_accordion <- function(content, title, text, open = FALSE, tabgroup = NULL) {
     return(content)
   }
   
+  # Handle sidebar_container
+  if (inherits(content, "sidebar_container")) {
+    content$blocks <- c(content$blocks, list(accordion_block))
+    return(content)
+  }
+  
   if (!is_content(content)) {
-    stop("First argument must be a content collection or page_object")
+    stop("First argument must be a content collection, sidebar_container, or page_object")
   }
   
   insertion_idx <- length(content$items) + 1
@@ -779,8 +835,14 @@ add_card <- function(content, text, title = NULL, footer = NULL, tabgroup = NULL
     return(content)
   }
   
+  # Handle sidebar_container
+  if (inherits(content, "sidebar_container")) {
+    content$blocks <- c(content$blocks, list(card_block))
+    return(content)
+  }
+  
   if (!is_content(content)) {
-    stop("First argument must be a content collection or page_object")
+    stop("First argument must be a content collection, sidebar_container, or page_object")
   }
   
   insertion_idx <- length(content$items) + 1
@@ -807,8 +869,14 @@ add_html <- function(content, html, tabgroup = NULL) {
     return(content)
   }
   
+  # Handle sidebar_container
+  if (inherits(content, "sidebar_container")) {
+    content$blocks <- c(content$blocks, list(html_block))
+    return(content)
+  }
+  
   if (!is_content(content)) {
-    stop("First argument must be a content collection or page_object")
+    stop("First argument must be a content collection, sidebar_container, or page_object")
   }
   
   insertion_idx <- length(content$items) + 1
@@ -869,8 +937,14 @@ add_badge <- function(content, text, color = "primary", tabgroup = NULL) {
     return(content)
   }
   
+  # Handle sidebar_container
+  if (inherits(content, "sidebar_container")) {
+    content$blocks <- c(content$blocks, list(badge_block))
+    return(content)
+  }
+  
   if (!is_content(content)) {
-    stop("First argument must be a content collection or page_object")
+    stop("First argument must be a content collection, sidebar_container, or page_object")
   }
   
   insertion_idx <- length(content$items) + 1
@@ -905,8 +979,14 @@ add_metric <- function(content, value, title, icon = NULL, color = NULL, subtitl
     return(content)
   }
   
+  # Handle sidebar_container
+  if (inherits(content, "sidebar_container")) {
+    content$blocks <- c(content$blocks, list(metric_block))
+    return(content)
+  }
+  
   if (!is_content(content)) {
-    stop("First argument must be a content collection or page_object")
+    stop("First argument must be a content collection, sidebar_container, or page_object")
   }
   
   insertion_idx <- length(content$items) + 1
@@ -1083,6 +1163,190 @@ end_value_box_row <- function(row_container) {
 }
 
 # ============================================
+# SIDEBAR SYSTEM
+# ============================================
+
+#' Add a sidebar to a page
+#'
+#' Creates a sidebar container that can hold inputs, text, images, and other content.
+#' Use with end_sidebar() to close the sidebar and return to main content.
+#'
+#' Sidebars are collapsible vertical panels that appear alongside the main content.
+#' They're ideal for placing filter controls, navigation, or supplementary information.
+#'
+#' @section Important - Heading Levels:
+#' When using a sidebar, the page is rendered in Quarto dashboard format where
+#' heading levels have special meaning:
+#' \itemize{
+#'   \item \code{##} creates new rows/columns (avoid in main content)
+#'   \item \code{###} creates cards/sections (safe to use)
+#' }
+#' To avoid layout issues, use \code{###} headings or plain text in the main
+#' content area after the sidebar.
+#'
+#' @param content Content collection or page_object
+#' @param width CSS width for sidebar (default "250px")
+#' @param position Sidebar position: "left" (default) or "right"
+#' @param title Optional title displayed at top of sidebar
+#' @param background Background color (CSS color value, e.g., "#f8f9fa", "white", "transparent")
+#' @param padding Padding inside the sidebar (CSS value, e.g., "1rem", "20px")
+#' @param border Show border on sidebar edge. TRUE (default), FALSE, or CSS border value
+#' @param open Whether sidebar starts open (default TRUE). Set FALSE to start collapsed.
+#' @param class Additional CSS class(es) to add to the sidebar
+#' @return A sidebar_container for piping
+#' @export
+#' @examples
+#' \dontrun{
+#' # Basic sidebar with filters
+#' content <- create_content() %>%
+#'   add_sidebar(width = "300px") %>%
+#'     add_text("### Filters") %>%
+#'     add_input(input_id = "country", filter_var = "country", options = countries) %>%
+#'     add_divider() %>%
+#'     add_image(src = "logo.png") %>%
+#'   end_sidebar() %>%
+#'   add_viz(viz_bar(...))
+#'
+#' # Right-positioned sidebar
+#' content <- create_content() %>%
+#'   add_sidebar(position = "right", title = "Options") %>%
+#'     add_input(input_id = "metric", filter_var = "metric", type = "radio",
+#'               options = c("Revenue", "Users", "Growth")) %>%
+#'   end_sidebar() %>%
+#'   add_viz(viz_timeline(...))
+#'
+#' # Styled sidebar with custom background and no border
+#' content <- create_content() %>%
+#'   add_sidebar(width = "300px", background = "#f8f9fa", 
+#'               padding = "1.5rem", border = FALSE) %>%
+#'     add_text("### Settings") %>%
+#'   end_sidebar()
+#' }
+add_sidebar <- function(content, 
+                        width = "250px", 
+                        position = c("left", "right"),
+                        title = NULL,
+                        background = NULL,
+                        padding = NULL,
+                        border = TRUE,
+                        open = TRUE,
+                        class = NULL) {
+  position <- match.arg(position)
+  
+  # Handle page_object
+  if (inherits(content, "page_object")) {
+    sidebar_container <- structure(list(
+      type = "sidebar",
+      blocks = list(),
+      parent_page = content,
+      parent_content = NULL,
+      width = width,
+      position = position,
+      title = title,
+      background = background,
+      padding = padding,
+      border = border,
+      open = open,
+      class = class,
+      needs_inputs = FALSE
+    ), class = c("sidebar_container", "content_block"))
+    return(sidebar_container)
+  }
+  
+  if (!is_content(content)) {
+    stop("First argument must be a content collection or page_object", call. = FALSE)
+  }
+  
+  sidebar_container <- structure(list(
+    type = "sidebar",
+    blocks = list(),
+    parent_content = content,
+    parent_page = NULL,
+    width = width,
+    position = position,
+    title = title,
+    background = background,
+    padding = padding,
+    border = border,
+    open = open,
+    class = class,
+    needs_inputs = FALSE
+  ), class = c("sidebar_container", "content_block"))
+  
+  sidebar_container
+}
+
+#' End a sidebar
+#'
+#' Closes a sidebar container and returns to the parent content collection.
+#' Must be called after add_sidebar() and all content additions.
+#'
+#' @param sidebar_container Sidebar container object created by add_sidebar()
+#' @return The parent content_collection or page_object for further piping
+#' @export
+#' @examples
+#' \dontrun{
+#' content <- create_content() %>%
+#'   add_sidebar() %>%
+#'     add_text("## Filters") %>%
+#'     add_input(input_id = "filter1", filter_var = "var1", options = c("A", "B")) %>%
+#'   end_sidebar() %>%
+#'   add_text("Content after the sidebar...")
+#' }
+end_sidebar <- function(sidebar_container) {
+  if (!inherits(sidebar_container, "sidebar_container")) {
+    stop("end_sidebar() must be called on a sidebar_container (created by add_sidebar())", call. = FALSE)
+  }
+  
+  # Create the final sidebar block with all styling options
+  sidebar_block <- structure(list(
+    type = "sidebar",
+    blocks = sidebar_container$blocks,
+    width = sidebar_container$width,
+    position = sidebar_container$position,
+    title = sidebar_container$title,
+    background = sidebar_container$background,
+    padding = sidebar_container$padding,
+    border = sidebar_container$border,
+    open = sidebar_container$open,
+    class = sidebar_container$class,
+    needs_inputs = sidebar_container$needs_inputs %||% FALSE,
+    needs_metric_data = sidebar_container$needs_metric_data %||% FALSE
+  ), class = "content_block")
+  
+  # Handle page_object parent
+  if (!is.null(sidebar_container$parent_page)) {
+    parent_page <- sidebar_container$parent_page
+    parent_page$sidebar <- sidebar_block
+    # Propagate needs_inputs flag
+    if (isTRUE(sidebar_container$needs_inputs)) {
+      parent_page$needs_inputs <- TRUE
+    }
+    # Propagate needs_metric_data flag
+    if (isTRUE(sidebar_container$needs_metric_data)) {
+      parent_page$needs_metric_data <- TRUE
+    }
+    return(parent_page)
+  }
+  
+  # Handle content collection parent
+  parent_content <- sidebar_container$parent_content
+  parent_content$sidebar <- sidebar_block
+  
+  # Propagate needs_inputs flag
+  if (isTRUE(sidebar_container$needs_inputs)) {
+    parent_content$needs_inputs <- TRUE
+  }
+  
+  # Propagate needs_metric_data flag
+  if (isTRUE(sidebar_container$needs_metric_data)) {
+    parent_content$needs_metric_data <- TRUE
+  }
+  
+  parent_content
+}
+
+# ============================================
 # INPUT FILTERING SYSTEM
 # ============================================
 
@@ -1237,6 +1501,7 @@ add_input <- function(content,
                       value = NULL,
                       show_value = TRUE,
                       inline = TRUE,
+                      columns = NULL,
                       toggle_series = NULL,
                       override = FALSE,
                       labels = NULL,
@@ -1288,6 +1553,7 @@ add_input <- function(content,
     value = value,
     show_value = show_value,
     inline = inline,
+    columns = columns,
     toggle_series = toggle_series,
     override = override,
     labels = labels,
@@ -1313,9 +1579,47 @@ add_input <- function(content,
     return(content)
   }
   
+  # Check if we're adding to a sidebar container
+  if (inherits(content, "sidebar_container")) {
+    # Store input_type separately to avoid conflict with content block type
+    input_block <- structure(list(
+      type = "input",
+      input_type = type,  # Store the actual input widget type separately
+      input_id = input_id,
+      label = label,
+      filter_var = filter_var,
+      options = options,
+      options_from = options_from,
+      default_selected = default_selected,
+      placeholder = placeholder,
+      width = width,
+      min = min,
+      max = max,
+      step = step,
+      value = value,
+      show_value = show_value,
+      inline = inline,
+      toggle_series = toggle_series,
+      override = override,
+      labels = labels,
+      size = size,
+      help = help,
+      disabled = disabled
+    ), class = "content_block")
+    content$blocks <- c(content$blocks, list(input_block))
+    content$needs_inputs <- TRUE
+    
+    # If filter_var is "metric", mark on the sidebar container
+    if (!is.null(filter_var) && filter_var == "metric") {
+      content$needs_metric_data <- TRUE
+    }
+    
+    return(content)
+  }
+  
   # Otherwise, add as a standalone input
   if (!is_content(content)) {
-    stop("First argument must be a content_collection object or input_row_container", call. = FALSE)
+    stop("First argument must be a content_collection object, input_row_container, or sidebar_container", call. = FALSE)
   }
   
   # Mark that this collection needs inputs enabled
@@ -1326,9 +1630,35 @@ add_input <- function(content,
     content$needs_metric_data <- TRUE
   }
   
-  input_block <- structure(c(
-    list(type = "input", tabgroup = .parse_tabgroup(tabgroup)),
-    input_spec
+  # Store input_type separately to avoid conflict with content block type
+  input_block <- structure(list(
+    type = "input",
+    input_type = type,  # Store the actual input widget type separately
+    tabgroup = .parse_tabgroup(tabgroup),
+    input_id = input_id,
+    label = label,
+    filter_var = filter_var,
+    options = options,
+    options_from = options_from,
+    default_selected = default_selected,
+    placeholder = placeholder,
+    width = width,
+    min = min,
+    max = max,
+    step = step,
+    value = value,
+    show_value = show_value,
+    inline = inline,
+    toggle_series = toggle_series,
+    override = override,
+    labels = labels,
+    size = size,
+    help = help,
+    disabled = disabled,
+    mt = mt,
+    mr = mr,
+    mb = mb,
+    ml = ml
   ), class = "content_block")
   
   insertion_idx <- length(content$items) + 1

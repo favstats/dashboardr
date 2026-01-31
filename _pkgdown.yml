@@ -118,6 +118,8 @@ navbar:
       - text: -------
       - text: "🎛️ Interactive Inputs"
         href: live-demos/inputs/index.html
+      - text: "📋 Sidebar Filters"
+        href: live-demos/sidebar/index.html
       - text: "🎭 Loading Overlays"
         href: live-demos/overlay/index.html
 
@@ -298,6 +300,13 @@ reference:
   - end_input_row
   - render_input
   - render_input_row
+
+- title: Sidebars
+  desc: Functions for adding page sidebars with filters
+  contents:
+  - add_sidebar
+  - end_sidebar
+  - enable_sidebar
 
 - title: Embedded Content
   desc: Functions for embedding external content
