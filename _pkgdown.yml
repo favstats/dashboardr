@@ -64,11 +64,11 @@ navbar:
         href: articles/pages.html
       - text: "- Dashboards"
         href: articles/dashboards.html
-      - text: "🌐 Publishing Dashboards"
-        href: articles/publishing_dashboards.html
       - text: -------
       - text: "⚙️ Advanced Features"
         href: articles/advanced-features.html
+      - text: "🌐 Publishing Dashboards"
+        href: articles/publishing_dashboards.html
       - text: -------
       - text: "📊 Visualization Types"
       - text: "- Bar Charts"
@@ -117,15 +117,15 @@ articles:
   - pages
   - dashboards
 
-- title: Publishing
-  navbar: ~
-  contents:
-  - publishing_dashboards
-
 - title: Advanced Features
   navbar: ~
   contents:
   - advanced-features
+
+- title: Publishing
+  navbar: ~
+  contents:
+  - publishing_dashboards
 
 - title: Live Demos
   navbar: Live Demos
