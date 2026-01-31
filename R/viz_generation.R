@@ -108,6 +108,7 @@
     "gt" = .generate_gt_block(block),
     "reactable" = .generate_reactable_block(block),
     "DT" = .generate_DT_block(block),
+    "hc" = .generate_hc_block(block),
     "spacer" = .generate_spacer_block(block),
     "html" = .generate_html_block(block),
     "quote" = .generate_quote_block(block),
@@ -258,6 +259,8 @@
                          "timeline" = "viz_timeline",
                          "bar" = "viz_bar",
                          "scatter" = "viz_scatter",
+                         "density" = "viz_density",
+                         "boxplot" = "viz_boxplot",
                          spec$viz_type
   )
 
@@ -313,6 +316,12 @@
         if (!is.null(spec$y_var)) vars_to_clean <- c(vars_to_clean, spec$y_var)
         if (!is.null(spec$color_var)) vars_to_clean <- c(vars_to_clean, spec$color_var)
         if (!is.null(spec$size_var)) vars_to_clean <- c(vars_to_clean, spec$size_var)
+      } else if (spec$viz_type == "density") {
+        if (!is.null(spec$x_var)) vars_to_clean <- c(vars_to_clean, spec$x_var)
+        if (!is.null(spec$group_var)) vars_to_clean <- c(vars_to_clean, spec$group_var)
+      } else if (spec$viz_type == "boxplot") {
+        if (!is.null(spec$y_var)) vars_to_clean <- c(vars_to_clean, spec$y_var)
+        if (!is.null(spec$x_var)) vars_to_clean <- c(vars_to_clean, spec$x_var)
       }
       
       # Build data pipeline with drop_na if we have variables
@@ -1116,6 +1125,12 @@
         if (!is.null(spec$x_var)) vars <- c(vars, spec$x_var)
         if (!is.null(spec$y_var)) vars <- c(vars, spec$y_var)
         if (!is.null(spec$value_var)) vars <- c(vars, spec$value_var)
+      } else if (viz_type == "density") {
+        if (!is.null(spec$x_var)) vars <- c(vars, spec$x_var)
+        if (!is.null(spec$group_var)) vars <- c(vars, spec$group_var)
+      } else if (viz_type == "boxplot") {
+        if (!is.null(spec$y_var)) vars <- c(vars, spec$y_var)
+        if (!is.null(spec$x_var)) vars <- c(vars, spec$x_var)
       }
       
       # Construct label from type + variables

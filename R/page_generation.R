@@ -237,6 +237,7 @@
               "gt" = .generate_gt_block(item),
               "reactable" = .generate_reactable_block(item),
               "DT" = .generate_DT_block(item),
+              "hc" = .generate_hc_block(item),
               "spacer" = .generate_spacer_block(item),
               "html" = .generate_html_block(item),
               "quote" = .generate_quote_block(item),
@@ -276,6 +277,7 @@
         "gt" = .generate_gt_block(block),
         "reactable" = .generate_reactable_block(block),
         "DT" = .generate_DT_block(block),
+        "hc" = .generate_hc_block(block),
         "spacer" = .generate_spacer_block(block),
         "html" = .generate_html_block(block),
         "quote" = .generate_quote_block(block),
@@ -326,6 +328,7 @@
         "gt" = .generate_gt_block(item),
         "reactable" = .generate_reactable_block(item),
         "DT" = .generate_DT_block(item),
+        "hc" = .generate_hc_block(item),
         "spacer" = .generate_spacer_block(item),
         "html" = .generate_html_block(item),
         "quote" = .generate_quote_block(item),
@@ -674,6 +677,33 @@
     "",
     # Just output the htmlwidget object - it will render automatically
     table_var,
+    "```",
+    ""
+  )
+  
+  lines
+}
+
+#' Generate highcharter block markdown
+#'
+#' Internal function to generate markdown for custom highcharter content blocks
+#'
+#' @param block Highcharter content block
+#' @return Character vector of markdown lines
+#' @keywords internal
+.generate_hc_block <- function(block) {
+  # Render the saved highcharter object
+  hc_var <- if (!is.null(block$hc_var)) block$hc_var else "hc_obj"
+  height <- block$height %||% "400px"
+  
+  lines <- c(
+    "",
+    "```{r}",
+    "#| echo: false",
+    paste0("#| fig-height: ", gsub("px", "", height)),
+    "",
+    # Output the htmlwidget object - it will render automatically
+    hc_var,
     "```",
     ""
   )
@@ -1140,6 +1170,18 @@
       for (block in table_blocks) {
         if (isTRUE(!is.null(block$table_var) && !is.null(block$table_file))) {
           lines <- c(lines, paste0(block$table_var, " <- readRDS('", block$table_file, "')"))
+        }
+      }
+      lines <- c(lines, "")
+    }
+    
+    # Load highcharter objects from content blocks
+    hc_blocks <- Filter(function(b) isTRUE(b$type == "hc") && !is.null(b$hc_file), page$content_blocks)
+    if (length(hc_blocks) > 0) {
+      lines <- c(lines, "# Load custom highcharter charts", "")
+      for (block in hc_blocks) {
+        if (isTRUE(!is.null(block$hc_var) && !is.null(block$hc_file))) {
+          lines <- c(lines, paste0(block$hc_var, " <- readRDS('", block$hc_file, "')"))
         }
       }
       lines <- c(lines, "")

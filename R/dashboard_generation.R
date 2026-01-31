@@ -193,6 +193,7 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
     filter_hook_js <- system.file("assets", "filter_hook.js", package = "dashboardr")
     choices_css <- system.file("assets", "choices.min.css", package = "dashboardr")
     choices_js <- system.file("assets", "choices.min.js", package = "dashboardr")
+    tab_scroll_fix_js <- system.file("assets", "tab-scroll-fix.js", package = "dashboardr")
     
     if (file.exists(modal_css)) {
       file.copy(modal_css, file.path(assets_dir, "modal.css"), overwrite = TRUE)
@@ -217,6 +218,9 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
     }
     if (file.exists(choices_js)) {
       file.copy(choices_js, file.path(assets_dir, "choices.min.js"), overwrite = TRUE)
+    }
+    if (file.exists(tab_scroll_fix_js)) {
+      file.copy(tab_scroll_fix_js, file.path(assets_dir, "tab-scroll-fix.js"), overwrite = TRUE)
     }
 
     # Copy tabset theme SCSS file if using a built-in theme
@@ -328,32 +332,45 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
       # Save table objects (entire styled objects for direct rendering)
       if (!is.null(page$content_blocks)) {
         table_counter <- 0
+        hc_counter <- 0
         for (i in seq_along(page$content_blocks)) {
           block <- page$content_blocks[[i]]
           if (!inherits(block, "content_block")) next
-          if (!isTRUE(block$type %in% c("table", "gt", "reactable", "DT"))) next
           
-          table_counter <- table_counter + 1
-          
-          # Get the table object to save
-          table_obj <- NULL
-          if (block$type == "table" && !is.null(block$table_object)) {
-            table_obj <- block$table_object
-          } else if (block$type == "gt" && !is.null(block$gt_object)) {
-            table_obj <- block$gt_object
-          } else if (block$type == "reactable" && !is.null(block$reactable_object)) {
-            table_obj <- block$reactable_object
-          } else if (block$type == "DT" && !is.null(block$table_data)) {
-            table_obj <- block$table_data
+          # Handle table types
+          if (isTRUE(block$type %in% c("table", "gt", "reactable", "DT"))) {
+            table_counter <- table_counter + 1
+            
+            # Get the table object to save
+            table_obj <- NULL
+            if (block$type == "table" && !is.null(block$table_object)) {
+              table_obj <- block$table_object
+            } else if (block$type == "gt" && !is.null(block$gt_object)) {
+              table_obj <- block$gt_object
+            } else if (block$type == "reactable" && !is.null(block$reactable_object)) {
+              table_obj <- block$reactable_object
+            } else if (block$type == "DT" && !is.null(block$table_data)) {
+              table_obj <- block$table_data
+            }
+            
+            # Save the ENTIRE styled object (preserves all styling!)
+            if (!is.null(table_obj)) {
+              obj_filename <- paste0("table_obj_", table_counter, ".rds")
+              obj_filepath <- file.path(output_dir, obj_filename)
+              saveRDS(table_obj, obj_filepath)
+              page$content_blocks[[i]]$table_file <- obj_filename
+              page$content_blocks[[i]]$table_var <- paste0("table_obj_", table_counter)
+            }
           }
           
-          # Save the ENTIRE styled object (preserves all styling!)
-          if (!is.null(table_obj)) {
-            obj_filename <- paste0("table_obj_", table_counter, ".rds")
-            obj_filepath <- file.path(output_dir, obj_filename)
-            saveRDS(table_obj, obj_filepath)
-            page$content_blocks[[i]]$table_file <- obj_filename
-            page$content_blocks[[i]]$table_var <- paste0("table_obj_", table_counter)
+          # Handle highcharter objects
+          if (isTRUE(block$type == "hc") && !is.null(block$hc_object)) {
+            hc_counter <- hc_counter + 1
+            hc_filename <- paste0("hc_obj_", hc_counter, ".rds")
+            hc_filepath <- file.path(output_dir, hc_filename)
+            saveRDS(block$hc_object, hc_filepath)
+            page$content_blocks[[i]]$hc_file <- hc_filename
+            page$content_blocks[[i]]$hc_var <- paste0("hc_obj_", hc_counter)
           }
         }
       }
@@ -445,6 +462,48 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
           .progress_step(paste0(landing_page_name, " [🏠 Landing] (skipped)"), landing_elapsed, show_progress, is_last = TRUE, use_page_style = TRUE)
         } else {
           build_info$regenerated <- c(build_info$regenerated, landing_page_name)
+          
+          # Save table/hc objects for landing page (same as regular pages)
+          if (!is.null(landing_page$content_blocks)) {
+            table_counter <- 0
+            hc_counter <- 0
+            for (i in seq_along(landing_page$content_blocks)) {
+              block <- landing_page$content_blocks[[i]]
+              if (!inherits(block, "content_block")) next
+              
+              # Handle table types
+              if (isTRUE(block$type %in% c("table", "gt", "reactable", "DT"))) {
+                table_counter <- table_counter + 1
+                table_obj <- NULL
+                if (block$type == "table" && !is.null(block$table_object)) {
+                  table_obj <- block$table_object
+                } else if (block$type == "gt" && !is.null(block$gt_object)) {
+                  table_obj <- block$gt_object
+                } else if (block$type == "reactable" && !is.null(block$reactable_object)) {
+                  table_obj <- block$reactable_object
+                } else if (block$type == "DT" && !is.null(block$table_data)) {
+                  table_obj <- block$table_data
+                }
+                if (!is.null(table_obj)) {
+                  obj_filename <- paste0("table_obj_", table_counter, ".rds")
+                  obj_filepath <- file.path(output_dir, obj_filename)
+                  saveRDS(table_obj, obj_filepath)
+                  landing_page$content_blocks[[i]]$table_file <- obj_filename
+                  landing_page$content_blocks[[i]]$table_var <- paste0("table_obj_", table_counter)
+                }
+              }
+              
+              # Handle highcharter objects
+              if (isTRUE(block$type == "hc") && !is.null(block$hc_object)) {
+                hc_counter <- hc_counter + 1
+                hc_filename <- paste0("hc_obj_", hc_counter, ".rds")
+                hc_filepath <- file.path(output_dir, hc_filename)
+                saveRDS(block$hc_object, hc_filepath)
+                landing_page$content_blocks[[i]]$hc_file <- hc_filename
+                landing_page$content_blocks[[i]]$hc_var <- paste0("hc_obj_", hc_counter)
+              }
+            }
+          }
           
           if (!is.null(landing_page$template)) {
             # Custom template

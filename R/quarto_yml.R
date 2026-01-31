@@ -1047,19 +1047,11 @@
   # Add BOMBPROOF tab-jump prevention script (always included)
   # This is a multi-layer defense against scroll jumping:
   # 1. Locks scroll position with CSS class during tab transition
-  # Tab scroll fix - read from external file for maintainability
+  # Tab scroll fix - reference external file (copied to assets/ during generation)
   # Prevents page jumping when clicking on tabs in panel-tabsets
-  tab_scroll_fix_path <- system.file("assets/tab-scroll-fix.js", package = "dashboardr")
-  if (file.exists(tab_scroll_fix_path)) {
-    js_content <- readLines(tab_scroll_fix_path, warn = FALSE)
-    # Indent for YAML and wrap in script tags
-    tab_jump_fix_script <- c(
-      "        <script>",
-      paste0("        ", js_content),
-      "        </script>"
-    )
-    header_content <- c(header_content, tab_jump_fix_script)
-  }
+  header_content <- c(header_content,
+    "        <script src=\"assets/tab-scroll-fix.js\"></script>"
+  )
   
   # Write the collected header content once
   if (length(header_content) > 0) {

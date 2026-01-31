@@ -508,6 +508,78 @@ add_reactable <- function(content, reactable_object, tabgroup = NULL) {
   content
 }
 
+#' Add a custom highcharter chart
+#' 
+#' Add a pre-built highcharter chart to your dashboard. This allows you to
+
+#' create complex, customized highcharter visualizations and include them
+#' directly without using dashboardr's viz_* functions.
+#' 
+#' @param content A content_collection, page_object, or dashboard object
+#' @param hc_object A highcharter object created with highcharter::highchart() or hchart()
+#' @param height Optional height for the chart (e.g., "400px", "50vh"). Defaults to "400px"
+#' @param tabgroup Optional tabgroup for organizing content (character vector for nested tabs)
+#' @return Updated content object
+#' @export
+#' @examples
+#' \dontrun{
+#' library(highcharter)
+#' 
+#' # Create a custom highcharter chart
+#' my_chart <- hchart(mtcars, "scatter", hcaes(x = wt, y = mpg, group = cyl)) %>%
+#'   hc_title(text = "Custom Scatter Plot") %>%
+#'   hc_subtitle(text = "Made with highcharter") %>%
+#'   hc_add_theme(hc_theme_smpl())
+#' 
+#' # Add it to a page
+#' page <- create_page("Charts") %>%
+#'   add_hc(my_chart) %>%
+#'   add_hc(another_chart, height = "500px", tabgroup = "My Charts")
+#' }
+add_hc <- function(content, hc_object, height = "400px", tabgroup = NULL) {
+  # Validate it's a highcharter object
+  if (!inherits(hc_object, "highchart")) {
+    stop("hc_object must be a highcharter object (created with highchart() or hchart())", call. = FALSE)
+  }
+  
+  hc_block <- structure(list(
+    type = "hc",
+    hc_object = hc_object,
+    height = height,
+    tabgroup = .parse_tabgroup(tabgroup)
+  ), class = "content_block")
+  
+  # Handle dashboard_project - add to last page's content_blocks
+  if (inherits(content, "dashboard_project")) {
+    if (length(content$pages) == 0) {
+      stop("Dashboard has no pages. Add a page first with add_page().", call. = FALSE)
+    }
+    last_page_name <- names(content$pages)[length(content$pages)]
+    if (is.null(content$pages[[last_page_name]]$content_blocks)) {
+      content$pages[[last_page_name]]$content_blocks <- list()
+    }
+    content$pages[[last_page_name]]$content_blocks <- c(
+      content$pages[[last_page_name]]$content_blocks, 
+      list(hc_block)
+    )
+    return(content)
+  }
+  
+  if (inherits(content, "page_object")) {
+    content$.items <- c(content$.items, list(hc_block))
+    return(content)
+  }
+  
+  if (!is_content(content)) {
+    stop("First argument must be a content collection, page_object, or dashboard_project")
+  }
+  
+  insertion_idx <- length(content$items) + 1
+  hc_block$.insertion_index <- insertion_idx
+  content$items <- c(content$items, list(hc_block))
+  content
+}
+
 #' Add generic table (data frame)
 #' @param content A content_collection object
 #' @param table_object A data frame or tibble
