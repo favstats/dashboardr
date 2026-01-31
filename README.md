@@ -9,6 +9,8 @@
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 [![CRAN
 status](https://www.r-pkg.org/badges/version/dashboardr)](https://CRAN.R-project.org/package=dashboardr)
+[![Codecov test
+coverage](https://codecov.io/gh/favstats/dashboardr/graph/badge.svg)](https://app.codecov.io/gh/favstats/dashboardr)
 <!-- badges: end -->
 
 **dashboardr** lets you build interactive HTML dashboards from R using a
@@ -24,6 +26,18 @@ simple, composable grammar. Think of it like building with Lego blocks:
 ``` r
 # install.packages("pak")
 pak::pak("favstats/dashboardr")
+```
+
+### Optional: Install gssr for tutorials
+
+The tutorials and demos use the `gssr` package (General Social Survey
+data). Install it from r-universe:
+
+``` r
+install.packages('gssr', repos = c('https://kjhealy.r-universe.dev', 'https://cloud.r-project.org'))
+
+# Also recommended: install gssrdoc for documentation
+install.packages('gssrdoc', repos = c('https://kjhealy.r-universe.dev', 'https://cloud.r-project.org'))
 ```
 
 ## Live Demos

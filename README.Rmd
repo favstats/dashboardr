@@ -19,6 +19,7 @@ knitr::opts_chunk$set(
 <!-- badges: start -->
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 [![CRAN status](https://www.r-pkg.org/badges/version/dashboardr)](https://CRAN.R-project.org/package=dashboardr)
+[![Codecov test coverage](https://codecov.io/gh/favstats/dashboardr/graph/badge.svg)](https://app.codecov.io/gh/favstats/dashboardr)
 <!-- badges: end -->
 
 **dashboardr** lets you build interactive HTML dashboards from R using a simple, composable grammar. Think of it like building with Lego blocks:
