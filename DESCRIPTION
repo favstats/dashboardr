@@ -38,12 +38,12 @@ Imports:
     tidyr,
     tidyselect,
     usethis,
-    digest
+    digest,
+    withr
 Suggests:
   gssr,
   haven,
-  testthat (>= 3.0.0),
-  withr
+  testthat (>= 3.0.0)
 Config/testthat/edition: 3
 Additional_repositories: https://kjhealy.r-universe.dev
 Remotes: 

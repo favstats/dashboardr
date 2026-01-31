@@ -349,7 +349,7 @@ styled_page %>% preview()
 
 For pages with many charts or complex visualizations, loading overlays provide visual feedback while content renders. The overlay covers the page with a spinner and optional message, then fades out once charts are ready. This improves perceived performance and prevents users from seeing partially-loaded content.
 
-> **See it in action:** Check out the [Features Demo](../live-demos/features/index.html) - navigate to the "Loading Overlay" page and reload to see all overlay themes in action.
+> **See it in action:** Check out the [Loading Overlay Demo](../live-demos/overlay/index.html) - reload to see all overlay themes in action.
 
 **Note:** Loading overlays are only visible when viewing the generated dashboard (not in `preview()`). To see them in action, generate a dashboard with `generate_dashboard()` and open it in a browser.
 

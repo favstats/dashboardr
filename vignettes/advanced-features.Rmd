@@ -40,6 +40,7 @@ gss <- gss_all %>%
     !is.na(age), !is.na(sex), !is.na(race), !is.na(degree)
   ) %>%
   mutate(
+    age = as.numeric(age),  # Keep age as numeric for filter comparisons
     happy = droplevels(as_factor(happy)),
     polviews = droplevels(as_factor(polviews)),
     degree = droplevels(as_factor(degree)),
@@ -249,7 +250,7 @@ create_content(data = gss, type = "bar") %>%
 
 Interactive input widgets transform your dashboard from a static report into an **exploratory data tool**. Users can filter data, adjust parameters, and see visualizations update in real-time.
 
-> **🔗 See it in action:** Check out the [Features Demo](../live-demos/features/index.html) to try all input types with real GSS data!
+> **🔗 See it in action:** Check out the [Inputs Demo](../live-demos/inputs/index.html) to try all input types with real GSS data!
 
 ### How Inputs Work
 
@@ -964,7 +965,7 @@ create_page(
 
 Loading overlays provide visual feedback while content renders. They display a spinner or animation that disappears once the page is ready, creating a polished user experience.
 
-> **See it in action:** Check out the [Features Demo](../live-demos/features/index.html) to experience loading overlays - navigate to the "Loading Overlay" page and reload to see the effect.
+> **See it in action:** Check out the [Loading Overlay Demo](../live-demos/overlay/index.html) to experience loading overlays - reload to see the effect.
 
 | Parameter | Description | Options |
 |-----------|-------------|---------|

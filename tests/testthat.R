@@ -6,6 +6,10 @@
 # * https://r-pkgs.org/testing-design.html#sec-tests-files-overview
 # * https://testthat.r-lib.org/articles/special-files.html
 
+# Fix for testthat failing in R CMD check but working in devtools::test()
+# See: https://github.com/r-lib/testthat/issues/144
+Sys.setenv(R_TESTS = "")
+
 library(testthat)
 library(dashboardr)
 
