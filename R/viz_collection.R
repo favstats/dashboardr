@@ -853,7 +853,7 @@ add_viz.default <- function(x, type = NULL, ..., tabgroup = NULL, title = NULL, 
   dot_args <- merged_params[!names(merged_params) %in% c("type", "tabgroup", "title", "title_tabset", "text", "icon", "text_position", "text_before_tabset", "text_after_tabset", "text_before_viz", "text_after_viz", "height", "filter", "data", "drop_na_vars")]
 
   # Validate supported visualization types
-  supported_types <- c("map", "treemap", "stackedbar", "stackedbars", "heatmap", "histogram", "timeline", "bar", "scatter")
+  supported_types <- c("map", "treemap", "stackedbar", "stackedbars", "heatmap", "histogram", "timeline", "bar", "scatter", "density", "boxplot")
 
   # Validate type parameter
   if (is.null(type) || !is.character(type) || length(type) != 1 || nchar(type) == 0) {
@@ -1430,8 +1430,20 @@ spec_viz <- function(type, ..., tabgroup = NULL, title = NULL) {
 #' Use \code{print(x, render = TRUE)} to open a preview in the viewer instead
 #' of showing the structure. This is useful for quick visualization in the console.
 #'
+#' Use \code{print(x, check = TRUE)} to validate all visualization specs before
+#' printing. This catches missing required parameters and invalid column names
+#' early, providing clearer error messages than Quarto rendering errors.
+#'
+#' @param check Logical. If TRUE, validates all visualization specs before printing.
+#'   Useful for catching errors early before attempting to render.
+#'
 #' @export
-print.viz_collection <- function(x, render = FALSE, ...) {
+print.viz_collection <- function(x, render = FALSE, check = FALSE, ...) {
+  # If check = TRUE, validate specs first
+  if (check) {
+    validate_specs(x, verbose = TRUE)
+  }
+  
  # If render = TRUE and data is attached, open preview instead
   if (render && !is.null(x$data)) {
     preview(x, open = TRUE, quarto = FALSE)
@@ -1994,6 +2006,12 @@ preview <- function(collection, title = "Preview", open = TRUE, clean = FALSE,
     stop("No data attached to collection. Use create_viz(data = df) or create_content(data = df) to attach data for visualizations.", call. = FALSE)
   }
 
+  # Validate all viz specs before rendering
+  # This catches missing parameters and column name errors early
+  if (has_viz) {
+    .validate_all_viz_specs(collection, data = collection$data, stop_on_error = TRUE)
+  }
+
   # Note: Tabgroups now work in direct preview mode via Bootstrap tabs
   # No warning needed - direct mode fully supports tabs
 
@@ -2042,6 +2060,147 @@ preview <- function(collection, title = "Preview", open = TRUE, clean = FALSE,
   invisible(html_file)
 }
 
+#' Validate visualization specifications in a collection
+#'
+#' Checks all visualization specs in a collection for common errors before
+
+#' rendering. This includes verifying required parameters are present and
+#' that specified column names exist in the data.
+#'
+#' @param collection A content_collection, viz_collection, page_object, or dashboard_project
+#' @param verbose Logical. If TRUE (default), prints validation results to console.
+#'   If FALSE, returns silently with results as attributes.
+#' @param data Optional data frame to validate column names against.
+#'   If NULL, uses data attached to the collection.
+#'
+#' @return Invisibly returns TRUE if all specs are valid, FALSE otherwise.
+#'   When FALSE, the return value has an "issues" attribute containing
+#'   details about validation errors.
+#'
+#' @details
+#' This function is called automatically by `preview()` before rendering.
+#' You can also call it manually to check your visualizations before
+#' attempting to render, which provides clearer error messages than
+#' Quarto rendering errors.
+#'
+#' Validation checks include:
+#' \itemize{
+#'   \item Required parameters for each visualization type (e.g., x_var for bar charts)
+#'   \item Column existence in the data (when data is available)
+#'   \item Suggestions for typos in column names
+#' }
+#'
+#' @export
+#' @examples
+#' \dontrun{
+#' # Create a collection with an error (missing stack_var)
+#' viz <- create_viz(data = mtcars) %>%
+#'   add_viz(type = "stackedbar", x_var = "cyl")  # Missing required stack_var
+#'
+#' # Validate before previewing - will show helpful error
+#' validate_specs(viz)
+#'
+#' # Use in print with check parameter
+#' print(viz, check = TRUE)
+#'
+#' # Programmatic validation (silent)
+#' result <- validate_specs(viz, verbose = FALSE)
+#' if (!result) {
+#'   print(attr(result, "issues"))
+#' }
+#' }
+validate_specs <- function(collection, verbose = TRUE, data = NULL) {
+  # Handle different object types
+  if (inherits(collection, "dashboard_project")) {
+    # Validate all pages in the dashboard
+    all_valid <- TRUE
+    all_issues <- list()
+    
+    for (page_name in names(collection$pages)) {
+      page <- collection$pages[[page_name]]
+      page_data <- data %||% page$data %||% collection$data
+      
+      # Get content from page
+      if (!is.null(page$content) && length(page$content) > 0) {
+        for (content_item in page$content) {
+          if (is_content(content_item)) {
+            result <- .validate_all_viz_specs(content_item, data = page_data, stop_on_error = FALSE)
+            if (!result$valid) {
+              all_valid <- FALSE
+              all_issues[[page_name]] <- result$issues
+            }
+          }
+        }
+      }
+    }
+    
+    if (!all_valid && verbose) {
+      .print_validation_issues(all_issues, "dashboard")
+    }
+    
+    result <- all_valid
+    attr(result, "issues") <- all_issues
+    return(invisible(result))
+  }
+  
+  if (inherits(collection, "page_object")) {
+    collection <- .page_to_content(collection)
+  }
+  
+  if (is_content_block(collection)) {
+    collection <- .wrap_content_block(collection)
+  }
+  
+  if (!is_content(collection)) {
+    if (verbose) {
+      cli::cli_alert_warning("Object is not a content collection, nothing to validate")
+    }
+    return(invisible(TRUE))
+  }
+  
+  # Use provided data or collection's data
+  data <- data %||% collection$data
+  
+  # Run validation
+  result <- .validate_all_viz_specs(collection, data = data, stop_on_error = FALSE)
+  
+  if (verbose) {
+    if (result$valid) {
+      cli::cli_alert_success("All {length(collection$items)} item(s) validated successfully")
+    } else {
+      .print_validation_issues(result$issues, "collection")
+    }
+  }
+  
+  ret <- result$valid
+  attr(ret, "issues") <- result$issues
+  invisible(ret)
+}
+
+#' Print formatted validation issues
+#' @noRd
+.print_validation_issues <- function(issues, context = "collection") {
+  n_issues <- sum(sapply(issues, function(x) length(x$issues %||% x)))
+  
+  cli::cli_alert_danger("Found {n_issues} validation issue(s) in {context}:")
+  cli::cli_text("")
+  
+  for (item_id in names(issues)) {
+    item_issues <- issues[[item_id]]
+    viz_type <- item_issues$viz_type %||% "viz"
+    issue_list <- item_issues$issues %||% item_issues
+    
+    cli::cli_text("{.strong Item {item_id}} ({.field viz_{viz_type}}):")
+    for (issue in issue_list) {
+      cli::cli_bullets(setNames(issue, "x"))
+    }
+    cli::cli_text("")
+  }
+  
+  # Add help text
+  cli::cli_alert_info("Fix these issues before calling {.fn preview} or rendering the dashboard")
+}
+
 #' Create a self-contained HTML widget from a preview
 #' 
 #' Returns an htmltools tagList that can be saved as self-contained HTML
@@ -2076,6 +2235,14 @@ preview <- function(collection, title = "Preview", open = TRUE, clean = FALSE,
   
   if (length(collection$items) == 0) {
     stop("Collection is empty.", call. = FALSE)
+  }
+  
+  # Validate viz specs before rendering
+  has_viz <- any(sapply(collection$items, function(item) {
+    !is.null(item$viz_type) || (!is.null(item$type) && item$type == "viz")
+  }))
+  if (has_viz) {
+    .validate_all_viz_specs(collection, data = collection$data, stop_on_error = TRUE)
   }
   
   # Render all items to HTML
@@ -2517,6 +2684,8 @@ save_widget <- function(widget, file, selfcontained = TRUE) {
     "timeline" = viz_timeline,
     "map" = viz_map,
     "treemap" = viz_treemap,
+    "density" = viz_density,
+    "boxplot" = viz_boxplot,
     NULL
   )
   
@@ -3173,9 +3342,6 @@ save_widget <- function(widget, file, selfcontained = TRUE) {
     "",
     "```{r setup, include=FALSE}",
     "library(dashboardr)",
-    "library(highcharter)",
-    "library(dplyr)",
-    "library(tidyr)",
     "",
     "# Load data",
     "data <- readRDS('data.rds')",
@@ -3602,9 +3768,6 @@ save_widget <- function(widget, file, selfcontained = TRUE) {
     "",
     "```{r setup, include=FALSE}",
     "library(dashboardr)",
-    "library(highcharter)",
-    "library(dplyr)",
-    "library(tidyr)",
     "```",
     ""
   )

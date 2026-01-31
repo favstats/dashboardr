@@ -302,3 +302,300 @@
   
   stop("Could not convert variable argument to character string(s)", call. = FALSE)
 }
+
+# =================================================================
+# Visualization Validation System
+# =================================================================
+
+#' Registry of visualization parameter requirements
+#' 
+#' Internal list defining required and optional parameters for each viz type,
+#' along with which parameters represent column names that should be validated.
+#' @keywords internal
+.viz_param_registry <- list(
+  bar = list(
+    required = c("x_var"),
+    column_params = c("x_var", "group_var", "weight_var"),
+    example = 'add_viz(type = "bar", x_var = "category")'
+  ),
+  scatter = list(
+    required = c("x_var", "y_var"),
+    column_params = c("x_var", "y_var", "color_var", "size_var"),
+    example = 'add_viz(type = "scatter", x_var = "weight", y_var = "mpg")'
+  ),
+  histogram = list(
+    required = c("x_var"),
+    column_params = c("x_var", "y_var", "group_var", "weight_var"),
+    example = 'add_viz(type = "histogram", x_var = "age")'
+  ),
+
+density = list(
+    required = c("x_var"),
+    column_params = c("x_var", "group_var", "weight_var"),
+    example = 'add_viz(type = "density", x_var = "income")'
+  ),
+  treemap = list(
+    required = c("group_var", "value_var"),
+    column_params = c("group_var", "subgroup_var", "value_var", "color_var"),
+    example = 'add_viz(type = "treemap", group_var = "category", value_var = "count")'
+  ),
+  boxplot = list(
+    required = c("y_var"),
+    column_params = c("y_var", "x_var", "weight_var"),
+    example = 'add_viz(type = "boxplot", y_var = "score")'
+  ),
+  stackedbars = list(
+    required = c("x_vars"),
+    column_params = c("x_vars"),
+    example = 'add_viz(type = "stackedbars", x_vars = c("q1", "q2", "q3"))'
+  ),
+  stackedbar = list(
+    required = c("x_var", "stack_var"),
+    column_params = c("x_var", "y_var", "stack_var", "weight_var"),
+    example = 'add_viz(type = "stackedbar", x_var = "age_group", stack_var = "gender")'
+  ),
+  map = list(
+    required = c("value_var"),
+    column_params = c("value_var", "join_var", "click_var"),
+    example = 'add_viz(type = "map", value_var = "population", join_var = "country_code")'
+  ),
+  heatmap = list(
+    required = c("x_var", "y_var", "value_var"),
+    column_params = c("x_var", "y_var", "value_var"),
+    example = 'add_viz(type = "heatmap", x_var = "hour", y_var = "day", value_var = "count")'
+  ),
+  timeline = list(
+    required = c("time_var", "y_var"),
+    column_params = c("time_var", "y_var", "group_var"),
+    example = 'add_viz(type = "timeline", time_var = "date", y_var = "value")'
+  )
+)
+
+#' Validate a single visualization specification
+#'
+#' Internal function that validates a visualization spec against its requirements.
+#' Checks for missing required parameters and optionally validates column existence.
+#'
+#' @param spec List containing the visualization specification
+#' @param data Optional data frame to validate column names against
+#' @param item_index Optional index of the item in the collection (for error messages)
+#' @param stop_on_error If TRUE, stops with an error. If FALSE, returns list of issues.
+#' @return If stop_on_error=FALSE, returns a list with `valid` (logical) and `issues` (character vector).
+#'         If stop_on_error=TRUE and invalid, throws an error with helpful message.
+#' @keywords internal
+.validate_viz_spec <- function(spec, data = NULL, item_index = NULL, stop_on_error = TRUE) {
+  issues <- character(0)
+  
+
+  # Skip non-viz items
+  if (is.null(spec$viz_type) && (is.null(spec$type) || spec$type != "viz")) {
+    return(list(valid = TRUE, issues = character(0)))
+  }
+  
+  viz_type <- spec$viz_type %||% spec$type
+  
+  # Check if viz type is known
+  if (!viz_type %in% names(.viz_param_registry)) {
+    # Unknown viz type - can't validate further, but don't error
+    # The actual viz function will handle this
+    return(list(valid = TRUE, issues = character(0)))
+  }
+  
+  registry <- .viz_param_registry[[viz_type]]
+  
+  # Check required parameters
+  missing_params <- character(0)
+  for (param in registry$required) {
+    value <- spec[[param]]
+    if (is.null(value) || (is.character(value) && length(value) == 1 && value == "")) {
+      missing_params <- c(missing_params, param)
+    }
+  }
+  
+  if (length(missing_params) > 0) {
+    for (param in missing_params) {
+      issues <- c(issues, paste0("'", param, "' parameter is required for viz_", viz_type))
+    }
+  }
+  
+  # Validate column existence if data is provided
+  if (!is.null(data) && is.data.frame(data)) {
+    data_cols <- names(data)
+    
+    for (param in registry$column_params) {
+      col_value <- spec[[param]]
+      
+      if (!is.null(col_value)) {
+        # Handle vector of column names (like x_vars in stackedbars)
+        cols_to_check <- if (is.character(col_value)) col_value else character(0)
+        
+        for (col in cols_to_check) {
+          if (!col %in% data_cols) {
+            # Try to suggest a similar column name
+            suggestion <- .suggest_alternative(col, data_cols)
+            issue_msg <- paste0("Column '", col, "' (", param, ") not found in data")
+            if (!is.null(suggestion)) {
+              issue_msg <- paste0(issue_msg, ". Did you mean '", suggestion, "'?")
+            }
+            issues <- c(issues, issue_msg)
+          }
+        }
+      }
+    }
+  }
+  
+  # If there are issues and we should stop, format a helpful error message
+  if (length(issues) > 0 && stop_on_error) {
+    # Build informative error message
+    item_label <- if (!is.null(item_index)) paste0(" (item ", item_index, ")") else ""
+    
+    msg <- paste0("\n", cli::symbol$cross, " Validation error in viz_", viz_type, item_label, ":\n")
+    
+    for (issue in issues) {
+      msg <- paste0(msg, "  ", cli::symbol$bullet, " ", issue, "\n")
+    }
+    
+    # Add example
+    if (!is.null(registry$example)) {
+      msg <- paste0(msg, "\n", cli::symbol$info, " Example: ", registry$example, "\n")
+    }
+    
+    # Show current spec values for debugging
+    msg <- paste0(msg, "\n", cli::symbol$info, " Current specification:\n")
+    for (param in registry$required) {
+      value <- spec[[param]]
+      value_str <- if (is.null(value)) "(missing)" else paste0('"', value, '"')
+      msg <- paste0(msg, "    ", param, ": ", value_str, "\n")
+    }
+    
+    stop(msg, call. = FALSE)
+  }
+  
+  list(valid = length(issues) == 0, issues = issues)
+}
+
+#' Validate all visualization specs in a collection
+#'
+#' Internal function that validates all viz specs in a content/viz collection.
+#' Collects all validation issues and reports them together.
+#'
+#' @param collection A content_collection or viz_collection object
+#' @param data Optional data frame to validate column names against
+#' @param stop_on_error If TRUE, stops on first error. If FALSE, collects all issues.
+#' @return If stop_on_error=FALSE, returns a list with `valid` (logical), `issues` (list of issues by item).
+#'         If stop_on_error=TRUE and invalid, throws an error.
+#' @keywords internal
+.validate_all_viz_specs <- function(collection, data = NULL, stop_on_error = TRUE) {
+  if (is.null(collection$items) || length(collection$items) == 0) {
+    return(list(valid = TRUE, issues = list()))
+  }
+  
+  # Use collection data if not provided
+  if (is.null(data)) {
+    data <- collection$data
+  }
+  
+  all_issues <- list()
+  has_errors <- FALSE
+  
+  for (i in seq_along(collection$items)) {
+    item <- collection$items[[i]]
+    
+    # Only validate viz items
+    is_viz <- (!is.null(item$viz_type)) || 
+              (!is.null(item$type) && item$type == "viz")
+    
+    if (is_viz) {
+      result <- .validate_viz_spec(item, data = data, item_index = i, stop_on_error = stop_on_error)
+      
+      if (!result$valid) {
+        has_errors <- TRUE
+        all_issues[[as.character(i)]] <- list(
+          viz_type = item$viz_type %||% item$type,
+          issues = result$issues
+        )
+      }
+    }
+  }
+  
+  # If we collected issues without stopping, format a summary error
+  if (has_errors && stop_on_error) {
+    # This shouldn't happen since stop_on_error=TRUE stops in .validate_viz_spec
+    # But just in case, throw an error
+    stop("Validation errors found in collection", call. = FALSE)
+  }
+  
+  list(valid = !has_errors, issues = all_issues)
+}
+
+# =================================================================
+# Page configuration helpers
+# =================================================================
+
+#' Convert haven_labelled columns to factors
+#' 
+#' Internal helper that converts haven_labelled columns to factors for filtering.
+#' Used in generated QMD files when data might contain haven-style labels.
+#' 
+#' @param df A data frame
+#' @return The data frame with haven_labelled columns converted to factors
+#' @keywords internal
+.convert_haven <- function(df) {
+  if (requireNamespace("haven", quietly = TRUE)) {
+    for (col in names(df)) {
+      if (inherits(df[[col]], "haven_labelled")) {
+        df[[col]] <- haven::as_factor(df[[col]])
+      }
+    }
+  }
+  df
+}
+
+#' Generate page configuration HTML
+#' 
+#' Internal helper that outputs CSS and JavaScript for chart containers and reflow.
+#' Called from generated QMD setup chunks.
+#' 
+#' @return Invisible NULL (outputs HTML via knitr)
+#' @keywords internal
+.page_config <- function() {
+  css <- "
+<style>
+/* Ensure chart containers expand to fit content */
+.cell-output-display,
+.cell-output,
+.panel-tabset-tabby > .tab-content,
+.panel-tabset > .tab-content,
+.tab-pane,
+.tab-pane.active,
+.card-body,
+.quarto-figure,
+section {
+  overflow: visible !important;
+  height: auto !important;
+  max-height: none !important;
+}
+.highcharts-container,
+.html-widget,
+.htmlwidget {
+  overflow: visible !important;
+}
+</style>
+<script>
+(function() {
+  function reflowCharts() {
+    if (typeof Highcharts !== 'undefined' && Highcharts.charts) {
+      Highcharts.charts.forEach(function(c) { if (c) try { c.reflow(); } catch(e) {} });
+    }
+  }
+  [0, 100, 250, 500, 1000, 2000].forEach(function(d) {
+    setTimeout(function() { window.dispatchEvent(new Event('resize')); requestAnimationFrame(reflowCharts); }, d);
+  });
+  document.addEventListener('click', function(e) {
+    if (e.target.matches('.nav-link, [data-bs-toggle=\"tab\"]')) setTimeout(reflowCharts, 50);
+  });
+})();
+</script>
+"
+  knitr::asis_output(css)
+}
