@@ -21,9 +21,15 @@ utils::globalVariables(c("name", "value", "colorValue"))
 #' @param height Chart height in pixels (default 500)
 #' @param allow_drill_down Whether to allow drilling into subgroups (default TRUE)
 #' @param layout_algorithm Layout algorithm: "squarified" (default), "strip", "sliceAndDice", "stripes"
-#' @param show_labels Whether to show data labels (default TRUE)
+#' @param data_labels_enabled Logical. If TRUE, show data labels on cells. Default TRUE.
+#' @param show_labels Deprecated. Use `data_labels_enabled` instead.
 #' @param label_style List of label styling options
-#' @param tooltip_format Custom tooltip format
+#' @param tooltip A tooltip configuration created with \code{\link{tooltip}()}, 
+#'   OR a format string with \{placeholders\}. Available placeholders: 
+#'   \code{\{name\}}, \code{\{value\}}.
+#'   See \code{\link{tooltip}} for full customization options.
+#' @param tooltip_format Custom tooltip format using Highcharts syntax (legacy).
+#'   For the simpler dashboardr placeholder syntax, use \code{tooltip} instead.
 #' @param credits Whether to show Highcharts credits (default FALSE)
 #' @param ... Additional parameters passed to highcharter
 #'
@@ -55,8 +61,10 @@ viz_treemap <- function(
     height = 500,
     allow_drill_down = TRUE,
     layout_algorithm = "squarified",
-    show_labels = TRUE,
+    data_labels_enabled = TRUE,
+    show_labels = NULL,
     label_style = NULL,
+    tooltip = NULL,
     tooltip_format = NULL,
     credits = FALSE,
     ...
@@ -66,6 +74,13 @@ viz_treemap <- function(
   subgroup_var <- .as_var_string(rlang::enquo(subgroup_var))
   value_var <- .as_var_string(rlang::enquo(value_var))
   color_var <- .as_var_string(rlang::enquo(color_var))
+  
+
+  # Handle deprecated show_labels parameter
+  if (!is.null(show_labels)) {
+    warning("show_labels is deprecated. Use data_labels_enabled instead.", call. = FALSE)
+    data_labels_enabled <- show_labels
+  }
   
   # Validate required parameters
   if (missing(data) || is.null(data)) {
@@ -198,7 +213,7 @@ viz_treemap <- function(
         list(
           level = 1,
           dataLabels = list(
-            enabled = show_labels,
+            enabled = data_labels_enabled,
             style = label_style %||% list(fontSize = "14px", fontWeight = "bold")
           ),
           borderWidth = 2,
@@ -207,7 +222,7 @@ viz_treemap <- function(
         list(
           level = 2,
           dataLabels = list(
-            enabled = show_labels,
+            enabled = data_labels_enabled,
             style = label_style %||% list(fontSize = "11px")
           ),
           borderWidth = 1,
@@ -226,12 +241,26 @@ viz_treemap <- function(
     hc <- hc %>% highcharter::hc_subtitle(text = subtitle)
   }
   
-  # Configure tooltip
-  if (!is.null(tooltip_format)) {
-    hc <- hc %>% highcharter::hc_tooltip(
-      pointFormat = tooltip_format
+  # ─── TOOLTIP ───────────────────────────────────────────────────────────────
+  if (!is.null(tooltip) && !is.null(tooltip_format)) {
+    # Prefer tooltip_format if both are provided (for backwards compat)
+    hc <- hc %>% highcharter::hc_tooltip(pointFormat = tooltip_format)
+  } else if (!is.null(tooltip)) {
+    # Use new unified tooltip system
+    tooltip_result <- .process_tooltip_config(
+      tooltip = tooltip,
+      tooltip_prefix = NULL,
+      tooltip_suffix = NULL,
+      x_tooltip_suffix = NULL,
+      chart_type = "treemap",
+      context = list()
     )
+    hc <- .apply_tooltip_to_hc(hc, tooltip_result)
+  } else if (!is.null(tooltip_format)) {
+    # Use legacy tooltip_format (Highcharts pointFormat syntax)
+    hc <- hc %>% highcharter::hc_tooltip(pointFormat = tooltip_format)
   } else {
+    # Default tooltip
     hc <- hc %>% highcharter::hc_tooltip(
       pointFormat = "<b>{point.name}</b>: {point.value:,.0f}"
     )

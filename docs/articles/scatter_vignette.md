@@ -1,6 +1,6 @@
 # Creating Scatter Plots with viz_scatter()
 
-## Introduction
+## 📖 Introduction
 
 The
 [`viz_scatter()`](https://favstats.github.io/dashboardr/reference/viz_scatter.md)
@@ -27,7 +27,7 @@ gss <- gss_all %>%
   )
 ```
 
-## Basic Scatter Plots
+## 📊 Basic Scatter Plots
 
 Create a simple scatter plot showing the relationship between education
 (years) and income:
@@ -45,7 +45,7 @@ plot <- viz_scatter(
 plot
 ```
 
-## Adding Trend Lines
+## 📈 Adding Trend Lines
 
 Use `show_trend = TRUE` to add a regression line:
 
@@ -61,7 +61,7 @@ plot <- viz_scatter(
 plot
 ```
 
-## Coloring by Groups
+## 🎨 Coloring by Groups
 
 Use `color_var` to color points by a categorical variable:
 
@@ -78,7 +78,7 @@ plot <- viz_scatter(
 plot
 ```
 
-## Age vs Education
+## 📊 Age vs Education
 
 Another relationship to explore - age and years of education:
 
@@ -89,13 +89,16 @@ plot <- viz_scatter(
   y_var = "educ",
   color_var = "degree",
   title = "Age vs Education by Degree",
-  alpha = 0.5
+  x_label = "Age (years)",
+  y_label = "Years of Education",
+  alpha = 0.5,
+  color_palette = c("#E74C3C", "#F39C12", "#27AE60", "#3498DB", "#9B59B6")
 )
 
 plot
 ```
 
-## Handling Overlap with Transparency
+## 👁️ Handling Overlap with Transparency
 
 For dense data, use `alpha` to reveal patterns:
 
@@ -112,7 +115,7 @@ plot <- viz_scatter(
 plot
 ```
 
-## Labels and Tooltips
+## 🏷️ Labels and Tooltips
 
 Customize axis labels and tooltip formatting for better readability:
 
@@ -139,7 +142,7 @@ plot
 The `tooltip_format` parameter supports placeholders: `{x}` for x-value,
 `{y}` for y-value, and `{color}` for the color group.
 
-## Using with create_content()
+## 📁 Using with create_content()
 
 Integrate scatter plots into dashboards:
 
@@ -215,11 +218,11 @@ Preview
 
 Relationships
 
-Education → Income
+Education \<U+2192\> Income
 
-Age → Income
+Age \<U+2192\> Income
 
-## Interpreting Scatter Plots
+## 🔍 Interpreting Scatter Plots
 
 ### Correlation Patterns
 
@@ -239,7 +242,7 @@ Age → Income
 4.  **Outliers** - Points far from the pattern?
 5.  **Clusters** - Distinct groups?
 
-## When to Use Scatter Plots
+## 💡 When to Use Scatter Plots
 
 **Use
 [`viz_scatter()`](https://favstats.github.io/dashboardr/reference/viz_scatter.md)
@@ -254,7 +257,7 @@ when:** - Showing distribution of a single variable
 [`viz_heatmap()`](https://favstats.github.io/dashboardr/reference/viz_heatmap.md)
 when:** - Data is aggregated (means, counts) - Many overlapping points
 
-## See Also
+## 📚 See Also
 
 - [`?viz_scatter`](https://favstats.github.io/dashboardr/reference/viz_scatter.md) -
   Full function documentation

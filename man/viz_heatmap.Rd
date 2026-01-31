@@ -14,6 +14,7 @@ viz_heatmap(
   x_label = NULL,
   y_label = NULL,
   value_label = NULL,
+  tooltip = NULL,
   tooltip_prefix = "",
   tooltip_suffix = "",
   x_tooltip_suffix = "",
@@ -59,9 +60,14 @@ determine the color intensity.}
 
 \item{value_label}{Optional string. Label for the color axis. Defaults to \code{value_var}.}
 
-\item{tooltip_prefix}{Optional string prepended in the tooltip value.}
+\item{tooltip}{A tooltip configuration created with \code{\link{tooltip}()},
+OR a format string with \{placeholders\}. Available placeholders:
+\code{\{x\}}, \code{\{y\}}, \code{\{value\}}, \code{\{name\}}.
+See \code{\link{tooltip}} for full customization options.}
 
-\item{tooltip_suffix}{Optional string appended in the tooltip value.}
+\item{tooltip_prefix}{Optional string prepended in the tooltip value (simple customization).}
+
+\item{tooltip_suffix}{Optional string appended in the tooltip value (simple customization).}
 
 \item{x_tooltip_suffix}{Optional string appended to x value in tooltip.}
 

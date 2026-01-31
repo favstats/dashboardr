@@ -20,6 +20,7 @@ viz_heatmap(
   x_label = NULL,
   y_label = NULL,
   value_label = NULL,
+  tooltip = NULL,
   tooltip_prefix = "",
   tooltip_suffix = "",
   x_tooltip_suffix = "",
@@ -85,13 +86,22 @@ viz_heatmap(
 
   Optional string. Label for the color axis. Defaults to `value_var`.
 
+- tooltip:
+
+  A tooltip configuration created with
+  [`tooltip()`](https://favstats.github.io/dashboardr/reference/tooltip.md),
+  OR a format string with {placeholders}. Available placeholders: `{x}`,
+  `{y}`, `{value}`, `{name}`. See
+  [`tooltip`](https://favstats.github.io/dashboardr/reference/tooltip.md)
+  for full customization options.
+
 - tooltip_prefix:
 
-  Optional string prepended in the tooltip value.
+  Optional string prepended in the tooltip value (simple customization).
 
 - tooltip_suffix:
 
-  Optional string appended in the tooltip value.
+  Optional string appended in the tooltip value (simple customization).
 
 - x_tooltip_suffix:
 
@@ -258,7 +268,7 @@ This function performs the following steps:
 ``` r
 # Load the dataset
 data(gss_panel20)
-#> Warning: data set ‘gss_panel20’ not found
+#> Warning: data set 'gss_panel20' not found
 
 # Example 1: Basic heatmap – no mapped values or other customization
 viz_heatmap(

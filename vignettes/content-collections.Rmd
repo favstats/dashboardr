@@ -37,7 +37,7 @@ gss <- gss_all %>%
   select(year, age, sex, race, degree, happy, polviews, wtssps,
          # Continuous variables for scatter plots
          educ, childs,
-         # Confidence in institutions (for stackedbars example)
+         # Confidence in institutions (for multi-question stackedbar example)
          confinan, conbus, coneduc, confed, conmedic) %>%
   filter(year == max(year, na.rm = TRUE)) %>%
   # Filter to substantive responses for core variables
@@ -99,7 +99,7 @@ A content collection is a container that holds visualizations, content blocks, i
 <strong><a href="#visualization-types">Visualizations</a></strong>
 </td>
 <td style="padding: 12px; vertical-align: top;">
-Bar, Stacked Bar, Histogram, Timeline, Heatmap, Scatter, Treemap, Map
+Bar, Stacked Bar, Histogram, Density, Boxplot, Timeline, Heatmap, Scatter, Treemap, Map
 </td>
 <td style="padding: 12px; vertical-align: top;">
 <code>add_viz()</code>, <code>add_vizzes()</code>
@@ -363,9 +363,13 @@ all_content <- demographics %>%
 print(all_content)
 ```
 
-## 📊 Visualization Collections
+## 📊 Visualization Types {#visualization-types}
 
-dashboardr supports 9 visualization types. Each is optimized for different data patterns.
+dashboardr supports 11 visualization types. Each is optimized for different data patterns. For detailed documentation on each type, see the individual vignettes:
+- [Bar Charts](bar_vignette.html) | [Stacked Bars](stackedbar_vignette.html)
+- [Histograms](histogram_vignette.html) | [Density Plots](density_vignette.html) | [Box Plots](boxplot_vignette.html)
+- [Timelines](timeline_vignette.html) | [Heatmaps](heatmap_vignette.html) | [Scatter Plots](scatter_vignette.html)
+- [Treemaps](treemap_vignette.html) | [Maps](map_vignette.html)
 
 ### Bar Charts
 
@@ -403,6 +407,8 @@ create_content(data = gss, type = "bar") %>%
   preview()
 ```
 
+See the [Bar Chart vignette](bar_vignette.html) for more options.
+
 ### Stacked Bars
 
 Stacked bars show composition - how a whole breaks down into parts. Use `stack_var` to specify what fills each bar.
@@ -433,6 +439,8 @@ create_content(data = gss, type = "stackedbar") %>%
   preview()
 ```
 
+See the [Stacked Bar vignette](stackedbar_vignette.html) for more options.
+
 ### Histograms
 
 Histograms show the distribution of continuous variables. The `bins` parameter controls granularity - more bins show more detail, fewer bins show smoother patterns.
@@ -444,14 +452,52 @@ create_content(data = gss, type = "histogram") %>%
   preview()
 ```
 
+See the [Histogram vignette](histogram_vignette.html) for more options.
+
+### Density Plots
+
+Density plots show smooth estimates of the distribution of a continuous variable. They're useful when you want a cleaner view of the distribution shape compared to histograms.
+
+```{r}
+create_content(data = gss, type = "density") %>%
+  add_viz(x_var = "age", title = "Age Distribution (Density)",
+          x_label = "Age (years)") %>%
+  preview()
+```
+
+Add `group_var` to compare distributions across groups:
+
+```{r}
+create_content(data = gss, type = "density") %>%
+  add_viz(x_var = "age", group_var = "sex", 
+          title = "Age Distribution by Sex") %>%
+  preview()
+```
+
+See the [Density vignette](density_vignette.html) for more options.
+
+### Box Plots
+
+Box plots (also called box-and-whisker plots) show the distribution of a numeric variable across categories. They display the median, quartiles, and outliers, making it easy to compare distributions.
+
+```{r}
+create_content(data = gss, type = "boxplot") %>%
+  add_viz(x_var = "degree", y_var = "age", 
+          title = "Age Distribution by Education Level",
+          x_label = "Highest Degree", y_label = "Age") %>%
+  preview()
+```
+
+See the [Box Plot vignette](boxplot_vignette.html) for more options.
+
 ### Multiple Stacked Bars (Likert Scales)
 
-When you have multiple survey questions with the same response scale (like Likert items), `type = "stackedbars"` displays them together for comparison. This is perfect for "confidence in institutions" batteries or agreement scales.
+When you have multiple survey questions with the same response scale (like Likert items), use `type = "stackedbar"` with `x_vars` to display them together for comparison. This is perfect for "confidence in institutions" batteries or agreement scales.
 
 Use `x_vars` for the question columns and `x_var_labels` for readable labels. Note: These confidence questions use a split-ballot design, so ~1/3 of respondents have NA (question not asked). We use `drop_na_vars = TRUE` to exclude those:
 
 ```{r}
-create_content(data = gss, type = "stackedbars", drop_na_vars = TRUE) %>%
+create_content(data = gss, type = "stackedbar", drop_na_vars = TRUE) %>%
   add_viz(
     x_vars = c("confinan", "conbus", "coneduc", "confed", "conmedic"),
     x_var_labels = c("Banks & financial institutions", 
@@ -465,6 +511,8 @@ create_content(data = gss, type = "stackedbars", drop_na_vars = TRUE) %>%
   ) %>%
   preview()
 ```
+
+See the [Stacked Bar vignette](stackedbar_vignette.html) for more options including multi-question mode.
 
 ### Timeline
 
@@ -493,6 +541,8 @@ create_content(data = gss_timeline, type = "timeline") %>%
   ) %>%
   preview()
 ```
+
+See the [Timeline vignette](timeline_vignette.html) for more options.
 
 ### Heatmap
 
@@ -573,6 +623,8 @@ create_content(data = gss, type = "heatmap") %>%
   preview()
 ```
 
+See the [Heatmap vignette](heatmap_vignette.html) for more options.
+
 ### Scatter Plots
 
 Scatter plots show relationships between two numeric variables. Each point represents one observation. Key parameters:
@@ -601,6 +653,8 @@ create_content(data = scatter_data, type = "scatter") %>%
   ) %>%
   preview()
 ```
+
+See the [Scatter Plot vignette](scatter_vignette.html) for more options.
 
 ### Treemap
 
@@ -645,6 +699,8 @@ create_content(data = degree_sex_counts, type = "treemap") %>%
   ) %>%
   preview()
 ```
+
+See the [Treemap vignette](treemap_vignette.html) for more options.
 
 ### Map
 
@@ -714,6 +770,8 @@ create_content(data = map_data, type = "map") %>%
 | `"countries/us/us-all"` | US states | Postal codes ("CA", "NY") |
 | `"countries/de/de-all"` | German states | State codes |
 | `"custom/europe"` | European countries | `iso2c` |
+
+See the [Map vignette](map_vignette.html) for more options.
 
 ## 📁 Organizing with Tabgroups
 
@@ -1169,7 +1227,7 @@ spacer_example %>% preview()
 
 ## 👁️ Previewing Content
 
-Use `preview()` to quickly check your visualizations and content blocks during development:
+Use `preview()` to quickly check your visualizations and content blocks during development. It automatically validates your visualization specs and catches errors like missing parameters or invalid column names before rendering:
 
 ```{r, eval=FALSE}
 # Quick preview (fast, no Quarto)

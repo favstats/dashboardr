@@ -64,11 +64,11 @@ navbar:
         href: articles/pages.html
       - text: "- Dashboards"
         href: articles/dashboards.html
+      - text: "🌐 Publishing Dashboards"
+        href: articles/publishing_dashboards.html
       - text: -------
       - text: "⚙️ Advanced Features"
         href: articles/advanced-features.html
-      - text: "🌐 Publishing Dashboards"
-        href: articles/publishing_dashboards.html
       - text: -------
       - text: "📊 Visualization Types"
       - text: "- Bar Charts"
@@ -77,12 +77,14 @@ navbar:
         href: articles/timeline_vignette.html
       - text: "- Stacked Bars"
         href: articles/stackedbar_vignette.html
-      - text: "- Stacked Bars (Multiple)"
-        href: articles/stackedbars_vignette.html
       - text: "- Heatmaps"
         href: articles/heatmap_vignette.html
       - text: "- Histograms"
         href: articles/histogram_vignette.html
+      - text: "- Density Plots"
+        href: articles/density_vignette.html
+      - text: "- Box Plots"
+        href: articles/boxplot_vignette.html
       - text: "- Scatter Plots"
         href: articles/scatter_vignette.html
       - text: "- Treemaps"
@@ -115,15 +117,15 @@ articles:
   - pages
   - dashboards
 
-- title: Advanced Features
-  navbar: ~
-  contents:
-  - advanced-features
-
 - title: Publishing
   navbar: ~
   contents:
   - publishing_dashboards
+
+- title: Advanced Features
+  navbar: ~
+  contents:
+  - advanced-features
 
 - title: Live Demos
   navbar: Live Demos
@@ -139,6 +141,8 @@ articles:
   - stackedbars_vignette
   - heatmap_vignette
   - histogram_vignette
+  - density_vignette
+  - boxplot_vignette
   - scatter_vignette
   - treemap_vignette
   - map_vignette
@@ -181,11 +185,15 @@ reference:
   - add_pagination
   - set_tabgroup_labels
   - preview
+  - save_widget
+  - validate_specs
 
 - title: Visualization Types
   desc: Functions for different chart types
   contents:
   - viz_histogram
+  - viz_density
+  - viz_boxplot
   - viz_bar
   - viz_stackedbar
   - viz_stackedbars
@@ -194,6 +202,22 @@ reference:
   - viz_scatter
   - viz_map
   - viz_treemap
+
+- title: Tooltip Customization
+  desc: Functions for customizing chart tooltips
+  contents:
+  - tooltip
+  - print.dashboardr_tooltip
+  - add_hc
+
+- title: Stacked Bar Charts
+  desc: >
+    `viz_stackedbar()` is the unified function for all stacked bar charts.
+    Use `x_var` + `stack_var` for crosstabs, or `x_vars` for multi-variable comparisons.
+    `viz_stackedbars()` is a legacy wrapper that calls `viz_stackedbar()`.
+  contents:
+  - viz_stackedbar
+  - viz_stackedbars
 
 - title: Navigation & Layout
   desc: Functions for dashboard navigation and structure
@@ -288,6 +312,7 @@ reference:
   - print.viz_collection
   - print.dashboard_project
   - print.page_object
+  - print.dashboardr_widget
   - knit_print.content_collection
   - knit_print.page_object
   - knit_print.dashboard_project

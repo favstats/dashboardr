@@ -8,38 +8,67 @@
 #' It handles git initialization, .gitignore setup, GitHub repository creation,
 #' and GitHub Pages configuration using usethis functions.
 #'
+#' When \code{ask = TRUE} (the default), the function guides you through a 3-step
+#' interactive confirmation process:
+#' \enumerate{
+#'   \item \strong{File Review}: Shows you the files that will be published and opens
+#'     a folder so you can verify nothing unintended is included
+#'   \item \strong{Repository Privacy}: Asks whether to create a private or public repository
+#'   \item \strong{Confirm Publish}: Final confirmation before publishing to GitHub
+#' }
+#'
+#' @section What Gets Published:
+#' Typically, you only need to publish:
+#' \itemize{
+#'   \item The \code{docs/} folder (auto-generated HTML, CSS, JS files)
+#'   \item Optionally, your R scripts (just for reproducibility)
+#' }
+#'
+#' By default, common data file extensions (.csv, .rds, .xlsx, .sav, .dta) are
+#' automatically excluded via .gitignore. Use \code{usethis::use_git_ignore()} to
+#' exclude additional files you don't want to publish.
+#'
 #' @param message Initial commit message (default: "Initial commit")
 #' @param restart Whether to restart RStudio after git initialization (default: FALSE)
 #' @param organisation GitHub organisation name (optional, for org repositories)
-#' @param private Whether to create a private repository (default: FALSE)
+#' @param private Whether to create a private repository. When \code{NULL} (default)
+#'   and \code{ask = TRUE}, you will be prompted interactively. Set to \code{TRUE}
+#'   or \code{FALSE} to skip the prompt.
 #' @param protocol Transfer protocol: "https" or "ssh" (default: "https")
 #' @param branch Branch to deploy from (default: uses git default branch)
 #' @param path Path containing the site files (default: "/docs")
+#' @param ask Whether to use the interactive confirmation workflow (default: TRUE).
+#'   When \code{TRUE}, guides you through file review and confirmation steps.
+#'   Set to \code{FALSE} to skip all prompts (not recommended for first-time use).
 #' @param ... Additional arguments passed to \code{usethis::use_github()}
 #'
-#' @return Invisibly returns TRUE
+#' @return Invisibly returns TRUE if published successfully, FALSE if cancelled
 #' @export
 #'
 #' @examples
 #' \dontrun{
 #' # After generating a dashboard, navigate to the dashboard directory
-#' # and publish it:
+#' # and publish it (interactive mode):
 #' setwd("my_dashboard")
 #' publish_dashboard()
 #'
 #' # Publish to an organization
 #' publish_dashboard(organisation = "my-org")
 #'
-#' # Create a private repository
+#' # Create a private repository (skip privacy prompt)
 #' publish_dashboard(private = TRUE)
+#'
+#' # Skip all prompts (use with caution)
+#' publish_dashboard(ask = FALSE, private = FALSE)
 #' }
 publish_dashboard <- function(message = "Initial commit",
                              restart = FALSE,
                              organisation = NULL,
-                             private = FALSE,
+                             private = NULL,
                              protocol = c("https", "ssh"),
                              branch = usethis::git_default_branch(),
                              path = "/docs",
+                             ask = TRUE,
                              ...) {
   
   protocol <- match.arg(protocol)
@@ -48,6 +77,23 @@ publish_dashboard <- function(message = "Initial commit",
   cat("╔══════════════════════════════════════════════════════════════╗\n")
   cat("║          📤 Publishing Dashboard to GitHub Pages             ║\n")
   cat("╚══════════════════════════════════════════════════════════════╝\n\n")
+  
+ # Run interactive confirmation workflow if ask = TRUE
+  if (ask) {
+    confirmation <- .run_interactive_confirmation(private = private)
+    
+    if (!confirmation$proceed) {
+      return(invisible(FALSE))
+    }
+    
+    # Update private from user's choice
+    private <- confirmation$private
+  }
+  
+  # Handle case where private is still NULL (ask = FALSE and no explicit value)
+  if (is.null(private)) {
+    private <- FALSE
+  }
   
   # Step 1: Initialize git repository and setup .gitignore
   cat("📝 Step 1/3: Setting up Git repository...\n\n")
@@ -381,4 +427,332 @@ update_dashboard <- function(files = ".", message = "Update dashboard", ask = TR
   }
 
   large_files
+}
+
+# ===================================================================
+# Interactive Publishing Helper Functions
+# ===================================================================
+
+#' Get files that would be committed (respecting .gitignore)
+#'
+#' Returns a list of files that git would track, excluding ignored files.
+#'
+#' @param base_path Base directory path
+#' @return Character vector of file paths
+#' @noRd
+.get_committable_files <- function(base_path = ".") {
+  # Get all files recursively
+
+  all_files <- list.files(base_path, recursive = TRUE, all.files = FALSE, full.names = FALSE)
+  
+
+  # Check if .gitignore exists and read patterns
+  gitignore_path <- file.path(base_path, ".gitignore")
+  if (file.exists(gitignore_path)) {
+    gitignore_patterns <- readLines(gitignore_path, warn = FALSE)
+    # Filter out comments and empty lines
+    gitignore_patterns <- gitignore_patterns[!grepl("^\\s*#", gitignore_patterns)]
+    gitignore_patterns <- gitignore_patterns[nchar(trimws(gitignore_patterns)) > 0]
+    
+    # Convert gitignore patterns to regex and filter files
+    for (pattern in gitignore_patterns) {
+      pattern <- trimws(pattern)
+      if (nchar(pattern) == 0) next
+      
+      # Convert glob pattern to regex
+      regex_pattern <- .glob_to_regex(pattern)
+      
+      # Filter out matching files
+      all_files <- all_files[!grepl(regex_pattern, all_files, perl = TRUE)]
+    }
+  }
+  
+  # Also exclude common non-file entries
+  all_files <- all_files[!grepl("^\\.git/", all_files)]
+  all_files <- all_files[!grepl("^\\.dashboardr_review/", all_files)]
+  
+  all_files
+}
+
+#' Convert glob pattern to regex
+#'
+#' @param pattern Glob pattern
+#' @return Regex pattern
+#' @noRd
+.glob_to_regex <- function(pattern) {
+  # Escape regex special characters except * and ?
+
+  pattern <- gsub("\\.", "\\\\.", pattern)
+  pattern <- gsub("\\[", "\\\\[", pattern)
+  pattern <- gsub("\\]", "\\\\]", pattern)
+  pattern <- gsub("\\(", "\\\\(", pattern)
+
+  pattern <- gsub("\\)", "\\\\)", pattern)
+  pattern <- gsub("\\+", "\\\\+", pattern)
+  pattern <- gsub("\\^", "\\\\^", pattern)
+  pattern <- gsub("\\$", "\\\\$", pattern)
+  
+  # Handle directory patterns (ending with /)
+  if (grepl("/$", pattern)) {
+    pattern <- sub("/$", "", pattern)
+    pattern <- paste0("(^|/)", pattern, "(/|$)")
+  } else if (!grepl("/", pattern)) {
+    # Pattern without / matches anywhere in path
+    pattern <- paste0("(^|/)", pattern, "($|/)?")
+  }
+  
+  # Convert glob wildcards to regex
+  pattern <- gsub("\\*\\*", ".*", pattern)  # ** matches everything including /
+
+  pattern <- gsub("\\*", "[^/]*", pattern)   # * matches everything except /
+  pattern <- gsub("\\?", ".", pattern)       # ? matches single character
+  
+  pattern
+}
+
+#' Create temporary review folder with files to be committed
+#'
+#' Creates a folder at .dashboardr_review/ containing copies of all files
+#' that would be committed (respecting .gitignore).
+#'
+#' @param base_path Base directory path
+#' @return Path to the review folder
+#' @noRd
+.create_review_folder <- function(base_path = ".") {
+  review_path <- file.path(base_path, ".dashboardr_review")
+  
+
+  # Clean up if exists
+  if (dir.exists(review_path)) {
+    unlink(review_path, recursive = TRUE)
+  }
+  
+  # Create the review folder
+  dir.create(review_path, recursive = TRUE)
+  
+  # Get files that would be committed
+  files_to_copy <- .get_committable_files(base_path)
+  
+  # Copy files maintaining directory structure
+  for (file in files_to_copy) {
+    src <- file.path(base_path, file)
+    dst <- file.path(review_path, file)
+    
+    # Create parent directory if needed
+    dst_dir <- dirname(dst)
+    if (!dir.exists(dst_dir)) {
+      dir.create(dst_dir, recursive = TRUE)
+    }
+    
+    # Copy the file
+    if (file.exists(src) && !dir.exists(src)) {
+      file.copy(src, dst, overwrite = TRUE)
+    }
+  }
+  
+  # Add .gitignore to the review folder itself so it's not committed
+  usethis::use_git_ignore(".dashboardr_review/")
+  
+  normalizePath(review_path)
+}
+
+#' Open folder in system file browser
+#'
+#' Opens the specified folder in Finder (macOS), Explorer (Windows),
+#' or the default file manager (Linux).
+#'
+#' @param path Path to the folder to open
+#' @return Invisibly returns TRUE
+#' @noRd
+.open_folder_in_browser <- function(path) {
+  path <- normalizePath(path, mustWork = FALSE)
+  
+  os <- Sys.info()["sysname"]
+  
+  if (os == "Darwin") {
+    # macOS
+    system2("open", path)
+  } else if (os == "Windows") {
+    # Windows - use explorer.exe via system2
+    system2("explorer", path)
+  } else {
+    # Linux and others
+    system2("xdg-open", path)
+  }
+  
+  invisible(TRUE)
+}
+
+#' Print file tree to console
+#'
+#' Displays a simplified summary of files - top-level folders with counts
+#' and root-level files.
+#'
+#' @param path Path to the directory
+#' @return Invisibly returns the number of files
+#' @noRd
+.print_file_tree <- function(path) {
+  files <- list.files(path, recursive = TRUE, all.files = FALSE)
+  n_files <- length(files)
+  
+  cat("\n")
+  cat("   Files to be committed (", n_files, " total):\n", sep = "")
+  cat("   ", strrep("-", 40), "\n", sep = "")
+  
+  if (n_files > 0) {
+    # Get top-level directories and their file counts
+    top_level <- sapply(strsplit(files, "/"), `[`, 1)
+    
+    # Separate directories from root files
+    root_files <- files[!grepl("/", files)]
+    dir_files <- files[grepl("/", files)]
+    
+    # Count files per top-level directory
+    if (length(dir_files) > 0) {
+      dir_names <- sapply(strsplit(dir_files, "/"), `[`, 1)
+      dir_counts <- table(dir_names)
+      
+      for (dir in sort(names(dir_counts))) {
+        cat("   ", dir, "/  (", dir_counts[dir], " files)\n", sep = "")
+      }
+    }
+    
+    # Show root-level files (these are important to see)
+    if (length(root_files) > 0) {
+      cat("\n   Root files:\n")
+      for (f in sort(root_files)) {
+        cat("   ", f, "\n", sep = "")
+      }
+    }
+  } else {
+    cat("   (no files found)\n")
+  }
+  
+  cat("   ", strrep("-", 40), "\n\n", sep = "")
+  
+  invisible(n_files)
+}
+
+#' Display pre-review instructions
+#'
+#' Shows brief instructions before file review.
+#'
+#' @return Invisibly returns TRUE
+#' @noRd
+.display_pre_review_info <- function() {
+  cat("\n")
+  cat("In the next step, you can review the files that will be published.\n\n")
+  
+  cat("Typically, you only need:\n")
+  cat("   • docs/  folder (auto-generated HTML, CSS, JS files)\n")
+  cat("   • Optionally: your R scripts (just for reproducibility)\n\n")
+  
+  cat("By default, data files (.csv, .rds, .xlsx, etc.) are excluded\n")
+  cat("via .gitignore. To exclude additional files, use:\n")
+  cat("   usethis::use_git_ignore(c(\"file.csv\", \"folder/\"))\n\n")
+  
+  invisible(TRUE)
+}
+
+#' Clean up review folder
+#'
+#' Removes the temporary .dashboardr_review folder.
+#'
+#' @param base_path Base directory path
+#' @return Invisibly returns TRUE
+#' @noRd
+.cleanup_review_folder <- function(base_path = ".") {
+  review_path <- file.path(base_path, ".dashboardr_review")
+  
+  if (dir.exists(review_path)) {
+    unlink(review_path, recursive = TRUE)
+  }
+  
+  invisible(TRUE)
+}
+
+#' Run interactive confirmation workflow
+#'
+#' Guides the user through a streamlined confirmation process before publishing.
+#'
+#' @param private Current private setting (NULL means ask interactively)
+#' @return A list with components:
+#'   \item{proceed}{Whether to proceed with publishing}
+#'   \item{private}{Final private setting}
+#' @noRd
+.run_interactive_confirmation <- function(private = NULL) {
+  
+  # ===== STEP 1: Pre-review info and ask to proceed =====
+  cat("\n📋 Step 1/3: File Review\n")
+  cat(strrep("-", 40), "\n", sep = "")
+  
+ .display_pre_review_info()
+  
+  response <- readline("   Ready to review files? (yes/no): ")
+  
+  if (!tolower(trimws(response)) %in% c("yes", "y")) {
+    cat("\n❌ Cancelled. Run publish_dashboard() when ready.\n\n")
+    return(list(proceed = FALSE, private = private))
+  }
+  
+  # Create review folder and show files
+  cat("\n📂 Preparing file review...\n")
+  review_path <- .create_review_folder(".")
+  
+  # Print file tree
+  .print_file_tree(review_path)
+  
+  # Open folder in browser
+  cat("📂 Opening folder: ", review_path, "\n\n")
+  .open_folder_in_browser(review_path)
+  
+  cat("⚠️  Please verify these are the files you want to publish.\n")
+  cat("   Make sure there's nothing you didn't intend to include.\n\n")
+  
+  response <- readline("   Confirm these files are OK to publish? (yes/no): ")
+  
+  if (!tolower(trimws(response)) %in% c("yes", "y")) {
+    cat("\n❌ Cancelled. To exclude files, use:\n")
+    cat("   usethis::use_git_ignore(c(\"file.csv\", \"folder/\"))\n\n")
+    .cleanup_review_folder(".")
+    return(list(proceed = FALSE, private = private))
+  }
+  
+  # ===== STEP 2: Repository Privacy Choice =====
+  if (is.null(private)) {
+    cat("\n🔒 Step 2/3: Repository Privacy\n")
+    cat(strrep("-", 40), "\n\n", sep = "")
+    
+    cat("PUBLIC:  Anyone can see your code. Free GitHub Pages.\n")
+    cat("PRIVATE: Only you can see code. Pages requires paid plan.\n\n")
+    
+    response <- readline("   Create a PRIVATE repository? (yes/no): ")
+    
+    private <- tolower(trimws(response)) %in% c("yes", "y")
+    cat("   ✓ Repository will be ", if (private) "PRIVATE" else "PUBLIC", "\n", sep = "")
+  }
+  
+  # ===== STEP 3: Final Confirmation =====
+  cat("\n🚀 Step 3/3: Confirm Publish\n")
+  cat(strrep("-", 40), "\n\n", sep = "")
+  
+  cat("This will:\n")
+  cat("   • Create a ", if (private) "private" else "public", " GitHub repository\n", sep = "")
+  cat("   • Push your files to GitHub\n")
+  cat("   • Enable GitHub Pages\n\n")
+  
+  response <- readline("   Publish to GitHub? (yes/no): ")
+  
+  if (!tolower(trimws(response)) %in% c("yes", "y")) {
+    cat("\n❌ Cancelled. Run publish_dashboard() when ready.\n\n")
+    .cleanup_review_folder(".")
+    return(list(proceed = FALSE, private = private))
+  }
+  
+  # Clean up review folder before proceeding
+  .cleanup_review_folder(".")
+  
+  cat("\n✓ Proceeding with publishing...\n\n")
+  
+  list(proceed = TRUE, private = private)
 }

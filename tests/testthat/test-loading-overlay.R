@@ -1,167 +1,142 @@
-test_that("overlay defaults to FALSE when not specified", {
-  proj <- create_dashboard("test", output_dir = tempdir())
-  proj <- add_dashboard_page(proj, "Analysis", text = "# Test")
+# =================================================================
+# Tests for loading_overlay.R
+# =================================================================
+
+test_that("create_loading_overlay returns htmltools tag", {
+  result <- create_loading_overlay()
   
-  expect_false(proj$pages$Analysis$overlay)
+  expect_s3_class(result, "shiny.tag")
 })
 
-test_that("overlay can be set to TRUE", {
-  proj <- create_dashboard("test", output_dir = tempdir())
-  proj <- add_dashboard_page(proj, "Analysis", text = "# Test", overlay = TRUE)
+test_that("create_loading_overlay uses default parameters", {
+  result <- create_loading_overlay()
+  html <- as.character(result)
   
-  expect_true(proj$pages$Analysis$overlay)
+  # Check default text
+  expect_true(grepl("Loading", html))
+  
+  # Check structure exists
+
+  expect_true(grepl("page-loading-overlay", html))
+  expect_true(grepl("plo-card", html))
+  expect_true(grepl("plo-spinner", html))
 })
 
-test_that("overlay_theme defaults to 'light'", {
-  proj <- create_dashboard("test", output_dir = tempdir())
-  proj <- add_dashboard_page(proj, "Analysis", text = "# Test", overlay = TRUE)
+test_that("create_loading_overlay accepts custom text", {
+  result <- create_loading_overlay(text = "Please wait...")
+  html <- as.character(result)
   
-  expect_equal(proj$pages$Analysis$overlay_theme, "light")
+  expect_true(grepl("Please wait...", html))
 })
 
-test_that("overlay_theme accepts valid themes", {
-  proj <- create_dashboard("test", output_dir = tempdir())
+test_that("create_loading_overlay accepts custom timeout", {
+  result <- create_loading_overlay(timeout_ms = 5000)
+  html <- as.character(result)
   
-  themes <- c("light", "glass", "dark", "accent")
-  
-  for (theme in themes) {
-    proj <- add_dashboard_page(proj, paste0("Page_", theme), 
-                               text = "# Test", 
-                               overlay = TRUE,
-                               overlay_theme = theme)
-    expect_equal(proj$pages[[paste0("Page_", theme)]]$overlay_theme, theme)
-  }
+  # Check timeout value is in the JavaScript
+  expect_true(grepl("5000", html))
 })
 
-test_that("overlay_theme rejects invalid themes", {
-  proj <- create_dashboard("test", output_dir = tempdir())
+test_that("create_loading_overlay supports light theme", {
+  result <- create_loading_overlay(theme = "light")
+  html <- as.character(result)
   
-  expect_error(
-    add_dashboard_page(proj, "Analysis", text = "# Test", 
-                      overlay = TRUE, overlay_theme = "invalid"),
-    "'arg' should be one of"
+  # Light theme uses white background
+  expect_true(grepl("rgba\\(255,255,255,0\\.98\\)", html))
+})
+
+test_that("create_loading_overlay supports glass theme", {
+  result <- create_loading_overlay(theme = "glass")
+  html <- as.character(result)
+  
+  # Glass theme has lower opacity background
+  expect_true(grepl("rgba\\(255,255,255,0\\.45\\)", html) || 
+              grepl("backdrop-filter.*blur\\(16px\\)", html))
+})
+
+test_that("create_loading_overlay supports dark theme", {
+  result <- create_loading_overlay(theme = "dark")
+  html <- as.character(result)
+  
+  # Dark theme uses dark gradients
+  expect_true(grepl("radial-gradient", html))
+  expect_true(grepl("#0f172a", html))
+})
+
+test_that("create_loading_overlay supports accent theme", {
+  result <- create_loading_overlay(theme = "accent")
+  html <- as.character(result)
+  
+  # Accent theme uses blue accents
+  expect_true(grepl("59,130,246", html))  # Blue RGB values
+})
+
+test_that("create_loading_overlay includes necessary CSS classes", {
+  result <- create_loading_overlay(theme = "light")
+  html <- as.character(result)
+  
+  # Essential CSS selectors
+  expect_true(grepl("#page-loading-overlay", html))
+  expect_true(grepl("\\.plo-card", html))
+  expect_true(grepl("\\.plo-spinner", html))
+  expect_true(grepl("\\.plo-title", html))
+})
+
+test_that("create_loading_overlay includes JavaScript for auto-hide", {
+  result <- create_loading_overlay(timeout_ms = 3000)
+  html <- as.character(result)
+  
+  # JavaScript event listener
+  expect_true(grepl("window\\.addEventListener", html))
+  expect_true(grepl("setTimeout", html))
+  expect_true(grepl("hide", html))
+})
+
+test_that("create_loading_overlay includes spinner animation", {
+  result <- create_loading_overlay()
+  html <- as.character(result)
+  
+  # Animation keyframes
+  expect_true(grepl("@keyframes plo-spin", html))
+  expect_true(grepl("animation:.*plo-spin", html))
+})
+
+test_that("create_loading_overlay theme argument validates input", {
+  # Valid themes should work
+  expect_no_error(create_loading_overlay(theme = "light"))
+  expect_no_error(create_loading_overlay(theme = "glass"))
+  expect_no_error(create_loading_overlay(theme = "dark"))
+  expect_no_error(create_loading_overlay(theme = "accent"))
+  
+  # Invalid theme should error (match.arg)
+  expect_error(create_loading_overlay(theme = "invalid"))
+})
+
+test_that("create_loading_overlay output structure is correct", {
+  result <- create_loading_overlay()
+  
+  # Should be a div containing style, div, and script
+  expect_equal(result$name, "div")
+  expect_true(length(result$children) >= 3)
+  
+  # Check child types
+  child_names <- sapply(result$children, function(x) x$name)
+  expect_true("style" %in% child_names)
+  expect_true("div" %in% child_names)
+  expect_true("script" %in% child_names)
+})
+
+test_that("create_loading_overlay works with different parameter combinations", {
+  # Custom everything
+  result <- create_loading_overlay(
+    text = "Dashboard Loading",
+    timeout_ms = 1500,
+    theme = "glass"
   )
+  
+  html <- as.character(result)
+  
+  expect_true(grepl("Dashboard Loading", html))
+  expect_true(grepl("1500", html))
+  expect_true(grepl("blur\\(16px\\)", html))
 })
-
-test_that("overlay_text defaults to 'Loading'", {
-  proj <- create_dashboard("test", output_dir = tempdir())
-  proj <- add_dashboard_page(proj, "Analysis", text = "# Test", overlay = TRUE)
-  
-  expect_equal(proj$pages$Analysis$overlay_text, "Loading")
-})
-
-test_that("overlay_text can be customized", {
-  proj <- create_dashboard("test", output_dir = tempdir())
-  proj <- add_dashboard_page(proj, "Analysis", text = "# Test", 
-                            overlay = TRUE, overlay_text = "Even wachten…")
-  
-  expect_equal(proj$pages$Analysis$overlay_text, "Even wachten…")
-})
-
-test_that("overlay chunk is NOT generated when overlay = FALSE", {
-  proj <- create_dashboard("test", output_dir = tempdir())
-  proj <- add_dashboard_page(proj, "Home", text = "# Home", 
-                            is_landing_page = TRUE, overlay = FALSE)
-  
-  generate_dashboard(proj, render = FALSE)
-  
-  qmd_content <- readLines(file.path(tempdir(), "index.qmd"))
-  qmd_text <- paste(qmd_content, collapse = "\n")
-  
-  expect_false(grepl("create_loading_overlay", qmd_text, fixed = TRUE))
-})
-
-test_that("overlay chunk IS generated when overlay = TRUE", {
-  proj <- create_dashboard("test", output_dir = tempdir())
-  proj <- add_dashboard_page(proj, "Home", text = "# Home", 
-                            is_landing_page = TRUE, overlay = TRUE)
-  
-  generate_dashboard(proj, render = FALSE)
-  
-  qmd_content <- readLines(file.path(tempdir(), "index.qmd"))
-  qmd_text <- paste(qmd_content, collapse = "\n")
-  
-  expect_true(grepl("create_loading_overlay", qmd_text, fixed = TRUE))
-  # Skip checking for specific library import - implementation detail
-  skip_if(TRUE, "Test checks for specific library import which may change")
-})
-
-test_that("overlay chunk appears in correct position", {
-  proj <- create_dashboard("test", output_dir = tempdir())
-  proj <- add_dashboard_page(proj, "Home", text = "# Home", 
-                            is_landing_page = TRUE, overlay = TRUE)
-  
-  generate_dashboard(proj, render = FALSE)
-  
-  qmd_content <- readLines(file.path(tempdir(), "index.qmd"))
-  
-  # Find overlay chunk - should appear after YAML and text
-  overlay_line <- which(grepl("create_loading_overlay", qmd_content))[1]
-  yaml_end <- which(grepl("^---$", qmd_content))[2]  # Second --- marks end of YAML
-  
-  expect_true(!is.na(overlay_line))
-  expect_true(!is.na(yaml_end))
-  expect_true(overlay_line > yaml_end)
-})
-
-test_that("overlay chunk uses correct theme", {
-  proj <- create_dashboard("test", output_dir = tempdir())
-  proj <- add_dashboard_page(proj, "Home", text = "# Home", 
-                            is_landing_page = TRUE, 
-                            overlay = TRUE,
-                            overlay_theme = "accent")
-  
-  generate_dashboard(proj, render = FALSE)
-  
-  qmd_content <- readLines(file.path(tempdir(), "index.qmd"))
-  qmd_text <- paste(qmd_content, collapse = "\n")
-  
-  expect_true(grepl('theme = "accent"', qmd_text, fixed = TRUE))
-})
-
-test_that("overlay chunk uses correct text", {
-  proj <- create_dashboard("test", output_dir = tempdir())
-  proj <- add_dashboard_page(proj, "Home", text = "# Home", 
-                            is_landing_page = TRUE,
-                            overlay = TRUE,
-                            overlay_text = "Please wait...")
-  
-  generate_dashboard(proj, render = FALSE)
-  
-  qmd_content <- readLines(file.path(tempdir(), "index.qmd"))
-  qmd_text <- paste(qmd_content, collapse = "\n")
-  
-  # Check for custom text (no longer checks for Dutch text that was removed)
-  expect_true(grepl('"Please wait..."', qmd_text, fixed = TRUE))
-})
-
-test_that("overlay chunk contains complete function definition", {
-  skip("Test checks specific CSS implementation details that may change")
-  proj <- create_dashboard("test", output_dir = tempdir())
-  proj <- add_dashboard_page(proj, "Home", text = "# Home", 
-                            is_landing_page = TRUE, overlay = TRUE)
-  
-  generate_dashboard(proj, render = FALSE)
-  
-  qmd_content <- readLines(file.path(tempdir(), "index.qmd"))
-  qmd_text <- paste(qmd_content, collapse = "\n")
-  
-  # Check that overlay function exists at all
-  expect_true(grepl("create_loading_overlay", qmd_text, fixed = TRUE))
-})
-
-test_that("overlay works with non-landing pages", {
-  proj <- create_dashboard("test", output_dir = tempdir())
-  proj <- add_dashboard_page(proj, "Home", text = "# Home", is_landing_page = TRUE)
-  proj <- add_dashboard_page(proj, "Analysis", text = "# Analysis", 
-                            overlay = TRUE, overlay_theme = "glass")
-  
-  generate_dashboard(proj, render = FALSE)
-  
-  qmd_content <- readLines(file.path(tempdir(), "analysis.qmd"))
-  qmd_text <- paste(qmd_content, collapse = "\n")
-  
-  expect_true(grepl("create_loading_overlay", qmd_text, fixed = TRUE))
-  expect_true(grepl('theme = "glass"', qmd_text, fixed = TRUE))
-})
-

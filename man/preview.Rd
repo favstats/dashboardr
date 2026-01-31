@@ -13,7 +13,8 @@ preview(
   theme = "cosmo",
   path = NULL,
   page = NULL,
-  debug = FALSE
+  debug = FALSE,
+  output = c("viewer", "widget")
 )
 }
 \arguments{
@@ -47,9 +48,14 @@ a file path ending in .html.}
 When NULL, previews all pages. When specified, previews only the named page.}
 
 \item{debug}{Whether to show debug messages like file paths (default: FALSE).}
+
+\item{output}{Output mode: "viewer" (default) opens in RStudio viewer/browser,
+"widget" returns an htmltools widget that can be saved as self-contained HTML
+with \code{save_widget()} or embedded in R Markdown/Quarto documents.}
 }
 \value{
-Invisibly returns the path to the generated HTML file.
+For output="viewer": invisibly returns the path to the generated HTML file.
+For output="widget": returns a dashboardr_widget object that can be saved or embedded.
 }
 \description{
 Universal preview function that renders any dashboardr object to HTML and
@@ -122,5 +128,12 @@ my_viz \%>\% preview(path = "~/Desktop/my_preview.html")
 
 # Preview without opening (just render)
 html_path <- my_viz \%>\% preview(open = FALSE)
+
+# Return as widget (for embedding in R Markdown or saving as self-contained HTML)
+widget <- my_viz \%>\% preview(output = "widget")
+htmltools::save_html(widget, "my_chart.html", selfcontained = TRUE)
+
+# In R Markdown/Quarto, widgets display inline automatically
+my_viz \%>\% preview(output = "widget")
 }
 }

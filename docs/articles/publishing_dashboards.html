@@ -67,17 +67,18 @@
     <li><a class="dropdown-item" href="../articles/content-collections.html">- Content</a></li>
     <li><a class="dropdown-item" href="../articles/pages.html">- Pages</a></li>
     <li><a class="dropdown-item" href="../articles/dashboards.html">- Dashboards</a></li>
+    <li><a class="dropdown-item" href="../articles/publishing_dashboards.html">🌐 Publishing Dashboards</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><a class="dropdown-item" href="../articles/advanced-features.html">⚙️ Advanced Features</a></li>
-    <li><a class="dropdown-item" href="../articles/publishing_dashboards.html">🌐 Publishing Dashboards</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>📊 Visualization Types</h6></li>
     <li><a class="dropdown-item" href="../articles/bar_vignette.html">- Bar Charts</a></li>
     <li><a class="dropdown-item" href="../articles/timeline_vignette.html">- Timelines</a></li>
     <li><a class="dropdown-item" href="../articles/stackedbar_vignette.html">- Stacked Bars</a></li>
-    <li><a class="dropdown-item" href="../articles/stackedbars_vignette.html">- Stacked Bars (Multiple)</a></li>
     <li><a class="dropdown-item" href="../articles/heatmap_vignette.html">- Heatmaps</a></li>
     <li><a class="dropdown-item" href="../articles/histogram_vignette.html">- Histograms</a></li>
+    <li><a class="dropdown-item" href="../articles/density_vignette.html">- Density Plots</a></li>
+    <li><a class="dropdown-item" href="../articles/boxplot_vignette.html">- Box Plots</a></li>
     <li><a class="dropdown-item" href="../articles/scatter_vignette.html">- Scatter Plots</a></li>
     <li><a class="dropdown-item" href="../articles/treemap_vignette.html">- Treemaps</a></li>
     <li><a class="dropdown-item" href="../articles/map_vignette.html">- Maps</a></li>
@@ -186,7 +187,7 @@ Pages</li>
 </ol>
 </blockquote>
 <div class="section level3">
-<h3 id="what-youll-learn">What You’ll Learn<a class="anchor" aria-label="anchor" href="#what-youll-learn"></a>
+<h3 id="what-youll-learn">📖 What You’ll Learn<a class="anchor" aria-label="anchor" href="#what-youll-learn"></a>
 </h3>
 <p>By the end of this guide, you’ll be able to:</p>
 <ul>
@@ -196,7 +197,7 @@ Pages</li>
 </ul>
 </div>
 <div class="section level3">
-<h3 id="prerequisites">Prerequisites<a class="anchor" aria-label="anchor" href="#prerequisites"></a>
+<h3 id="prerequisites">⚙️ Prerequisites<a class="anchor" aria-label="anchor" href="#prerequisites"></a>
 </h3>
 <p>You need:</p>
 <ul>
@@ -217,10 +218,10 @@ Dashboard</a>.</p>
 </blockquote>
 </div>
 <div class="section level2">
-<h2 id="part-1-one-time-setup-do-this-once">Part 1: One-Time Setup (Do This Once)<a class="anchor" aria-label="anchor" href="#part-1-one-time-setup-do-this-once"></a>
+<h2 id="part-1-one-time-setup-do-this-once">🔧 Part 1: One-Time Setup (Do This Once)<a class="anchor" aria-label="anchor" href="#part-1-one-time-setup-do-this-once"></a>
 </h2>
 <div class="section level3">
-<h3 id="step-1-install-git-on-your-computer">Step 1: Install Git on Your Computer<a class="anchor" aria-label="anchor" href="#step-1-install-git-on-your-computer"></a>
+<h3 id="step-1-install-git-on-your-computer">💻 Step 1: Install Git on Your Computer<a class="anchor" aria-label="anchor" href="#step-1-install-git-on-your-computer"></a>
 </h3>
 <p>Git is the tool that tracks changes to your files. It needs to be
 installed before R can use it.</p>
@@ -257,7 +258,7 @@ installed before R can use it.</p>
 </div>
 </div>
 <div class="section level3">
-<h3 id="step-2-tell-git-who-you-are">Step 2: Tell Git Who You Are<a class="anchor" aria-label="anchor" href="#step-2-tell-git-who-you-are"></a>
+<h3 id="step-2-tell-git-who-you-are">👤 Step 2: Tell Git Who You Are<a class="anchor" aria-label="anchor" href="#step-2-tell-git-who-you-are"></a>
 </h3>
 <p>Git needs to know your name and email. Run this in R with
 <strong>your</strong> information:</p>
@@ -272,7 +273,7 @@ installed before R can use it.</p>
 GitHub.</p>
 </div>
 <div class="section level3">
-<h3 id="step-3-check-everything-works">Step 3: Check Everything Works<a class="anchor" aria-label="anchor" href="#step-3-check-everything-works"></a>
+<h3 id="step-3-check-everything-works">✅ Step 3: Check Everything Works<a class="anchor" aria-label="anchor" href="#step-3-check-everything-works"></a>
 </h3>
 <p>Run this command to verify your setup:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
@@ -285,7 +286,7 @@ GitHub.</p>
 </ul>
 </div>
 <div class="section level3">
-<h3 id="step-4-create-a-github-account">Step 4: Create a GitHub Account<a class="anchor" aria-label="anchor" href="#step-4-create-a-github-account"></a>
+<h3 id="step-4-create-a-github-account">🌐 Step 4: Create a GitHub Account<a class="anchor" aria-label="anchor" href="#step-4-create-a-github-account"></a>
 </h3>
 <p>GitHub will host your dashboard for free.</p>
 <ol style="list-style-type: decimal">
@@ -298,7 +299,7 @@ dashboard URL!)</li>
 </ol>
 </div>
 <div class="section level3">
-<h3 id="step-5-set-up-authentication">Step 5: Set Up Authentication<a class="anchor" aria-label="anchor" href="#step-5-set-up-authentication"></a>
+<h3 id="step-5-set-up-authentication">🔐 Step 5: Set Up Authentication<a class="anchor" aria-label="anchor" href="#step-5-set-up-authentication"></a>
 </h3>
 <p>GitHub needs a way to verify it’s really you. We’ll create a Personal
 Access Token (PAT).</p>
@@ -337,11 +338,11 @@ never have to do these steps again.</p>
 </div>
 </div>
 <div class="section level2">
-<h2 id="part-2-publishing-your-dashboard">Part 2: Publishing Your Dashboard<a class="anchor" aria-label="anchor" href="#part-2-publishing-your-dashboard"></a>
+<h2 id="part-2-publishing-your-dashboard">🚀 Part 2: Publishing Your Dashboard<a class="anchor" aria-label="anchor" href="#part-2-publishing-your-dashboard"></a>
 </h2>
 <p>Now comes the fun part - publishing your dashboard!</p>
 <div class="section level3">
-<h3 id="step-1-generate-your-dashboard">Step 1: Generate Your Dashboard<a class="anchor" aria-label="anchor" href="#step-1-generate-your-dashboard"></a>
+<h3 id="step-1-generate-your-dashboard">📊 Step 1: Generate Your Dashboard<a class="anchor" aria-label="anchor" href="#step-1-generate-your-dashboard"></a>
 </h3>
 <p>First, create and render your dashboard as usual:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
@@ -368,7 +369,7 @@ never have to do these steps again.</p>
 <span><span class="fu"><a href="../reference/generate_dashboard.html">generate_dashboard</a></span><span class="op">(</span><span class="va">dashboard</span>, render <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
-<h3 id="step-2-publish">Step 2: Publish!<a class="anchor" aria-label="anchor" href="#step-2-publish"></a>
+<h3 id="step-2-publish">🌍 Step 2: Publish!<a class="anchor" aria-label="anchor" href="#step-2-publish"></a>
 </h3>
 <p>Now for the magic command with the key arguments shown
 explicitly:</p>
@@ -456,7 +457,7 @@ dashboard!</p>
 </div>
 </div>
 <div class="section level3">
-<h3 id="additional-options">Additional Options<a class="anchor" aria-label="anchor" href="#additional-options"></a>
+<h3 id="additional-options">⚙️ Additional Options<a class="anchor" aria-label="anchor" href="#additional-options"></a>
 </h3>
 <p>For more advanced scenarios:</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
@@ -471,12 +472,12 @@ dashboard!</p>
 </div>
 </div>
 <div class="section level2">
-<h2 id="part-3-updating-your-dashboard">Part 3: Updating Your Dashboard<a class="anchor" aria-label="anchor" href="#part-3-updating-your-dashboard"></a>
+<h2 id="part-3-updating-your-dashboard">🔄 Part 3: Updating Your Dashboard<a class="anchor" aria-label="anchor" href="#part-3-updating-your-dashboard"></a>
 </h2>
 <p>Made changes to your dashboard? Here’s how to update the published
 version.</p>
 <div class="section level3">
-<h3 id="step-1-regenerate-your-dashboard">Step 1: Regenerate Your Dashboard<a class="anchor" aria-label="anchor" href="#step-1-regenerate-your-dashboard"></a>
+<h3 id="step-1-regenerate-your-dashboard">📊 Step 1: Regenerate Your Dashboard<a class="anchor" aria-label="anchor" href="#step-1-regenerate-your-dashboard"></a>
 </h3>
 <p>Make your changes and regenerate:</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
@@ -496,7 +497,7 @@ version.</p>
 <span><span class="fu"><a href="../reference/generate_dashboard.html">generate_dashboard</a></span><span class="op">(</span><span class="va">dashboard</span>, render <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
-<h3 id="step-2-push-your-updates">Step 2: Push Your Updates<a class="anchor" aria-label="anchor" href="#step-2-push-your-updates"></a>
+<h3 id="step-2-push-your-updates">⬆️ Step 2: Push Your Updates<a class="anchor" aria-label="anchor" href="#step-2-push-your-updates"></a>
 </h3>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/update_dashboard.html">update_dashboard</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
@@ -541,7 +542,7 @@ see your updates.</p>
 </div>
 </div>
 <div class="section level2">
-<h2 id="complete-workflow-example">Complete Workflow Example<a class="anchor" aria-label="anchor" href="#complete-workflow-example"></a>
+<h2 id="complete-workflow-example">📋 Complete Workflow Example<a class="anchor" aria-label="anchor" href="#complete-workflow-example"></a>
 </h2>
 <p>Here’s a full example from start to finish:</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
@@ -578,7 +579,7 @@ see your updates.</p>
 <span><span class="fu"><a href="../reference/update_dashboard.html">update_dashboard</a></span><span class="op">(</span>message <span class="op">=</span> <span class="st">"Updated car analysis"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="troubleshooting">Troubleshooting<a class="anchor" aria-label="anchor" href="#troubleshooting"></a>
+<h2 id="troubleshooting">🔧 Troubleshooting<a class="anchor" aria-label="anchor" href="#troubleshooting"></a>
 </h2>
 <div class="section level3">
 <h3 id="error-no-github-token">“Error: No GitHub token”<a class="anchor" aria-label="anchor" href="#error-no-github-token"></a>
@@ -633,7 +634,7 @@ data files match the patterns (<em>.csv, </em>.rds, etc.) 3. Large files
 </div>
 </div>
 <div class="section level2">
-<h2 id="tips-and-best-practices">Tips and Best Practices<a class="anchor" aria-label="anchor" href="#tips-and-best-practices"></a>
+<h2 id="tips-and-best-practices">💡 Tips and Best Practices<a class="anchor" aria-label="anchor" href="#tips-and-best-practices"></a>
 </h2>
 <div class="section level3">
 <h3 id="keep-data-out-of-git">1. Keep Data Out of Git<a class="anchor" aria-label="anchor" href="#keep-data-out-of-git"></a>
@@ -674,7 +675,7 @@ verify the changes appear correctly.</p>
 </div>
 </div>
 <div class="section level2">
-<h2 id="next-steps">Next Steps<a class="anchor" aria-label="anchor" href="#next-steps"></a>
+<h2 id="next-steps">➡️ Next Steps<a class="anchor" aria-label="anchor" href="#next-steps"></a>
 </h2>
 <p>Now that your dashboard is published, you can:</p>
 <ul>

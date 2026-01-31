@@ -350,9 +350,14 @@ density = list(
     example = 'add_viz(type = "stackedbars", x_vars = c("q1", "q2", "q3"))'
   ),
   stackedbar = list(
-    required = c("x_var", "stack_var"),
-    column_params = c("x_var", "y_var", "stack_var", "weight_var"),
-    example = 'add_viz(type = "stackedbar", x_var = "age_group", stack_var = "gender")'
+    # Unified function: requires EITHER (x_var + stack_var) OR x_vars
+    required = c(),  # No single required set - use required_alternatives
+    required_alternatives = list(
+      c("x_var", "stack_var"),  # Crosstab mode
+      c("x_vars")               # Multi-variable mode
+    ),
+    column_params = c("x_var", "y_var", "stack_var", "x_vars", "weight_var"),
+    example = 'add_viz(type = "stackedbar", x_var = "age_group", stack_var = "gender") OR add_viz(type = "stackedbar", x_vars = c("q1", "q2", "q3"))'
   ),
   map = list(
     required = c("value_var"),
@@ -405,16 +410,49 @@ density = list(
   
   # Check required parameters
   missing_params <- character(0)
-  for (param in registry$required) {
-    value <- spec[[param]]
-    if (is.null(value) || (is.character(value) && length(value) == 1 && value == "")) {
-      missing_params <- c(missing_params, param)
-    }
-  }
   
-  if (length(missing_params) > 0) {
-    for (param in missing_params) {
-      issues <- c(issues, paste0("'", param, "' parameter is required for viz_", viz_type))
+  # Handle required_alternatives (for functions like stackedbar that support multiple modes)
+  if (!is.null(registry$required_alternatives) && length(registry$required_alternatives) > 0) {
+    # Check if ANY alternative set of requirements is satisfied
+    any_satisfied <- FALSE
+    for (alt in registry$required_alternatives) {
+      all_present <- TRUE
+      for (param in alt) {
+        value <- spec[[param]]
+        if (is.null(value) || (is.character(value) && length(value) == 1 && value == "")) {
+          all_present <- FALSE
+          break
+        }
+      }
+      if (all_present) {
+        any_satisfied <- TRUE
+        break
+      }
+    }
+    
+    if (!any_satisfied) {
+      # Format helpful error message showing the alternatives
+      alt_msgs <- sapply(registry$required_alternatives, function(alt) {
+        paste0("(", paste(alt, collapse = " + "), ")")
+      })
+      issues <- c(issues, paste0(
+        "viz_", viz_type, " requires one of: ",
+        paste(alt_msgs, collapse = " OR ")
+      ))
+    }
+  } else {
+    # Standard required parameter check
+    for (param in registry$required) {
+      value <- spec[[param]]
+      if (is.null(value) || (is.character(value) && length(value) == 1 && value == "")) {
+        missing_params <- c(missing_params, param)
+      }
+    }
+    
+    if (length(missing_params) > 0) {
+      for (param in missing_params) {
+        issues <- c(issues, paste0("'", param, "' parameter is required for viz_", viz_type))
+      }
     }
   }
   

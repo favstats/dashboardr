@@ -20,6 +20,7 @@ viz_map(
   na_color = "#E0E0E0",
   click_url_template = NULL,
   click_var = NULL,
+  tooltip = NULL,
   tooltip_vars = NULL,
   tooltip_format = NULL,
   height = 500,
@@ -82,13 +83,23 @@ viz_map(
 
   Variable to use in click URL (defaults to join_var)
 
+- tooltip:
+
+  A tooltip configuration created with
+  [`tooltip()`](https://favstats.github.io/dashboardr/reference/tooltip.md),
+  OR a format string with {placeholders}. Available placeholders:
+  `{name}`, `{value}`. See
+  [`tooltip`](https://favstats.github.io/dashboardr/reference/tooltip.md)
+  for full customization options.
+
 - tooltip_vars:
 
-  Character vector of variables to show in tooltip
+  Character vector of variables to show in tooltip (legacy).
 
 - tooltip_format:
 
-  Custom tooltip format string (overrides tooltip_vars)
+  Custom tooltip format string using Highcharts syntax (legacy). For the
+  simpler dashboardr placeholder syntax, use `tooltip` instead.
 
 - height:
 

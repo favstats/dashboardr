@@ -16,9 +16,9 @@ n_per_country <- 250
 countries <- c("DE", "NL", "ES", "PL")
 
 # German states
-de_states <- c("Baden-Württemberg", "Bayern", "Berlin", "Brandenburg", "Bremen", 
-               "Hamburg", "Hessen", "Mecklenburg-Vorpommern", "Niedersachsen", 
-               "Nordrhein-Westfalen", "Rheinland-Pfalz", "Saarland", "Sachsen", 
+de_states <- c("Baden-Württemberg", "Bayern", "Berlin", "Brandenburg", "Bremen",
+               "Hamburg", "Hessen", "Mecklenburg-Vorpommern", "Niedersachsen",
+               "Nordrhein-Westfalen", "Rheinland-Pfalz", "Saarland", "Sachsen",
                "Sachsen-Anhalt", "Schleswig-Holstein", "Thüringen")
 
 # Dutch provinces
@@ -27,15 +27,15 @@ nl_states <- c("Groningen", "Friesland", "Drenthe", "Overijssel", "Gelderland",
                "Noord-Brabant", "Limburg")
 
 # Spanish regions
-es_states <- c("Andalucía", "Aragón", "Cantabria", "Castilla y León", 
-               "Castilla-La Mancha", "Cataluña", "Comunidad Valenciana", 
-               "Comunidad de Madrid", "Extremadura", "Galicia", 
+es_states <- c("Andalucía", "Aragón", "Cantabria", "Castilla y León",
+               "Castilla-La Mancha", "Cataluña", "Comunidad Valenciana",
+               "Comunidad de Madrid", "Extremadura", "Galicia",
                "Islas Baleares", "Islas Canarias", "País Vasco")
 
 # Polish voivodeships
 pl_states <- c("Dolnośląskie", "Kujawsko-Pomorskie", "Lubelskie", "Lubuskie",
                "Łódzkie", "Małopolskie", "Mazowieckie", "Opolskie", "Podkarpackie",
-               "Podlaskie", "Pomorskie", "Śląskie", "Świętokrzyskie", 
+               "Podlaskie", "Pomorskie", "Śląskie", "Świętokrzyskie",
                "Warmińsko-Mazurskie", "Wielkopolskie", "Zachodniopomorskie")
 
 # Generate data for each country
@@ -43,14 +43,14 @@ generate_country_data <- function(country_code, states, n) {
   tibble(
     country = country_code,
     q001 = factor(sample(c("Male", "Female"), n, replace = TRUE, prob = c(0.48, 0.52))),
-    q002 = factor(sample(c("18-24 years", "25-34 years", "35-44 years", 
-                           "45-54 years", "55-64 years", "65+"), 
-                         n, replace = TRUE, 
+    q002 = factor(sample(c("18-24 years", "25-34 years", "35-44 years",
+                           "45-54 years", "55-64 years", "65+"),
+                         n, replace = TRUE,
                          prob = c(0.12, 0.18, 0.18, 0.18, 0.17, 0.17)),
-                  levels = c("18-24 years", "25-34 years", "35-44 years", 
+                  levels = c("18-24 years", "25-34 years", "35-44 years",
                              "45-54 years", "55-64 years", "65+")),
     q003 = sample(states, n, replace = TRUE),
-    q004_recoded = factor(sample(c("Low", "Middle", "High"), n, replace = TRUE, 
+    q004_recoded = factor(sample(c("Low", "Middle", "High"), n, replace = TRUE,
                                   prob = c(0.3, 0.45, 0.25)),
                           levels = c("Low", "Middle", "High")),
     ad03 = factor(sample(c("Not at all useful", "Slightly useful", "Moderately useful",
@@ -88,47 +88,47 @@ cat("Countries:", paste(unique(dat$country), collapse = ", "), "\n\n")
 demographics <- create_content(data = dat, type = "bar") %>%
   add_text("This is a very preliminary visualization of our data yippie.") %>%
   # Gender - 3 levels: Demographics > Gender > [Country tabs via title]
-  add_viz(x_var = "q001", title = "Germany", tabgroup = "Demographics/Gender", 
+  add_viz(x_var = "q001", title = "Germany", tabgroup = "Demographics/Gender",
           filter = ~ country == "DE", x_label = "Gender") %>%
-  add_viz(x_var = "q001", title = "Netherlands", tabgroup = "Demographics/Gender", 
+  add_viz(x_var = "q001", title = "Netherlands", tabgroup = "Demographics/Gender",
           filter = ~ country == "NL", x_label = "Gender") %>%
-  add_viz(x_var = "q001", title = "Spain", tabgroup = "Demographics/Gender", 
+  add_viz(x_var = "q001", title = "Spain", tabgroup = "Demographics/Gender",
           filter = ~ country == "ES", x_label = "Gender") %>%
-  add_viz(x_var = "q001", title = "Poland", tabgroup = "Demographics/Gender", 
+  add_viz(x_var = "q001", title = "Poland", tabgroup = "Demographics/Gender",
           filter = ~ country == "PL", x_label = "Gender") %>%
   # Age - 3 levels: Demographics > Age > [Country tabs via title]
-  add_viz(x_var = "q002", title = "Germany", tabgroup = "Demographics/Age", 
+  add_viz(x_var = "q002", title = "Germany", tabgroup = "Demographics/Age",
           filter = ~ country == "DE", x_label = "Age") %>%
-  add_viz(x_var = "q002", title = "Netherlands", tabgroup = "Demographics/Age", 
+  add_viz(x_var = "q002", title = "Netherlands", tabgroup = "Demographics/Age",
           filter = ~ country == "NL", x_label = "Age") %>%
-  add_viz(x_var = "q002", title = "Spain", tabgroup = "Demographics/Age", 
+  add_viz(x_var = "q002", title = "Spain", tabgroup = "Demographics/Age",
           filter = ~ country == "ES", x_label = "Age") %>%
-  add_viz(x_var = "q002", title = "Poland", tabgroup = "Demographics/Age", 
+  add_viz(x_var = "q002", title = "Poland", tabgroup = "Demographics/Age",
           filter = ~ country == "PL", x_label = "Age") %>%
   # State - 3 levels: Demographics > State > [Country tabs via title]
-  add_viz(x_var = "q003", title = "Germany", tabgroup = "Demographics/State", 
+  add_viz(x_var = "q003", title = "Germany", tabgroup = "Demographics/State",
           filter = ~ country == "DE", x_label = "State") %>%
-  add_viz(x_var = "q003", title = "Netherlands", tabgroup = "Demographics/State", 
+  add_viz(x_var = "q003", title = "Netherlands", tabgroup = "Demographics/State",
           filter = ~ country == "NL", x_label = "State") %>%
-  add_viz(x_var = "q003", title = "Spain", tabgroup = "Demographics/State", 
+  add_viz(x_var = "q003", title = "Spain", tabgroup = "Demographics/State",
           filter = ~ country == "ES", x_label = "State") %>%
-  add_viz(x_var = "q003", title = "Poland", tabgroup = "Demographics/State", 
+  add_viz(x_var = "q003", title = "Poland", tabgroup = "Demographics/State",
           filter = ~ country == "PL", x_label = "State") %>%
   # Education - 3 levels: Demographics > Education > [Country tabs via title]
-  add_viz(x_var = "q004_recoded", title = "Germany", tabgroup = "Demographics/Education", 
+  add_viz(x_var = "q004_recoded", title = "Germany", tabgroup = "Demographics/Education",
           filter = ~ country == "DE", x_label = "Education") %>%
-  add_viz(x_var = "q004_recoded", title = "Netherlands", tabgroup = "Demographics/Education", 
+  add_viz(x_var = "q004_recoded", title = "Netherlands", tabgroup = "Demographics/Education",
           filter = ~ country == "NL", x_label = "Education") %>%
-  add_viz(x_var = "q004_recoded", title = "Spain", tabgroup = "Demographics/Education", 
+  add_viz(x_var = "q004_recoded", title = "Spain", tabgroup = "Demographics/Education",
           filter = ~ country == "ES", x_label = "Education") %>%
-  add_viz(x_var = "q004_recoded", title = "Poland", tabgroup = "Demographics/Education", 
+  add_viz(x_var = "q004_recoded", title = "Poland", tabgroup = "Demographics/Education",
           filter = ~ country == "PL", x_label = "Education")
 
 # Attitudes - also nested: Attitudes > [subtabs]
 attitudes <- create_content(data = dat, type = "stackedbar") %>%
-  add_viz(x_var = "ad03", stack_var = "country", title = "Gen-AI Use", 
+  add_viz(x_var = "ad03", stack_var = "country", title = "Gen-AI Use",
           tabgroup = "Attitudes") %>%
-  add_viz(x_var = "g112_01", stack_var = "country", title = "Left-Right Attitude", 
+  add_viz(x_var = "g112_01", stack_var = "country", title = "Left-Right Attitude",
           tabgroup = "Attitudes")
 
 # Create pages - EXACT structure from user's code
@@ -137,7 +137,7 @@ analysis <- create_page("Analysis", data = dat, icon = "ph:chart-bar", is_landin
   add_content(attitudes)
 
 about <- create_page("About", navbar_align = "right", icon = "ph:info") %>%
-  add_text("## About", "", 
+  add_text("## About", "",
            "This is a test dashboard for the tabset scroll jumping fix.", "",
            "Built with [dashboardr](https://github.com/favstats/dashboardr)")
 
@@ -146,13 +146,13 @@ about <- create_page("About", navbar_align = "right", icon = "ph:info") %>%
 # ============================================
 
 # Clean up old output
-output_dir <- "test_scroll_jumping"
+output_dir <- "test_scroll_jumping8"
 if (dir.exists(output_dir)) {
   unlink(output_dir, recursive = TRUE)
 }
 
 my_dashboard <- create_dashboard(
-  title = "Scroll Jump Test", 
+  title = "Scroll Jump Test",
   output_dir = output_dir,
   theme = "flatly",
   tabset_theme = "segmented"  # Test with segmented theme

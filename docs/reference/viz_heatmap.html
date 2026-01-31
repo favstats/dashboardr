@@ -53,17 +53,18 @@ as explicit categories."><style>
     <li><a class="dropdown-item" href="../articles/content-collections.html">- Content</a></li>
     <li><a class="dropdown-item" href="../articles/pages.html">- Pages</a></li>
     <li><a class="dropdown-item" href="../articles/dashboards.html">- Dashboards</a></li>
+    <li><a class="dropdown-item" href="../articles/publishing_dashboards.html">🌐 Publishing Dashboards</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><a class="dropdown-item" href="../articles/advanced-features.html">⚙️ Advanced Features</a></li>
-    <li><a class="dropdown-item" href="../articles/publishing_dashboards.html">🌐 Publishing Dashboards</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>📊 Visualization Types</h6></li>
     <li><a class="dropdown-item" href="../articles/bar_vignette.html">- Bar Charts</a></li>
     <li><a class="dropdown-item" href="../articles/timeline_vignette.html">- Timelines</a></li>
     <li><a class="dropdown-item" href="../articles/stackedbar_vignette.html">- Stacked Bars</a></li>
-    <li><a class="dropdown-item" href="../articles/stackedbars_vignette.html">- Stacked Bars (Multiple)</a></li>
     <li><a class="dropdown-item" href="../articles/heatmap_vignette.html">- Heatmaps</a></li>
     <li><a class="dropdown-item" href="../articles/histogram_vignette.html">- Histograms</a></li>
+    <li><a class="dropdown-item" href="../articles/density_vignette.html">- Density Plots</a></li>
+    <li><a class="dropdown-item" href="../articles/boxplot_vignette.html">- Box Plots</a></li>
     <li><a class="dropdown-item" href="../articles/scatter_vignette.html">- Scatter Plots</a></li>
     <li><a class="dropdown-item" href="../articles/treemap_vignette.html">- Treemaps</a></li>
     <li><a class="dropdown-item" href="../articles/map_vignette.html">- Maps</a></li>
@@ -113,6 +114,7 @@ as explicit categories.</p>
 <span>  x_label <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  y_label <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  value_label <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  tooltip <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  tooltip_prefix <span class="op">=</span> <span class="st">""</span>,</span>
 <span>  tooltip_suffix <span class="op">=</span> <span class="st">""</span>,</span>
 <span>  x_tooltip_suffix <span class="op">=</span> <span class="st">""</span>,</span>
@@ -180,12 +182,19 @@ determine the color intensity.</p></dd>
 <dd><p>Optional string. Label for the color axis. Defaults to <code>value_var</code>.</p></dd>
 
 
+<dt id="arg-tooltip">tooltip<a class="anchor" aria-label="anchor" href="#arg-tooltip"></a></dt>
+<dd><p>A tooltip configuration created with <code><a href="tooltip.html">tooltip()</a></code>,
+OR a format string with {placeholders}. Available placeholders:
+<code>{x}</code>, <code>{y}</code>, <code>{value}</code>, <code>{name}</code>.
+See <code><a href="tooltip.html">tooltip</a></code> for full customization options.</p></dd>
+
+
 <dt id="arg-tooltip-prefix">tooltip_prefix<a class="anchor" aria-label="anchor" href="#arg-tooltip-prefix"></a></dt>
-<dd><p>Optional string prepended in the tooltip value.</p></dd>
+<dd><p>Optional string prepended in the tooltip value (simple customization).</p></dd>
 
 
 <dt id="arg-tooltip-suffix">tooltip_suffix<a class="anchor" aria-label="anchor" href="#arg-tooltip-suffix"></a></dt>
-<dd><p>Optional string appended in the tooltip value.</p></dd>
+<dd><p>Optional string appended in the tooltip value (simple customization).</p></dd>
 
 
 <dt id="arg-x-tooltip-suffix">x_tooltip_suffix<a class="anchor" aria-label="anchor" href="#arg-x-tooltip-suffix"></a></dt>
@@ -312,7 +321,7 @@ filling missing <code>value_var</code> with <code>NA_real_</code> (which will ap
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Load the dataset</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">gss_panel20</span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>data set ‘gss_panel20’ not found</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>data set 'gss_panel20' not found</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Example 1: Basic heatmap – no mapped values or other customization</span></span></span>
 <span class="r-in"><span><span class="fu">viz_heatmap</span><span class="op">(</span></span></span>

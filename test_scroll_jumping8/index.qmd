@@ -1,0 +1,373 @@
+---
+title: "{{< iconify ph chart-bar >}} Analysis"
+format: html
+---
+
+```{r, include=FALSE}
+# Initialize dashboardr page configuration (CSS/JS for charts)
+dashboardr:::.page_config()
+```
+
+```{r setup}
+#| echo: false
+#| warning: false
+#| message: false
+#| error: false
+#| results: 'hide'
+
+# Load dashboardr (includes dplyr, highcharter as dependencies)
+library(dashboardr)
+
+# Global chunk options
+knitr::opts_chunk$set(
+  echo = FALSE,
+  warning = FALSE,
+  message = FALSE,
+  error = FALSE,
+  fig.width = 12,
+  fig.height = 8,
+  dpi = 300
+)
+
+# Load data
+data <- readRDS('dataset_1000obs.rds')
+
+# Data summary
+cat('Dataset loaded:', nrow(data), 'rows,', ncol(data), 'columns\n')
+
+# Create filtered datasets
+# Each filter is applied once and reused across visualizations
+
+data_filtered_7a2890a3 <- dashboardr:::.convert_haven(data) %>% dplyr::filter(country == "DE")
+data_filtered_c4fa1a8d <- dashboardr:::.convert_haven(data) %>% dplyr::filter(country == "NL")
+data_filtered_74ed31ac <- dashboardr:::.convert_haven(data) %>% dplyr::filter(country == "ES")
+data_filtered_d4a98b5c <- dashboardr:::.convert_haven(data) %>% dplyr::filter(country == "PL")
+
+```
+
+
+This is a very preliminary visualization of our data yippie.
+
+
+::: {.panel-tabset}
+
+### Demographics
+
+
+::: {.panel-tabset}
+
+##### Gender
+
+
+::: {.panel-tabset}
+
+###### Germany
+
+```{r demographics-gender}
+# Germany
+result <- viz_bar(
+  data = data_filtered_7a2890a3,
+  title = "Germany",
+  x_var = "q001",
+  x_label = "Gender"
+)
+
+result
+```
+
+
+###### Netherlands
+
+```{r demographics-gender-2}
+# Netherlands
+result <- viz_bar(
+  data = data_filtered_c4fa1a8d,
+  title = "Netherlands",
+  x_var = "q001",
+  x_label = "Gender"
+)
+
+result
+```
+
+
+###### Spain
+
+```{r demographics-gender-3}
+# Spain
+result <- viz_bar(
+  data = data_filtered_74ed31ac,
+  title = "Spain",
+  x_var = "q001",
+  x_label = "Gender"
+)
+
+result
+```
+
+
+###### Poland
+
+```{r demographics-gender-4}
+# Poland
+result <- viz_bar(
+  data = data_filtered_d4a98b5c,
+  title = "Poland",
+  x_var = "q001",
+  x_label = "Gender"
+)
+
+result
+```
+
+
+:::
+
+
+##### Age
+
+
+::: {.panel-tabset}
+
+###### Germany
+
+```{r demographics-age}
+# Germany
+result <- viz_bar(
+  data = data_filtered_7a2890a3,
+  title = "Germany",
+  x_var = "q002",
+  x_label = "Age"
+)
+
+result
+```
+
+
+###### Netherlands
+
+```{r demographics-age-2}
+# Netherlands
+result <- viz_bar(
+  data = data_filtered_c4fa1a8d,
+  title = "Netherlands",
+  x_var = "q002",
+  x_label = "Age"
+)
+
+result
+```
+
+
+###### Spain
+
+```{r demographics-age-3}
+# Spain
+result <- viz_bar(
+  data = data_filtered_74ed31ac,
+  title = "Spain",
+  x_var = "q002",
+  x_label = "Age"
+)
+
+result
+```
+
+
+###### Poland
+
+```{r demographics-age-4}
+# Poland
+result <- viz_bar(
+  data = data_filtered_d4a98b5c,
+  title = "Poland",
+  x_var = "q002",
+  x_label = "Age"
+)
+
+result
+```
+
+
+:::
+
+
+##### State
+
+
+::: {.panel-tabset}
+
+###### Germany
+
+```{r demographics-state}
+# Germany
+result <- viz_bar(
+  data = data_filtered_7a2890a3,
+  title = "Germany",
+  x_var = "q003",
+  x_label = "State"
+)
+
+result
+```
+
+
+###### Netherlands
+
+```{r demographics-state-2}
+# Netherlands
+result <- viz_bar(
+  data = data_filtered_c4fa1a8d,
+  title = "Netherlands",
+  x_var = "q003",
+  x_label = "State"
+)
+
+result
+```
+
+
+###### Spain
+
+```{r demographics-state-3}
+# Spain
+result <- viz_bar(
+  data = data_filtered_74ed31ac,
+  title = "Spain",
+  x_var = "q003",
+  x_label = "State"
+)
+
+result
+```
+
+
+###### Poland
+
+```{r demographics-state-4}
+# Poland
+result <- viz_bar(
+  data = data_filtered_d4a98b5c,
+  title = "Poland",
+  x_var = "q003",
+  x_label = "State"
+)
+
+result
+```
+
+
+:::
+
+
+##### Education
+
+
+::: {.panel-tabset}
+
+###### Germany
+
+```{r demographics-education}
+# Germany
+result <- viz_bar(
+  data = data_filtered_7a2890a3,
+  title = "Germany",
+  x_var = "q004_recoded",
+  x_label = "Education"
+)
+
+result
+```
+
+
+###### Netherlands
+
+```{r demographics-education-2}
+# Netherlands
+result <- viz_bar(
+  data = data_filtered_c4fa1a8d,
+  title = "Netherlands",
+  x_var = "q004_recoded",
+  x_label = "Education"
+)
+
+result
+```
+
+
+###### Spain
+
+```{r demographics-education-3}
+# Spain
+result <- viz_bar(
+  data = data_filtered_74ed31ac,
+  title = "Spain",
+  x_var = "q004_recoded",
+  x_label = "Education"
+)
+
+result
+```
+
+
+###### Poland
+
+```{r demographics-education-4}
+# Poland
+result <- viz_bar(
+  data = data_filtered_d4a98b5c,
+  title = "Poland",
+  x_var = "q004_recoded",
+  x_label = "Education"
+)
+
+result
+```
+
+
+:::
+
+
+:::
+
+
+### Attitudes
+
+
+::: {.panel-tabset}
+
+##### Gen-AI Use
+
+```{r attitudes}
+# Gen-AI Use
+result <- viz_stackedbar(
+  data = data,
+  title = "Gen-AI Use",
+  x_var = "ad03",
+  stack_var = "country"
+)
+
+result
+```
+
+
+##### Left-Right Attitude
+
+```{r attitudes-2}
+# Left-Right Attitude
+result <- viz_stackedbar(
+  data = data,
+  title = "Left-Right Attitude",
+  x_var = "g112_01",
+  stack_var = "country"
+)
+
+result
+```
+
+
+:::
+
+
+:::
+

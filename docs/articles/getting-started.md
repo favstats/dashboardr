@@ -44,9 +44,16 @@ library(gssr)
 
 # Load GSS data and select relevant variables (latest wave only)
 data(gss_all)
+
+# Define GSS-specific NA values to filter out
+gss_na_values <- c("iap", "dk na", "dk, na, iap", "no answer", "skipped on web", 
+                   "don't know", "refused", "not imputable", "I don't have a job")
+
 gss <- gss_all %>%
   select(year, age, sex, race, degree, happy, polviews) %>%
-  filter(year == max(year, na.rm = TRUE), !is.na(age), !is.na(sex), !is.na(race), !is.na(degree))
+  filter(year == max(year, na.rm = TRUE), !is.na(age), !is.na(sex), !is.na(race), !is.na(degree)) %>%
+  filter(!tolower(happy) %in% tolower(gss_na_values),
+         !tolower(polviews) %in% tolower(gss_na_values))
 ```
 
 We now have a dataset with about 3139 respondents from 2024 onwards,
@@ -85,13 +92,14 @@ passing the data and a default chart type:
 
 ``` r
 demographics <- create_content(data = gss, type = "bar") %>%
-  add_viz(x_var = "degree", title = "Education") 
+  add_viz(x_var = "degree", title = "Education",
+          x_label = "", y_label = "Respondents") 
 
 print(demographics)
 #> -- Content Collection ──────────────────────────────────────────────────────────
-#> 1 items | ✔ data: 3139 rows x 7 cols
+#> 1 items | ✔ data: 3139 rows x 7 colsls
 #> 
-#> • [Viz] Education (bar) x=degree
+#> • [Viz] Education (bar) x=degree9m
 ```
 
 Here
@@ -122,8 +130,10 @@ charts into tabs. The code below will crate two tabs, one titled
 
 ``` r
 demographics <- create_content(data = gss, type = "bar") %>%
-  add_viz(x_var = "degree", title = "Education", tabgroup = "Demographics") %>%
-  add_viz(x_var = "happy", title = "Happiness", tabgroup = "Attitudes")
+  add_viz(x_var = "degree", title = "Education", tabgroup = "Demographics",
+          y_label = "Count") %>%
+  add_viz(x_var = "happy", title = "Happiness", tabgroup = "Attitudes",
+          color_palette = c("#27AE60", "#F39C12", "#E74C3C"))
 
 demographics %>% preview()
 ```
@@ -175,14 +185,14 @@ analysis <- create_page("Analysis", data = gss) %>%
 
 print(analysis)
 #> -- Page: Analysis ───────────────────────────────────────────────
-#> ✔ data: 3139 rows x 7 cols 
+#> ✔ data: 3139 rows x 7 cols s 
 #> 3 items
 #> 
-#> ℹ [Text]
-#> ❯ [Tab] Demographics (1 viz)
-#>   • [Viz] Education (bar) x=degree
-#> ❯ [Tab] Attitudes (1 viz)
-#>   • [Viz] Happiness (bar) x=happy
+#> ℹ [Text]9m
+#> ❯ [Tab] Demographics (1 viz)9m
+#>   • [Viz] Education (bar) x=degree9m
+#> ❯ [Tab] Attitudes (1 viz)9m
+#>   • [Viz] Happiness (bar) x=happy9m
 ```
 
 The
@@ -309,23 +319,32 @@ library(gssr)
 
 # Prepare data (latest wave only)
 data(gss_all)
+
+# Define GSS-specific NA values to filter out
+gss_na_values <- c("iap", "dk na", "dk, na, iap", "no answer", "skipped on web", 
+                   "don't know", "refused", "not imputable", "I don't have a job")
+
 gss <- gss_all %>%
   select(year, age, sex, race, degree, happy, polviews) %>%
-  filter(year == max(year, na.rm = TRUE), !is.na(age), !is.na(sex), !is.na(race), !is.na(degree))
+  filter(year == max(year, na.rm = TRUE), !is.na(age), !is.na(sex), !is.na(race), !is.na(degree)) %>%
+  filter(!tolower(happy) %in% tolower(gss_na_values),
+         !tolower(polviews) %in% tolower(gss_na_values))
 
 # LAYER 1: Build content collections
-demographics <- create_content(type = "bar") %>%
+demographics <- create_content(type = "bar", y_label = "Count") %>%
   add_viz(x_var = "degree", title = "Education", tabgroup = "Overview") %>%
   add_viz(x_var = "race", title = "Race", tabgroup = "Overview") %>%
   add_viz(x_var = "sex", title = "Gender", tabgroup = "Overview")
 
-cross_tabs <- create_content(type = "stackedbar") %>%
+cross_tabs <- create_content(type = "stackedbar", 
+                             y_label = "Percentage",
+                             color_palette = c("#27AE60", "#F39C12", "#E74C3C")) %>%
   add_viz(x_var = "degree", stack_var = "happy", 
           title = "Happiness by Education", tabgroup = "Analysis", 
           stacked_type = "percent") %>%
   add_viz(x_var = "polviews", stack_var = "happy",
           title = "Happiness by Politics", tabgroup = "Analysis",
-          stacked_type = "percent")
+          stacked_type = "percent", horizontal = TRUE)
 
 # LAYER 2: Create pages
 home <- create_page("Home", is_landing_page = TRUE) %>%
@@ -439,7 +458,8 @@ a nationally representative survey of American adults conducted since
 ## 💡 Tips
 
 1.  **Print often**: use [`print()`](https://rdrr.io/r/base/print.html)
-    to inspect structure before generating
+    to inspect structure before generating. Use
+    `print(collection, check = TRUE)` to also validate your viz specs.
 2.  **Preview as you go**: use
     [`preview()`](https://favstats.github.io/dashboardr/reference/preview.md)
     to see charts without building everything
@@ -447,7 +467,7 @@ a nationally representative survey of American adults conducted since
     then expand
 4.  **Use tabgroups**: they make complex dashboards navigable
 5.  **Build content separately**: create reusable collections, attach to
-    multiple pages
+    multiple pages if you want
 
 ## 🔧 Function Overview
 

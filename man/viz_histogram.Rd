@@ -13,6 +13,7 @@ viz_histogram(
   x_label = NULL,
   y_label = NULL,
   histogram_type = c("count", "percent"),
+  tooltip = NULL,
   tooltip_prefix = "",
   tooltip_suffix = "",
   x_tooltip_suffix = "",
@@ -24,7 +25,8 @@ viz_histogram(
   color_palette = NULL,
   x_map_values = NULL,
   x_order = NULL,
-  weight_var = NULL
+  weight_var = NULL,
+  data_labels_enabled = TRUE
 )
 }
 \arguments{
@@ -45,9 +47,15 @@ If supplied, the function skips counting and uses this column as y.}
 
 \item{histogram_type}{One of "count" or "percent". Default "count".}
 
-\item{tooltip_prefix}{Optional string prepended in the tooltip.}
+\item{tooltip}{A tooltip configuration created with \code{\link{tooltip}()},
+OR a format string with \{placeholders\}. Available placeholders:
+\code{\{category\}}, \code{\{value\}}, \code{\{percent\}}.
+For simple cases, use \code{tooltip_prefix} and \code{tooltip_suffix} instead.
+See \code{\link{tooltip}} for full customization options.}
 
-\item{tooltip_suffix}{Optional string appended in the tooltip.}
+\item{tooltip_prefix}{Optional string prepended in the tooltip (simple customization).}
+
+\item{tooltip_suffix}{Optional string appended in the tooltip (simple customization).}
 
 \item{x_tooltip_suffix}{Optional string appended to x value in tooltip.}
 
@@ -76,6 +84,9 @@ of the binned variable.}
 \item{weight_var}{Optional string. Name of a weight variable to use for
 weighted aggregation. When provided, counts are computed as the sum of
 weights instead of simple counts.}
+
+\item{data_labels_enabled}{Logical. If TRUE, show value labels on bars.
+Default TRUE.}
 }
 \value{
 A \code{highcharter} histogram (column) plot object.

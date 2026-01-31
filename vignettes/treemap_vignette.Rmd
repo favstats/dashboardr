@@ -18,7 +18,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-## Introduction
+## 📖 Introduction
 
 Treemaps display hierarchical data as nested rectangles. The size of each rectangle represents its value - larger rectangles mean larger values. They're excellent for showing composition and proportions across many categories at once.
 
@@ -48,7 +48,7 @@ devtools::load_all()
 
 **Important**: Treemaps require **pre-aggregated data** with a value column. You typically need to `count()` or `summarize()` your data first.
 
-## Basic Treemaps
+## 📊 Basic Treemaps
 
 ### Simple Category Sizes
 
@@ -92,7 +92,7 @@ plot <- viz_treemap(
 plot
 ```
 
-## Hierarchical Treemaps
+## 🏗️ Hierarchical Treemaps
 
 Treemaps shine when showing nested categories. Use `subgroup_var` for a second level:
 
@@ -133,7 +133,7 @@ plot <- viz_treemap(
 plot
 ```
 
-## Custom Colors
+## 🎨 Custom Colors
 
 ```{r}
 plot <- viz_treemap(
@@ -147,7 +147,7 @@ plot <- viz_treemap(
 plot
 ```
 
-## Labels and Tooltips
+## 🏷️ Labels and Tooltips
 
 Customize what appears in the treemap cells and hover tooltips:
 
@@ -172,7 +172,7 @@ plot
 
 For hierarchical treemaps, both group and subgroup appear in tooltips automatically.
 
-## Using with create_content()
+## 📁 Using with create_content()
 
 ### Basic Integration
 
@@ -228,7 +228,7 @@ content <- create_content(data = all_counts, type = "treemap") %>%
 content %>% preview()
 ```
 
-## Data Preparation Tips
+## 💡 Data Preparation Tips
 
 Treemaps need aggregated data. Here's how to prepare GSS data:
 
@@ -255,7 +255,7 @@ gss %>%
   summarize(avg_age = mean(age, na.rm = TRUE), .groups = "drop")
 ```
 
-## When to Use Treemaps
+## 🔍 When to Use Treemaps
 
 **Use treemaps when:**
 - Showing part-to-whole relationships
@@ -268,7 +268,7 @@ gss %>%
 - You have few categories (< 5)
 - Order matters (rankings)
 
-## See Also
+## 📚 See Also
 
 - `?viz_treemap` - Full function documentation
 - `vignette("bar_vignette")` - For categorical comparisons

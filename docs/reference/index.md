@@ -67,6 +67,10 @@ Functions for creating visualizations
   : Set or update tabgroup display labels
 - [`preview()`](https://favstats.github.io/dashboardr/reference/preview.md)
   : Preview any dashboardr object
+- [`save_widget()`](https://favstats.github.io/dashboardr/reference/save_widget.md)
+  : Save widget as self-contained HTML
+- [`validate_specs()`](https://favstats.github.io/dashboardr/reference/validate_specs.md)
+  : Validate visualization specifications in a collection
 
 ## Visualization Types
 
@@ -74,12 +78,16 @@ Functions for different chart types
 
 - [`viz_histogram()`](https://favstats.github.io/dashboardr/reference/viz_histogram.md)
   : Create an Histogram
+- [`viz_density()`](https://favstats.github.io/dashboardr/reference/viz_density.md)
+  : Create a Density Plot
+- [`viz_boxplot()`](https://favstats.github.io/dashboardr/reference/viz_boxplot.md)
+  : Create a Box Plot
 - [`viz_bar()`](https://favstats.github.io/dashboardr/reference/viz_bar.md)
   : Create Bar Chart
 - [`viz_stackedbar()`](https://favstats.github.io/dashboardr/reference/viz_stackedbar.md)
   : Create a Stacked Bar Chart
 - [`viz_stackedbars()`](https://favstats.github.io/dashboardr/reference/viz_stackedbars.md)
-  : Stacked Bar Charts (Multiple Variables)
+  : Stacked Bar Charts for Multiple Variables (Legacy)
 - [`viz_timeline()`](https://favstats.github.io/dashboardr/reference/viz_timeline.md)
   : Create a Timeline Chart
 - [`viz_heatmap()`](https://favstats.github.io/dashboardr/reference/viz_heatmap.md)
@@ -90,6 +98,31 @@ Functions for different chart types
   : Create an interactive map visualization
 - [`viz_treemap()`](https://favstats.github.io/dashboardr/reference/viz_treemap.md)
   : Create a treemap visualization
+
+## Tooltip Customization
+
+Functions for customizing chart tooltips
+
+- [`tooltip()`](https://favstats.github.io/dashboardr/reference/tooltip.md)
+  : Create a Tooltip Configuration
+- [`print(`*`<dashboardr_tooltip>`*`)`](https://favstats.github.io/dashboardr/reference/print.dashboardr_tooltip.md)
+  : Print method for tooltip configurations
+- [`add_hc()`](https://favstats.github.io/dashboardr/reference/add_hc.md)
+  : Add a custom highcharter chart
+
+## Stacked Bar Charts
+
+[`viz_stackedbar()`](https://favstats.github.io/dashboardr/reference/viz_stackedbar.md)
+is the unified function for all stacked bar charts. Use `x_var` +
+`stack_var` for crosstabs, or `x_vars` for multi-variable comparisons.
+[`viz_stackedbars()`](https://favstats.github.io/dashboardr/reference/viz_stackedbars.md)
+is a legacy wrapper that calls
+[`viz_stackedbar()`](https://favstats.github.io/dashboardr/reference/viz_stackedbar.md).
+
+- [`viz_stackedbar()`](https://favstats.github.io/dashboardr/reference/viz_stackedbar.md)
+  : Create a Stacked Bar Chart
+- [`viz_stackedbars()`](https://favstats.github.io/dashboardr/reference/viz_stackedbars.md)
+  : Stacked Bar Charts for Multiple Variables (Legacy)
 
 ## Navigation & Layout
 
@@ -248,6 +281,8 @@ S3 methods for displaying objects
   : Create iconify icon shortcode
 - [`print(`*`<page_object>`*`)`](https://favstats.github.io/dashboardr/reference/print.page_object.md)
   : Print method for page objects
+- [`print(`*`<dashboardr_widget>`*`)`](https://favstats.github.io/dashboardr/reference/print.dashboardr_widget.md)
+  : Print method for dashboardr_widget - opens in viewer
 - [`knit_print(`*`<content_collection>`*`)`](https://favstats.github.io/dashboardr/reference/knit_print.content_collection.md)
   : Knitr print method for content collections
 - [`knit_print(`*`<page_object>`*`)`](https://favstats.github.io/dashboardr/reference/knit_print.page_object.md)

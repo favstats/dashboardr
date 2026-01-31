@@ -1,6 +1,6 @@
 # Creating Maps with viz_map()
 
-## Introduction
+## 📖 Introduction
 
 The
 [`viz_map()`](https://favstats.github.io/dashboardr/reference/viz_map.md)
@@ -19,7 +19,7 @@ maps typically can’t use GSS data directly since GSS regions don’t map
 to standard geographic codes. The examples below use hypothetical
 geographic datasets.
 
-## Basic World Map
+## 🌍 Basic World Map
 
 ### Country-Level Data
 
@@ -55,11 +55,14 @@ plot <- viz_map(
   value_var = "happiness_score",
   map_type = "custom/world",
   title = "Happiness Score",
+  value_label = "Score",
   color_palette = c("#FEE5D9", "#A50F15")  # Light to dark red
 )
+
+plot
 ```
 
-## US State Maps
+## 🗺️ US State Maps
 
 ### State-Level Data
 
@@ -84,7 +87,7 @@ plot <- viz_map(
 plot
 ```
 
-## Labels and Tooltips
+## 🏷️ Labels and Tooltips
 
 ### Basic Tooltips
 
@@ -105,8 +108,11 @@ plot <- viz_map(
   value_var = "value",
   map_type = "countries/us/us-all",
   tooltip_vars = c("label", "value", "growth"),
-  title = "State Metrics"
+  title = "State Metrics",
+  value_label = "Score"
 )
+
+plot
 ```
 
 ### Tooltip Parameters
@@ -126,11 +132,14 @@ plot <- viz_map(
   map_type = "countries/us/us-all",
   title = "US Population",
   value_label = "Population (millions)",
-  tooltip_suffix = " million people"
+  tooltip_suffix = " million people",
+  color_palette = c("#DEEBF7", "#08519C")
 )
+
+plot
 ```
 
-## European Maps
+## 🇪🇺 European Maps
 
 ``` r
 european_data <- data.frame(
@@ -144,11 +153,15 @@ plot <- viz_map(
   value_var = "gdp_per_capita",
   map_type = "custom/europe",
   title = "GDP per Capita in Europe",
+  value_label = "GDP per Capita (€)",
+  tooltip_prefix = "€",
   color_palette = c("#F7FCB9", "#31A354")
 )
+
+plot
 ```
 
-## Map Types Reference
+## 📋 Map Types Reference
 
 | Map Type | Coverage | Join Variable |
 |----|----|----|
@@ -157,7 +170,7 @@ plot <- viz_map(
 | `"custom/europe"` | European countries | ISO 3166-1 alpha-2 (DE, FR, GB) |
 | `"countries/us/custom/world"` | World regions | Various codes |
 
-## Real-World Examples
+## 🌐 Real-World Examples
 
 ### Survey Response Rates by State
 
@@ -195,11 +208,15 @@ plot <- viz_map(
   value_var = "satisfaction",
   map_type = "custom/world",
   title = "Customer Satisfaction by Country",
+  value_label = "Satisfaction Score",
+  tooltip_suffix = " / 10",
   color_palette = c("#FEE8C8", "#E34A33")
 )
+
+plot
 ```
 
-## Using with create_content()
+## 📁 Using with create_content()
 
 ### Basic Integration
 
@@ -214,6 +231,10 @@ content <- create_content(data = state_data, type = "map") %>%
 
 content %>% preview()
 ```
+
+Preview
+
+Population Distribution
 
 ### Multiple Maps with Different Metrics
 
@@ -246,7 +267,7 @@ content <- create_content(data = multi_metric, type = "map", map_type = "countri
   )
 ```
 
-## Data Preparation Tips
+## 💡 Data Preparation Tips
 
 ### Finding the Right Codes
 
@@ -275,11 +296,15 @@ plot <- viz_map(
   value_var = "metric",
   map_type = "countries/us/us-all",
   title = "Partial Coverage Map",
-  null_color = "#EEEEEE"  # Color for missing regions
+  value_label = "Score",
+  null_color = "#EEEEEE",  # Color for missing regions
+  color_palette = c("#C6DBEF", "#084594")
 )
+
+plot
 ```
 
-## When to Use Maps
+## 🔍 When to Use Maps
 
 **Use maps when:** - Showing geographic patterns - Regional comparisons
 are important - Audience thinks spatially about the data - Location
@@ -289,7 +314,7 @@ context adds meaning
 geography - Data isn’t inherently geographic - You have many small
 regions (hard to see)
 
-## See Also
+## 📚 See Also
 
 - [`?viz_map`](https://favstats.github.io/dashboardr/reference/viz_map.md) -
   Full function documentation
@@ -298,7 +323,7 @@ regions (hard to see)
 - [`vignette("content-collections")`](https://favstats.github.io/dashboardr/articles/content-collections.md) -
   For dashboard integration
 
-## Note on Map Data
+## ⚠️ Note on Map Data
 
 Maps require the Highcharts Maps module, which is included with
 dashboardr. The map geometries are loaded from Highcharts’ CDN when the

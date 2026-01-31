@@ -96,7 +96,9 @@ For straightforward dashboards, add content directly to pages:
 # Everything in one chain
 simple_page <- create_page("Analysis", data = gss, type = "bar") %>%
   add_text("## Education Distribution", "", "How education levels are distributed.") %>%
-  add_viz(x_var = "degree", title = "Education Levels") %>%
+  add_viz(x_var = "degree", title = "Education Levels",
+          x_label = "", y_label = "Respondents",
+          color_palette = c("#3498DB")) %>%
   add_callout("Data from GSS 2022", type = "note")
 
 print(simple_page)
@@ -117,12 +119,14 @@ For complex dashboards, build content separately, then assemble with `add_conten
 intro_text <- create_content() %>%
   add_text("## Overview", "", "Key findings from the General Social Survey.")
 
-demographic_charts <- create_content(type = "bar") %>%
+demographic_charts <- create_content(type = "bar", y_label = "Count") %>%
   add_viz(x_var = "degree", title = "Education", tabgroup = "Demographics") %>%
-  add_viz(x_var = "race", title = "Race", tabgroup = "Demographics")
+  add_viz(x_var = "race", title = "Race", tabgroup = "Demographics",
+          color_palette = c("#3498DB", "#E74C3C", "#27AE60"))
 
-attitude_charts <- create_content(type = "bar") %>%
-  add_viz(x_var = "happy", title = "Happiness", tabgroup = "Attitudes") %>%
+attitude_charts <- create_content(type = "bar", y_label = "Count") %>%
+  add_viz(x_var = "happy", title = "Happiness", tabgroup = "Attitudes",
+          color_palette = c("#27AE60", "#F39C12", "#E74C3C")) %>%
   add_viz(x_var = "polviews", title = "Political Views", tabgroup = "Attitudes")
 
 # Step 2: Assemble into page

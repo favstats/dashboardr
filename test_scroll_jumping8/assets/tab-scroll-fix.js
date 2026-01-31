@@ -1,0 +1,72 @@
+/**
+ * Tab Scroll Fix for dashboardr
+ * 
+ * Prevents page jumping when clicking on tabs in panel-tabsets.
+ * 
+ * Key insight: scroll position gets reset BEFORE click event fires (during mousedown/focus)
+ * Solution: capture scroll on mousedown, then restore it after tab switch
+ */
+(function() {
+  'use strict';
+  
+  // State
+  var savedScroll = { x: 0, y: 0 };
+  
+  // Capture scroll on mousedown (BEFORE any focus/scroll behavior)
+  document.addEventListener('mousedown', function(e) {
+    var tab = e.target.closest('.panel-tabset [role="tab"], .panel-tabset .nav-link');
+    if (tab) {
+      savedScroll.x = window.scrollX || window.pageXOffset || 0;
+      savedScroll.y = window.scrollY || window.pageYOffset || 0;
+    }
+  }, { capture: true, passive: true });
+  
+  // Handle tab click
+  document.addEventListener('click', function(e) {
+    var tab = e.target.closest('.panel-tabset [role="tab"], .panel-tabset .nav-link');
+    if (!tab) return;
+    
+    var targetId = tab.getAttribute('data-bs-target') || tab.getAttribute('href');
+    if (!targetId || !targetId.startsWith('#')) return;
+    
+    e.preventDefault();
+    
+    // Manual tab switch (bypass Bootstrap)
+    var tabset = tab.closest('.panel-tabset');
+    var navTabs = tabset.querySelector('.nav-tabs, ul.nav');
+    var tabContent = tabset.querySelector('.tab-content');
+    
+    // Deactivate current
+    if (navTabs) {
+      navTabs.querySelectorAll('.nav-link').forEach(function(t) {
+        t.classList.remove('active');
+        t.setAttribute('aria-selected', 'false');
+      });
+    }
+    if (tabContent) {
+      tabContent.querySelectorAll(':scope > .tab-pane').forEach(function(p) {
+        p.classList.remove('show', 'active');
+      });
+    }
+    
+    // Activate clicked
+    tab.classList.add('active');
+    tab.setAttribute('aria-selected', 'true');
+    var pane = document.querySelector(targetId);
+    if (pane) pane.classList.add('show', 'active');
+    
+    // Dispatch event for Highcharts reflow
+    tab.dispatchEvent(new CustomEvent('shown.bs.tab', { bubbles: true }));
+    
+    // Restore scroll (using mousedown-captured value)
+    window.scrollTo(savedScroll.x, savedScroll.y);
+    requestAnimationFrame(function() {
+      window.scrollTo(savedScroll.x, savedScroll.y);
+    });
+    setTimeout(function() {
+      window.scrollTo(savedScroll.x, savedScroll.y);
+    }, 50);
+    
+  }, { capture: true });
+  
+})();

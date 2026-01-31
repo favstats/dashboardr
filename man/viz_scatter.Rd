@@ -20,7 +20,8 @@ viz_scatter(
   trend_method = "lm",
   alpha = 0.7,
   include_na = FALSE,
-  na_label = "Missing",
+  na_label = "(Missing)",
+  tooltip = NULL,
   tooltip_format = NULL,
   jitter = FALSE,
   jitter_amount = 0.2
@@ -57,9 +58,16 @@ viz_scatter(
 
 \item{include_na}{Logical. Whether to include NA values in color grouping. Defaults to \code{FALSE}.}
 
-\item{na_label}{Character string. Label for NA category if \code{include_na = TRUE}. Defaults to "Missing".}
+\item{na_label}{Character string. Label for NA category if \code{include_na = TRUE}. Defaults to "(Missing)".}
 
-\item{tooltip_format}{Character string. Custom format for tooltips. Can use {x}, {y}, {color} placeholders.}
+\item{tooltip}{A tooltip configuration created with \code{\link{tooltip}()},
+OR a format string with \{placeholders\}. Available placeholders:
+\code{\{x\}}, \code{\{y\}}, \code{\{name\}}, \code{\{series\}}.
+See \code{\link{tooltip}} for full customization options.}
+
+\item{tooltip_format}{Character string. Custom format for tooltips using Highcharts
+placeholders like \{point.x\}, \{point.y\}. For the simpler dashboardr placeholder
+syntax, use the \code{tooltip} parameter instead.}
 
 \item{jitter}{Logical. Whether to add jittering to reduce overplotting. Defaults to \code{FALSE}.}
 

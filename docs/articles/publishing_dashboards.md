@@ -50,7 +50,7 @@ online in under 10 minutes. No prior Git or GitHub knowledge required!
 >     repositories or institutional hosting instead of public GitHub
 >     Pages
 
-### What You’ll Learn
+### 📖 What You’ll Learn
 
 By the end of this guide, you’ll be able to:
 
@@ -58,7 +58,7 @@ By the end of this guide, you’ll be able to:
 - Update your published dashboard whenever you make changes
 - Share your dashboard URL with anyone
 
-### Prerequisites
+### ⚙️ Prerequisites
 
 You need:
 
@@ -79,9 +79,9 @@ library(dashboardr)
 > Access Token configured, you can skip directly to [Part 2: Publishing
 > Your Dashboard](#part-2-publishing-your-dashboard).
 
-## Part 1: One-Time Setup (Do This Once)
+## 🔧 Part 1: One-Time Setup (Do This Once)
 
-### Step 1: Install Git on Your Computer
+### 💻 Step 1: Install Git on Your Computer
 
 Git is the tool that tracks changes to your files. It needs to be
 installed before R can use it.
@@ -112,7 +112,7 @@ sudo apt install git
 sudo dnf install git
 ```
 
-### Step 2: Tell Git Who You Are
+### 👤 Step 2: Tell Git Who You Are
 
 Git needs to know your name and email. Run this in R with **your**
 information:
@@ -128,7 +128,7 @@ use_git_config(
 
 **Important:** Use the same email you’ll use for GitHub.
 
-### Step 3: Check Everything Works
+### ✅ Step 3: Check Everything Works
 
 Run this command to verify your setup:
 
@@ -142,7 +142,7 @@ You should see:
 - [x] Git version number
 - Some other information (warnings are okay for now)
 
-### Step 4: Create a GitHub Account
+### 🌐 Step 4: Create a GitHub Account
 
 GitHub will host your dashboard for free.
 
@@ -152,7 +152,7 @@ GitHub will host your dashboard for free.
     dashboard URL!)
 4.  Verify your email address
 
-### Step 5: Set Up Authentication
+### 🔐 Step 5: Set Up Authentication
 
 GitHub needs a way to verify it’s really you. We’ll create a Personal
 Access Token (PAT).
@@ -191,11 +191,11 @@ When prompted, paste your token and press Enter.
 **That’s it!** You’ve completed the one-time setup. You never have to do
 these steps again.
 
-## Part 2: Publishing Your Dashboard
+## 🚀 Part 2: Publishing Your Dashboard
 
 Now comes the fun part - publishing your dashboard!
 
-### Step 1: Generate Your Dashboard
+### 📊 Step 1: Generate Your Dashboard
 
 First, create and render your dashboard as usual:
 
@@ -223,7 +223,7 @@ dashboard <- create_dashboard(
 generate_dashboard(dashboard, render = TRUE)
 ```
 
-### Step 2: Publish!
+### 🌍 Step 2: Publish!
 
 Now for the magic command with the key arguments shown explicitly:
 
@@ -294,7 +294,7 @@ works from **your current working directory**. It will:
 Copy this URL and wait 2-5 minutes, then visit it to see your live
 dashboard!
 
-### Additional Options
+### ⚙️ Additional Options
 
 For more advanced scenarios:
 
@@ -309,12 +309,12 @@ publish_dashboard(protocol = "ssh")
 publish_dashboard(branch = "gh-pages")
 ```
 
-## Part 3: Updating Your Dashboard
+## 🔄 Part 3: Updating Your Dashboard
 
 Made changes to your dashboard? Here’s how to update the published
 version.
 
-### Step 1: Regenerate Your Dashboard
+### 📊 Step 1: Regenerate Your Dashboard
 
 Make your changes and regenerate:
 
@@ -335,7 +335,7 @@ dashboard <- create_dashboard(
 generate_dashboard(dashboard, render = TRUE)
 ```
 
-### Step 2: Push Your Updates
+### ⬆️ Step 2: Push Your Updates
 
 ``` r
 update_dashboard()
@@ -379,7 +379,7 @@ update_dashboard(
 update_dashboard(ask = FALSE)
 ```
 
-## Complete Workflow Example
+## 📋 Complete Workflow Example
 
 Here’s a full example from start to finish:
 
@@ -417,7 +417,7 @@ generate_dashboard(dashboard, render = TRUE)
 update_dashboard(message = "Updated car analysis")
 ```
 
-## Troubleshooting
+## 🔧 Troubleshooting
 
 ### “Error: No GitHub token”
 
@@ -472,7 +472,7 @@ files. Check: 1. Look for a `.gitignore` file in your dashboard folder
 2. Make sure your data files match the patterns (*.csv,* .rds, etc.) 3.
 Large files (\>10MB) are automatically detected and ignored
 
-## Tips and Best Practices
+## 💡 Tips and Best Practices
 
 ### 1. Keep Data Out of Git
 
@@ -512,7 +512,7 @@ Update after each significant change.
 After updating, wait 1-2 minutes then visit your dashboard URL to verify
 the changes appear correctly.
 
-## Next Steps
+## ➡️ Next Steps
 
 Now that your dashboard is published, you can:
 

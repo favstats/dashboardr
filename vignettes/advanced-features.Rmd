@@ -559,6 +559,65 @@ print(weighted_collection)
 weighted_collection %>% preview()
 ```
 
+## 🎯 Customizing Tooltips
+
+dashboardr provides a flexible 3-tier system for customizing chart tooltips, from quick tweaks to full control.
+
+### Quick Customization (Tier 1)
+
+Add prefix or suffix text to tooltip values:
+
+```{r, eval=FALSE}
+viz_bar(data = gss, x_var = "degree", 
+        tooltip_prefix = "Count: ",
+        tooltip_suffix = " respondents")
+```
+
+### Format Strings (Tier 2)
+
+Use format strings with `{placeholders}` for more control:
+```{r, eval=FALSE}
+viz_bar(data = gss, x_var = "degree", 
+        tooltip = "{category}: {value} people ({percent})")
+```
+
+Available placeholders vary by chart type:
+
+| Placeholder | Description | Charts |
+|-------------|-------------|--------|
+| `{value}` | Primary value | All |
+| `{category}` | X-axis category | bar, histogram, stackedbar |
+| `{x}`, `{y}` | Coordinates | scatter, heatmap |
+| `{series}` | Series name | Grouped charts |
+| `{percent}` | Percentage | Percent-type charts |
+| `{name}` | Point name | All |
+
+### Full Control (Tier 3)
+
+Use the `tooltip()` helper for complete customization including styling:
+
+```{r, eval=FALSE}
+viz_bar(data = gss, x_var = "degree",
+        tooltip = tooltip(
+          format = "<b>{category}</b><br/>Count: {value}",
+          backgroundColor = "#f8f9fa",
+          borderColor = "#dee2e6",
+          borderRadius = 8,
+          style = list(fontSize = "14px")
+        ))
+```
+
+The `tooltip()` function exposes all Highcharts tooltip options:
+
+- `format` - Format string with {placeholders}
+- `shared` - Share tooltip across series (TRUE/FALSE)
+- `backgroundColor`, `borderColor`, `borderRadius` - Visual styling
+- `style` - CSS styles as a named list
+- `header` - Header format (use FALSE to hide)
+- `enabled` - Enable/disable tooltips entirely
+
+All chart functions (`viz_bar()`, `viz_scatter()`, `viz_histogram()`, etc.) support the same tooltip parameters for consistent behavior across your dashboard.
+
 ## 🎨 Icons
 
 dashboardr uses [Iconify](https://icon-sets.iconify.design/) for **200,000+ icons** from 100+ icon sets.

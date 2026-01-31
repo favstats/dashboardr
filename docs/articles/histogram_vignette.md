@@ -1,6 +1,6 @@
 # Creating Histograms with viz_histogram()
 
-## Introduction
+## 📖 Introduction
 
 The
 [`viz_histogram()`](https://favstats.github.io/dashboardr/reference/viz_histogram.md)
@@ -21,7 +21,7 @@ gss <- gss_all %>%
   filter(year == max(year, na.rm = TRUE), !is.na(age))
 ```
 
-## Basic Histograms
+## 📊 Basic Histograms
 
 Create a simple histogram showing the distribution of age:
 
@@ -37,7 +37,7 @@ plot <- viz_histogram(
 plot
 ```
 
-## Controlling Bin Size
+## ⚙️ Controlling Bin Size
 
 The `bins` parameter controls granularity. More bins = more detail but
 noisier; fewer bins = smoother but less detail.
@@ -68,7 +68,7 @@ plot <- viz_histogram(
 plot
 ```
 
-## Count vs. Percent
+## 🔢 Count vs. Percent
 
 By default, histograms show counts. Use `histogram_type = "percent"` to
 show percentages:
@@ -85,7 +85,7 @@ plot <- viz_histogram(
 plot
 ```
 
-## Custom Colors
+## 🎨 Custom Colors
 
 ``` r
 plot <- viz_histogram(
@@ -99,7 +99,26 @@ plot <- viz_histogram(
 plot
 ```
 
-## Labels and Tooltips
+## 👁️ Hiding Data Labels
+
+By default, histograms show count/percentage labels on each bar. Use
+`data_labels_enabled = FALSE` to hide them for a cleaner look:
+
+``` r
+plot <- viz_histogram(
+  data = gss,
+  x_var = "age",
+  bins = 25,
+  title = "Histogram Without Data Labels",
+  data_labels_enabled = FALSE
+)
+
+plot
+```
+
+This is useful when you have many bins or want a simpler visualization.
+
+## 🏷️ Labels and Tooltips
 
 Customize axis labels and tooltip text for a polished presentation:
 
@@ -126,7 +145,7 @@ plot
 | `tooltip_suffix` | Text after tooltip value | `" respondents"` |
 | `x_tooltip_suffix` | Text after x value in tooltip | `" years"` |
 
-## Using with create_content()
+## 📁 Using with create_content()
 
 Integrate histograms into dashboards using `type = "histogram"`:
 
@@ -190,7 +209,7 @@ Distributions
 
 Age Distribution
 
-## Interpreting Histograms
+## 🔍 Interpreting Histograms
 
 ### Distribution Shapes
 
@@ -209,7 +228,7 @@ Age Distribution
 3.  **Shape** - Is it symmetric, skewed, or multimodal?
 4.  **Outliers** - Are there unusual values far from the center?
 
-## When to Use Histograms
+## 💡 When to Use Histograms
 
 **Use
 [`viz_histogram()`](https://favstats.github.io/dashboardr/reference/viz_histogram.md)
@@ -220,7 +239,7 @@ spread and shape of data - Looking for outliers or unusual patterns
 [`viz_bar()`](https://favstats.github.io/dashboardr/reference/viz_bar.md)
 when:** - Counting categorical values - Comparing groups side-by-side
 
-## See Also
+## 📚 See Also
 
 - [`?viz_histogram`](https://favstats.github.io/dashboardr/reference/viz_histogram.md) -
   Full function documentation

@@ -1,25 +1,43 @@
 # Create a Stacked Bar Chart
 
-This function creates a stacked barchart for survey data. It handles raw
-(unaggregated) data, counting the occurrences of categories, supporting
-ordered factors, allowing numerical x-axis and stacked variables to be
-binned into custom groups, and enables renaming of categorical values
-for display. It can also handle SPSS (.sav) columns automatically.
+A unified function for creating stacked bar charts that supports two
+modes:
+
+**Mode 1: Grouped/Crosstab Mode** (use `x_var` + `stack_var`)
+
+Creates a stacked bar chart from long/tidy data where one column
+provides the x-axis categories and another column provides the stack
+segments. This is ideal for cross-tabulating responses by demographic
+groups.
+
+**Mode 2: Multi-Variable/Battery Mode** (use `x_vars`)
+
+Creates a stacked bar chart from wide data where multiple columns become
+the x-axis bars, and their values become the stacks. This is ideal for
+comparing response distributions across multiple survey questions.
+
+The function automatically detects which mode to use based on the
+parameters provided.
 
 ## Usage
 
 ``` r
 viz_stackedbar(
   data,
-  x_var,
+  x_var = NULL,
   y_var = NULL,
-  stack_var,
+  stack_var = NULL,
+  x_vars = NULL,
+  x_var_labels = NULL,
+  response_levels = NULL,
+  show_var_tooltip = TRUE,
   title = NULL,
   subtitle = NULL,
   x_label = NULL,
   y_label = NULL,
   stack_label = NULL,
-  stacked_type = c("counts", "percent"),
+  stacked_type = c("counts", "percent", "normal"),
+  tooltip = NULL,
   tooltip_prefix = "",
   tooltip_suffix = "",
   x_tooltip_suffix = "",
@@ -36,7 +54,8 @@ viz_stackedbar(
   stack_bin_labels = NULL,
   stack_map_values = NULL,
   horizontal = FALSE,
-  weight_var = NULL
+  weight_var = NULL,
+  data_labels_enabled = TRUE
 )
 ```
 
@@ -44,11 +63,12 @@ viz_stackedbar(
 
 - data:
 
-  A data frame containing the raw survey data (one row per respondent).
+  A data frame containing the survey data.
 
 - x_var:
 
-  String. Name of the column for the X-axis categories.
+  String. Name of the column for X-axis categories. Use this together
+  with `stack_var` for crosstab-style charts.
 
 - y_var:
 
@@ -57,7 +77,31 @@ viz_stackedbar(
 
 - stack_var:
 
-  String. Name of the column whose values define the stacks.
+  String. Name of the column whose values define the stacks. Required
+  when using `x_var`.
+
+- x_vars:
+
+  Character vector of column names to compare. Each column becomes a bar
+  on the x-axis, and the values within each column become the stacks.
+  Use this for comparing multiple survey questions with the same
+  response scale.
+
+- x_var_labels:
+
+  Optional character vector of display labels for the variables. Must be
+  the same length as `x_vars`. If NULL, column names are used.
+
+- response_levels:
+
+  Optional character vector of factor levels for the response categories
+  (e.g., `c("Strongly Disagree", ..., "Strongly Agree")`). This sets the
+  order of the stacks in multi-variable mode.
+
+- show_var_tooltip:
+
+  Logical. If TRUE (default), shows enhanced tooltips with variable
+  labels in multi-variable mode.
 
 - title:
 
@@ -69,21 +113,29 @@ viz_stackedbar(
 
 - x_label:
 
-  Optional string. X-axis label. Defaults to `x_var`.
+  Optional string. X-axis label. Defaults to empty in crosstab mode or
+  "Variable" in multi-variable mode.
 
 - y_label:
 
-  Optional string. Y-axis label. Defaults to "Count" for counts or
-  "Percentage" for percent stacking.
+  Optional string. Y-axis label. Defaults to "Count" or "Percentage".
 
 - stack_label:
 
-  Optional string. Title for the stack legend. Defaults to empty (no
-  title).
+  Optional string. Title for the stack legend. Set to NULL, NA, FALSE,
+  or "" to hide the legend title.
 
 - stacked_type:
 
-  One of "counts" (default) or "percent" (100% stacked).
+  One of "normal", "counts" (both show raw counts), or "percent" (100%
+  stacked). Defaults to "counts".
+
+- tooltip:
+
+  A tooltip configuration created with
+  [`tooltip()`](https://favstats.github.io/dashboardr/reference/tooltip.md),
+  OR a format string with {placeholders}. Available placeholders:
+  `{category}`, `{value}`, `{series}`, `{percent}`.
 
 - tooltip_prefix:
 
@@ -103,27 +155,24 @@ viz_stackedbar(
 
 - stack_order:
 
-  Optional character vector specifying order of `stack_var` levels.
+  Optional character vector specifying order of stack levels.
 
 - x_order:
 
-  Optional character vector specifying order of `x_var` levels.
+  Optional character vector specifying order of x-axis levels.
 
 - include_na:
 
-  Logical. If TRUE, NA values in both `x_var` and `stack_var` are shown
-  as explicit categories. If FALSE (default), rows with NA in either
-  variable are excluded. Default FALSE.
+  Logical. If TRUE, NA values are shown as explicit categories. If FALSE
+  (default), rows with NA are excluded.
 
 - na_label_x:
 
-  String. Label for NA values in `x_var` when `include_na = TRUE`.
-  Default "(Missing)".
+  String. Label for NA values on x-axis. Default "(Missing)".
 
 - na_label_stack:
 
-  String. Label for NA values in `stack_var` when `include_na = TRUE`.
-  Default "(Missing)".
+  String. Label for NA values in stacks. Default "(Missing)".
 
 - x_breaks:
 
@@ -135,11 +184,11 @@ viz_stackedbar(
 
 - x_map_values:
 
-  Optional named list to remap `x_var` values for display.
+  Optional named list to remap x-axis values for display.
 
 - stack_breaks:
 
-  Optional numeric vector of cut points for binning `stack_var`.
+  Optional numeric vector of cut points for binning stack variable.
 
 - stack_bin_labels:
 
@@ -147,7 +196,7 @@ viz_stackedbar(
 
 - stack_map_values:
 
-  Optional named list to remap `stack_var` values for display.
+  Optional named list to remap stack values for display.
 
 - horizontal:
 
@@ -155,9 +204,11 @@ viz_stackedbar(
 
 - weight_var:
 
-  Optional string. Name of a weight variable to use for weighted
-  aggregation. When provided, counts are replaced with weighted sums
-  using this variable.
+  Optional string. Name of a weight variable for weighted counts.
+
+- data_labels_enabled:
+
+  Logical. If TRUE, show value labels on bars. Default TRUE.
 
 ## Value
 
@@ -165,80 +216,108 @@ An interactive `highcharter` bar chart plot object.
 
 ## Details
 
-This function performs the following steps:
+**Choosing the Right Mode:**
 
-1.  **Input Validation:** Checks if the provided `data` is a data frame
-    and if `x_var` and `stack_var` columns exist.
+Use **Mode 1** (`x_var` + `stack_var`) when you want to:
 
-2.  **Data Copy:** Creates a mutable copy of the input `data` to perform
-    transformations without affecting the original.
+- Show how one variable breaks down by another (e.g., education by
+  gender)
 
-3.  **Handle 'haven_labelled' Columns:** If `haven` package is
-    available, it detects if `x_var` or `stack_var` are of class
-    `haven_labelled` (common for data imported from SPSS/Stata/SAS). If
-    so, it converts them to standard R factors, using their underlying
-    numeric values as levels (e.g., a '1' that was labeled "Male" will
-    become a factor level "1"). This ensures `recode` can operate
-    correctly.
+- Create a cross-tabulation visualization
 
-4.  **Apply Value Mapping (`x_map_values`, `stack_map_values`):** If
-    provided, `x_map_values` and `stack_map_values` (named lists, e.g.,
-    `list("1"="Male")`) are used to rename the values in `x_var` and
-    `stack_var` respectively. This is useful for converting numeric
-    codes or abbreviations into descriptive labels. If the column is a
-    factor, it's temporarily converted to character to ensure
-    [`dplyr::recode`](https://dplyr.tidyverse.org/reference/recode.html)
-    works reliably on the values.
+- Your data is already in long/tidy format
 
-5.  **Handle Binning (`x_breaks`, `x_bin_labels`, `stack_breaks`,
-    `stack_bin_labels`):**
+Use **Mode 2** (`x_vars`) when you want to:
 
-    - If `x_var` (or `stack_var`) is numeric and corresponding `_breaks`
-      are provided, the function uses
-      [`base::cut()`](https://rdrr.io/r/base/cut.html) to discretize the
-      numeric variable into bins.
+- Compare response distributions across multiple survey questions
 
-    - `_bin_labels` can be supplied to give custom names to these bins
-      (e.g., "18-24" instead of "(17,25\]"). If not provided,
-      [`cut()`](https://rdrr.io/r/base/cut.html) generates default
-      labels.
+- Visualize a Likert scale battery
 
-    - A temporary column (e.g., `.x_var_binned`) is created to hold the
-      binned values, and this temporary column is then used for
-      plotting.
+- Your questions share the same response categories
 
-6.  **Data Aggregation and Final Factor Handling:**
+- Your data is in wide format (one column per question)
 
-    - The data is transformed using
-      [`dplyr::mutate`](https://dplyr.tidyverse.org/reference/mutate.html)
-      to ensure `x_var` and `stack_var` (or their binned versions) are
-      treated as factors. If `include_na = TRUE`, missing values are
-      converted into an explicit "(NA)" factor level.
+**Data Handling Features:**
 
-    - If `weight_var` is provided, weighted sums are calculated for each
-      combination of `x_var` and `stack_var` using
-      `sum(weight_var, na.rm = TRUE)`. Otherwise,
-      [`dplyr::count()`](https://dplyr.tidyverse.org/reference/count.html)
-      is used to count occurrences for each unique combination. This
-      creates the `n` column required for `highcharter`.
+- Automatically handles `haven_labelled` columns from SPSS/Stata/SAS
 
-7.  **Apply Custom Ordering (`x_order`, `stack_order`):** If provided,
-    `x_order` and `stack_order` are used to set the display order of the
-    factor levels for the X-axis and stack categories, respectively.
-    This is essential for ordinal scales (e.g., Likert scales) or custom
-    desired sorting. Levels not found in the order vector are appended
-    at the end.
+- Supports value mapping to rename categories for display
 
-8.  **Highcharter Chart Generation:** The aggregated `plot_data` is
-    passed to
-    [`highcharter::hchart()`](https://jkunst.com/highcharter/reference/hchart.html)
-    to create the base stacked column chart.
+- Supports binning of continuous variables
 
-9.  **Chart Customization:** Titles, subtitles, axis labels, stacking
-    type (counts vs. percent), data labels, legend titles, tooltips, and
-    custom color palettes are applied based on the function's arguments.
+- Handles missing values explicitly or implicitly
 
-10. **Return Value:** The function returns a `highcharter` plot object,
-    which can be printed directly to display the interactive chart.
+## Mode 1 Parameters (Grouped/Crosstab)
+
+## Mode 2 Parameters (Multi-Variable/Battery)
+
+## Common Parameters
+
+## See also
+
+[`viz_bar`](https://favstats.github.io/dashboardr/reference/viz_bar.md)
+for simple (non-stacked) bar charts
 
 ## Examples
+
+``` r
+library(gssr)
+#> Warning: package 'gssr' was built under R version 4.4.3
+#> Package loaded. To attach the GSS data, type data(gss_all) at the console.
+#> For the panel data and documentation, type e.g. data(gss_panel08_long) and data(gss_panel_doc).
+#> For help on a specific GSS variable, type ?varname at the console.
+data(gss_panel20)
+
+# ============================================================
+# MODE 1: Grouped/Crosstab - One variable broken down by another
+# ============================================================
+
+# Example 1: Education by Gender (counts)
+plot1 <- viz_stackedbar(
+  data = gss_panel20,
+  x_var = "degree_1a",
+  stack_var = "sex_1a",
+  title = "Educational Attainment by Gender",
+  x_label = "Highest Degree",
+  stack_label = "Gender"
+)
+
+# Example 2: Happiness by Education (percentages)
+plot2 <- viz_stackedbar(
+  data = gss_panel20,
+  x_var = "degree_1a",
+  stack_var = "happy_1a",
+  title = "Happiness by Education Level",
+  stacked_type = "percent",
+  tooltip_suffix = "%"
+)
+
+# ============================================================
+# MODE 2: Multi-Variable/Battery - Compare multiple questions
+# ============================================================
+
+# Example 3: Compare multiple attitude questions
+plot3 <- viz_stackedbar(
+  data = gss_panel20,
+  x_vars = c("trust_1a", "fair_1a", "helpful_1a"),
+  x_var_labels = c("Trust Others", "Others Are Fair", "Others Are Helpful"),
+  title = "Social Trust Battery",
+  stacked_type = "percent",
+  tooltip_suffix = "%"
+)
+#> Warning: `trust_1a` and `fair_1a` have conflicting value labels.
+#> i Labels for these values will be taken from `trust_1a`.
+#> x Values: 1 and 2
+#> Warning: `trust_1a` and `helpful_1a` have conflicting value labels.
+#> i Labels for these values will be taken from `trust_1a`.
+#> x Values: 1 and 2
+
+# Example 4: Single question horizontal (compact display)
+plot4 <- viz_stackedbar(
+  data = gss_panel20,
+  x_vars = "happy_1a",
+  title = "General Happiness",
+  stacked_type = "percent",
+  horizontal = TRUE
+)
+```

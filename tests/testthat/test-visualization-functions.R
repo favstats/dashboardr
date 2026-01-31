@@ -121,7 +121,69 @@ test_that("viz_stackedbar with percent type", {
 })
 
 # ===================================================================
-# viz_stackedbars (multiple questions)
+# viz_stackedbar with x_vars (unified multi-variable mode)
+# ===================================================================
+
+test_that("viz_stackedbar works with x_vars (multi-variable mode)", {
+  data <- data.frame(
+    q1 = sample(1:5, 100, replace = TRUE),
+    q2 = sample(1:5, 100, replace = TRUE),
+    q3 = sample(1:5, 100, replace = TRUE)
+  )
+  
+  # Using the unified function with x_vars
+  result <- viz_stackedbar(
+    data = data,
+    x_vars = c("q1", "q2", "q3"),
+    x_var_labels = c("Question 1", "Question 2", "Question 3"),
+    stacked_type = "counts"
+  )
+  expect_s3_class(result, "highchart")
+})
+
+test_that("viz_stackedbar x_vars mode with percent type", {
+  data <- data.frame(
+    q1 = sample(1:5, 100, replace = TRUE),
+    q2 = sample(1:5, 100, replace = TRUE)
+  )
+  
+  result <- viz_stackedbar(
+    data = data,
+    x_vars = c("q1", "q2"),
+    x_var_labels = c("Q1", "Q2"),
+    stacked_type = "percent"
+  )
+  expect_s3_class(result, "highchart")
+})
+
+test_that("viz_stackedbar gives helpful error for missing params", {
+  data <- data.frame(x = 1:10)
+  
+  expect_error(
+    viz_stackedbar(data = data, x_var = "x"),
+    "stack_var"
+  )
+  
+  expect_error(
+    viz_stackedbar(data = data),
+    "x_var.*x_vars"
+  )
+})
+
+test_that("viz_stackedbar gives error for conflicting params", {
+  data <- data.frame(
+    q1 = 1:10,
+    response = c("A", "B")
+  )
+  
+  expect_error(
+    viz_stackedbar(data = data, x_var = "q1", x_vars = c("q1")),
+    "Cannot use both"
+  )
+})
+
+# ===================================================================
+# viz_stackedbars (legacy wrapper)
 # ===================================================================
 
 test_that("viz_stackedbars works with multiple questions", {
@@ -141,8 +203,6 @@ test_that("viz_stackedbars works with multiple questions", {
 })
 
 test_that("viz_stackedbars with percent type", {
-  skip("Edge case with stacked_type parameter")
-  
   data <- data.frame(
     q1 = sample(1:5, 100, replace = TRUE),
     q2 = sample(1:5, 100, replace = TRUE)

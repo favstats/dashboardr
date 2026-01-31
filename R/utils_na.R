@@ -17,10 +17,34 @@ handle_na_for_plotting <- function(data, var_name, include_na = FALSE,
   
   # Check if it's already a factor and preserve its levels if no custom_order
   is_factor <- is.factor(col_data)
+
   existing_levels <- if (is_factor) levels(col_data) else NULL
+  
+  # Check if original data is numeric BEFORE character conversion
+
+  # This ensures we sort numerically even for edge cases (scientific notation, etc.)
+  is_originally_numeric <- is.numeric(col_data) && !is_factor
   
   # Convert to character for manipulation
   temp_var <- as.character(col_data)
+
+  # Helper function to sort values (numeric or alphabetic)
+  sort_values <- function(vals) {
+    if (length(vals) == 0) return(vals)
+    
+    if (is_originally_numeric) {
+      # Original column was numeric - sort using original numeric values
+      # Match back to original data for proper numeric sorting
+      numeric_vals <- unique(col_data[!is.na(col_data)])
+      return(as.character(sort(numeric_vals)))
+    } else if (all(grepl("^-?[0-9]+(\\.[0-9]+)?$", vals))) {
+      # String values that look numeric - parse and sort numerically
+      return(as.character(sort(as.numeric(vals))))
+    } else {
+      # Non-numeric - sort alphabetically
+      return(sort(vals))
+    }
+  }
 
   if (include_na) {
     # Replace NA with custom label
@@ -55,15 +79,8 @@ handle_na_for_plotting <- function(data, var_name, include_na = FALSE,
       # Auto-order with NA label at end
       unique_vals_no_na <- setdiff(unique_vals, na_label)
 
-      # Sort numeric-like strings numerically if possible
-      if (length(unique_vals_no_na) > 0 && 
-          all(grepl("^-?[0-9]+(\\.[0-9]+)?$", unique_vals_no_na))) {
-        # All values are numeric, sort numerically
-        unique_vals_no_na <- as.character(sort(as.numeric(unique_vals_no_na)))
-      } else {
-        # Contains non-numeric values, sort alphabetically
-        unique_vals_no_na <- sort(unique_vals_no_na)
-      }
+      # Sort values (numerically if originally numeric, otherwise alphabetically)
+      unique_vals_no_na <- sort_values(unique_vals_no_na)
 
       # Put NA label at the end
       levels <- if (na_label %in% unique_vals) {
@@ -83,8 +100,10 @@ handle_na_for_plotting <- function(data, var_name, include_na = FALSE,
       # Preserve existing factor levels
       result <- factor(temp_var, levels = existing_levels)
     } else {
-      # Create factor with default ordering
-      result <- factor(temp_var)
+      # Create factor with proper ordering
+      unique_vals <- unique(temp_var[!is.na(temp_var)])
+      sorted_levels <- sort_values(unique_vals)
+      result <- factor(temp_var, levels = sorted_levels)
     }
   }
 

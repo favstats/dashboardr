@@ -43,17 +43,18 @@
     <li><a class="dropdown-item" href="../articles/content-collections.html">- Content</a></li>
     <li><a class="dropdown-item" href="../articles/pages.html">- Pages</a></li>
     <li><a class="dropdown-item" href="../articles/dashboards.html">- Dashboards</a></li>
+    <li><a class="dropdown-item" href="../articles/publishing_dashboards.html">🌐 Publishing Dashboards</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><a class="dropdown-item" href="../articles/advanced-features.html">⚙️ Advanced Features</a></li>
-    <li><a class="dropdown-item" href="../articles/publishing_dashboards.html">🌐 Publishing Dashboards</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>📊 Visualization Types</h6></li>
     <li><a class="dropdown-item" href="../articles/bar_vignette.html">- Bar Charts</a></li>
     <li><a class="dropdown-item" href="../articles/timeline_vignette.html">- Timelines</a></li>
     <li><a class="dropdown-item" href="../articles/stackedbar_vignette.html">- Stacked Bars</a></li>
-    <li><a class="dropdown-item" href="../articles/stackedbars_vignette.html">- Stacked Bars (Multiple)</a></li>
     <li><a class="dropdown-item" href="../articles/heatmap_vignette.html">- Heatmaps</a></li>
     <li><a class="dropdown-item" href="../articles/histogram_vignette.html">- Histograms</a></li>
+    <li><a class="dropdown-item" href="../articles/density_vignette.html">- Density Plots</a></li>
+    <li><a class="dropdown-item" href="../articles/boxplot_vignette.html">- Box Plots</a></li>
     <li><a class="dropdown-item" href="../articles/scatter_vignette.html">- Scatter Plots</a></li>
     <li><a class="dropdown-item" href="../articles/treemap_vignette.html">- Treemaps</a></li>
     <li><a class="dropdown-item" href="../articles/map_vignette.html">- Maps</a></li>
@@ -289,6 +290,20 @@
 
         </dt>
         <dd>Preview any dashboardr object</dd>
+
+        <dt>
+
+          <code><a href="save_widget.html">save_widget()</a></code>
+
+        </dt>
+        <dd>Save widget as self-contained HTML</dd>
+
+        <dt>
+
+          <code><a href="validate_specs.html">validate_specs()</a></code>
+
+        </dt>
+        <dd>Validate visualization specifications in a collection</dd>
       </dl></div><div class="section level2">
       <h2 id="visualization-types">Visualization Types<a class="anchor" aria-label="anchor" href="#visualization-types"></a></h2>
 
@@ -305,6 +320,20 @@
 
         </dt>
         <dd>Create an Histogram</dd>
+
+        <dt>
+
+          <code><a href="viz_density.html">viz_density()</a></code>
+
+        </dt>
+        <dd>Create a Density Plot</dd>
+
+        <dt>
+
+          <code><a href="viz_boxplot.html">viz_boxplot()</a></code>
+
+        </dt>
+        <dd>Create a Box Plot</dd>
 
         <dt>
 
@@ -325,7 +354,7 @@
           <code><a href="viz_stackedbars.html">viz_stackedbars()</a></code>
 
         </dt>
-        <dd>Stacked Bar Charts (Multiple Variables)</dd>
+        <dd>Stacked Bar Charts for Multiple Variables (Legacy)</dd>
 
         <dt>
 
@@ -361,6 +390,59 @@
 
         </dt>
         <dd>Create a treemap visualization</dd>
+      </dl></div><div class="section level2">
+      <h2 id="tooltip-customization">Tooltip Customization<a class="anchor" aria-label="anchor" href="#tooltip-customization"></a></h2>
+
+      <div class="section-desc"><p>Functions for customizing chart tooltips</p></div>
+
+      <dl></dl></div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="tooltip.html">tooltip()</a></code>
+
+        </dt>
+        <dd>Create a Tooltip Configuration</dd>
+
+        <dt>
+
+          <code><a href="print.dashboardr_tooltip.html">print(<i>&lt;dashboardr_tooltip&gt;</i>)</a></code>
+
+        </dt>
+        <dd>Print method for tooltip configurations</dd>
+
+        <dt>
+
+          <code><a href="add_hc.html">add_hc()</a></code>
+
+        </dt>
+        <dd>Add a custom highcharter chart</dd>
+      </dl></div><div class="section level2">
+      <h2 id="stacked-bar-charts">Stacked Bar Charts<a class="anchor" aria-label="anchor" href="#stacked-bar-charts"></a></h2>
+
+      <div class="section-desc"><p><code><a href="../reference/viz_stackedbar.html">viz_stackedbar()</a></code> is the unified function for all stacked bar charts. Use <code>x_var</code> + <code>stack_var</code> for crosstabs, or <code>x_vars</code> for multi-variable comparisons. <code><a href="../reference/viz_stackedbars.html">viz_stackedbars()</a></code> is a legacy wrapper that calls <code><a href="../reference/viz_stackedbar.html">viz_stackedbar()</a></code>.</p></div>
+
+      <dl></dl></div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="viz_stackedbar.html">viz_stackedbar()</a></code>
+
+        </dt>
+        <dd>Create a Stacked Bar Chart</dd>
+
+        <dt>
+
+          <code><a href="viz_stackedbars.html">viz_stackedbars()</a></code>
+
+        </dt>
+        <dd>Stacked Bar Charts for Multiple Variables (Legacy)</dd>
       </dl></div><div class="section level2">
       <h2 id="navigation-layout">Navigation &amp; Layout<a class="anchor" aria-label="anchor" href="#navigation-layout"></a></h2>
 
@@ -829,6 +911,13 @@
 
         </dt>
         <dd>Print method for page objects</dd>
+
+        <dt>
+
+          <code><a href="print.dashboardr_widget.html">print(<i>&lt;dashboardr_widget&gt;</i>)</a></code>
+
+        </dt>
+        <dd>Print method for dashboardr_widget - opens in viewer</dd>
 
         <dt>
 

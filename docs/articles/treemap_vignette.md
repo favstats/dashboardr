@@ -1,6 +1,6 @@
 # Creating Treemaps with viz_treemap()
 
-## Introduction
+## 📖 Introduction
 
 Treemaps display hierarchical data as nested rectangles. The size of
 each rectangle represents its value - larger rectangles mean larger
@@ -33,7 +33,7 @@ column. You typically need to
 [`summarize()`](https://dplyr.tidyverse.org/reference/summarise.html)
 your data first.
 
-## Basic Treemaps
+## 📊 Basic Treemaps
 
 ### Simple Category Sizes
 
@@ -45,7 +45,7 @@ degree_counts <- gss %>%
   count(degree, name = "n")
 
 degree_counts
-#> # A tibble: 5 × 2
+#> # A tibble: 5 x 2
 #>   degree                       n
 #>   <fct>                    <int>
 #> 1 less than high school      287
@@ -85,7 +85,7 @@ plot <- viz_treemap(
 plot
 ```
 
-## Hierarchical Treemaps
+## 🏗️ Hierarchical Treemaps
 
 Treemaps shine when showing nested categories. Use `subgroup_var` for a
 second level:
@@ -96,7 +96,7 @@ degree_by_sex <- gss %>%
   count(sex, degree, name = "n")
 
 degree_by_sex
-#> # A tibble: 10 × 3
+#> # A tibble: 10 x 3
 #>    sex    degree                       n
 #>    <fct>  <fct>                    <int>
 #>  1 male   less than high school      110
@@ -140,7 +140,7 @@ plot <- viz_treemap(
 plot
 ```
 
-## Custom Colors
+## 🎨 Custom Colors
 
 ``` r
 plot <- viz_treemap(
@@ -154,7 +154,7 @@ plot <- viz_treemap(
 plot
 ```
 
-## Labels and Tooltips
+## 🏷️ Labels and Tooltips
 
 Customize what appears in the treemap cells and hover tooltips:
 
@@ -180,7 +180,7 @@ plot
 For hierarchical treemaps, both group and subgroup appear in tooltips
 automatically.
 
-## Using with create_content()
+## 📁 Using with create_content()
 
 ### Basic Integration
 
@@ -250,7 +250,7 @@ By Race
 
 By Region
 
-## Data Preparation Tips
+## 💡 Data Preparation Tips
 
 Treemaps need aggregated data. Here’s how to prepare GSS data:
 
@@ -259,7 +259,7 @@ Treemaps need aggregated data. Here’s how to prepare GSS data:
 ``` r
 # Count by one variable
 gss %>% count(degree, name = "n")
-#> # A tibble: 5 × 2
+#> # A tibble: 5 x 2
 #>   degree                       n
 #>   <fct>                    <int>
 #> 1 less than high school      287
@@ -274,7 +274,7 @@ gss %>% count(degree, name = "n")
 ``` r
 # Count by two variables for nested treemap
 gss %>% count(sex, degree, name = "n")
-#> # A tibble: 10 × 3
+#> # A tibble: 10 x 3
 #>    sex    degree                       n
 #>    <fct>  <fct>                    <int>
 #>  1 male   less than high school      110
@@ -296,7 +296,7 @@ gss %>% count(sex, degree, name = "n")
 gss %>%
   group_by(degree) %>%
   summarize(avg_age = mean(age, na.rm = TRUE), .groups = "drop")
-#> # A tibble: 5 × 2
+#> # A tibble: 5 x 2
 #>   degree                   avg_age
 #>   <fct>                      <dbl>
 #> 1 less than high school       49.9
@@ -306,7 +306,7 @@ gss %>%
 #> 5 graduate                    52.4
 ```
 
-## When to Use Treemaps
+## 🔍 When to Use Treemaps
 
 **Use treemaps when:** - Showing part-to-whole relationships - Comparing
 sizes across many categories - Displaying hierarchical data - Space is
@@ -315,7 +315,7 @@ limited (more compact than bar charts)
 **Use bar charts instead when:** - Precise comparisons are important -
 You have few categories (\< 5) - Order matters (rankings)
 
-## See Also
+## 📚 See Also
 
 - [`?viz_treemap`](https://favstats.github.io/dashboardr/reference/viz_treemap.md) -
   Full function documentation

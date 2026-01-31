@@ -1,6 +1,6 @@
 # Creating Interactive Heatmaps with \`viz_heatmap\`
 
-### Introduction
+### 📖 Introduction
 
 Welcome to this guide on how to use the `viz_heatmap` function as part
 of the `dashboardr` package. This guide demonstrates how to use this
@@ -34,7 +34,7 @@ GSS Panel 2020 dataset follows the same respondents across three waves
 (2016, 2018, 2020), providing rich longitudinal data for understanding
 social attitudes and demographic patterns.
 
-### Getting Started
+### ⚙️ Getting Started
 
 First, let’s load the necessary libraries and the `gss_2020` dataset.
 
@@ -49,7 +49,7 @@ library(dashboardr)
 data(gss_panel20)
 ```
 
-### Data Preparation
+### 📋 Data Preparation
 
 With any data analysis, the first step is to examine the data (namely,
 the variables) that we’re working with.
@@ -120,7 +120,7 @@ table(gss_clean$income_group, useNA = "always")
 #>         100         229        2055          49         434
 ```
 
-## Basic Heatmap Examples
+## 📊 Basic Heatmap Examples
 
 ### Example 1: Average Age by Education and Gender
 
@@ -210,7 +210,7 @@ plot2 <- viz_heatmap(
 plot2
 ```
 
-## Advanced Heatmap Features
+## ⚡ Advanced Heatmap Features
 
 ### Example 3: Including Missing Values
 
@@ -313,7 +313,7 @@ plot5 <- viz_heatmap(
 plot5
 ```
 
-### Labels and Tooltips Reference
+### 🏷️ Labels and Tooltips Reference
 
 Heatmaps support extensive label and tooltip customization:
 
@@ -354,9 +354,9 @@ viz_heatmap(
 )
 ```
 
-## Summary and Best Practices
+## 💡 Summary and Best Practices
 
-### Key Features Demonstrated
+### ✅ Key Features Demonstrated
 
 1.  **Basic heatmaps** with continuous values mapped to color intensity
 2.  **Custom ordering** of categorical variables for logical
@@ -368,7 +368,7 @@ viz_heatmap(
 6.  **Flexible aggregation** using different functions (mean, median)
 7.  **Longitudinal analysis** showing change over time
 
-### Best Practices for Heatmaps
+### 🎯 Best Practices for Heatmaps
 
 ``` r
 # 1. Always check your data structure first!
@@ -396,7 +396,7 @@ table(your_data$x_var, your_data$y_var, useNA = "always")
 # - Format numbers appropriately for your audience
 ```
 
-### Conclusion
+### 📚 Conclusion
 
 The
 [`viz_heatmap()`](https://favstats.github.io/dashboardr/reference/viz_heatmap.md)

@@ -3,19 +3,25 @@
 # --------------------------------------------------------------------------
 #' @title Create Bar Chart
 #' @description
-#' Creates horizontal or vertical bar charts showing counts or percentages.
+#' Creates horizontal or vertical bar charts showing counts, percentages, or means.
 #' Supports simple bars or grouped bars (when `group_var` is provided).
+#' Can display error bars (standard deviation, standard error, or confidence intervals)
+#' when showing means via `value_var`.
 #'
 #' @param data A data frame containing the survey data.
 #' @param x_var Character string. Name of the categorical variable for the x-axis.
 #' @param group_var Optional character string. Name of grouping variable to create separate bars
 #'   (e.g., score ranges, categories). Creates grouped/clustered bars.
+#' @param value_var Optional character string. Name of a numeric variable to aggregate.
+#'   When provided, bars show the mean of this variable per category (instead of counts).
+#'   Required for error bars with "sd", "se", or "ci".
 #' @param title Optional main title for the chart.
 #' @param subtitle Optional subtitle for the chart.
 #' @param x_label Optional label for the x-axis. Defaults to `x_var` name.
 #' @param y_label Optional label for the y-axis.
 #' @param horizontal Logical. If `TRUE`, creates horizontal bars. Defaults to `FALSE`.
-#' @param bar_type Character string. Type of bar chart: "count" or "percent". Defaults to "count".
+#' @param bar_type Character string. Type of bar chart: "count", "percent", or "mean".
+#'   Defaults to "count". When `value_var` is provided, automatically switches to "mean".
 #' @param color_palette Optional character vector of colors for the bars.
 #' @param group_order Optional character vector specifying the order of groups (for `group_var`).
 #' @param x_order Optional character vector specifying the order of x categories.
@@ -24,12 +30,26 @@
 #' @param x_breaks Optional numeric vector for binning continuous x variables.
 #' @param x_bin_labels Optional character vector of labels for x bins.
 #' @param include_na Logical. Whether to include NA values as a separate category. Defaults to `FALSE`.
-#' @param na_label Character string. Label for NA category if `include_na = TRUE`. Defaults to "Missing".
+#' @param na_label Character string. Label for NA category if `include_na = TRUE`. Defaults to "(Missing)".
 #' @param weight_var Optional character string. Name of a weight variable to use for weighted
 #'   aggregation. When provided, counts are computed as the sum of weights instead of simple counts.
-#' @param tooltip_prefix Optional string prepended to tooltip values.
-#' @param tooltip_suffix Optional string appended to tooltip values.
-#' @param x_tooltip_suffix Optional string appended to x-axis values in tooltips.
+#' @param error_bars Character string. Type of error bars to display: "none" (default), "sd" 
+#'   (standard deviation), "se" (standard error), or "ci" (confidence interval).
+#'   Requires `value_var` to be specified.
+#' @param ci_level Numeric. Confidence level for confidence intervals. Defaults to 0.95 (95% CI).
+#'   Only used when `error_bars = "ci"`.
+#' @param error_bar_color Character string. Color for error bars. Defaults to "black".
+#' @param error_bar_width Numeric. Width of error bar whiskers as percentage (0-100). Defaults to 50.
+#' @param tooltip A tooltip configuration created with \code{\link{tooltip}()}, 
+#'   OR a format string with \{placeholders\}. Available placeholders: 
+#'   \code{\{category\}}, \code{\{value\}}, \code{\{percent\}}, \code{\{series\}}.
+#'   For simple cases, use \code{tooltip_prefix} and \code{tooltip_suffix} instead.
+#'   See \code{\link{tooltip}} for full customization options.
+#' @param tooltip_prefix Optional string prepended to tooltip values (simple customization).
+#' @param tooltip_suffix Optional string appended to tooltip values (simple customization).
+#' @param x_tooltip_suffix Optional string appended to x-axis category in tooltips.
+#' @param data_labels_enabled Logical. If TRUE, show value labels on bars.
+#'   Default TRUE.
 #'
 #' @return A highcharter plot object.
 #'
@@ -60,11 +80,34 @@
 #' )
 #' plot3
 #'
+#' # Bar chart with means and error bars (95% CI)
+#' plot4 <- viz_bar(
+#'   data = mtcars,
+#'   x_var = "cyl",
+#'   value_var = "mpg",
+#'   error_bars = "ci",
+#'   title = "Mean MPG by Cylinders",
+#'   y_label = "Miles per Gallon"
+#' )
+#' plot4
+#'
+#' # Grouped means with standard error bars
+#' plot5 <- viz_bar(
+#'   data = mtcars,
+#'   x_var = "cyl",
+#'   group_var = "am",
+#'   value_var = "mpg",
+#'   error_bars = "se",
+#'   title = "Mean MPG by Cylinders and Transmission"
+#' )
+#' plot5
+#'
 #' @export
 
 viz_bar <- function(data,
                        x_var,
                        group_var = NULL,
+                       value_var = NULL,
                        title = NULL,
                        subtitle = NULL,
                        x_label = NULL,
@@ -79,15 +122,22 @@ viz_bar <- function(data,
                        x_breaks = NULL,
                        x_bin_labels = NULL,
                        include_na = FALSE,
-                       na_label = "Missing",
+                       na_label = "(Missing)",
                        weight_var = NULL,
+                       error_bars = "none",
+                       ci_level = 0.95,
+                       error_bar_color = "black",
+                       error_bar_width = 50,
+                       tooltip = NULL,
                        tooltip_prefix = "",
                        tooltip_suffix = "",
-                       x_tooltip_suffix = "") {
+                       x_tooltip_suffix = "",
+                       data_labels_enabled = TRUE) {
   
   # Convert variable arguments to strings (supports both quoted and unquoted)
   x_var <- .as_var_string(rlang::enquo(x_var))
   group_var <- .as_var_string(rlang::enquo(group_var))
+  value_var <- .as_var_string(rlang::enquo(value_var))
   weight_var <- .as_var_string(rlang::enquo(weight_var))
   
   # Input validation
@@ -98,7 +148,7 @@ viz_bar <- function(data,
   if (is.null(x_var)) {
     dashboardr:::.stop_with_hint("x_var", example = "viz_bar(data, x_var = \"category\")")
   }
-  
+
   if (!x_var %in% names(data)) {
     stop(paste0("Column '", x_var, "' not found in data."), call. = FALSE)
   }
@@ -107,13 +157,45 @@ viz_bar <- function(data,
     stop(paste0("Column '", group_var, "' not found in data."), call. = FALSE)
   }
   
-  if (!bar_type %in% c("count", "percent")) {
-    stop("`bar_type` must be either 'count' or 'percent'.", call. = FALSE)
+  if (!is.null(value_var) && !value_var %in% names(data)) {
+    stop(paste0("Column '", value_var, "' not found in data."), call. = FALSE)
+  }
+  
+  if (!is.null(value_var) && !is.numeric(data[[value_var]])) {
+    stop(paste0("'", value_var, "' must be a numeric column for computing means."), call. = FALSE)
+  }
+  
+  # If value_var is provided, automatically switch to mean mode
+  if (!is.null(value_var) && bar_type == "count") {
+    bar_type <- "mean"
+  }
+  
+  if (!bar_type %in% c("count", "percent", "mean")) {
+    stop("`bar_type` must be 'count', 'percent', or 'mean'.", call. = FALSE)
+  }
+  
+  # Validate error_bars parameter
+  if (!error_bars %in% c("none", "sd", "se", "ci")) {
+    stop("`error_bars` must be 'none', 'sd', 'se', or 'ci'.", call. = FALSE)
+  }
+  
+  # Error bars require value_var for sd/se/ci
+
+  if (error_bars %in% c("sd", "se", "ci") && is.null(value_var)) {
+    stop(paste0("`error_bars = '", error_bars, "'` requires `value_var` to be specified."), 
+         call. = FALSE)
+  }
+  
+  # Validate ci_level
+
+  if (!is.numeric(ci_level) || ci_level <= 0 || ci_level >= 1) {
+    stop("`ci_level` must be a number between 0 and 1 (e.g., 0.95 for 95% CI).", call. = FALSE)
   }
   
   # Select relevant variables
   vars_to_select <- x_var
   if (!is.null(group_var)) vars_to_select <- c(vars_to_select, group_var)
+  if (!is.null(value_var)) vars_to_select <- c(vars_to_select, value_var)
   if (!is.null(weight_var)) vars_to_select <- c(vars_to_select, weight_var)
   
   plot_data <- data %>%
@@ -186,7 +268,49 @@ viz_bar <- function(data,
   }
   
   # Aggregate data
-  if (is.null(group_var)) {
+  # Helper function to compute error metrics
+  .compute_error_metrics <- function(df, val_col, error_type, ci_lvl) {
+    df %>%
+      dplyr::summarize(
+        n = dplyr::n(),
+        mean_val = mean(!!rlang::sym(val_col), na.rm = TRUE),
+        sd_val = stats::sd(!!rlang::sym(val_col), na.rm = TRUE),
+        .groups = "drop"
+      ) %>%
+      dplyr::mutate(
+        se_val = .data$sd_val / sqrt(.data$n),
+        # t-value for confidence interval
+        t_val = stats::qt((1 + ci_lvl) / 2, df = pmax(.data$n - 1, 1)),
+        ci_val = .data$t_val * .data$se_val,
+        # Compute low/high based on error type
+        error_amount = dplyr::case_when(
+          error_type == "sd" ~ .data$sd_val,
+          error_type == "se" ~ .data$se_val,
+          error_type == "ci" ~ .data$ci_val,
+          TRUE ~ 0
+        ),
+        low = .data$mean_val - .data$error_amount,
+        high = .data$mean_val + .data$error_amount,
+        value = round(.data$mean_val, 2)
+      )
+  }
+  
+  if (bar_type == "mean" && !is.null(value_var)) {
+    # Mean aggregation with optional error bars
+    if (is.null(group_var)) {
+      # Simple mean by x_var
+      agg_data <- plot_data %>%
+        dplyr::filter(!is.na(!!rlang::sym(value_var))) %>%
+        dplyr::group_by(!!rlang::sym(x_var_plot)) %>%
+        .compute_error_metrics(value_var, error_bars, ci_level)
+    } else {
+      # Grouped means by x_var and group_var
+      agg_data <- plot_data %>%
+        dplyr::filter(!is.na(!!rlang::sym(value_var))) %>%
+        dplyr::group_by(!!rlang::sym(x_var_plot), !!rlang::sym(group_var)) %>%
+        .compute_error_metrics(value_var, error_bars, ci_level)
+    }
+  } else if (is.null(group_var)) {
     # Simple bar chart - count by x_var
     if (!is.null(weight_var)) {
       if (!weight_var %in% names(plot_data)) {
@@ -271,7 +395,11 @@ viz_bar <- function(data,
 
   # Set up axis labels
   final_x_label <- x_label %||% x_var
-  final_y_label <- y_label %||% if (bar_type == "percent") "Percentage" else "Count"
+  final_y_label <- y_label %||% switch(bar_type,
+    "percent" = "Percentage",
+    "mean" = paste0("Mean ", value_var),
+    "Count"
+  )
   
   # Create base chart
   hc <- highcharter::highchart()
@@ -302,6 +430,9 @@ viz_bar <- function(data,
       highcharter::hc_yAxis(title = list(text = final_y_label))
   }
   
+  # Check if we need error bars
+  has_error_bars <- error_bars != "none" && "low" %in% names(agg_data) && "high" %in% names(agg_data)
+  
   # Add series
   if (is.null(group_var)) {
     # Simple bars - single series with multiple colors per bar
@@ -329,10 +460,35 @@ viz_bar <- function(data,
     hc <- hc %>%
       highcharter::hc_add_series(
         name = final_y_label,
+        id = "main_series",
         data = series_data_list,
         showInLegend = FALSE,
         colorByPoint = TRUE  # Enable different colors for each bar
       )
+    
+    # Add error bars for simple bars (if applicable)
+    if (has_error_bars) {
+      error_data <- agg_data %>%
+        dplyr::arrange(!!rlang::sym(x_var_plot)) %>%
+        dplyr::rowwise() %>%
+        dplyr::mutate(
+          error_point = list(list(low = round(low, 2), high = round(high, 2)))
+        ) %>%
+        dplyr::pull(error_point)
+      
+      hc <- hc %>%
+        highcharter::hc_add_series(
+          type = "errorbar",
+          name = paste0(toupper(error_bars), " Error"),
+          data = error_data,
+          linkedTo = "main_series",
+          showInLegend = FALSE,
+          enableMouseTracking = TRUE,
+          whiskerLength = paste0(error_bar_width, "%"),
+          color = error_bar_color,
+          stemWidth = 1.5
+        )
+    }
     
     # Apply color palette to individual bars
     if (!is.null(color_palette) && length(color_palette) >= 1) {
@@ -347,6 +503,9 @@ viz_bar <- function(data,
       unique(agg_data[[group_var]])
     }
     
+    # Create series IDs for linking error bars
+    series_ids <- paste0("series_", seq_along(group_levels))
+    
     for (i in seq_along(group_levels)) {
       group_level <- group_levels[i]
       
@@ -358,8 +517,38 @@ viz_bar <- function(data,
       hc <- hc %>%
         highcharter::hc_add_series(
           name = as.character(group_level),
+          id = series_ids[i],
           data = series_data
         )
+    }
+    
+    # Add error bars for grouped bars (if applicable)
+    if (has_error_bars) {
+      for (i in seq_along(group_levels)) {
+        group_level <- group_levels[i]
+        
+        error_data <- agg_data %>%
+          dplyr::filter(!!rlang::sym(group_var) == group_level) %>%
+          dplyr::arrange(!!rlang::sym(x_var_plot)) %>%
+          dplyr::rowwise() %>%
+          dplyr::mutate(
+            error_point = list(list(low = round(low, 2), high = round(high, 2)))
+          ) %>%
+          dplyr::pull(error_point)
+        
+        hc <- hc %>%
+          highcharter::hc_add_series(
+            type = "errorbar",
+            name = paste0(as.character(group_level), " ", toupper(error_bars)),
+            data = error_data,
+            linkedTo = series_ids[i],
+            showInLegend = FALSE,
+            enableMouseTracking = TRUE,
+            whiskerLength = paste0(error_bar_width, "%"),
+            color = error_bar_color,
+            stemWidth = 1.5
+          )
+      }
     }
     
     # Apply color palette if specified
@@ -369,22 +558,24 @@ viz_bar <- function(data,
   }
   
   # Enable data labels
-  # Use whole numbers for count mode (especially important when using weights)
+  # Use appropriate decimal places based on bar_type
+  data_label_format <- switch(bar_type,
+    "percent" = "{point.y:.0f}%",
+    "mean" = "{point.y:.1f}",  # One decimal for means
+    "{point.y:.0f}"  # Whole numbers for counts
+  )
+  
   hc <- hc %>%
     highcharter::hc_plotOptions(
       series = list(
         dataLabels = list(
-          enabled = TRUE,
-          format = if (bar_type == "percent") "{point.y:.0f}%" else "{point.y:.0f}"
+          enabled = data_labels_enabled,
+          format = data_label_format
         )
       )
     )
   
   # ─── TOOLTIP ───────────────────────────────────────────────────────────────
-  pre <- if (is.null(tooltip_prefix) || tooltip_prefix == "") "" else tooltip_prefix
-  suf <- if (is.null(tooltip_suffix) || tooltip_suffix == "") "" else tooltip_suffix
-  xsuf <- if (is.null(x_tooltip_suffix) || x_tooltip_suffix == "") "" else x_tooltip_suffix
-  
   # Calculate total for percentage calculation in tooltips
   total_value <- if (bar_type == "percent") {
     100  # For percent type, total is always 100
@@ -392,75 +583,117 @@ viz_bar <- function(data,
     sum(agg_data$value, na.rm = TRUE)
   }
   
-  # Format tooltip based on bar type and whether grouped
-  if (is.null(group_var)) {
-    # Simple bars - single series
-    if (bar_type == "percent") {
-      # For percent bars, show percentage
-      tooltip_fn <- sprintf(
-        "function() {
-           var cat = this.point.category || this.series.chart.xAxis[0].categories[this.point.x] || this.x;
-           var pct = this.y.toFixed(1);
-           
-           // Try to get raw value if available (for weighted data)
-           var rawVal = this.point.rawValue || this.point.options.rawValue;
-           var tooltipText = '<b>' + cat + '%s</b><br/>';
-           
-           if (rawVal !== undefined && rawVal !== null) {
-             // Show both raw value and percentage
-             tooltipText += '%s' + rawVal.toLocaleString('en-US', {maximumFractionDigits: 1}) + '%s<br/>';
-             tooltipText += '<span style=\"color:#666;font-size:0.9em\">' + pct + '%% of total</span>';
-           } else {
-             // Just show percentage
-             tooltipText += '%s' + pct + '%%' + '%s';
-           }
-           return tooltipText;
-         }",
-        xsuf, # x_tooltip_suffix
-        pre,  # tooltip_prefix
-        suf,  # tooltip_suffix
-        pre,  # tooltip_prefix (for percentage if no raw value)
-        suf   # tooltip_suffix (for percentage if no raw value)
+  if (!is.null(tooltip)) {
+    # Use new unified tooltip system when custom tooltip is provided
+    tooltip_result <- .process_tooltip_config(
+      tooltip = tooltip,
+      tooltip_prefix = tooltip_prefix,
+      tooltip_suffix = tooltip_suffix,
+      x_tooltip_suffix = x_tooltip_suffix,
+      chart_type = "bar",
+      context = list(
+        bar_type = bar_type,
+        is_grouped = !is.null(group_var),
+        total_value = total_value,
+        x_label = final_x_label,
+        y_label = final_y_label
       )
-    } else {
-      # For count bars, show value and percentage of total
-      tooltip_fn <- sprintf(
-        "function() {
-           var cat = this.point.category || this.series.chart.xAxis[0].categories[this.point.x] || this.x;
-           var val = this.y;
-           var total = %s;
-           var pct = total > 0 ? (val / total * 100).toFixed(1) : 0;
-           return '<b>' + cat + '%s</b><br/>' +
-                  '%s' + val.toLocaleString() + '%s<br/>' +
-                  '<span style=\"color:#666;font-size:0.9em\">' + pct + '%% of total</span>';
-         }",
-        total_value,
-        xsuf, # x_tooltip_suffix
-        pre,  # tooltip_prefix
-        suf   # tooltip_suffix
-      )
-    }
-  } else {
-    # Grouped bars - multiple series
-    tooltip_fn <- sprintf(
-      "function() {
-         var cat = this.point.category || this.series.chart.xAxis[0].categories[this.point.x] || this.x;
-         var val = %s;
-         return '<b>' + cat + '%s</b><br/>' +
-                this.series.name + ': %s' + val + '%s';
-       }",
-      if (bar_type == "percent") {
-        "this.y.toFixed(1)"
-      } else {
-        "this.y"
-      },
-      xsuf, # x_tooltip_suffix
-      pre,  # tooltip_prefix
-      suf   # tooltip_suffix
     )
+    hc <- .apply_tooltip_to_hc(hc, tooltip_result)
+  } else {
+    # Use original working tooltip code
+    pre <- if (is.null(tooltip_prefix) || tooltip_prefix == "") "" else tooltip_prefix
+    suf <- if (is.null(tooltip_suffix) || tooltip_suffix == "") "" else tooltip_suffix
+    xsuf <- if (is.null(x_tooltip_suffix) || x_tooltip_suffix == "") "" else x_tooltip_suffix
+    
+    # Error bar type label for tooltip
+    error_label <- switch(error_bars,
+      "sd" = "SD",
+      "se" = "SE", 
+      "ci" = paste0(round(ci_level * 100), "% CI"),
+      ""
+    )
+    
+    if (is.null(group_var)) {
+      # Simple bars - single series
+      if (bar_type == "percent") {
+        tooltip_fn <- sprintf(
+          "function() {
+             var cat = this.point.category || this.series.chart.xAxis[0].categories[this.point.x] || this.x;
+             var pct = this.y.toFixed(1);
+             var rawVal = this.point.rawValue || this.point.options.rawValue;
+             var tooltipText = '<b>' + cat + '%s</b><br/>';
+             if (rawVal !== undefined && rawVal !== null) {
+               tooltipText += '%s' + rawVal.toLocaleString('en-US', {maximumFractionDigits: 1}) + '%s<br/>';
+               tooltipText += '<span style=\"color:#666;font-size:0.9em\">' + pct + '%% of total</span>';
+             } else {
+               tooltipText += '%s' + pct + '%%' + '%s';
+             }
+             return tooltipText;
+           }",
+          xsuf, pre, suf, pre, suf
+        )
+      } else if (bar_type == "mean" && has_error_bars) {
+        # Mean with error bars - show range in tooltip
+        tooltip_fn <- sprintf(
+          "function() {
+             if (this.series.type === 'errorbar') {
+               return '<b>' + this.series.chart.xAxis[0].categories[this.point.x] + '</b><br/>' +
+                      '%s: ' + this.point.low.toFixed(2) + ' - ' + this.point.high.toFixed(2);
+             }
+             var cat = this.point.category || this.series.chart.xAxis[0].categories[this.point.x] || this.x;
+             return '<b>' + cat + '%s</b><br/>' +
+                    'Mean: %s' + this.y.toFixed(2) + '%s';
+           }",
+          error_label, xsuf, pre, suf
+        )
+      } else {
+        tooltip_fn <- sprintf(
+          "function() {
+             var cat = this.point.category || this.series.chart.xAxis[0].categories[this.point.x] || this.x;
+             var val = this.y;
+             var total = %s;
+             var pct = total > 0 ? (val / total * 100).toFixed(1) : 0;
+             return '<b>' + cat + '%s</b><br/>' +
+                    '%s' + val.toLocaleString() + '%s<br/>' +
+                    '<span style=\"color:#666;font-size:0.9em\">' + pct + '%% of total</span>';
+           }",
+          total_value, xsuf, pre, suf
+        )
+      }
+    } else {
+      # Grouped bars - multiple series
+      if (bar_type == "mean" && has_error_bars) {
+        # Grouped means with error bars
+        tooltip_fn <- sprintf(
+          "function() {
+             if (this.series.type === 'errorbar') {
+               var cat = this.series.chart.xAxis[0].categories[this.point.x];
+               return '<b>' + cat + '</b><br/>' +
+                      '%s: ' + this.point.low.toFixed(2) + ' - ' + this.point.high.toFixed(2);
+             }
+             var cat = this.point.category || this.series.chart.xAxis[0].categories[this.point.x] || this.x;
+             return '<b>' + cat + '%s</b><br/>' +
+                    this.series.name + ': %s' + this.y.toFixed(2) + '%s';
+           }",
+          error_label, xsuf, pre, suf
+        )
+      } else {
+        tooltip_fn <- sprintf(
+          "function() {
+             var cat = this.point.category || this.series.chart.xAxis[0].categories[this.point.x] || this.x;
+             var val = %s;
+             return '<b>' + cat + '%s</b><br/>' +
+                    this.series.name + ': %s' + val + '%s';
+           }",
+          if (bar_type == "percent") "this.y.toFixed(1)" else "this.y",
+          xsuf, pre, suf
+        )
+      }
+    }
+    
+    hc <- hc %>% highcharter::hc_tooltip(formatter = highcharter::JS(tooltip_fn), useHTML = TRUE)
   }
-  
-  hc <- hc %>% highcharter::hc_tooltip(formatter = highcharter::JS(tooltip_fn), useHTML = TRUE)
   
   return(hc)
 }

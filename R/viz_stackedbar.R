@@ -1,247 +1,451 @@
 # --------------------------------------------------------------------------
-# Function: viz_stackedbar
+# Function: viz_stackedbar (Unified)
 # --------------------------------------------------------------------------
 #' @export
 #' @title Create a Stacked Bar Chart
 #'
-#' @description This function creates a stacked barchart for survey data. It
-#'              handles raw (unaggregated) data, counting the occurrences of
-#'              categories, supporting ordered factors, allowing numerical x-axis
-#'              and stacked variables to be binned into custom groups, and
-#'              enables renaming of categorical values for display. It can also
-#'              handle SPSS (.sav) columns automatically.
+#' @description
+#' A unified function for creating stacked bar charts that supports two modes:
 #'
-#' @param data A data frame containing the raw survey data (one row per respondent).
-#' @param x_var String. Name of the column for the X-axis categories.
-#' @param y_var Optional string. Name of a pre-computed count column. If NULL (default),
-#'   the function counts occurrences.
+#' **Mode 1: Grouped/Crosstab Mode** (use `x_var` + `stack_var`)
+#'
+#' Creates a stacked bar chart from long/tidy data where one column provides
+
+#' the x-axis categories and another column provides the stack segments.
+#' This is ideal for cross-tabulating responses by demographic groups.
+#'
+#' **Mode 2: Multi-Variable/Battery Mode** (use `x_vars`)
+#'
+#' Creates a stacked bar chart from wide data where multiple columns become
+#' the x-axis bars, and their values become the stacks. This is ideal for
+#' comparing response distributions across multiple survey questions.
+#'
+#' The function automatically detects which mode to use based on the parameters
+#' provided.
+#'
+#' @param data A data frame containing the survey data.
+#'
+#' @section Mode 1 Parameters (Grouped/Crosstab):
+#' @param x_var String. Name of the column for X-axis categories. Use this
+#'   together with `stack_var` for crosstab-style charts.
 #' @param stack_var String. Name of the column whose values define the stacks.
+#'   Required when using `x_var`.
+#' @param y_var Optional string. Name of a pre-computed count column. If NULL
+#'   (default), the function counts occurrences.
+#'
+#' @section Mode 2 Parameters (Multi-Variable/Battery):
+#' @param x_vars Character vector of column names to compare. Each column becomes
+#'   a bar on the x-axis, and the values within each column become the stacks.
+#'   Use this for comparing multiple survey questions with the same response scale.
+#' @param x_var_labels Optional character vector of display labels for the variables.
+#'   Must be the same length as `x_vars`. If NULL, column names are used.
+#' @param response_levels Optional character vector of factor levels for the
+#'   response categories (e.g., `c("Strongly Disagree", ..., "Strongly Agree")`).
+#'   This sets the order of the stacks in multi-variable mode.
+#' @param show_var_tooltip Logical. If TRUE (default), shows enhanced tooltips
+#'   with variable labels in multi-variable mode.
+#'
+#' @section Common Parameters:
 #' @param title Optional string. Main chart title.
 #' @param subtitle Optional string. Chart subtitle.
-#' @param x_label Optional string. X-axis label. Defaults to `x_var`.
-#' @param y_label Optional string. Y-axis label. Defaults to "Count" for counts
-#'   or "Percentage" for percent stacking.
-#' @param stack_label Optional string. Title for the stack legend. Defaults to empty (no title).
-#' @param stacked_type One of "counts" (default) or "percent" (100% stacked).
+#' @param x_label Optional string. X-axis label. Defaults to empty in crosstab mode
+#'   or "Variable" in multi-variable mode.
+#' @param y_label Optional string. Y-axis label. Defaults to "Count" or "Percentage".
+#' @param stack_label Optional string. Title for the stack legend.
+#'   Set to NULL, NA, FALSE, or "" to hide the legend title.
+#' @param stacked_type One of "normal", "counts" (both show raw counts), or
+#'   "percent" (100% stacked). Defaults to "counts".
+#' @param tooltip A tooltip configuration created with \code{\link{tooltip}()},
+#'   OR a format string with \{placeholders\}. Available placeholders:
+#'   \code{\{category\}}, \code{\{value\}}, \code{\{series\}}, \code{\{percent\}}.
 #' @param tooltip_prefix Optional string prepended to tooltip values.
 #' @param tooltip_suffix Optional string appended to tooltip values.
 #' @param x_tooltip_suffix Optional string appended to x-axis values in tooltips.
 #' @param color_palette Optional character vector of colors for the stacks.
-#' @param stack_order Optional character vector specifying order of `stack_var` levels.
-#' @param x_order Optional character vector specifying order of `x_var` levels.
-#' @param include_na Logical. If TRUE, NA values in both `x_var` and `stack_var` are
-#'   shown as explicit categories. If FALSE (default), rows with NA in either variable
-#'   are excluded. Default FALSE.
-#' @param na_label_x String. Label for NA values in `x_var` when `include_na = TRUE`.
-#'   Default "(Missing)".
-#' @param na_label_stack String. Label for NA values in `stack_var` when `include_na = TRUE`.
-#'   Default "(Missing)".
+#' @param stack_order Optional character vector specifying order of stack levels.
+#' @param x_order Optional character vector specifying order of x-axis levels.
+#' @param include_na Logical. If TRUE, NA values are shown as explicit categories.
+#'   If FALSE (default), rows with NA are excluded.
+#' @param na_label_x String. Label for NA values on x-axis. Default "(Missing)".
+#' @param na_label_stack String. Label for NA values in stacks. Default "(Missing)".
 #' @param x_breaks Optional numeric vector of cut points for binning `x_var`.
 #' @param x_bin_labels Optional character vector of labels for `x_breaks` bins.
-#' @param x_map_values Optional named list to remap `x_var` values for display.
-#' @param stack_breaks Optional numeric vector of cut points for binning `stack_var`.
+#' @param x_map_values Optional named list to remap x-axis values for display.
+#' @param stack_breaks Optional numeric vector of cut points for binning stack variable.
 #' @param stack_bin_labels Optional character vector of labels for `stack_breaks` bins.
-#' @param stack_map_values Optional named list to remap `stack_var` values for display.
+#' @param stack_map_values Optional named list to remap stack values for display.
 #' @param horizontal Logical. If TRUE, creates horizontal bars. Default FALSE.
-#' @param weight_var Optional string. Name of a weight variable to use for weighted aggregation.
-#'   When provided, counts are replaced with weighted sums using this variable.
+#' @param weight_var Optional string. Name of a weight variable for weighted counts.
+#' @param data_labels_enabled Logical. If TRUE, show value labels on bars. Default TRUE.
 #'
 #' @return An interactive `highcharter` bar chart plot object.
 #'
 #' @examples
-#' # Load GSS data
 #' library(gssr)
 #' data(gss_panel20)
 #'
-#' # Example 1: Basic stacked bar (excluding NAs)
+#' # ============================================================
+#' # MODE 1: Grouped/Crosstab - One variable broken down by another
+#' # ============================================================
+#'
+#' # Example 1: Education by Gender (counts)
 #' plot1 <- viz_stackedbar(
 #'   data = gss_panel20,
 #'   x_var = "degree_1a",
 #'   stack_var = "sex_1a",
 #'   title = "Educational Attainment by Gender",
-#'   subtitle = "GSS respondents 2010-present (NAs excluded)",
-#'   x_label = "Highest Degree Completed",
-#'   y_label = "Number of Respondents",
-#'   stack_label = "Gender",
-#'   include_na = FALSE  # Exclude missing values
+#'   x_label = "Highest Degree",
+#'   stack_label = "Gender"
 #' )
-#' plot1
 #'
-#'education_map = list("less than high school" = "High School or Less",
-#'                     "high school" = "High School",
-#'                     "associate/junior college" = "Associate or Junior College",
-#'                     "bachelor's" = "Bachelor's Degree",
-#'                     "graduate" = "Master's Degree or Higher"
-#'                    )
-#'
-#' # Example 2: Including NA values with custom labels
+#' # Example 2: Happiness by Education (percentages)
 #' plot2 <- viz_stackedbar(
 #'   data = gss_panel20,
 #'   x_var = "degree_1a",
-#'   x_label = "Degree"
-#'   stack_var = "sex_1a",
-#'   title = "Educational Attainment by Gender (Including Missing Data)",
-#'   subtitle = "GSS respondents 2010-present",
-#'   x_order = education_order,
-#'   include_na = TRUE,
-#'   na_label_x = "Education Not Reported",
-#'   na_label_stack = "Gender Not Reported"
+#'   stack_var = "happy_1a",
+#'   title = "Happiness by Education Level",
+#'   stacked_type = "percent",
+#'   tooltip_suffix = "%"
 #' )
-#' plot2
 #'
-#'education_order = list("High School or Less",
-#'                       "High School",
-#'                       "Associate or Junior College",
-#'                       "Bachelor's Degree",
-#'                       "Master's Degree or Higher"
-#')
+#' # ============================================================
+#' # MODE 2: Multi-Variable/Battery - Compare multiple questions
+#' # ============================================================
 #'
-#'happiness_map = list("very happy" = "Very Happy",
-#'                     "pretty happy" = "Pretty Happy",
-#'                     "not too happy" = "Not Too Happy"
-#')
-#'
-#' # Example 3: Percentage stacked with NA handling and custom ordering and stack labels
+#' # Example 3: Compare multiple attitude questions
 #' plot3 <- viz_stackedbar(
 #'   data = gss_panel20,
-#'   x_var = "degree_1a",
-#'   stack_var = "happy_1a",
-#'   title = "Happiness Distribution by Education Level",
-#'   subtitle = "Percentage within each education category",
-#'   x_label = "Education Level",
-#'   y_label = "Percentage",
-#'   stack_label = "Reported Happiness",
+#'   x_vars = c("trust_1a", "fair_1a", "helpful_1a"),
+#'   x_var_labels = c("Trust Others", "Others Are Fair", "Others Are Helpful"),
+#'   title = "Social Trust Battery",
 #'   stacked_type = "percent",
-#'   stack_map_values = "happiness_map"
-#'   x_map_values = education_map,
-#'   stack_order = c("Very Happy", "Pretty Happy", "Not Too Happy"),
-#'   tooltip_suffix = "%",
-#'   color_palette = c("#2E8B57", "#FFD700", "#CD5C5C", "grey"),
-#'   include_na = TRUE,
-#'   na_label_x = "Missing",
-#'   na_label_stack = "No Answer",
-#'   x_order = education_order
+#'   tooltip_suffix = "%"
 #' )
-#' plot3
 #'
-#' # Example 4: Age binning with political views
-#' age_breaks <- c(18, 30, 45, 60, 75, Inf)
-#' age_labels <- c("18-29", "30-44", "45-59", "60-74", "75+")
-#' gss_panel20$age_1a_numeric <- as.numeric(gss_panel20$age_1a)
-#' stack_order = list("extremely liberal", "liberal", "slightly liberal",
-#'                    "moderate, middle of the road", "slightly conservative",
-#'                    "conservative", "extremely conservative")
-#'
+#' # Example 4: Single question horizontal (compact display)
 #' plot4 <- viz_stackedbar(
 #'   data = gss_panel20,
-#'   x_var = "age_1a_numeric",
-#'   stack_var = "polviews_1a",
-#'   title = "Political Views by Age Group",
-#'   subtitle = "Distribution across age cohorts",
-#'   x_label = "Age Group",
-#'   stack_label = "Political Views",
-#'   x_breaks = age_breaks,
-#'   x_bin_labels = age_labels,
+#'   x_vars = "happy_1a",
+#'   title = "General Happiness",
 #'   stacked_type = "percent",
-#'   tooltip_suffix = "%",
-#'   color_palette = c("darkblue", "blue", "lightblue", "purple", "tomato",  "red", "darkred"),
-#'   include_na = FALSE  # Exclude NAs for cleaner visualization
+#'   horizontal = TRUE
 #' )
-#' plot4
 #'
-#' # Example 5: Custom value mapping with NA inclusion
-#' sex_map <- list("male" = "Men", "female" = "Women")
+#' @seealso
+#' \code{\link{viz_bar}} for simple (non-stacked) bar charts
 #'
-#' plot5 <- viz_stackedbar(
-#'   data = gss_panel20,
-#'   x_var = "happy_1a",
-#'   stack_var = "sex_1a",
-#'   x_label = "Reported Happiness",
-#'   title = "Gender Distribution Across Happiness Levels",
-#'   x_order = c("Very Happy", "Pretty Happy", "Not Too Happy"),
-#'   stack_map_values = sex_map,
-#'   x_map_values = happiness_map,
-#'   stack_order = c("Women", "Men"),
-#'   stacked_type = "counts",
-#'   tooltip_prefix = "Count: ",
-#'   include_na = TRUE,
-#'   na_label_x = "Happiness Not Reported",
-#'   na_label_stack = "Gender Not Specified"
-#' )
-#' plot5
+#' @details
+#' **Choosing the Right Mode:**
 #'
+#' Use **Mode 1** (`x_var` + `stack_var`) when you want to:
+#' - Show how one variable breaks down by another (e.g., education by gender)
+#' - Create a cross-tabulation visualization
+#' - Your data is already in long/tidy format
 #'
-#' @details This function performs the following steps:
-#' \enumerate{
-#'   \item **Input Validation:** Checks if the provided `data` is a data frame and if `x_var` and `stack_var` columns exist.
-#'   \item **Data Copy:** Creates a mutable copy of the input `data` to perform transformations without affecting the original.
-#'   \item **Handle 'haven_labelled' Columns:** If `haven` package is available, it detects if `x_var` or `stack_var` are of class `haven_labelled` (common for data imported from SPSS/Stata/SAS). If so, it converts them to standard R factors, using their underlying numeric values as levels (e.g., a '1' that was labeled "Male" will become a factor level "1"). This ensures `recode` can operate correctly.
-#'   \item **Apply Value Mapping (`x_map_values`, `stack_map_values`):** If provided, `x_map_values` and `stack_map_values` (named lists, e.g., `list("1"="Male")`) are used to rename the values in `x_var` and `stack_var` respectively. This is useful for converting numeric codes or abbreviations into descriptive labels. If the column is a factor, it's temporarily converted to character to ensure `dplyr::recode` works reliably on the values.
-#'   \item **Handle Binning (`x_breaks`, `x_bin_labels`, `stack_breaks`, `stack_bin_labels`):**
-#'     \itemize{
-#'       \item If `x_var` (or `stack_var`) is numeric and corresponding `_breaks` are provided, the function uses `base::cut()` to discretize the numeric variable into bins.
-#'       \item `_bin_labels` can be supplied to give custom names to these bins (e.g., "18-24" instead of "(17,25]"). If not provided, `cut()` generates default labels.
-#'       \item A temporary column (e.g., `.x_var_binned`) is created to hold the binned values, and this temporary column is then used for plotting.
-#'     }
-#'   \item **Data Aggregation and Final Factor Handling:**
-#'     \itemize{
-#'       \item The data is transformed using `dplyr::mutate` to ensure `x_var` and `stack_var` (or their binned versions) are treated as factors. If `include_na = TRUE`, missing values are converted into an explicit "(NA)" factor level.
-#'       \item If `weight_var` is provided, weighted sums are calculated for each combination of `x_var` and `stack_var` using `sum(weight_var, na.rm = TRUE)`. Otherwise, `dplyr::count()` is used to count occurrences for each unique combination. This creates the `n` column required for `highcharter`.
-#'     }
-#'   \item **Apply Custom Ordering (`x_order`, `stack_order`):** If provided, `x_order` and `stack_order` are used to set the display order of the factor levels for the X-axis and stack categories, respectively. This is essential for ordinal scales (e.g., Likert scales) or custom desired sorting. Levels not found in the order vector are appended at the end.
-#'   \item **Highcharter Chart Generation:** The aggregated `plot_data` is passed to `highcharter::hchart()` to create the base stacked column chart.
-#'   \item **Chart Customization:** Titles, subtitles, axis labels, stacking type (counts vs. percent), data labels, legend titles, tooltips, and custom color palettes are applied based on the function's arguments.
-#'   \item **Return Value:** The function returns a `highcharter` plot object, which can be printed directly to display the interactive chart.
-#' }
+#' Use **Mode 2** (`x_vars`) when you want to:
+#' - Compare response distributions across multiple survey questions
+#' - Visualize a Likert scale battery
+#' - Your questions share the same response categories
+#' - Your data is in wide format (one column per question)
+#'
+#' **Data Handling Features:**
+#' - Automatically handles `haven_labelled` columns from SPSS/Stata/SAS
+#' - Supports value mapping to rename categories for display
+#' - Supports binning of continuous variables
+#' - Handles missing values explicitly or implicitly
 #'
 
 ########################################################################
 
-# General function
+# Unified function that supports both modes
 viz_stackedbar <- function(data,
-                              x_var,
-                              y_var = NULL,
-                              stack_var,
-                              title = NULL,
-                              subtitle = NULL,
-                              x_label = NULL,
-                              y_label = NULL,
-                              stack_label = NULL,
-                              stacked_type = c("counts", "percent"),
-                              tooltip_prefix = "",
-                              tooltip_suffix = "",
-                              x_tooltip_suffix = "",
-                              color_palette = NULL,
-                              stack_order = NULL,
-                              x_order = NULL,
-                              include_na = FALSE,
-                              na_label_x = "(Missing)",
-                              na_label_stack = "(Missing)",
-                              x_breaks = NULL,
-                              x_bin_labels = NULL,
-                              x_map_values = NULL,
-                              stack_breaks = NULL,
-                              stack_bin_labels = NULL,
-                              stack_map_values = NULL,
-                              horizontal = FALSE,
-                              weight_var = NULL) {
+                           # Mode 1 parameters (crosstab)
+                           x_var = NULL,
+                           y_var = NULL,
+                           stack_var = NULL,
+                           # Mode 2 parameters (multi-variable)
+                           x_vars = NULL,
+                           x_var_labels = NULL,
+                           response_levels = NULL,
+                           show_var_tooltip = TRUE,
+                           # Common parameters
+                           title = NULL,
+                           subtitle = NULL,
+                           x_label = NULL,
+                           y_label = NULL,
+                           stack_label = NULL,
+                           stacked_type = c("counts", "percent", "normal"),
+                           tooltip = NULL,
+                           tooltip_prefix = "",
+                           tooltip_suffix = "",
+                           x_tooltip_suffix = "",
+                           color_palette = NULL,
+                           stack_order = NULL,
+                           x_order = NULL,
+                           include_na = FALSE,
+                           na_label_x = "(Missing)",
+                           na_label_stack = "(Missing)",
+                           x_breaks = NULL,
+                           x_bin_labels = NULL,
+                           x_map_values = NULL,
+                           stack_breaks = NULL,
+                           stack_bin_labels = NULL,
+                           stack_map_values = NULL,
+                           horizontal = FALSE,
+                           weight_var = NULL,
+                           data_labels_enabled = TRUE) {
 
   # Convert variable arguments to strings (supports both quoted and unquoted)
   x_var <- .as_var_string(rlang::enquo(x_var))
   y_var <- .as_var_string(rlang::enquo(y_var))
   stack_var <- .as_var_string(rlang::enquo(stack_var))
+  x_vars <- .as_var_strings(rlang::enquo(x_vars))
   weight_var <- .as_var_string(rlang::enquo(weight_var))
 
   # INPUT VALIDATION
   if (!is.data.frame(data)) {
     stop("Input 'data' must be a data frame.", call. = FALSE)
   }
-  if (is.null(x_var)) {
-    dashboardr:::.stop_with_hint("x_var", example = "viz_stackedbar(data, x_var = \"question\", stack_var = \"response\")")
+
+  stacked_type <- match.arg(stacked_type)
+
+  # Normalize "normal" to "counts" for internal consistency
+  if (stacked_type == "normal") {
+    stacked_type <- "counts"
   }
-  if (is.null(stack_var)) {
-    dashboardr:::.stop_with_hint("stack_var", example = "viz_stackedbar(data, x_var = \"question\", stack_var = \"response\")")
+
+  # =========================================================================
+  # MODE DETECTION: Determine which mode to use based on parameters
+
+  # =========================================================================
+  has_x_var <- !is.null(x_var)
+  has_stack_var <- !is.null(stack_var)
+  has_x_vars <- !is.null(x_vars) && length(x_vars) > 0
+
+  # Validate parameter combinations and provide helpful error messages
+  if (has_x_vars && has_x_var) {
+    stop(
+      "Cannot use both 'x_var' and 'x_vars' together.\n",
+      "- Use 'x_var' + 'stack_var' to show one variable broken down by another (e.g., education by gender)\n",
+      "- Use 'x_vars' to compare multiple columns/questions side by side",
+      call. = FALSE
+    )
   }
+
+  if (has_x_vars && has_stack_var) {
+    stop(
+      "'stack_var' is not used with 'x_vars'.\n",
+      "When using 'x_vars', the values within each column automatically become the stacks.\n",
+      "Use 'response_levels' to control the order of stack categories.",
+      call. = FALSE
+    )
+  }
+
+  if (!has_x_vars && !has_x_var) {
+    stop(
+      "Please specify either:\n",
+      "- 'x_var' + 'stack_var' for crosstab charts (one variable by another)\n",
+      "- 'x_vars' for comparing multiple columns/questions\n\n",
+      "Examples:\n",
+      "  viz_stackedbar(data, x_var = \"education\", stack_var = \"gender\")\n",
+      "  viz_stackedbar(data, x_vars = c(\"q1\", \"q2\", \"q3\"))",
+      call. = FALSE
+    )
+  }
+
+  if (has_x_var && !has_stack_var) {
+    stop(
+      "'stack_var' is required when using 'x_var'.\n",
+      "- Specify the column that defines the stacked segments.\n\n",
+      "Example:\n",
+      "  viz_stackedbar(data, x_var = \"education\", stack_var = \"gender\")",
+      call. = FALSE
+    )
+  }
+
+  # =========================================================================
+  # MODE 2: Multi-Variable Mode (x_vars provided)
+  # =========================================================================
+  if (has_x_vars) {
+    # Validate x_vars columns exist
+    missing_cols <- setdiff(x_vars, names(data))
+    if (length(missing_cols) > 0) {
+      stop("Column(s) not found in data: ", paste(missing_cols, collapse = ", "), call. = FALSE)
+    }
+
+    # Pivot wide -> long
+    data_long <- tidyr::pivot_longer(
+      data,
+      cols = tidyr::all_of(x_vars),
+      names_to = "variable",
+      values_to = "response"
+    )
+
+    # Apply x_var_labels or default to raw names
+    # Special case: when there's only one variable and horizontal = TRUE,
+    # blank the category label to avoid truncation (use title instead)
+    if (length(x_vars) == 1 && horizontal && !is.null(x_var_labels)) {
+      data_long$variable <- factor(data_long$variable, levels = x_vars, labels = "")
+      axis_categories <- ""
+    } else if (is.null(x_var_labels)) {
+      data_long$variable <- factor(data_long$variable, levels = x_vars)
+      axis_categories <- x_vars
+    } else {
+      if (length(x_var_labels) != length(x_vars)) {
+        stop("`x_var_labels` must be same length as `x_vars`", call. = FALSE)
+      }
+      data_long$variable <- factor(
+        data_long$variable,
+        levels = x_vars,
+        labels = x_var_labels
+      )
+      axis_categories <- x_var_labels
+    }
+
+    # Enforce response_levels if provided
+    if (!is.null(response_levels)) {
+      data_long$response <- factor(
+        data_long$response,
+        levels = response_levels
+      )
+    }
+
+    # Build the core chart using internal crosstab logic
+    hc <- .viz_stackedbar_core(
+      data = data_long,
+      x_var = "variable",
+      stack_var = "response",
+      y_var = y_var,
+      title = title,
+      subtitle = subtitle,
+      x_label = if (is.null(x_label)) "Variable" else x_label,
+      y_label = y_label,
+      stack_label = stack_label,
+      stacked_type = stacked_type,
+      tooltip = tooltip,
+      tooltip_prefix = tooltip_prefix,
+      tooltip_suffix = tooltip_suffix,
+      x_tooltip_suffix = x_tooltip_suffix,
+      color_palette = color_palette,
+      stack_order = stack_order,
+      x_order = x_order,
+      include_na = include_na,
+      na_label_x = na_label_x,
+      na_label_stack = na_label_stack,
+      x_breaks = x_breaks,
+      x_bin_labels = x_bin_labels,
+      x_map_values = x_map_values,
+      stack_breaks = stack_breaks,
+      stack_bin_labels = stack_bin_labels,
+      stack_map_values = stack_map_values,
+      horizontal = horizontal,
+      weight_var = weight_var,
+      data_labels_enabled = data_labels_enabled
+    )
+
+    # Set the xAxis categories explicitly so JS knows them
+    hc <- hc %>% highcharter::hc_xAxis(categories = axis_categories)
+
+    # Override with show_var_tooltip if no custom tooltip was provided
+    if (show_var_tooltip && is.null(tooltip)) {
+      hc$x$hc_opts$tooltip <- list(
+        useHTML = TRUE,
+        formatter = htmlwidgets::JS("
+          function() {
+            // pull the variable label from the axis categories array
+            var v = this.series.chart.xAxis[0].categories[this.point.x];
+            // If category is empty/undefined (single variable case), use chart title instead
+            if (!v || v === '') {
+              v = this.series.chart.title ? this.series.chart.title.textStr : '';
+            }
+            // the response (series name)
+            var r = this.series.name;
+            // format as percentage if percent-stacked, else point.y
+            var val = (this.point.percentage !== undefined)
+                    ? Highcharts.numberFormat(this.point.percentage,1) + '%'
+                    : this.point.y;
+            return '<b>' + v + '</b><br/>' +
+                   r + ': <b>' + val + '</b>';
+          }
+        ")
+      )
+    }
+
+    return(hc)
+  }
+
+  # =========================================================================
+  # MODE 1: Crosstab Mode (x_var + stack_var provided)
+  # =========================================================================
+  .viz_stackedbar_core(
+    data = data,
+    x_var = x_var,
+    stack_var = stack_var,
+    y_var = y_var,
+    title = title,
+    subtitle = subtitle,
+    x_label = x_label,
+    y_label = y_label,
+    stack_label = stack_label,
+    stacked_type = stacked_type,
+    tooltip = tooltip,
+    tooltip_prefix = tooltip_prefix,
+    tooltip_suffix = tooltip_suffix,
+    x_tooltip_suffix = x_tooltip_suffix,
+    color_palette = color_palette,
+    stack_order = stack_order,
+    x_order = x_order,
+    include_na = include_na,
+    na_label_x = na_label_x,
+    na_label_stack = na_label_stack,
+    x_breaks = x_breaks,
+    x_bin_labels = x_bin_labels,
+    x_map_values = x_map_values,
+    stack_breaks = stack_breaks,
+    stack_bin_labels = stack_bin_labels,
+    stack_map_values = stack_map_values,
+    horizontal = horizontal,
+    weight_var = weight_var,
+    data_labels_enabled = data_labels_enabled
+  )
+}
+
+
+########################################################################
+# Internal core function for crosstab-style stacked bar charts
+########################################################################
+
+.viz_stackedbar_core <- function(data,
+                                  x_var,
+                                  stack_var,
+                                  y_var = NULL,
+                                  title = NULL,
+                                  subtitle = NULL,
+                                  x_label = NULL,
+                                  y_label = NULL,
+                                  stack_label = NULL,
+                                  stacked_type = "counts",
+                                  tooltip = NULL,
+                                  tooltip_prefix = "",
+                                  tooltip_suffix = "",
+                                  x_tooltip_suffix = "",
+                                  color_palette = NULL,
+                                  stack_order = NULL,
+                                  x_order = NULL,
+                                  include_na = FALSE,
+                                  na_label_x = "(Missing)",
+                                  na_label_stack = "(Missing)",
+                                  x_breaks = NULL,
+                                  x_bin_labels = NULL,
+                                  x_map_values = NULL,
+                                  stack_breaks = NULL,
+                                  stack_bin_labels = NULL,
+                                  stack_map_values = NULL,
+                                  horizontal = FALSE,
+                                  weight_var = NULL,
+                                  data_labels_enabled = TRUE) {
+
+  # Validation for core function (x_var and stack_var are already strings)
   if (!x_var %in% names(data)) {
     stop(paste0("Column '", x_var, "' not found in data."), call. = FALSE)
   }
@@ -249,14 +453,11 @@ viz_stackedbar <- function(data,
     stop(paste0("Column '", stack_var, "' not found in data."), call. = FALSE)
   }
 
-  stacked_type <- match.arg(stacked_type)
-
   # Create a mutable copy of the data
   plot_data_temp <- tibble::as_tibble(data)
 
   # DATA HANDLING (BASIC)
   # Handle 'haven_labelled' columns
-  # This is for SPSS data. TODO ask Fleur what other file types ppl use
   if (requireNamespace("haven", quietly = TRUE)) {
     if (inherits(plot_data_temp[[x_var]], "haven_labelled")) {
       plot_data_temp <- plot_data_temp |>
@@ -271,12 +472,10 @@ viz_stackedbar <- function(data,
   }
 
   # X VAR VALUE MAPPING
-  # We need to map when values are numeric
   if (!is.null(x_map_values)) {
     if (!is.list(x_map_values) || is.null(names(x_map_values))) {
       stop("'x_map_values' must be a named list (e.g., list('1'='Male', '2'='Female')).", call. = FALSE)
     }
-    # Convert to character if it's a factor. Recode works on characters best.
     if (is.factor(plot_data_temp[[x_var]])) {
       plot_data_temp <- plot_data_temp |>
         dplyr::mutate(!!rlang::sym(x_var) := as.character(!!rlang::sym(x_var)))
@@ -293,7 +492,6 @@ viz_stackedbar <- function(data,
     if (!is.list(stack_map_values) || is.null(names(stack_map_values))) {
       stop("'stack_map_values' must be a named list (e.g., list('1'='Strongly Disagree', '7'='Strongly Agree')).", call. = FALSE)
     }
-    # Convert to character if it's a factor
     if (is.factor(plot_data_temp[[stack_var]])) {
       plot_data_temp <- plot_data_temp |>
         dplyr::mutate(!!rlang::sym(stack_var) := as.character(!!rlang::sym(stack_var)))
@@ -306,8 +504,7 @@ viz_stackedbar <- function(data,
   }
 
   # X_VAR BINNING
-  # Binning is useful if you have a lot of entries (like age)
-  x_var_for_plot <- x_var # Default to original x_var
+  x_var_for_plot <- x_var
   if (!is.null(x_breaks)) {
     if (!is.numeric(plot_data_temp[[x_var]])) {
       warning(paste0("'", x_var, "' is not a numeric column. 'x_breaks' will be ignored."), call. = FALSE)
@@ -330,20 +527,19 @@ viz_stackedbar <- function(data,
             right = FALSE
           )
         )
-      x_var_for_plot <- ".x_var_binned" # Now use the binned column for plotting
+      x_var_for_plot <- ".x_var_binned"
       if (!is.null(x_order) && (is.null(x_bin_labels) || !all(x_order %in% x_bin_labels))) {
-        warning("x_order provided with x_breaks. Ensure x_order refers to the *correct* bin labels (either auto-generated or custom 'x_bin_labels').", call.=FALSE)
+        warning("x_order provided with x_breaks. Ensure x_order refers to the *correct* bin labels (either auto-generated or custom 'x_bin_labels').", call. = FALSE)
       }
     }
   }
 
   # STACK_VAR BINNING
-  # Same as x_vars, depends what user wants
-  stack_var_for_plot <- stack_var # Default to original stack_var
+  stack_var_for_plot <- stack_var
   if (!is.null(stack_breaks)) {
     if (!is.numeric(plot_data_temp[[stack_var]])) {
       warning(paste0("'", stack_var, "' is not a numeric column. 'stack_breaks' will be ignored."), call. = FALSE)
-      stack_breaks <- NULL # Invalidate breaks if not numeric
+      stack_breaks <- NULL
       stack_bin_labels <- NULL
     } else {
       if (!is.numeric(stack_breaks) || length(stack_breaks) < 2) {
@@ -362,9 +558,9 @@ viz_stackedbar <- function(data,
             right = FALSE
           )
         )
-      stack_var_for_plot <- ".stack_var_binned" # Now use the binned column for plotting
+      stack_var_for_plot <- ".stack_var_binned"
       if (!is.null(stack_order) && (is.null(stack_bin_labels) || !all(stack_order %in% stack_bin_labels))) {
-        warning("stack_order provided with stack_breaks. Ensure stack_order refers to the *correct* bin labels (either auto-generated or custom 'stack_bin_labels').", call.=FALSE)
+        warning("stack_order provided with stack_breaks. Ensure stack_order refers to the *correct* bin labels (either auto-generated or custom 'stack_bin_labels').", call. = FALSE)
       }
     }
   }
@@ -399,14 +595,13 @@ viz_stackedbar <- function(data,
 
   # AGGREGATION
   if (is.null(y_var)) {
-    # Handle weighting if weight_var is provided
     if (!is.null(weight_var)) {
       if (!weight_var %in% names(plot_data)) {
         stop("`weight_var` '", weight_var, "' not found in data.", call. = FALSE)
       }
       plot_data <- plot_data |>
         dplyr::count(.x_var_col, .stack_var_col, wt = !!rlang::sym(weight_var), name = "n") |>
-        dplyr::mutate(n = round(n, 0))  # Round weighted counts to whole numbers
+        dplyr::mutate(n = round(n, 0))
     } else {
       plot_data <- plot_data |>
         dplyr::count(.x_var_col, .stack_var_col, name = "n")
@@ -417,7 +612,6 @@ viz_stackedbar <- function(data,
   }
 
   # HIGHCHARTER
-  # Determine chart type based on horizontal parameter
   chart_type <- if (horizontal) "bar" else "column"
 
   hchart_obj <- highcharter::hchart(
@@ -426,7 +620,7 @@ viz_stackedbar <- function(data,
     highcharter::hcaes(x = .x_var_col, y = n, group = .stack_var_col)
   )
 
-  # titles and subtitles
+  # Titles and subtitles
   if (!is.null(title)) {
     hchart_obj <- highcharter::hc_title(hchart_obj, text = title)
   }
@@ -435,14 +629,11 @@ viz_stackedbar <- function(data,
   }
 
   # Axes labels
-  # X-axis Title Logic:
   final_x_label <- x_label
   if (is.null(final_x_label)) {
-    # Default to empty string for cleaner charts
     final_x_label <- ""
   }
 
-  # Y-axis Title Logic:
   final_y_label <- y_label
   if (is.null(final_y_label)) {
     if (stacked_type == "percent") {
@@ -452,7 +643,6 @@ viz_stackedbar <- function(data,
     }
   }
 
-  # Apply axis titles and set x-axis categories explicitly for tooltips
   x_categories <- levels(plot_data$.x_var_col)
   hchart_obj <- highcharter::hc_xAxis(hchart_obj,
                                        title = list(text = final_x_label),
@@ -460,70 +650,74 @@ viz_stackedbar <- function(data,
   hchart_obj <- highcharter::hc_yAxis(hchart_obj, title = list(text = final_y_label))
 
   # Stacking and data labels
-  # Use whole numbers for count mode (especially important when using weights)
   data_label_format <- if (stacked_type == "percent") '{point.percentage:.1f}%' else '{point.y:.0f}'
   stacking_type_hc <- if (stacked_type == "percent") "percent" else "counts"
 
-  # Use appropriate series type for plotOptions (bar or column)
   series_type <- if (horizontal) "bar" else "column"
 
   plot_options <- list()
   plot_options[[series_type]] <- list(
-      stacking = stacking_type_hc,
-      dataLabels = list(
-        enabled = TRUE,
-        format = data_label_format, # Show percentage or count
-        style = list(textOutline = "none", fontSize = "10px")
+    stacking = stacking_type_hc,
+    dataLabels = list(
+      enabled = data_labels_enabled,
+      format = data_label_format,
+      style = list(textOutline = "none", fontSize = "10px")
     )
   )
 
   hchart_obj <- do.call(highcharter::hc_plotOptions, c(list(hchart_obj), plot_options))
 
   # Legend
-  # Stack label logic for legend:
-  # Allow stack_label to be NULL, NA, FALSE, or "" to hide the title
   if (is.null(stack_label) || (length(stack_label) == 1 && (is.na(stack_label) || isFALSE(stack_label) || stack_label == ""))) {
-    # Hide legend title
     hchart_obj <- highcharter::hc_legend(hchart_obj, title = list(text = NULL))
-    } else {
-    # Use custom label
+  } else {
     hchart_obj <- highcharter::hc_legend(hchart_obj, title = list(text = stack_label))
-    }
+  }
 
-  # Reverse legend order for horizontal charts to match visual stacking order
   if (horizontal) {
     hchart_obj <- highcharter::hc_legend(hchart_obj, reversed = TRUE)
   }
 
-  # Tooltips
-  # defines the content and formatting of the interactive pop-up box that
-  # appears when a user hovers their mouse over a data point
-  # Pre-process R variables to ensure they are valid JS strings (empty if NULL/empty)
-  tooltip_prefix_js <- if(is.null(tooltip_prefix) || tooltip_prefix == "") "" else tooltip_prefix
-  tooltip_suffix_js <- if(is.null(tooltip_suffix) || tooltip_suffix == "") "" else tooltip_suffix
-  x_tooltip_suffix_js <- if(is.null(x_tooltip_suffix) || x_tooltip_suffix == "") "" else x_tooltip_suffix
-
-  hchart_obj <- highcharter::hc_tooltip(
-    hchart_obj,
-    formatter = highcharter::JS(
-      paste0(
-        "function() {
-        var value = ", if(stacked_type == "percent") "this.percentage.toFixed(1)" else "this.y", ";
-        var categoryLabel = this.point.category || this.series.chart.xAxis[0].categories[this.point.x] || this.x;
-        return '<b>' + categoryLabel + '", x_tooltip_suffix_js, "</b><br/>' +
-               this.series.name + ': ", tooltip_prefix_js, "' + value + '", tooltip_suffix_js, "<br/>' +
-               'Total: ' + ", if(stacked_type == "percent") "100" else "this.point.stackTotal", ";
-      }"
+  # TOOLTIP
+  if (!is.null(tooltip)) {
+    tooltip_result <- .process_tooltip_config(
+      tooltip = tooltip,
+      tooltip_prefix = tooltip_prefix,
+      tooltip_suffix = tooltip_suffix,
+      x_tooltip_suffix = x_tooltip_suffix,
+      chart_type = "stackedbar",
+      context = list(
+        stacked_type = stacked_type,
+        x_label = x_label %||% x_var,
+        y_label = y_label %||% if (stacked_type == "percent") "Percentage" else "Count"
       )
     )
-  )
+    hchart_obj <- .apply_tooltip_to_hc(hchart_obj, tooltip_result)
+  } else {
+    tooltip_prefix_js <- if (is.null(tooltip_prefix) || tooltip_prefix == "") "" else tooltip_prefix
+    tooltip_suffix_js <- if (is.null(tooltip_suffix) || tooltip_suffix == "") "" else tooltip_suffix
+    x_tooltip_suffix_js <- if (is.null(x_tooltip_suffix) || x_tooltip_suffix == "") "" else x_tooltip_suffix
 
-  # colors and custom color palette
+    hchart_obj <- highcharter::hc_tooltip(
+      hchart_obj,
+      formatter = highcharter::JS(
+        paste0(
+          "function() {
+          var value = ", if (stacked_type == "percent") "this.percentage.toFixed(1)" else "this.y", ";
+          var categoryLabel = this.point.category || this.series.chart.xAxis[0].categories[this.point.x] || this.x;
+          return '<b>' + categoryLabel + '", x_tooltip_suffix_js, "</b><br/>' +
+                 this.series.name + ': ", tooltip_prefix_js, "' + value + '", tooltip_suffix_js, "<br/>' +
+                 'Total: ' + ", if (stacked_type == "percent") "100" else "this.point.stackTotal", ";
+        }"
+        )
+      )
+    )
+  }
+
+  # Colors
   if (!is.null(color_palette)) {
     hchart_obj <- highcharter::hc_colors(hchart_obj, colors = color_palette)
   }
 
   return(hchart_obj)
 }
-
-

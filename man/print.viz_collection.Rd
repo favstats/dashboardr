@@ -4,13 +4,16 @@
 \alias{print.viz_collection}
 \title{Create a new dashboard project}
 \usage{
-\method{print}{viz_collection}(x, render = FALSE, ...)
+\method{print}{viz_collection}(x, render = FALSE, check = FALSE, ...)
 }
 \arguments{
 \item{x}{A viz_collection object created by \code{\link{create_viz}}.}
 
 \item{render}{If TRUE and data is attached, opens a preview in the viewer
 instead of showing the structure. Default is FALSE.}
+
+\item{check}{Logical. If TRUE, validates all visualization specs before printing.
+Useful for catching errors early before attempting to render.}
 
 \item{...}{Additional arguments (currently ignored).}
 
@@ -121,6 +124,10 @@ The print method displays:
 
 Use \code{print(x, render = TRUE)} to open a preview in the viewer instead
 of showing the structure. This is useful for quick visualization in the console.
+
+Use \code{print(x, check = TRUE)} to validate all visualization specs before
+printing. This catches missing required parameters and invalid column names
+early, providing clearer error messages than Quarto rendering errors.
 }
 \examples{
 \dontrun{

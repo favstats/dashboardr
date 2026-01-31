@@ -16,8 +16,10 @@ viz_treemap(
   height = 500,
   allow_drill_down = TRUE,
   layout_algorithm = "squarified",
-  show_labels = TRUE,
+  data_labels_enabled = TRUE,
+  show_labels = NULL,
   label_style = NULL,
+  tooltip = NULL,
   tooltip_format = NULL,
   credits = FALSE,
   ...
@@ -46,11 +48,19 @@ viz_treemap(
 
 \item{layout_algorithm}{Layout algorithm: "squarified" (default), "strip", "sliceAndDice", "stripes"}
 
-\item{show_labels}{Whether to show data labels (default TRUE)}
+\item{data_labels_enabled}{Logical. If TRUE, show data labels on cells. Default TRUE.}
+
+\item{show_labels}{Deprecated. Use \code{data_labels_enabled} instead.}
 
 \item{label_style}{List of label styling options}
 
-\item{tooltip_format}{Custom tooltip format}
+\item{tooltip}{A tooltip configuration created with \code{\link{tooltip}()},
+OR a format string with \{placeholders\}. Available placeholders:
+\code{\{name\}}, \code{\{value\}}.
+See \code{\link{tooltip}} for full customization options.}
+
+\item{tooltip_format}{Custom tooltip format using Highcharts syntax (legacy).
+For the simpler dashboardr placeholder syntax, use \code{tooltip} instead.}
 
 \item{credits}{Whether to show Highcharts credits (default FALSE)}
 

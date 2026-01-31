@@ -21,8 +21,14 @@
 #' @param trend_method Character string. Method for trend line: "lm" (linear) or "loess". Defaults to "lm".
 #' @param alpha Numeric between 0 and 1. Transparency of points. Defaults to 0.7.
 #' @param include_na Logical. Whether to include NA values in color grouping. Defaults to `FALSE`.
-#' @param na_label Character string. Label for NA category if `include_na = TRUE`. Defaults to "Missing".
-#' @param tooltip_format Character string. Custom format for tooltips. Can use {x}, {y}, {color} placeholders.
+#' @param na_label Character string. Label for NA category if `include_na = TRUE`. Defaults to "(Missing)".
+#' @param tooltip A tooltip configuration created with \code{\link{tooltip}()}, 
+#'   OR a format string with \{placeholders\}. Available placeholders: 
+#'   \code{\{x\}}, \code{\{y\}}, \code{\{name\}}, \code{\{series\}}.
+#'   See \code{\link{tooltip}} for full customization options.
+#' @param tooltip_format Character string. Custom format for tooltips using Highcharts 
+#'   placeholders like \{point.x\}, \{point.y\}. For the simpler dashboardr placeholder 
+#'   syntax, use the \code{tooltip} parameter instead.
 #' @param jitter Logical. Whether to add jittering to reduce overplotting. Defaults to `FALSE`.
 #' @param jitter_amount Numeric. Amount of jittering if `jitter = TRUE`. Defaults to 0.2.
 #'
@@ -77,7 +83,8 @@ viz_scatter <- function(data,
                            trend_method = "lm",
                            alpha = 0.7,
                            include_na = FALSE,
-                           na_label = "Missing",
+                           na_label = "(Missing)",
+                           tooltip = NULL,
                            tooltip_format = NULL,
                            jitter = FALSE,
                            jitter_amount = 0.2) {
@@ -214,8 +221,8 @@ viz_scatter <- function(data,
       gridLineWidth = 1
     )
   
-  # Prepare tooltip format
-  if (is.null(tooltip_format)) {
+  # Prepare tooltip format (for legacy tooltip_format parameter)
+  if (is.null(tooltip) && is.null(tooltip_format)) {
     tooltip_format <- paste0(
       "<b>", final_x_label, ":</b> {point.x}<br/>",
       "<b>", final_y_label, ":</b> {point.y}",
@@ -336,12 +343,29 @@ viz_scatter <- function(data,
   }
   
   # Configure tooltip
-  hc <- hc %>%
-    highcharter::hc_tooltip(
-      useHTML = TRUE,
-      headerFormat = "",
-      pointFormat = tooltip_format
+  if (!is.null(tooltip)) {
+    # Use new unified tooltip system
+    tooltip_result <- .process_tooltip_config(
+      tooltip = tooltip,
+      tooltip_prefix = NULL,
+      tooltip_suffix = NULL,
+      x_tooltip_suffix = NULL,
+      chart_type = "scatter",
+      context = list(
+        x_label = final_x_label,
+        y_label = final_y_label
+      )
     )
+    hc <- .apply_tooltip_to_hc(hc, tooltip_result)
+  } else {
+    # Use legacy tooltip_format (Highcharts pointFormat syntax)
+    hc <- hc %>%
+      highcharter::hc_tooltip(
+        useHTML = TRUE,
+        headerFormat = "",
+        pointFormat = tooltip_format
+      )
+  }
   
   # Enable legend if color grouping is used
   hc <- hc %>%

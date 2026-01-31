@@ -1,12 +1,14 @@
-# Stacked Bar Charts (Multiple Variables)
+# Stacked Bar Charts for Multiple Variables (Legacy)
 
-Turns wide data (one column per variable) into long format and then
-creates a stacked-bar chart where each bar represents a variable and
-each stack segment represents a response category.
+soft-deprecated
 
-This is useful for comparing distributions across multiple related
-variables, such as survey questions, rating scales, or any set of
-categorical variables with shared response options.
+This function has been superseded by
+[`viz_stackedbar`](https://favstats.github.io/dashboardr/reference/viz_stackedbar.md),
+which now supports both single-variable crosstabs and multi-variable
+comparisons through a unified interface.
+
+**Migration:** Replace `viz_stackedbars(data, x_vars = ...)` with
+`viz_stackedbar(data, x_vars = ...)`. All parameters work the same way.
 
 ## Usage
 
@@ -22,6 +24,7 @@ viz_stackedbars(
   y_label = NULL,
   stack_label = NULL,
   stacked_type = c("normal", "percent", "counts"),
+  tooltip = NULL,
   tooltip_prefix = "",
   tooltip_suffix = "",
   x_tooltip_suffix = "",
@@ -39,7 +42,8 @@ viz_stackedbars(
   stack_map_values = NULL,
   show_var_tooltip = TRUE,
   horizontal = FALSE,
-  weight_var = NULL
+  weight_var = NULL,
+  data_labels_enabled = TRUE
 )
 ```
 
@@ -47,7 +51,7 @@ viz_stackedbars(
 
 - data:
 
-  A data frame with one column per variable to compare.
+  A data frame containing the survey data.
 
 - x_vars:
 
@@ -66,31 +70,37 @@ viz_stackedbars(
 
 - title:
 
-  Optional main title for the chart.
+  Optional string. Main chart title.
 
 - subtitle:
 
-  Optional subtitle for the chart.
+  Optional string. Chart subtitle.
 
 - x_label:
 
-  Optional label for the X-axis. Defaults to "Variable".
+  Optional string. X-axis label. Defaults to empty in crosstab mode or
+  "Variable" in multi-variable mode.
 
 - y_label:
 
-  Optional label for the Y-axis. Defaults to "Count" or "Percentage" if
-  `stacked_type = "percent"`.
+  Optional string. Y-axis label. Defaults to "Count" or "Percentage".
 
 - stack_label:
 
-  Optional title for the stack legend. Set to NULL, NA, FALSE, or "" to
-  hide the legend title completely.
+  Optional string. Title for the stack legend. Set to NULL, NA, FALSE,
+  or "" to hide the legend title.
 
 - stacked_type:
 
-  Type of stacking: `"normal"` or `"counts"` (raw counts) or `"percent"`
-  (100% stacked). Defaults to `"normal"`. Note: "counts" is an alias for
-  "normal".
+  One of "normal", "counts" (both show raw counts), or "percent" (100%
+  stacked). Defaults to "counts".
+
+- tooltip:
+
+  A tooltip configuration created with
+  [`tooltip()`](https://favstats.github.io/dashboardr/reference/tooltip.md),
+  OR a format string with {placeholders}. Available placeholders:
+  `{category}`, `{value}`, `{series}`, `{percent}`.
 
 - tooltip_prefix:
 
@@ -102,7 +112,7 @@ viz_stackedbars(
 
 - x_tooltip_suffix:
 
-  Optional string appended to X-axis tooltip values.
+  Optional string appended to x-axis values in tooltips.
 
 - color_palette:
 
@@ -110,52 +120,48 @@ viz_stackedbars(
 
 - stack_order:
 
-  Optional character vector specifying the order of response levels.
+  Optional character vector specifying order of stack levels.
 
 - x_order:
 
-  Optional character vector specifying the order of variables on the
-  x-axis.
+  Optional character vector specifying order of x-axis levels.
 
 - include_na:
 
-  Logical. If `TRUE`, NA values are shown as explicit categories; if
-  `FALSE`, rows with `NA` are dropped. Default `FALSE`.
+  Logical. If TRUE, NA values are shown as explicit categories. If FALSE
+  (default), rows with NA are excluded.
 
 - na_label_x:
 
-  Optional string. Custom label for NA values in variables. Defaults to
-  "(Missing)".
+  String. Label for NA values on x-axis. Default "(Missing)".
 
 - na_label_stack:
 
-  Optional string. Custom label for NA values in responses. Defaults to
-  "(Missing)".
+  String. Label for NA values in stacks. Default "(Missing)".
 
 - x_breaks:
 
-  Optional numeric vector of cut points to bin the variables (if they
-  are numeric).
+  Optional numeric vector of cut points for binning `x_var`.
 
 - x_bin_labels:
 
-  Optional character vector of labels for `x_breaks`.
+  Optional character vector of labels for `x_breaks` bins.
 
 - x_map_values:
 
-  Optional named list to rename variable values.
+  Optional named list to remap x-axis values for display.
 
 - stack_breaks:
 
-  Optional numeric vector of cut points to bin the responses.
+  Optional numeric vector of cut points for binning stack variable.
 
 - stack_bin_labels:
 
-  Optional character vector of labels for `stack_breaks`.
+  Optional character vector of labels for `stack_breaks` bins.
 
 - stack_map_values:
 
-  Optional named list to rename response values.
+  Optional named list to remap stack values for display.
 
 - show_var_tooltip:
 
@@ -163,177 +169,31 @@ viz_stackedbars(
 
 - horizontal:
 
-  Logical. If `TRUE`, creates a horizontal bar chart (bars extend from
-  left to right). If `FALSE` (default), creates a vertical column chart
-  (bars extend from bottom to top). Note: When horizontal = TRUE, the
-  stack order is automatically reversed so that the visual order of the
-  stacks matches the legend order.
+  Logical. If TRUE, creates horizontal bars. Default FALSE.
 
 - weight_var:
 
-  Optional. Column name for weighting observations.
+  Optional string. Name of a weight variable for weighted counts.
+
+- data_labels_enabled:
+
+  Logical. If TRUE, show value labels on bars. Default TRUE.
 
 ## Value
 
 A `highcharter` stacked bar chart object.
 
+## See also
+
+[`viz_stackedbar`](https://favstats.github.io/dashboardr/reference/viz_stackedbar.md)
+for the unified function
+
 ## Examples
 
 ``` r
-# Load GSS data
-data(gss_all)
-#> Warning: data set ‘gss_all’ not found
+# The old way (still works):
+# viz_stackedbars(data, x_vars = c("q1", "q2", "q3"))
 
-# Filter to recent years and select confidence variables
-gss_recent <- gss_all %>%
-  filter(year >= 2010) %>%
-  select(year, confinan, confed, conmedic, conjudge, consci, conlegis)
-#> Error in select(., year, confinan, confed, conmedic, conjudge, consci,     conlegis): could not find function "select"
-
-# Example 1: Basic chart comparing confidence across institutions
-confidence_vars <- c("confinan", "confed", "conmedic", "conjudge", "consci", "conlegis")
-confidence_labels <- c(
-  "Financial Institutions",
-  "Education",
-  "Medicine",
-  "Courts/Justice",
-  "Scientific Community",
-  "Congress"
-)
-
-# Define response order (typical GSS confidence scale)
-confidence_order <- c("A Great Deal", "Only Some", "Hardly Any")
-
-plot1 <- viz_stackedbars(
-  data = gss_recent,
-  x_vars = confidence_vars,
-  x_var_labels = confidence_labels,
-  title = "Confidence in American Institutions",
-  subtitle = "GSS respondents 2010-present",
-  x_label = "Institution",
-  stack_label = "Level of Confidence",
-  response_levels = confidence_order,
-  stacked_type = "percent",
-  color_palette = c("#2E8B57", "#FFD700", "#CD5C5C")
-)
-#> Error: object 'gss_recent' not found
-plot1
-#> Error: object 'plot1' not found
-
-# Example 2: Including NA values with custom labels
-plot2 <- viz_stackedbars(
-  data = gss_recent,
-  x_vars = confidence_vars,
-  x_var_labels = confidence_labels,
-  title = "Confidence in Institutions (Including Non-Responses)",
-  subtitle = "Showing missing data explicitly",
-  x_label = "Institution",
-  stack_label = "Response",
-  include_na = TRUE,
-  na_label_stack = "No Opinion/Refused",
-  stacked_type = "percent",
-  tooltip_suffix = "%",
-  color_palette = c("#2E8B57", "#FFD700", "#CD5C5C", "#808080")
-)
-#> Error: object 'gss_recent' not found
-plot2
-#> Error: object 'plot2' not found
-
-# Example 3: Custom response mapping and ordering
-# Map GSS codes to more descriptive labels
-confidence_map <- list(
-  "A Great Deal" = "High Confidence",
-  "Only Some" = "Moderate Confidence",
-  "Hardly Any" = "Low Confidence"
-)
-
-plot3 <- viz_stackedbars(
-  data = gss_recent,
-  x_vars = confidence_vars[1:4],  # Just first 4 institutions
-  x_var_labels = confidence_labels[1:4],
-  title = "Institutional Confidence with Custom Labels",
-  subtitle = "Remapped response categories",
-  stack_map_values = confidence_map,
-  stack_order = c("High Confidence", "Moderate Confidence", "Low Confidence"),
-  stacked_type = "normal",
-  color_palette = c("#1f77b4", "#ff7f0e", "#d62728")
-)
-#> Error: object 'gss_recent' not found
-plot3
-#> Error: object 'plot3' not found
-
-# Example 4: Custom ordering and tooltips
-# Reorder by typical confidence levels (highest to lowest)
-custom_order <- c(
-  "Scientific Community",
-  "Medicine",
-  "Education",
-  "Courts/Justice",
-  "Financial Institutions",
-  "Congress"
-)
-
-plot4 <- viz_stackedbars(
-  data = gss_recent,
-  x_vars = confidence_vars,
-  x_var_labels = confidence_labels,
-  title = "Institutional Confidence (Reordered)",
-  subtitle = "Ordered from typically highest to lowest confidence",
-  x_order = custom_order,
-  response_levels = confidence_order,
-  stacked_type = "percent",
-  tooltip_prefix = "Response: ",
-  tooltip_suffix = "% of respondents",
-  x_tooltip_suffix = " institution",
-  color_palette = c("#2E8B57", "#FFD700", "#CD5C5C")
-)
-#> Error: object 'gss_recent' not found
-plot4
-#> Error: object 'plot4' not found
-
-# Example 5: Horizontal bar chart
-plot5 <- viz_stackedbars(
-  data = gss_recent,
-  x_vars = confidence_vars,
-  x_var_labels = confidence_labels,
-  title = "Confidence in American Institutions (Horizontal)",
-  subtitle = "GSS respondents 2010-present",
-  x_label = "Institution",
-  stack_label = "Level of Confidence",
-  response_levels = confidence_order,
-  stacked_type = "percent",
-  horizontal = TRUE,
-  color_palette = c("#2E8B57", "#FFD700", "#CD5C5C")
-)
-#> Error: object 'gss_recent' not found
-plot5
-#> Error: object 'plot5' not found
-
-# Example 6: Working with different variable types
-# Using happiness and satisfaction variables
-if (all(c("happy", "satfin", "satjob") %in% names(gss_all))) {
-  satisfaction_data <- gss_all %>%
-    filter(year >= 2010) %>%
-    select(happy, satfin, satjob) %>%
-    mutate(across(everything(), as.character))
-
-  satisfaction_vars <- c("happy", "satfin", "satjob")
-  satisfaction_labels <- c("General Happiness", "Financial Satisfaction", "Job Satisfaction")
-
-  plot6 <- viz_stackedbars(
-    data = satisfaction_data,
-    x_vars = satisfaction_vars,
-    x_var_labels = satisfaction_labels,
-    title = "Life Satisfaction Measures",
-    subtitle = "Multiple satisfaction domains",
-    x_label = "Life Domain",
-    stack_label = "Satisfaction Level",
-    stacked_type = "percent",
-    include_na = TRUE,
-    na_label_stack = "Not Asked/No Answer"
-  )
-  plot6
-}
-#> Error: object 'gss_all' not found
-
+# The new preferred way:
+# viz_stackedbar(data, x_vars = c("q1", "q2", "q3"))
 ```

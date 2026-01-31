@@ -18,6 +18,7 @@ viz_histogram(
   x_label = NULL,
   y_label = NULL,
   histogram_type = c("count", "percent"),
+  tooltip = NULL,
   tooltip_prefix = "",
   tooltip_suffix = "",
   x_tooltip_suffix = "",
@@ -29,7 +30,8 @@ viz_histogram(
   color_palette = NULL,
   x_map_values = NULL,
   x_order = NULL,
-  weight_var = NULL
+  weight_var = NULL,
+  data_labels_enabled = TRUE
 )
 ```
 
@@ -68,13 +70,23 @@ viz_histogram(
 
   One of "count" or "percent". Default "count".
 
+- tooltip:
+
+  A tooltip configuration created with
+  [`tooltip()`](https://favstats.github.io/dashboardr/reference/tooltip.md),
+  OR a format string with {placeholders}. Available placeholders:
+  `{category}`, `{value}`, `{percent}`. For simple cases, use
+  `tooltip_prefix` and `tooltip_suffix` instead. See
+  [`tooltip`](https://favstats.github.io/dashboardr/reference/tooltip.md)
+  for full customization options.
+
 - tooltip_prefix:
 
-  Optional string prepended in the tooltip.
+  Optional string prepended in the tooltip (simple customization).
 
 - tooltip_suffix:
 
-  Optional string appended in the tooltip.
+  Optional string appended in the tooltip (simple customization).
 
 - x_tooltip_suffix:
 
@@ -124,6 +136,10 @@ viz_histogram(
   Optional string. Name of a weight variable to use for weighted
   aggregation. When provided, counts are computed as the sum of weights
   instead of simple counts.
+
+- data_labels_enabled:
+
+  Logical. If TRUE, show value labels on bars. Default TRUE.
 
 ## Value
 
@@ -183,7 +199,7 @@ This function performs the following steps:
 #our `dashboardr` package.
 
 data(gss_panel20)
-#> Warning: data set ‘gss_panel20’ not found
+#> Warning: data set 'gss_panel20' not found
 
 # Example 1: Basic histogram of age distribution
 plot1 <- viz_histogram(

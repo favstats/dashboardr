@@ -8,10 +8,11 @@ publish_dashboard(
   message = "Initial commit",
   restart = FALSE,
   organisation = NULL,
-  private = FALSE,
+  private = NULL,
   protocol = c("https", "ssh"),
   branch = usethis::git_default_branch(),
   path = "/docs",
+  ask = TRUE,
   ...
 )
 }
@@ -22,7 +23,9 @@ publish_dashboard(
 
 \item{organisation}{GitHub organisation name (optional, for org repositories)}
 
-\item{private}{Whether to create a private repository (default: FALSE)}
+\item{private}{Whether to create a private repository. When \code{NULL} (default)
+and \code{ask = TRUE}, you will be prompted interactively. Set to \code{TRUE}
+or \code{FALSE} to skip the prompt.}
 
 \item{protocol}{Transfer protocol: "https" or "ssh" (default: "https")}
 
@@ -30,27 +33,57 @@ publish_dashboard(
 
 \item{path}{Path containing the site files (default: "/docs")}
 
+\item{ask}{Whether to use the interactive confirmation workflow (default: TRUE).
+When \code{TRUE}, guides you through file review and confirmation steps.
+Set to \code{FALSE} to skip all prompts (not recommended for first-time use).}
+
 \item{...}{Additional arguments passed to \code{usethis::use_github()}}
 }
 \value{
-Invisibly returns TRUE
+Invisibly returns TRUE if published successfully, FALSE if cancelled
 }
 \description{
 This function automates the process of publishing a dashboard to GitHub Pages.
 It handles git initialization, .gitignore setup, GitHub repository creation,
 and GitHub Pages configuration using usethis functions.
 }
+\details{
+When \code{ask = TRUE} (the default), the function guides you through a 3-step
+interactive confirmation process:
+\enumerate{
+\item \strong{File Review}: Shows you the files that will be published and opens
+a folder so you can verify nothing unintended is included
+\item \strong{Repository Privacy}: Asks whether to create a private or public repository
+\item \strong{Confirm Publish}: Final confirmation before publishing to GitHub
+}
+}
+\section{What Gets Published}{
+
+Typically, you only need to publish:
+\itemize{
+\item The \code{docs/} folder (auto-generated HTML, CSS, JS files)
+\item Optionally, your R scripts (just for reproducibility)
+}
+
+By default, common data file extensions (.csv, .rds, .xlsx, .sav, .dta) are
+automatically excluded via .gitignore. Use \code{usethis::use_git_ignore()} to
+exclude additional files you don't want to publish.
+}
+
 \examples{
 \dontrun{
 # After generating a dashboard, navigate to the dashboard directory
-# and publish it:
+# and publish it (interactive mode):
 setwd("my_dashboard")
 publish_dashboard()
 
 # Publish to an organization
 publish_dashboard(organisation = "my-org")
 
-# Create a private repository
+# Create a private repository (skip privacy prompt)
 publish_dashboard(private = TRUE)
+
+# Skip all prompts (use with caution)
+publish_dashboard(ask = FALSE, private = FALSE)
 }
 }

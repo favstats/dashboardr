@@ -1,21 +1,29 @@
 # Creating Interactive Stacked Bar Charts with \`viz_stackedbar\`
 
-### Introduction
+### 📖 Introduction
 
 Welcome to this comprehensive guide on using the `viz_stackedbar`
-function from the `dashboardr` package. This function is designed to
-create highly customizable interactive stacked bar charts from survey
-data, making it particularly valuable for communication science
-researchers and other social scientists working with categorical data.
+function from the `dashboardr` package. This unified function creates
+highly customizable interactive stacked bar charts from survey data,
+supporting two powerful modes:
 
-Stacked bar charts are excellent for visualizing the distribution of
-categorical responses across different groups or demographics. They
-allow you to see both the overall patterns and the composition within
-each category, making them ideal for displaying survey responses,
-demographic breakdowns, and attitude distributions.
+**Mode 1: Grouped/Crosstab Mode** (use `x_var` + `stack_var`)
 
-The `viz_stackedbar` function handles many common data preparation tasks
-automatically, including:
+- Shows how one variable breaks down by another (e.g., education by
+  gender)
+- Use when your data is in long/tidy format
+- Example:
+  `viz_stackedbar(data, x_var = "education", stack_var = "gender")`
+
+**Mode 2: Multi-Variable/Battery Mode** (use `x_vars`)
+
+- Compares response distributions across multiple survey questions
+- Use when you have multiple columns with the same response scale (e.g.,
+  Likert items)
+- Example: `viz_stackedbar(data, x_vars = c("q1", "q2", "q3"))`
+
+The function handles many common data preparation tasks automatically,
+including:
 
 - Converting `haven_labelled` columns (from SPSS imports) to R factors
 - Mapping raw values to descriptive labels
@@ -24,11 +32,10 @@ automatically, including:
 - Creating both count-based and percentage-based visualizations
 - Customizing colors, ordering, and interactive tooltips
 
-This vignette demonstrates the function’s capabilities using the General
-Social Survey (GSS) Panel 2020 dataset, focusing on the 2016 wave (`_1a`
-variables).
+This vignette demonstrates both modes using the General Social Survey
+(GSS) Panel 2020 dataset.
 
-### Getting Started
+### ⚙️ Getting Started
 
 First, let’s load the necessary libraries and examine our data set.
 
@@ -43,7 +50,7 @@ library(dashboardr)
 data(gss_panel20)
 ```
 
-### Data Preparation
+### 📋 Data Preparation
 
 Let’s prepare our working dataset using the 2020 wave variables.
 
@@ -66,20 +73,20 @@ gss_clean <- gss_panel20 %>%
 glimpse(gss_clean)
 #> Rows: 2,867
 #> Columns: 14
-#> $ age_1a      <dbl+lbl> 47, 61, 72, 43, 55, 53, 50, 23, 45, 71, 33, 86, 32, 60…
-#> $ sex_1a      <dbl+lbl> 1, 1, 1, 2, 2, 2, 1, 2, 1, 1, 2, 2, 1, 2, 1, 2, 1, 2, …
-#> $ race_1a     <dbl+lbl> 1, 1, 1, 1, 1, 1, 1, 3, 2, 1, 2, 1, 2, 2, 1, 1, 1, 3, …
-#> $ degree_1a   <dbl+lbl> 3, 1, 3, 1, 4, 2, 1, 1, 1, 2, 1, 1, 1, 1, 0, 1, 1, 0, …
-#> $ region_1a   <dbl+lbl> 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, …
-#> $ happy_1a    <dbl+lbl>     2,     2,     1,     2,     1,     1,     2,     1…
-#> $ trust_1a    <dbl+lbl> NA(i),     3,     1, NA(i),     1,     1, NA(i),     2…
-#> $ fair_1a     <dbl+lbl> NA(i),     1,     1, NA(i),     2,     2, NA(i),     1…
-#> $ helpful_1a  <dbl+lbl> NA(i),     2,     2, NA(i),     3,     1, NA(i),     1…
-#> $ polviews_1a <dbl+lbl>     4,     2,     6,     4,     3,     3,     3,     5…
-#> $ partyid_1a  <dbl+lbl>     3,     2,     5,     5,     1,     1,     5,     2…
-#> $ attend_1a   <dbl+lbl> 0, 0, 7, 6, 0, 0, 1, 5, 6, 0, 5, 3, 5, 6, 1, 8, 8, 8, …
-#> $ income_1a   <dbl+lbl> NA(n),    12,    12, NA(n), NA(n),    12, NA(n),    12…
-#> $ class_1a    <dbl+lbl>     3, NA(d),     3,     3,     3,     3,     3,     2…
+#> $ age_1a      <dbl+lbl> 47, 61, 72, 43, 55, 53, 50, 23, 45, 71, 33, 86, 32, 60~
+#> $ sex_1a      <dbl+lbl> 1, 1, 1, 2, 2, 2, 1, 2, 1, 1, 2, 2, 1, 2, 1, 2, 1, 2, ~
+#> $ race_1a     <dbl+lbl> 1, 1, 1, 1, 1, 1, 1, 3, 2, 1, 2, 1, 2, 2, 1, 1, 1, 3, ~
+#> $ degree_1a   <dbl+lbl> 3, 1, 3, 1, 4, 2, 1, 1, 1, 2, 1, 1, 1, 1, 0, 1, 1, 0, ~
+#> $ region_1a   <dbl+lbl> 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, ~
+#> $ happy_1a    <dbl+lbl>     2,     2,     1,     2,     1,     1,     2,     1~
+#> $ trust_1a    <dbl+lbl> NA(i),     3,     1, NA(i),     1,     1, NA(i),     2~
+#> $ fair_1a     <dbl+lbl> NA(i),     1,     1, NA(i),     2,     2, NA(i),     1~
+#> $ helpful_1a  <dbl+lbl> NA(i),     2,     2, NA(i),     3,     1, NA(i),     1~
+#> $ polviews_1a <dbl+lbl>     4,     2,     6,     4,     3,     3,     3,     5~
+#> $ partyid_1a  <dbl+lbl>     3,     2,     5,     5,     1,     1,     5,     2~
+#> $ attend_1a   <dbl+lbl> 0, 0, 7, 6, 0, 0, 1, 5, 6, 0, 5, 3, 5, 6, 1, 8, 8, 8, ~
+#> $ income_1a   <dbl+lbl> NA(n),    12,    12, NA(n), NA(n),    12, NA(n),    12~
+#> $ class_1a    <dbl+lbl>     3, NA(d),     3,     3,     3,     3,     3,     2~
 
 # Examine some key variables
 table(gss_clean$degree_1a, useNA = "always")
@@ -92,7 +99,7 @@ table(gss_clean$happy_1a, useNA = "always")
 #>  806 1601  452    8
 ```
 
-## Basic Stacked Bar Charts
+## 📊 Basic Stacked Bar Charts
 
 ### Example 1: Education by Gender (Count-based)
 
@@ -145,7 +152,7 @@ plot2 <- viz_stackedbar(
 plot2
 ```
 
-## Advanced Features
+## ⚡ Advanced Features
 
 ### Example 3: Age Binning with Political Views
 
@@ -283,7 +290,7 @@ plot5 <- viz_stackedbar(
 plot5
 ```
 
-## Complex Analysis Examples
+## 🔬 Complex Analysis Examples
 
 ### Example 6: Regional Patterns in Trust
 
@@ -317,25 +324,292 @@ plot6 <- viz_stackedbar(
 plot6
 ```
 
-## Summary and Best Practices
+## 📊 Multi-Variable Mode: Comparing Survey Questions
 
-### Key Features Demonstrated
+The `viz_stackedbar` function also supports comparing multiple survey
+questions side-by-side. This is particularly useful for visualizing
+survey batteries (sets of questions with the same response scale).
 
-1.  **Basic stacked bars** with both count and percentage displays
-2.  **Age binning** for continuous variables
-3.  **Value mapping** for cleaner, more descriptive labels
-4.  **Custom ordering** for logical presentation of categories
-5.  **Missing value handling** with explicit NA categories
-6.  **Pre-aggregated data** support for existing summary tables
-7.  **Custom color palettes** for different data types and branding
-8.  **Comprehensive tooltips** with prefixes, suffixes, and formatting
-9.  **Flexible styling** for different analytical needs
+### Example 7: Basic Multi-Variable Comparison
 
-### Best Practices for Stacked Bar Charts
+When you have multiple columns representing different questions with the
+same response categories, use `x_vars` to compare them:
+
+``` r
+# Define the questions to compare
+social_questions <- c("trust_1a", "fair_1a", "helpful_1a")
+social_labels <- c(
+  "Interpersonal Trust",
+  "Fairness of Others",
+  "Helpfulness of Others"
+)
+
+# Create multi-variable comparison chart
+plot7 <- viz_stackedbar(
+  data = gss_clean,
+  x_vars = social_questions,
+  x_var_labels = social_labels,
+  title = "Social Attitudes and Trust",
+  subtitle = "Distribution of responses across social attitude questions",
+  x_label = "Social Attitude Dimension",
+  stack_label = "Response Level",
+  stacked_type = "percent",
+  tooltip_suffix = "%"
+)
+
+plot7
+```
+
+### Example 8: Multi-Variable with Response Mapping
+
+You can standardize response labels across questions and customize the
+display. It’s helpful to first check what the actual response values
+are:
+
+``` r
+# First, examine what the actual response values are
+cat("Unique trust responses:\n")
+#> Unique trust responses:
+print(unique(as.character(gss_clean$trust_1a)))
+#> [1] NA  "3" "1" "2"
+
+cat("\nUnique fair responses:\n")
+#> 
+#> Unique fair responses:
+print(unique(as.character(gss_clean$fair_1a)))
+#> [1] NA  "1" "2" "3"
+```
+
+Now create a mapping to standardize the labels:
+
+``` r
+# Create response mapping for cleaner labels
+response_map <- list(
+  "can't trust" = "High Trust/Positive",
+  "can't be too careful" = "Low Trust/Negative",
+  "depends" = "Situational/Neutral",
+  "would try to be fair" = "High Trust/Positive",
+  "would take advantage of you" = "Low Trust/Negative",
+  "try to be helpful" = "High Trust/Positive",
+  "looking out for themselves" = "Low Trust/Negative"
+)
+
+# Define response order (from negative to positive)
+response_order <- c("Low Trust/Negative", "Situational/Neutral", "High Trust/Positive")
+
+# Create chart with custom mapping and ordering
+plot8 <- viz_stackedbar(
+  data = gss_clean,
+  x_vars = social_questions,
+  x_var_labels = social_labels,
+  title = "Social Trust Dimensions with Standardized Responses",
+  subtitle = "Responses mapped to consistent positive/negative categories",
+  x_label = "Trust Dimension",
+  stack_label = "Trust Level",
+  stack_map_values = response_map,
+  stack_order = response_order,
+  stacked_type = "percent",
+  tooltip_suffix = "%",
+  color_palette = c("#d62728", "#ffbb78", "#2ca02c"),
+  include_na = TRUE,
+  na_label_stack = "No Answer"
+)
+
+plot8
+```
+
+### Example 9: Single Variable with x_vars (Compact Display)
+
+The `x_vars` parameter also works with a single variable. This is useful
+when you want the compact styling of multi-variable mode for a single
+question:
+
+``` r
+# Single variable with x_vars - great for compact horizontal displays
+plot9a <- viz_stackedbar(
+  data = gss_clean,
+  x_vars = "happy_1a",
+  x_var_labels = "General Happiness",
+  title = "Happiness Distribution",
+  x_label = "Well-being Measure",
+  stack_label = "Happiness Level",
+  stacked_type = "percent",
+  horizontal = TRUE,
+  tooltip_suffix = "%",
+  color_palette = c("#2E8B57", "#FFD700", "#CD5C5C", "grey")
+)
+
+plot9a
+```
+
+### Example 9b: Horizontal Multi-Variable Chart
+
+For better readability with long labels, use horizontal orientation:
+
+``` r
+# Horizontal chart for survey battery
+plot9b <- viz_stackedbar(
+  data = gss_clean,
+  x_vars = c("trust_1a", "fair_1a", "helpful_1a"),
+  x_var_labels = c(
+    "Can people be trusted?",
+    "Are people generally fair?",
+    "Are people generally helpful?"
+  ),
+  title = "Social Capital Dimensions",
+  subtitle = "GSS Panel 2016",
+  stacked_type = "percent",
+  horizontal = TRUE,
+  tooltip_suffix = "%",
+  color_palette = c("#8c510a", "#d8b365", "#f6e8c3", "grey"),
+  include_na = TRUE,
+  na_label_stack = "No response"
+)
+
+plot9b
+```
+
+### Example 10: Survey Battery Analysis
+
+Survey batteries are sets of related questions with the same response
+scale. Here’s how to create a comprehensive battery analysis:
+
+``` r
+# Create a social trust battery
+trust_battery <- c("trust_1a", "fair_1a", "helpful_1a")
+trust_battery_labels <- c(
+  "Interpersonal Trust",
+  "Perceived Fairness",
+  "Perceived Helpfulness"
+)
+
+# Create a comprehensive battery analysis
+plot10 <- viz_stackedbar(
+  data = gss_clean,
+  x_vars = trust_battery,
+  x_var_labels = trust_battery_labels,
+  title = "Social Trust Battery - Complete Analysis",
+  subtitle = "Comprehensive view of social trust dimensions with enhanced tooltips",
+  x_label = "Trust Dimension",
+  stack_label = "Response Category",
+  stacked_type = "percent",
+  tooltip_prefix = "Percentage: ",
+  tooltip_suffix = "% of respondents",
+  show_var_tooltip = TRUE,
+  include_na = TRUE,
+  na_label_stack = "No answer",
+  color_palette = c("#8c510a", "#d8b365", "#f6e8c3", "darkgrey")
+)
+
+plot10
+```
+
+### Example 11: Publication-Ready Chart
+
+Let’s create a fully customized, publication-ready chart:
+
+``` r
+# Create the most polished example
+plot11 <- viz_stackedbar(
+  data = gss_clean,
+  x_vars = social_questions,
+  x_var_labels = c(
+    "Interpersonal Trust\n('Can most people be trusted?')",
+    "Perceived Fairness\n('Do people try to be fair?')",
+    "Perceived Helpfulness\n('Are people helpful?')"
+  ),
+  title = "Social Capital Dimensions in American Society",
+  subtitle = "General Social Survey Panel 2016 (N = 2,867 respondents)\nPercentage distribution of responses across social trust measures",
+  x_label = "Social Trust Dimension",
+  stack_label = "Response Category",
+  stacked_type = "percent",
+  tooltip_prefix = "",
+  tooltip_suffix = "% of respondents",
+  x_tooltip_suffix = "",
+  include_na = TRUE,
+  na_label_stack = "No response",
+  color_palette = c("#b2182b", "#ef8a62", "#fddbc7", "darkgrey"),
+  show_var_tooltip = TRUE
+)
+
+plot11
+```
+
+## 🏷️ Labels and Tooltips Reference
+
+### Summary of Label and Tooltip Options
+
+The
+[`viz_stackedbar()`](https://favstats.github.io/dashboardr/reference/viz_stackedbar.md)
+function offers extensive customization for labels and tooltips:
+
+| Parameter | Description | Example |
+|----|----|----|
+| `x_label` | X-axis title | `"Question"` |
+| `y_label` | Y-axis title (auto-set based on stacked_type) | `"Percentage"` |
+| `stack_label` | Legend title | `"Response Category"` |
+| `x_var_labels` | Custom labels for each question (multi-variable mode) | `c("Trust", "Fairness")` |
+| `tooltip_prefix` | Text before value in tooltip | `"Score: "` |
+| `tooltip_suffix` | Text after value in tooltip | `"%"`, `" respondents"` |
+| `x_tooltip_suffix` | Text after category name in tooltip | `" question"` |
+| `show_var_tooltip` | Show question name in tooltip (multi-variable mode) | `TRUE` |
+
+``` r
+# Example with all label/tooltip options
+viz_stackedbar(
+  data = gss_clean,
+  x_vars = c("trust_1a", "fair_1a"),
+  x_var_labels = c("Trust", "Fairness"),
+  title = "Social Attitudes",
+  x_label = "Attitude Measure",
+  y_label = "Percent of Respondents",
+  stack_label = "Response Level",
+  stacked_type = "percent",
+  tooltip_prefix = "",
+  tooltip_suffix = "% responded",
+  show_var_tooltip = TRUE
+)
+```
+
+### When to Use Each Mode
+
+| Mode | Use Case | Parameters |
+|----|----|----|
+| **Grouped/Crosstab** | One variable broken down by another | `x_var` + `stack_var` |
+| **Multi-Variable** | Compare multiple questions side-by-side | `x_vars` |
+
+**Use Grouped Mode when:** - You want to show how education levels
+differ by gender - You’re creating a cross-tabulation visualization -
+Your data is already in long/tidy format
+
+**Use Multi-Variable Mode when:** - You’re comparing multiple survey
+questions - Your questions share the same response categories - You want
+to visualize a Likert scale battery
+
+## 💡 Summary and Best Practices
+
+### ✅ Key Features Demonstrated
+
+1.  **Two flexible modes**: Grouped/crosstab (`x_var` + `stack_var`) and
+    multi-variable (`x_vars`)
+2.  **Basic stacked bars** with both count and percentage displays
+3.  **Age binning** for continuous variables
+4.  **Value mapping** for cleaner, more descriptive labels
+5.  **Custom ordering** for logical presentation of categories
+6.  **Missing value handling** with explicit NA categories
+7.  **Multi-variable comparisons** for survey batteries and Likert
+    scales
+8.  **Custom color palettes** for different data types and branding
+9.  **Comprehensive tooltips** with prefixes, suffixes, and formatting
+10. **Horizontal orientation** for better readability with long labels
+
+### 🎯 Best Practices for Stacked Bar Charts
+
+#### General Guidelines
 
 1.  Choose appropriate stacking type
 
-- Use “normal” for comparing absolute counts across groups
+- Use “normal” or “counts” for comparing absolute counts across groups
 - Use “percent” for comparing proportions within groups
 
 2.  Order categories logically
@@ -345,6 +619,26 @@ plot6
 - Use natural ordering for ordinal variables (e.g., Likert scales)
 - Consider frequency-based ordering for nominal categories
 - Place “Other” or “Missing” categories at the end
+
+#### Multi-Variable Mode Best Practices
+
+1.  Choose questions with similar response scales
+
+- Use questions that have the same or compatible response categories
+- Consider mapping different scales to common categories when
+  appropriate
+
+2.  Order questions logically
+
+- Group related concepts together
+- Consider ordering by typical response patterns (most positive to least
+  positive)
+- Place most important questions first
+
+3.  Use appropriate stacking type
+
+- Use “percent” for comparing response patterns across questions
+- Use “counts” when absolute counts matter more than proportions
 
 3.  Handle missing data thoughtfully
 
@@ -371,7 +665,7 @@ plot6
 - Provide clear titles and subtitles
 - Include sample sizes in subtitles when relevant
 
-### Common Use Cases
+### 🌍 Common Use Cases
 
 The `viz_stackedbar` function is particularly useful for:
 
@@ -385,21 +679,34 @@ The `viz_stackedbar` function is particularly useful for:
 - **Health surveys**: Displaying health behaviors or outcomes by
   demographics
 
-### Conclusion
+### 📚 Conclusion
 
 The
 [`viz_stackedbar()`](https://favstats.github.io/dashboardr/reference/viz_stackedbar.md)
-function provides a comprehensive solution for creating
-publication-ready stacked bar charts from survey data. Its extensive
-customization options, automatic data handling capabilities, and
-interactive features make it an invaluable tool for social science
-researchers.
+function provides a unified, comprehensive solution for creating
+publication-ready stacked bar charts from survey data. Its two flexible
+modes handle the most common visualization needs:
+
+- **Grouped/Crosstab Mode** (`x_var` + `stack_var`): Show how one
+  variable breaks down by another
+- **Multi-Variable Mode** (`x_vars`): Compare response distributions
+  across multiple survey questions
 
 Key advantages include:
 
+- **Unified interface** - one function for both crosstabs and survey
+  batteries
 - **Automatic data preparation** for common survey data formats
+- **Smart mode detection** based on the parameters you provide
 - **Flexible binning and mapping** for continuous and coded variables
 - **Comprehensive missing data handling** options
 - **Interactive tooltips** for enhanced data exploration
 - **Publication-ready styling** with extensive customization options
-- **Support for both raw and pre-aggregated data**
+
+**Note:** If you were previously using
+[`viz_stackedbars()`](https://favstats.github.io/dashboardr/reference/viz_stackedbars.md)
+for multi-variable comparisons, you can now use
+[`viz_stackedbar()`](https://favstats.github.io/dashboardr/reference/viz_stackedbar.md)
+with the same parameters. The old function still works but
+[`viz_stackedbar()`](https://favstats.github.io/dashboardr/reference/viz_stackedbar.md)
+is now the recommended approach for all stacked bar chart needs.

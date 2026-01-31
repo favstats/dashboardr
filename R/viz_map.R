@@ -23,8 +23,13 @@
 #'   Use \code{\{var\}} syntax for variable substitution, e.g.,
 #'   "\{iso2c\}_dashboard/index.html"
 #' @param click_var Variable to use in click URL (defaults to join_var)
-#' @param tooltip_vars Character vector of variables to show in tooltip
-#' @param tooltip_format Custom tooltip format string (overrides tooltip_vars)
+#' @param tooltip A tooltip configuration created with \code{\link{tooltip}()}, 
+#'   OR a format string with \{placeholders\}. Available placeholders: 
+#'   \code{\{name\}}, \code{\{value\}}.
+#'   See \code{\link{tooltip}} for full customization options.
+#' @param tooltip_vars Character vector of variables to show in tooltip (legacy).
+#' @param tooltip_format Custom tooltip format string using Highcharts syntax (legacy).
+#'   For the simpler dashboardr placeholder syntax, use \code{tooltip} instead.
 #' @param height Chart height in pixels (default: 500)
 #' @param border_color Border color between regions (default: "#FFFFFF")
 #' @param border_width Border width (default: 0.5
@@ -79,6 +84,7 @@ viz_map <- function(
     na_color = "#E0E0E0",
     click_url_template = NULL,
     click_var = NULL,
+    tooltip = NULL,
     tooltip_vars = NULL,
     tooltip_format = NULL,
     height = 500,
@@ -235,20 +241,32 @@ viz_map <- function(
     )
   }
 
-  # Tooltip configuration
+  # ─── TOOLTIP ───────────────────────────────────────────────────────────────
+  # Priority: tooltip_format > tooltip_vars > tooltip > default
   if (!is.null(tooltip_format)) {
-    # Custom format string
+    # Legacy: Custom format string (Highcharts syntax) - highest priority for backwards compat
     hc <- hc %>% highcharter::hc_tooltip(pointFormat = tooltip_format)
   } else if (!is.null(tooltip_vars) && length(tooltip_vars) > 0) {
-    # Build tooltip from variable list
+    # Legacy: Build tooltip from variable list
     tooltip_parts <- sapply(tooltip_vars, function(v) {
       paste0(v, ": {point.", v, "}")
     })
-    tooltip_format <- paste0(
+    tooltip_format_built <- paste0(
       "<b>{point.name}</b><br/>",
       paste(tooltip_parts, collapse = "<br/>")
     )
-    hc <- hc %>% highcharter::hc_tooltip(pointFormat = tooltip_format)
+    hc <- hc %>% highcharter::hc_tooltip(pointFormat = tooltip_format_built)
+  } else if (!is.null(tooltip)) {
+    # Use new unified tooltip system
+    tooltip_result <- .process_tooltip_config(
+      tooltip = tooltip,
+      tooltip_prefix = NULL,
+      tooltip_suffix = NULL,
+      x_tooltip_suffix = NULL,
+      chart_type = "map",
+      context = list()
+    )
+    hc <- .apply_tooltip_to_hc(hc, tooltip_result)
   }
 
   # Chart configuration

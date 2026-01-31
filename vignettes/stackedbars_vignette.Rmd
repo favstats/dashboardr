@@ -1,18 +1,24 @@
 ---
-title: "Getting Started With `viz_stackedbars()`"
+title: "Multi-Question Stacked Bar Charts (Legacy Reference)"
 author: "Alexandra Pafford"
 date: "14/08/2025"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Creating Multi-Question Stacked Bar Charts with `viz_stackedbars`}
+  %\VignetteIndexEntry{Creating Multi-Question Stacked Bar Charts (Legacy)}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
 
+> **Note:** This functionality is now part of the unified `viz_stackedbar()` function.
+> You can use `viz_stackedbar(data, x_vars = ...)` for the same functionality shown here.
+> See the [main stackedbar vignette](stackedbar_vignette.html) for comprehensive documentation.
+>
+> The examples below still work with `viz_stackedbars()` for backward compatibility,
+> but we recommend using `viz_stackedbar()` for new code.
 
-Welcome to this comprehensive guide on using the `viz_stackedbars` function from the `dashboardr` package. This function is specifically designed to handle a common challenge in survey research: visualizing responses to multiple Likert-type questions simultaneously.
+This guide covers visualizing responses to multiple Likert-type questions simultaneously.
 
-The `viz_stackedbars` function transforms wide survey data (where each question is a separate column) into an elegant stacked bar chart where:
+The multi-variable mode transforms wide survey data (where each question is a separate column) into an elegant stacked bar chart where:
 - Each bar represents a different survey question
 - Each stack within a bar represents a response category (e.g., "Strongly Agree", "Agree", etc.)
 - Colors show the distribution of responses across all questions
@@ -25,7 +31,21 @@ This approach is particularly valuable for:
 
 The function handles many data preparation tasks automatically, including pivoting from wide to long format, managing `haven_labelled` variables from SPSS data, and creating publication-ready interactive visualizations.
 
-## Getting Started
+## Migration to Unified Function
+
+To migrate from `viz_stackedbars()` to `viz_stackedbar()`, simply change the function name:
+
+```r
+# Old way (still works)
+viz_stackedbars(data, x_vars = c("q1", "q2", "q3"))
+
+# New preferred way
+viz_stackedbar(data, x_vars = c("q1", "q2", "q3"))
+```
+
+All parameters work the same way. The unified `viz_stackedbar()` also supports crosstab-style charts using `x_var` + `stack_var` parameters.
+
+## ⚙️ Getting Started
 
 Let's load the necessary libraries and examine our dataset. For this demonstration, we will be using the 2020 wave from the GSS dataset.
 
@@ -40,7 +60,7 @@ library(dashboardr)
 data(gss_panel20)
 ```
 
-## Data Preparation
+## 📋 Data Preparation
 
 Let's identify and prepare Likert-type questions from the 2016 wave (`_1a` variables) for ease of use in this practical.
 
@@ -87,7 +107,7 @@ cat("\nHappy responses:\n")
 table(gss_likert$happy_1a, useNA = "always")
 ```
 
-# Basic Multi-Question Charts
+# 📊 Basic Multi-Question Charts
 
 ## Example 1: Social Trust and Attitudes
 
@@ -139,7 +159,7 @@ plot2 <- viz_stackedbars(
 plot2
 ```
 
-# Advanced Customization
+# 🎨 Advanced Customization
 
 ## Example 3: Custom Response Ordering and Mapping
 
@@ -218,7 +238,7 @@ plot4 <- viz_stackedbars(
 plot4
 ```
 
-# Working with Different Question Types
+# 📝 Working with Different Question Types
 
 ## Example 5: Happiness and Life Satisfaction
 
@@ -342,7 +362,7 @@ plot6 <- viz_stackedbars(
 plot6
 ```
 
-# Advanced Analysis Techniques
+# 🔬 Advanced Analysis Techniques
 
 ## Example 7: Demographic Subgroup Analysis
 
@@ -441,7 +461,7 @@ if (nrow(high_school_data) > 50) {
 }
 ```
 
-# Working with Survey Batteries
+# 📋 Working with Survey Batteries
 
 ## Example 9: Creating Question Batteries
 
@@ -477,7 +497,7 @@ plot9 <- viz_stackedbars(
 plot9
 ```
 
-# Labels and Tooltips Reference
+# 🏷️ Labels and Tooltips Reference
 
 ## Summary of Label and Tooltip Options
 
@@ -511,7 +531,7 @@ viz_stackedbars(
 )
 ```
 
-# Best Practices and Tips
+# 💡 Best Practices and Tips
 
 ## Example 10: Publication-Ready Chart
 
@@ -544,9 +564,9 @@ plot10 <- viz_stackedbars(
 plot10
 ```
 
-# Summary and Best Practices
+# ✅ Summary and Best Practices
 
-## Key Features Demonstrated
+## ✅ Key Features Demonstrated
 
 1. **Multi-question visualization** with automatic wide-to-long data transformation
 2. **Custom question labeling** for more descriptive axis labels
@@ -557,7 +577,7 @@ plot10
 7. **Survey battery analysis** for related question sets
 8. **Publication-ready styling** with comprehensive customization
 
-## Best Practices for Multi-Question Charts
+## 🎯 Best Practices for Multi-Question Charts
 
 1. Choose questions with similar response scales
  - Use questions that have the same or compatible response categories
@@ -589,7 +609,7 @@ plot10
  - Provide context about sample sizes when relevant
 
 
-## Conclusion
+## 📚 Conclusion
 
 The `viz_stackedbars()` function provides a powerful solution for visualizing multiple Likert-type survey questions simultaneously. Its key advantages include:
 

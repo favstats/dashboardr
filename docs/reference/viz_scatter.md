@@ -23,7 +23,8 @@ viz_scatter(
   trend_method = "lm",
   alpha = 0.7,
   include_na = FALSE,
-  na_label = "Missing",
+  na_label = "(Missing)",
+  tooltip = NULL,
   tooltip_format = NULL,
   jitter = FALSE,
   jitter_amount = 0.2
@@ -100,12 +101,22 @@ viz_scatter(
 - na_label:
 
   Character string. Label for NA category if `include_na = TRUE`.
-  Defaults to "Missing".
+  Defaults to "(Missing)".
+
+- tooltip:
+
+  A tooltip configuration created with
+  [`tooltip()`](https://favstats.github.io/dashboardr/reference/tooltip.md),
+  OR a format string with {placeholders}. Available placeholders: `{x}`,
+  `{y}`, `{name}`, `{series}`. See
+  [`tooltip`](https://favstats.github.io/dashboardr/reference/tooltip.md)
+  for full customization options.
 
 - tooltip_format:
 
-  Character string. Custom format for tooltips. Can use x, y, color
-  placeholders.
+  Character string. Custom format for tooltips using Highcharts
+  placeholders like {point.x}, {point.y}. For the simpler dashboardr
+  placeholder syntax, use the `tooltip` parameter instead.
 
 - jitter:
 

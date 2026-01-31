@@ -7,7 +7,7 @@ piping workflow with add_landingpage() and add_page().
 
 ``` r
 # S3 method for class 'viz_collection'
-print(x, render = FALSE, ...)
+print(x, render = FALSE, check = FALSE, ...)
 ```
 
 ## Arguments
@@ -21,6 +21,11 @@ print(x, render = FALSE, ...)
 
   If TRUE and data is attached, opens a preview in the viewer instead of
   showing the structure. Default is FALSE.
+
+- check:
+
+  Logical. If TRUE, validates all visualization specs before printing.
+  Useful for catching errors early before attempting to render.
 
 - ...:
 
@@ -221,5 +226,10 @@ The print method displays:
 Use `print(x, render = TRUE)` to open a preview in the viewer instead of
 showing the structure. This is useful for quick visualization in the
 console.
+
+Use `print(x, check = TRUE)` to validate all visualization specs before
+printing. This catches missing required parameters and invalid column
+names early, providing clearer error messages than Quarto rendering
+errors.
 
 ## Examples

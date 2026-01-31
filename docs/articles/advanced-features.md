@@ -88,13 +88,13 @@ filtered <- create_content(data = gss, type = "bar") %>%
   add_viz(x_var = "happy", title = "Female", filter = ~ sex == "female", tabgroup = "Female")
 
 print(filtered)
-#> -- Content Collection ──────────────────────────────────────────────────────────
-#> 2 items | ✔ data: 2997 rows x 8 cols
+#> -- Content Collection ----------------------------------------------------------
+#> 2 items | v data: 2997 rows x 8 cols
 #> 
-#> ❯ [Tab] Male (1 viz)
-#>   • [Viz] Male (bar) x=happy +filter
-#> ❯ [Tab] Female (1 viz)
-#>   • [Viz] Female (bar) x=happy +filter
+#> > [Tab] Male (1 viz)
+#>   * [Viz] Male (bar) x=happy +filter
+#> > [Tab] Female (1 viz)
+#>   * [Viz] Female (bar) x=happy +filter
 ```
 
 ``` r
@@ -131,33 +131,33 @@ complex <- create_content(data = gss, type = "bar") %>%
           filter = ~ age > 55, tabgroup = "Olders")
 
 print(complex)
-#> -- Content Collection ──────────────────────────────────────────────────────────
-#> 3 items | ✔ data: 2997 rows x 8 cols
+#> -- Content Collection ----------------------------------------------------------
+#> 3 items | v data: 2997 rows x 8 cols
 #> 
-#> ❯ [Tab] Youngsters (1 viz)
-#>   • [Viz] Young Adults (18-35) (bar) x=happy +filter
-#> ❯ [Tab] Middlers (1 viz)
-#>   • [Viz] Middle Age (36-55) (bar) x=happy +filter
-#> ❯ [Tab] Olders (1 viz)
-#>   • [Viz] Older Adults (55+) (bar) x=happy +filter
+#> > [Tab] Youngsters (1 viz)
+#>   * [Viz] Young Adults (18-35) (bar) x=happy +filter
+#> > [Tab] Middlers (1 viz)
+#>   * [Viz] Middle Age (36-55) (bar) x=happy +filter
+#> > [Tab] Olders (1 viz)
+#>   * [Viz] Older Adults (55+) (bar) x=happy +filter
 ```
 
 ``` r
 complex %>% preview()
 #> Warning: There were 2 warnings in `dplyr::filter()`.
 #> The first warning was:
-#> ℹ In argument: `age >= 18 & age <= 35`.
+#> i In argument: `age >= 18 & age <= 35`.
 #> Caused by warning in `Ops.factor()`:
 #> ! '>=' not meaningful for factors
-#> ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.
+#> i Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.
 #> Warning: There were 2 warnings in `dplyr::filter()`.
 #> The first warning was:
-#> ℹ In argument: `age > 35 & age <= 55`.
+#> i In argument: `age > 35 & age <= 55`.
 #> Caused by warning in `Ops.factor()`:
 #> ! '>' not meaningful for factors
-#> ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.
+#> i Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.
 #> Warning: There was 1 warning in `dplyr::filter()`.
-#> ℹ In argument: `age > 55`.
+#> i In argument: `age > 55`.
 #> Caused by warning in `Ops.factor()`:
 #> ! '>' not meaningful for factors
 ```
@@ -235,15 +235,15 @@ gender_comparison <- create_content(data = gss, type = "bar") %>%
           filter = ~ sex == "female", title_tabset = "Female", tabgroup = "education")
 
 print(gender_comparison)
-#> -- Content Collection ──────────────────────────────────────────────────────────
-#> 4 items | ✔ data: 2997 rows x 8 cols
+#> -- Content Collection ----------------------------------------------------------
+#> 4 items | v data: 2997 rows x 8 cols
 #> 
-#> ❯ [Tab] happiness (2 vizs)
-#>   • [Viz] Happiness (bar) x=happy +filter
-#>   • [Viz] Happiness (bar) x=happy +filter
-#> ❯ [Tab] education (2 vizs)
-#>   • [Viz] Education (bar) x=degree +filter
-#>   • [Viz] Education (bar) x=degree +filter
+#> > [Tab] happiness (2 vizs)
+#>   * [Viz] Happiness (bar) x=happy +filter
+#>   * [Viz] Happiness (bar) x=happy +filter
+#> > [Tab] education (2 vizs)
+#>   * [Viz] Education (bar) x=degree +filter
+#>   * [Viz] Education (bar) x=degree +filter
 ```
 
 ``` r
@@ -306,14 +306,14 @@ batch <- create_content(data = gss, type = "bar") %>%
   add_vizzes(x_var = vars, title = labels, tabgroup = "survey")
 
 print(batch)
-#> -- Content Collection ──────────────────────────────────────────────────────────
-#> 4 items | ✔ data: 2997 rows x 8 cols
+#> -- Content Collection ----------------------------------------------------------
+#> 4 items | v data: 2997 rows x 8 cols
 #> 
-#> ❯ [Tab] survey (4 vizs)
-#>   • [Viz] Education (bar) x=degree
-#>   • [Viz] Race (bar) x=race
-#>   • [Viz] Happiness (bar) x=happy
-#>   • [Viz] Politics (bar) x=polviews
+#> > [Tab] survey (4 vizs)
+#>   * [Viz] Education (bar) x=degree
+#>   * [Viz] Race (bar) x=race
+#>   * [Viz] Happiness (bar) x=happy
+#>   * [Viz] Politics (bar) x=polviews
 ```
 
 ``` r
@@ -709,13 +709,13 @@ weighted_collection <- create_content(data = gss, type = "bar", weight_var = "wt
   add_viz(x_var = "happy", title = "Happiness", tabgroup = "weighted")
 
 print(weighted_collection)
-#> -- Content Collection ──────────────────────────────────────────────────────────
-#> 3 items | ✔ data: 2997 rows x 8 cols
+#> -- Content Collection ----------------------------------------------------------
+#> 3 items | v data: 2997 rows x 8 cols
 #> 
-#> ❯ [Tab] weighted (3 vizs)
-#>   • [Viz] Education (bar) x=degree
-#>   • [Viz] Race (bar) x=race
-#>   • [Viz] Happiness (bar) x=happy
+#> > [Tab] weighted (3 vizs)
+#>   * [Viz] Education (bar) x=degree
+#>   * [Viz] Race (bar) x=race
+#>   * [Viz] Happiness (bar) x=happy
 ```
 
 ``` r
@@ -731,6 +731,76 @@ Education
 Race
 
 Happiness
+
+## 🎯 Customizing Tooltips
+
+dashboardr provides a flexible 3-tier system for customizing chart
+tooltips, from quick tweaks to full control.
+
+### Quick Customization (Tier 1)
+
+Add prefix or suffix text to tooltip values:
+
+``` r
+viz_bar(data = gss, x_var = "degree", 
+        tooltip_prefix = "Count: ",
+        tooltip_suffix = " respondents")
+```
+
+### Format Strings (Tier 2)
+
+Use format strings with `{placeholders}` for more control:
+
+``` r
+viz_bar(data = gss, x_var = "degree", 
+        tooltip = "{category}: {value} people ({percent})")
+```
+
+Available placeholders vary by chart type:
+
+| Placeholder | Description | Charts |
+|----|----|----|
+| `{value}` | Primary value | All |
+| `{category}` | X-axis category | bar, histogram, stackedbar |
+| `{x}`, `{y}` | Coordinates | scatter, heatmap |
+| `{series}` | Series name | Grouped charts |
+| `{percent}` | Percentage | Percent-type charts |
+| [name](https://github.com/christopherkenny/name) | Point name | All |
+
+### Full Control (Tier 3)
+
+Use the
+[`tooltip()`](https://favstats.github.io/dashboardr/reference/tooltip.md)
+helper for complete customization including styling:
+
+``` r
+viz_bar(data = gss, x_var = "degree",
+        tooltip = tooltip(
+          format = "<b>{category}</b><br/>Count: {value}",
+          backgroundColor = "#f8f9fa",
+          borderColor = "#dee2e6",
+          borderRadius = 8,
+          style = list(fontSize = "14px")
+        ))
+```
+
+The
+[`tooltip()`](https://favstats.github.io/dashboardr/reference/tooltip.md)
+function exposes all Highcharts tooltip options:
+
+- `format` - Format string with {placeholders}
+- `shared` - Share tooltip across series (TRUE/FALSE)
+- `backgroundColor`, `borderColor`, `borderRadius` - Visual styling
+- `style` - CSS styles as a named list
+- `header` - Header format (use FALSE to hide)
+- `enabled` - Enable/disable tooltips entirely
+
+All chart functions
+([`viz_bar()`](https://favstats.github.io/dashboardr/reference/viz_bar.md),
+[`viz_scatter()`](https://favstats.github.io/dashboardr/reference/viz_scatter.md),
+[`viz_histogram()`](https://favstats.github.io/dashboardr/reference/viz_histogram.md),
+etc.) support the same tooltip parameters for consistent behavior across
+your dashboard.
 
 ## 🎨 Icons
 
@@ -964,14 +1034,14 @@ modern_page <- create_page("Modern", data = gss, type = "bar", tabset_theme = "m
   add_viz(x_var = "race", title = "Race", tabgroup = "B")
 
 print(modern_page)
-#> -- Page: Modern ─────────────────────────────────────────────────
-#> ✔ data: 2997 rows x 8 cols | default: bar 
+#> -- Page: Modern -------------------------------------------------
+#> v data: 2997 rows x 8 cols | default: bar 
 #> 2 items
 #> 
-#> ❯ [Tab] A (1 viz)
-#>   • [Viz] Education (bar) x=degree
-#> ❯ [Tab] B (1 viz)
-#>   • [Viz] Race (bar) x=race
+#> > [Tab] A (1 viz)
+#>   * [Viz] Education (bar) x=degree
+#> > [Tab] B (1 viz)
+#>   * [Viz] Race (bar) x=race
 ```
 
 ``` r
@@ -1027,14 +1097,14 @@ blue_tabs <- create_page(
   add_viz(x_var = "happy", title = "Happiness", tabgroup = "attitudes")
 
 print(blue_tabs)
-#> -- Page: Blue Theme ─────────────────────────────────────────────
-#> ✔ data: 2997 rows x 8 cols | default: bar 
+#> -- Page: Blue Theme ---------------------------------------------
+#> v data: 2997 rows x 8 cols | default: bar 
 #> 2 items
 #> 
-#> ❯ [Tab] demo (1 viz)
-#>   • [Viz] Education (bar) x=degree
-#> ❯ [Tab] attitudes (1 viz)
-#>   • [Viz] Happiness (bar) x=happy
+#> > [Tab] demo (1 viz)
+#>   * [Viz] Education (bar) x=degree
+#> > [Tab] attitudes (1 viz)
+#>   * [Viz] Happiness (bar) x=happy
 ```
 
 ``` r
@@ -1078,16 +1148,16 @@ corporate <- create_page(
   add_viz(x_var = "happy", title = "Satisfaction", tabgroup = "Q3")
 
 print(corporate)
-#> -- Page: Corporate ──────────────────────────────────────────────
-#> ✔ data: 2997 rows x 8 cols | default: bar 
+#> -- Page: Corporate ----------------------------------------------
+#> v data: 2997 rows x 8 cols | default: bar 
 #> 3 items
 #> 
-#> ❯ [Tab] Q1 (1 viz)
-#>   • [Viz] Education (bar) x=degree
-#> ❯ [Tab] Q2 (1 viz)
-#>   • [Viz] Demographics (bar) x=race
-#> ❯ [Tab] Q3 (1 viz)
-#>   • [Viz] Satisfaction (bar) x=happy
+#> > [Tab] Q1 (1 viz)
+#>   * [Viz] Education (bar) x=degree
+#> > [Tab] Q2 (1 viz)
+#>   * [Viz] Demographics (bar) x=race
+#> > [Tab] Q3 (1 viz)
+#>   * [Viz] Satisfaction (bar) x=happy
 ```
 
 ### Example: Dark Theme
@@ -1115,14 +1185,14 @@ dark_tabs <- create_page(
   add_viz(x_var = "happy", title = "Results", tabgroup = "Analysis")
 
 print(dark_tabs)
-#> -- Page: Dark Theme ─────────────────────────────────────────────
-#> ✔ data: 2997 rows x 8 cols | default: bar 
+#> -- Page: Dark Theme ---------------------------------------------
+#> v data: 2997 rows x 8 cols | default: bar 
 #> 2 items
 #> 
-#> ❯ [Tab] Data (1 viz)
-#>   • [Viz] Education (bar) x=degree
-#> ❯ [Tab] Analysis (1 viz)
-#>   • [Viz] Results (bar) x=happy
+#> > [Tab] Data (1 viz)
+#>   * [Viz] Education (bar) x=degree
+#> > [Tab] Analysis (1 viz)
+#>   * [Viz] Results (bar) x=happy
 ```
 
 > **Note:** Tab styling (custom colors, themes) is fully visible only in

@@ -41,6 +41,12 @@
 #'   If `NULL` and no `group_var`, uses auto-generated label (e.g., "5-7" for `y_filter = 5:7`).
 #' @param time_breaks Optional numeric vector for binning continuous time variables.
 #' @param time_bin_labels Optional character vector of labels for time bins.
+#' @param tooltip A tooltip configuration created with \code{\link{tooltip}()}, 
+#'   OR a format string with \{placeholders\}. Available placeholders: 
+#'   \code{\{x\}}, \code{\{y\}}, \code{\{value\}}, \code{\{series\}}, \code{\{percent\}}.
+#'   See \code{\link{tooltip}} for full customization options.
+#' @param tooltip_prefix Optional string prepended to values in tooltip.
+#' @param tooltip_suffix Optional string appended to values in tooltip.
 #'
 #' @return A highcharter plot object.
 #'
@@ -168,7 +174,10 @@ viz_timeline <- function(data,
                             weight_var = NULL,
                             include_na = FALSE,
                             na_label_y = "(Missing)",
-                            na_label_group = "(Missing)") {
+                            na_label_group = "(Missing)",
+                            tooltip = NULL,
+                            tooltip_prefix = "",
+                            tooltip_suffix = "") {
 
   # Convert variable arguments to strings (supports both quoted and unquoted)
   time_var <- .as_var_string(rlang::enquo(time_var))
@@ -612,6 +621,34 @@ viz_timeline <- function(data,
         }
       }
     }
+  }
+
+  # ─── TOOLTIP ───────────────────────────────────────────────────────────────
+  if (!is.null(tooltip)) {
+    # Use new unified tooltip system
+    tooltip_result <- .process_tooltip_config(
+      tooltip = tooltip,
+      tooltip_prefix = tooltip_prefix,
+      tooltip_suffix = tooltip_suffix,
+      x_tooltip_suffix = NULL,
+      chart_type = "timeline",
+      context = list(
+        x_label = x_label %||% time_var,
+        y_label = y_label %||% "Percentage"
+      )
+    )
+    hc <- .apply_tooltip_to_hc(hc, tooltip_result)
+  } else {
+    # Default tooltip with prefix/suffix
+    pre <- if (is.null(tooltip_prefix) || tooltip_prefix == "") "" else tooltip_prefix
+    suf <- if (is.null(tooltip_suffix) || tooltip_suffix == "") "%" else tooltip_suffix
+    
+    hc <- hc %>%
+      highcharter::hc_tooltip(
+        useHTML = TRUE,
+        headerFormat = "<b>{point.x}</b><br>",
+        pointFormat = paste0("{series.name}: ", pre, "{point.y:.1f}", suf)
+      )
   }
 
   return(hc)

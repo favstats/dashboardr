@@ -230,8 +230,8 @@ test_that("handle_na_for_plotting uses standard factor() with include_na = FALSE
   )
   
   expect_s3_class(result, "factor")
-  # Standard factor() sorts alphabetically
-  expect_equal(levels(result), c("1", "10", "2", "20", "3"))
+  # Numeric-like strings are now sorted numerically (not alphabetically)
+  expect_equal(levels(result), c("1", "2", "3", "10", "20"))
 })
 
 test_that("handle_na_for_plotting handles numeric-like strings with NAs", {
@@ -519,5 +519,101 @@ test_that("edge case: custom_order with no matching values and include_na = TRUE
   # With include_na = TRUE, appends actual data values to custom_order
   # Since no overlap, all actual values are in "remaining"
   expect_equal(levels(result), c("A", "B", "C"))
+})
+
+test_that("handle_na_for_plotting sorts actual numeric columns correctly", {
+  # Test with integer column - values that would sort wrong alphabetically
+  df <- data.frame(
+    year = c(2020L, 2010L, 2021L, 2011L, 2019L),
+    value = 1:5
+  )
+  
+  result <- handle_na_for_plotting(
+    data = df,
+    var_name = "year",
+    include_na = FALSE,
+    na_label = "(Missing)"
+  )
+  
+  expect_s3_class(result, "factor")
+  # Should sort numerically: 2010, 2011, 2019, 2020, 2021
+  # NOT alphabetically: 2010, 2011, 2019, 2020, 2021 (same in this case)
+  expect_equal(levels(result), c("2010", "2011", "2019", "2020", "2021"))
+})
+
+test_that("handle_na_for_plotting sorts numeric column with values that differ alphabetically", {
+  # Values that would sort differently alphabetically vs numerically
+  df <- data.frame(
+    x = c(1, 10, 2, 20, 100, 3),
+    y = 1:6
+  )
+  
+  result <- handle_na_for_plotting(
+    data = df,
+    var_name = "x",
+    include_na = FALSE,
+    na_label = "(Missing)"
+  )
+  
+  expect_s3_class(result, "factor")
+  # Should sort numerically: 1, 2, 3, 10, 20, 100
+  # NOT alphabetically: 1, 10, 100, 2, 20, 3
+  expect_equal(levels(result), c("1", "2", "3", "10", "20", "100"))
+})
+
+test_that("handle_na_for_plotting sorts numeric column with NAs correctly", {
+  df <- data.frame(
+    x = c(1, 10, NA, 2, NA, 100),
+    y = 1:6
+  )
+  
+  result <- handle_na_for_plotting(
+    data = df,
+    var_name = "x",
+    include_na = TRUE,
+    na_label = "Missing"
+  )
+  
+  expect_s3_class(result, "factor")
+  # Should sort numerically with NA label at end
+  expect_equal(levels(result), c("1", "2", "10", "100", "Missing"))
+})
+
+test_that("handle_na_for_plotting respects custom_order even for numeric columns", {
+  df <- data.frame(
+    x = c(1, 2, 3, 10, 20),
+    y = 1:5
+  )
+  
+  result <- handle_na_for_plotting(
+    data = df,
+    var_name = "x",
+    include_na = FALSE,
+    na_label = "(Missing)",
+    custom_order = c("20", "10", "3", "2", "1")  # Reverse order
+  )
+  
+  expect_s3_class(result, "factor")
+  # Custom order should be respected
+  expect_equal(levels(result), c("20", "10", "3", "2", "1"))
+})
+
+test_that("integration: viz_stackedbar sorts numeric x_var correctly", {
+  df <- data.frame(
+    year = c(rep(2020, 10), rep(2010, 15), rep(2021, 8), rep(2015, 12)),
+    response = c(rep(c("Yes", "No"), 22), "Yes")
+  )
+  
+  plot <- viz_stackedbar(
+    data = df,
+    x_var = "year",
+    stack_var = "response",
+    include_na = FALSE
+  )
+  
+  expect_s3_class(plot, "highchart")
+  # Check that x-axis categories are in numeric order
+  categories <- plot$x$hc_opts$xAxis$categories
+  expect_equal(categories, c("2010", "2015", "2020", "2021"))
 })
 

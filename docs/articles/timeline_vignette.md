@@ -1,6 +1,6 @@
 # Getting Started With \`viz_timeline()\`
 
-## Introduction
+## 📖 Introduction
 
 The
 [`viz_timeline()`](https://favstats.github.io/dashboardr/reference/viz_timeline.md)
@@ -15,7 +15,7 @@ Social Survey (GSS) data. Because we are working with data over time, we
 will use the `gss_all` data set. This is a large data set, so it might
 take a while to load.
 
-## Setup
+## ⚙️ Setup
 
 First, let’s load the required packages and define the function:
 
@@ -31,7 +31,7 @@ library(gssr)
 data(gss_all)
 ```
 
-## Example 1: Basic Stacked Area Chart
+## 📊 Example 1: Basic Stacked Area Chart
 
 Let’s start with a simple stacked area chart showing confidence in
 financial institutions over time:
@@ -43,7 +43,10 @@ plot1 <- viz_timeline(
   y_var = "confinan",
   chart_type = "stacked_area",
   title = "Confidence in Financial Institutions Over Time",
-  y_max = 100
+  x_label = "Year",
+  y_label = "Percentage of Respondents",
+  y_max = 100,
+  color_palette = c("#2E86AB", "#A23B72", "#F18F01")
 )
 
 plot1
@@ -53,7 +56,7 @@ This chart shows how public confidence in financial institutions has
 changed from the 1970s to recent years, with each colored area
 representing a different level of confidence.
 
-## Example 2: Line Chart with Grouping
+## 📈 Example 2: Line Chart with Grouping
 
 Now let’s create a line chart showing happiness trends by gender:
 
@@ -75,7 +78,7 @@ This line chart displays separate lines for each combination of
 happiness level and gender, allowing us to compare trends between men
 and women over time.
 
-## Example 3: Time Binning
+## 🗓️ Example 3: Time Binning
 
 For data spanning many years, we can bin the time variable into decades:
 
@@ -97,7 +100,7 @@ plot3
 This approach is useful when you want to show broader trends across time
 periods rather than year-by-year changes.
 
-## Example 4: Controlling Response Order
+## 🔢 Example 4: Controlling Response Order
 
 You can control the order of response categories to ensure logical
 ordering:
@@ -119,7 +122,7 @@ plot4
 By specifying `y_levels`, we ensure that health categories are ordered
 from worst to best, making the chart more intuitive to read.
 
-## Tips for Using the Function
+## 💡 Tips for Using the Function
 
 ### 1. Check Your Data First
 
@@ -139,7 +142,7 @@ gss_all %>%
   filter(!is.na(happy)) %>%
   mutate(happy = haven::as_factor(happy, levels = "labels")) %>%
   count(happy)
-#> # A tibble: 3 × 2
+#> # A tibble: 3 x 2
 #>   happy             n
 #>   <fct>         <int>
 #> 1 very happy    21069
@@ -161,7 +164,7 @@ gss_all %>%
     happy_missing = sum(is.na(happy)),
     both_available = sum(!is.na(year) & !is.na(happy))
   )
-#> # A tibble: 1 × 4
+#> # A tibble: 1 x 4
 #>   total_rows year_missing happy_missing both_available
 #>        <int>        <int>         <int>          <int>
 #> 1      75699            0          4830          70869
@@ -203,7 +206,7 @@ plot_labeled
 The tooltips in timeline charts automatically show the year, category,
 and percentage when hovering over data points.
 
-## Advanced Features
+## ⚡ Advanced Features
 
 ### Response Binning
 
@@ -290,7 +293,7 @@ viz_timeline(
 This creates separate lines for each age group, all showing only the
 highly satisfied responses.
 
-## Integration with Dashboards
+## 📁 Integration with Dashboards
 
 The
 [`viz_timeline()`](https://favstats.github.io/dashboardr/reference/viz_timeline.md)
@@ -361,7 +364,7 @@ generate_dashboard(dashboard)
 This creates separate tabs for each filtered view, making it easy to
 compare trends across groups.
 
-## Conclusion
+## 📚 Conclusion
 
 The
 [`viz_timeline()`](https://favstats.github.io/dashboardr/reference/viz_timeline.md)

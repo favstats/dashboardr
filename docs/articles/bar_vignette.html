@@ -67,17 +67,18 @@
     <li><a class="dropdown-item" href="../articles/content-collections.html">- Content</a></li>
     <li><a class="dropdown-item" href="../articles/pages.html">- Pages</a></li>
     <li><a class="dropdown-item" href="../articles/dashboards.html">- Dashboards</a></li>
+    <li><a class="dropdown-item" href="../articles/publishing_dashboards.html">🌐 Publishing Dashboards</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><a class="dropdown-item" href="../articles/advanced-features.html">⚙️ Advanced Features</a></li>
-    <li><a class="dropdown-item" href="../articles/publishing_dashboards.html">🌐 Publishing Dashboards</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>📊 Visualization Types</h6></li>
     <li><a class="dropdown-item" href="../articles/bar_vignette.html">- Bar Charts</a></li>
     <li><a class="dropdown-item" href="../articles/timeline_vignette.html">- Timelines</a></li>
     <li><a class="dropdown-item" href="../articles/stackedbar_vignette.html">- Stacked Bars</a></li>
-    <li><a class="dropdown-item" href="../articles/stackedbars_vignette.html">- Stacked Bars (Multiple)</a></li>
     <li><a class="dropdown-item" href="../articles/heatmap_vignette.html">- Heatmaps</a></li>
     <li><a class="dropdown-item" href="../articles/histogram_vignette.html">- Histograms</a></li>
+    <li><a class="dropdown-item" href="../articles/density_vignette.html">- Density Plots</a></li>
+    <li><a class="dropdown-item" href="../articles/boxplot_vignette.html">- Box Plots</a></li>
     <li><a class="dropdown-item" href="../articles/scatter_vignette.html">- Scatter Plots</a></li>
     <li><a class="dropdown-item" href="../articles/treemap_vignette.html">- Treemaps</a></li>
     <li><a class="dropdown-item" href="../articles/map_vignette.html">- Maps</a></li>
@@ -108,8 +109,9 @@
 
 
 
-
-<div class="row">
+<link href="bar_vignette_files/htmltools-fill-0.5.9/fill.css" rel="stylesheet">
+<script src="bar_vignette_files/htmlwidgets-1.6.4/htmlwidgets.js"></script><script src="bar_vignette_files/proj4js-2.3.15/proj4.js"></script><link href="bar_vignette_files/highcharts-9.3.1/css/motion.css" rel="stylesheet">
+<script src="bar_vignette_files/highcharts-9.3.1/highcharts.js"></script><script src="bar_vignette_files/highcharts-9.3.1/highcharts-3d.js"></script><script src="bar_vignette_files/highcharts-9.3.1/highcharts-more.js"></script><script src="bar_vignette_files/highcharts-9.3.1/modules/stock.js"></script><script src="bar_vignette_files/highcharts-9.3.1/modules/map.js"></script><script src="bar_vignette_files/highcharts-9.3.1/modules/data.js"></script><script src="bar_vignette_files/highcharts-9.3.1/modules/exporting.js"></script><script src="bar_vignette_files/highcharts-9.3.1/modules/offline-exporting.js"></script><script src="bar_vignette_files/highcharts-9.3.1/modules/drilldown.js"></script><script src="bar_vignette_files/highcharts-9.3.1/modules/item-series.js"></script><script src="bar_vignette_files/highcharts-9.3.1/modules/overlapping-datalabels.js"></script><script src="bar_vignette_files/highcharts-9.3.1/modules/annotations.js"></script><script src="bar_vignette_files/highcharts-9.3.1/modules/export-data.js"></script><script src="bar_vignette_files/highcharts-9.3.1/modules/funnel.js"></script><script src="bar_vignette_files/highcharts-9.3.1/modules/heatmap.js"></script><script src="bar_vignette_files/highcharts-9.3.1/modules/treemap.js"></script><script src="bar_vignette_files/highcharts-9.3.1/modules/sankey.js"></script><script src="bar_vignette_files/highcharts-9.3.1/modules/dependency-wheel.js"></script><script src="bar_vignette_files/highcharts-9.3.1/modules/organization.js"></script><script src="bar_vignette_files/highcharts-9.3.1/modules/solid-gauge.js"></script><script src="bar_vignette_files/highcharts-9.3.1/modules/streamgraph.js"></script><script src="bar_vignette_files/highcharts-9.3.1/modules/sunburst.js"></script><script src="bar_vignette_files/highcharts-9.3.1/modules/vector.js"></script><script src="bar_vignette_files/highcharts-9.3.1/modules/wordcloud.js"></script><script src="bar_vignette_files/highcharts-9.3.1/modules/xrange.js"></script><script src="bar_vignette_files/highcharts-9.3.1/modules/tilemap.js"></script><script src="bar_vignette_files/highcharts-9.3.1/modules/venn.js"></script><script src="bar_vignette_files/highcharts-9.3.1/modules/gantt.js"></script><script src="bar_vignette_files/highcharts-9.3.1/modules/timeline.js"></script><script src="bar_vignette_files/highcharts-9.3.1/modules/parallel-coordinates.js"></script><script src="bar_vignette_files/highcharts-9.3.1/modules/bullet.js"></script><script src="bar_vignette_files/highcharts-9.3.1/modules/coloraxis.js"></script><script src="bar_vignette_files/highcharts-9.3.1/modules/dumbbell.js"></script><script src="bar_vignette_files/highcharts-9.3.1/modules/lollipop.js"></script><script src="bar_vignette_files/highcharts-9.3.1/modules/series-label.js"></script><script src="bar_vignette_files/highcharts-9.3.1/plugins/motion.js"></script><script src="bar_vignette_files/highcharts-9.3.1/custom/reset.js"></script><script src="bar_vignette_files/highcharts-9.3.1/modules/boost.js"></script><script src="bar_vignette_files/highchart-binding-0.9.4/highchart.js"></script><div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Creating Bar Charts with viz_bar()</h1>
@@ -122,7 +124,7 @@
     
     
 <div class="section level2">
-<h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
+<h2 id="introduction">📖 Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
 </h2>
 <p>The <code><a href="../reference/viz_bar.html">viz_bar()</a></code> function creates grouped/clustered bar
 charts, perfect for comparing categories across different groups or
@@ -134,7 +136,7 @@ comparisons.</p>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="basic-bar-charts">Basic Bar Charts<a class="anchor" aria-label="anchor" href="#basic-bar-charts"></a>
+<h2 id="basic-bar-charts">📊 Basic Bar Charts<a class="anchor" aria-label="anchor" href="#basic-bar-charts"></a>
 </h2>
 <div class="section level3">
 <h3 id="simple-category-counts">Simple Category Counts<a class="anchor" aria-label="anchor" href="#simple-category-counts"></a>
@@ -152,6 +154,8 @@ comparisons.</p>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">plot</span></span></code></pre></div>
+<div class="highchart html-widget html-fill-item" id="htmlwidget-ac96cb3ee4656e2e9ec3" style="width:672px;height:480px;"></div>
+<script type="application/json" data-for="htmlwidget-ac96cb3ee4656e2e9ec3">{"x":{"hc_opts":{"chart":{"reflow":true,"type":"column"},"title":{"text":null},"yAxis":{"title":{"text":"Count"}},"credits":{"enabled":false},"exporting":{"enabled":false},"boost":{"enabled":false},"plotOptions":{"series":{"label":{"enabled":false},"turboThreshold":0,"dataLabels":{"enabled":true,"format":"{point.y:.0f}"}},"treemap":{"layoutAlgorithm":"squarified"}},"xAxis":{"categories":["A","B","C"],"title":{"text":"category"}},"series":[{"data":[2,3,4],"name":"Count","id":"main_series","showInLegend":false,"colorByPoint":true}],"tooltip":{"formatter":"function() {\n             var cat = this.point.category || this.series.chart.xAxis[0].categories[this.point.x] || this.x;\n             var val = this.y;\n             var total = 9;\n             var pct = total > 0 ? (val / total * 100).toFixed(1) : 0;\n             return '<b>' + cat + '<\/b><br/>' +\n                    '' + val.toLocaleString() + '<br/>' +\n                    '<span style=\"color:#666;font-size:0.9em\">' + pct + '% of total<\/span>';\n           }","useHTML":true}},"theme":{"chart":{"backgroundColor":"transparent"},"colors":["#7cb5ec","#434348","#90ed7d","#f7a35c","#8085e9","#f15c80","#e4d354","#2b908f","#f45b5b","#91e8e1"]},"conf_opts":{"global":{"Date":null,"VMLRadialGradientURL":"http =//code.highcharts.com/list(version)/gfx/vml-radial-gradient.png","canvasToolsURL":"http =//code.highcharts.com/list(version)/modules/canvas-tools.js","getTimezoneOffset":null,"timezoneOffset":0,"useUTC":true},"lang":{"contextButtonTitle":"Chart context menu","decimalPoint":".","downloadCSV":"Download CSV","downloadJPEG":"Download JPEG image","downloadPDF":"Download PDF document","downloadPNG":"Download PNG image","downloadSVG":"Download SVG vector image","downloadXLS":"Download XLS","drillUpText":"◁ Back to {series.name}","exitFullscreen":"Exit from full screen","exportData":{"annotationHeader":"Annotations","categoryDatetimeHeader":"DateTime","categoryHeader":"Category"},"hideData":"Hide data table","invalidDate":null,"loading":"Loading...","months":["January","February","March","April","May","June","July","August","September","October","November","December"],"noData":"No data to display","numericSymbolMagnitude":1000,"numericSymbols":["k","M","G","T","P","E"],"printChart":"Print chart","resetZoom":"Reset zoom","resetZoomTitle":"Reset zoom level 1:1","shortMonths":["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],"shortWeekdays":["Sat","Sun","Mon","Tue","Wed","Thu","Fri"],"thousandsSep":" ","viewData":"View data table","viewFullscreen":"View in full screen","weekdays":["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]}},"type":"chart","fonts":[],"debug":false},"evals":["hc_opts.tooltip.formatter"],"jsHooks":[]}</script>
 </div>
 <div class="section level3">
 <h3 id="with-custom-labels">With Custom Labels<a class="anchor" aria-label="anchor" href="#with-custom-labels"></a>
@@ -163,11 +167,15 @@ comparisons.</p>
 <span>  title <span class="op">=</span> <span class="st">"Category Distribution"</span>,</span>
 <span>  x_label <span class="op">=</span> <span class="st">"Categories"</span>,</span>
 <span>  y_label <span class="op">=</span> <span class="st">"Count"</span></span>
-<span><span class="op">)</span></span></code></pre></div>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">plot</span></span></code></pre></div>
+<div class="highchart html-widget html-fill-item" id="htmlwidget-e5c8c404fe174e4c81bd" style="width:672px;height:480px;"></div>
+<script type="application/json" data-for="htmlwidget-e5c8c404fe174e4c81bd">{"x":{"hc_opts":{"chart":{"reflow":true,"type":"column"},"title":{"text":"Category Distribution"},"yAxis":{"title":{"text":"Count"}},"credits":{"enabled":false},"exporting":{"enabled":false},"boost":{"enabled":false},"plotOptions":{"series":{"label":{"enabled":false},"turboThreshold":0,"dataLabels":{"enabled":true,"format":"{point.y:.0f}"}},"treemap":{"layoutAlgorithm":"squarified"}},"xAxis":{"categories":["A","B","C"],"title":{"text":"Categories"}},"series":[{"data":[2,3,4],"name":"Count","id":"main_series","showInLegend":false,"colorByPoint":true}],"tooltip":{"formatter":"function() {\n             var cat = this.point.category || this.series.chart.xAxis[0].categories[this.point.x] || this.x;\n             var val = this.y;\n             var total = 9;\n             var pct = total > 0 ? (val / total * 100).toFixed(1) : 0;\n             return '<b>' + cat + '<\/b><br/>' +\n                    '' + val.toLocaleString() + '<br/>' +\n                    '<span style=\"color:#666;font-size:0.9em\">' + pct + '% of total<\/span>';\n           }","useHTML":true}},"theme":{"chart":{"backgroundColor":"transparent"},"colors":["#7cb5ec","#434348","#90ed7d","#f7a35c","#8085e9","#f15c80","#e4d354","#2b908f","#f45b5b","#91e8e1"]},"conf_opts":{"global":{"Date":null,"VMLRadialGradientURL":"http =//code.highcharts.com/list(version)/gfx/vml-radial-gradient.png","canvasToolsURL":"http =//code.highcharts.com/list(version)/modules/canvas-tools.js","getTimezoneOffset":null,"timezoneOffset":0,"useUTC":true},"lang":{"contextButtonTitle":"Chart context menu","decimalPoint":".","downloadCSV":"Download CSV","downloadJPEG":"Download JPEG image","downloadPDF":"Download PDF document","downloadPNG":"Download PNG image","downloadSVG":"Download SVG vector image","downloadXLS":"Download XLS","drillUpText":"◁ Back to {series.name}","exitFullscreen":"Exit from full screen","exportData":{"annotationHeader":"Annotations","categoryDatetimeHeader":"DateTime","categoryHeader":"Category"},"hideData":"Hide data table","invalidDate":null,"loading":"Loading...","months":["January","February","March","April","May","June","July","August","September","October","November","December"],"noData":"No data to display","numericSymbolMagnitude":1000,"numericSymbols":["k","M","G","T","P","E"],"printChart":"Print chart","resetZoom":"Reset zoom","resetZoomTitle":"Reset zoom level 1:1","shortMonths":["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],"shortWeekdays":["Sat","Sun","Mon","Tue","Wed","Thu","Fri"],"thousandsSep":" ","viewData":"View data table","viewFullscreen":"View in full screen","weekdays":["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]}},"type":"chart","fonts":[],"debug":false},"evals":["hc_opts.tooltip.formatter"],"jsHooks":[]}</script>
 </div>
 </div>
 <div class="section level2">
-<h2 id="grouped-bar-charts">Grouped Bar Charts<a class="anchor" aria-label="anchor" href="#grouped-bar-charts"></a>
+<h2 id="grouped-bar-charts">📊 Grouped Bar Charts<a class="anchor" aria-label="anchor" href="#grouped-bar-charts"></a>
 </h2>
 <div class="section level3">
 <h3 id="basic-grouping">Basic Grouping<a class="anchor" aria-label="anchor" href="#basic-grouping"></a>
@@ -189,6 +197,8 @@ comparisons.</p>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">plot</span></span></code></pre></div>
+<div class="highchart html-widget html-fill-item" id="htmlwidget-36aa3d2a04d42bbc2145" style="width:672px;height:480px;"></div>
+<script type="application/json" data-for="htmlwidget-36aa3d2a04d42bbc2145">{"x":{"hc_opts":{"chart":{"reflow":true,"type":"bar"},"title":{"text":null},"yAxis":{"title":{"text":"Percentage"}},"credits":{"enabled":false},"exporting":{"enabled":false},"boost":{"enabled":false},"plotOptions":{"series":{"label":{"enabled":false},"turboThreshold":0,"dataLabels":{"enabled":true,"format":"{point.y:.0f}%"}},"treemap":{"layoutAlgorithm":"squarified"}},"xAxis":{"categories":["Q1","Q2","Q3"],"title":{"text":"question"}},"series":[{"data":[36,28,34],"name":"High","id":"series_1"},{"data":[30,36,38],"name":"Low","id":"series_2"},{"data":[34,36,28],"name":"Medium","id":"series_3"}],"tooltip":{"formatter":"function() {\n             var cat = this.point.category || this.series.chart.xAxis[0].categories[this.point.x] || this.x;\n             var val = this.y.toFixed(1);\n             return '<b>' + cat + '<\/b><br/>' +\n                    this.series.name + ': ' + val + '';\n           }","useHTML":true}},"theme":{"chart":{"backgroundColor":"transparent"},"colors":["#7cb5ec","#434348","#90ed7d","#f7a35c","#8085e9","#f15c80","#e4d354","#2b908f","#f45b5b","#91e8e1"]},"conf_opts":{"global":{"Date":null,"VMLRadialGradientURL":"http =//code.highcharts.com/list(version)/gfx/vml-radial-gradient.png","canvasToolsURL":"http =//code.highcharts.com/list(version)/modules/canvas-tools.js","getTimezoneOffset":null,"timezoneOffset":0,"useUTC":true},"lang":{"contextButtonTitle":"Chart context menu","decimalPoint":".","downloadCSV":"Download CSV","downloadJPEG":"Download JPEG image","downloadPDF":"Download PDF document","downloadPNG":"Download PNG image","downloadSVG":"Download SVG vector image","downloadXLS":"Download XLS","drillUpText":"◁ Back to {series.name}","exitFullscreen":"Exit from full screen","exportData":{"annotationHeader":"Annotations","categoryDatetimeHeader":"DateTime","categoryHeader":"Category"},"hideData":"Hide data table","invalidDate":null,"loading":"Loading...","months":["January","February","March","April","May","June","July","August","September","October","November","December"],"noData":"No data to display","numericSymbolMagnitude":1000,"numericSymbols":["k","M","G","T","P","E"],"printChart":"Print chart","resetZoom":"Reset zoom","resetZoomTitle":"Reset zoom level 1:1","shortMonths":["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],"shortWeekdays":["Sat","Sun","Mon","Tue","Wed","Thu","Fri"],"thousandsSep":" ","viewData":"View data table","viewFullscreen":"View in full screen","weekdays":["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]}},"type":"chart","fonts":[],"debug":false},"evals":["hc_opts.tooltip.formatter"],"jsHooks":[]}</script>
 </div>
 <div class="section level3">
 <h3 id="with-custom-colors">With Custom Colors<a class="anchor" aria-label="anchor" href="#with-custom-colors"></a>
@@ -200,28 +210,42 @@ comparisons.</p>
 <span>  group_var <span class="op">=</span> <span class="st">"score_range"</span>,</span>
 <span>  horizontal <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  bar_type <span class="op">=</span> <span class="st">"percent"</span>,</span>
+<span>  title <span class="op">=</span> <span class="st">"Survey Scores by Question"</span>,</span>
+<span>  x_label <span class="op">=</span> <span class="st">"Question"</span>,</span>
+<span>  y_label <span class="op">=</span> <span class="st">"Percentage"</span>,</span>
 <span>  color_palette <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
 <span>    <span class="st">"#E74C3C"</span>,  <span class="co"># Red for Low</span></span>
 <span>    <span class="st">"#F39C12"</span>,  <span class="co"># Orange for Medium</span></span>
 <span>    <span class="st">"#27AE60"</span>   <span class="co"># Green for High</span></span>
 <span>  <span class="op">)</span>,</span>
 <span>  group_order <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Low"</span>, <span class="st">"Medium"</span>, <span class="st">"High"</span><span class="op">)</span></span>
-<span><span class="op">)</span></span></code></pre></div>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">plot</span></span></code></pre></div>
+<div class="highchart html-widget html-fill-item" id="htmlwidget-febe03efa1a2d8d52a86" style="width:672px;height:480px;"></div>
+<script type="application/json" data-for="htmlwidget-febe03efa1a2d8d52a86">{"x":{"hc_opts":{"chart":{"reflow":true,"type":"bar"},"title":{"text":"Survey Scores by Question"},"yAxis":{"title":{"text":"Percentage"}},"credits":{"enabled":false},"exporting":{"enabled":false},"boost":{"enabled":false},"plotOptions":{"series":{"label":{"enabled":false},"turboThreshold":0,"dataLabels":{"enabled":true,"format":"{point.y:.0f}%"}},"treemap":{"layoutAlgorithm":"squarified"}},"xAxis":{"categories":["Q1","Q2","Q3"],"title":{"text":"Question"}},"series":[{"data":[30,36,38],"name":"Low","id":"series_1"},{"data":[34,36,28],"name":"Medium","id":"series_2"},{"data":[36,28,34],"name":"High","id":"series_3"}],"colors":["#E74C3C","#F39C12","#27AE60"],"tooltip":{"formatter":"function() {\n             var cat = this.point.category || this.series.chart.xAxis[0].categories[this.point.x] || this.x;\n             var val = this.y.toFixed(1);\n             return '<b>' + cat + '<\/b><br/>' +\n                    this.series.name + ': ' + val + '';\n           }","useHTML":true}},"theme":{"chart":{"backgroundColor":"transparent"},"colors":["#7cb5ec","#434348","#90ed7d","#f7a35c","#8085e9","#f15c80","#e4d354","#2b908f","#f45b5b","#91e8e1"]},"conf_opts":{"global":{"Date":null,"VMLRadialGradientURL":"http =//code.highcharts.com/list(version)/gfx/vml-radial-gradient.png","canvasToolsURL":"http =//code.highcharts.com/list(version)/modules/canvas-tools.js","getTimezoneOffset":null,"timezoneOffset":0,"useUTC":true},"lang":{"contextButtonTitle":"Chart context menu","decimalPoint":".","downloadCSV":"Download CSV","downloadJPEG":"Download JPEG image","downloadPDF":"Download PDF document","downloadPNG":"Download PNG image","downloadSVG":"Download SVG vector image","downloadXLS":"Download XLS","drillUpText":"◁ Back to {series.name}","exitFullscreen":"Exit from full screen","exportData":{"annotationHeader":"Annotations","categoryDatetimeHeader":"DateTime","categoryHeader":"Category"},"hideData":"Hide data table","invalidDate":null,"loading":"Loading...","months":["January","February","March","April","May","June","July","August","September","October","November","December"],"noData":"No data to display","numericSymbolMagnitude":1000,"numericSymbols":["k","M","G","T","P","E"],"printChart":"Print chart","resetZoom":"Reset zoom","resetZoomTitle":"Reset zoom level 1:1","shortMonths":["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],"shortWeekdays":["Sat","Sun","Mon","Tue","Wed","Thu","Fri"],"thousandsSep":" ","viewData":"View data table","viewFullscreen":"View in full screen","weekdays":["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]}},"type":"chart","fonts":[],"debug":false},"evals":["hc_opts.tooltip.formatter"],"jsHooks":[]}</script>
 </div>
 </div>
 <div class="section level2">
-<h2 id="horizontal-vs--vertical">Horizontal vs. Vertical<a class="anchor" aria-label="anchor" href="#horizontal-vs--vertical"></a>
+<h2 id="horizontal-vs--vertical">↔︎️ Horizontal vs. Vertical<a class="anchor" aria-label="anchor" href="#horizontal-vs--vertical"></a>
 </h2>
 <div class="section level3">
 <h3 id="vertical-bars">Vertical Bars<a class="anchor" aria-label="anchor" href="#vertical-bars"></a>
 </h3>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">plot</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/viz_bar.html">viz_bar</a></span><span class="op">(</span></span>
-<span>  data <span class="op">=</span> <span class="va">data</span>,</span>
-<span>  x_var <span class="op">=</span> <span class="st">"category"</span>,</span>
-<span>  group_var <span class="op">=</span> <span class="st">"segment"</span>,</span>
-<span>  horizontal <span class="op">=</span> <span class="cn">FALSE</span>  <span class="co"># Vertical</span></span>
-<span><span class="op">)</span></span></code></pre></div>
+<span>  data <span class="op">=</span> <span class="va">survey_data</span>,</span>
+<span>  x_var <span class="op">=</span> <span class="st">"question"</span>,</span>
+<span>  group_var <span class="op">=</span> <span class="st">"score_range"</span>,</span>
+<span>  horizontal <span class="op">=</span> <span class="cn">FALSE</span>,  <span class="co"># Vertical (default)</span></span>
+<span>  title <span class="op">=</span> <span class="st">"Score Distribution"</span>,</span>
+<span>  x_label <span class="op">=</span> <span class="st">"Question"</span>,</span>
+<span>  y_label <span class="op">=</span> <span class="st">"Count"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">plot</span></span></code></pre></div>
+<div class="highchart html-widget html-fill-item" id="htmlwidget-1fb4450895fe099f74a1" style="width:672px;height:480px;"></div>
+<script type="application/json" data-for="htmlwidget-1fb4450895fe099f74a1">{"x":{"hc_opts":{"chart":{"reflow":true,"type":"column"},"title":{"text":"Score Distribution"},"yAxis":{"title":{"text":"Count"}},"credits":{"enabled":false},"exporting":{"enabled":false},"boost":{"enabled":false},"plotOptions":{"series":{"label":{"enabled":false},"turboThreshold":0,"dataLabels":{"enabled":true,"format":"{point.y:.0f}"}},"treemap":{"layoutAlgorithm":"squarified"}},"xAxis":{"categories":["Q1","Q2","Q3"],"title":{"text":"Question"}},"series":[{"data":[18,14,17],"name":"High","id":"series_1"},{"data":[15,18,19],"name":"Low","id":"series_2"},{"data":[17,18,14],"name":"Medium","id":"series_3"}],"tooltip":{"formatter":"function() {\n             var cat = this.point.category || this.series.chart.xAxis[0].categories[this.point.x] || this.x;\n             var val = this.y;\n             return '<b>' + cat + '<\/b><br/>' +\n                    this.series.name + ': ' + val + '';\n           }","useHTML":true}},"theme":{"chart":{"backgroundColor":"transparent"},"colors":["#7cb5ec","#434348","#90ed7d","#f7a35c","#8085e9","#f15c80","#e4d354","#2b908f","#f45b5b","#91e8e1"]},"conf_opts":{"global":{"Date":null,"VMLRadialGradientURL":"http =//code.highcharts.com/list(version)/gfx/vml-radial-gradient.png","canvasToolsURL":"http =//code.highcharts.com/list(version)/modules/canvas-tools.js","getTimezoneOffset":null,"timezoneOffset":0,"useUTC":true},"lang":{"contextButtonTitle":"Chart context menu","decimalPoint":".","downloadCSV":"Download CSV","downloadJPEG":"Download JPEG image","downloadPDF":"Download PDF document","downloadPNG":"Download PNG image","downloadSVG":"Download SVG vector image","downloadXLS":"Download XLS","drillUpText":"◁ Back to {series.name}","exitFullscreen":"Exit from full screen","exportData":{"annotationHeader":"Annotations","categoryDatetimeHeader":"DateTime","categoryHeader":"Category"},"hideData":"Hide data table","invalidDate":null,"loading":"Loading...","months":["January","February","March","April","May","June","July","August","September","October","November","December"],"noData":"No data to display","numericSymbolMagnitude":1000,"numericSymbols":["k","M","G","T","P","E"],"printChart":"Print chart","resetZoom":"Reset zoom","resetZoomTitle":"Reset zoom level 1:1","shortMonths":["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],"shortWeekdays":["Sat","Sun","Mon","Tue","Wed","Thu","Fri"],"thousandsSep":" ","viewData":"View data table","viewFullscreen":"View in full screen","weekdays":["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]}},"type":"chart","fonts":[],"debug":false},"evals":["hc_opts.tooltip.formatter"],"jsHooks":[]}</script>
 </div>
 <div class="section level3">
 <h3 id="horizontal-bars-better-for-long-labels">Horizontal Bars (Better for Long Labels)<a class="anchor" aria-label="anchor" href="#horizontal-bars-better-for-long-labels"></a>
@@ -241,40 +265,59 @@ comparisons.</p>
 <span>  x_var <span class="op">=</span> <span class="st">"question"</span>,</span>
 <span>  group_var <span class="op">=</span> <span class="st">"response"</span>,</span>
 <span>  horizontal <span class="op">=</span> <span class="cn">TRUE</span>,  <span class="co"># Much better for long labels!</span></span>
-<span>  bar_type <span class="op">=</span> <span class="st">"percent"</span></span>
-<span><span class="op">)</span></span></code></pre></div>
+<span>  bar_type <span class="op">=</span> <span class="st">"percent"</span>,</span>
+<span>  title <span class="op">=</span> <span class="st">"Digital Literacy Self-Assessment"</span>,</span>
+<span>  y_label <span class="op">=</span> <span class="st">"Percentage"</span>,</span>
+<span>  color_palette <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"#2ECC71"</span>, <span class="st">"#E74C3C"</span><span class="op">)</span>  <span class="co"># Green for Agree, Red for Disagree</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">plot</span></span></code></pre></div>
+<div class="highchart html-widget html-fill-item" id="htmlwidget-10b3b7155e8045a1b2ad" style="width:672px;height:480px;"></div>
+<script type="application/json" data-for="htmlwidget-10b3b7155e8045a1b2ad">{"x":{"hc_opts":{"chart":{"reflow":true,"type":"bar"},"title":{"text":"Digital Literacy Self-Assessment"},"yAxis":{"title":{"text":"Percentage"}},"credits":{"enabled":false},"exporting":{"enabled":false},"boost":{"enabled":false},"plotOptions":{"series":{"label":{"enabled":false},"turboThreshold":0,"dataLabels":{"enabled":true,"format":"{point.y:.0f}%"}},"treemap":{"layoutAlgorithm":"squarified"}},"xAxis":{"categories":["I can evaluate information quality","I know how to search effectively","I understand data privacy"],"title":{"text":"question"}},"series":[{"data":[45,62.5,40],"name":"Agree","id":"series_1"},{"data":[55,37.5,60],"name":"Disagree","id":"series_2"}],"colors":["#2ECC71","#E74C3C"],"tooltip":{"formatter":"function() {\n             var cat = this.point.category || this.series.chart.xAxis[0].categories[this.point.x] || this.x;\n             var val = this.y.toFixed(1);\n             return '<b>' + cat + '<\/b><br/>' +\n                    this.series.name + ': ' + val + '';\n           }","useHTML":true}},"theme":{"chart":{"backgroundColor":"transparent"},"colors":["#7cb5ec","#434348","#90ed7d","#f7a35c","#8085e9","#f15c80","#e4d354","#2b908f","#f45b5b","#91e8e1"]},"conf_opts":{"global":{"Date":null,"VMLRadialGradientURL":"http =//code.highcharts.com/list(version)/gfx/vml-radial-gradient.png","canvasToolsURL":"http =//code.highcharts.com/list(version)/modules/canvas-tools.js","getTimezoneOffset":null,"timezoneOffset":0,"useUTC":true},"lang":{"contextButtonTitle":"Chart context menu","decimalPoint":".","downloadCSV":"Download CSV","downloadJPEG":"Download JPEG image","downloadPDF":"Download PDF document","downloadPNG":"Download PNG image","downloadSVG":"Download SVG vector image","downloadXLS":"Download XLS","drillUpText":"◁ Back to {series.name}","exitFullscreen":"Exit from full screen","exportData":{"annotationHeader":"Annotations","categoryDatetimeHeader":"DateTime","categoryHeader":"Category"},"hideData":"Hide data table","invalidDate":null,"loading":"Loading...","months":["January","February","March","April","May","June","July","August","September","October","November","December"],"noData":"No data to display","numericSymbolMagnitude":1000,"numericSymbols":["k","M","G","T","P","E"],"printChart":"Print chart","resetZoom":"Reset zoom","resetZoomTitle":"Reset zoom level 1:1","shortMonths":["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],"shortWeekdays":["Sat","Sun","Mon","Tue","Wed","Thu","Fri"],"thousandsSep":" ","viewData":"View data table","viewFullscreen":"View in full screen","weekdays":["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]}},"type":"chart","fonts":[],"debug":false},"evals":["hc_opts.tooltip.formatter"],"jsHooks":[]}</script>
 </div>
 </div>
 <div class="section level2">
-<h2 id="count-vs--percent">Count vs. Percent<a class="anchor" aria-label="anchor" href="#count-vs--percent"></a>
+<h2 id="count-vs--percent">🔢 Count vs. Percent<a class="anchor" aria-label="anchor" href="#count-vs--percent"></a>
 </h2>
 <div class="section level3">
 <h3 id="count">Count<a class="anchor" aria-label="anchor" href="#count"></a>
 </h3>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">plot</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/viz_bar.html">viz_bar</a></span><span class="op">(</span></span>
-<span>  data <span class="op">=</span> <span class="va">data</span>,</span>
-<span>  x_var <span class="op">=</span> <span class="st">"category"</span>,</span>
-<span>  group_var <span class="op">=</span> <span class="st">"segment"</span>,</span>
+<span>  data <span class="op">=</span> <span class="va">survey_data</span>,</span>
+<span>  x_var <span class="op">=</span> <span class="st">"question"</span>,</span>
+<span>  group_var <span class="op">=</span> <span class="st">"score_range"</span>,</span>
 <span>  bar_type <span class="op">=</span> <span class="st">"count"</span>,  <span class="co"># Show raw counts</span></span>
+<span>  title <span class="op">=</span> <span class="st">"Response Counts by Question"</span>,</span>
+<span>  x_label <span class="op">=</span> <span class="st">"Survey Question"</span>,</span>
 <span>  y_label <span class="op">=</span> <span class="st">"Number of Responses"</span></span>
-<span><span class="op">)</span></span></code></pre></div>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">plot</span></span></code></pre></div>
+<div class="highchart html-widget html-fill-item" id="htmlwidget-4018eef1a407a0df6b52" style="width:672px;height:480px;"></div>
+<script type="application/json" data-for="htmlwidget-4018eef1a407a0df6b52">{"x":{"hc_opts":{"chart":{"reflow":true,"type":"column"},"title":{"text":"Response Counts by Question"},"yAxis":{"title":{"text":"Number of Responses"}},"credits":{"enabled":false},"exporting":{"enabled":false},"boost":{"enabled":false},"plotOptions":{"series":{"label":{"enabled":false},"turboThreshold":0,"dataLabels":{"enabled":true,"format":"{point.y:.0f}"}},"treemap":{"layoutAlgorithm":"squarified"}},"xAxis":{"categories":["Q1","Q2","Q3"],"title":{"text":"Survey Question"}},"series":[{"data":[18,14,17],"name":"High","id":"series_1"},{"data":[15,18,19],"name":"Low","id":"series_2"},{"data":[17,18,14],"name":"Medium","id":"series_3"}],"tooltip":{"formatter":"function() {\n             var cat = this.point.category || this.series.chart.xAxis[0].categories[this.point.x] || this.x;\n             var val = this.y;\n             return '<b>' + cat + '<\/b><br/>' +\n                    this.series.name + ': ' + val + '';\n           }","useHTML":true}},"theme":{"chart":{"backgroundColor":"transparent"},"colors":["#7cb5ec","#434348","#90ed7d","#f7a35c","#8085e9","#f15c80","#e4d354","#2b908f","#f45b5b","#91e8e1"]},"conf_opts":{"global":{"Date":null,"VMLRadialGradientURL":"http =//code.highcharts.com/list(version)/gfx/vml-radial-gradient.png","canvasToolsURL":"http =//code.highcharts.com/list(version)/modules/canvas-tools.js","getTimezoneOffset":null,"timezoneOffset":0,"useUTC":true},"lang":{"contextButtonTitle":"Chart context menu","decimalPoint":".","downloadCSV":"Download CSV","downloadJPEG":"Download JPEG image","downloadPDF":"Download PDF document","downloadPNG":"Download PNG image","downloadSVG":"Download SVG vector image","downloadXLS":"Download XLS","drillUpText":"◁ Back to {series.name}","exitFullscreen":"Exit from full screen","exportData":{"annotationHeader":"Annotations","categoryDatetimeHeader":"DateTime","categoryHeader":"Category"},"hideData":"Hide data table","invalidDate":null,"loading":"Loading...","months":["January","February","March","April","May","June","July","August","September","October","November","December"],"noData":"No data to display","numericSymbolMagnitude":1000,"numericSymbols":["k","M","G","T","P","E"],"printChart":"Print chart","resetZoom":"Reset zoom","resetZoomTitle":"Reset zoom level 1:1","shortMonths":["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],"shortWeekdays":["Sat","Sun","Mon","Tue","Wed","Thu","Fri"],"thousandsSep":" ","viewData":"View data table","viewFullscreen":"View in full screen","weekdays":["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]}},"type":"chart","fonts":[],"debug":false},"evals":["hc_opts.tooltip.formatter"],"jsHooks":[]}</script>
 </div>
 <div class="section level3">
 <h3 id="percent">Percent<a class="anchor" aria-label="anchor" href="#percent"></a>
 </h3>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">plot</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/viz_bar.html">viz_bar</a></span><span class="op">(</span></span>
-<span>  data <span class="op">=</span> <span class="va">data</span>,</span>
-<span>  x_var <span class="op">=</span> <span class="st">"category"</span>,</span>
-<span>  group_var <span class="op">=</span> <span class="st">"segment"</span>,</span>
+<span>  data <span class="op">=</span> <span class="va">survey_data</span>,</span>
+<span>  x_var <span class="op">=</span> <span class="st">"question"</span>,</span>
+<span>  group_var <span class="op">=</span> <span class="st">"score_range"</span>,</span>
 <span>  bar_type <span class="op">=</span> <span class="st">"percent"</span>,  <span class="co"># Show percentages</span></span>
+<span>  title <span class="op">=</span> <span class="st">"Response Distribution"</span>,</span>
+<span>  x_label <span class="op">=</span> <span class="st">"Survey Question"</span>,</span>
 <span>  y_label <span class="op">=</span> <span class="st">"Percentage"</span></span>
-<span><span class="op">)</span></span></code></pre></div>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">plot</span></span></code></pre></div>
+<div class="highchart html-widget html-fill-item" id="htmlwidget-5b1b2f4ad92281566982" style="width:672px;height:480px;"></div>
+<script type="application/json" data-for="htmlwidget-5b1b2f4ad92281566982">{"x":{"hc_opts":{"chart":{"reflow":true,"type":"column"},"title":{"text":"Response Distribution"},"yAxis":{"title":{"text":"Percentage"}},"credits":{"enabled":false},"exporting":{"enabled":false},"boost":{"enabled":false},"plotOptions":{"series":{"label":{"enabled":false},"turboThreshold":0,"dataLabels":{"enabled":true,"format":"{point.y:.0f}%"}},"treemap":{"layoutAlgorithm":"squarified"}},"xAxis":{"categories":["Q1","Q2","Q3"],"title":{"text":"Survey Question"}},"series":[{"data":[36,28,34],"name":"High","id":"series_1"},{"data":[30,36,38],"name":"Low","id":"series_2"},{"data":[34,36,28],"name":"Medium","id":"series_3"}],"tooltip":{"formatter":"function() {\n             var cat = this.point.category || this.series.chart.xAxis[0].categories[this.point.x] || this.x;\n             var val = this.y.toFixed(1);\n             return '<b>' + cat + '<\/b><br/>' +\n                    this.series.name + ': ' + val + '';\n           }","useHTML":true}},"theme":{"chart":{"backgroundColor":"transparent"},"colors":["#7cb5ec","#434348","#90ed7d","#f7a35c","#8085e9","#f15c80","#e4d354","#2b908f","#f45b5b","#91e8e1"]},"conf_opts":{"global":{"Date":null,"VMLRadialGradientURL":"http =//code.highcharts.com/list(version)/gfx/vml-radial-gradient.png","canvasToolsURL":"http =//code.highcharts.com/list(version)/modules/canvas-tools.js","getTimezoneOffset":null,"timezoneOffset":0,"useUTC":true},"lang":{"contextButtonTitle":"Chart context menu","decimalPoint":".","downloadCSV":"Download CSV","downloadJPEG":"Download JPEG image","downloadPDF":"Download PDF document","downloadPNG":"Download PNG image","downloadSVG":"Download SVG vector image","downloadXLS":"Download XLS","drillUpText":"◁ Back to {series.name}","exitFullscreen":"Exit from full screen","exportData":{"annotationHeader":"Annotations","categoryDatetimeHeader":"DateTime","categoryHeader":"Category"},"hideData":"Hide data table","invalidDate":null,"loading":"Loading...","months":["January","February","March","April","May","June","July","August","September","October","November","December"],"noData":"No data to display","numericSymbolMagnitude":1000,"numericSymbols":["k","M","G","T","P","E"],"printChart":"Print chart","resetZoom":"Reset zoom","resetZoomTitle":"Reset zoom level 1:1","shortMonths":["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],"shortWeekdays":["Sat","Sun","Mon","Tue","Wed","Thu","Fri"],"thousandsSep":" ","viewData":"View data table","viewFullscreen":"View in full screen","weekdays":["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]}},"type":"chart","fonts":[],"debug":false},"evals":["hc_opts.tooltip.formatter"],"jsHooks":[]}</script>
 </div>
 </div>
 <div class="section level2">
-<h2 id="labels-and-tooltips">Labels and Tooltips<a class="anchor" aria-label="anchor" href="#labels-and-tooltips"></a>
+<h2 id="labels-and-tooltips">🏷️ Labels and Tooltips<a class="anchor" aria-label="anchor" href="#labels-and-tooltips"></a>
 </h2>
 <div class="section level3">
 <h3 id="axis-labels">Axis Labels<a class="anchor" aria-label="anchor" href="#axis-labels"></a>
@@ -286,8 +329,14 @@ comparisons.</p>
 <span>  group_var <span class="op">=</span> <span class="st">"score_range"</span>,</span>
 <span>  title <span class="op">=</span> <span class="st">"Survey Results"</span>,</span>
 <span>  x_label <span class="op">=</span> <span class="st">"Question"</span>,</span>
-<span>  y_label <span class="op">=</span> <span class="st">"Percentage of Respondents"</span></span>
-<span><span class="op">)</span></span></code></pre></div>
+<span>  y_label <span class="op">=</span> <span class="st">"Percentage of Respondents"</span>,</span>
+<span>  bar_type <span class="op">=</span> <span class="st">"percent"</span>,</span>
+<span>  color_palette <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"#9B59B6"</span>, <span class="st">"#3498DB"</span>, <span class="st">"#1ABC9C"</span><span class="op">)</span>  <span class="co"># Purple, Blue, Teal</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">plot</span></span></code></pre></div>
+<div class="highchart html-widget html-fill-item" id="htmlwidget-25c3e940e6859592f801" style="width:672px;height:480px;"></div>
+<script type="application/json" data-for="htmlwidget-25c3e940e6859592f801">{"x":{"hc_opts":{"chart":{"reflow":true,"type":"column"},"title":{"text":"Survey Results"},"yAxis":{"title":{"text":"Percentage of Respondents"}},"credits":{"enabled":false},"exporting":{"enabled":false},"boost":{"enabled":false},"plotOptions":{"series":{"label":{"enabled":false},"turboThreshold":0,"dataLabels":{"enabled":true,"format":"{point.y:.0f}%"}},"treemap":{"layoutAlgorithm":"squarified"}},"xAxis":{"categories":["Q1","Q2","Q3"],"title":{"text":"Question"}},"series":[{"data":[36,28,34],"name":"High","id":"series_1"},{"data":[30,36,38],"name":"Low","id":"series_2"},{"data":[34,36,28],"name":"Medium","id":"series_3"}],"colors":["#9B59B6","#3498DB","#1ABC9C"],"tooltip":{"formatter":"function() {\n             var cat = this.point.category || this.series.chart.xAxis[0].categories[this.point.x] || this.x;\n             var val = this.y.toFixed(1);\n             return '<b>' + cat + '<\/b><br/>' +\n                    this.series.name + ': ' + val + '';\n           }","useHTML":true}},"theme":{"chart":{"backgroundColor":"transparent"},"colors":["#7cb5ec","#434348","#90ed7d","#f7a35c","#8085e9","#f15c80","#e4d354","#2b908f","#f45b5b","#91e8e1"]},"conf_opts":{"global":{"Date":null,"VMLRadialGradientURL":"http =//code.highcharts.com/list(version)/gfx/vml-radial-gradient.png","canvasToolsURL":"http =//code.highcharts.com/list(version)/modules/canvas-tools.js","getTimezoneOffset":null,"timezoneOffset":0,"useUTC":true},"lang":{"contextButtonTitle":"Chart context menu","decimalPoint":".","downloadCSV":"Download CSV","downloadJPEG":"Download JPEG image","downloadPDF":"Download PDF document","downloadPNG":"Download PNG image","downloadSVG":"Download SVG vector image","downloadXLS":"Download XLS","drillUpText":"◁ Back to {series.name}","exitFullscreen":"Exit from full screen","exportData":{"annotationHeader":"Annotations","categoryDatetimeHeader":"DateTime","categoryHeader":"Category"},"hideData":"Hide data table","invalidDate":null,"loading":"Loading...","months":["January","February","March","April","May","June","July","August","September","October","November","December"],"noData":"No data to display","numericSymbolMagnitude":1000,"numericSymbols":["k","M","G","T","P","E"],"printChart":"Print chart","resetZoom":"Reset zoom","resetZoomTitle":"Reset zoom level 1:1","shortMonths":["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],"shortWeekdays":["Sat","Sun","Mon","Tue","Wed","Thu","Fri"],"thousandsSep":" ","viewData":"View data table","viewFullscreen":"View in full screen","weekdays":["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]}},"type":"chart","fonts":[],"debug":false},"evals":["hc_opts.tooltip.formatter"],"jsHooks":[]}</script>
 </div>
 <div class="section level3">
 <h3 id="tooltip-customization">Tooltip Customization<a class="anchor" aria-label="anchor" href="#tooltip-customization"></a>
@@ -300,10 +349,29 @@ comparisons.</p>
 <span>  group_var <span class="op">=</span> <span class="st">"score_range"</span>,</span>
 <span>  bar_type <span class="op">=</span> <span class="st">"percent"</span>,</span>
 <span>  title <span class="op">=</span> <span class="st">"Score Distribution"</span>,</span>
+<span>  x_label <span class="op">=</span> <span class="st">"Question"</span>,</span>
+<span>  y_label <span class="op">=</span> <span class="st">"Percentage"</span>,</span>
 <span>  tooltip_prefix <span class="op">=</span> <span class="st">""</span>,</span>
 <span>  tooltip_suffix <span class="op">=</span> <span class="st">"% of responses"</span>,</span>
 <span>  x_tooltip_suffix <span class="op">=</span> <span class="st">""</span></span>
-<span><span class="op">)</span></span></code></pre></div>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">plot</span></span></code></pre></div>
+<div class="highchart html-widget html-fill-item" id="htmlwidget-3f27c09be0c60bb52829" style="width:672px;height:480px;"></div>
+<script type="application/json" data-for="htmlwidget-3f27c09be0c60bb52829">{"x":{"hc_opts":{"chart":{"reflow":true,"type":"column"},"title":{"text":"Score Distribution"},"yAxis":{"title":{"text":"Percentage"}},"credits":{"enabled":false},"exporting":{"enabled":false},"boost":{"enabled":false},"plotOptions":{"series":{"label":{"enabled":false},"turboThreshold":0,"dataLabels":{"enabled":true,"format":"{point.y:.0f}%"}},"treemap":{"layoutAlgorithm":"squarified"}},"xAxis":{"categories":["Q1","Q2","Q3"],"title":{"text":"Question"}},"series":[{"data":[36,28,34],"name":"High","id":"series_1"},{"data":[30,36,38],"name":"Low","id":"series_2"},{"data":[34,36,28],"name":"Medium","id":"series_3"}],"tooltip":{"formatter":"function() {\n             var cat = this.point.category || this.series.chart.xAxis[0].categories[this.point.x] || this.x;\n             var val = this.y.toFixed(1);\n             return '<b>' + cat + '<\/b><br/>' +\n                    this.series.name + ': ' + val + '% of responses';\n           }","useHTML":true}},"theme":{"chart":{"backgroundColor":"transparent"},"colors":["#7cb5ec","#434348","#90ed7d","#f7a35c","#8085e9","#f15c80","#e4d354","#2b908f","#f45b5b","#91e8e1"]},"conf_opts":{"global":{"Date":null,"VMLRadialGradientURL":"http =//code.highcharts.com/list(version)/gfx/vml-radial-gradient.png","canvasToolsURL":"http =//code.highcharts.com/list(version)/modules/canvas-tools.js","getTimezoneOffset":null,"timezoneOffset":0,"useUTC":true},"lang":{"contextButtonTitle":"Chart context menu","decimalPoint":".","downloadCSV":"Download CSV","downloadJPEG":"Download JPEG image","downloadPDF":"Download PDF document","downloadPNG":"Download PNG image","downloadSVG":"Download SVG vector image","downloadXLS":"Download XLS","drillUpText":"◁ Back to {series.name}","exitFullscreen":"Exit from full screen","exportData":{"annotationHeader":"Annotations","categoryDatetimeHeader":"DateTime","categoryHeader":"Category"},"hideData":"Hide data table","invalidDate":null,"loading":"Loading...","months":["January","February","March","April","May","June","July","August","September","October","November","December"],"noData":"No data to display","numericSymbolMagnitude":1000,"numericSymbols":["k","M","G","T","P","E"],"printChart":"Print chart","resetZoom":"Reset zoom","resetZoomTitle":"Reset zoom level 1:1","shortMonths":["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],"shortWeekdays":["Sat","Sun","Mon","Tue","Wed","Thu","Fri"],"thousandsSep":" ","viewData":"View data table","viewFullscreen":"View in full screen","weekdays":["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]}},"type":"chart","fonts":[],"debug":false},"evals":["hc_opts.tooltip.formatter"],"jsHooks":[]}</script><p>For more control, use format strings or the <code><a href="../reference/tooltip.html">tooltip()</a></code>
+helper:</p>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Format string with placeholders</span></span>
+<span><span class="fu"><a href="../reference/viz_bar.html">viz_bar</a></span><span class="op">(</span><span class="va">data</span>, x_var <span class="op">=</span> <span class="st">"category"</span>, </span>
+<span>        tooltip <span class="op">=</span> <span class="st">"{category}: {value} ({percent})"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Full control with tooltip() helper</span></span>
+<span><span class="fu"><a href="../reference/viz_bar.html">viz_bar</a></span><span class="op">(</span><span class="va">data</span>, x_var <span class="op">=</span> <span class="st">"category"</span>,</span>
+<span>        tooltip <span class="op">=</span> <span class="fu"><a href="../reference/tooltip.html">tooltip</a></span><span class="op">(</span></span>
+<span>          format <span class="op">=</span> <span class="st">"&lt;b&gt;{category}&lt;/b&gt;: {value}"</span>,</span>
+<span>          backgroundColor <span class="op">=</span> <span class="st">"#f8f9fa"</span>,</span>
+<span>          borderRadius <span class="op">=</span> <span class="fl">8</span></span>
+<span>        <span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
 <colgroup>
 <col width="33%">
@@ -329,33 +397,40 @@ comparisons.</p>
 </td>
 </tr>
 <tr class="odd">
+<td><code>tooltip</code></td>
+<td>Full tooltip config (see <code><a href="../reference/tooltip.html">?tooltip</a></code>)</td>
+<td><code>tooltip(format = "...")</code></td>
+</tr>
+<tr class="even">
 <td><code>tooltip_prefix</code></td>
 <td>Text before value in tooltip</td>
 <td><code>"N = "</code></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td><code>tooltip_suffix</code></td>
 <td>Text after value in tooltip</td>
 <td>
 <code>"%"</code>, <code>" respondents"</code>
 </td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td><code>x_tooltip_suffix</code></td>
 <td>Text after x value in tooltip</td>
 <td><code>" category"</code></td>
 </tr>
 </tbody>
 </table>
+<p>See <code><a href="../articles/getting-started.html">vignette("getting-started")</a></code> for the complete tooltip
+customization guide.</p>
 </div>
 </div>
 <div class="section level2">
-<h2 id="working-with-numeric-variables">Working with Numeric Variables<a class="anchor" aria-label="anchor" href="#working-with-numeric-variables"></a>
+<h2 id="working-with-numeric-variables">🔢 Working with Numeric Variables<a class="anchor" aria-label="anchor" href="#working-with-numeric-variables"></a>
 </h2>
 <div class="section level3">
 <h3 id="automatic-binning">Automatic Binning<a class="anchor" aria-label="anchor" href="#automatic-binning"></a>
 </h3>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Age data</span></span>
 <span><span class="va">age_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
 <span>  age <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fl">18</span><span class="op">:</span><span class="fl">65</span>, <span class="fl">200</span>, replace <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
@@ -364,28 +439,44 @@ comparisons.</p>
 <span><span class="co"># Automatically bins numeric values</span></span>
 <span><span class="va">plot</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/viz_bar.html">viz_bar</a></span><span class="op">(</span></span>
 <span>  data <span class="op">=</span> <span class="va">age_data</span>,</span>
-<span>  x_var <span class="op">=</span> <span class="st">"age"</span></span>
-<span><span class="op">)</span></span></code></pre></div>
+<span>  x_var <span class="op">=</span> <span class="st">"age"</span>,</span>
+<span>  title <span class="op">=</span> <span class="st">"Age Distribution"</span>,</span>
+<span>  x_label <span class="op">=</span> <span class="st">"Age"</span>,</span>
+<span>  y_label <span class="op">=</span> <span class="st">"Count"</span>,</span>
+<span>  color_palette <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"#3498DB"</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">plot</span></span></code></pre></div>
+<div class="highchart html-widget html-fill-item" id="htmlwidget-416566eb193bf50d04e6" style="width:672px;height:480px;"></div>
+<script type="application/json" data-for="htmlwidget-416566eb193bf50d04e6">{"x":{"hc_opts":{"chart":{"reflow":true,"type":"column"},"title":{"text":"Age Distribution"},"yAxis":{"title":{"text":"Count"}},"credits":{"enabled":false},"exporting":{"enabled":false},"boost":{"enabled":false},"plotOptions":{"series":{"label":{"enabled":false},"turboThreshold":0,"dataLabels":{"enabled":true,"format":"{point.y:.0f}"}},"treemap":{"layoutAlgorithm":"squarified"}},"xAxis":{"categories":["18","19","20","21","22","23","24","25","26","27","28","29","30","31","32","33","34","35","36","37","38","39","40","41","42","43","44","45","46","48","49","50","51","52","53","54","55","56","58","59","60","61","62","63","64","65"],"title":{"text":"Age"}},"series":[{"data":[3,2,1,2,8,6,7,4,3,6,7,6,6,3,4,3,5,5,2,4,7,2,4,3,4,6,2,7,2,2,5,5,6,5,3,3,4,2,5,10,3,4,4,4,3,8],"name":"Count","id":"main_series","showInLegend":false,"colorByPoint":true}],"colors":["#3498DB"],"tooltip":{"formatter":"function() {\n             var cat = this.point.category || this.series.chart.xAxis[0].categories[this.point.x] || this.x;\n             var val = this.y;\n             var total = 200;\n             var pct = total > 0 ? (val / total * 100).toFixed(1) : 0;\n             return '<b>' + cat + '<\/b><br/>' +\n                    '' + val.toLocaleString() + '<br/>' +\n                    '<span style=\"color:#666;font-size:0.9em\">' + pct + '% of total<\/span>';\n           }","useHTML":true}},"theme":{"chart":{"backgroundColor":"transparent"},"colors":["#7cb5ec","#434348","#90ed7d","#f7a35c","#8085e9","#f15c80","#e4d354","#2b908f","#f45b5b","#91e8e1"]},"conf_opts":{"global":{"Date":null,"VMLRadialGradientURL":"http =//code.highcharts.com/list(version)/gfx/vml-radial-gradient.png","canvasToolsURL":"http =//code.highcharts.com/list(version)/modules/canvas-tools.js","getTimezoneOffset":null,"timezoneOffset":0,"useUTC":true},"lang":{"contextButtonTitle":"Chart context menu","decimalPoint":".","downloadCSV":"Download CSV","downloadJPEG":"Download JPEG image","downloadPDF":"Download PDF document","downloadPNG":"Download PNG image","downloadSVG":"Download SVG vector image","downloadXLS":"Download XLS","drillUpText":"◁ Back to {series.name}","exitFullscreen":"Exit from full screen","exportData":{"annotationHeader":"Annotations","categoryDatetimeHeader":"DateTime","categoryHeader":"Category"},"hideData":"Hide data table","invalidDate":null,"loading":"Loading...","months":["January","February","March","April","May","June","July","August","September","October","November","December"],"noData":"No data to display","numericSymbolMagnitude":1000,"numericSymbols":["k","M","G","T","P","E"],"printChart":"Print chart","resetZoom":"Reset zoom","resetZoomTitle":"Reset zoom level 1:1","shortMonths":["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],"shortWeekdays":["Sat","Sun","Mon","Tue","Wed","Thu","Fri"],"thousandsSep":" ","viewData":"View data table","viewFullscreen":"View in full screen","weekdays":["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]}},"type":"chart","fonts":[],"debug":false},"evals":["hc_opts.tooltip.formatter"],"jsHooks":[]}</script>
 </div>
 <div class="section level3">
 <h3 id="custom-binning">Custom Binning<a class="anchor" aria-label="anchor" href="#custom-binning"></a>
 </h3>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">plot</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/viz_bar.html">viz_bar</a></span><span class="op">(</span></span>
 <span>  data <span class="op">=</span> <span class="va">age_data</span>,</span>
 <span>  x_var <span class="op">=</span> <span class="st">"age"</span>,</span>
 <span>  x_breaks <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">18</span>, <span class="fl">25</span>, <span class="fl">35</span>, <span class="fl">50</span>, <span class="fl">65</span><span class="op">)</span>,</span>
-<span>  x_bin_labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"18-24"</span>, <span class="st">"25-34"</span>, <span class="st">"35-49"</span>, <span class="st">"50-64"</span><span class="op">)</span></span>
-<span><span class="op">)</span></span></code></pre></div>
+<span>  x_bin_labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"18-24"</span>, <span class="st">"25-34"</span>, <span class="st">"35-49"</span>, <span class="st">"50-64"</span><span class="op">)</span>,</span>
+<span>  title <span class="op">=</span> <span class="st">"Age Groups"</span>,</span>
+<span>  x_label <span class="op">=</span> <span class="st">"Age Range"</span>,</span>
+<span>  y_label <span class="op">=</span> <span class="st">"Number of Respondents"</span>,</span>
+<span>  tooltip_suffix <span class="op">=</span> <span class="st">" people"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">plot</span></span></code></pre></div>
+<div class="highchart html-widget html-fill-item" id="htmlwidget-72cbf064100ce560a04c" style="width:672px;height:480px;"></div>
+<script type="application/json" data-for="htmlwidget-72cbf064100ce560a04c">{"x":{"hc_opts":{"chart":{"reflow":true,"type":"column"},"title":{"text":"Age Groups"},"yAxis":{"title":{"text":"Number of Respondents"}},"credits":{"enabled":false},"exporting":{"enabled":false},"boost":{"enabled":false},"plotOptions":{"series":{"label":{"enabled":false},"turboThreshold":0,"dataLabels":{"enabled":true,"format":"{point.y:.0f}"}},"treemap":{"layoutAlgorithm":"squarified"}},"xAxis":{"categories":["18-24","25-34","35-49","50-64"],"title":{"text":"Age Range"}},"series":[{"data":[29,47,55,69],"name":"Number of Respondents","id":"main_series","showInLegend":false,"colorByPoint":true}],"tooltip":{"formatter":"function() {\n             var cat = this.point.category || this.series.chart.xAxis[0].categories[this.point.x] || this.x;\n             var val = this.y;\n             var total = 200;\n             var pct = total > 0 ? (val / total * 100).toFixed(1) : 0;\n             return '<b>' + cat + '<\/b><br/>' +\n                    '' + val.toLocaleString() + ' people<br/>' +\n                    '<span style=\"color:#666;font-size:0.9em\">' + pct + '% of total<\/span>';\n           }","useHTML":true}},"theme":{"chart":{"backgroundColor":"transparent"},"colors":["#7cb5ec","#434348","#90ed7d","#f7a35c","#8085e9","#f15c80","#e4d354","#2b908f","#f45b5b","#91e8e1"]},"conf_opts":{"global":{"Date":null,"VMLRadialGradientURL":"http =//code.highcharts.com/list(version)/gfx/vml-radial-gradient.png","canvasToolsURL":"http =//code.highcharts.com/list(version)/modules/canvas-tools.js","getTimezoneOffset":null,"timezoneOffset":0,"useUTC":true},"lang":{"contextButtonTitle":"Chart context menu","decimalPoint":".","downloadCSV":"Download CSV","downloadJPEG":"Download JPEG image","downloadPDF":"Download PDF document","downloadPNG":"Download PNG image","downloadSVG":"Download SVG vector image","downloadXLS":"Download XLS","drillUpText":"◁ Back to {series.name}","exitFullscreen":"Exit from full screen","exportData":{"annotationHeader":"Annotations","categoryDatetimeHeader":"DateTime","categoryHeader":"Category"},"hideData":"Hide data table","invalidDate":null,"loading":"Loading...","months":["January","February","March","April","May","June","July","August","September","October","November","December"],"noData":"No data to display","numericSymbolMagnitude":1000,"numericSymbols":["k","M","G","T","P","E"],"printChart":"Print chart","resetZoom":"Reset zoom","resetZoomTitle":"Reset zoom level 1:1","shortMonths":["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],"shortWeekdays":["Sat","Sun","Mon","Tue","Wed","Thu","Fri"],"thousandsSep":" ","viewData":"View data table","viewFullscreen":"View in full screen","weekdays":["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]}},"type":"chart","fonts":[],"debug":false},"evals":["hc_opts.tooltip.formatter"],"jsHooks":[]}</script>
 </div>
 </div>
 <div class="section level2">
-<h2 id="advanced-styling">Advanced Styling<a class="anchor" aria-label="anchor" href="#advanced-styling"></a>
+<h2 id="advanced-styling">🎨 Advanced Styling<a class="anchor" aria-label="anchor" href="#advanced-styling"></a>
 </h2>
 <div class="section level3">
 <h3 id="custom-ordering">Custom Ordering<a class="anchor" aria-label="anchor" href="#custom-ordering"></a>
 </h3>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
 <span>  satisfaction <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Very Satisfied"</span>, <span class="st">"Satisfied"</span>, <span class="st">"Neutral"</span>, </span>
 <span>                         <span class="st">"Dissatisfied"</span>, <span class="st">"Very Dissatisfied"</span><span class="op">)</span>, </span>
@@ -396,13 +487,21 @@ comparisons.</p>
 <span>  data <span class="op">=</span> <span class="va">data</span>,</span>
 <span>  x_var <span class="op">=</span> <span class="st">"satisfaction"</span>,</span>
 <span>  x_order <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Very Dissatisfied"</span>, <span class="st">"Dissatisfied"</span>, <span class="st">"Neutral"</span>, </span>
-<span>              <span class="st">"Satisfied"</span>, <span class="st">"Very Satisfied"</span><span class="op">)</span></span>
-<span><span class="op">)</span></span></code></pre></div>
+<span>              <span class="st">"Satisfied"</span>, <span class="st">"Very Satisfied"</span><span class="op">)</span>,</span>
+<span>  title <span class="op">=</span> <span class="st">"Customer Satisfaction"</span>,</span>
+<span>  x_label <span class="op">=</span> <span class="st">"Satisfaction Level"</span>,</span>
+<span>  y_label <span class="op">=</span> <span class="st">"Number of Responses"</span>,</span>
+<span>  color_palette <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"#C0392B"</span>, <span class="st">"#E74C3C"</span>, <span class="st">"#95A5A6"</span>, <span class="st">"#27AE60"</span>, <span class="st">"#1E8449"</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">plot</span></span></code></pre></div>
+<div class="highchart html-widget html-fill-item" id="htmlwidget-d11fc4360aa0230696d7" style="width:672px;height:480px;"></div>
+<script type="application/json" data-for="htmlwidget-d11fc4360aa0230696d7">{"x":{"hc_opts":{"chart":{"reflow":true,"type":"column"},"title":{"text":"Customer Satisfaction"},"yAxis":{"title":{"text":"Number of Responses"}},"credits":{"enabled":false},"exporting":{"enabled":false},"boost":{"enabled":false},"plotOptions":{"series":{"label":{"enabled":false},"turboThreshold":0,"dataLabels":{"enabled":true,"format":"{point.y:.0f}"}},"treemap":{"layoutAlgorithm":"squarified"}},"xAxis":{"categories":["Very Dissatisfied","Dissatisfied","Neutral","Satisfied","Very Satisfied"],"title":{"text":"Satisfaction Level"}},"series":[{"data":[20,19,17,22,22],"name":"Number of Responses","id":"main_series","showInLegend":false,"colorByPoint":true}],"colors":["#C0392B","#E74C3C","#95A5A6","#27AE60","#1E8449"],"tooltip":{"formatter":"function() {\n             var cat = this.point.category || this.series.chart.xAxis[0].categories[this.point.x] || this.x;\n             var val = this.y;\n             var total = 100;\n             var pct = total > 0 ? (val / total * 100).toFixed(1) : 0;\n             return '<b>' + cat + '<\/b><br/>' +\n                    '' + val.toLocaleString() + '<br/>' +\n                    '<span style=\"color:#666;font-size:0.9em\">' + pct + '% of total<\/span>';\n           }","useHTML":true}},"theme":{"chart":{"backgroundColor":"transparent"},"colors":["#7cb5ec","#434348","#90ed7d","#f7a35c","#8085e9","#f15c80","#e4d354","#2b908f","#f45b5b","#91e8e1"]},"conf_opts":{"global":{"Date":null,"VMLRadialGradientURL":"http =//code.highcharts.com/list(version)/gfx/vml-radial-gradient.png","canvasToolsURL":"http =//code.highcharts.com/list(version)/modules/canvas-tools.js","getTimezoneOffset":null,"timezoneOffset":0,"useUTC":true},"lang":{"contextButtonTitle":"Chart context menu","decimalPoint":".","downloadCSV":"Download CSV","downloadJPEG":"Download JPEG image","downloadPDF":"Download PDF document","downloadPNG":"Download PNG image","downloadSVG":"Download SVG vector image","downloadXLS":"Download XLS","drillUpText":"◁ Back to {series.name}","exitFullscreen":"Exit from full screen","exportData":{"annotationHeader":"Annotations","categoryDatetimeHeader":"DateTime","categoryHeader":"Category"},"hideData":"Hide data table","invalidDate":null,"loading":"Loading...","months":["January","February","March","April","May","June","July","August","September","October","November","December"],"noData":"No data to display","numericSymbolMagnitude":1000,"numericSymbols":["k","M","G","T","P","E"],"printChart":"Print chart","resetZoom":"Reset zoom","resetZoomTitle":"Reset zoom level 1:1","shortMonths":["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],"shortWeekdays":["Sat","Sun","Mon","Tue","Wed","Thu","Fri"],"thousandsSep":" ","viewData":"View data table","viewFullscreen":"View in full screen","weekdays":["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]}},"type":"chart","fonts":[],"debug":false},"evals":["hc_opts.tooltip.formatter"],"jsHooks":[]}</script>
 </div>
 <div class="section level3">
 <h3 id="colorful-individual-bars">Colorful Individual Bars<a class="anchor" aria-label="anchor" href="#colorful-individual-bars"></a>
 </h3>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># When no group_var, can color each bar differently</span></span>
 <span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
 <span>  category <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"C"</span>, <span class="st">"D"</span><span class="op">)</span></span>
@@ -411,17 +510,25 @@ comparisons.</p>
 <span><span class="va">plot</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/viz_bar.html">viz_bar</a></span><span class="op">(</span></span>
 <span>  data <span class="op">=</span> <span class="va">data</span>,</span>
 <span>  x_var <span class="op">=</span> <span class="st">"category"</span>,</span>
-<span>  color_palette <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"#3498DB"</span>, <span class="st">"#E74C3C"</span>, <span class="st">"#F39C12"</span>, <span class="st">"#27AE60"</span><span class="op">)</span></span>
-<span><span class="op">)</span></span></code></pre></div>
+<span>  title <span class="op">=</span> <span class="st">"Category Overview"</span>,</span>
+<span>  x_label <span class="op">=</span> <span class="st">"Category"</span>,</span>
+<span>  y_label <span class="op">=</span> <span class="st">"Count"</span>,</span>
+<span>  color_palette <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"#3498DB"</span>, <span class="st">"#E74C3C"</span>, <span class="st">"#F39C12"</span>, <span class="st">"#27AE60"</span><span class="op">)</span>,</span>
+<span>  tooltip_suffix <span class="op">=</span> <span class="st">" items"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">plot</span></span></code></pre></div>
+<div class="highchart html-widget html-fill-item" id="htmlwidget-21c7483268bafca56cec" style="width:672px;height:480px;"></div>
+<script type="application/json" data-for="htmlwidget-21c7483268bafca56cec">{"x":{"hc_opts":{"chart":{"reflow":true,"type":"column"},"title":{"text":"Category Overview"},"yAxis":{"title":{"text":"Count"}},"credits":{"enabled":false},"exporting":{"enabled":false},"boost":{"enabled":false},"plotOptions":{"series":{"label":{"enabled":false},"turboThreshold":0,"dataLabels":{"enabled":true,"format":"{point.y:.0f}"}},"treemap":{"layoutAlgorithm":"squarified"}},"xAxis":{"categories":["A","B","C","D"],"title":{"text":"Category"}},"series":[{"data":[1,1,1,1],"name":"Count","id":"main_series","showInLegend":false,"colorByPoint":true}],"colors":["#3498DB","#E74C3C","#F39C12","#27AE60"],"tooltip":{"formatter":"function() {\n             var cat = this.point.category || this.series.chart.xAxis[0].categories[this.point.x] || this.x;\n             var val = this.y;\n             var total = 4;\n             var pct = total > 0 ? (val / total * 100).toFixed(1) : 0;\n             return '<b>' + cat + '<\/b><br/>' +\n                    '' + val.toLocaleString() + ' items<br/>' +\n                    '<span style=\"color:#666;font-size:0.9em\">' + pct + '% of total<\/span>';\n           }","useHTML":true}},"theme":{"chart":{"backgroundColor":"transparent"},"colors":["#7cb5ec","#434348","#90ed7d","#f7a35c","#8085e9","#f15c80","#e4d354","#2b908f","#f45b5b","#91e8e1"]},"conf_opts":{"global":{"Date":null,"VMLRadialGradientURL":"http =//code.highcharts.com/list(version)/gfx/vml-radial-gradient.png","canvasToolsURL":"http =//code.highcharts.com/list(version)/modules/canvas-tools.js","getTimezoneOffset":null,"timezoneOffset":0,"useUTC":true},"lang":{"contextButtonTitle":"Chart context menu","decimalPoint":".","downloadCSV":"Download CSV","downloadJPEG":"Download JPEG image","downloadPDF":"Download PDF document","downloadPNG":"Download PNG image","downloadSVG":"Download SVG vector image","downloadXLS":"Download XLS","drillUpText":"◁ Back to {series.name}","exitFullscreen":"Exit from full screen","exportData":{"annotationHeader":"Annotations","categoryDatetimeHeader":"DateTime","categoryHeader":"Category"},"hideData":"Hide data table","invalidDate":null,"loading":"Loading...","months":["January","February","March","April","May","June","July","August","September","October","November","December"],"noData":"No data to display","numericSymbolMagnitude":1000,"numericSymbols":["k","M","G","T","P","E"],"printChart":"Print chart","resetZoom":"Reset zoom","resetZoomTitle":"Reset zoom level 1:1","shortMonths":["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],"shortWeekdays":["Sat","Sun","Mon","Tue","Wed","Thu","Fri"],"thousandsSep":" ","viewData":"View data table","viewFullscreen":"View in full screen","weekdays":["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]}},"type":"chart","fonts":[],"debug":false},"evals":["hc_opts.tooltip.formatter"],"jsHooks":[]}</script>
 </div>
 </div>
 <div class="section level2">
-<h2 id="real-world-examples">Real-World Examples<a class="anchor" aria-label="anchor" href="#real-world-examples"></a>
+<h2 id="real-world-examples">🌍 Real-World Examples<a class="anchor" aria-label="anchor" href="#real-world-examples"></a>
 </h2>
 <div class="section level3">
 <h3 id="survey-response-comparison">Survey Response Comparison<a class="anchor" aria-label="anchor" href="#survey-response-comparison"></a>
 </h3>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Knowledge assessment across topics</span></span>
 <span><span class="va">knowledge_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
 <span>  topic <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Search Skills"</span>, <span class="st">"Critical Thinking"</span>, </span>
@@ -444,11 +551,13 @@ comparisons.</p>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">plot</span></span></code></pre></div>
+<div class="highchart html-widget html-fill-item" id="htmlwidget-1834a22cd196f3aa03a1" style="width:672px;height:480px;"></div>
+<script type="application/json" data-for="htmlwidget-1834a22cd196f3aa03a1">{"x":{"hc_opts":{"chart":{"reflow":true,"type":"bar"},"title":{"text":"Self-Reported Proficiency by Topic"},"yAxis":{"title":{"text":"Percentage of Respondents"}},"credits":{"enabled":false},"exporting":{"enabled":false},"boost":{"enabled":false},"plotOptions":{"series":{"label":{"enabled":false},"turboThreshold":0,"dataLabels":{"enabled":true,"format":"{point.y:.0f}%"}},"treemap":{"layoutAlgorithm":"squarified"}},"xAxis":{"categories":["Critical Thinking","Data Privacy","Search Skills","Source Evaluation"],"title":{"text":""}},"series":[{"data":[26,42,33,31],"name":"Beginner","id":"series_1"},{"data":[44,33,30,29],"name":"Intermediate","id":"series_2"},{"data":[30,25,37,40],"name":"Advanced","id":"series_3"}],"colors":["#E74C3C","#F39C12","#27AE60"],"tooltip":{"formatter":"function() {\n             var cat = this.point.category || this.series.chart.xAxis[0].categories[this.point.x] || this.x;\n             var val = this.y.toFixed(1);\n             return '<b>' + cat + '<\/b><br/>' +\n                    this.series.name + ': ' + val + '';\n           }","useHTML":true}},"theme":{"chart":{"backgroundColor":"transparent"},"colors":["#7cb5ec","#434348","#90ed7d","#f7a35c","#8085e9","#f15c80","#e4d354","#2b908f","#f45b5b","#91e8e1"]},"conf_opts":{"global":{"Date":null,"VMLRadialGradientURL":"http =//code.highcharts.com/list(version)/gfx/vml-radial-gradient.png","canvasToolsURL":"http =//code.highcharts.com/list(version)/modules/canvas-tools.js","getTimezoneOffset":null,"timezoneOffset":0,"useUTC":true},"lang":{"contextButtonTitle":"Chart context menu","decimalPoint":".","downloadCSV":"Download CSV","downloadJPEG":"Download JPEG image","downloadPDF":"Download PDF document","downloadPNG":"Download PNG image","downloadSVG":"Download SVG vector image","downloadXLS":"Download XLS","drillUpText":"◁ Back to {series.name}","exitFullscreen":"Exit from full screen","exportData":{"annotationHeader":"Annotations","categoryDatetimeHeader":"DateTime","categoryHeader":"Category"},"hideData":"Hide data table","invalidDate":null,"loading":"Loading...","months":["January","February","March","April","May","June","July","August","September","October","November","December"],"noData":"No data to display","numericSymbolMagnitude":1000,"numericSymbols":["k","M","G","T","P","E"],"printChart":"Print chart","resetZoom":"Reset zoom","resetZoomTitle":"Reset zoom level 1:1","shortMonths":["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],"shortWeekdays":["Sat","Sun","Mon","Tue","Wed","Thu","Fri"],"thousandsSep":" ","viewData":"View data table","viewFullscreen":"View in full screen","weekdays":["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]}},"type":"chart","fonts":[],"debug":false},"evals":["hc_opts.tooltip.formatter"],"jsHooks":[]}</script>
 </div>
 <div class="section level3">
 <h3 id="demographic-breakdown">Demographic Breakdown<a class="anchor" aria-label="anchor" href="#demographic-breakdown"></a>
 </h3>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">demo_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
 <span>  age_group <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"18-24"</span>, <span class="st">"25-34"</span>, <span class="st">"35-44"</span>, <span class="st">"45-54"</span>, <span class="st">"55+"</span><span class="op">)</span>, each <span class="op">=</span> <span class="fl">80</span><span class="op">)</span>,</span>
 <span>  device_type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Mobile"</span>, <span class="st">"Desktop"</span>, <span class="st">"Tablet"</span><span class="op">)</span>, <span class="fl">400</span>, replace <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
@@ -461,15 +570,22 @@ comparisons.</p>
 <span>  horizontal <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  bar_type <span class="op">=</span> <span class="st">"percent"</span>,</span>
 <span>  title <span class="op">=</span> <span class="st">"Device Usage by Age Group"</span>,</span>
-<span>  color_palette <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"#3498DB"</span>, <span class="st">"#95A5A6"</span>, <span class="st">"#F39C12"</span><span class="op">)</span></span>
-<span><span class="op">)</span></span></code></pre></div>
+<span>  x_label <span class="op">=</span> <span class="st">"Age Group"</span>,</span>
+<span>  y_label <span class="op">=</span> <span class="st">"Percentage"</span>,</span>
+<span>  color_palette <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"#3498DB"</span>, <span class="st">"#95A5A6"</span>, <span class="st">"#F39C12"</span><span class="op">)</span>,</span>
+<span>  tooltip_suffix <span class="op">=</span> <span class="st">"%"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">plot</span></span></code></pre></div>
+<div class="highchart html-widget html-fill-item" id="htmlwidget-28515d92cb327f90c9eb" style="width:672px;height:480px;"></div>
+<script type="application/json" data-for="htmlwidget-28515d92cb327f90c9eb">{"x":{"hc_opts":{"chart":{"reflow":true,"type":"column"},"title":{"text":"Device Usage by Age Group"},"yAxis":{"title":{"text":"Percentage"}},"credits":{"enabled":false},"exporting":{"enabled":false},"boost":{"enabled":false},"plotOptions":{"series":{"label":{"enabled":false},"turboThreshold":0,"dataLabels":{"enabled":true,"format":"{point.y:.0f}%"}},"treemap":{"layoutAlgorithm":"squarified"}},"xAxis":{"categories":["18-24","25-34","35-44","45-54","55+"],"title":{"text":"Age Group"}},"series":[{"data":[40,40,33.8,28.7,41.2],"name":"Desktop","id":"series_1"},{"data":[23.8,25,37.5,32.5,33.8],"name":"Mobile","id":"series_2"},{"data":[36.2,35,28.7,38.8,25],"name":"Tablet","id":"series_3"}],"colors":["#3498DB","#95A5A6","#F39C12"],"tooltip":{"formatter":"function() {\n             var cat = this.point.category || this.series.chart.xAxis[0].categories[this.point.x] || this.x;\n             var val = this.y.toFixed(1);\n             return '<b>' + cat + '<\/b><br/>' +\n                    this.series.name + ': ' + val + '%';\n           }","useHTML":true}},"theme":{"chart":{"backgroundColor":"transparent"},"colors":["#7cb5ec","#434348","#90ed7d","#f7a35c","#8085e9","#f15c80","#e4d354","#2b908f","#f45b5b","#91e8e1"]},"conf_opts":{"global":{"Date":null,"VMLRadialGradientURL":"http =//code.highcharts.com/list(version)/gfx/vml-radial-gradient.png","canvasToolsURL":"http =//code.highcharts.com/list(version)/modules/canvas-tools.js","getTimezoneOffset":null,"timezoneOffset":0,"useUTC":true},"lang":{"contextButtonTitle":"Chart context menu","decimalPoint":".","downloadCSV":"Download CSV","downloadJPEG":"Download JPEG image","downloadPDF":"Download PDF document","downloadPNG":"Download PNG image","downloadSVG":"Download SVG vector image","downloadXLS":"Download XLS","drillUpText":"◁ Back to {series.name}","exitFullscreen":"Exit from full screen","exportData":{"annotationHeader":"Annotations","categoryDatetimeHeader":"DateTime","categoryHeader":"Category"},"hideData":"Hide data table","invalidDate":null,"loading":"Loading...","months":["January","February","March","April","May","June","July","August","September","October","November","December"],"noData":"No data to display","numericSymbolMagnitude":1000,"numericSymbols":["k","M","G","T","P","E"],"printChart":"Print chart","resetZoom":"Reset zoom","resetZoomTitle":"Reset zoom level 1:1","shortMonths":["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],"shortWeekdays":["Sat","Sun","Mon","Tue","Wed","Thu","Fri"],"thousandsSep":" ","viewData":"View data table","viewFullscreen":"View in full screen","weekdays":["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]}},"type":"chart","fonts":[],"debug":false},"evals":["hc_opts.tooltip.formatter"],"jsHooks":[]}</script>
 </div>
 </div>
 <div class="section level2">
-<h2 id="using-with-create_viz">Using with create_viz()<a class="anchor" aria-label="anchor" href="#using-with-create_viz"></a>
+<h2 id="using-with-create_viz">📁 Using with create_viz()<a class="anchor" aria-label="anchor" href="#using-with-create_viz"></a>
 </h2>
 <p>Integrate with the dashboard workflow:</p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">viz</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_viz.html">create_viz</a></span><span class="op">(</span></span>
 <span>  type <span class="op">=</span> <span class="st">"bar"</span>,</span>
 <span>  horizontal <span class="op">=</span> <span class="cn">TRUE</span>,</span>
@@ -496,7 +612,7 @@ comparisons.</p>
 <div class="section level3">
 <h3 id="with-filters">With Filters<a class="anchor" aria-label="anchor" href="#with-filters"></a>
 </h3>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">viz</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_viz.html">create_viz</a></span><span class="op">(</span></span>
 <span>  type <span class="op">=</span> <span class="st">"bar"</span>,</span>
 <span>  x_var <span class="op">=</span> <span class="st">"satisfaction"</span>,</span>
@@ -511,7 +627,7 @@ comparisons.</p>
 <div class="section level3">
 <h3 id="with-tabgroups">With Tabgroups<a class="anchor" aria-label="anchor" href="#with-tabgroups"></a>
 </h3>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">viz</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_viz.html">create_viz</a></span><span class="op">(</span></span>
 <span>  type <span class="op">=</span> <span class="st">"bar"</span>,</span>
 <span>  horizontal <span class="op">=</span> <span class="cn">TRUE</span>,</span>
@@ -538,7 +654,7 @@ comparisons.</p>
 </div>
 </div>
 <div class="section level2">
-<h2 id="comparison-with-other-chart-types">Comparison with Other Chart Types<a class="anchor" aria-label="anchor" href="#comparison-with-other-chart-types"></a>
+<h2 id="comparison-with-other-chart-types">🔍 Comparison with Other Chart Types<a class="anchor" aria-label="anchor" href="#comparison-with-other-chart-types"></a>
 </h2>
 <div class="section level3">
 <h3 id="when-to-use-bar-charts">When to Use Bar Charts<a class="anchor" aria-label="anchor" href="#when-to-use-bar-charts"></a>
@@ -557,7 +673,7 @@ changes over time - Displaying trends - Comparing time series</p>
 </div>
 </div>
 <div class="section level2">
-<h2 id="tips-and-best-practices">Tips and Best Practices<a class="anchor" aria-label="anchor" href="#tips-and-best-practices"></a>
+<h2 id="tips-and-best-practices">💡 Tips and Best Practices<a class="anchor" aria-label="anchor" href="#tips-and-best-practices"></a>
 </h2>
 <ol style="list-style-type: decimal">
 <li>
@@ -578,7 +694,7 @@ across charts</li>
 </ol>
 </div>
 <div class="section level2">
-<h2 id="see-also">See Also<a class="anchor" aria-label="anchor" href="#see-also"></a>
+<h2 id="see-also">📚 See Also<a class="anchor" aria-label="anchor" href="#see-also"></a>
 </h2>
 <ul>
 <li>

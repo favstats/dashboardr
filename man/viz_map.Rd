@@ -17,6 +17,7 @@ viz_map(
   na_color = "#E0E0E0",
   click_url_template = NULL,
   click_var = NULL,
+  tooltip = NULL,
   tooltip_vars = NULL,
   tooltip_format = NULL,
   height = 500,
@@ -54,9 +55,15 @@ Use \code{\{var\}} syntax for variable substitution, e.g.,
 
 \item{click_var}{Variable to use in click URL (defaults to join_var)}
 
-\item{tooltip_vars}{Character vector of variables to show in tooltip}
+\item{tooltip}{A tooltip configuration created with \code{\link{tooltip}()},
+OR a format string with \{placeholders\}. Available placeholders:
+\code{\{name\}}, \code{\{value\}}.
+See \code{\link{tooltip}} for full customization options.}
 
-\item{tooltip_format}{Custom tooltip format string (overrides tooltip_vars)}
+\item{tooltip_vars}{Character vector of variables to show in tooltip (legacy).}
+
+\item{tooltip_format}{Custom tooltip format string using Highcharts syntax (legacy).
+For the simpler dashboardr placeholder syntax, use \code{tooltip} instead.}
 
 \item{height}{Chart height in pixels (default: 500)}
 

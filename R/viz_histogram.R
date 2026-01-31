@@ -17,8 +17,13 @@
 #' @param x_label Optional string. X-axis label. Defaults to `x_var`.
 #' @param y_label Optional string. Y-axis label. Defaults to "Count" or "Percentage".
 #' @param histogram_type One of "count" or "percent". Default "count".
-#' @param tooltip_prefix Optional string prepended in the tooltip.
-#' @param tooltip_suffix Optional string appended in the tooltip.
+#' @param tooltip A tooltip configuration created with \code{\link{tooltip}()}, 
+#'   OR a format string with \{placeholders\}. Available placeholders: 
+#'   \code{\{category\}}, \code{\{value\}}, \code{\{percent\}}.
+#'   For simple cases, use \code{tooltip_prefix} and \code{tooltip_suffix} instead.
+#'   See \code{\link{tooltip}} for full customization options.
+#' @param tooltip_prefix Optional string prepended in the tooltip (simple customization).
+#' @param tooltip_suffix Optional string appended in the tooltip (simple customization).
 #' @param x_tooltip_suffix Optional string appended to x value in tooltip.
 #' @param bins Optional integer. Number of bins to compute via `hist()`.
 #' @param bin_breaks Optional numeric vector of cut points.
@@ -37,6 +42,8 @@
 #' @param weight_var Optional string. Name of a weight variable to use for
 #'   weighted aggregation. When provided, counts are computed as the sum of
 #'   weights instead of simple counts.
+#' @param data_labels_enabled Logical. If TRUE, show value labels on bars.
+#'   Default TRUE.
 #'
 #' @return A `highcharter` histogram (column) plot object.
 #'
@@ -162,6 +169,7 @@ viz_histogram <- function(data,
                              x_label = NULL,
                              y_label = NULL,
                              histogram_type = c("count", "percent"),
+                             tooltip = NULL,
                              tooltip_prefix = "",
                              tooltip_suffix = "",
                              x_tooltip_suffix = "",
@@ -170,10 +178,11 @@ viz_histogram <- function(data,
                              bin_labels = NULL,
                              include_na = FALSE,
                              na_label = "(Missing)",
-                             color_palette = NULL,
-                             x_map_values = NULL,
-                             x_order = NULL,
-                             weight_var = NULL) {
+                            color_palette = NULL,
+                            x_map_values = NULL,
+                            x_order = NULL,
+                            weight_var = NULL,
+                            data_labels_enabled = TRUE) {
   # Convert variable arguments to strings (supports both quoted and unquoted)
   x_var <- .as_var_string(rlang::enquo(x_var))
   y_var <- .as_var_string(rlang::enquo(y_var))
@@ -202,6 +211,17 @@ viz_histogram <- function(data,
         !!rlang::sym(x_var) := as.numeric(unclass(!!rlang::sym(x_var)))
       )
   }
+  
+  # Convert character-numeric to actual numeric for binning
+  # This handles cases like "25", "30" which should be treated as numbers
+  if (is.character(df[[x_var]]) && !is.null(bins)) {
+    numeric_attempt <- suppressWarnings(as.numeric(df[[x_var]]))
+    # Only convert if at least some values are valid numbers
+    if (!all(is.na(numeric_attempt[!is.na(df[[x_var]])]))) {
+      df[[x_var]] <- numeric_attempt
+    }
+  }
+  
   # Map raw values if requested (before binning)
   if (!is.null(x_map_values)) {
     if (!is.list(x_map_values) || is.null(names(x_map_values))) {
@@ -227,6 +247,30 @@ viz_histogram <- function(data,
       plot = FALSE,
       breaks = bins
     )$breaks
+    
+    # Generate readable default bin labels (e.g., "18-29" instead of "[18,30)")
+    if (is.null(bin_labels)) {
+      # Create labels like "18-29", "30-44", etc.
+      # For single values (e.g., 1-1), just show "1"
+      lower <- head(bin_breaks, -1)
+      upper <- tail(bin_breaks, -1)
+      bin_labels <- vapply(seq_along(lower), function(i) {
+        low_val <- round(lower[i])
+        if (i == length(lower)) {
+          # Last bin: include upper bound
+          high_val <- round(upper[i])
+        } else {
+          # Other bins: upper bound is exclusive, so show upper-1
+          high_val <- round(upper[i] - 1)
+        }
+        # If low and high are the same, just show single value
+        if (low_val == high_val) {
+          as.character(low_val)
+        } else {
+          paste0(low_val, "-", high_val)
+        }
+      }, character(1))
+    }
   }
   # Use cut() if breaks available
   if (!is.null(bin_breaks)) {
@@ -342,7 +386,7 @@ viz_histogram <- function(data,
       column = list(
         stacking = stacking,
         dataLabels = list(
-          enabled = TRUE,
+          enabled = data_labels_enabled,
           format = fmt,
           style = list(textOutline = "none")
         ),
@@ -356,30 +400,40 @@ viz_histogram <- function(data,
     )
 
   # ─── TOOLTIP ───────────────────────────────────────────────────────────────
-  pre <- if (tooltip_prefix == "") "" else tooltip_prefix
-  suf <- if (tooltip_suffix == "") "" else tooltip_suffix
-  xsuf <- if (x_tooltip_suffix == "") "" else x_tooltip_suffix
+  if (!is.null(tooltip)) {
+    # Use new unified tooltip system when custom tooltip is provided
+    tooltip_result <- .process_tooltip_config(
+      tooltip = tooltip,
+      tooltip_prefix = tooltip_prefix,
+      tooltip_suffix = tooltip_suffix,
+      x_tooltip_suffix = x_tooltip_suffix,
+      chart_type = "histogram",
+      context = list(
+        histogram_type = histogram_type,
+        x_label = final_x,
+        y_label = final_y
+      )
+    )
+    hc <- .apply_tooltip_to_hc(hc, tooltip_result)
+  } else {
+    # Use original working tooltip code
+    pre <- if (tooltip_prefix == "") "" else tooltip_prefix
+    suf <- if (tooltip_suffix == "") "" else tooltip_suffix
+    xsuf <- if (x_tooltip_suffix == "") "" else x_tooltip_suffix
 
-  # Corrected sprintf format string and arguments
-  tooltip_fn <- sprintf(
-    "function() {
-       // here we pull the label directly
-       var cat = this.point.category;
-       var val = %s;
-       return '<b>' + cat + '%s</b><br/>' +
-              '%s' + val + '%s';
-     }",
-    if (histogram_type == "percent") {
-      "this.percentage.toFixed(1) + '%'"
-    } else {
-      "this.y"
-    },
-    xsuf, # Fills the first %s for cat + '%s' (x_tooltip_suffix)
-    pre,  # Fills the second %s for '%s' + val (tooltip_prefix)
-    suf   # Fills the third %s for val + '%s' (tooltip_suffix)
-  )
-
-  hc <- hc %>% highcharter::hc_tooltip(formatter = highcharter::JS(tooltip_fn))
+    tooltip_fn <- sprintf(
+      "function() {
+         var cat = this.point.category;
+         var val = %s;
+         return '<b>' + cat + '%s</b><br/>' +
+                '%s' + val + '%s';
+       }",
+      if (histogram_type == "percent") "this.percentage.toFixed(1) + '%'" else "this.y",
+      xsuf, pre, suf
+    )
+    
+    hc <- hc %>% highcharter::hc_tooltip(formatter = highcharter::JS(tooltip_fn))
+  }
 
   # Color palette (applied to the series)
   if (!is.null(color_palette)) hc <- hc %>% highcharter::hc_colors(color_palette)

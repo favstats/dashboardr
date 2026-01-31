@@ -1,16 +1,26 @@
-# Getting Started With \`viz_stackedbars()\`
+# Multi-Question Stacked Bar Charts (Legacy Reference)
 
-Welcome to this comprehensive guide on using the `viz_stackedbars`
-function from the `dashboardr` package. This function is specifically
-designed to handle a common challenge in survey research: visualizing
-responses to multiple Likert-type questions simultaneously.
+> **Note:** This functionality is now part of the unified
+> [`viz_stackedbar()`](https://favstats.github.io/dashboardr/reference/viz_stackedbar.md)
+> function. You can use `viz_stackedbar(data, x_vars = ...)` for the
+> same functionality shown here. See the [main stackedbar
+> vignette](https://favstats.github.io/dashboardr/articles/stackedbar_vignette.md)
+> for comprehensive documentation.
+>
+> The examples below still work with
+> [`viz_stackedbars()`](https://favstats.github.io/dashboardr/reference/viz_stackedbars.md)
+> for backward compatibility, but we recommend using
+> [`viz_stackedbar()`](https://favstats.github.io/dashboardr/reference/viz_stackedbar.md)
+> for new code.
 
-The `viz_stackedbars` function transforms wide survey data (where each
-question is a separate column) into an elegant stacked bar chart
-where: - Each bar represents a different survey question - Each stack
-within a bar represents a response category (e.g., “Strongly Agree”,
-“Agree”, etc.) - Colors show the distribution of responses across all
-questions
+This guide covers visualizing responses to multiple Likert-type
+questions simultaneously.
+
+The multi-variable mode transforms wide survey data (where each question
+is a separate column) into an elegant stacked bar chart where: - Each
+bar represents a different survey question - Each stack within a bar
+represents a response category (e.g., “Strongly Agree”, “Agree”, etc.) -
+Colors show the distribution of responses across all questions
 
 This approach is particularly valuable for: - **Comparing response
 patterns** across multiple related questions - **Identifying questions**
@@ -23,7 +33,28 @@ including pivoting from wide to long format, managing `haven_labelled`
 variables from SPSS data, and creating publication-ready interactive
 visualizations.
 
-### Getting Started
+### Migration to Unified Function
+
+To migrate from
+[`viz_stackedbars()`](https://favstats.github.io/dashboardr/reference/viz_stackedbars.md)
+to
+[`viz_stackedbar()`](https://favstats.github.io/dashboardr/reference/viz_stackedbar.md),
+simply change the function name:
+
+``` r
+# Old way (still works)
+viz_stackedbars(data, x_vars = c("q1", "q2", "q3"))
+
+# New preferred way
+viz_stackedbar(data, x_vars = c("q1", "q2", "q3"))
+```
+
+All parameters work the same way. The unified
+[`viz_stackedbar()`](https://favstats.github.io/dashboardr/reference/viz_stackedbar.md)
+also supports crosstab-style charts using `x_var` + `stack_var`
+parameters.
+
+### ⚙️ Getting Started
 
 Let’s load the necessary libraries and examine our dataset. For this
 demonstration, we will be using the 2020 wave from the GSS dataset.
@@ -78,7 +109,7 @@ library(dashboardr)
 data(gss_panel20)
 ```
 
-### Data Preparation
+### 📋 Data Preparation
 
 Let’s identify and prepare Likert-type questions from the 2016 wave
 (`_1a` variables) for ease of use in this practical.
@@ -192,7 +223,7 @@ table(gss_likert$happy_1a, useNA = "always")
     ##    1    2    3 <NA> 
     ##  806 1601  452    8
 
-## Basic Multi-Question Charts
+## 📊 Basic Multi-Question Charts
 
 ### Example 1: Social Trust and Attitudes
 
@@ -221,13 +252,17 @@ plot1 <- viz_stackedbars(
 )
 ```
 
+    ## Note: viz_stackedbars() is now part of viz_stackedbar().
+    ## You can use viz_stackedbar(data, x_vars = ...) for the same functionality.
+    ## viz_stackedbars() will continue to work but consider updating your code.
+
     ## Warning: `trust_1a` and `fair_1a` have conflicting value labels.
-    ## ℹ Labels for these values will be taken from `trust_1a`.
-    ## ✖ Values: 1 and 2
+    ## i Labels for these values will be taken from `trust_1a`.
+    ## x Values: 1 and 2
 
     ## Warning: `trust_1a` and `helpful_1a` have conflicting value labels.
-    ## ℹ Labels for these values will be taken from `trust_1a`.
-    ## ✖ Values: 1 and 2
+    ## i Labels for these values will be taken from `trust_1a`.
+    ## x Values: 1 and 2
 
 ``` r
 plot1
@@ -255,18 +290,18 @@ plot2 <- viz_stackedbars(
 ```
 
     ## Warning: `trust_1a` and `fair_1a` have conflicting value labels.
-    ## ℹ Labels for these values will be taken from `trust_1a`.
-    ## ✖ Values: 1 and 2
+    ## i Labels for these values will be taken from `trust_1a`.
+    ## x Values: 1 and 2
 
     ## Warning: `trust_1a` and `helpful_1a` have conflicting value labels.
-    ## ℹ Labels for these values will be taken from `trust_1a`.
-    ## ✖ Values: 1 and 2
+    ## i Labels for these values will be taken from `trust_1a`.
+    ## x Values: 1 and 2
 
 ``` r
 plot2
 ```
 
-## Advanced Customization
+## 🎨 Advanced Customization
 
 ### Example 3: Custom Response Ordering and Mapping
 
@@ -335,12 +370,12 @@ plot3 <- viz_stackedbars(
 ```
 
     ## Warning: `trust_1a` and `fair_1a` have conflicting value labels.
-    ## ℹ Labels for these values will be taken from `trust_1a`.
-    ## ✖ Values: 1 and 2
+    ## i Labels for these values will be taken from `trust_1a`.
+    ## x Values: 1 and 2
 
     ## Warning: `trust_1a` and `helpful_1a` have conflicting value labels.
-    ## ℹ Labels for these values will be taken from `trust_1a`.
-    ## ✖ Values: 1 and 2
+    ## i Labels for these values will be taken from `trust_1a`.
+    ## x Values: 1 and 2
 
     ## Warning: stack_order provided with stack_map_values. Ensure stack_order refers
     ## to the *new* mapped labels.
@@ -373,18 +408,18 @@ plot4 <- viz_stackedbars(
 ```
 
     ## Warning: `trust_1a` and `fair_1a` have conflicting value labels.
-    ## ℹ Labels for these values will be taken from `trust_1a`.
-    ## ✖ Values: 1 and 2
+    ## i Labels for these values will be taken from `trust_1a`.
+    ## x Values: 1 and 2
 
     ## Warning: `trust_1a` and `helpful_1a` have conflicting value labels.
-    ## ℹ Labels for these values will be taken from `trust_1a`.
-    ## ✖ Values: 1 and 2
+    ## i Labels for these values will be taken from `trust_1a`.
+    ## x Values: 1 and 2
 
 ``` r
 plot4
 ```
 
-## Working with Different Question Types
+## 📝 Working with Different Question Types
 
 ### Example 5: Happiness and Life Satisfaction
 
@@ -568,7 +603,7 @@ plot6 <- viz_stackedbars(
 plot6
 ```
 
-## Advanced Analysis Techniques
+## 🔬 Advanced Analysis Techniques
 
 ### Example 7: Demographic Subgroup Analysis
 
@@ -691,12 +726,12 @@ if (nrow(college_data) > 50) {
 ```
 
     ## Warning: `trust_1a` and `fair_1a` have conflicting value labels.
-    ## ℹ Labels for these values will be taken from `trust_1a`.
-    ## ✖ Values: 1 and 2
+    ## i Labels for these values will be taken from `trust_1a`.
+    ## x Values: 1 and 2
 
     ## Warning: `trust_1a` and `helpful_1a` have conflicting value labels.
-    ## ℹ Labels for these values will be taken from `trust_1a`.
-    ## ✖ Values: 1 and 2
+    ## i Labels for these values will be taken from `trust_1a`.
+    ## x Values: 1 and 2
 
     ## [1] "College-educated chart:"
 
@@ -726,15 +761,15 @@ if (nrow(high_school_data) > 50) {
 ```
 
     ## Warning: `trust_1a` and `fair_1a` have conflicting value labels.
-    ## ℹ Labels for these values will be taken from `trust_1a`.
-    ## ✖ Values: 1 and 2
+    ## i Labels for these values will be taken from `trust_1a`.
+    ## x Values: 1 and 2
     ## `trust_1a` and `helpful_1a` have conflicting value labels.
-    ## ℹ Labels for these values will be taken from `trust_1a`.
-    ## ✖ Values: 1 and 2
+    ## i Labels for these values will be taken from `trust_1a`.
+    ## x Values: 1 and 2
 
     ## [1] "High school educated chart:"
 
-## Working with Survey Batteries
+## 📋 Working with Survey Batteries
 
 ### Example 9: Creating Question Batteries
 
@@ -770,18 +805,18 @@ plot9 <- viz_stackedbars(
 ```
 
     ## Warning: `trust_1a` and `fair_1a` have conflicting value labels.
-    ## ℹ Labels for these values will be taken from `trust_1a`.
-    ## ✖ Values: 1 and 2
+    ## i Labels for these values will be taken from `trust_1a`.
+    ## x Values: 1 and 2
 
     ## Warning: `trust_1a` and `helpful_1a` have conflicting value labels.
-    ## ℹ Labels for these values will be taken from `trust_1a`.
-    ## ✖ Values: 1 and 2
+    ## i Labels for these values will be taken from `trust_1a`.
+    ## x Values: 1 and 2
 
 ``` r
 plot9
 ```
 
-## Labels and Tooltips Reference
+## 🏷️ Labels and Tooltips Reference
 
 ### Summary of Label and Tooltip Options
 
@@ -818,10 +853,10 @@ viz_stackedbars(
 ```
 
     ## Warning: `trust_1a` and `fair_1a` have conflicting value labels.
-    ## ℹ Labels for these values will be taken from `trust_1a`.
-    ## ✖ Values: 1 and 2
+    ## i Labels for these values will be taken from `trust_1a`.
+    ## x Values: 1 and 2
 
-## Best Practices and Tips
+## 💡 Best Practices and Tips
 
 ### Example 10: Publication-Ready Chart
 
@@ -853,20 +888,20 @@ plot10 <- viz_stackedbars(
 ```
 
     ## Warning: `trust_1a` and `fair_1a` have conflicting value labels.
-    ## ℹ Labels for these values will be taken from `trust_1a`.
-    ## ✖ Values: 1 and 2
+    ## i Labels for these values will be taken from `trust_1a`.
+    ## x Values: 1 and 2
 
     ## Warning: `trust_1a` and `helpful_1a` have conflicting value labels.
-    ## ℹ Labels for these values will be taken from `trust_1a`.
-    ## ✖ Values: 1 and 2
+    ## i Labels for these values will be taken from `trust_1a`.
+    ## x Values: 1 and 2
 
 ``` r
 plot10
 ```
 
-## Summary and Best Practices
+## ✅ Summary and Best Practices
 
-### Key Features Demonstrated
+### ✅ Key Features Demonstrated
 
 1.  **Multi-question visualization** with automatic wide-to-long data
     transformation
@@ -878,7 +913,7 @@ plot10
 7.  **Survey battery analysis** for related question sets
 8.  **Publication-ready styling** with comprehensive customization
 
-### Best Practices for Multi-Question Charts
+### 🎯 Best Practices for Multi-Question Charts
 
 1.  Choose questions with similar response scales
 
@@ -917,7 +952,7 @@ plot10
 - Use appropriate number formatting (percentages vs. counts)
 - Provide context about sample sizes when relevant
 
-### Conclusion
+### 📚 Conclusion
 
 The
 [`viz_stackedbars()`](https://favstats.github.io/dashboardr/reference/viz_stackedbars.md)

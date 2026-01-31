@@ -9,7 +9,7 @@
 | %                                                 |
 | %                                                 |
 
-## Overview
+## 📖 Overview
 
 `dashboardr` includes several live demo dashboards that showcase its
 capabilities:
@@ -23,7 +23,7 @@ capabilities:
 All demos use real data from the General Social Survey (GSS) and can be
 generated with a single function call!
 
-## Features Demo (Recommended)
+## ⭐ Features Demo (Recommended)
 
 The **Features Demo** is the best place to explore dashboardr’s
 interactive capabilities:
@@ -67,7 +67,7 @@ create_page("Loading Overlay", data = gss, type = "bar",
   add_viz(x_var = "degree", title = "Education")
 ```
 
-## Tutorial Dashboard
+## 📚 Tutorial Dashboard
 
 The tutorial dashboard is perfect for:
 
@@ -166,7 +166,7 @@ generate_dashboard(dashboard, render = TRUE)
 
 ------------------------------------------------------------------------
 
-## Showcase Dashboard
+## 🌟 Showcase Dashboard
 
 The showcase dashboard is perfect for:
 
@@ -257,7 +257,7 @@ add_page(
 
 ------------------------------------------------------------------------
 
-## Comparison
+## 🔍 Comparison
 
 | Feature               | Tutorial            | Showcase            |
 |-----------------------|---------------------|---------------------|
@@ -273,7 +273,7 @@ add_page(
 
 ------------------------------------------------------------------------
 
-## Customizing the Demos
+## 🎨 Customizing the Demos
 
 Both demo functions create dashboards in your working directory. You
 can:
@@ -301,7 +301,7 @@ View(showcase_dashboard)
 
 ------------------------------------------------------------------------
 
-## Requirements
+## ⚙️ Requirements
 
 Both demos require:
 
@@ -318,7 +318,7 @@ to install them.
 
 ------------------------------------------------------------------------
 
-## Next Steps
+## ➡️ Next Steps
 
 After exploring the demos:
 
@@ -335,7 +335,7 @@ After exploring the demos:
 
 ------------------------------------------------------------------------
 
-## Tips for Using the Demos
+## 💡 Tips for Using the Demos
 
 ### For Presentations
 
@@ -374,7 +374,7 @@ showcase_dashboard()
 
 ------------------------------------------------------------------------
 
-## Troubleshooting
+## 🔧 Troubleshooting
 
 ### Quarto Not Found
 
@@ -406,7 +406,7 @@ browseURL("tutorial_dashboard/docs/index.html")
 
 ------------------------------------------------------------------------
 
-## Getting Help
+## ❓ Getting Help
 
 ``` r
 # Function documentation

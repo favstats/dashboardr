@@ -2093,9 +2093,10 @@ preview <- function(collection, title = "Preview", open = TRUE, clean = FALSE,
 #' @export
 #' @examples
 #' \dontrun{
-#' # Create a collection with an error (missing stack_var)
+#' # Create a collection with an error (missing required params)
+#' # stackedbar requires either (x_var + stack_var) OR x_vars
 #' viz <- create_viz(data = mtcars) %>%
-#'   add_viz(type = "stackedbar", x_var = "cyl")  # Missing required stack_var
+#'   add_viz(type = "stackedbar", x_var = "cyl")  # Missing stack_var or x_vars
 #'
 #' # Validate before previewing - will show helpful error
 #' validate_specs(viz)

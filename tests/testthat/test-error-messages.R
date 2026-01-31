@@ -72,7 +72,8 @@ test_that("viz_stackedbar shows helpful error for missing parameters", {
     viz_stackedbar(data = data, stack_var = "y"),
     error = function(e) e$message
   )
-  expect_true(grepl("x_var.*required", err1))
+  # New error message is more helpful - suggests specifying x_var + stack_var or x_vars
+  expect_true(grepl("x_var|Please specify", err1))
   
   # Missing stack_var
   err2 <- tryCatch(

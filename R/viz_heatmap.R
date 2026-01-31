@@ -19,8 +19,12 @@
 #' @param x_label Optional string. X-axis label. Defaults to `x_var`.
 #' @param y_label Optional string. Y-axis label. Defaults to `y_var`.
 #' @param value_label Optional string. Label for the color axis. Defaults to `value_var`.
-#' @param tooltip_prefix Optional string prepended in the tooltip value.
-#' @param tooltip_suffix Optional string appended in the tooltip value.
+#' @param tooltip A tooltip configuration created with \code{\link{tooltip}()}, 
+#'   OR a format string with \{placeholders\}. Available placeholders: 
+#'   \code{\{x\}}, \code{\{y\}}, \code{\{value\}}, \code{\{name\}}.
+#'   See \code{\link{tooltip}} for full customization options.
+#' @param tooltip_prefix Optional string prepended in the tooltip value (simple customization).
+#' @param tooltip_suffix Optional string appended in the tooltip value (simple customization).
 #' @param x_tooltip_suffix Optional string appended to x value in tooltip.
 #' @param y_tooltip_suffix Optional string appended to y value in tooltip.
 #' @param x_tooltip_prefix Optional string prepended to x value in tooltip.
@@ -193,6 +197,7 @@ viz_heatmap <- function(data,
                            x_label = NULL,
                            y_label = NULL,
                            value_label = NULL,
+                           tooltip = NULL,
                            tooltip_prefix = "",
                            tooltip_suffix = "",
                            x_tooltip_suffix = "",
@@ -499,45 +504,62 @@ viz_heatmap <- function(data,
       )
     )
 
-  # Tooltip
-  pre_val <- tooltip_prefix %||% ""
-  suf_val <- tooltip_suffix %||% ""
-  xpre_tip <- x_tooltip_prefix %||% ""
-  xsuf_tip <- x_tooltip_suffix %||% ""
-  ypre_tip <- y_tooltip_prefix %||% ""
-  ysuf_tip <- y_tooltip_suffix %||% ""
+  # ─── TOOLTIP ───────────────────────────────────────────────────────────────
+  if (!is.null(tooltip)) {
+    # Use new unified tooltip system
+    tooltip_result <- .process_tooltip_config(
+      tooltip = tooltip,
+      tooltip_prefix = tooltip_prefix,
+      tooltip_suffix = tooltip_suffix,
+      x_tooltip_suffix = NULL,
+      chart_type = "heatmap",
+      context = list(
+        x_label = final_x_label,
+        y_label = final_y_label,
+        value_label = final_value_label
+      )
+    )
+    hc <- .apply_tooltip_to_hc(hc, tooltip_result)
+  } else {
+    # Use legacy tooltip construction with all prefix/suffix parameters
+    pre_val <- tooltip_prefix %||% ""
+    suf_val <- tooltip_suffix %||% ""
+    xpre_tip <- x_tooltip_prefix %||% ""
+    xsuf_tip <- x_tooltip_suffix %||% ""
+    ypre_tip <- y_tooltip_prefix %||% ""
+    ysuf_tip <- y_tooltip_suffix %||% ""
 
+    tooltip_fn <- sprintf(
+      "function() {
+        // Access categories using this.series.xAxis.categories and this.series.yAxis.categories
+        // this.point.x and this.point.y are the numerical indices
+        var x_cat = this.series.xAxis.categories[this.point.x];
+        var y_cat = this.series.yAxis.categories[this.point.y];
+        var value = this.point.value;
 
-  tooltip_fn <- sprintf(
-    "function() {
-      // Access categories using this.series.xAxis.categories and this.series.yAxis.categories
-      // this.point.x and this.point.y are the numerical indices
-      var x_cat = this.series.xAxis.categories[this.point.x];
-      var y_cat = this.series.yAxis.categories[this.point.y];
-      var value = this.point.value;
+        var value_str = Highcharts.numberFormat(value, 0); // Format value (e.g., 0 decimals)
+        if (value === null) {
+            value_str = 'N/A'; // Display N/A for null values in tooltip
+        }
 
-      var value_str = Highcharts.numberFormat(value, 0); // Format value (e.g., 0 decimals)
-      if (value === null) {
-          value_str = 'N/A'; // Display N/A for null values in tooltip
-      }
+        return '<b>' + '%s' + x_cat + '%s</b><br/>' + // Using x_tooltip_prefix here
+               '<b>' + '%s' + y_cat + '%s</b><br/>' + // Using y_tooltip_prefix here
+               '<b>%s: </b>' + '%s' + value_str + '%s';
+      }",
+      xpre_tip, # Corresponds to the first %s
+      xsuf_tip, # Corresponds to the second %s
+      ypre_tip, # Corresponds to the third %s
+      ysuf_tip, # Corresponds to the fourth %s
+      final_value_label, # Corresponds to the fifth %s
+      pre_val, # Corresponds to the sixth %s
+      suf_val  # Corresponds to the seventh %s
+    )
 
-      return '<b>' + '%s' + x_cat + '%s</b><br/>' + // Using x_tooltip_prefix here
-             '<b>' + '%s' + y_cat + '%s</b><br/>' + // Using y_tooltip_prefix here
-             '<b>%s: </b>' + '%s' + value_str + '%s';
-    }",
-    xpre_tip, # Corresponds to the first %s
-    xsuf_tip, # Corresponds to the second %s
-    ypre_tip, # Corresponds to the third %s
-    ysuf_tip, # Corresponds to the fourth %s
-    final_value_label, # Corresponds to the fifth %s
-    pre_val, # Corresponds to the sixth %s
-    suf_val  # Corresponds to the seventh %s
-  )
-
-  hc <- hc %>% highcharter::hc_tooltip(
-    formatter = highcharter::JS(tooltip_fn),
-    valueDecimals = 0 # This line might conflict with JS formatting, but helpful for default behavior
-  )
+    hc <- hc %>% highcharter::hc_tooltip(
+      formatter = highcharter::JS(tooltip_fn),
+      valueDecimals = 0
+    )
+  }
 
   return(hc)
 }

@@ -22,7 +22,7 @@ knitr::opts_chunk$set(
 
 ```
 
-## Introduction
+## 📖 Introduction
 
 Welcome to this guide on how to use the `viz_heatmap` function as part of the `dashboardr` package. This guide demonstrates how to use this function to generate interactive heatmaps. In this demonstration, we will use the `gss_2020` dataset from the `gssr` package to walk you through how to use the function.
 
@@ -39,7 +39,7 @@ It handles common data preparation steps such as:
 
 This vignette demonstrates how to use the `viz_heatmap()` function with the General Social Survey (GSS) Panel 2020 dataset. The GSS Panel 2020 dataset follows the same respondents across three waves (2016, 2018, 2020), providing rich longitudinal data for understanding social attitudes and demographic patterns.
 
-## Getting Started
+## ⚙️ Getting Started
 
 First, let's load the necessary libraries and the `gss_2020` dataset.
 
@@ -56,7 +56,7 @@ data(gss_panel20)
 
 ```
 
-## Data Preparation
+## 📋 Data Preparation
 
 With any data analysis, the first step is to examine the data (namely, the variables) that we're working with.
 
@@ -113,7 +113,7 @@ table(gss_clean$age_group, useNA = "always")
 table(gss_clean$income_group, useNA = "always")
 ```
 
-# Basic Heatmap Examples
+# 📊 Basic Heatmap Examples
 
 ## Example 1: Average Age by Education and Gender
 
@@ -201,7 +201,7 @@ plot2 <- viz_heatmap(
 plot2
 ```
 
-# Advanced Heatmap Features
+# ⚡ Advanced Heatmap Features
 
 ## Example 3: Including Missing Values
 
@@ -305,7 +305,7 @@ plot5
 ```
 
 
-## Labels and Tooltips Reference
+## 🏷️ Labels and Tooltips Reference
 
 Heatmaps support extensive label and tooltip customization:
 
@@ -346,9 +346,9 @@ viz_heatmap(
 )
 ```
 
-# Summary and Best Practices
+# 💡 Summary and Best Practices
 
-## Key Features Demonstrated
+## ✅ Key Features Demonstrated
 
 1.  **Basic heatmaps** with continuous values mapped to color intensity
 2.  **Custom ordering** of categorical variables for logical presentation
@@ -358,7 +358,7 @@ viz_heatmap(
 6.  **Flexible aggregation** using different functions (mean, median)
 7.  **Longitudinal analysis** showing change over time
 
-## Best Practices for Heatmaps
+## 🎯 Best Practices for Heatmaps
 
 ```{r best-practices, eval=FALSE}
 # 1. Always check your data structure first!
@@ -386,7 +386,7 @@ table(your_data$x_var, your_data$y_var, useNA = "always")
 # - Format numbers appropriately for your audience
 ```
 
-## Conclusion
+## 📚 Conclusion
 
 The `viz_heatmap()` function provides a powerful and flexible way to visualize bivariate relationships in survey data. By leveraging the rich GSS Panel 2020 dataset, we've demonstrated how heatmaps can reveal patterns in:
 

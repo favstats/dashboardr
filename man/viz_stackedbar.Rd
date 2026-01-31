@@ -6,15 +6,20 @@
 \usage{
 viz_stackedbar(
   data,
-  x_var,
+  x_var = NULL,
   y_var = NULL,
-  stack_var,
+  stack_var = NULL,
+  x_vars = NULL,
+  x_var_labels = NULL,
+  response_levels = NULL,
+  show_var_tooltip = TRUE,
   title = NULL,
   subtitle = NULL,
   x_label = NULL,
   y_label = NULL,
   stack_label = NULL,
-  stacked_type = c("counts", "percent"),
+  stacked_type = c("counts", "percent", "normal"),
+  tooltip = NULL,
   tooltip_prefix = "",
   tooltip_suffix = "",
   x_tooltip_suffix = "",
@@ -31,31 +36,54 @@ viz_stackedbar(
   stack_bin_labels = NULL,
   stack_map_values = NULL,
   horizontal = FALSE,
-  weight_var = NULL
+  weight_var = NULL,
+  data_labels_enabled = TRUE
 )
 }
 \arguments{
-\item{data}{A data frame containing the raw survey data (one row per respondent).}
+\item{data}{A data frame containing the survey data.}
 
-\item{x_var}{String. Name of the column for the X-axis categories.}
+\item{x_var}{String. Name of the column for X-axis categories. Use this
+together with \code{stack_var} for crosstab-style charts.}
 
-\item{y_var}{Optional string. Name of a pre-computed count column. If NULL (default),
-the function counts occurrences.}
+\item{y_var}{Optional string. Name of a pre-computed count column. If NULL
+(default), the function counts occurrences.}
 
-\item{stack_var}{String. Name of the column whose values define the stacks.}
+\item{stack_var}{String. Name of the column whose values define the stacks.
+Required when using \code{x_var}.}
+
+\item{x_vars}{Character vector of column names to compare. Each column becomes
+a bar on the x-axis, and the values within each column become the stacks.
+Use this for comparing multiple survey questions with the same response scale.}
+
+\item{x_var_labels}{Optional character vector of display labels for the variables.
+Must be the same length as \code{x_vars}. If NULL, column names are used.}
+
+\item{response_levels}{Optional character vector of factor levels for the
+response categories (e.g., \code{c("Strongly Disagree", ..., "Strongly Agree")}).
+This sets the order of the stacks in multi-variable mode.}
+
+\item{show_var_tooltip}{Logical. If TRUE (default), shows enhanced tooltips
+with variable labels in multi-variable mode.}
 
 \item{title}{Optional string. Main chart title.}
 
 \item{subtitle}{Optional string. Chart subtitle.}
 
-\item{x_label}{Optional string. X-axis label. Defaults to \code{x_var}.}
+\item{x_label}{Optional string. X-axis label. Defaults to empty in crosstab mode
+or "Variable" in multi-variable mode.}
 
-\item{y_label}{Optional string. Y-axis label. Defaults to "Count" for counts
-or "Percentage" for percent stacking.}
+\item{y_label}{Optional string. Y-axis label. Defaults to "Count" or "Percentage".}
 
-\item{stack_label}{Optional string. Title for the stack legend. Defaults to empty (no title).}
+\item{stack_label}{Optional string. Title for the stack legend.
+Set to NULL, NA, FALSE, or "" to hide the legend title.}
 
-\item{stacked_type}{One of "counts" (default) or "percent" (100\% stacked).}
+\item{stacked_type}{One of "normal", "counts" (both show raw counts), or
+"percent" (100\% stacked). Defaults to "counts".}
+
+\item{tooltip}{A tooltip configuration created with \code{\link{tooltip}()},
+OR a format string with \{placeholders\}. Available placeholders:
+\code{\{category\}}, \code{\{value\}}, \code{\{series\}}, \code{\{percent\}}.}
 
 \item{tooltip_prefix}{Optional string prepended to tooltip values.}
 
@@ -65,193 +93,146 @@ or "Percentage" for percent stacking.}
 
 \item{color_palette}{Optional character vector of colors for the stacks.}
 
-\item{stack_order}{Optional character vector specifying order of \code{stack_var} levels.}
+\item{stack_order}{Optional character vector specifying order of stack levels.}
 
-\item{x_order}{Optional character vector specifying order of \code{x_var} levels.}
+\item{x_order}{Optional character vector specifying order of x-axis levels.}
 
-\item{include_na}{Logical. If TRUE, NA values in both \code{x_var} and \code{stack_var} are
-shown as explicit categories. If FALSE (default), rows with NA in either variable
-are excluded. Default FALSE.}
+\item{include_na}{Logical. If TRUE, NA values are shown as explicit categories.
+If FALSE (default), rows with NA are excluded.}
 
-\item{na_label_x}{String. Label for NA values in \code{x_var} when \code{include_na = TRUE}.
-Default "(Missing)".}
+\item{na_label_x}{String. Label for NA values on x-axis. Default "(Missing)".}
 
-\item{na_label_stack}{String. Label for NA values in \code{stack_var} when \code{include_na = TRUE}.
-Default "(Missing)".}
+\item{na_label_stack}{String. Label for NA values in stacks. Default "(Missing)".}
 
 \item{x_breaks}{Optional numeric vector of cut points for binning \code{x_var}.}
 
 \item{x_bin_labels}{Optional character vector of labels for \code{x_breaks} bins.}
 
-\item{x_map_values}{Optional named list to remap \code{x_var} values for display.}
+\item{x_map_values}{Optional named list to remap x-axis values for display.}
 
-\item{stack_breaks}{Optional numeric vector of cut points for binning \code{stack_var}.}
+\item{stack_breaks}{Optional numeric vector of cut points for binning stack variable.}
 
 \item{stack_bin_labels}{Optional character vector of labels for \code{stack_breaks} bins.}
 
-\item{stack_map_values}{Optional named list to remap \code{stack_var} values for display.}
+\item{stack_map_values}{Optional named list to remap stack values for display.}
 
 \item{horizontal}{Logical. If TRUE, creates horizontal bars. Default FALSE.}
 
-\item{weight_var}{Optional string. Name of a weight variable to use for weighted aggregation.
-When provided, counts are replaced with weighted sums using this variable.}
+\item{weight_var}{Optional string. Name of a weight variable for weighted counts.}
+
+\item{data_labels_enabled}{Logical. If TRUE, show value labels on bars. Default TRUE.}
 }
 \value{
 An interactive \code{highcharter} bar chart plot object.
 }
 \description{
-This function creates a stacked barchart for survey data. It
-handles raw (unaggregated) data, counting the occurrences of
-categories, supporting ordered factors, allowing numerical x-axis
-and stacked variables to be binned into custom groups, and
-enables renaming of categorical values for display. It can also
-handle SPSS (.sav) columns automatically.
+A unified function for creating stacked bar charts that supports two modes:
+
+\strong{Mode 1: Grouped/Crosstab Mode} (use \code{x_var} + \code{stack_var})
+
+Creates a stacked bar chart from long/tidy data where one column provides
+the x-axis categories and another column provides the stack segments.
+This is ideal for cross-tabulating responses by demographic groups.
+
+\strong{Mode 2: Multi-Variable/Battery Mode} (use \code{x_vars})
+
+Creates a stacked bar chart from wide data where multiple columns become
+the x-axis bars, and their values become the stacks. This is ideal for
+comparing response distributions across multiple survey questions.
+
+The function automatically detects which mode to use based on the parameters
+provided.
 }
 \details{
-This function performs the following steps:
-\enumerate{
-\item \strong{Input Validation:} Checks if the provided \code{data} is a data frame and if \code{x_var} and \code{stack_var} columns exist.
-\item \strong{Data Copy:} Creates a mutable copy of the input \code{data} to perform transformations without affecting the original.
-\item \strong{Handle 'haven_labelled' Columns:} If \code{haven} package is available, it detects if \code{x_var} or \code{stack_var} are of class \code{haven_labelled} (common for data imported from SPSS/Stata/SAS). If so, it converts them to standard R factors, using their underlying numeric values as levels (e.g., a '1' that was labeled "Male" will become a factor level "1"). This ensures \code{recode} can operate correctly.
-\item \strong{Apply Value Mapping (\code{x_map_values}, \code{stack_map_values}):} If provided, \code{x_map_values} and \code{stack_map_values} (named lists, e.g., \code{list("1"="Male")}) are used to rename the values in \code{x_var} and \code{stack_var} respectively. This is useful for converting numeric codes or abbreviations into descriptive labels. If the column is a factor, it's temporarily converted to character to ensure \code{dplyr::recode} works reliably on the values.
-\item \strong{Handle Binning (\code{x_breaks}, \code{x_bin_labels}, \code{stack_breaks}, \code{stack_bin_labels}):}
+\strong{Choosing the Right Mode:}
+
+Use \strong{Mode 1} (\code{x_var} + \code{stack_var}) when you want to:
 \itemize{
-\item If \code{x_var} (or \code{stack_var}) is numeric and corresponding \verb{_breaks} are provided, the function uses \code{base::cut()} to discretize the numeric variable into bins.
-\item \verb{_bin_labels} can be supplied to give custom names to these bins (e.g., "18-24" instead of "(17,25]"). If not provided, \code{cut()} generates default labels.
-\item A temporary column (e.g., \code{.x_var_binned}) is created to hold the binned values, and this temporary column is then used for plotting.
+\item Show how one variable breaks down by another (e.g., education by gender)
+\item Create a cross-tabulation visualization
+\item Your data is already in long/tidy format
 }
-\item \strong{Data Aggregation and Final Factor Handling:}
+
+Use \strong{Mode 2} (\code{x_vars}) when you want to:
 \itemize{
-\item The data is transformed using \code{dplyr::mutate} to ensure \code{x_var} and \code{stack_var} (or their binned versions) are treated as factors. If \code{include_na = TRUE}, missing values are converted into an explicit "(NA)" factor level.
-\item If \code{weight_var} is provided, weighted sums are calculated for each combination of \code{x_var} and \code{stack_var} using \code{sum(weight_var, na.rm = TRUE)}. Otherwise, \code{dplyr::count()} is used to count occurrences for each unique combination. This creates the \code{n} column required for \code{highcharter}.
+\item Compare response distributions across multiple survey questions
+\item Visualize a Likert scale battery
+\item Your questions share the same response categories
+\item Your data is in wide format (one column per question)
 }
-\item \strong{Apply Custom Ordering (\code{x_order}, \code{stack_order}):} If provided, \code{x_order} and \code{stack_order} are used to set the display order of the factor levels for the X-axis and stack categories, respectively. This is essential for ordinal scales (e.g., Likert scales) or custom desired sorting. Levels not found in the order vector are appended at the end.
-\item \strong{Highcharter Chart Generation:} The aggregated \code{plot_data} is passed to \code{highcharter::hchart()} to create the base stacked column chart.
-\item \strong{Chart Customization:} Titles, subtitles, axis labels, stacking type (counts vs. percent), data labels, legend titles, tooltips, and custom color palettes are applied based on the function's arguments.
-\item \strong{Return Value:} The function returns a \code{highcharter} plot object, which can be printed directly to display the interactive chart.
+
+\strong{Data Handling Features:}
+\itemize{
+\item Automatically handles \code{haven_labelled} columns from SPSS/Stata/SAS
+\item Supports value mapping to rename categories for display
+\item Supports binning of continuous variables
+\item Handles missing values explicitly or implicitly
 }
 }
+\section{Mode 1 Parameters (Grouped/Crosstab)}{
+
+}
+
+\section{Mode 2 Parameters (Multi-Variable/Battery)}{
+
+}
+
+\section{Common Parameters}{
+
+}
+
 \examples{
-# Load GSS data
 library(gssr)
 data(gss_panel20)
 
-# Example 1: Basic stacked bar (excluding NAs)
+# ============================================================
+# MODE 1: Grouped/Crosstab - One variable broken down by another
+# ============================================================
+
+# Example 1: Education by Gender (counts)
 plot1 <- viz_stackedbar(
   data = gss_panel20,
   x_var = "degree_1a",
   stack_var = "sex_1a",
   title = "Educational Attainment by Gender",
-  subtitle = "GSS respondents 2010-present (NAs excluded)",
-  x_label = "Highest Degree Completed",
-  y_label = "Number of Respondents",
-  stack_label = "Gender",
-  include_na = FALSE  # Exclude missing values
+  x_label = "Highest Degree",
+  stack_label = "Gender"
 )
-plot1
 
-education_map = list("less than high school" = "High School or Less",
-                    "high school" = "High School",
-                    "associate/junior college" = "Associate or Junior College",
-                    "bachelor's" = "Bachelor's Degree",
-                    "graduate" = "Master's Degree or Higher"
-                   )
-
-# Example 2: Including NA values with custom labels
+# Example 2: Happiness by Education (percentages)
 plot2 <- viz_stackedbar(
   data = gss_panel20,
   x_var = "degree_1a",
-  x_label = "Degree"
-  stack_var = "sex_1a",
-  title = "Educational Attainment by Gender (Including Missing Data)",
-  subtitle = "GSS respondents 2010-present",
-  x_order = education_order,
-  include_na = TRUE,
-  na_label_x = "Education Not Reported",
-  na_label_stack = "Gender Not Reported"
-)
-plot2
-
-education_order = list("High School or Less",
-                      "High School",
-                      "Associate or Junior College",
-                      "Bachelor's Degree",
-                      "Master's Degree or Higher"
+  stack_var = "happy_1a",
+  title = "Happiness by Education Level",
+  stacked_type = "percent",
+  tooltip_suffix = "\%"
 )
 
-happiness_map = list("very happy" = "Very Happy",
-                    "pretty happy" = "Pretty Happy",
-                    "not too happy" = "Not Too Happy"
-)
+# ============================================================
+# MODE 2: Multi-Variable/Battery - Compare multiple questions
+# ============================================================
 
-# Example 3: Percentage stacked with NA handling and custom ordering and stack labels
+# Example 3: Compare multiple attitude questions
 plot3 <- viz_stackedbar(
   data = gss_panel20,
-  x_var = "degree_1a",
-  stack_var = "happy_1a",
-  title = "Happiness Distribution by Education Level",
-  subtitle = "Percentage within each education category",
-  x_label = "Education Level",
-  y_label = "Percentage",
-  stack_label = "Reported Happiness",
+  x_vars = c("trust_1a", "fair_1a", "helpful_1a"),
+  x_var_labels = c("Trust Others", "Others Are Fair", "Others Are Helpful"),
+  title = "Social Trust Battery",
   stacked_type = "percent",
-  stack_map_values = "happiness_map"
-  x_map_values = education_map,
-  stack_order = c("Very Happy", "Pretty Happy", "Not Too Happy"),
-  tooltip_suffix = "\%",
-  color_palette = c("#2E8B57", "#FFD700", "#CD5C5C", "grey"),
-  include_na = TRUE,
-  na_label_x = "Missing",
-  na_label_stack = "No Answer",
-  x_order = education_order
+  tooltip_suffix = "\%"
 )
-plot3
 
-# Example 4: Age binning with political views
-age_breaks <- c(18, 30, 45, 60, 75, Inf)
-age_labels <- c("18-29", "30-44", "45-59", "60-74", "75+")
-gss_panel20$age_1a_numeric <- as.numeric(gss_panel20$age_1a)
-stack_order = list("extremely liberal", "liberal", "slightly liberal",
-                   "moderate, middle of the road", "slightly conservative",
-                   "conservative", "extremely conservative")
-
+# Example 4: Single question horizontal (compact display)
 plot4 <- viz_stackedbar(
   data = gss_panel20,
-  x_var = "age_1a_numeric",
-  stack_var = "polviews_1a",
-  title = "Political Views by Age Group",
-  subtitle = "Distribution across age cohorts",
-  x_label = "Age Group",
-  stack_label = "Political Views",
-  x_breaks = age_breaks,
-  x_bin_labels = age_labels,
+  x_vars = "happy_1a",
+  title = "General Happiness",
   stacked_type = "percent",
-  tooltip_suffix = "\%",
-  color_palette = c("darkblue", "blue", "lightblue", "purple", "tomato",  "red", "darkred"),
-  include_na = FALSE  # Exclude NAs for cleaner visualization
+  horizontal = TRUE
 )
-plot4
 
-# Example 5: Custom value mapping with NA inclusion
-sex_map <- list("male" = "Men", "female" = "Women")
-
-plot5 <- viz_stackedbar(
-  data = gss_panel20,
-  x_var = "happy_1a",
-  stack_var = "sex_1a",
-  x_label = "Reported Happiness",
-  title = "Gender Distribution Across Happiness Levels",
-  x_order = c("Very Happy", "Pretty Happy", "Not Too Happy"),
-  stack_map_values = sex_map,
-  x_map_values = happiness_map,
-  stack_order = c("Women", "Men"),
-  stacked_type = "counts",
-  tooltip_prefix = "Count: ",
-  include_na = TRUE,
-  na_label_x = "Happiness Not Reported",
-  na_label_stack = "Gender Not Specified"
-)
-plot5
-
-
+}
+\seealso{
+\code{\link{viz_bar}} for simple (non-stacked) bar charts
 }

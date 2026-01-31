@@ -8,6 +8,7 @@ viz_bar(
   data,
   x_var,
   group_var = NULL,
+  value_var = NULL,
   title = NULL,
   subtitle = NULL,
   x_label = NULL,
@@ -22,11 +23,17 @@ viz_bar(
   x_breaks = NULL,
   x_bin_labels = NULL,
   include_na = FALSE,
-  na_label = "Missing",
+  na_label = "(Missing)",
   weight_var = NULL,
+  error_bars = "none",
+  ci_level = 0.95,
+  error_bar_color = "black",
+  error_bar_width = 50,
+  tooltip = NULL,
   tooltip_prefix = "",
   tooltip_suffix = "",
-  x_tooltip_suffix = ""
+  x_tooltip_suffix = "",
+  data_labels_enabled = TRUE
 )
 }
 \arguments{
@@ -36,6 +43,10 @@ viz_bar(
 
 \item{group_var}{Optional character string. Name of grouping variable to create separate bars
 (e.g., score ranges, categories). Creates grouped/clustered bars.}
+
+\item{value_var}{Optional character string. Name of a numeric variable to aggregate.
+When provided, bars show the mean of this variable per category (instead of counts).
+Required for error bars with "sd", "se", or "ci".}
 
 \item{title}{Optional main title for the chart.}
 
@@ -47,7 +58,8 @@ viz_bar(
 
 \item{horizontal}{Logical. If \code{TRUE}, creates horizontal bars. Defaults to \code{FALSE}.}
 
-\item{bar_type}{Character string. Type of bar chart: "count" or "percent". Defaults to "count".}
+\item{bar_type}{Character string. Type of bar chart: "count", "percent", or "mean".
+Defaults to "count". When \code{value_var} is provided, automatically switches to "mean".}
 
 \item{color_palette}{Optional character vector of colors for the bars.}
 
@@ -65,23 +77,45 @@ viz_bar(
 
 \item{include_na}{Logical. Whether to include NA values as a separate category. Defaults to \code{FALSE}.}
 
-\item{na_label}{Character string. Label for NA category if \code{include_na = TRUE}. Defaults to "Missing".}
+\item{na_label}{Character string. Label for NA category if \code{include_na = TRUE}. Defaults to "(Missing)".}
 
 \item{weight_var}{Optional character string. Name of a weight variable to use for weighted
 aggregation. When provided, counts are computed as the sum of weights instead of simple counts.}
 
-\item{tooltip_prefix}{Optional string prepended to tooltip values.}
+\item{error_bars}{Character string. Type of error bars to display: "none" (default), "sd"
+(standard deviation), "se" (standard error), or "ci" (confidence interval).
+Requires \code{value_var} to be specified.}
 
-\item{tooltip_suffix}{Optional string appended to tooltip values.}
+\item{ci_level}{Numeric. Confidence level for confidence intervals. Defaults to 0.95 (95\% CI).
+Only used when \code{error_bars = "ci"}.}
 
-\item{x_tooltip_suffix}{Optional string appended to x-axis values in tooltips.}
+\item{error_bar_color}{Character string. Color for error bars. Defaults to "black".}
+
+\item{error_bar_width}{Numeric. Width of error bar whiskers as percentage (0-100). Defaults to 50.}
+
+\item{tooltip}{A tooltip configuration created with \code{\link{tooltip}()},
+OR a format string with \{placeholders\}. Available placeholders:
+\code{\{category\}}, \code{\{value\}}, \code{\{percent\}}, \code{\{series\}}.
+For simple cases, use \code{tooltip_prefix} and \code{tooltip_suffix} instead.
+See \code{\link{tooltip}} for full customization options.}
+
+\item{tooltip_prefix}{Optional string prepended to tooltip values (simple customization).}
+
+\item{tooltip_suffix}{Optional string appended to tooltip values (simple customization).}
+
+\item{x_tooltip_suffix}{Optional string appended to x-axis category in tooltips.}
+
+\item{data_labels_enabled}{Logical. If TRUE, show value labels on bars.
+Default TRUE.}
 }
 \value{
 A highcharter plot object.
 }
 \description{
-Creates horizontal or vertical bar charts showing counts or percentages.
+Creates horizontal or vertical bar charts showing counts, percentages, or means.
 Supports simple bars or grouped bars (when \code{group_var} is provided).
+Can display error bars (standard deviation, standard error, or confidence intervals)
+when showing means via \code{value_var}.
 }
 \examples{
 # Simple bar chart showing counts (default)
@@ -109,5 +143,27 @@ plot3 <- viz_bar(
   group_order = c("Low (1-9)", "Middle (10-19)", "High (20-29)")
 )
 plot3
+
+# Bar chart with means and error bars (95\% CI)
+plot4 <- viz_bar(
+  data = mtcars,
+  x_var = "cyl",
+  value_var = "mpg",
+  error_bars = "ci",
+  title = "Mean MPG by Cylinders",
+  y_label = "Miles per Gallon"
+)
+plot4
+
+# Grouped means with standard error bars
+plot5 <- viz_bar(
+  data = mtcars,
+  x_var = "cyl",
+  group_var = "am",
+  value_var = "mpg",
+  error_bars = "se",
+  title = "Mean MPG by Cylinders and Transmission"
+)
+plot5
 
 }

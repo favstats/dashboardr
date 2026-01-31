@@ -29,7 +29,10 @@ viz_timeline(
   weight_var = NULL,
   include_na = FALSE,
   na_label_y = "(Missing)",
-  na_label_group = "(Missing)"
+  na_label_group = "(Missing)",
+  tooltip = NULL,
+  tooltip_prefix = "",
+  tooltip_suffix = ""
 )
 }
 \arguments{
@@ -86,6 +89,15 @@ If \code{NULL} and no \code{group_var}, uses auto-generated label (e.g., "5-7" f
 \item{time_breaks}{Optional numeric vector for binning continuous time variables.}
 
 \item{time_bin_labels}{Optional character vector of labels for time bins.}
+
+\item{tooltip}{A tooltip configuration created with \code{\link{tooltip}()},
+OR a format string with \{placeholders\}. Available placeholders:
+\code{\{x\}}, \code{\{y\}}, \code{\{value\}}, \code{\{series\}}, \code{\{percent\}}.
+See \code{\link{tooltip}} for full customization options.}
+
+\item{tooltip_prefix}{Optional string prepended to values in tooltip.}
+
+\item{tooltip_suffix}{Optional string appended to values in tooltip.}
 }
 \value{
 A highcharter plot object.
