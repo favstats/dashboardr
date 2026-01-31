@@ -40,19 +40,6 @@ install.packages('gssr', repos = c('https://kjhealy.r-universe.dev', 'https://cl
 install.packages('gssrdoc', repos = c('https://kjhealy.r-universe.dev', 'https://cloud.r-project.org'))
 ```
 
-## Live Demos
-
-See dashboardr in action:
-
-1.  [**Tutorial
-    Dashboard**](https://favstats.github.io/dashboardr/live-demos/tutorial/docs/index.html) -
-    Beginner-friendly demo
-2.  [**Showcase
-    Dashboard**](https://favstats.github.io/dashboardr/live-demos/showcase/docs/index.html) -
-    Advanced features
-
-Both use real data from the General Social Survey (GSS).
-
 ## The Three Layers
 
 Just as ggplot2 builds plots from layers, dashboardr builds dashboards
@@ -98,19 +85,6 @@ create_dashboard(
 ```
 
 That’s it! A complete interactive dashboard.
-
-## Features
-
-- 📊 **9 Visualization Types** - Bar, histogram, stacked bar, timeline,
-  heatmap, scatter, treemap, map
-- 🎨 **Beautiful Themes** - 25+ Bootswatch themes
-- 🎯 **Smart Defaults** - Set once, reuse everywhere
-- 🔍 **Data Filtering** - Row-level filters per visualization
-- 🎭 **Nested Tabs** - Hierarchical tab structures
-  (`"parent/child/grandchild"`)
-- ⚡ **Batch Creation** - `add_vizzes()` for multiple charts at once
-- 🎬 **Loading Overlays** - Visual feedback while content loads
-- 🧭 **Flexible Navigation** - Navbar, dropdowns, sidebar, icons
 
 ## Visualization Types
 
@@ -163,13 +137,18 @@ create_content(data = my_data, type = "bar") %>%
 | Advanced features        | `vignette("advanced-features")`     |
 | Publishing               | `vignette("publishing_dashboards")` |
 
-## Use Cases
+## Live Demos
 
-- 🎓 **Academic Research** - Present study results interactively
-- 📊 **Survey Analysis** - Visualize Likert-scale responses across waves
-- 📈 **Business Analytics** - Track KPIs over time
-- 💼 **Consulting Reports** - Client-ready dashboards
-- 📱 **Data Journalism** - Interactive data stories
+See dashboardr in action:
+
+1.  [**Tutorial
+    Dashboard**](https://favstats.github.io/dashboardr/live-demos/tutorial/docs/index.html) -
+    Beginner-friendly demo
+2.  [**Showcase
+    Dashboard**](https://favstats.github.io/dashboardr/live-demos/showcase/docs/index.html) -
+    Advanced features
+
+Both use real data from the General Social Survey (GSS).
 
 ## Contributing
 

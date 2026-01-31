@@ -1,9 +1,17 @@
 Package: dashboardr
-Title: What the Package Does (One Line, Title Case)
+Title: Build Interactive HTML Dashboards from R
 Version: 0.0.0.9000
-Authors@R: 
-    person("First", "Last", , "first.last@example.com", role = c("aut", "cre"))
-Description: What the package does (one paragraph).
+Authors@R: c(
+    person("Fabio", "Votta", , "fabio.votta@gmail.com", role = c("aut", "cre")),
+    person("Alexandra", "Pafford", role = "aut"),
+    person("Max", "Paulus", role = "aut"),
+    person("Ernesto", "de León", role = "aut")
+  )
+Description: Build interactive HTML dashboards from R using a simple, 
+    composable grammar. Create visualizations, organize them into pages, 
+    and generate complete dashboards with navigation, theming, and 
+    interactivity. Powered by Highcharts for charts and Quarto for 
+    rendering.
 License: MIT + file LICENSE
 URL: https://favstats.github.io/dashboardr/
 Encoding: UTF-8
