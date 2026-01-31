@@ -4,28 +4,46 @@
    CLASSIC THEME - Traditional Bootstrap-style tabs
    ============================================ */
 
-/* Comprehensive fix to prevent page jump when clicking tabs */
+/* NUCLEAR scroll prevention - bombproof fix for tab jumping */
+html.dashboardr-tab-switching,
+html.dashboardr-tab-switching body {
+  scroll-behavior: auto !important;
+  overflow-anchor: none !important;
+}
+
 .panel-tabset {
-  scroll-margin-top: 0;
-  overflow-anchor: none;
+  scroll-margin-top: 0 !important;
+  scroll-padding-top: 0 !important;
+  overflow-anchor: none !important;
+  contain: layout style;  /* Isolate reflow from affecting parent scroll */
 }
 
 .panel-tabset .tab-pane {
-  scroll-margin-top: 0;
-  overflow-anchor: none;
+  scroll-margin-top: 0 !important;
+  overflow-anchor: none !important;
+  contain: layout style;  /* Prevent height changes from propagating */
 }
 
 .panel-tabset .tab-content {
-  overflow-anchor: none;
+  overflow-anchor: none !important;
 }
 
 .panel-tabset .nav-link {
-  scroll-margin: 0;
-  scroll-padding: 0;
+  scroll-margin: 0 !important;
+  scroll-padding: 0 !important;
 }
 
-.panel-tabset .nav-link:focus {
-  scroll-margin: 0;
+.panel-tabset .nav-link:focus,
+.panel-tabset [role="tab"]:focus,
+.panel-tabset .tab-pane:focus {
+  outline: none;
+  scroll-margin: 0 !important;
+  scroll-padding: 0 !important;
+}
+
+/* Prevent any focus-based scrolling within tabsets */
+.panel-tabset *:focus {
+  scroll-margin: 0 !important;
 }
 
 .panel-tabset .nav-tabs {
