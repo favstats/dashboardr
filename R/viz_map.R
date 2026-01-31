@@ -118,16 +118,28 @@ viz_map <- function(
     legend_title <- value_var
   }
 
-  # Determine map join key based on map type
-  # World maps use "iso-a2", US maps use different keys
+  # Determine map join key based on map type and data
+  # World maps support both iso-a2 (2-letter) and iso-a3 (3-letter) codes
+  # US maps use postal codes
 
   map_join_key <- if (grepl("world", map_type, ignore.case = TRUE)) {
-    "iso-a2"
+    # Auto-detect 2-letter vs 3-letter country codes
+    sample_values <- na.omit(data[[join_var]])
+    if (length(sample_values) > 0) {
+      # Check the most common string length
+      avg_length <- mean(nchar(as.character(sample_values)))
+      if (avg_length > 2.5) {
+        "iso-a3"  # 3-letter codes like "USA", "DEU", "GBR"
+      } else {
+        "iso-a2"  # 2-letter codes like "US", "DE", "GB"
+      }
+    } else {
+      "iso-a2"  # Default fallback
+    }
   } else if (grepl("us-all|usa", map_type, ignore.case = TRUE)) {
     "postal-code"
   } else {
     "hc-key"  # Generic fallback
-
   }
 
   # Handle haven_labelled variables
