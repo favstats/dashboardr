@@ -17,12 +17,12 @@ knitr::opts_chunk$set(
 
 ## Overview
 
-`dashboardr` includes several live demo dashboards that showcase its capabilities.
+`dashboardr` includes several live demo dashboards that showcase its capabilities. Each demo comes with complete code documentation showing the exact R code used.
 
 ### Main Demos
 
-- **Tutorial Dashboard** - Beginner-friendly introduction to dashboardr. [View Demo](../live-demos/tutorial/index.html)
-- **Showcase Dashboard** - Advanced dashboard with multiple pages and tabsets. [View Demo](../live-demos/showcase/index.html)
+- **Tutorial Dashboard** - Beginner-friendly introduction to dashboardr. [Code & Docs](tutorial_dashboard_code.html) | [Live Demo](../live-demos/tutorial/index.html)
+- **Showcase Dashboard** - Advanced dashboard with multiple pages and tabsets. [Code & Docs](showcase_dashboard_code.html) | [Live Demo](../live-demos/showcase/index.html)
 - **Interactive Inputs** - Gallery of input types (select, slider, switch, checkbox). [View Demo](../live-demos/inputs/index.html)
 - **Sidebar Demo** - Page sidebars with filters (checkbox, dropdown, slider). [View Demo](../live-demos/sidebar/index.html)
 
@@ -49,6 +49,9 @@ The tutorial dashboard is perfect for learning the basics:
 - Heatmaps showing relationships between variables
 - Tabset grouping for organizing visualizations
 - Text-only pages for documentation
+- **Collapsible code blocks** showing exact R code for each visualization
+
+**[View Complete Code Documentation →](tutorial_dashboard_code.html)**
 
 ```{r}
 library(dashboardr)
@@ -65,6 +68,9 @@ The showcase dashboard demonstrates advanced features:
 - Complex visualizations with custom styling
 - Mixed content pages (text + visualizations)
 - Card layouts with images
+- **Bidirectional links** between code documentation and live visualizations
+
+**[View Complete Code Documentation →](showcase_dashboard_code.html)**
 
 ```{r}
 # Generate and open the showcase dashboard

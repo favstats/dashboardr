@@ -1,0 +1,114 @@
+[
+  {
+    "objectID": "example_dashboard.html",
+    "href": "example_dashboard.html",
+    "title": " Example Dashboard",
+    "section": "",
+    "text": "Here, you can see how to add text within a dashboard."
+  },
+  {
+    "objectID": "example_dashboard.html#add-a-new-heading-like-this",
+    "href": "example_dashboard.html#add-a-new-heading-like-this",
+    "title": " Example Dashboard",
+    "section": "Add a new heading like this",
+    "text": "Add a new heading like this\nA line break is displayed when you add a new section."
+  },
+  {
+    "objectID": "example_dashboard.html#example-1-stacked-bars",
+    "href": "example_dashboard.html#example-1-stacked-bars",
+    "title": " Example Dashboard",
+    "section": "Example 1: Stacked Bars",
+    "text": "Example 1: Stacked Bars\n\n Change the title here…\n\n\nIf you want to add text within the tab, you can do so here.\n\n\n\n\n\n\n\n\n\n\n\n\n\n View R Code\n\nadd_viz(type = \"stackedbar\",\n        x_var = \"degree_1a\",\n        stack_var = \"happy_1a\",\n        title = \"Change the title here...\",\n        subtitle = \"You can add a subtitle using the subtitle argument\",\n        x_label = \"Education Level\",\n        y_label = \"Percentage of Respondents\",\n        stack_label = \"Happiness Level\",\n        stacked_type = \"percent\",\n        x_order = c(\"Lt High School\", \"High School\", \"Junior College\", \"Bachelor\", \"Graduate\"),\n        stack_order = c(\"Very Happy\", \"Pretty Happy\", \"Not Too Happy\"),\n        tooltip_suffix = \"%\",\n        color_palette = c(\"#2E86AB\", \"#A23B72\", \"#F18F01\"),\n        text = \"If you want to add text within the tab, you can do so here.\",\n        text_position = \"above\",\n        icon = \"ph:chart-bar\",\n        height = 500,\n        tabgroup = \"demographics\")\nFull documentation"
+  },
+  {
+    "objectID": "example_dashboard.html#example-1-stacked-bars-1",
+    "href": "example_dashboard.html#example-1-stacked-bars-1",
+    "title": " Example Dashboard",
+    "section": "Example 1: Stacked Bars",
+    "text": "Example 1: Stacked Bars\n\n Tabset #2\n\n\n\n\n\n\n\n\n\n\nChange the position of the text using the text_position argument.\n\n\n\n\n\n View R Code\n\nadd_viz(type = \"stackedbar\",\n        x_var = \"sex_1a\",\n        stack_var = \"happy_1a\",\n        title = \"Tabset #2\",\n        subtitle = \"Another example subtitle here!\",\n        x_label = \"Gender\",\n        y_label = \"Percentage of Respondents\",\n        stack_label = \"Happiness Level\",\n        stacked_type = \"percent\",\n        stack_order = c(\"Very Happy\", \"Pretty Happy\", \"Not Too Happy\"),\n        tooltip_suffix = \"%\",\n        color_palette = c(\"#2E86AB\", \"#A23B72\", \"#F18F01\"),\n        text = \"Change the position of the text using the `text_position` argument.\",\n        text_position = \"below\",\n        icon = \"ph:gender-intersex\",\n        height = 450,\n        tabgroup = \"demographics\")\nFull documentation"
+  },
+  {
+    "objectID": "example_dashboard.html#example-2-heatmap",
+    "href": "example_dashboard.html#example-2-heatmap",
+    "title": " Example Dashboard",
+    "section": "Example 2: Heatmap",
+    "text": "Example 2: Heatmap\n\n Trust by Education and Age\n\n\nHere’s another example of the kind of plots you can generate in your dashboard.\n\n\n\n\n\n\n\n\n\n\n\n\n\n View R Code\n\nadd_viz(type = \"heatmap\",\n        x_var = \"degree_1a\",\n        y_var = \"age_1a\",\n        value_var = \"trust_1a\",\n        title = \"Trust by Education and Age\",\n        subtitle = \"Average trust levels across education and age groups\",\n        x_label = \"Example x axis\",\n        y_label = \"Customizable y label\",\n        value_label = \"You can change the label here too...\",\n        x_order = c(\"Lt High School\", \"High School\", \"Junior College\", \"Bachelor\", \"Graduate\"),\n        color_palette = c(\"#d7191c\", \"#fdae61\", \"#ffffbf\", \"#abdda4\", \"#2b83ba\"),\n        tooltip_prefix = \"Trust: \",\n        tooltip_suffix = \"/3\",\n        tooltip_labels_format = \"{point.value:.2f}\",\n        text = \"Heres another example of the kind of plots you can generate in your dashboard.\",\n        text_position = \"above\",\n        icon = \"ph:heatmap\",\n        height = 600,\n        tabgroup = \"social\")\nFull documentation"
+  },
+  {
+    "objectID": "example_dashboard.html#example-2-heatmap-1",
+    "href": "example_dashboard.html#example-2-heatmap-1",
+    "title": " Example Dashboard",
+    "section": "Example 2: Heatmap",
+    "text": "Example 2: Heatmap\n\n Trust by Region and Education\n\n\nEducational and regional patterns in trust distribution.\n\n\n\n\n\n\n\n\n\n\n\n\n\n View R Code\n\nadd_viz(type = \"heatmap\",\n        x_var = \"region_1a\",\n        y_var = \"degree_1a\",\n        value_var = \"trust_1a\",\n        title = \"Trust by Region and Education\",\n        subtitle = \"Educational and regional patterns in trust levels\",\n        x_label = \"Region\",\n        y_label = \"Education Level\",\n        value_label = \"Trust Level\",\n        y_order = c(\"Lt High School\", \"High School\", \"Junior College\", \"Bachelor\", \"Graduate\"),\n        color_palette = c(\"#d7191c\", \"#fdae61\", \"#ffffbf\", \"#abdda4\", \"#2b83ba\"),\n        tooltip_prefix = \"Trust: \",\n        tooltip_suffix = \"/3\",\n        tooltip_labels_format = \"{point.value:.2f}\",\n        text = \"Educational and regional patterns in trust distribution.\",\n        text_position = \"above\",\n        icon = \"ph:chart-pie\",\n        height = 550,\n        tabgroup = \"social\")\nFull documentation"
+  },
+  {
+    "objectID": "standalone_charts.html",
+    "href": "standalone_charts.html",
+    "title": " Standalone Charts",
+    "section": "",
+    "text": "This page demonstrates standalone charts (no tabsets) for key findings.\nFor example, you could use this layout to visualize the most important trends or overarching themes of your data."
+  },
+  {
+    "objectID": "standalone_charts.html#this-is-a-standalone-chart.",
+    "href": "standalone_charts.html#this-is-a-standalone-chart.",
+    "title": " Standalone Charts",
+    "section": " This is a standalone chart.",
+    "text": "This is a standalone chart.\nThis standalone chart shows the overall distribution of happiness across education levels.\n\n\n\n\n\n\n\n\n\n\n View R Code\n\nadd_viz(type = \"stackedbar\",\n        x_var = \"degree_1a\",\n        stack_var = \"happy_1a\",\n        title = \"This is a standalone chart.\",\n        subtitle = \"Here youll notice that this is a standalone plot.\",\n        x_label = \"Education Level\",\n        y_label = \"Percentage of Respondents\",\n        stack_label = \"Happiness Level\",\n        stacked_type = \"percent\",\n        x_order = c(\"Lt High School\", \"High School\", \"Junior College\", \"Bachelor\", \"Graduate\"),\n        stack_order = c(\"Very Happy\", \"Pretty Happy\", \"Not Too Happy\"),\n        tooltip_suffix = \"%\",\n        color_palette = c(\"#2E86AB\", \"#A23B72\", \"#F18F01\"),\n        text = \"This standalone chart shows the overall distribution of happiness across education levels.\",\n        text_position = \"above\",\n        icon = \"ph:chart-bar\",\n        height = 600)\nFull documentation"
+  },
+  {
+    "objectID": "standalone_charts.html#heres-another-summary-chart",
+    "href": "standalone_charts.html#heres-another-summary-chart",
+    "title": " Standalone Charts",
+    "section": " Here’s another summary chart",
+    "text": "Here’s another summary chart\n\n\n\n\n\n\n\n\nSubtitle for your standalone chart.\n\n\n View R Code\n\nadd_viz(type = \"heatmap\",\n        x_var = \"partyid_1a\",\n        y_var = \"polviews_1a\",\n        value_var = \"trust_1a\",\n        title = \"Heres another summary chart\",\n        subtitle = \"This summary chart visualizes trust patterns across political groups\",\n        x_label = \"Party Identification\",\n        y_label = \"Political Views\",\n        value_label = \"Trust Level\",\n        x_order = c(\"Strong Democrat\", \"Not Very Strong Democrat\", \"Independent, Close to Democrat\",\n                    \"Independent\", \"Independent, Close to Republican\", \"Not Very Strong Republican\", \"Strong Republican\"),\n        y_order = c(\"Extremely Liberal\", \"Liberal\", \"Slightly Liberal\", \"Moderate\",\n                    \"Slightly Conservative\", \"Conservative\", \"Extremely Conservative\"),\n        color_palette = c(\"#d7191c\", \"#fdae61\", \"#ffffbf\", \"#abdda4\", \"#2b83ba\"),\n        tooltip_prefix = \"Trust: \",\n        tooltip_suffix = \"/3\",\n        tooltip_labels_format = \"{point.value:.2f}\",\n        text = \"Subtitle for your standalone chart.\",\n        text_position = \"below\",\n        icon = \"ph:shield-check\",\n        height = 700)\nFull documentation"
+  },
+  {
+    "objectID": "text_only_page.html",
+    "href": "text_only_page.html",
+    "title": " Text-Only Page",
+    "section": "",
+    "text": "You can also have a text-only page in your dashboard.\nThis might be useful if you want to add some context or extra information about your plots.\n\n\n\n\n\n\n Back to top"
+  },
+  {
+    "objectID": "showcase_dashboard.html",
+    "href": "showcase_dashboard.html",
+    "title": " Showcase Dashboard",
+    "section": "",
+    "text": "Ready to see all the features dashboardr has to offer?\nThe Showcase Dashboard demonstrates the complete power of the dashboardr package, including:\n\nInteractive Filters - Page sidebars with checkbox, dropdown, and radio filters\nValue Boxes - Key metrics at a glance with custom styling\nInput Controls - Select, switch, checkbox, radio, and slider inputs\nContent Blocks - Callouts, cards, accordions, and more\nAdvanced Visualizations - Multiple tabset groups with various chart types\n\n\n Open Showcase Dashboard\nOr run it locally:\nlibrary(dashboardr)\nshowcase_dashboard()"
+  },
+  {
+    "objectID": "showcase_dashboard.html#explore-the-full-showcase",
+    "href": "showcase_dashboard.html#explore-the-full-showcase",
+    "title": " Showcase Dashboard",
+    "section": "",
+    "text": "Ready to see all the features dashboardr has to offer?\nThe Showcase Dashboard demonstrates the complete power of the dashboardr package, including:\n\nInteractive Filters - Page sidebars with checkbox, dropdown, and radio filters\nValue Boxes - Key metrics at a glance with custom styling\nInput Controls - Select, switch, checkbox, radio, and slider inputs\nContent Blocks - Callouts, cards, accordions, and more\nAdvanced Visualizations - Multiple tabset groups with various chart types\n\n\n Open Showcase Dashboard\nOr run it locally:\nlibrary(dashboardr)\nshowcase_dashboard()"
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": " Welcome to the Tutorial Dashboard!",
+    "section": "",
+    "text": "Welcome to the Tutorial Dashboard, providing insights into the General Social Survey (GSS) data!\nThis dashboard demonstrates how to use the dashboardr package to create beautiful, interactive dashboards using real survey data.\nThe tutorial is divided into main sections:\nExample Dashboard - Tabbed visualizations with stacked bars and heatmaps\nStandalone Charts - Charts without tabsets\nText Page - Text-only content example\nShowcase Dashboard - Full feature demonstration\nClick on the hyperlinks above for quick navigation."
+  },
+  {
+    "objectID": "index.html#dashboard-file-structure",
+    "href": "index.html#dashboard-file-structure",
+    "title": " Welcome to the Tutorial Dashboard!",
+    "section": "Dashboard File Structure",
+    "text": "Dashboard File Structure\nWhen you create a dashboard with dashboardr, the following files are generated:\ntutorial_dashboard/\n├── _quarto.yml\n├── index.qmd\n├── example_dashboard.qmd\n├── standalone_charts.qmd\n├── text_only_page.qmd\n└── showcase_dashboard.qmd"
+  },
+  {
+    "objectID": "index.html#about-the-data",
+    "href": "index.html#about-the-data",
+    "title": " Welcome to the Tutorial Dashboard!",
+    "section": "About the Data",
+    "text": "About the Data\nThis dashboard uses data from the General Social Survey (GSS), a nationally representative survey of adults in the United States conducted since 1972. We explore patterns in:\n\nHappiness - Self-reported happiness levels\nTrust - Interpersonal trust measures\nPolitical attitudes - Party identification and ideological views"
+  },
+  {
+    "objectID": "index.html#getting-started-with-dashboardr",
+    "href": "index.html#getting-started-with-dashboardr",
+    "title": " Welcome to the Tutorial Dashboard!",
+    "section": "Getting Started with dashboardr",
+    "text": "Getting Started with dashboardr\nEach visualization includes a collapsible View R Code section showing exactly how it was created. Click the accordion to see the code and link to full documentation.\n\n\n View Full Dashboard Code\n\nlibrary(dashboardr)\nlibrary(dplyr)\n\n# Load GSS data\ndata(gss_panel20, package = \"gssr\")\ngss_clean &lt;- gss_panel20 %&gt;%\n  select(age_1a, sex_1a, degree_1a, region_1a,\n         happy_1a, trust_1a, fair_1a, helpful_1a,\n         polviews_1a, partyid_1a, class_1a) %&gt;%\n  filter(if_any(everything(), ~ !is.na(.)))\n\n# Create visualizations\nanalysis_vizzes &lt;- create_content() %&gt;%\n  add_viz(type = \"stackedbar\",\n          x_var = \"degree_1a\", stack_var = \"happy_1a\",\n          title = \"Happiness by Education\",\n          tabgroup = \"demographics\") %&gt;%\n  add_viz(type = \"heatmap\",\n          x_var = \"degree_1a\", y_var = \"age_1a\", value_var = \"trust_1a\",\n          title = \"Trust by Education and Age\",\n          tabgroup = \"social\")\n\n# Create dashboard\ncreate_dashboard(\n  output_dir = \"my_dashboard\",\n  title = \"My Dashboard\",\n  logo = \"logo.png\",\n  theme = \"flatly\"\n) %&gt;%\n  add_page(name = \"Welcome\", text = \"Landing page content\",\n           icon = \"ph:house\", is_landing_page = TRUE) %&gt;%\n  add_page(name = \"Analysis\", data = gss_clean,\n           content = analysis_vizzes, icon = \"ph:chart-line\") %&gt;%\n  generate_dashboard()\nView full tutorial_dashboard.R source code"
+  }
+]

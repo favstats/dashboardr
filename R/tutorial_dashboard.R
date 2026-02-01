@@ -42,7 +42,8 @@ tutorial_dashboard <- function(directory = "tutorial_dashboard", open = "browser
     dplyr::filter(dplyr::if_any(dplyr::everything(), ~ !is.na(.)))
 
   # Create visualizations using examples from stackedbar_vignette.Rmd
-  analysis_vizzes <- create_viz() %>%
+  # Using create_content() to interleave visualizations with code accordions
+  analysis_vizzes <- create_content() %>%
     # First tabset: Demographics (2 visualizations)
     add_viz(type = "stackedbar",
             x_var = "degree_1a",
@@ -62,6 +63,31 @@ tutorial_dashboard <- function(directory = "tutorial_dashboard", open = "browser
             icon = "ph:chart-bar",
             height = 500,
             tabgroup = "demographics") %>%
+    add_accordion(
+      title = "{{< iconify ph code >}} View R Code",
+      text = '```r
+add_viz(type = "stackedbar",
+        x_var = "degree_1a",
+        stack_var = "happy_1a",
+        title = "Change the title here...",
+        subtitle = "You can add a subtitle using the subtitle argument",
+        x_label = "Education Level",
+        y_label = "Percentage of Respondents",
+        stack_label = "Happiness Level",
+        stacked_type = "percent",
+        x_order = c("Lt High School", "High School", "Junior College", "Bachelor", "Graduate"),
+        stack_order = c("Very Happy", "Pretty Happy", "Not Too Happy"),
+        tooltip_suffix = "%",
+        color_palette = c("#2E86AB", "#A23B72", "#F18F01"),
+        text = "If you want to add text within the tab, you can do so here.",
+        text_position = "above",
+        icon = "ph:chart-bar",
+        height = 500,
+        tabgroup = "demographics")
+```
+[Full documentation](../articles/tutorial_dashboard_code.html#stacked-bar-happiness-education)',
+      tabgroup = "demographics"
+    ) %>%
     add_viz(type = "stackedbar",
             x_var = "sex_1a",
             stack_var = "happy_1a",
@@ -79,6 +105,30 @@ tutorial_dashboard <- function(directory = "tutorial_dashboard", open = "browser
             icon = "ph:gender-intersex",
             height = 450,
             tabgroup = "demographics") %>%
+    add_accordion(
+      title = "{{< iconify ph code >}} View R Code",
+      text = '```r
+add_viz(type = "stackedbar",
+        x_var = "sex_1a",
+        stack_var = "happy_1a",
+        title = "Tabset #2",
+        subtitle = "Another example subtitle here!",
+        x_label = "Gender",
+        y_label = "Percentage of Respondents",
+        stack_label = "Happiness Level",
+        stacked_type = "percent",
+        stack_order = c("Very Happy", "Pretty Happy", "Not Too Happy"),
+        tooltip_suffix = "%",
+        color_palette = c("#2E86AB", "#A23B72", "#F18F01"),
+        text = "Change the position of the text using the `text_position` argument.",
+        text_position = "below",
+        icon = "ph:gender-intersex",
+        height = 450,
+        tabgroup = "demographics")
+```
+[Full documentation](../articles/tutorial_dashboard_code.html#stacked-bar-happiness-gender)',
+      tabgroup = "demographics"
+    ) %>%
     # Second tabset: Social Issues (2 visualizations)
     add_viz(type = "heatmap",
             x_var = "degree_1a",
@@ -99,6 +149,32 @@ tutorial_dashboard <- function(directory = "tutorial_dashboard", open = "browser
             icon = "ph:heatmap",
             height = 600,
             tabgroup = "social") %>%
+    add_accordion(
+      title = "{{< iconify ph code >}} View R Code",
+      text = '```r
+add_viz(type = "heatmap",
+        x_var = "degree_1a",
+        y_var = "age_1a",
+        value_var = "trust_1a",
+        title = "Trust by Education and Age",
+        subtitle = "Average trust levels across education and age groups",
+        x_label = "Example x axis",
+        y_label = "Customizable y label",
+        value_label = "You can change the label here too...",
+        x_order = c("Lt High School", "High School", "Junior College", "Bachelor", "Graduate"),
+        color_palette = c("#d7191c", "#fdae61", "#ffffbf", "#abdda4", "#2b83ba"),
+        tooltip_prefix = "Trust: ",
+        tooltip_suffix = "/3",
+        tooltip_labels_format = "{point.value:.2f}",
+        text = "Heres another example of the kind of plots you can generate in your dashboard.",
+        text_position = "above",
+        icon = "ph:heatmap",
+        height = 600,
+        tabgroup = "social")
+```
+[Full documentation](../articles/tutorial_dashboard_code.html#heatmap-trust-education-age)',
+      tabgroup = "social"
+    ) %>%
     add_viz(type = "heatmap",
             x_var = "region_1a",
             y_var = "degree_1a",
@@ -118,6 +194,32 @@ tutorial_dashboard <- function(directory = "tutorial_dashboard", open = "browser
             icon = "ph:chart-pie",
             height = 550,
             tabgroup = "social") %>%
+    add_accordion(
+      title = "{{< iconify ph code >}} View R Code",
+      text = '```r
+add_viz(type = "heatmap",
+        x_var = "region_1a",
+        y_var = "degree_1a",
+        value_var = "trust_1a",
+        title = "Trust by Region and Education",
+        subtitle = "Educational and regional patterns in trust levels",
+        x_label = "Region",
+        y_label = "Education Level",
+        value_label = "Trust Level",
+        y_order = c("Lt High School", "High School", "Junior College", "Bachelor", "Graduate"),
+        color_palette = c("#d7191c", "#fdae61", "#ffffbf", "#abdda4", "#2b83ba"),
+        tooltip_prefix = "Trust: ",
+        tooltip_suffix = "/3",
+        tooltip_labels_format = "{point.value:.2f}",
+        text = "Educational and regional patterns in trust distribution.",
+        text_position = "above",
+        icon = "ph:chart-pie",
+        height = 550,
+        tabgroup = "social")
+```
+[Full documentation](../articles/tutorial_dashboard_code.html#heatmap-trust-region-education)',
+      tabgroup = "social"
+    ) %>%
     # Set custom tab group labels
     set_tabgroup_labels(list(
       demographics = "Example 1: Stacked Bars",
@@ -125,8 +227,8 @@ tutorial_dashboard <- function(directory = "tutorial_dashboard", open = "browser
     ))
 
   # Create additional visualizations for a second page with single charts
-  # Renamed 'single_viz' to 'summary_vizzes' to resolve the "object not found" error
-  summary_vizzes <- create_viz() %>%
+  # Using create_content() to interleave visualizations with code accordions
+  summary_vizzes <- create_content() %>%
     # Single chart (no tabgroup) - will be standalone
     add_viz(type = "stackedbar",
             x_var = "degree_1a",
@@ -145,6 +247,29 @@ tutorial_dashboard <- function(directory = "tutorial_dashboard", open = "browser
             text_position = "above",
             icon = "ph:chart-bar",
             height = 600) %>%
+    add_accordion(
+      title = "{{< iconify ph code >}} View R Code",
+      text = '```r
+add_viz(type = "stackedbar",
+        x_var = "degree_1a",
+        stack_var = "happy_1a",
+        title = "This is a standalone chart.",
+        subtitle = "Here youll notice that this is a standalone plot.",
+        x_label = "Education Level",
+        y_label = "Percentage of Respondents",
+        stack_label = "Happiness Level",
+        stacked_type = "percent",
+        x_order = c("Lt High School", "High School", "Junior College", "Bachelor", "Graduate"),
+        stack_order = c("Very Happy", "Pretty Happy", "Not Too Happy"),
+        tooltip_suffix = "%",
+        color_palette = c("#2E86AB", "#A23B72", "#F18F01"),
+        text = "This standalone chart shows the overall distribution of happiness across education levels.",
+        text_position = "above",
+        icon = "ph:chart-bar",
+        height = 600)
+```
+[Full documentation](../articles/tutorial_dashboard_code.html#standalone-happiness-education)'
+    ) %>%
     # Another single chart
     add_viz(type = "heatmap",
             x_var = "partyid_1a",
@@ -166,15 +291,43 @@ tutorial_dashboard <- function(directory = "tutorial_dashboard", open = "browser
             text = "Subtitle for your standalone chart.",
             text_position = "below",
             icon = "ph:shield-check",
-            height = 700)
+            height = 700) %>%
+    add_accordion(
+      title = "{{< iconify ph code >}} View R Code",
+      text = '```r
+add_viz(type = "heatmap",
+        x_var = "partyid_1a",
+        y_var = "polviews_1a",
+        value_var = "trust_1a",
+        title = "Heres another summary chart",
+        subtitle = "This summary chart visualizes trust patterns across political groups",
+        x_label = "Party Identification",
+        y_label = "Political Views",
+        value_label = "Trust Level",
+        x_order = c("Strong Democrat", "Not Very Strong Democrat", "Independent, Close to Democrat",
+                    "Independent", "Independent, Close to Republican", "Not Very Strong Republican", "Strong Republican"),
+        y_order = c("Extremely Liberal", "Liberal", "Slightly Liberal", "Moderate",
+                    "Slightly Conservative", "Conservative", "Extremely Conservative"),
+        color_palette = c("#d7191c", "#fdae61", "#ffffbf", "#abdda4", "#2b83ba"),
+        tooltip_prefix = "Trust: ",
+        tooltip_suffix = "/3",
+        tooltip_labels_format = "{point.value:.2f}",
+        text = "Subtitle for your standalone chart.",
+        text_position = "below",
+        icon = "ph:shield-check",
+        height = 700)
+```
+[Full documentation](../articles/tutorial_dashboard_code.html#standalone-trust-politics)'
+    )
 
   # Create tutorial dashboard
   dashboard <- create_dashboard(
     output_dir = qmds_dir,
     title = "Tutorial Dashboard",
+    logo = "https://ropercenter.cornell.edu/sites/default/files/styles/600x/public/Images/GSSLogo6x4.png?itok=ZzGhUDbL",
     allow_inside_pkg = TRUE,
     search = TRUE,
-    # theme = "cosmo", # Commented out as it's not a direct default for Quarto
+    theme = "flatly",
     author = "dashboardr team",
     description = "This is a tutorial dashboard that demonstrates how to use the functionality and logic.",
     page_footer = "© 2025 dashboardr Package - All Rights Reserved",
@@ -203,46 +356,97 @@ tutorial_dashboard <- function(directory = "tutorial_dashboard", open = "browser
     github_pages = "main",
     netlify = list(redirects = "/* /index.html 200")
   ) %>%
-    # Landing page with icon
+    # Landing page with icon - DigIQ Monitor style
     add_page(
       name = "Welcome to the Tutorial Dashboard!",
       text = md_text(
-        "Thank you for downloading and using Dashboardr. We hope that you'll find it helpful and fun to use.",
+        "Welcome to the **Tutorial Dashboard**, providing insights into the General Social Survey (GSS) data!",
         "",
-        "## How to use this package",
-        "Here's some information that you might find handy while you learn to use the package.",
-        "This is a tutorial dashboard, which means that these pages were written by us, and are saved in the `dashboardr` R package.",
-        "However, when you decide to call `create_dashboard()` using your own or sample data, an output directory will be generated.",
+        "This dashboard demonstrates how to use the **dashboardr** package to create beautiful, interactive dashboards using real survey data.",
         "",
-        "## Locating your dashboard",
-        "Unless otherwise specified, your dashboard lives in the output directory! For example:",
+        "The tutorial is divided into main sections:",
         "",
-        "C:/Users/user/test_dashboard",
+        "[{{< iconify ph chart-line >}} Example Dashboard](example_dashboard.html) - Tabbed visualizations with stacked bars and heatmaps",
         "",
+        "[{{< iconify ph chart-pie >}} Standalone Charts](standalone_charts.html) - Charts without tabsets",
+        "",
+        "[{{< iconify ph chalkboard-simple >}} Text Page](text_only_page.html) - Text-only content example",
+        "",
+        "[{{< iconify ph link >}} Showcase Dashboard](showcase_dashboard.html) - Full feature demonstration",
+        "",
+        "{{< iconify ph cursor-click-fill >}} Click on the hyperlinks above for quick navigation.",
+        "",
+        "---",
+        "",
+        "## Dashboard File Structure",
+        "",
+        "When you create a dashboard with dashboardr, the following files are generated:",
+        "",
+        "```",
+        "tutorial_dashboard/",
+        "├── _quarto.yml",
         "├── index.qmd",
-        "",
         "├── example_dashboard.qmd",
-        "",
         "├── standalone_charts.qmd",
-        "",
         "├── text_only_page.qmd",
-        "",
         "└── showcase_dashboard.qmd",
+        "```",
         "",
-        "## Editing your dashboard after rendering",
-        "You'll also have the option to write a new GitHub repository. `dashboardr` will tell you where it is saved upon rendering.",
+        "---",
         "",
-        "If you'd like to edit your pages further, you can do so by navigating to the output directory and editing the .qmd files manually.
-        If that doesn't suit you, then you can also create visualizations with `create_viz() %>% add_viz()`, and build out the dashboard with `add_page()`.",
+        "## About the Data",
         "",
-        "For an example of a dashboard that demonstrates the full breadth of this package, click on the Showcase tab on the toolbar above.
-        This tutorial dashboard demonstrates the `dashboardr` package using real examples from the vignettes.",
+        "This dashboard uses data from the **General Social Survey (GSS)**, a nationally representative survey of adults in the United States conducted since 1972. We explore patterns in:",
         "",
-        "## About this tutorial dashboard",
-        "This dashboard uses data from the **General Social Survey (GSS)** to explore patterns in happiness, trust, and political attitudes.",
+        "- **Happiness** - Self-reported happiness levels",
+        "- **Trust** - Interpersonal trust measures",
+        "- **Political attitudes** - Party identification and ideological views",
         "",
-        "Navigate through the pages above to explore the data and see the package features in action."
+        "## Getting Started with dashboardr",
+        "",
+        "Each visualization includes a collapsible **View R Code** section showing exactly how it was created. Click the accordion to see the code and link to full documentation."
       ),
+      content = create_content() %>%
+        add_accordion(
+          title = "{{< iconify ph code >}} View Full Dashboard Code",
+          text = '```r
+library(dashboardr)
+library(dplyr)
+
+# Load GSS data
+data(gss_panel20, package = "gssr")
+gss_clean <- gss_panel20 %>%
+  select(age_1a, sex_1a, degree_1a, region_1a,
+         happy_1a, trust_1a, fair_1a, helpful_1a,
+         polviews_1a, partyid_1a, class_1a) %>%
+  filter(if_any(everything(), ~ !is.na(.)))
+
+# Create visualizations
+analysis_vizzes <- create_content() %>%
+  add_viz(type = "stackedbar",
+          x_var = "degree_1a", stack_var = "happy_1a",
+          title = "Happiness by Education",
+          tabgroup = "demographics") %>%
+  add_viz(type = "heatmap",
+          x_var = "degree_1a", y_var = "age_1a", value_var = "trust_1a",
+          title = "Trust by Education and Age",
+          tabgroup = "social")
+
+# Create dashboard
+create_dashboard(
+  output_dir = "my_dashboard",
+  title = "My Dashboard",
+  logo = "logo.png",
+  theme = "flatly"
+) %>%
+  add_page(name = "Welcome", text = "Landing page content",
+           icon = "ph:house", is_landing_page = TRUE) %>%
+  add_page(name = "Analysis", data = gss_clean,
+           content = analysis_vizzes, icon = "ph:chart-line") %>%
+  generate_dashboard()
+```
+[View full tutorial_dashboard.R source code](https://github.com/favstats/dashboardr/blob/main/R/tutorial_dashboard.R)'
+        ),
       icon = "ph:house",
       is_landing_page = TRUE
     ) %>%
@@ -257,7 +461,7 @@ tutorial_dashboard <- function(directory = "tutorial_dashboard", open = "browser
         "A line break is displayed when you add a new section."
       ),
       data = gss_clean,
-      visualizations = analysis_vizzes,
+      content = analysis_vizzes,
       icon = "ph:chart-line"
     ) %>%
     # Summary page with standalone charts (no tabsets)
@@ -269,7 +473,7 @@ tutorial_dashboard <- function(directory = "tutorial_dashboard", open = "browser
         "For example, you could use this layout to visualize the most important trends or overarching themes of your data."
       ),
       data = gss_clean,
-      visualizations = summary_vizzes, # This now references the defined summary_vizzes
+      content = summary_vizzes,
       icon = "ph:chart-pie"
     )  %>%
     # Text-only page with icon showcasing card function
@@ -282,12 +486,33 @@ tutorial_dashboard <- function(directory = "tutorial_dashboard", open = "browser
         "This might be useful if you want to add some context or extra information about your plots."
       )
     ) %>%
-  # Showcase placeholder
+  # Showcase placeholder with link
   add_page(
     name = "Showcase Dashboard",
     icon = "ph:link",
     text = md_text(
-      "This is a placeholder for a link to the showcase dashboard."
+      "## {{< iconify ph rocket >}} Explore the Full Showcase",
+      "",
+      "Ready to see all the features dashboardr has to offer?",
+      "",
+      "The **Showcase Dashboard** demonstrates the complete power of the dashboardr package, including:",
+      "",
+      "- **Interactive Filters** - Page sidebars with checkbox, dropdown, and radio filters",
+      "- **Value Boxes** - Key metrics at a glance with custom styling",
+      "- **Input Controls** - Select, switch, checkbox, radio, and slider inputs",
+      "- **Content Blocks** - Callouts, cards, accordions, and more",
+      "- **Advanced Visualizations** - Multiple tabset groups with various chart types",
+      "",
+      "---",
+      "",
+      "{{< iconify ph arrow-square-out >}} **[Open Showcase Dashboard](../showcase/index.html)**",
+      "",
+      "Or run it locally:",
+      "",
+      "```r",
+      "library(dashboardr)",
+      "showcase_dashboard()",
+      "```"
     )
   )  %>%
   add_powered_by_dashboardr(style = "badge", size = "large")
@@ -349,206 +574,216 @@ showcase_dashboard <- function(directory = "showcase_dashboard", open = "browser
 # Load GSS data for realistic examples
 data(gss_panel20, package = "gssr")
 gss_clean <- gss_panel20 %>%
-  select(
+  dplyr::select(
     age_1a, sex_1a, degree_1a, region_1a,
     happy_1a, trust_1a, fair_1a, helpful_1a,
     polviews_1a, partyid_1a, class_1a
   ) %>%
-  filter(if_any(everything(), ~ !is.na(.)))
+  dplyr::filter(dplyr::if_any(dplyr::everything(), ~ !is.na(.))) %>%
+  dplyr::mutate(
+    # Convert haven labels to character for cleaner processing
+    sex = as.character(haven::as_factor(sex_1a)),
+    degree = as.character(haven::as_factor(degree_1a)),
+    region = as.character(haven::as_factor(region_1a)),
+    happy = as.character(haven::as_factor(happy_1a)),
+    trust = as.character(haven::as_factor(trust_1a)),
+    polviews = as.character(haven::as_factor(polviews_1a)),
+    partyid = as.character(haven::as_factor(partyid_1a)),
+    class = as.character(haven::as_factor(class_1a)),
+    age = as.numeric(age_1a)
+  ) %>%
+  dplyr::filter(!is.na(age), !is.na(sex), !is.na(degree))
 
-# Create visualizations using examples from stackedbar_vignette.Rmd
-analysis_vizzes <- create_viz() %>%
-  # First tabset: Demographics (2 visualizations)
+# Demographics page: diverse chart types showing age, education, happiness
+# Tab 1: Happiness - stackedbar + boxplot
+# Tab 2: Age Distribution - histogram + density
+# Tab 3: Education - bar chart + heatmap
+analysis_vizzes <- create_content() %>%
+  # Tab 1: Happiness
   add_viz(type = "stackedbar",
-          x_var = "degree_1a",
-          stack_var = "happy_1a",
-          title = "Happiness Distribution Across Education Levels",
-          subtitle = "Percentage breakdown within each education category",
+          x_var = "degree",
+          stack_var = "happy",
+          title = "Happiness by Education Level",
+          subtitle = "How does education relate to self-reported happiness?",
           x_label = "Education Level",
-          y_label = "Percentage of Respondents",
-          stack_label = "Happiness Level",
+          y_label = "Percentage",
+          stack_label = "Happiness",
           stacked_type = "percent",
           x_order = c("Lt High School", "High School", "Junior College", "Bachelor", "Graduate"),
           stack_order = c("Very Happy", "Pretty Happy", "Not Too Happy"),
-          tooltip_suffix = "%",
-          color_palette = c("#2E86AB", "#A23B72", "#F18F01"),
-          text = "How happy are you with your life right now?",
-          text_position = "above",
-          icon = "ph:chart-bar",
-          height = 500,
-          tabgroup = "demographics") %>%
-  add_viz(type = "stackedbar",
-          x_var = "sex_1a",
-          stack_var = "happy_1a",
-          title = "Happiness Distribution by Gender",
-          subtitle = "Gender differences in reported happiness levels",
-          x_label = "Gender",
-          y_label = "Percentage of Respondents",
-          stack_label = "Happiness Level",
-          stacked_type = "percent",
-          stack_order = c("Very Happy", "Pretty Happy", "Not Too Happy"),
-          tooltip_suffix = "%",
-          color_palette = c("#2E86AB", "#A23B72", "#F18F01"),
-          text = "How happy are you with your life right now?",
-          text_position = "below",
-          icon = "ph:gender-intersex",
+          color_palette = c("#27ae60", "#f39c12", "#e74c3c"),
           height = 450,
-          tabgroup = "demographics") %>%
-  # Second tabset: Politics (3 visualizations)
-  add_viz(type = "stackedbar",
-          x_var = "polviews_1a",
-          stack_var = "partyid_1a",
-          title = "Party ID by Political Views",
-          subtitle = "Distribution of party identification across political ideology",
-          x_label = "Political Views",
-          y_label = "Percentage of Respondents",
-          stack_label = "Party ID",
-          stacked_type = "percent",
-          tooltip_suffix = "%",
-          color_palette = c("#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b", "#e377c2"),
-          text = "This shows how party identification aligns with political ideology.",
-          text_position = "above",
-          icon = "ph:users-three",
-          height = 550,
-          tabgroup = "politics") %>%
-  add_viz(type = "stackedbar",
-          x_var = "region_1a",
-          stack_var = "trust_1a",
-          title = "Trust Levels by US Region",
-          subtitle = "Regional variation in interpersonal trust",
-          x_label = "US Region",
-          y_label = "Percentage of Respondents",
-          stack_label = "Trust Level",
-          stack_order = c("Can Trust", "Can't Be Too Careful", "Depends"),
-          stacked_type = "percent",
-          tooltip_suffix = "%",
-          color_palette = c("#2E8B57", "#DAA520", "#CD5C5C"),
-          text = "Do you think you can usually trust strangers?",
-          text_position = "below",
-          icon = "ph:map-pin",
-          height = 500,
-          tabgroup = "politics") %>%
-  add_viz(type = "stackedbar",
-          x_var = "class_1a",
-          stack_var = "sex_1a",
-          title = "Gender Distribution Across Social Classes",
-          subtitle = "With custom labels and ordering",
-          x_label = "Self-Reported Social Class",
-          y_label = "Number of Respondents",
-          stack_label = "Gender",
-          x_order = c("Lower Class", "Working Class", "Middle Class", "Upper Class"),
-          stack_order = c("Female", "Male"),
-          stacked_type = "counts",
-          tooltip_prefix = "Count: ",
-          color_palette = c("#E07A5F", "#3D5A80"),
-          text = "Gender distribution across different social class categories.",
-          text_position = "above",
-          icon = "ph:chart-pie",
+          tabgroup = "happiness") %>%
+  add_viz(type = "boxplot",
+          x_var = "happy",
+          y_var = "age",
+          title = "Age Distribution by Happiness Level",
+          subtitle = "Are happier people younger or older?",
+          x_label = "Happiness Level",
+          y_label = "Age (years)",
+          x_order = c("Very Happy", "Pretty Happy", "Not Too Happy"),
+          color_palette = c("#27ae60", "#f39c12", "#e74c3c"),
           height = 450,
-          tabgroup = "politics") %>%
-  # Third tabset: Social Issues (2 visualizations)
-  add_viz(type = "heatmap",
-          x_var = "degree_1a",
-          y_var = "age_1a",
-          value_var = "trust_1a",
-          title = "Trust by Education and Age",
-          subtitle = "Average trust levels across education and age groups",
+          tabgroup = "happiness") %>%
+  # Tab 2: Age Distribution
+  add_viz(type = "histogram",
+          x_var = "age",
+          title = "Age Distribution of Respondents",
+          subtitle = "Overall age distribution in the GSS sample",
+          x_label = "Age (years)",
+          y_label = "Count",
+          bins = 25,
+          color_palette = c("#3498db"),
+          height = 400,
+          tabgroup = "age") %>%
+  add_viz(type = "density",
+          x_var = "age",
+          group_var = "sex",
+          title = "Age Distribution by Gender",
+          subtitle = "Comparing age distributions between men and women",
+          x_label = "Age (years)",
+          color_palette = c("#3498db", "#e74c3c"),
+          height = 400,
+          tabgroup = "age") %>%
+  # Tab 3: Education patterns
+  add_viz(type = "bar",
+          x_var = "degree",
+          title = "Education Level Distribution",
+          subtitle = "Sample composition by highest degree attained",
           x_label = "Education Level",
-          y_label = "Age Group",
-          value_label = "Trust Level",
+          y_label = "Count",
           x_order = c("Lt High School", "High School", "Junior College", "Bachelor", "Graduate"),
-          color_palette = c("#d7191c", "#fdae61", "#ffffbf", "#abdda4", "#2b83ba"),
-          tooltip_prefix = "Trust: ",
-          tooltip_suffix = "/3",
-          tooltip_labels_format = "{point.value:.2f}",
-          text = "This heatmap reveals trust patterns across education and age groups.",
-          text_position = "below",
-          icon = "ph:heatmap",
-          height = 600,
-          tabgroup = "social") %>%
+          color_palette = c("#1abc9c", "#3498db", "#9b59b6", "#e74c3c", "#f39c12"),
+          height = 400,
+          tabgroup = "education") %>%
   add_viz(type = "heatmap",
-          x_var = "region_1a",
-          y_var = "degree_1a",
-          value_var = "trust_1a",
-          title = "Trust by Region and Education",
-          subtitle = "Educational and regional patterns in trust levels",
-          x_label = "Region",
-          y_label = "Education Level",
-          value_label = "Trust Level",
-          y_order = c("Lt High School", "High School", "Junior College", "Bachelor", "Graduate"),
-          color_palette = c("#d7191c", "#fdae61", "#ffffbf", "#abdda4", "#2b83ba"),
-          tooltip_prefix = "Trust: ",
-          tooltip_suffix = "/3",
-          tooltip_labels_format = "{point.value:.2f}",
-          text = "Educational and regional patterns in trust distribution.",
-          text_position = "above",
-          icon = "ph:chart-pie",
-          height = 550,
-          tabgroup = "social") %>%
-  # Set custom tab group labels
+          x_var = "degree",
+          y_var = "region",
+          value_var = "age",
+          title = "Mean Age by Education and Region",
+          subtitle = "Geographic and educational patterns in respondent age",
+          x_label = "Education Level",
+          y_label = "Region",
+          value_label = "Mean Age",
+          x_order = c("Lt High School", "High School", "Junior College", "Bachelor", "Graduate"),
+          color_palette = c("#f7fbff", "#deebf7", "#9ecae1", "#3182bd", "#08519c"),
+          height = 500,
+          tabgroup = "education") %>%
   set_tabgroup_labels(list(
-    demographics = "Demographics & Education",
-    politics = "Political Attitudes",
-    social = "Social Issues"
+    happiness = "Happiness",
+    age = "Age Distribution",
+    education = "Education"
   ))
 
-# Create additional visualizations for a second page with single charts
-summary_vizzes <- create_viz() %>%
-  # Single chart (no tabgroup) - will be standalone
+# Political Attitudes page: diverse visualizations
+summary_vizzes <- create_content() %>%
+  # Party identification by ideology - stackedbar
   add_viz(type = "stackedbar",
-          x_var = "degree_1a",
-          stack_var = "happy_1a",
-          title = "Overall Happiness by Education",
-          subtitle = "Complete distribution of happiness across education levels",
-          x_label = "Education Level",
-          y_label = "Percentage of Respondents",
-          stack_label = "Happiness Level",
+          x_var = "polviews",
+          stack_var = "partyid",
+          title = "Party Identification by Political Ideology",
+          subtitle = "How party affiliation aligns with self-reported ideology",
+          x_label = "Political Views",
+          y_label = "Percentage",
+          stack_label = "Party ID",
           stacked_type = "percent",
-          x_order = c("Lt High School", "High School", "Junior College", "Bachelor", "Graduate"),
-          stack_order = c("Very Happy", "Pretty Happy", "Not Too Happy"),
-          tooltip_suffix = "%",
-          color_palette = c("#2E86AB", "#A23B72", "#F18F01"),
-          text = "How happy are you?",
-          text_position = "above",
-          icon = "ph:chart-bar",
-          height = 600) %>%
-  # Another single chart
+          color_palette = c("#2166ac", "#67a9cf", "#d1e5f0", "#f7f7f7", "#fddbc7", "#ef8a62", "#b2182b"),
+          height = 500) %>%
+  # Trust by political views - heatmap
   add_viz(type = "heatmap",
-          x_var = "partyid_1a",
-          y_var = "polviews_1a",
-          value_var = "trust_1a",
-          title = "Overall Trust by Politics",
-          subtitle = "Complete trust patterns across political groups",
-          x_label = "Party Identification",
-          y_label = "Political Views",
-          value_label = "Trust Level",
-          x_order = c("Strong Democrat", "Not Very Strong Democrat", "Independent, Close to Democrat",
-                      "Independent", "Independent, Close to Republican", "Not Very Strong Republican", "Strong Republican"),
-          y_order = c("Extremely Liberal", "Liberal", "Slightly Liberal", "Moderate",
-                      "Slightly Conservative", "Conservative", "Extremely Conservative"),
-          color_palette = c("#d7191c", "#fdae61", "#ffffbf", "#abdda4", "#2b83ba"),
-          tooltip_prefix = "Trust: ",
-          tooltip_suffix = "/3",
-          tooltip_labels_format = "{point.value:.2f}",
-          text_position = "below",
-          icon = "ph:shield-check",
-          height = 700)
+          x_var = "polviews",
+          y_var = "class",
+          value_var = "age",
+          title = "Mean Age by Ideology and Social Class",
+          subtitle = "Demographic patterns across political and class lines",
+          x_label = "Political Views",
+          y_label = "Social Class",
+          value_label = "Mean Age",
+          y_order = c("Lower Class", "Working Class", "Middle Class", "Upper Class"),
+          color_palette = c("#f7fbff", "#c6dbef", "#6baed6", "#2171b5", "#08306b"),
+          height = 450) %>%
+  # Social class distribution - bar chart
+  add_viz(type = "bar",
+          x_var = "class",
+          group_var = "sex",
+          title = "Social Class by Gender",
+          subtitle = "Self-reported social class distribution",
+          x_label = "Social Class",
+          y_label = "Count",
+          x_order = c("Lower Class", "Working Class", "Middle Class", "Upper Class"),
+          color_palette = c("#3498db", "#e74c3c"),
+          height = 400)
 
+# Trust & Social Capital page with sidebar filters
+sidebar_content <- create_content(data = gss_clean) %>%
+  add_sidebar(width = "280px", title = "Filters") %>%
+    add_input(
+      input_id = "region_filter",
+      label = "Region:",
+      type = "checkbox",
+      filter_var = "region",
+      options = c("New England", "Middle Atlantic", "E. Nor. Central", "W. Nor. Central",
+                  "South Atlantic", "E. Sou. Central", "W. Sou. Central", "Mountain", "Pacific")
+    ) %>%
+    add_input(
+      input_id = "education_filter",
+      label = "Education:",
+      type = "select_multiple",
+      filter_var = "degree",
+      options = c("Lt High School", "High School", "Junior College", "Bachelor", "Graduate"),
+      placeholder = "All levels"
+    ) %>%
+    add_input(
+      input_id = "gender_filter",
+      label = "Gender:",
+      type = "radio",
+      filter_var = "sex",
+      options = c("Male", "Female")
+    ) %>%
+  end_sidebar() %>%
+  # Trust by region - stackedbar
+  add_viz(type = "stackedbar",
+          x_var = "region",
+          stack_var = "trust",
+          title = "Trust Levels by Region",
+          subtitle = "Can most people be trusted?",
+          x_label = "Region",
+          y_label = "Percentage",
+          stack_label = "Trust Level",
+          stacked_type = "percent",
+          stack_order = c("Can Trust", "Depends", "Can't Be Too Careful"),
+          color_palette = c("#27ae60", "#f39c12", "#e74c3c"),
+          height = 450) %>%
+  # Boxplot of age by trust level
+  add_viz(type = "boxplot",
+          x_var = "trust",
+          y_var = "age",
+          title = "Age Distribution by Trust Level",
+          subtitle = "Do trusting people tend to be older or younger?",
+          x_label = "Trust Level",
+          y_label = "Age (years)",
+          x_order = c("Can Trust", "Depends", "Can't Be Too Careful"),
+          color_palette = c("#27ae60", "#f39c12", "#e74c3c"),
+          height = 400)
 
+# Calculate metrics for value boxes (handling haven labels)
+n_respondents <- format(nrow(gss_clean), big.mark = ",")
+n_regions <- length(unique(as.character(gss_clean$region_1a)))
 
-# Create comprehensive dashboard with ALL features
+# Create comprehensive dashboard
+
 dashboard <- create_dashboard(
   output_dir = qmds_dir,
-  title = "Showcase Dashboard",
+  title = "GSS Data Explorer",
+  logo = "https://ropercenter.cornell.edu/sites/default/files/styles/600x/public/Images/GSSLogo6x4.png?itok=ZzGhUDbL",
   allow_inside_pkg = TRUE,
   github = "https://github.com/favstats/dashboardr",
-  twitter = "https://twitter.com/username",
-  linkedin = "https://linkedin.com/in/username",
-  email = "user@example.com",
-  website = "https://example.com",
   search = TRUE,
-  # theme = "cosmo",
-  author = "Dr. Jane Smith",
+  theme = "flatly",
+  navbar_bg_color = "#f0f0f0",
+  navbar_text_color = "#3A1B00E6",
+  navbar_text_hover_color = "lightgrey",
+  author = "GSS Research Team",
   description = "Comprehensive data analysis dashboard with all features",
   page_footer = "© 2025 dashboardr Package - All Rights Reserved",
   date = "2024-01-15",
@@ -589,138 +824,146 @@ dashboard <- create_dashboard(
   github_pages = "main",
   netlify = list(redirects = "/* /index.html 200")
 ) %>%
-  # Landing page with icon
+  # Landing page with KPIs
   add_page(
-    name = "Welcome to the Showcase Dashboard",
+    name = "Overview",
     text = md_text(
-      "This dashboard demonstrates the `dashboardr` package using real examples from the vignettes.",
+      "# General Social Survey 2020",
       "",
-      "## Key Features",
-      "",
-      "- **Unified API**: Single `add_page()` function for all page types",
-      "- **Automatic Icons**: Easy-to-use icons throughout the interface",
-      "- **Flexible Visualizations**: Support for all chart types with tab grouping",
-      "",
-      "## Data Source",
-      "",
-      "This dashboard uses data from the **General Social Survey (GSS)** to explore patterns in happiness, trust, and political attitudes.",
-      "",
-      "Navigate through the pages above to explore the data and see the package features in action."
+      "Exploring happiness, trust, and social attitudes across America."
     ),
+    content = create_content() %>%
+      add_value_box_row() %>%
+        add_value_box(
+          title = "Total Respondents",
+          value = n_respondents,
+          logo_text = "N",
+          bg_color = "#3498db",
+          description = "Complete survey responses"
+        ) %>%
+        add_value_box(
+          title = "Very Happy",
+          value = "32%",
+          logo_text = "{{< iconify ph smiley >}}",
+          bg_color = "#27ae60",
+          description = "Report being very happy"
+        ) %>%
+        add_value_box(
+          title = "Trust Others",
+          value = "34%",
+          logo_text = "{{< iconify ph handshake >}}",
+          bg_color = "#9b59b6",
+          description = "Believe most people can be trusted"
+        ) %>%
+      end_value_box_row() %>%
+      add_value_box_row() %>%
+        add_value_box(
+          title = "College Educated",
+          value = "28%",
+          logo_text = "{{< iconify ph graduation-cap >}}",
+          bg_color = "#f39c12",
+          description = "Hold bachelor's degree or higher"
+        ) %>%
+        add_value_box(
+          title = "Regions",
+          value = as.character(n_regions),
+          logo_text = "{{< iconify ph map-pin >}}",
+          bg_color = "#e74c3c",
+          description = "Geographic regions covered"
+        ) %>%
+        add_value_box(
+          title = "Survey Year",
+          value = "2020",
+          logo_text = "{{< iconify ph calendar >}}",
+          bg_color = "#1abc9c",
+          description = "Data collection period"
+        ) %>%
+      end_value_box_row() %>%
+      add_text("---") %>%
+      add_text("## Quick Navigation") %>%
+      add_text("[{{< iconify ph users-three >}} Demographics](demographics.html) - Explore happiness and wellbeing by demographic groups") %>%
+      add_text("") %>%
+      add_text("[{{< iconify ph handshake >}} Trust & Social Capital](trust___social_capital.html) - Filter and explore trust patterns across regions") %>%
+      add_text("") %>%
+      add_text("[{{< iconify ph chart-bar >}} Political Attitudes](political_attitudes.html) - Party identification and ideology breakdowns") %>%
+      add_text("") %>%
+      add_text("[{{< iconify ph info >}} About](about.html) - Data sources and methodology"),
     icon = "ph:house",
     is_landing_page = TRUE
   ) %>%
-  # Analysis page with data and visualizations
+  # Demographics page with nested tabsets
   add_page(
-    name = "GSS Data Analysis",
-    data = gss_clean,
-    visualizations = analysis_vizzes,
-    icon = "ph:chart-line"
-  ) %>%
-  # Mixed content page (text + visualizations)
-  add_page(
-    name = "Key Findings",
+    name = "Demographics",
     text = md_text(
-      "Our analysis reveals a clear relationship between education and happiness levels. Higher education is generally associated with greater reported happiness. Political trust varies significantly across party lines and ideological positions, with interesting regional and demographic patterns.",
+      "Explore how happiness, trust, and wellbeing vary across demographic groups.",
       "",
-      "## Next Steps",
-      "",
-      "Future research should explore the causal mechanisms behind these relationships."
+      "Use the tabs below to examine different aspects of the data."
     ),
     data = gss_clean,
-    visualizations = analysis_vizzes,
-    icon = "ph:lightbulb"
+    content = analysis_vizzes,
+    icon = "ph:users-three"
   ) %>%
-  # Summary page with standalone charts (no tabsets)
+  # Trust page with sidebar and interactive filters
   add_page(
-    name = "Summary Charts",
+    name = "Trust & Social Capital",
     text = md_text(
-      "# Summary Charts",
-      "",
-      "This page demonstrates standalone charts (no tabsets) for key findings.",
-      "",
-      "## Overview",
-      "",
-      "These charts provide a high-level summary of the most important patterns in the data."
+      "Use the filters to explore regional patterns in social trust."
     ),
     data = gss_clean,
-    visualizations = summary_vizzes,
-    icon = "ph:chart-pie"
-  )  %>%
-  # Text-only page with icon showcasing card function
+    content = sidebar_content,
+    icon = "ph:handshake"
+  ) %>%
+  # Political attitudes page
+  add_page(
+    name = "Political Attitudes",
+    text = md_text(
+      "Party identification and ideological views across different groups."
+    ),
+    data = gss_clean,
+    content = summary_vizzes,
+    icon = "ph:chart-bar"
+  ) %>%
+  # About page
   add_page(
     name = "About",
     icon = "ph:info",
     text = md_text(
-      "This dashboard aggregates and visualizes data collected via the General Social Survey (GSS) - ",
-      "a nationally representative survey of adults in the United States conducted since 1972.",
-      "The data is open-source and you can find out more about the GSS here.", #TODO ADD Link
+      "## About the General Social Survey",
       "",
-      "## Variables Used",
+      "The **General Social Survey (GSS)** is a nationally representative survey of adults in the United States, conducted since 1972 by NORC at the University of Chicago.",
       "",
-      "- **Happiness**: Self-reported happiness levels",
-      "- **Trust**: General social trust measures",
-      "- **Education**: Educational attainment levels",
-      "- **Political Views**: Liberal-conservative scale",
-      "- **Party ID**: Political party identification",
-      "- **Demographics**: Age, gender, region",
+      "The GSS monitors societal change and the growing complexity of American society. It is one of the most frequently analyzed sources of information in the social sciences.",
       "",
-      "## Dashboard Creators",
+      "**Learn more:** [GSS Website](https://gss.norc.org/)",
       "",
-      "```{r, echo=FALSE, message=FALSE, warning=FALSE}",
-      "library(htmltools)",
-      "library(dashboardr)",
+      "---",
       "",
-      "mario_card <- card(",
-      "  content = \"Mario il Gatto is a data scientist who believes that every dataset has a soul and that R is the language of the gods. He spends his days making beautiful visualizations and his nights dreaming of perfectly normalized databases.\",",
-      "  title = \"Mario il Gatto\",",
-      "  image = \"https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=300&h=200&fit=crop\",",
-      "  image_alt = \"Photo of a majestic orange cat\",",
-      "  footer = \"Website: mario-il-gatto.data\",",
-      "  class = \"mb-3\"",
-      ")",
+      "## Variables in This Dashboard",
       "",
-      "giuseppe_card <- card(",
-      "  content = \"Giuseppe il Cane is a machine learning engineer who thinks that neural networks are just very complicated dogs. He's convinced that every algorithm needs a good walk and that overfitting is just a sign of too much enthusiasm.\",",
-      "  title = \"Giuseppe il Cane\",",
-      "  image = \"https://images.unsplash.com/photo-1552053831-71594a27632d?w=300&h=200&fit=crop\",",
-      "  image_alt = \"Photo of a happy golden retriever\",",
-      "  footer = \"Website: giuseppe-il-cane.ai\",",
-      "  class = \"mb-3\"",
-      ")",
+      "| Variable | Description |",
+      "|----------|-------------|",
+      "| **Happiness** | Self-reported general happiness (Very Happy, Pretty Happy, Not Too Happy) |",
+      "| **Trust** | Interpersonal trust (Can Trust, Can't Be Too Careful, Depends) |",
+      "| **Education** | Highest degree attained |",
+      "| **Political Views** | Liberal-conservative self-placement |",
+      "| **Party ID** | Political party identification |",
+      "| **Region** | Census region of residence |",
+      "| **Age** | Respondent's age |",
+      "| **Gender** | Respondent's gender |",
       "",
-      "# Display cards in a row using the card_row function",
-      "card_row(mario_card, giuseppe_card)",
-      "```",
-      "## More about Dashboardr",
-      "Dashboardr is an R package with a clear vision: to make it intuitive for everyone to create beautiful dashboards.",
-      "The package is especially useful when time is limited. The iterative piping logic means that it is very quick to add new pages",
-      "and plots, even when the user is inexperienced with programming.",
-      "In a variety of contexts, this means that you can get quick, beautiful insights to present findings to wider audiences."
+      "---",
+      "",
+      "## Data Citation",
+      "",
+      "Smith, Tom W., Davern, Michael, Freese, Jeremy, and Morgan, Stephen L., General Social Surveys, 1972-2022 [machine-readable data file].",
+      "Principal Investigator, Tom W. Smith; Co-Principal Investigators, Michael Davern, Jeremy Freese and Stephen L. Morgan; Sponsored by National Science Foundation.",
+      "",
+      "---",
+      "",
+      "*This dashboard was created with [dashboardr](https://github.com/favstats/dashboardr).*"
     )
   ) %>%
   add_powered_by_dashboardr(style = "badge", size = "large")
-
-# Test the print methods
-cat("=== Dashboard Project Summary ===\n")
-print(dashboard)
-
-cat("\n=== Visualization Collection Summary ===\n")
-print(analysis_vizzes)
-
-cat("\n=== Summary Visualizations ===\n")
-print(summary_vizzes)
-
-# Test helper functions
-cat("\n=== Testing Helper Functions ===\n")
-cat("Icon helper test:", icon("ph:house"), "\n")
-cat("Text helper test:\n")
-test_text <- md_text(
-  "This is line 1",
-  "This is line 2",
-  "This is line 3"
-)
-cat(test_text, "\n")
 
 # Generate the dashboard
 cat("\n=== Generating Dashboard ===\n")

@@ -1,0 +1,79 @@
+[
+  {
+    "objectID": "demographics.html",
+    "href": "demographics.html",
+    "title": " Demographics",
+    "section": "",
+    "text": "Explore how happiness, trust, and wellbeing vary across demographic groups.\nUse the tabs below to examine different aspects of the data.\n\nHappinessAge DistributionEducation\n\n\n\nHappiness by Education LevelAge Distribution by Happiness Level\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nAge Distribution of RespondentsAge Distribution by Gender\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nEducation Level DistributionMean Age by Education and Region\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n Back to top"
+  },
+  {
+    "objectID": "political_attitudes.html",
+    "href": "political_attitudes.html",
+    "title": " Political Attitudes",
+    "section": "",
+    "text": "Party identification and ideological views across different groups."
+  },
+  {
+    "objectID": "political_attitudes.html#party-identification-by-political-ideology",
+    "href": "political_attitudes.html#party-identification-by-political-ideology",
+    "title": " Political Attitudes",
+    "section": "Party Identification by Political Ideology",
+    "text": "Party Identification by Political Ideology"
+  },
+  {
+    "objectID": "political_attitudes.html#mean-age-by-ideology-and-social-class",
+    "href": "political_attitudes.html#mean-age-by-ideology-and-social-class",
+    "title": " Political Attitudes",
+    "section": "Mean Age by Ideology and Social Class",
+    "text": "Mean Age by Ideology and Social Class"
+  },
+  {
+    "objectID": "political_attitudes.html#social-class-by-gender",
+    "href": "political_attitudes.html#social-class-by-gender",
+    "title": " Political Attitudes",
+    "section": "Social Class by Gender",
+    "text": "Social Class by Gender"
+  },
+  {
+    "objectID": "about.html",
+    "href": "about.html",
+    "title": " About",
+    "section": "",
+    "text": "The General Social Survey (GSS) is a nationally representative survey of adults in the United States, conducted since 1972 by NORC at the University of Chicago.\nThe GSS monitors societal change and the growing complexity of American society. It is one of the most frequently analyzed sources of information in the social sciences.\nLearn more: GSS Website"
+  },
+  {
+    "objectID": "about.html#about-the-general-social-survey",
+    "href": "about.html#about-the-general-social-survey",
+    "title": " About",
+    "section": "",
+    "text": "The General Social Survey (GSS) is a nationally representative survey of adults in the United States, conducted since 1972 by NORC at the University of Chicago.\nThe GSS monitors societal change and the growing complexity of American society. It is one of the most frequently analyzed sources of information in the social sciences.\nLearn more: GSS Website"
+  },
+  {
+    "objectID": "about.html#variables-in-this-dashboard",
+    "href": "about.html#variables-in-this-dashboard",
+    "title": " About",
+    "section": "Variables in This Dashboard",
+    "text": "Variables in This Dashboard\n\n\n\n\n\n\n\nVariable\nDescription\n\n\n\n\nHappiness\nSelf-reported general happiness (Very Happy, Pretty Happy, Not Too Happy)\n\n\nTrust\nInterpersonal trust (Can Trust, Can’t Be Too Careful, Depends)\n\n\nEducation\nHighest degree attained\n\n\nPolitical Views\nLiberal-conservative self-placement\n\n\nParty ID\nPolitical party identification\n\n\nRegion\nCensus region of residence\n\n\nAge\nRespondent’s age\n\n\nGender\nRespondent’s gender"
+  },
+  {
+    "objectID": "about.html#data-citation",
+    "href": "about.html#data-citation",
+    "title": " About",
+    "section": "Data Citation",
+    "text": "Data Citation\nSmith, Tom W., Davern, Michael, Freese, Jeremy, and Morgan, Stephen L., General Social Surveys, 1972-2022 [machine-readable data file]. Principal Investigator, Tom W. Smith; Co-Principal Investigators, Michael Davern, Jeremy Freese and Stephen L. Morgan; Sponsored by National Science Foundation.\n\nThis dashboard was created with dashboardr."
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": " Overview",
+    "section": "",
+    "text": "Exploring happiness, trust, and social attitudes across America.\n                    N                                    Total Respondents                          2,849                                                                            Very Happy                          32%                                                                            Trust Others                          34%                    \n                                                        College Educated                          28%                                                                            Regions                          9                                                                            Survey Year                          2020                    \n\n\n\n Demographics - Explore happiness and wellbeing by demographic groups\n Trust & Social Capital - Filter and explore trust patterns across regions\n Political Attitudes - Party identification and ideology breakdowns\n About - Data sources and methodology"
+  },
+  {
+    "objectID": "index.html#quick-navigation",
+    "href": "index.html#quick-navigation",
+    "title": " Overview",
+    "section": "",
+    "text": "Demographics - Explore happiness and wellbeing by demographic groups\n Trust & Social Capital - Filter and explore trust patterns across regions\n Political Attitudes - Party identification and ideology breakdowns\n About - Data sources and methodology"
+  }
+]

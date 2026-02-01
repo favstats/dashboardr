@@ -1,0 +1,305 @@
+---
+title: "Showcase Dashboard Code Examples"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Showcase Dashboard Code Examples}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  eval = FALSE
+)
+```
+
+<div style="background-color: #e7f3fe; border-left: 6px solid #2196F3; padding: 15px; margin-bottom: 20px;">
+<h3 style="margin-top: 0;">🚀 View the Live Demo</h3>
+<p>See this code in action! <strong><a href="../live-demos/showcase/index.html">Click here to view the Showcase Dashboard live demo →</a></strong></p>
+<p>Or run it yourself: <code>dashboardr::showcase_dashboard()</code></p>
+</div>
+
+## Overview
+
+This vignette provides the **exact R code** for each visualization in the Showcase Dashboard. Each section shows the complete `add_viz()` call as it appears in the `showcase_dashboard()` function source code.
+
+Click on any visualization in the live demo to see the "View R Code" accordion, which links back to the corresponding section here.
+
+---
+
+## Data Preparation {#data-prep}
+
+```{r data-prep-code}
+library(dashboardr)
+library(dplyr)
+
+# Load GSS panel data
+data(gss_panel20, package = "gssr")
+
+# Clean and select relevant variables
+gss_clean <- gss_panel20 %>%
+  select(
+    age_1a, sex_1a, degree_1a, region_1a,
+    happy_1a, trust_1a, fair_1a, helpful_1a,
+    polviews_1a, partyid_1a, class_1a
+  ) %>%
+  filter(if_any(everything(), ~ !is.na(.)))
+```
+
+---
+
+## Demographics & Education Tabset
+
+### Happiness by Education {#demographics-happiness-education}
+
+```{r demographics-happiness-education-code}
+add_viz(type = "stackedbar",
+        x_var = "degree_1a",
+        stack_var = "happy_1a",
+        title = "Happiness Distribution Across Education Levels",
+        subtitle = "Percentage breakdown within each education category",
+        x_label = "Education Level",
+        y_label = "Percentage of Respondents",
+        stack_label = "Happiness Level",
+        stacked_type = "percent",
+        x_order = c("Lt High School", "High School", "Junior College", "Bachelor", "Graduate"),
+        stack_order = c("Very Happy", "Pretty Happy", "Not Too Happy"),
+        tooltip_suffix = "%",
+        color_palette = c("#2E86AB", "#A23B72", "#F18F01"),
+        text = "How happy are you with your life right now?",
+        text_position = "above",
+        icon = "ph:chart-bar",
+        height = 500,
+        tabgroup = "demographics")
+```
+
+---
+
+### Happiness by Gender {#demographics-happiness-gender}
+
+```{r demographics-happiness-gender-code}
+add_viz(type = "stackedbar",
+        x_var = "sex_1a",
+        stack_var = "happy_1a",
+        title = "Happiness Distribution by Gender",
+        subtitle = "Gender differences in reported happiness levels",
+        x_label = "Gender",
+        y_label = "Percentage of Respondents",
+        stack_label = "Happiness Level",
+        stacked_type = "percent",
+        stack_order = c("Very Happy", "Pretty Happy", "Not Too Happy"),
+        tooltip_suffix = "%",
+        color_palette = c("#2E86AB", "#A23B72", "#F18F01"),
+        text = "How happy are you with your life right now?",
+        text_position = "below",
+        icon = "ph:gender-intersex",
+        height = 450,
+        tabgroup = "demographics")
+```
+
+---
+
+## Political Attitudes Tabset
+
+### Party ID by Political Views {#politics-party-views}
+
+```{r politics-party-views-code}
+add_viz(type = "stackedbar",
+        x_var = "polviews_1a",
+        stack_var = "partyid_1a",
+        title = "Party ID by Political Views",
+        subtitle = "Distribution of party identification across political ideology",
+        x_label = "Political Views",
+        y_label = "Percentage of Respondents",
+        stack_label = "Party ID",
+        stacked_type = "percent",
+        tooltip_suffix = "%",
+        color_palette = c("#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b", "#e377c2"),
+        text = "This shows how party identification aligns with political ideology.",
+        text_position = "above",
+        icon = "ph:users-three",
+        height = 550,
+        tabgroup = "politics")
+```
+
+---
+
+### Trust by Region {#politics-trust-region}
+
+```{r politics-trust-region-code}
+add_viz(type = "stackedbar",
+        x_var = "region_1a",
+        stack_var = "trust_1a",
+        title = "Trust Levels by US Region",
+        subtitle = "Regional variation in interpersonal trust",
+        x_label = "US Region",
+        y_label = "Percentage of Respondents",
+        stack_label = "Trust Level",
+        stack_order = c("Can Trust", "Can't Be Too Careful", "Depends"),
+        stacked_type = "percent",
+        tooltip_suffix = "%",
+        color_palette = c("#2E8B57", "#DAA520", "#CD5C5C"),
+        text = "Do you think you can usually trust strangers?",
+        text_position = "below",
+        icon = "ph:map-pin",
+        height = 500,
+        tabgroup = "politics")
+```
+
+---
+
+### Gender by Social Class {#politics-gender-class}
+
+```{r politics-gender-class-code}
+add_viz(type = "stackedbar",
+        x_var = "class_1a",
+        stack_var = "sex_1a",
+        title = "Gender Distribution Across Social Classes",
+        subtitle = "With custom labels and ordering",
+        x_label = "Self-Reported Social Class",
+        y_label = "Number of Respondents",
+        stack_label = "Gender",
+        x_order = c("Lower Class", "Working Class", "Middle Class", "Upper Class"),
+        stack_order = c("Female", "Male"),
+        stacked_type = "counts",
+        tooltip_prefix = "Count: ",
+        color_palette = c("#E07A5F", "#3D5A80"),
+        text = "Gender distribution across different social class categories.",
+        text_position = "above",
+        icon = "ph:chart-pie",
+        height = 450,
+        tabgroup = "politics")
+```
+
+**Note:** This chart uses `stacked_type = "counts"` instead of "percent".
+
+---
+
+## Social Issues Tabset
+
+### Trust by Education and Age {#social-trust-education-age}
+
+```{r social-trust-education-age-code}
+add_viz(type = "heatmap",
+        x_var = "degree_1a",
+        y_var = "age_1a",
+        value_var = "trust_1a",
+        title = "Trust by Education and Age",
+        subtitle = "Average trust levels across education and age groups",
+        x_label = "Education Level",
+        y_label = "Age Group",
+        value_label = "Trust Level",
+        x_order = c("Lt High School", "High School", "Junior College", "Bachelor", "Graduate"),
+        color_palette = c("#d7191c", "#fdae61", "#ffffbf", "#abdda4", "#2b83ba"),
+        tooltip_prefix = "Trust: ",
+        tooltip_suffix = "/3",
+        tooltip_labels_format = "{point.value:.2f}",
+        text = "This heatmap reveals trust patterns across education and age groups.",
+        text_position = "below",
+        icon = "ph:heatmap",
+        height = 600,
+        tabgroup = "social")
+```
+
+---
+
+### Trust by Region and Education {#social-trust-region-education}
+
+```{r social-trust-region-education-code}
+add_viz(type = "heatmap",
+        x_var = "region_1a",
+        y_var = "degree_1a",
+        value_var = "trust_1a",
+        title = "Trust by Region and Education",
+        subtitle = "Educational and regional patterns in trust levels",
+        x_label = "Region",
+        y_label = "Education Level",
+        value_label = "Trust Level",
+        y_order = c("Lt High School", "High School", "Junior College", "Bachelor", "Graduate"),
+        color_palette = c("#d7191c", "#fdae61", "#ffffbf", "#abdda4", "#2b83ba"),
+        tooltip_prefix = "Trust: ",
+        tooltip_suffix = "/3",
+        tooltip_labels_format = "{point.value:.2f}",
+        text = "Educational and regional patterns in trust distribution.",
+        text_position = "above",
+        icon = "ph:chart-pie",
+        height = 550,
+        tabgroup = "social")
+```
+
+---
+
+## Standalone Summary Charts
+
+### Overall Happiness by Education {#summary-happiness-education}
+
+```{r summary-happiness-education-code}
+add_viz(type = "stackedbar",
+        x_var = "degree_1a",
+        stack_var = "happy_1a",
+        title = "Overall Happiness by Education",
+        subtitle = "Complete distribution of happiness across education levels",
+        x_label = "Education Level",
+        y_label = "Percentage of Respondents",
+        stack_label = "Happiness Level",
+        stacked_type = "percent",
+        x_order = c("Lt High School", "High School", "Junior College", "Bachelor", "Graduate"),
+        stack_order = c("Very Happy", "Pretty Happy", "Not Too Happy"),
+        tooltip_suffix = "%",
+        color_palette = c("#2E86AB", "#A23B72", "#F18F01"),
+        text = "How happy are you?",
+        text_position = "above",
+        icon = "ph:chart-bar",
+        height = 600)
+```
+
+---
+
+### Overall Trust by Politics {#summary-trust-politics}
+
+```{r summary-trust-politics-code}
+add_viz(type = "heatmap",
+        x_var = "partyid_1a",
+        y_var = "polviews_1a",
+        value_var = "trust_1a",
+        title = "Overall Trust by Politics",
+        subtitle = "Complete trust patterns across political groups",
+        x_label = "Party Identification",
+        y_label = "Political Views",
+        value_label = "Trust Level",
+        x_order = c("Strong Democrat", "Not Very Strong Democrat", "Independent, Close to Democrat",
+                    "Independent", "Independent, Close to Republican", "Not Very Strong Republican", "Strong Republican"),
+        y_order = c("Extremely Liberal", "Liberal", "Slightly Liberal", "Moderate",
+                    "Slightly Conservative", "Conservative", "Extremely Conservative"),
+        color_palette = c("#d7191c", "#fdae61", "#ffffbf", "#abdda4", "#2b83ba"),
+        tooltip_prefix = "Trust: ",
+        tooltip_suffix = "/3",
+        tooltip_labels_format = "{point.value:.2f}",
+        text_position = "below",
+        icon = "ph:shield-check",
+        height = 700)
+```
+
+---
+
+## Visualization Index
+
+| Chart | Type | Page | Tabset | Anchor |
+|-------|------|------|--------|--------|
+| Happiness by Education | Stacked Bar | GSS Data Analysis | Demographics | [#demographics-happiness-education](#demographics-happiness-education) |
+| Happiness by Gender | Stacked Bar | GSS Data Analysis | Demographics | [#demographics-happiness-gender](#demographics-happiness-gender) |
+| Party ID by Political Views | Stacked Bar | GSS Data Analysis | Politics | [#politics-party-views](#politics-party-views) |
+| Trust by Region | Stacked Bar | GSS Data Analysis | Politics | [#politics-trust-region](#politics-trust-region) |
+| Gender by Social Class | Stacked Bar | GSS Data Analysis | Politics | [#politics-gender-class](#politics-gender-class) |
+| Trust by Education & Age | Heatmap | GSS Data Analysis | Social Issues | [#social-trust-education-age](#social-trust-education-age) |
+| Trust by Region & Education | Heatmap | GSS Data Analysis | Social Issues | [#social-trust-region-education](#social-trust-region-education) |
+| Overall Happiness | Stacked Bar | Summary Charts | - | [#summary-happiness-education](#summary-happiness-education) |
+| Overall Trust by Politics | Heatmap | Summary Charts | - | [#summary-trust-politics](#summary-trust-politics) |
+
+## Next Steps
+
+- **[View the live Showcase Dashboard →](../live-demos/showcase/index.html)**
+- See the [Tutorial Dashboard Code](tutorial_dashboard_code.html) for simpler examples
+- Explore [visualization vignettes](../articles/index.html) for detailed chart customization

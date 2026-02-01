@@ -1,0 +1,75 @@
+project:
+  type: website
+  output-dir: test_showcase_new
+  resources:
+    - assets/
+
+website:
+  title: "GSS Data Explorer"
+  navbar:
+    style: dark
+    brand: "Dashboardr"
+    toggle: collapse
+    logo: https://ropercenter.cornell.edu/sites/default/files/styles/600x/public/Images/GSSLogo6x4.png?itok=ZzGhUDbL
+    left:
+      - href: index.qmd
+        text: "{{< iconify ph house >}} Overview"
+      - href: demographics.qmd
+        text: "{{< iconify ph users-three >}} Demographics"
+      - href: trust___social_capital.qmd
+        text: "{{< iconify ph handshake >}} Trust & Social Capital"
+      - href: political_attitudes.qmd
+        text: "{{< iconify ph chart-bar >}} Political Attitudes"
+      - href: about.qmd
+        text: "{{< iconify ph info >}} About"
+    right:
+      - icon: github
+        href: https://github.com/favstats/dashboardr
+    search: true
+  bread-crumbs: true
+  page-navigation: true
+  back-to-top-navigation: true
+  reader-mode: true
+  repo-url: https://github.com/favstats/dashboardr
+  page-footer:
+    left: |
+      <U+00A9> 2025 dashboardr Package - All Rights Reserved
+    right: |
+      <a href="https://favstats.github.io/dashboardr/" target="_blank" rel="noopener" style="display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.25rem 0.5rem; background: rgba(0, 0, 0, 0.05); border-radius: 4px; font-size: 1rem; color: inherit; text-decoration: none; opacity: 0.8; transition: opacity 0.2s ease, background 0.2s ease;" onmouseover="this.style.opacity='1'; this.style.background='rgba(0, 0, 0, 0.08)';" onmouseout="this.style.opacity='0.8'; this.style.background='rgba(0, 0, 0, 0.05)';"><img src="https://raw.githubusercontent.com/favstats/dashboardr/refs/heads/main/man/figures/logo.svg" alt="dashboardr logo" style="width: 24px; height: 24px; object-fit: contain;" /><span style="font-weight: 500;">Powered by dashboardr</span></a>
+
+format:
+  html:
+    prefer-html: true
+    theme:
+      - flatly
+      - _tabset_minimal.scss
+      - _theme_custom.scss
+
+    css:
+      - assets/modal.css
+      - assets/pagination.css
+    mainfont: "Fira Sans"
+    fontsize: 16px
+    monofont: "Fira Code"
+    math:
+      engine: katex
+    code-tools: true
+    value-boxes: true
+    page-layout: full
+    shiny: true
+    google-analytics:
+      id: "GA-XXXXXXXXX"
+    plausible:
+      domain: "example.com"
+    include-in-header:
+      text: |
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Fira+Sans:wght@300;400;500;600;700&family=Fira+Code:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+        <script src="assets/tab-scroll-fix.js"></script>
+    gtag:
+      id: "GTM-XXXXXXX"
+    github-pages:
+      branch: main
+    netlify:
+      redirects: /* /index.html 200

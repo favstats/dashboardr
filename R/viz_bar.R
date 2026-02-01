@@ -486,7 +486,8 @@ viz_bar <- function(data,
           enableMouseTracking = TRUE,
           whiskerLength = paste0(error_bar_width, "%"),
           color = error_bar_color,
-          stemWidth = 1.5
+          stemWidth = 1.5,
+          dataLabels = list(enabled = FALSE)
         )
     }
     
@@ -546,7 +547,8 @@ viz_bar <- function(data,
             enableMouseTracking = TRUE,
             whiskerLength = paste0(error_bar_width, "%"),
             color = error_bar_color,
-            stemWidth = 1.5
+            stemWidth = 1.5,
+            dataLabels = list(enabled = FALSE)
           )
       }
     }

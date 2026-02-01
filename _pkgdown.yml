@@ -151,6 +151,12 @@ articles:
   contents:
   - demos
 
+- title: Demo Dashboard Code
+  navbar: ~
+  contents:
+  - tutorial_dashboard_code
+  - showcase_dashboard_code
+
 - title: Visualization Types
   navbar: ~
   contents:

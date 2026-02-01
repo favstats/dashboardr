@@ -1,0 +1,528 @@
+# Publishing Dashboards to GitHub Pages
+
+This vignette will take you from zero to publishing your dashboard
+online in under 10 minutes. No prior Git or GitHub knowledge required!
+
+> ⚠️ **IMPORTANT: Data Privacy Warning**
+>
+> When you publish a dashboard, **all data embedded in your
+> visualizations becomes publicly accessible**. Before publishing,
+> verify that your dashboard does not contain:
+>
+> - **Personal identifiable information (PII)** - names, emails,
+>   addresses, ID numbers
+> - **Sensitive survey responses** - individual-level data that could
+>   identify respondents
+> - **Confidential research data** - unpublished findings, proprietary
+>   information
+> - **Location data** - precise coordinates that could identify
+>   individuals
+>
+> **How dashboardr protects you:**
+>
+> - Data is aggregated for visualizations (counts, percentages, means)
+> - Individual-level microdata is not exported to the final HTML
+> - Only the summary statistics needed to render charts are included
+> - **Automatic .gitignore protection** - Data files are automatically
+>   excluded from Git commits
+>
+> **About .gitignore protection:**
+>
+> The `.gitignore` file in your dashboard folder automatically excludes
+> data files from being published:
+>
+> 1.  Common data file extensions (`.csv`, `.rds`, `.xlsx`, `.sav`,
+>     `.dta`) are ignored by default
+> 2.  Large files (\>10MB) are automatically detected and added to
+>     `.gitignore`
+> 3.  Check your `.gitignore` file to verify your data files match the
+>     patterns
+>
+> **Best practices:**
+>
+> 1.  **Review before publishing** - Open your generated HTML files and
+>     inspect what data is visible
+> 2.  **Remove identifying variables** - Drop columns like names, IDs,
+>     or exact dates before creating visualizations
+> 3.  **Test with `render = TRUE, open = "browser"`** - Review the full
+>     dashboard locally before pushing to GitHub
+> 4.  **Consider access controls** - For sensitive data, use private
+>     repositories or institutional hosting instead of public GitHub
+>     Pages
+
+### 📖 What You’ll Learn
+
+By the end of this guide, you’ll be able to:
+
+- Publish your dashboard to GitHub Pages (completely free)
+- Update your published dashboard whenever you make changes
+- Share your dashboard URL with anyone
+
+### ⚙️ Prerequisites
+
+You need:
+
+- R and RStudio installed
+- The `dashboardr` package installed
+- A dashboard you want to publish (see the `getting-started` vignette if
+  you need to create one)
+
+``` r
+# Install packages if you don't have them
+install.packages(c("usethis", "gert"))
+library(dashboardr)
+```
+
+> **⚡ Already have Git and GitHub set up?**
+>
+> If you already have Git installed, a GitHub account, and a Personal
+> Access Token configured, you can skip directly to [Part 2: Publishing
+> Your Dashboard](#part-2-publishing-your-dashboard).
+
+## 🔧 Part 1: One-Time Setup (Do This Once)
+
+### 💻 Step 1: Install Git on Your Computer
+
+Git is the tool that tracks changes to your files. It needs to be
+installed before R can use it.
+
+#### Windows
+
+1.  Download Git from <https://git-scm.com/download/win>
+2.  Run the installer (accept all defaults)
+3.  Restart RStudio after installation
+
+#### macOS
+
+Git usually comes pre-installed. To check or update:
+
+1.  Open Terminal (find it in Applications \> Utilities)
+2.  Type: `xcode-select --install`
+3.  Follow the prompts
+
+#### Linux
+
+Open terminal and run:
+
+``` bash
+# Ubuntu/Debian:
+sudo apt install git
+
+# Fedora:
+sudo dnf install git
+```
+
+### 👤 Step 2: Tell Git Who You Are
+
+Git needs to know your name and email. Run this in R with **your**
+information:
+
+``` r
+library(usethis)
+
+use_git_config(
+  user.name = "Your Username",
+  user.email = "you@example.com"
+)
+```
+
+**Important:** Use the same email you’ll use for GitHub.
+
+### ✅ Step 3: Check Everything Works
+
+Run this command to verify your setup:
+
+``` r
+git_sitrep()
+```
+
+You should see:
+
+- [x] Your name and email
+- [x] Git version number
+- Some other information (warnings are okay for now)
+
+### 🌐 Step 4: Create a GitHub Account
+
+GitHub will host your dashboard for free.
+
+1.  Go to <https://github.com>
+2.  Click “Sign up”
+3.  Follow the steps (choose a username you like - it will be in your
+    dashboard URL!)
+4.  Verify your email address
+
+### 🔐 Step 5: Set Up Authentication
+
+GitHub needs a way to verify it’s really you. We’ll create a Personal
+Access Token (PAT).
+
+#### Create Your Token
+
+Run this command in R:
+
+``` r
+usethis::create_github_token()
+```
+
+This will:
+
+1.  Open GitHub in your browser
+2.  Pre-fill a token creation form
+
+On the GitHub page:
+
+1.  Add a note like “dashboardr publishing” (to remember what it’s for)
+2.  Click the green “Generate token” button at the bottom
+3.  **IMPORTANT:** Copy the token that appears (it looks like
+    `ghp_xxxxxxxxxxxx`)
+4.  Save it somewhere safe - you won’t be able to see it again!
+
+#### Store Your Token
+
+Now tell R about your token:
+
+``` r
+gitcreds::gitcreds_set()
+```
+
+When prompted, paste your token and press Enter.
+
+**That’s it!** You’ve completed the one-time setup. You never have to do
+these steps again.
+
+## 🚀 Part 2: Publishing Your Dashboard
+
+Now comes the fun part - publishing your dashboard!
+
+### 📊 Step 1: Generate Your Dashboard
+
+First, create and render your dashboard as usual:
+
+``` r
+# Example dashboard
+my_data <- data.frame(
+  category = c("A", "B", "C", "D"),
+  value = c(23, 45, 67, 34)
+)
+
+viz <- create_viz(type = "bar", x_var = "category") %>%
+  add_viz()
+
+dashboard <- create_dashboard(
+  output_dir = "my_dashboard",
+  title = "My First Dashboard"
+) %>%
+  add_page(
+    name = "Analysis",
+    data = my_data,
+    visualizations = viz
+  )
+
+# Generate the dashboard files
+generate_dashboard(dashboard, render = TRUE)
+```
+
+### 🌍 Step 2: Publish!
+
+Now for the magic command with the key arguments shown explicitly:
+
+``` r
+publish_dashboard(
+  message = "Initial commit",  # Your commit message
+  path = "/docs"               # Folder with your dashboard (default)
+)
+```
+
+Or simply:
+
+``` r
+publish_dashboard()  # Uses defaults above
+```
+
+#### Key Arguments
+
+**Important:**
+[`publish_dashboard()`](https://favstats.github.io/dashboardr/reference/publish_dashboard.md)
+works from **your current working directory**. It will:
+
+- Look for your dashboard files in the current folder
+- Create a git repository in that folder
+- Publish the contents of the `/docs` folder to GitHub Pages
+
+**Main arguments you might want to customize:**
+
+- **`message`** - Your initial commit message (default:
+  `"Initial commit"`)
+  - Example:
+    `publish_dashboard(message = "Launch my analysis dashboard")`
+  - This appears in your git history and helps you track what was
+    published
+- **`private`** - Create a private repository (default: `FALSE`)
+  - Example: `publish_dashboard(private = TRUE)`
+  - Use this if your dashboard (code) contains sensitive information
+- **`path`** - Which folder contains your site files (default:
+  `"/docs"`)
+  - The `/docs` (with leading slash) tells GitHub Pages to serve from
+    the `docs/` folder in your repository root
+  - This is where
+    [`generate_dashboard()`](https://favstats.github.io/dashboardr/reference/generate_dashboard.md)
+    creates your HTML files
+
+#### What happens:
+
+1.  Git is initialized in your dashboard folder
+2.  A comprehensive `.gitignore` file is created (automatically excludes
+    data files, large files \>10MB, and temporary files)
+3.  You’ll be asked to confirm committing your files
+4.  A GitHub repository is created
+5.  GitHub Pages is configured
+6.  Your dashboard is pushed online
+
+**Important notes:**
+
+- You will see prompts asking for confirmation - just type the number to
+  proceed
+- Your browser may open showing your GitHub repository
+- The function will display your dashboard URL at the end
+- GitHub Pages takes **2-5 minutes** to build your site the first time
+
+**Your dashboard URL will be shown in the output and will look like:**
+
+    https://YOUR-USERNAME.github.io/your-dashboard-name/
+
+Copy this URL and wait 2-5 minutes, then visit it to see your live
+dashboard!
+
+### ⚙️ Additional Options
+
+For more advanced scenarios:
+
+``` r
+# Publish to an organization instead of your personal account
+publish_dashboard(organisation = "my-organization")
+
+# Use SSH instead of HTTPS (requires SSH keys set up)
+publish_dashboard(protocol = "ssh")
+
+# Custom branch (advanced - usually not needed)
+publish_dashboard(branch = "gh-pages")
+```
+
+## 🔄 Part 3: Updating Your Dashboard
+
+Made changes to your dashboard? Here’s how to update the published
+version.
+
+### 📊 Step 1: Regenerate Your Dashboard
+
+Make your changes and regenerate:
+
+``` r
+# Make changes to your dashboard
+dashboard <- create_dashboard(
+  output_dir = "my_dashboard",
+  title = "My Updated Dashboard"
+) %>%
+  add_page(
+    name = "Analysis",
+    data = my_data,
+    visualizations = viz,
+    text = "Now with more insights!"  # Added new content
+  )
+
+# Regenerate
+generate_dashboard(dashboard, render = TRUE)
+```
+
+### ⬆️ Step 2: Push Your Updates
+
+``` r
+update_dashboard()
+```
+
+**What happens:**
+
+1.  All your changed files are staged
+2.  Changes are committed with your message
+3.  **You’ll be asked to confirm** before pushing (shows list of files)
+4.  Changes are pushed to GitHub
+
+**Safety feature:** By default,
+[`update_dashboard()`](https://favstats.github.io/dashboardr/reference/update_dashboard.md)
+will show you what files will be pushed and ask for confirmation. Type
+`yes` or `y` to proceed.
+
+**That’s it!** Your changes will be live in 1-2 minutes. The function
+will display your dashboard URL - just refresh the page to see your
+updates.
+
+#### Update Options
+
+``` r
+# Custom commit message
+update_dashboard(message = "Added new visualizations")
+
+# Update specific files only
+update_dashboard(
+  files = c("docs/index.html", "docs/analysis.html"),
+  message = "Updated main pages"
+)
+
+# Update all HTML files
+update_dashboard(
+  files = "docs/*.html",
+  message = "Regenerated all pages"
+)
+
+# Skip confirmation prompt (not recommended!)
+update_dashboard(ask = FALSE)
+```
+
+## 📋 Complete Workflow Example
+
+Here’s a full example from start to finish:
+
+``` r
+library(dashboardr)
+
+# 1. Create your dashboard
+my_data <- mtcars
+
+viz <- create_viz(type = "bar", x_var = "cyl") %>%
+  add_viz(text = "Cars by Cylinder Count")
+
+dashboard <- create_dashboard(
+  output_dir = "mtcars_dashboard",
+  title = "Motor Trends Car Analysis"
+) %>%
+  add_page(
+    name = "Overview",
+    data = my_data,
+    visualizations = viz
+  )
+
+# 2. Generate the dashboard
+generate_dashboard(dashboard, render = TRUE)
+
+# 3. Publish (only needed once!)
+publish_dashboard(message = "Initial publication")
+
+# ... time passes, you make changes ...
+
+# 4. Regenerate with changes
+generate_dashboard(dashboard, render = TRUE)
+
+# 5. Push updates
+update_dashboard(message = "Updated car analysis")
+```
+
+## 🔧 Troubleshooting
+
+### “Error: No GitHub token”
+
+**Problem:** R can’t find your GitHub token.
+
+**Solution:** Run
+[`gitcreds::gitcreds_set()`](https://gitcreds.r-lib.org/reference/gitcreds_get.html)
+and paste your token again.
+
+### “Error: Git is not installed”
+
+**Problem:** Git isn’t installed or R can’t find it.
+
+**Solution:** 1. Install Git (see Step 1) 2. Restart RStudio 3. Run
+[`git_sitrep()`](https://usethis.r-lib.org/reference/git_sitrep.html) to
+verify
+
+### “Repository already exists”
+
+**Problem:** You’re trying to publish a second time.
+
+**Solution:** Use
+[`update_dashboard()`](https://favstats.github.io/dashboardr/reference/update_dashboard.md)
+instead of
+[`publish_dashboard()`](https://favstats.github.io/dashboardr/reference/publish_dashboard.md).
+
+### “Error: not a git repository”
+
+**Problem:** Git wasn’t initialized properly, or you’re trying to update
+before publishing.
+
+**Solution:** 1. Make sure you’ve run
+[`publish_dashboard()`](https://favstats.github.io/dashboardr/reference/publish_dashboard.md)
+at least once 2. Run
+[`publish_dashboard()`](https://favstats.github.io/dashboardr/reference/publish_dashboard.md)
+first to initialize Git and create the repository
+
+### GitHub Pages shows 404
+
+**Problem:** Your site isn’t deployed yet, or Pages isn’t configured.
+
+**Solution:** 1. Wait 2-5 minutes after first publish 2. Check your
+repository settings on GitHub 3. Make sure “Pages” is enabled and set to
+deploy from `/docs` folder
+
+### Data files are being committed
+
+**Problem:** Your data files are being uploaded to GitHub.
+
+**Solution:** The `.gitignore` file should automatically exclude data
+files. Check: 1. Look for a `.gitignore` file in your dashboard folder
+2. Make sure your data files match the patterns (*.csv,* .rds, etc.) 3.
+Large files (\>10MB) are automatically detected and ignored
+
+## 💡 Tips and Best Practices
+
+### 1. Keep Data Out of Git
+
+The publishing functions automatically exclude: - All common data file
+formats (CSV, RDS, Excel, etc.) - Large files (\>10MB) - Data
+directories
+
+This keeps your repository small and protects sensitive data.
+
+### 2. Write Descriptive Commit Messages
+
+Instead of:
+
+``` r
+update_dashboard(message = "update")
+```
+
+Do this:
+
+``` r
+update_dashboard(message = "Added new bar chart for regional analysis")
+```
+
+### 3. Test Locally First
+
+Always run
+`generate_dashboard(dashboard, render = TRUE, open = "browser")` to
+preview your changes before publishing.
+
+### 4. Update Regularly
+
+It’s easier to push small, frequent updates than large, infrequent ones.
+Update after each significant change.
+
+### 5. Check Your Site
+
+After updating, wait 1-2 minutes then visit your dashboard URL to verify
+the changes appear correctly.
+
+## ➡️ Next Steps
+
+Now that your dashboard is published, you can:
+
+- Share the URL with colleagues, clients, or the public
+- Add more pages and visualizations
+- Customize your dashboard theme
+- Set up custom domains (see GitHub Pages documentation)
+
+**Happy publishing!** 🎉
+
+For more advanced features, see: -
+[`vignette("advanced-features", package = "dashboardr")`](https://favstats.github.io/dashboardr/articles/advanced-features.md) -
+GitHub Pages documentation: <https://docs.github.com/pages>
