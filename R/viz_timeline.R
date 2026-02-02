@@ -505,7 +505,7 @@ viz_timeline <- function(data,
 
   # Add subtitle if provided
   if (!is.null(subtitle)) {
-    hc <- hc %>% hc_subtitle(text = subtitle)
+    hc <- hc %>% highcharter::hc_subtitle(text = subtitle)
   }
 
   # Configure x-axis based on whether time is categorical or numeric

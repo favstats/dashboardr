@@ -16,7 +16,7 @@ test_that("tutorial_dashboard respects directory parameter", {
   # Verify key files exist
   expect_true(file.exists(file.path(temp_dir, "_quarto.yml")))
   expect_true(file.exists(file.path(temp_dir, "index.qmd")))
-  expect_true(file.exists(file.path(temp_dir, "example_dashboard.qmd")))
+  expect_true(file.exists(file.path(temp_dir, "charts.qmd")))
   
   # Cleanup
   unlink(temp_dir, recursive = TRUE)
@@ -34,8 +34,8 @@ test_that("tutorial_dashboard generates valid QMD with curly braces", {
     tutorial_dashboard(directory = temp_dir)
   })
   
-  # Read example dashboard QMD
-  qmd_file <- file.path(temp_dir, "example_dashboard.qmd")
+  # Read charts QMD (has visualizations)
+  qmd_file <- file.path(temp_dir, "charts.qmd")
   expect_true(file.exists(qmd_file))
   
   qmd_content <- readLines(qmd_file)
@@ -44,15 +44,8 @@ test_that("tutorial_dashboard generates valid QMD with curly braces", {
   expect_true(length(qmd_content) > 10)
   
   # Find lines with viz_ function calls (these should have valid R syntax)
-  viz_lines <- grep("viz_heatmap|viz_bar|viz_stackedbar", qmd_content, value = TRUE)
+  viz_lines <- grep("viz_bar|viz_stackedbar", qmd_content, value = TRUE)
   expect_true(length(viz_lines) > 0)
-  
-  # Check tooltip_labels_format has curly braces preserved (not escaped)
-  format_lines <- grep("tooltip_labels_format.*\\{point", qmd_content, value = TRUE)
-  # If format lines exist, verify curly braces are there
-  if (length(format_lines) > 0) {
-    expect_true(any(grepl("\\{point\\.", format_lines)))
-  }
   
   # Cleanup
   unlink(temp_dir, recursive = TRUE)

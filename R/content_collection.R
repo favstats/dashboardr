@@ -1594,7 +1594,12 @@ add_input <- function(content,
     data_values <- data_values[!is.na(data_values)]
     
     # Check if options match data values
-    mismatched <- setdiff(options, data_values)
+    # Exclude add_all_label from mismatch check (it's a special "All" option, not a data value)
+    options_to_check <- options
+    if (add_all) {
+      options_to_check <- setdiff(options, add_all_label)
+    }
+    mismatched <- setdiff(options_to_check, data_values)
     if (length(mismatched) > 0) {
       warning(
         "add_input(): Some options don't match values in data column '", filter_var, "':\n",
@@ -1940,32 +1945,14 @@ end_input_row <- function(row_container) {
 # ============================================
 # OPERATOR OVERLOADING FOR + SYNTAX
 # ============================================
+# Note: +.content_collection is defined in viz_collection.R to avoid duplication
 
-#' Combine content collections using + operator
+#' Combine viz collections using + operator
 #'
-#' Allows combining content and visualization collections using the `+` operator.
-#' This provides a clean, intuitive syntax for building dashboard content.
-#'
-#' @param e1 First content_collection or viz_collection
-#' @param e2 Second content_collection or viz_collection
-#' @return A merged content_collection containing items from both
-#' @export
-#' @examples
-#' \dontrun{
-#' # Combine content and visualizations
-#' combined <- content + viz
-#' 
-#' # Or the other way around
-#' combined <- viz + content
-#' 
-#' # Chain multiple combinations
-#' combined <- text_content + charts + more_content
-#' }
-`+.content_collection` <- function(e1, e2) {
-  merge_collections(e1, e2)
-}
-
-#' @rdname +.content_collection
+#' @param e1 First viz_collection
+#' @param e2 Second viz_collection
+#' @return A merged collection containing items from both
+#' @rdname plus-viz_collection
 #' @export
 `+.viz_collection` <- function(e1, e2) {
   merge_collections(e1, e2)

@@ -1,0 +1,100 @@
+[
+  {
+    "objectID": "glass_theme.html",
+    "href": "glass_theme.html",
+    "title": " Glass Theme",
+    "section": "",
+    "text": "Loading visualizations..."
+  },
+  {
+    "objectID": "glass_theme.html#glass-overlay-theme",
+    "href": "glass_theme.html#glass-overlay-theme",
+    "title": " Glass Theme",
+    "section": "Glass Overlay Theme",
+    "text": "Glass Overlay Theme\nThis page uses the glass overlay theme - a semi-transparent frosted effect.\nReload the page to see the overlay again.\n\nDemographicsAttitudes\n\n\n\nEducation LevelsRace Distribution\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nHappiness LevelsPolitical Views"
+  },
+  {
+    "objectID": "light_theme.html",
+    "href": "light_theme.html",
+    "title": " Light Theme",
+    "section": "",
+    "text": "Preparing your dashboard..."
+  },
+  {
+    "objectID": "light_theme.html#light-overlay-theme",
+    "href": "light_theme.html#light-overlay-theme",
+    "title": " Light Theme",
+    "section": "Light Overlay Theme",
+    "text": "Light Overlay Theme\nThis page uses the light overlay theme - a clean white background.\nReload the page to see the overlay again."
+  },
+  {
+    "objectID": "light_theme.html#education-levels",
+    "href": "light_theme.html#education-levels",
+    "title": " Light Theme",
+    "section": "Education Levels",
+    "text": "Education Levels"
+  },
+  {
+    "objectID": "light_theme.html#happiness-levels",
+    "href": "light_theme.html#happiness-levels",
+    "title": " Light Theme",
+    "section": "Happiness Levels",
+    "text": "Happiness Levels"
+  },
+  {
+    "objectID": "dark_theme.html",
+    "href": "dark_theme.html",
+    "title": " Dark Theme",
+    "section": "",
+    "text": "Almost ready..."
+  },
+  {
+    "objectID": "dark_theme.html#dark-overlay-theme",
+    "href": "dark_theme.html#dark-overlay-theme",
+    "title": " Dark Theme",
+    "section": "Dark Overlay Theme",
+    "text": "Dark Overlay Theme\nThis page uses the dark overlay theme - ideal for dark-themed dashboards.\nReload the page to see the overlay again."
+  },
+  {
+    "objectID": "dark_theme.html#education-levels",
+    "href": "dark_theme.html#education-levels",
+    "title": " Dark Theme",
+    "section": "Education Levels",
+    "text": "Education Levels"
+  },
+  {
+    "objectID": "dark_theme.html#happiness-levels",
+    "href": "dark_theme.html#happiness-levels",
+    "title": " Dark Theme",
+    "section": "Happiness Levels",
+    "text": "Happiness Levels"
+  },
+  {
+    "objectID": "accent_theme.html",
+    "href": "accent_theme.html",
+    "title": " Accent Theme",
+    "section": "",
+    "text": "Loading..."
+  },
+  {
+    "objectID": "accent_theme.html#accent-overlay-theme",
+    "href": "accent_theme.html#accent-overlay-theme",
+    "title": " Accent Theme",
+    "section": "Accent Overlay Theme",
+    "text": "Accent Overlay Theme\nThis page uses the accent overlay theme - uses your dashboard’s accent color.\nReload the page to see the overlay again."
+  },
+  {
+    "objectID": "accent_theme.html#education-levels",
+    "href": "accent_theme.html#education-levels",
+    "title": " Accent Theme",
+    "section": "Education Levels",
+    "text": "Education Levels"
+  },
+  {
+    "objectID": "accent_theme.html#happiness-levels",
+    "href": "accent_theme.html#happiness-levels",
+    "title": " Accent Theme",
+    "section": "Happiness Levels",
+    "text": "Happiness Levels"
+  }
+]

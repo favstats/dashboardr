@@ -1027,9 +1027,20 @@
     // Step 1: Filter the cross-tab data based on filter selections
     let filteredData = data.slice();
     
+    // Common "All" labels that mean "don't filter" (case-insensitive)
+    const allLabels = ['all', 'alle', 'tous', 'todo', 'tutti', 'すべて', '全部'];
+    
     for (const filterVar of filterVars) {
       const selectedValues = filters[filterVar];
       if (selectedValues && selectedValues.length > 0) {
+        // Check if any selected value is an "All" option - if so, skip this filter
+        const hasAllOption = selectedValues.some(v => 
+          allLabels.includes(String(v).toLowerCase())
+        );
+        if (hasAllOption) {
+          continue; // Don't filter on this variable
+        }
+        
         filteredData = filteredData.filter(row => {
           const rowValue = String(row[filterVar]);
           return selectedValues.includes(rowValue);

@@ -107,7 +107,9 @@ result <- viz_heatmap(
   value_label = "Mean Age",
   x_order = c("extremely liberal", "liberal", "slightly liberal", "moderate, middle of the road", "slightly conservative", "conservative", "extremely conservative"),
   y_order = c("lower class", "working class", "middle class", "upper class"),
-  color_palette = c("#f7fbff", "#c6dbef", "#6baed6", "#2171b5", "#08306b")
+  color_palette = c("#f7fbff", "#c6dbef", "#6baed6", "#2171b5", "#08306b"),
+  data_labels_enabled = TRUE,
+  tooltip_labels_format = "{point.value:.1f}"
 )
 
 # Extract cross-tab data BEFORE wrapping (wrapping strips attributes)
@@ -143,19 +145,19 @@ if (!is.null(cross_tab_data)) {
 result
 ```
 
-## Social Class by Gender
+## Political Ideology by Gender
 
-```{r bar-class-sex}
-# Social Class by Gender
+```{r bar-polviews-sex}
+# Political Ideology by Gender
 result <- viz_bar(
   data = data,
-  title = "Social Class by Gender",
-  x_var = "class",
+  title = "Political Ideology by Gender",
+  x_var = "polviews",
   group_var = "sex",
-  subtitle = "Self-reported social class distribution",
-  x_label = "Social Class",
+  subtitle = "Distribution of political views across genders",
+  x_label = "Political Views",
   y_label = "Count",
-  x_order = c("lower class", "working class", "middle class", "upper class"),
+  x_order = c("extremely liberal", "liberal", "slightly liberal", "moderate, middle of the road", "slightly conservative", "conservative", "extremely conservative"),
   color_palette = c("#3498db", "#e74c3c")
 )
 

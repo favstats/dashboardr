@@ -1,0 +1,132 @@
+---
+title: "{{< iconify ph chart-line >}} Timeline"
+format: html
+---
+
+```{r, include=FALSE}
+# Initialize dashboardr page configuration (CSS/JS for charts)
+dashboardr:::.page_config()
+```
+
+```{r setup}
+#| echo: false
+#| warning: false
+#| message: false
+#| error: false
+#| results: 'hide'
+
+# Load dashboardr (includes dplyr, highcharter as dependencies)
+library(dashboardr)
+
+# Global chunk options
+knitr::opts_chunk$set(
+  echo = FALSE,
+  warning = FALSE,
+  message = FALSE,
+  error = FALSE,
+  fig.width = 12,
+  fig.height = 8,
+  dpi = 300
+)
+
+# Load data
+data <- readRDS('dataset_large_70869obs.rds')
+
+# Data summary
+cat('Dataset loaded:', nrow(data), 'rows,', ncol(data), 'columns\n')
+
+```
+
+
+<details>
+<summary>{{< iconify ph code >}} View Full Page Code</summary>
+
+```r
+# === TIMELINE PAGE ===
+# This page shows happiness trends over 50+ years
+
+# Data preparation - use gss_all for time series
+library(gssr)
+data(gss_all, package = "gssr")
+gss_time <- gss_all %>%
+  dplyr::mutate(
+    happy = as.character(haven::as_factor(happy))
+  ) %>%
+  dplyr::filter(
+    !is.na(happy),
+    !is.na(year),
+    happy %in% c("very happy", "pretty happy", "not too happy")
+  )
+
+# Create visualization
+timeline_viz <- create_content() %>%
+  add_viz(type = "timeline",
+          time_var = "year",
+          y_var = "happy",
+          title = "Happiness Trends Over Time (1972-2024)",
+          subtitle = "How has happiness changed across 50+ years?",
+          x_label = "Year",
+          y_label = "Percentage",
+          y_levels = c("very happy", "pretty happy", "not too happy"),
+          color_palette = c("#27ae60", "#f39c12", "#e74c3c"),
+          height = 450)
+
+# Create page and add content
+timeline_page <- create_page(name = "Timeline", data = gss_time, icon = "ph:chart-line") %>%
+  add_content(timeline_viz)
+```
+
+</details>
+
+
+The **timeline chart** visualizes trends across the 50+ year history of the GSS (1972-2024).
+
+## Happiness Trends Over Time (1972-2024)
+
+```{r timeline-happy}
+# Happiness Trends Over Time (1972-2024)
+result <- viz_timeline(
+  data = data,
+  title = "Happiness Trends Over Time (1972-2024)",
+  time_var = "year",
+  y_var = "happy",
+  subtitle = "How has happiness changed across 50+ years?",
+  x_label = "Year",
+  y_label = "Percentage",
+  y_levels = c("very happy", "pretty happy", "not too happy"),
+  color_palette = c("#27ae60", "#f39c12", "#e74c3c")
+)
+
+# Extract cross-tab data BEFORE wrapping (wrapping strips attributes)
+cross_tab_data <- attr(result, 'cross_tab_data')
+cross_tab_config <- attr(result, 'cross_tab_config')
+cross_tab_id <- attr(result, 'cross_tab_id')
+
+# Force container height with explicit wrapper
+if (inherits(result, 'highchart')) {
+  result <- highcharter::hc_size(result, height = 450)
+}
+result <- htmltools::div(
+  style = 'height: 450px !important; min-height: 450px !important; width: 100%; overflow: visible;',
+  result
+)
+
+# Embed cross-tab data for client-side filtering
+if (!is.null(cross_tab_data)) {
+  cross_tab_json <- jsonlite::toJSON(cross_tab_data, dataframe = 'rows')
+  config_json <- jsonlite::toJSON(cross_tab_config, auto_unbox = TRUE)
+  script_tag <- htmltools::tags$script(
+    htmltools::HTML(paste0(
+      'window.dashboardrCrossTab = window.dashboardrCrossTab || {};',
+      'window.dashboardrCrossTab["', cross_tab_id, '"] = {',
+      'data: ', cross_tab_json, ',',
+      'config: ', config_json,
+      '};'
+    ))
+  )
+  result <- htmltools::tagList(script_tag, result)
+}
+
+result
+```
+

@@ -304,10 +304,10 @@ S3 methods for displaying objects
   : Knitr print method for dashboard projects
 - [`show_structure()`](https://favstats.github.io/dashboardr/reference/show_structure.md)
   : Show collection structure (even with data attached)
-- [`` `+`( ``*`<viz_collection>`*`)`](https://favstats.github.io/dashboardr/reference/plus-.viz_collection.md)
-  : Combine Visualization Collections with + Operator
+- [`` `+`( ``*`<viz_collection>`*`)`](https://favstats.github.io/dashboardr/reference/plus-viz_collection.md)
+  : Combine viz collections using + operator
 - [`` `+`( ``*`<content_collection>`*`)`](https://favstats.github.io/dashboardr/reference/plus-.content_collection.md)
-  : Combine content collections using + operator
+  : Combine Content Collections with + Operator
 
 ## Page Object Methods
 

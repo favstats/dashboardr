@@ -1,0 +1,65 @@
+[
+  {
+    "objectID": "1_level.html",
+    "href": "1_level.html",
+    "title": " 1 Level",
+    "section": "",
+    "text": "Each visualization gets a different tabgroup name, creating separate top-level tabs:\nadd_viz(..., tabgroup = \"age\") %&gt;%\nadd_viz(..., tabgroup = \"education\") %&gt;%\nadd_viz(..., tabgroup = \"region\")\n\nBy AgeBy EducationBy Region"
+  },
+  {
+    "objectID": "1_level.html#single-level-tabs",
+    "href": "1_level.html#single-level-tabs",
+    "title": " 1 Level",
+    "section": "",
+    "text": "Each visualization gets a different tabgroup name, creating separate top-level tabs:\nadd_viz(..., tabgroup = \"age\") %&gt;%\nadd_viz(..., tabgroup = \"education\") %&gt;%\nadd_viz(..., tabgroup = \"region\")\n\nBy AgeBy EducationBy Region"
+  },
+  {
+    "objectID": "2_levels.html",
+    "href": "2_levels.html",
+    "title": " 2 Levels",
+    "section": "",
+    "text": "Use / to create parent and child tabs:\nadd_viz(..., tabgroup = \"satisfaction/by_age\") %&gt;%\nadd_viz(..., tabgroup = \"satisfaction/by_education\") %&gt;%\nadd_viz(..., tabgroup = \"education/by_age\")\n\nSatisfaction AnalysisEducation Analysis\n\n\n\nBy AgeBy EducationBy Region\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nBy AgeBy Region"
+  },
+  {
+    "objectID": "2_levels.html#two-level-nested-tabs",
+    "href": "2_levels.html#two-level-nested-tabs",
+    "title": " 2 Levels",
+    "section": "",
+    "text": "Use / to create parent and child tabs:\nadd_viz(..., tabgroup = \"satisfaction/by_age\") %&gt;%\nadd_viz(..., tabgroup = \"satisfaction/by_education\") %&gt;%\nadd_viz(..., tabgroup = \"education/by_age\")\n\nSatisfaction AnalysisEducation Analysis\n\n\n\nBy AgeBy EducationBy Region\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nBy AgeBy Region"
+  },
+  {
+    "objectID": "3_levels.html",
+    "href": "3_levels.html",
+    "title": " 3 Levels",
+    "section": "",
+    "text": "Add more / for deeper nesting:\nadd_viz(..., tabgroup = \"survey/satisfaction/age\") %&gt;%\nadd_viz(..., tabgroup = \"survey/demographics/education\") %&gt;%\nadd_viz(..., tabgroup = \"analysis/trends/regional\")\n\nSurvey ResultsAnalysis\n\n\n\nSatisfactionDemographics\n\n\n\nBy AgeBy Education\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nBy AgeBy Education\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nTrends\n\n\n\nRegionalEducational"
+  },
+  {
+    "objectID": "3_levels.html#three-level-nested-tabs",
+    "href": "3_levels.html#three-level-nested-tabs",
+    "title": " 3 Levels",
+    "section": "",
+    "text": "Add more / for deeper nesting:\nadd_viz(..., tabgroup = \"survey/satisfaction/age\") %&gt;%\nadd_viz(..., tabgroup = \"survey/demographics/education\") %&gt;%\nadd_viz(..., tabgroup = \"analysis/trends/regional\")\n\nSurvey ResultsAnalysis\n\n\n\nSatisfactionDemographics\n\n\n\nBy AgeBy Education\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nBy AgeBy Education\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nTrends\n\n\n\nRegionalEducational"
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": " Home",
+    "section": "",
+    "text": "This dashboard demonstrates the segmented tabset theme with different nesting levels.\n\n\ncreate_dashboard(\n  title = \"My Dashboard\",\n  output_dir = \"my_dashboard\",\n  tabset_theme = \"segmented\"\n)\n\n\n\n\n1 Level - Simple tabs (Demographics, Regions)\n2 Levels - Nested tabs (Topic &gt; Subtopic)\n3 Levels - Deep nesting (Category &gt; Subcategory &gt; Detail)"
+  },
+  {
+    "objectID": "index.html#how-to-use-this-theme",
+    "href": "index.html#how-to-use-this-theme",
+    "title": " Home",
+    "section": "",
+    "text": "create_dashboard(\n  title = \"My Dashboard\",\n  output_dir = \"my_dashboard\",\n  tabset_theme = \"segmented\"\n)"
+  },
+  {
+    "objectID": "index.html#demo-pages",
+    "href": "index.html#demo-pages",
+    "title": " Home",
+    "section": "",
+    "text": "1 Level - Simple tabs (Demographics, Regions)\n2 Levels - Nested tabs (Topic &gt; Subtopic)\n3 Levels - Deep nesting (Category &gt; Subcategory &gt; Detail)"
+  }
+]

@@ -1,73 +1,45 @@
 [
   {
-    "objectID": "example_dashboard.html",
-    "href": "example_dashboard.html",
-    "title": " Example Dashboard",
+    "objectID": "charts.html",
+    "href": "charts.html",
+    "title": " Charts",
     "section": "",
-    "text": "Here, you can see how to add text within a dashboard."
+    "text": "View Full Page Code\n\n# === CHARTS PAGE ===\n# This page shows a bar chart and stacked bar chart\n\n# Data preparation\nlibrary(gssr)\ndata(gss_panel20, package = \"gssr\")\ngss_clean &lt;- gss_panel20 %&gt;%\n  dplyr::mutate(\n    degree = as.character(haven::as_factor(degree_1a)),\n    happy = as.character(haven::as_factor(happy_1a))\n  ) %&gt;%\n  dplyr::filter(!is.na(degree), !is.na(happy))\n\n# Create visualizations\nchart_vizzes &lt;- create_content() %&gt;%\n  add_viz(type = \"bar\",\n          x_var = \"degree\",\n          title = \"Education Level Distribution\",\n          subtitle = \"Count of respondents by highest degree attained\",\n          x_label = \"Education\",\n          y_label = \"Count\",\n          x_order = c(\"less than high school\", \"high school\",\n                      \"associate/junior college\", \"bachelor's\", \"graduate\"),\n          color_palette = c(\"#3498db\", \"#2ecc71\", \"#9b59b6\", \"#e74c3c\", \"#f39c12\"),\n          height = 400) %&gt;%\n  add_viz(type = \"stackedbar\",\n          x_var = \"degree\",\n          stack_var = \"happy\",\n          title = \"Happiness by Education Level\",\n          subtitle = \"Self-reported happiness across education groups\",\n          x_label = \"Education\",\n          y_label = \"Percentage\",\n          stack_label = \"Happiness\",\n          stacked_type = \"percent\",\n          x_order = c(\"less than high school\", \"high school\",\n                      \"associate/junior college\", \"bachelor's\", \"graduate\"),\n          stack_order = c(\"very happy\", \"pretty happy\", \"not too happy\"),\n          color_palette = c(\"#27ae60\", \"#f39c12\", \"#e74c3c\"),\n          height = 450)\n\n# Create page and add content\ncharts_page &lt;- create_page(name = \"Charts\", data = gss_clean, icon = \"ph:chart-bar\") %&gt;%\n  add_content(chart_vizzes)\nThis page demonstrates three common chart types: a bar chart for counts, and a stacked bar chart for proportions."
   },
   {
-    "objectID": "example_dashboard.html#add-a-new-heading-like-this",
-    "href": "example_dashboard.html#add-a-new-heading-like-this",
-    "title": " Example Dashboard",
-    "section": "Add a new heading like this",
-    "text": "Add a new heading like this\nA line break is displayed when you add a new section."
+    "objectID": "charts.html#education-level-distribution",
+    "href": "charts.html#education-level-distribution",
+    "title": " Charts",
+    "section": "Education Level Distribution",
+    "text": "Education Level Distribution\n\n\n\n\n\n\n\n\n\n\n View R Code\n\nadd_viz(type = \"bar\",\n        x_var = \"degree\",\n        title = \"Education Level Distribution\",\n        subtitle = \"Count of respondents by highest degree attained\",\n        x_label = \"Education\",\n        y_label = \"Count\",\n        x_order = c(\"less than high school\", \"high school\",\n                    \"associate/junior college\", \"bachelor's\", \"graduate\"),\n        color_palette = c(\"#3498db\", \"#2ecc71\", \"#9b59b6\", \"#e74c3c\", \"#f39c12\"),\n        height = 400)"
   },
   {
-    "objectID": "example_dashboard.html#example-1-stacked-bars",
-    "href": "example_dashboard.html#example-1-stacked-bars",
-    "title": " Example Dashboard",
-    "section": "Example 1: Stacked Bars",
-    "text": "Example 1: Stacked Bars\n\n Change the title here…\n\n\nIf you want to add text within the tab, you can do so here.\n\n\n\n\n\n\n\n\n\n\n\n\n\n View R Code\n\nadd_viz(type = \"stackedbar\",\n        x_var = \"degree_1a\",\n        stack_var = \"happy_1a\",\n        title = \"Change the title here...\",\n        subtitle = \"You can add a subtitle using the subtitle argument\",\n        x_label = \"Education Level\",\n        y_label = \"Percentage of Respondents\",\n        stack_label = \"Happiness Level\",\n        stacked_type = \"percent\",\n        x_order = c(\"Lt High School\", \"High School\", \"Junior College\", \"Bachelor\", \"Graduate\"),\n        stack_order = c(\"Very Happy\", \"Pretty Happy\", \"Not Too Happy\"),\n        tooltip_suffix = \"%\",\n        color_palette = c(\"#2E86AB\", \"#A23B72\", \"#F18F01\"),\n        text = \"If you want to add text within the tab, you can do so here.\",\n        text_position = \"above\",\n        icon = \"ph:chart-bar\",\n        height = 500,\n        tabgroup = \"demographics\")\nFull documentation"
+    "objectID": "charts.html#happiness-by-education-level",
+    "href": "charts.html#happiness-by-education-level",
+    "title": " Charts",
+    "section": "Happiness by Education Level",
+    "text": "Happiness by Education Level\n\n\n\n\n\n\n\n\n\n\n View R Code\n\nadd_viz(type = \"stackedbar\",\n        x_var = \"degree\",\n        stack_var = \"happy\",\n        title = \"Happiness by Education Level\",\n        subtitle = \"Self-reported happiness across education groups\",\n        x_label = \"Education\",\n        y_label = \"Percentage\",\n        stack_label = \"Happiness\",\n        stacked_type = \"percent\",\n        x_order = c(\"less than high school\", \"high school\",\n                    \"associate/junior college\", \"bachelor's\", \"graduate\"),\n        stack_order = c(\"very happy\", \"pretty happy\", \"not too happy\"),\n        color_palette = c(\"#27ae60\", \"#f39c12\", \"#e74c3c\"),\n        height = 450)"
   },
   {
-    "objectID": "example_dashboard.html#example-1-stacked-bars-1",
-    "href": "example_dashboard.html#example-1-stacked-bars-1",
-    "title": " Example Dashboard",
-    "section": "Example 1: Stacked Bars",
-    "text": "Example 1: Stacked Bars\n\n Tabset #2\n\n\n\n\n\n\n\n\n\n\nChange the position of the text using the text_position argument.\n\n\n\n\n\n View R Code\n\nadd_viz(type = \"stackedbar\",\n        x_var = \"sex_1a\",\n        stack_var = \"happy_1a\",\n        title = \"Tabset #2\",\n        subtitle = \"Another example subtitle here!\",\n        x_label = \"Gender\",\n        y_label = \"Percentage of Respondents\",\n        stack_label = \"Happiness Level\",\n        stacked_type = \"percent\",\n        stack_order = c(\"Very Happy\", \"Pretty Happy\", \"Not Too Happy\"),\n        tooltip_suffix = \"%\",\n        color_palette = c(\"#2E86AB\", \"#A23B72\", \"#F18F01\"),\n        text = \"Change the position of the text using the `text_position` argument.\",\n        text_position = \"below\",\n        icon = \"ph:gender-intersex\",\n        height = 450,\n        tabgroup = \"demographics\")\nFull documentation"
-  },
-  {
-    "objectID": "example_dashboard.html#example-2-heatmap",
-    "href": "example_dashboard.html#example-2-heatmap",
-    "title": " Example Dashboard",
-    "section": "Example 2: Heatmap",
-    "text": "Example 2: Heatmap\n\n Trust by Education and Age\n\n\nHere’s another example of the kind of plots you can generate in your dashboard.\n\n\n\n\n\n\n\n\n\n\n\n\n\n View R Code\n\nadd_viz(type = \"heatmap\",\n        x_var = \"degree_1a\",\n        y_var = \"age_1a\",\n        value_var = \"trust_1a\",\n        title = \"Trust by Education and Age\",\n        subtitle = \"Average trust levels across education and age groups\",\n        x_label = \"Example x axis\",\n        y_label = \"Customizable y label\",\n        value_label = \"You can change the label here too...\",\n        x_order = c(\"Lt High School\", \"High School\", \"Junior College\", \"Bachelor\", \"Graduate\"),\n        color_palette = c(\"#d7191c\", \"#fdae61\", \"#ffffbf\", \"#abdda4\", \"#2b83ba\"),\n        tooltip_prefix = \"Trust: \",\n        tooltip_suffix = \"/3\",\n        tooltip_labels_format = \"{point.value:.2f}\",\n        text = \"Heres another example of the kind of plots you can generate in your dashboard.\",\n        text_position = \"above\",\n        icon = \"ph:heatmap\",\n        height = 600,\n        tabgroup = \"social\")\nFull documentation"
-  },
-  {
-    "objectID": "example_dashboard.html#example-2-heatmap-1",
-    "href": "example_dashboard.html#example-2-heatmap-1",
-    "title": " Example Dashboard",
-    "section": "Example 2: Heatmap",
-    "text": "Example 2: Heatmap\n\n Trust by Region and Education\n\n\nEducational and regional patterns in trust distribution.\n\n\n\n\n\n\n\n\n\n\n\n\n\n View R Code\n\nadd_viz(type = \"heatmap\",\n        x_var = \"region_1a\",\n        y_var = \"degree_1a\",\n        value_var = \"trust_1a\",\n        title = \"Trust by Region and Education\",\n        subtitle = \"Educational and regional patterns in trust levels\",\n        x_label = \"Region\",\n        y_label = \"Education Level\",\n        value_label = \"Trust Level\",\n        y_order = c(\"Lt High School\", \"High School\", \"Junior College\", \"Bachelor\", \"Graduate\"),\n        color_palette = c(\"#d7191c\", \"#fdae61\", \"#ffffbf\", \"#abdda4\", \"#2b83ba\"),\n        tooltip_prefix = \"Trust: \",\n        tooltip_suffix = \"/3\",\n        tooltip_labels_format = \"{point.value:.2f}\",\n        text = \"Educational and regional patterns in trust distribution.\",\n        text_position = \"above\",\n        icon = \"ph:chart-pie\",\n        height = 550,\n        tabgroup = \"social\")\nFull documentation"
-  },
-  {
-    "objectID": "standalone_charts.html",
-    "href": "standalone_charts.html",
-    "title": " Standalone Charts",
+    "objectID": "timeline.html",
+    "href": "timeline.html",
+    "title": " Timeline",
     "section": "",
-    "text": "This page demonstrates standalone charts (no tabsets) for key findings.\nFor example, you could use this layout to visualize the most important trends or overarching themes of your data."
+    "text": "View Full Page Code\n\n# === TIMELINE PAGE ===\n# This page shows happiness trends over 50+ years\n\n# Data preparation - use gss_all for time series\nlibrary(gssr)\ndata(gss_all, package = \"gssr\")\ngss_time &lt;- gss_all %&gt;%\n  dplyr::mutate(\n    happy = as.character(haven::as_factor(happy))\n  ) %&gt;%\n  dplyr::filter(\n    !is.na(happy),\n    !is.na(year),\n    happy %in% c(\"very happy\", \"pretty happy\", \"not too happy\")\n  )\n\n# Create visualization\ntimeline_viz &lt;- create_content() %&gt;%\n  add_viz(type = \"timeline\",\n          time_var = \"year\",\n          y_var = \"happy\",\n          title = \"Happiness Trends Over Time (1972-2024)\",\n          subtitle = \"How has happiness changed across 50+ years?\",\n          x_label = \"Year\",\n          y_label = \"Percentage\",\n          y_levels = c(\"very happy\", \"pretty happy\", \"not too happy\"),\n          color_palette = c(\"#27ae60\", \"#f39c12\", \"#e74c3c\"),\n          height = 450)\n\n# Create page and add content\ntimeline_page &lt;- create_page(name = \"Timeline\", data = gss_time, icon = \"ph:chart-line\") %&gt;%\n  add_content(timeline_viz)\nThe timeline chart visualizes trends across the 50+ year history of the GSS (1972-2024)."
   },
   {
-    "objectID": "standalone_charts.html#this-is-a-standalone-chart.",
-    "href": "standalone_charts.html#this-is-a-standalone-chart.",
-    "title": " Standalone Charts",
-    "section": " This is a standalone chart.",
-    "text": "This is a standalone chart.\nThis standalone chart shows the overall distribution of happiness across education levels.\n\n\n\n\n\n\n\n\n\n\n View R Code\n\nadd_viz(type = \"stackedbar\",\n        x_var = \"degree_1a\",\n        stack_var = \"happy_1a\",\n        title = \"This is a standalone chart.\",\n        subtitle = \"Here youll notice that this is a standalone plot.\",\n        x_label = \"Education Level\",\n        y_label = \"Percentage of Respondents\",\n        stack_label = \"Happiness Level\",\n        stacked_type = \"percent\",\n        x_order = c(\"Lt High School\", \"High School\", \"Junior College\", \"Bachelor\", \"Graduate\"),\n        stack_order = c(\"Very Happy\", \"Pretty Happy\", \"Not Too Happy\"),\n        tooltip_suffix = \"%\",\n        color_palette = c(\"#2E86AB\", \"#A23B72\", \"#F18F01\"),\n        text = \"This standalone chart shows the overall distribution of happiness across education levels.\",\n        text_position = \"above\",\n        icon = \"ph:chart-bar\",\n        height = 600)\nFull documentation"
+    "objectID": "timeline.html#happiness-trends-over-time-1972-2024",
+    "href": "timeline.html#happiness-trends-over-time-1972-2024",
+    "title": " Timeline",
+    "section": "Happiness Trends Over Time (1972-2024)",
+    "text": "Happiness Trends Over Time (1972-2024)"
   },
   {
-    "objectID": "standalone_charts.html#heres-another-summary-chart",
-    "href": "standalone_charts.html#heres-another-summary-chart",
-    "title": " Standalone Charts",
-    "section": " Here’s another summary chart",
-    "text": "Here’s another summary chart\n\n\n\n\n\n\n\n\nSubtitle for your standalone chart.\n\n\n View R Code\n\nadd_viz(type = \"heatmap\",\n        x_var = \"partyid_1a\",\n        y_var = \"polviews_1a\",\n        value_var = \"trust_1a\",\n        title = \"Heres another summary chart\",\n        subtitle = \"This summary chart visualizes trust patterns across political groups\",\n        x_label = \"Party Identification\",\n        y_label = \"Political Views\",\n        value_label = \"Trust Level\",\n        x_order = c(\"Strong Democrat\", \"Not Very Strong Democrat\", \"Independent, Close to Democrat\",\n                    \"Independent\", \"Independent, Close to Republican\", \"Not Very Strong Republican\", \"Strong Republican\"),\n        y_order = c(\"Extremely Liberal\", \"Liberal\", \"Slightly Liberal\", \"Moderate\",\n                    \"Slightly Conservative\", \"Conservative\", \"Extremely Conservative\"),\n        color_palette = c(\"#d7191c\", \"#fdae61\", \"#ffffbf\", \"#abdda4\", \"#2b83ba\"),\n        tooltip_prefix = \"Trust: \",\n        tooltip_suffix = \"/3\",\n        tooltip_labels_format = \"{point.value:.2f}\",\n        text = \"Subtitle for your standalone chart.\",\n        text_position = \"below\",\n        icon = \"ph:shield-check\",\n        height = 700)\nFull documentation"
-  },
-  {
-    "objectID": "text_only_page.html",
-    "href": "text_only_page.html",
-    "title": " Text-Only Page",
+    "objectID": "text___content.html",
+    "href": "text___content.html",
+    "title": " Text & Content",
     "section": "",
-    "text": "You can also have a text-only page in your dashboard.\nThis might be useful if you want to add some context or extra information about your plots.\n\n\n\n\n\n\n Back to top"
+    "text": "View Full Page Code\n\n# === TEXT & CONTENT PAGE ===\n# This page demonstrates markdown formatting and content blocks\n\n# Create content with text and accordions\ntext_content &lt;- create_content() %&gt;%\n  add_text(md_text(\n    \"This page demonstrates text formatting and content blocks.\",\n    \"\",\n    \"You can use **bold text** for emphasis, *italics* for subtle highlighting,\",\n    \"and `inline code` for technical terms like `add_viz()`.\",\n    \"\",\n    \"Combine styles: ***bold and italic*** or **`bold code`**.\",\n    \"Add [hyperlinks](https://dashboardr.dev) to external resources.\",\n    \"\",\n    \"Lists work too:\",\n    \"\",\n    \"- First item with **bold**\",\n    \"- Second item with *italics*\",\n    \"- Third item with `code`\"\n  )) %&gt;%\n  add_accordion(\n    title = \"What is an accordion?\",\n    text = \"An **accordion** is a collapsible content block. Users click to\n           expand and reveal hidden content. Great for FAQs or code examples.\"\n  ) %&gt;%\n  add_accordion(\n    title = \"Pro tip: Nested content\",\n    text = md_text(\n      \"Inside accordions, you can include:\",\n      \"\",\n      \"- Markdown formatting like **bold** and *italics*\",\n      \"- Code blocks for examples\",\n      \"- Links to documentation\"\n    )\n  ) %&gt;%\n  add_text(\"Text-only pages are useful for documentation or methodology notes.\")\n\n# Create page and add content\ntext_page &lt;- create_page(name = \"Text & Content\", icon = \"ph:chalkboard-simple-bold\") %&gt;%\n  add_content(text_content)\n\nThis page demonstrates text formatting and content blocks available in dashboardr.\nYou can use bold text for emphasis, italics for subtle highlighting, and inline code for technical terms or function names like add_viz().\nCombine styles: bold and italic or bold code. Add hyperlinks to external resources.\nLists work too:\n\nFirst item with bold\nSecond item with italics\nThird item with code\n\n\n\n What is an accordion?\n\nAn accordion is a collapsible content block. Users click to expand and reveal hidden content. Great for FAQs, code examples, or additional details that might clutter the main page.\n\n\n\n Pro tip: Nested content\n\nInside accordions, you can include:\n\nMarkdown formatting like bold and italics\nCode blocks for examples\nLinks to documentation\n\nThis keeps your dashboard clean while providing depth for curious users.\n\n\nText-only pages are useful for documentation, methodology notes, data sources, or any context that helps users understand your visualizations.\n\n\n\n\n Back to top"
   },
   {
     "objectID": "showcase_dashboard.html",
@@ -86,29 +58,29 @@
   {
     "objectID": "index.html",
     "href": "index.html",
-    "title": " Welcome to the Tutorial Dashboard!",
+    "title": " Welcome",
     "section": "",
-    "text": "Welcome to the Tutorial Dashboard, providing insights into the General Social Survey (GSS) data!\nThis dashboard demonstrates how to use the dashboardr package to create beautiful, interactive dashboards using real survey data.\nThe tutorial is divided into main sections:\nExample Dashboard - Tabbed visualizations with stacked bars and heatmaps\nStandalone Charts - Charts without tabsets\nText Page - Text-only content example\nShowcase Dashboard - Full feature demonstration\nClick on the hyperlinks above for quick navigation."
+    "text": "View Full Dashboard Code\n\nlibrary(dashboardr)\nlibrary(gssr)\n\n# === DATA PREPARATION ===\n\n# Cross-sectional data (for bar/stackedbar charts)\ndata(gss_panel20, package = \"gssr\")\ngss_clean &lt;- gss_panel20 %&gt;%\n  dplyr::mutate(\n    degree = as.character(haven::as_factor(degree_1a)),\n    happy = as.character(haven::as_factor(happy_1a))\n  ) %&gt;%\n  dplyr::filter(!is.na(degree), !is.na(happy))\n\n# Time series data (for timeline chart)\ndata(gss_all, package = \"gssr\")\ngss_time &lt;- gss_all %&gt;%\n  dplyr::mutate(happy = as.character(haven::as_factor(happy))) %&gt;%\n  dplyr::filter(!is.na(happy), !is.na(year),\n                happy %in% c(\"very happy\", \"pretty happy\", \"not too happy\"))\n\n# === CHARTS PAGE ===\n\nchart_vizzes &lt;- create_content() %&gt;%\n  add_viz(type = \"bar\",\n          x_var = \"degree\",\n          title = \"Education Level Distribution\",\n          subtitle = \"Count of respondents by highest degree attained\",\n          x_label = \"Education\",\n          y_label = \"Count\",\n          x_order = c(\"less than high school\", \"high school\",\n                      \"associate/junior college\", \"bachelor's\", \"graduate\"),\n          color_palette = c(\"#3498db\", \"#2ecc71\", \"#9b59b6\", \"#e74c3c\", \"#f39c12\"),\n          height = 400) %&gt;%\n  add_viz(type = \"stackedbar\",\n          x_var = \"degree\",\n          stack_var = \"happy\",\n          title = \"Happiness by Education Level\",\n          subtitle = \"Self-reported happiness across education groups\",\n          x_label = \"Education\",\n          y_label = \"Percentage\",\n          stack_label = \"Happiness\",\n          stacked_type = \"percent\",\n          x_order = c(\"less than high school\", \"high school\",\n                      \"associate/junior college\", \"bachelor's\", \"graduate\"),\n          stack_order = c(\"very happy\", \"pretty happy\", \"not too happy\"),\n          color_palette = c(\"#27ae60\", \"#f39c12\", \"#e74c3c\"),\n          height = 450)\n\ncharts_page &lt;- create_page(name = \"Charts\", data = gss_clean, icon = \"ph:chart-bar\") %&gt;%\n  add_content(chart_vizzes)\n\n# === TIMELINE PAGE ===\n\ntimeline_viz &lt;- create_content() %&gt;%\n  add_viz(type = \"timeline\",\n          time_var = \"year\",\n          y_var = \"happy\",\n          title = \"Happiness Trends Over Time (1972-2024)\",\n          subtitle = \"How has happiness changed across 50+ years?\",\n          x_label = \"Year\",\n          y_label = \"Percentage\",\n          y_levels = c(\"very happy\", \"pretty happy\", \"not too happy\"),\n          color_palette = c(\"#27ae60\", \"#f39c12\", \"#e74c3c\"),\n          height = 450)\n\ntimeline_page &lt;- create_page(name = \"Timeline\", data = gss_time, icon = \"ph:chart-line\") %&gt;%\n  add_content(timeline_viz)\n\n# === TEXT & CONTENT PAGE ===\n\ntext_content &lt;- create_content() %&gt;%\n  add_text(md_text(\n    \"This page demonstrates text formatting and content blocks.\",\n    \"\",\n    \"You can use **bold text**, *italics*, and `inline code`.\",\n    \"\",\n    \"Lists work too:\",\n    \"\",\n    \"- First item with **bold**\",\n    \"- Second item with *italics*\",\n    \"- Third item with `code`\"\n  )) %&gt;%\n  add_accordion(\n    title = \"What is an accordion?\",\n    text = \"A collapsible content block. Great for FAQs or code examples.\"\n  )\n\ntext_page &lt;- create_page(name = \"Text & Content\", icon = \"ph:chalkboard-simple-bold\") %&gt;%\n  add_content(text_content)\n\n# === CREATE DASHBOARD ===\n\ndashboard &lt;- create_dashboard(\n  output_dir = \"tutorial_dashboard\",\n  title = \"Tutorial Dashboard\",\n  logo = \"gss_logo.png\",\n  theme = \"flatly\"\n) %&gt;%\n  add_pages(charts_page, timeline_page, text_page)\n\n# Generate the dashboard\ngenerate_dashboard(dashboard)\n View complete R script on GitHub\nWelcome to the Tutorial Dashboard, providing insights into the General Social Survey (GSS) data!\nThis dashboard demonstrates how to use the dashboardr package to create beautiful, interactive dashboards using real survey data."
   },
   {
     "objectID": "index.html#dashboard-file-structure",
     "href": "index.html#dashboard-file-structure",
-    "title": " Welcome to the Tutorial Dashboard!",
+    "title": " Welcome",
     "section": "Dashboard File Structure",
-    "text": "Dashboard File Structure\nWhen you create a dashboard with dashboardr, the following files are generated:\ntutorial_dashboard/\n├── _quarto.yml\n├── index.qmd\n├── example_dashboard.qmd\n├── standalone_charts.qmd\n├── text_only_page.qmd\n└── showcase_dashboard.qmd"
+    "text": "Dashboard File Structure\ndashboardr generates Quarto dashboards. Quarto is an open-source publishing system that renders .qmd (Quarto Markdown) files into HTML, PDF, and other formats. You write content in Markdown with embedded R code, and Quarto renders it into a polished output.\nWhen you run tutorial_dashboard(), the following files are created:\ntutorial_dashboard/\n├── _quarto.yml              # Project config (title, theme, navigation)\n├── index.qmd                # Landing page (this page)\n├── charts.qmd               # Bar and stacked bar charts\n├── timeline.qmd             # Time series chart (uses gss_all data)\n├── text___content.qmd       # Text and content blocks demo\n└── showcase_dashboard.qmd   # Full feature demonstration\nKey files:\n\n_quarto.yml - The project configuration file. Controls the dashboard title, theme, navbar, and which pages appear in the navigation.\n.qmd files - Each page is a separate Quarto Markdown file containing text and R code chunks that generate visualizations.\n\nTo render the dashboard, Quarto executes the R code in each .qmd file and produces the final HTML. dashboardr handles all the code generation for you!"
   },
   {
     "objectID": "index.html#about-the-data",
     "href": "index.html#about-the-data",
-    "title": " Welcome to the Tutorial Dashboard!",
+    "title": " Welcome",
     "section": "About the Data",
-    "text": "About the Data\nThis dashboard uses data from the General Social Survey (GSS), a nationally representative survey of adults in the United States conducted since 1972. We explore patterns in:\n\nHappiness - Self-reported happiness levels\nTrust - Interpersonal trust measures\nPolitical attitudes - Party identification and ideological views"
+    "text": "About the Data\nThis dashboard uses data from the General Social Survey (GSS), a nationally representative survey of adults in the United States conducted since 1972. We explore patterns in:\n\nHappiness - Self-reported happiness levels (very happy, pretty happy, not too happy)\nEducation - Highest degree attained\nTrends over time - How attitudes change across 50+ years of surveys (1972-2024)"
   },
   {
     "objectID": "index.html#getting-started-with-dashboardr",
     "href": "index.html#getting-started-with-dashboardr",
-    "title": " Welcome to the Tutorial Dashboard!",
+    "title": " Welcome",
     "section": "Getting Started with dashboardr",
-    "text": "Getting Started with dashboardr\nEach visualization includes a collapsible View R Code section showing exactly how it was created. Click the accordion to see the code and link to full documentation.\n\n\n View Full Dashboard Code\n\nlibrary(dashboardr)\nlibrary(dplyr)\n\n# Load GSS data\ndata(gss_panel20, package = \"gssr\")\ngss_clean &lt;- gss_panel20 %&gt;%\n  select(age_1a, sex_1a, degree_1a, region_1a,\n         happy_1a, trust_1a, fair_1a, helpful_1a,\n         polviews_1a, partyid_1a, class_1a) %&gt;%\n  filter(if_any(everything(), ~ !is.na(.)))\n\n# Create visualizations\nanalysis_vizzes &lt;- create_content() %&gt;%\n  add_viz(type = \"stackedbar\",\n          x_var = \"degree_1a\", stack_var = \"happy_1a\",\n          title = \"Happiness by Education\",\n          tabgroup = \"demographics\") %&gt;%\n  add_viz(type = \"heatmap\",\n          x_var = \"degree_1a\", y_var = \"age_1a\", value_var = \"trust_1a\",\n          title = \"Trust by Education and Age\",\n          tabgroup = \"social\")\n\n# Create dashboard\ncreate_dashboard(\n  output_dir = \"my_dashboard\",\n  title = \"My Dashboard\",\n  logo = \"logo.png\",\n  theme = \"flatly\"\n) %&gt;%\n  add_page(name = \"Welcome\", text = \"Landing page content\",\n           icon = \"ph:house\", is_landing_page = TRUE) %&gt;%\n  add_page(name = \"Analysis\", data = gss_clean,\n           content = analysis_vizzes, icon = \"ph:chart-line\") %&gt;%\n  generate_dashboard()\nView full tutorial_dashboard.R source code"
+    "text": "Getting Started with dashboardr\nEach visualization includes a collapsible View R Code section showing exactly how it was created."
   }
 ]

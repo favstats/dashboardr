@@ -965,31 +965,44 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
     cat("\n")
   }
 
-  # Display other files
+  # Display other files (summarized by extension)
   if (length(other_files) > 0) {
-    cat("📎 Other files:\n")
-    for (file in sort(other_files)) {
-      cat("   • ", file, "\n", sep = "")
-    }
-    cat("\n")
+    # Count files by extension
+    extensions <- tolower(tools::file_ext(other_files))
+    extensions[extensions == ""] <- "other"
+    ext_counts <- sort(table(extensions), decreasing = TRUE)
+    
+    # Format summary
+    summary_parts <- vapply(names(ext_counts), function(ext) {
+      count <- ext_counts[[ext]]
+      if (ext == "other") {
+        sprintf("%d other", count)
+      } else {
+        sprintf("%d .%s", count, ext)
+      }
+    }, character(1))
+    
+    cat("📎 Other files: ", paste(summary_parts, collapse = ", "), "\n\n", sep = "")
   }
 
   # Next steps
   cat("🚀 NEXT STEPS:\n")
   cat(paste(rep("─", 30), collapse = ""), "\n")
-  cat("1. Edit your dashboard:\n")
-  cat("   • Modify QMD files to customize content and styling\n")
-  cat("   • Add more visualizations using add_viz() with height parameters\n")
-  cat("   • Customize the _quarto.yml configuration file\n")
+  cat("1. Explore your dashboard:\n")
+  cat("   • Open the rendered HTML in your browser\n")
+  cat("   • Check layouts, visualizations, and interactivity\n")
   cat("\n")
-  cat("2. Generate a new dashboard:\n")
-  cat("   • Use create_dashboard() %>% add_page() %>% generate_dashboard()\n")
+  cat("2. Make changes in R:\n")
+  cat("   • Add/modify content with add_viz(), add_text(), etc.\n")
   cat("   • Try different themes, layouts, and features\n")
-  cat("   • Experiment with height parameters for better proportions\n")
   cat("\n")
-  cat("3. Deploy your dashboard:\n")
+  cat("3. Regenerate:\n")
+  cat("   • Run generate_dashboard() again to see your changes\n")
+  cat("\n")
+  cat("4. Deploy:\n")
   cat("   • Use Quarto's publishing features (GitHub Pages, Netlify, etc.)\n")
-  cat("   • Share the docs/ folder contents\n")
+  cat("\n")
+  cat("💡 Tip: You can also inspect/edit the .qmd files directly, useful for debugging when you encounter errors!\n")
   cat("\n")
 
 

@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.5.57">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title> 3 Levels – Tabset Theme: Underline</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script src="site_libs/quarto-contrib/iconify-3.0.0/iconify-icon.min.js"></script>
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="site_libs/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<script src="site_libs/jquery-3.5.1/jquery.min.js"></script>
+<script src="site_libs/proj4js-2.3.15/proj4.js"></script>
+<link href="site_libs/highcharts-9.3.1/css/motion.css" rel="stylesheet">
+<script src="site_libs/highcharts-9.3.1/highcharts.js"></script>
+<script src="site_libs/highcharts-9.3.1/highcharts-3d.js"></script>
+<script src="site_libs/highcharts-9.3.1/highcharts-more.js"></script>
+<script src="site_libs/highcharts-9.3.1/modules/stock.js"></script>
+<script src="site_libs/highcharts-9.3.1/modules/map.js"></script>
+<script src="site_libs/highcharts-9.3.1/modules/data.js"></script>
+<script src="site_libs/highcharts-9.3.1/modules/exporting.js"></script>
+<script src="site_libs/highcharts-9.3.1/modules/offline-exporting.js"></script>
+<script src="site_libs/highcharts-9.3.1/modules/drilldown.js"></script>
+<script src="site_libs/highcharts-9.3.1/modules/item-series.js"></script>
+<script src="site_libs/highcharts-9.3.1/modules/overlapping-datalabels.js"></script>
+<script src="site_libs/highcharts-9.3.1/modules/annotations.js"></script>
+<script src="site_libs/highcharts-9.3.1/modules/export-data.js"></script>
+<script src="site_libs/highcharts-9.3.1/modules/funnel.js"></script>
+<script src="site_libs/highcharts-9.3.1/modules/heatmap.js"></script>
+<script src="site_libs/highcharts-9.3.1/modules/treemap.js"></script>
+<script src="site_libs/highcharts-9.3.1/modules/sankey.js"></script>
+<script src="site_libs/highcharts-9.3.1/modules/dependency-wheel.js"></script>
+<script src="site_libs/highcharts-9.3.1/modules/organization.js"></script>
+<script src="site_libs/highcharts-9.3.1/modules/solid-gauge.js"></script>
+<script src="site_libs/highcharts-9.3.1/modules/streamgraph.js"></script>
+<script src="site_libs/highcharts-9.3.1/modules/sunburst.js"></script>
+<script src="site_libs/highcharts-9.3.1/modules/vector.js"></script>
+<script src="site_libs/highcharts-9.3.1/modules/wordcloud.js"></script>
+<script src="site_libs/highcharts-9.3.1/modules/xrange.js"></script>
+<script src="site_libs/highcharts-9.3.1/modules/tilemap.js"></script>
+<script src="site_libs/highcharts-9.3.1/modules/venn.js"></script>
+<script src="site_libs/highcharts-9.3.1/modules/gantt.js"></script>
+<script src="site_libs/highcharts-9.3.1/modules/timeline.js"></script>
+<script src="site_libs/highcharts-9.3.1/modules/parallel-coordinates.js"></script>
+<script src="site_libs/highcharts-9.3.1/modules/bullet.js"></script>
+<script src="site_libs/highcharts-9.3.1/modules/coloraxis.js"></script>
+<script src="site_libs/highcharts-9.3.1/modules/dumbbell.js"></script>
+<script src="site_libs/highcharts-9.3.1/modules/lollipop.js"></script>
+<script src="site_libs/highcharts-9.3.1/modules/series-label.js"></script>
+<script src="site_libs/highcharts-9.3.1/plugins/motion.js"></script>
+<script src="site_libs/highcharts-9.3.1/custom/reset.js"></script>
+<script src="site_libs/highcharts-9.3.1/modules/boost.js"></script>
+<script src="site_libs/highchart-binding-0.9.4/highchart.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Fira+Sans:wght@300;400;500;600;700&amp;family=Fira+Code:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
+<script src="assets/tab-scroll-fix.js"></script>
+
+
+<link rel="stylesheet" href="assets/modal.css">
+<link rel="stylesheet" href="assets/pagination.css">
+</head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">Tabset Theme: Underline</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="./index.html"> 
+<span class="menu-text"><iconify-icon role="img" inline="" icon="ph:house" aria-label="Icon house from ph Iconify.design set." title="Icon house from ph Iconify.design set."></iconify-icon> Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./1_level.html"> 
+<span class="menu-text"><iconify-icon role="img" inline="" icon="ph:rows" aria-label="Icon rows from ph Iconify.design set." title="Icon rows from ph Iconify.design set."></iconify-icon> 1 Level</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./2_levels.html"> 
+<span class="menu-text"><iconify-icon role="img" inline="" icon="ph:stack" aria-label="Icon stack from ph Iconify.design set." title="Icon stack from ph Iconify.design set."></iconify-icon> 2 Levels</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link active" href="./3_levels.html" aria-current="page"> 
+<span class="menu-text"><iconify-icon role="img" inline="" icon="ph:tree-structure" aria-label="Icon tree-structure from ph Iconify.design set." title="Icon tree-structure from ph Iconify.design set."></iconify-icon> 3 Levels</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    
+<!-- main -->
+<main class="content column-page" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><iconify-icon role="img" inline="" icon="ph:tree-structure" aria-label="Icon tree-structure from ph Iconify.design set." title="Icon tree-structure from ph Iconify.design set."></iconify-icon> 3 Levels</h1>
+</div>
+
+
+
+<div class="quarto-title-meta column-page">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="three-level-nested-tabs" class="level2">
+<h2 class="anchored" data-anchor-id="three-level-nested-tabs">Three Level Nested Tabs</h2>
+<p>Add more <code>/</code> for deeper nesting:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">add_viz</span>(..., <span class="at">tabgroup =</span> <span class="st">"survey/satisfaction/age"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">add_viz</span>(..., <span class="at">tabgroup =</span> <span class="st">"survey/demographics/education"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">add_viz</span>(..., <span class="at">tabgroup =</span> <span class="st">"analysis/trends/regional"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-6-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-1" role="tab" aria-controls="tabset-6-1" aria-selected="true">Survey Results</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-6-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-2" role="tab" aria-controls="tabset-6-2" aria-selected="false">Analysis</a></li></ul>
+<div class="tab-content">
+<div id="tabset-6-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-6-1-tab">
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-3-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-1" role="tab" aria-controls="tabset-3-1" aria-selected="true">Satisfaction</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-2" role="tab" aria-controls="tabset-3-2" aria-selected="false">Demographics</a></li></ul>
+<div class="tab-content">
+<div id="tabset-3-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-3-1-tab">
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true">By Age</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false">By Education</a></li></ul>
+<div class="tab-content">
+<div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
+<div class="cell">
+<div class="cell-output-display">
+<div style="height: 460px !important; min-height: 460px !important; width: 100%; overflow: visible;">
+<div id="htmlwidget-fc47b8ac51bc3ec5eedb" style="width:100%;height:460px;" class="highchart html-widget"></div>
+<script type="application/json" data-for="htmlwidget-fc47b8ac51bc3ec5eedb">{"x":{"hc_opts":{"chart":{"reflow":true,"height":460},"title":{"text":"Age Distribution"},"yAxis":{"title":{"text":"%"},"type":"linear"},"credits":{"enabled":false},"exporting":{"enabled":false},"boost":{"enabled":false},"plotOptions":{"series":{"label":{"enabled":false},"turboThreshold":0,"showInLegend":true},"treemap":{"layoutAlgorithm":"squarified"},"scatter":{"marker":{"symbol":"circle"}},"column":{"stacking":"percent","dataLabels":{"enabled":true,"format":"{point.percentage:.1f}%","style":{"textOutline":"none","fontSize":"10px"}}}},"series":[{"name":"Very Satisfied","data":[{".x_var_col":"18-29",".stack_var_col":"Very Satisfied","n":112,"y":112,"name":"18-29"},{".x_var_col":"30-44",".stack_var_col":"Very Satisfied","n":134,"y":134,"name":"30-44"},{".x_var_col":"45-59",".stack_var_col":"Very Satisfied","n":131,"y":131,"name":"45-59"},{".x_var_col":"60+",".stack_var_col":"Very Satisfied","n":139,"y":139,"name":"60+"}],"type":"column"},{"name":"Satisfied","data":[{".x_var_col":"18-29",".stack_var_col":"Satisfied","n":156,"y":156,"name":"18-29"},{".x_var_col":"30-44",".stack_var_col":"Satisfied","n":203,"y":203,"name":"30-44"},{".x_var_col":"45-59",".stack_var_col":"Satisfied","n":203,"y":203,"name":"45-59"},{".x_var_col":"60+",".stack_var_col":"Satisfied","n":154,"y":154,"name":"60+"}],"type":"column"},{"name":"Neutral","data":[{".x_var_col":"18-29",".stack_var_col":"Neutral","n":121,"y":121,"name":"18-29"},{".x_var_col":"30-44",".stack_var_col":"Neutral","n":125,"y":125,"name":"30-44"},{".x_var_col":"45-59",".stack_var_col":"Neutral","n":132,"y":132,"name":"45-59"},{".x_var_col":"60+",".stack_var_col":"Neutral","n":100,"y":100,"name":"60+"}],"type":"column"},{"name":"Dissatisfied","data":[{".x_var_col":"18-29",".stack_var_col":"Dissatisfied","n":58,"y":58,"name":"18-29"},{".x_var_col":"30-44",".stack_var_col":"Dissatisfied","n":76,"y":76,"name":"30-44"},{".x_var_col":"45-59",".stack_var_col":"Dissatisfied","n":93,"y":93,"name":"45-59"},{".x_var_col":"60+",".stack_var_col":"Dissatisfied","n":63,"y":63,"name":"60+"}],"type":"column"}],"xAxis":{"type":"category","title":{"text":"Age"},"categories":["18-29","30-44","45-59","60+"]},"legend":{"title":{"text":"Satisfaction"}},"tooltip":{"formatter":"function() {\n          var value = this.percentage.toFixed(1);\n          var categoryLabel = this.point.category || this.series.chart.xAxis[0].categories[this.point.x] || this.x;\n          return '<b>' + categoryLabel + '<\/b><br/>' +\n                 this.series.name + ': ' + value + '%<br/>' +\n                 'Total: ' + 100;\n        }"},"colors":["#22C55E","#84CC16","#EAB308","#EF4444"]},"theme":{"chart":{"backgroundColor":"transparent"},"colors":["#7cb5ec","#434348","#90ed7d","#f7a35c","#8085e9","#f15c80","#e4d354","#2b908f","#f45b5b","#91e8e1"]},"conf_opts":{"global":{"Date":null,"VMLRadialGradientURL":"http =//code.highcharts.com/list(version)/gfx/vml-radial-gradient.png","canvasToolsURL":"http =//code.highcharts.com/list(version)/modules/canvas-tools.js","getTimezoneOffset":null,"timezoneOffset":0,"useUTC":true},"lang":{"contextButtonTitle":"Chart context menu","decimalPoint":".","downloadCSV":"Download CSV","downloadJPEG":"Download JPEG image","downloadPDF":"Download PDF document","downloadPNG":"Download PNG image","downloadSVG":"Download SVG vector image","downloadXLS":"Download XLS","drillUpText":"◁ Back to {series.name}","exitFullscreen":"Exit from full screen","exportData":{"annotationHeader":"Annotations","categoryDatetimeHeader":"DateTime","categoryHeader":"Category"},"hideData":"Hide data table","invalidDate":null,"loading":"Loading...","months":["January","February","March","April","May","June","July","August","September","October","November","December"],"noData":"No data to display","numericSymbolMagnitude":1000,"numericSymbols":["k","M","G","T","P","E"],"printChart":"Print chart","resetZoom":"Reset zoom","resetZoomTitle":"Reset zoom level 1:1","shortMonths":["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],"shortWeekdays":["Sat","Sun","Mon","Tue","Wed","Thu","Fri"],"thousandsSep":" ","viewData":"View data table","viewFullscreen":"View in full screen","weekdays":["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]}},"type":"chart","fonts":[],"debug":false},"evals":["hc_opts.tooltip.formatter"],"jsHooks":[]}</script>
+</div>
+</div>
+</div>
+</div>
+<div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
+<div class="cell">
+<div class="cell-output-display">
+<div style="height: 460px !important; min-height: 460px !important; width: 100%; overflow: visible;">
+<div id="htmlwidget-a252e5d6266a6e80aa9a" style="width:100%;height:460px;" class="highchart html-widget"></div>
+<script type="application/json" data-for="htmlwidget-a252e5d6266a6e80aa9a">{"x":{"hc_opts":{"chart":{"reflow":true,"height":460},"title":{"text":"Education Distribution"},"yAxis":{"title":{"text":"%"},"type":"linear"},"credits":{"enabled":false},"exporting":{"enabled":false},"boost":{"enabled":false},"plotOptions":{"series":{"label":{"enabled":false},"turboThreshold":0,"showInLegend":true},"treemap":{"layoutAlgorithm":"squarified"},"scatter":{"marker":{"symbol":"circle"}},"column":{"stacking":"percent","dataLabels":{"enabled":true,"format":"{point.percentage:.1f}%","style":{"textOutline":"none","fontSize":"10px"}}}},"series":[{"name":"Very Satisfied","data":[{".x_var_col":"High School",".stack_var_col":"Very Satisfied","n":233,"y":233,"name":"High School"},{".x_var_col":"Bachelor's",".stack_var_col":"Very Satisfied","n":185,"y":185,"name":"Bachelor's"},{".x_var_col":"Graduate",".stack_var_col":"Very Satisfied","n":98,"y":98,"name":"Graduate"}],"type":"column"},{"name":"Satisfied","data":[{".x_var_col":"High School",".stack_var_col":"Satisfied","n":313,"y":313,"name":"High School"},{".x_var_col":"Bachelor's",".stack_var_col":"Satisfied","n":260,"y":260,"name":"Bachelor's"},{".x_var_col":"Graduate",".stack_var_col":"Satisfied","n":143,"y":143,"name":"Graduate"}],"type":"column"},{"name":"Neutral","data":[{".x_var_col":"High School",".stack_var_col":"Neutral","n":216,"y":216,"name":"High School"},{".x_var_col":"Bachelor's",".stack_var_col":"Neutral","n":162,"y":162,"name":"Bachelor's"},{".x_var_col":"Graduate",".stack_var_col":"Neutral","n":100,"y":100,"name":"Graduate"}],"type":"column"},{"name":"Dissatisfied","data":[{".x_var_col":"High School",".stack_var_col":"Dissatisfied","n":142,"y":142,"name":"High School"},{".x_var_col":"Bachelor's",".stack_var_col":"Dissatisfied","n":94,"y":94,"name":"Bachelor's"},{".x_var_col":"Graduate",".stack_var_col":"Dissatisfied","n":54,"y":54,"name":"Graduate"}],"type":"column"}],"xAxis":{"type":"category","title":{"text":"Education"},"categories":["High School","Bachelor's","Graduate"]},"legend":{"title":{"text":"Satisfaction"}},"tooltip":{"formatter":"function() {\n          var value = this.percentage.toFixed(1);\n          var categoryLabel = this.point.category || this.series.chart.xAxis[0].categories[this.point.x] || this.x;\n          return '<b>' + categoryLabel + '<\/b><br/>' +\n                 this.series.name + ': ' + value + '%<br/>' +\n                 'Total: ' + 100;\n        }"},"colors":["#22C55E","#84CC16","#EAB308","#EF4444"]},"theme":{"chart":{"backgroundColor":"transparent"},"colors":["#7cb5ec","#434348","#90ed7d","#f7a35c","#8085e9","#f15c80","#e4d354","#2b908f","#f45b5b","#91e8e1"]},"conf_opts":{"global":{"Date":null,"VMLRadialGradientURL":"http =//code.highcharts.com/list(version)/gfx/vml-radial-gradient.png","canvasToolsURL":"http =//code.highcharts.com/list(version)/modules/canvas-tools.js","getTimezoneOffset":null,"timezoneOffset":0,"useUTC":true},"lang":{"contextButtonTitle":"Chart context menu","decimalPoint":".","downloadCSV":"Download CSV","downloadJPEG":"Download JPEG image","downloadPDF":"Download PDF document","downloadPNG":"Download PNG image","downloadSVG":"Download SVG vector image","downloadXLS":"Download XLS","drillUpText":"◁ Back to {series.name}","exitFullscreen":"Exit from full screen","exportData":{"annotationHeader":"Annotations","categoryDatetimeHeader":"DateTime","categoryHeader":"Category"},"hideData":"Hide data table","invalidDate":null,"loading":"Loading...","months":["January","February","March","April","May","June","July","August","September","October","November","December"],"noData":"No data to display","numericSymbolMagnitude":1000,"numericSymbols":["k","M","G","T","P","E"],"printChart":"Print chart","resetZoom":"Reset zoom","resetZoomTitle":"Reset zoom level 1:1","shortMonths":["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],"shortWeekdays":["Sat","Sun","Mon","Tue","Wed","Thu","Fri"],"thousandsSep":" ","viewData":"View data table","viewFullscreen":"View in full screen","weekdays":["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]}},"type":"chart","fonts":[],"debug":false},"evals":["hc_opts.tooltip.formatter"],"jsHooks":[]}</script>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="tabset-3-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-2-tab">
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-2-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-1" role="tab" aria-controls="tabset-2-1" aria-selected="true">By Age</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-2" role="tab" aria-controls="tabset-2-2" aria-selected="false">By Education</a></li></ul>
+<div class="tab-content">
+<div id="tabset-2-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-2-1-tab">
+<div class="cell">
+<div class="cell-output-display">
+<div style="height: 460px !important; min-height: 460px !important; width: 100%; overflow: visible;">
+<div id="htmlwidget-d6b5a7db29137e407532" style="width:100%;height:460px;" class="highchart html-widget"></div>
+<script type="application/json" data-for="htmlwidget-d6b5a7db29137e407532">{"x":{"hc_opts":{"chart":{"reflow":true,"height":460},"title":{"text":"Age by Region"},"yAxis":{"title":{"text":"%"},"type":"linear"},"credits":{"enabled":false},"exporting":{"enabled":false},"boost":{"enabled":false},"plotOptions":{"series":{"label":{"enabled":false},"turboThreshold":0,"showInLegend":true},"treemap":{"layoutAlgorithm":"squarified"},"scatter":{"marker":{"symbol":"circle"}},"column":{"stacking":"percent","dataLabels":{"enabled":true,"format":"{point.percentage:.1f}%","style":{"textOutline":"none","fontSize":"10px"}}}},"series":[{"name":"North","data":[{".x_var_col":"18-29",".stack_var_col":"North","n":99,"y":99,"name":"18-29"},{".x_var_col":"30-44",".stack_var_col":"North","n":148,"y":148,"name":"30-44"},{".x_var_col":"45-59",".stack_var_col":"North","n":146,"y":146,"name":"45-59"},{".x_var_col":"60+",".stack_var_col":"North","n":120,"y":120,"name":"60+"}],"type":"column"},{"name":"South","data":[{".x_var_col":"18-29",".stack_var_col":"South","n":141,"y":141,"name":"18-29"},{".x_var_col":"30-44",".stack_var_col":"South","n":141,"y":141,"name":"30-44"},{".x_var_col":"45-59",".stack_var_col":"South","n":175,"y":175,"name":"45-59"},{".x_var_col":"60+",".stack_var_col":"South","n":128,"y":128,"name":"60+"}],"type":"column"},{"name":"East","data":[{".x_var_col":"18-29",".stack_var_col":"East","n":84,"y":84,"name":"18-29"},{".x_var_col":"30-44",".stack_var_col":"East","n":101,"y":101,"name":"30-44"},{".x_var_col":"45-59",".stack_var_col":"East","n":108,"y":108,"name":"45-59"},{".x_var_col":"60+",".stack_var_col":"East","n":97,"y":97,"name":"60+"}],"type":"column"},{"name":"West","data":[{".x_var_col":"18-29",".stack_var_col":"West","n":123,"y":123,"name":"18-29"},{".x_var_col":"30-44",".stack_var_col":"West","n":148,"y":148,"name":"30-44"},{".x_var_col":"45-59",".stack_var_col":"West","n":130,"y":130,"name":"45-59"},{".x_var_col":"60+",".stack_var_col":"West","n":111,"y":111,"name":"60+"}],"type":"column"}],"xAxis":{"type":"category","title":{"text":"Age"},"categories":["18-29","30-44","45-59","60+"]},"legend":{"title":{"text":"Region"}},"tooltip":{"formatter":"function() {\n          var value = this.percentage.toFixed(1);\n          var categoryLabel = this.point.category || this.series.chart.xAxis[0].categories[this.point.x] || this.x;\n          return '<b>' + categoryLabel + '<\/b><br/>' +\n                 this.series.name + ': ' + value + '%<br/>' +\n                 'Total: ' + 100;\n        }"},"colors":["#3B82F6","#8B5CF6","#EC4899","#F97316"]},"theme":{"chart":{"backgroundColor":"transparent"},"colors":["#7cb5ec","#434348","#90ed7d","#f7a35c","#8085e9","#f15c80","#e4d354","#2b908f","#f45b5b","#91e8e1"]},"conf_opts":{"global":{"Date":null,"VMLRadialGradientURL":"http =//code.highcharts.com/list(version)/gfx/vml-radial-gradient.png","canvasToolsURL":"http =//code.highcharts.com/list(version)/modules/canvas-tools.js","getTimezoneOffset":null,"timezoneOffset":0,"useUTC":true},"lang":{"contextButtonTitle":"Chart context menu","decimalPoint":".","downloadCSV":"Download CSV","downloadJPEG":"Download JPEG image","downloadPDF":"Download PDF document","downloadPNG":"Download PNG image","downloadSVG":"Download SVG vector image","downloadXLS":"Download XLS","drillUpText":"◁ Back to {series.name}","exitFullscreen":"Exit from full screen","exportData":{"annotationHeader":"Annotations","categoryDatetimeHeader":"DateTime","categoryHeader":"Category"},"hideData":"Hide data table","invalidDate":null,"loading":"Loading...","months":["January","February","March","April","May","June","July","August","September","October","November","December"],"noData":"No data to display","numericSymbolMagnitude":1000,"numericSymbols":["k","M","G","T","P","E"],"printChart":"Print chart","resetZoom":"Reset zoom","resetZoomTitle":"Reset zoom level 1:1","shortMonths":["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],"shortWeekdays":["Sat","Sun","Mon","Tue","Wed","Thu","Fri"],"thousandsSep":" ","viewData":"View data table","viewFullscreen":"View in full screen","weekdays":["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]}},"type":"chart","fonts":[],"debug":false},"evals":["hc_opts.tooltip.formatter"],"jsHooks":[]}</script>
+</div>
+</div>
+</div>
+</div>
+<div id="tabset-2-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-2-tab">
+<div class="cell">
+<div class="cell-output-display">
+<div style="height: 460px !important; min-height: 460px !important; width: 100%; overflow: visible;">
+<div id="htmlwidget-15dfb5e9375064b3e311" style="width:100%;height:460px;" class="highchart html-widget"></div>
+<script type="application/json" data-for="htmlwidget-15dfb5e9375064b3e311">{"x":{"hc_opts":{"chart":{"reflow":true,"height":460},"title":{"text":"Education by Region"},"yAxis":{"title":{"text":"%"},"type":"linear"},"credits":{"enabled":false},"exporting":{"enabled":false},"boost":{"enabled":false},"plotOptions":{"series":{"label":{"enabled":false},"turboThreshold":0,"showInLegend":true},"treemap":{"layoutAlgorithm":"squarified"},"scatter":{"marker":{"symbol":"circle"}},"bar":{"stacking":"percent","dataLabels":{"enabled":true,"format":"{point.percentage:.1f}%","style":{"textOutline":"none","fontSize":"10px"}}}},"series":[{"name":"North","data":[{".x_var_col":"High School",".stack_var_col":"North","n":223,"y":223,"name":"High School"},{".x_var_col":"Bachelor's",".stack_var_col":"North","n":189,"y":189,"name":"Bachelor's"},{".x_var_col":"Graduate",".stack_var_col":"North","n":101,"y":101,"name":"Graduate"}],"type":"bar"},{"name":"South","data":[{".x_var_col":"High School",".stack_var_col":"South","n":268,"y":268,"name":"High School"},{".x_var_col":"Bachelor's",".stack_var_col":"South","n":190,"y":190,"name":"Bachelor's"},{".x_var_col":"Graduate",".stack_var_col":"South","n":127,"y":127,"name":"Graduate"}],"type":"bar"},{"name":"East","data":[{".x_var_col":"High School",".stack_var_col":"East","n":189,"y":189,"name":"High School"},{".x_var_col":"Bachelor's",".stack_var_col":"East","n":133,"y":133,"name":"Bachelor's"},{".x_var_col":"Graduate",".stack_var_col":"East","n":68,"y":68,"name":"Graduate"}],"type":"bar"},{"name":"West","data":[{".x_var_col":"High School",".stack_var_col":"West","n":224,"y":224,"name":"High School"},{".x_var_col":"Bachelor's",".stack_var_col":"West","n":189,"y":189,"name":"Bachelor's"},{".x_var_col":"Graduate",".stack_var_col":"West","n":99,"y":99,"name":"Graduate"}],"type":"bar"}],"xAxis":{"type":"category","title":{"text":"Education"},"categories":["High School","Bachelor's","Graduate"]},"legend":{"title":{"text":"Region"},"reversed":true},"tooltip":{"formatter":"function() {\n          var value = this.percentage.toFixed(1);\n          var categoryLabel = this.point.category || this.series.chart.xAxis[0].categories[this.point.x] || this.x;\n          return '<b>' + categoryLabel + '<\/b><br/>' +\n                 this.series.name + ': ' + value + '%<br/>' +\n                 'Total: ' + 100;\n        }"},"colors":["#3B82F6","#8B5CF6","#EC4899","#F97316"]},"theme":{"chart":{"backgroundColor":"transparent"},"colors":["#7cb5ec","#434348","#90ed7d","#f7a35c","#8085e9","#f15c80","#e4d354","#2b908f","#f45b5b","#91e8e1"]},"conf_opts":{"global":{"Date":null,"VMLRadialGradientURL":"http =//code.highcharts.com/list(version)/gfx/vml-radial-gradient.png","canvasToolsURL":"http =//code.highcharts.com/list(version)/modules/canvas-tools.js","getTimezoneOffset":null,"timezoneOffset":0,"useUTC":true},"lang":{"contextButtonTitle":"Chart context menu","decimalPoint":".","downloadCSV":"Download CSV","downloadJPEG":"Download JPEG image","downloadPDF":"Download PDF document","downloadPNG":"Download PNG image","downloadSVG":"Download SVG vector image","downloadXLS":"Download XLS","drillUpText":"◁ Back to {series.name}","exitFullscreen":"Exit from full screen","exportData":{"annotationHeader":"Annotations","categoryDatetimeHeader":"DateTime","categoryHeader":"Category"},"hideData":"Hide data table","invalidDate":null,"loading":"Loading...","months":["January","February","March","April","May","June","July","August","September","October","November","December"],"noData":"No data to display","numericSymbolMagnitude":1000,"numericSymbols":["k","M","G","T","P","E"],"printChart":"Print chart","resetZoom":"Reset zoom","resetZoomTitle":"Reset zoom level 1:1","shortMonths":["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],"shortWeekdays":["Sat","Sun","Mon","Tue","Wed","Thu","Fri"],"thousandsSep":" ","viewData":"View data table","viewFullscreen":"View in full screen","weekdays":["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]}},"type":"chart","fonts":[],"debug":false},"evals":["hc_opts.tooltip.formatter"],"jsHooks":[]}</script>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="tabset-6-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-6-2-tab">
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-5-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-1" role="tab" aria-controls="tabset-5-1" aria-selected="true">Trends</a></li></ul>
+<div class="tab-content">
+<div id="tabset-5-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-5-1-tab">
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-4-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-1" role="tab" aria-controls="tabset-4-1" aria-selected="true">Regional</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-4-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-2" role="tab" aria-controls="tabset-4-2" aria-selected="false">Educational</a></li></ul>
+<div class="tab-content">
+<div id="tabset-4-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-4-1-tab">
+<div class="cell">
+<div class="cell-output-display">
+<div style="height: 460px !important; min-height: 460px !important; width: 100%; overflow: visible;">
+<div id="htmlwidget-70fcaf9ea2a177e7b17f" style="width:100%;height:460px;" class="highchart html-widget"></div>
+<script type="application/json" data-for="htmlwidget-70fcaf9ea2a177e7b17f">{"x":{"hc_opts":{"chart":{"reflow":true,"height":460},"title":{"text":"Regional Age Distribution"},"yAxis":{"title":{"text":"%"},"type":"linear"},"credits":{"enabled":false},"exporting":{"enabled":false},"boost":{"enabled":false},"plotOptions":{"series":{"label":{"enabled":false},"turboThreshold":0,"showInLegend":true},"treemap":{"layoutAlgorithm":"squarified"},"scatter":{"marker":{"symbol":"circle"}},"bar":{"stacking":"percent","dataLabels":{"enabled":true,"format":"{point.percentage:.1f}%","style":{"textOutline":"none","fontSize":"10px"}}}},"series":[{"name":"18-29","data":[{".x_var_col":"North",".stack_var_col":"18-29","n":99,"y":99,"name":"North"},{".x_var_col":"South",".stack_var_col":"18-29","n":141,"y":141,"name":"South"},{".x_var_col":"East",".stack_var_col":"18-29","n":84,"y":84,"name":"East"},{".x_var_col":"West",".stack_var_col":"18-29","n":123,"y":123,"name":"West"}],"type":"bar"},{"name":"30-44","data":[{".x_var_col":"North",".stack_var_col":"30-44","n":148,"y":148,"name":"North"},{".x_var_col":"South",".stack_var_col":"30-44","n":141,"y":141,"name":"South"},{".x_var_col":"East",".stack_var_col":"30-44","n":101,"y":101,"name":"East"},{".x_var_col":"West",".stack_var_col":"30-44","n":148,"y":148,"name":"West"}],"type":"bar"},{"name":"45-59","data":[{".x_var_col":"North",".stack_var_col":"45-59","n":146,"y":146,"name":"North"},{".x_var_col":"South",".stack_var_col":"45-59","n":175,"y":175,"name":"South"},{".x_var_col":"East",".stack_var_col":"45-59","n":108,"y":108,"name":"East"},{".x_var_col":"West",".stack_var_col":"45-59","n":130,"y":130,"name":"West"}],"type":"bar"},{"name":"60+","data":[{".x_var_col":"North",".stack_var_col":"60+","n":120,"y":120,"name":"North"},{".x_var_col":"South",".stack_var_col":"60+","n":128,"y":128,"name":"South"},{".x_var_col":"East",".stack_var_col":"60+","n":97,"y":97,"name":"East"},{".x_var_col":"West",".stack_var_col":"60+","n":111,"y":111,"name":"West"}],"type":"bar"}],"xAxis":{"type":"category","title":{"text":"Region"},"categories":["North","South","East","West"]},"legend":{"title":{"text":"Age Group"},"reversed":true},"tooltip":{"formatter":"function() {\n          var value = this.percentage.toFixed(1);\n          var categoryLabel = this.point.category || this.series.chart.xAxis[0].categories[this.point.x] || this.x;\n          return '<b>' + categoryLabel + '<\/b><br/>' +\n                 this.series.name + ': ' + value + '%<br/>' +\n                 'Total: ' + 100;\n        }"},"colors":["#3B82F6","#10B981","#F59E0B","#EF4444"]},"theme":{"chart":{"backgroundColor":"transparent"},"colors":["#7cb5ec","#434348","#90ed7d","#f7a35c","#8085e9","#f15c80","#e4d354","#2b908f","#f45b5b","#91e8e1"]},"conf_opts":{"global":{"Date":null,"VMLRadialGradientURL":"http =//code.highcharts.com/list(version)/gfx/vml-radial-gradient.png","canvasToolsURL":"http =//code.highcharts.com/list(version)/modules/canvas-tools.js","getTimezoneOffset":null,"timezoneOffset":0,"useUTC":true},"lang":{"contextButtonTitle":"Chart context menu","decimalPoint":".","downloadCSV":"Download CSV","downloadJPEG":"Download JPEG image","downloadPDF":"Download PDF document","downloadPNG":"Download PNG image","downloadSVG":"Download SVG vector image","downloadXLS":"Download XLS","drillUpText":"◁ Back to {series.name}","exitFullscreen":"Exit from full screen","exportData":{"annotationHeader":"Annotations","categoryDatetimeHeader":"DateTime","categoryHeader":"Category"},"hideData":"Hide data table","invalidDate":null,"loading":"Loading...","months":["January","February","March","April","May","June","July","August","September","October","November","December"],"noData":"No data to display","numericSymbolMagnitude":1000,"numericSymbols":["k","M","G","T","P","E"],"printChart":"Print chart","resetZoom":"Reset zoom","resetZoomTitle":"Reset zoom level 1:1","shortMonths":["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],"shortWeekdays":["Sat","Sun","Mon","Tue","Wed","Thu","Fri"],"thousandsSep":" ","viewData":"View data table","viewFullscreen":"View in full screen","weekdays":["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]}},"type":"chart","fonts":[],"debug":false},"evals":["hc_opts.tooltip.formatter"],"jsHooks":[]}</script>
+</div>
+</div>
+</div>
+</div>
+<div id="tabset-4-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-4-2-tab">
+<div class="cell">
+<div class="cell-output-display">
+<div style="height: 460px !important; min-height: 460px !important; width: 100%; overflow: visible;">
+<div id="htmlwidget-35a66782855938a8f77e" style="width:100%;height:460px;" class="highchart html-widget"></div>
+<script type="application/json" data-for="htmlwidget-35a66782855938a8f77e">{"x":{"hc_opts":{"chart":{"reflow":true,"height":460},"title":{"text":"Educational Age Distribution"},"yAxis":{"title":{"text":"%"},"type":"linear"},"credits":{"enabled":false},"exporting":{"enabled":false},"boost":{"enabled":false},"plotOptions":{"series":{"label":{"enabled":false},"turboThreshold":0,"showInLegend":true},"treemap":{"layoutAlgorithm":"squarified"},"scatter":{"marker":{"symbol":"circle"}},"column":{"stacking":"percent","dataLabels":{"enabled":true,"format":"{point.percentage:.1f}%","style":{"textOutline":"none","fontSize":"10px"}}}},"series":[{"name":"18-29","data":[{".x_var_col":"High School",".stack_var_col":"18-29","n":195,"y":195,"name":"High School"},{".x_var_col":"Bachelor's",".stack_var_col":"18-29","n":164,"y":164,"name":"Bachelor's"},{".x_var_col":"Graduate",".stack_var_col":"18-29","n":88,"y":88,"name":"Graduate"}],"type":"column"},{"name":"30-44","data":[{".x_var_col":"High School",".stack_var_col":"30-44","n":231,"y":231,"name":"High School"},{".x_var_col":"Bachelor's",".stack_var_col":"30-44","n":199,"y":199,"name":"Bachelor's"},{".x_var_col":"Graduate",".stack_var_col":"30-44","n":108,"y":108,"name":"Graduate"}],"type":"column"},{"name":"45-59","data":[{".x_var_col":"High School",".stack_var_col":"45-59","n":262,"y":262,"name":"High School"},{".x_var_col":"Bachelor's",".stack_var_col":"45-59","n":182,"y":182,"name":"Bachelor's"},{".x_var_col":"Graduate",".stack_var_col":"45-59","n":115,"y":115,"name":"Graduate"}],"type":"column"},{"name":"60+","data":[{".x_var_col":"High School",".stack_var_col":"60+","n":216,"y":216,"name":"High School"},{".x_var_col":"Bachelor's",".stack_var_col":"60+","n":156,"y":156,"name":"Bachelor's"},{".x_var_col":"Graduate",".stack_var_col":"60+","n":84,"y":84,"name":"Graduate"}],"type":"column"}],"xAxis":{"type":"category","title":{"text":"Education"},"categories":["High School","Bachelor's","Graduate"]},"legend":{"title":{"text":"Age Group"}},"tooltip":{"formatter":"function() {\n          var value = this.percentage.toFixed(1);\n          var categoryLabel = this.point.category || this.series.chart.xAxis[0].categories[this.point.x] || this.x;\n          return '<b>' + categoryLabel + '<\/b><br/>' +\n                 this.series.name + ': ' + value + '%<br/>' +\n                 'Total: ' + 100;\n        }"},"colors":["#3B82F6","#10B981","#F59E0B","#EF4444"]},"theme":{"chart":{"backgroundColor":"transparent"},"colors":["#7cb5ec","#434348","#90ed7d","#f7a35c","#8085e9","#f15c80","#e4d354","#2b908f","#f45b5b","#91e8e1"]},"conf_opts":{"global":{"Date":null,"VMLRadialGradientURL":"http =//code.highcharts.com/list(version)/gfx/vml-radial-gradient.png","canvasToolsURL":"http =//code.highcharts.com/list(version)/modules/canvas-tools.js","getTimezoneOffset":null,"timezoneOffset":0,"useUTC":true},"lang":{"contextButtonTitle":"Chart context menu","decimalPoint":".","downloadCSV":"Download CSV","downloadJPEG":"Download JPEG image","downloadPDF":"Download PDF document","downloadPNG":"Download PNG image","downloadSVG":"Download SVG vector image","downloadXLS":"Download XLS","drillUpText":"◁ Back to {series.name}","exitFullscreen":"Exit from full screen","exportData":{"annotationHeader":"Annotations","categoryDatetimeHeader":"DateTime","categoryHeader":"Category"},"hideData":"Hide data table","invalidDate":null,"loading":"Loading...","months":["January","February","March","April","May","June","July","August","September","October","November","December"],"noData":"No data to display","numericSymbolMagnitude":1000,"numericSymbols":["k","M","G","T","P","E"],"printChart":"Print chart","resetZoom":"Reset zoom","resetZoomTitle":"Reset zoom level 1:1","shortMonths":["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],"shortWeekdays":["Sat","Sun","Mon","Tue","Wed","Thu","Fri"],"thousandsSep":" ","viewData":"View data table","viewFullscreen":"View in full screen","weekdays":["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]}},"type":"chart","fonts":[],"debug":false},"evals":["hc_opts.tooltip.formatter"],"jsHooks":[]}</script>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
+<p><span style="font-size: 0.75rem; opacity: 0.6; color: inherit; font-weight: 400;">Built with <a href="https://favstats.github.io/dashboardr/" style="color: inherit; text-decoration: none; font-weight: 500;" target="_blank" rel="noopener">dashboardr</a></span></p>
+</div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

@@ -1,0 +1,121 @@
+/*-- scss:rules --*/
+
+/* ============================================
+   MODERN THEME - Centered tabs at bottom with shadows and lift effect
+   Based on the user's preferred style
+   ============================================ */
+
+/* NUCLEAR scroll prevention - bombproof fix for tab jumping */
+html.dashboardr-tab-switching,
+html.dashboardr-tab-switching body {
+  scroll-behavior: auto !important;
+  overflow-anchor: none !important;
+}
+
+.panel-tabset {
+  scroll-margin-top: 0 !important;
+  scroll-padding-top: 0 !important;
+  overflow-anchor: none !important;
+  contain: layout style;  /* Isolate reflow from affecting parent scroll */
+}
+
+.panel-tabset .tab-pane {
+  scroll-margin-top: 0 !important;
+  overflow-anchor: none !important;
+  contain: layout style;  /* Prevent height changes from propagating */
+}
+
+.panel-tabset .tab-content {
+  overflow-anchor: none !important;
+}
+
+.panel-tabset .nav-link {
+  scroll-margin: 0 !important;
+  scroll-padding: 0 !important;
+}
+
+.panel-tabset .nav-link:focus,
+.panel-tabset [role="tab"]:focus,
+.panel-tabset .tab-pane:focus {
+  outline: none;
+  scroll-margin: 0 !important;
+  scroll-padding: 0 !important;
+}
+
+/* Prevent any focus-based scrolling within tabsets */
+.panel-tabset *:focus {
+  scroll-margin: 0 !important;
+}
+
+/* General Styles for All Tabs */
+.panel-tabset .nav-tabs {
+  display: flex;
+  justify-content: center; /* Centers tabs in the tabset */
+  width: 100%;
+  flex-wrap: wrap;
+  list-style: none;
+  padding: 5px 0;  /* Reduced padding */
+  margin: 5px 0;   /* Tight spacing */
+  border-bottom: none; /* Remove default border */
+}
+
+.panel-tabset .nav-item {
+  color: #000;
+  background-color: #eee; /* Default background color of the tabs */
+  border-radius: 5px; /* Rounded corners for the tabs */
+  transition: all 0.4s ease; /* Smooth transition */
+  margin: 2px;
+  border: none; /* No borders - clean modern look */
+}
+
+.panel-tabset .nav-item a {
+  display: block;
+  padding: 8px 16px;
+  text-decoration: none;
+  color: inherit;
+  background-color: inherit;
+  border: none;
+}
+
+/* Hover effect */
+.panel-tabset .nav-item:hover {
+  background-color: #ccc;
+  transform: translateY(-1px); /* Subtle lift on hover */
+}
+
+/* Active tab styling */
+.panel-tabset .nav-tabs .nav-link.active {
+  color: #fff;
+  background-color: #2563eb; /* Primary blue color */
+  box-shadow: 0 6px 8px rgba(211, 211, 211, 1); /* Drop shadow */
+  transform: translateY(-2px); /* Lift effect */
+  border: none;
+}
+
+/* Tabs at bottom layout */
+.panel-tabset {
+  display: flex;
+  flex-direction: column;
+  border: none !important;  /* Remove all borders */
+  box-shadow: none !important;  /* Remove shadows */
+}
+
+.nav-tabs {
+  order: 2; /* Tabs at the bottom */
+  border: none !important;  /* Remove all borders */
+}
+
+.panel-tabset .tab-content {
+  order: 1; /* Content at the top */
+  padding-bottom: 5px;  /* Reduced even further */
+  margin-bottom: 0;  /* No extra margin */
+  border: none !important;  /* Remove content borders */
+}
+
+/* Responsive Adjustment for Mobile Devices */
+@media (max-width: 768px) {
+  .panel-tabset .nav-tabs {
+    justify-content: space-around;
+  }
+}
+
