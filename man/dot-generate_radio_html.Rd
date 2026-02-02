@@ -16,7 +16,12 @@
   size = "md",
   help = NULL,
   disabled = FALSE,
-  columns = NULL
+  columns = NULL,
+  stacked = FALSE,
+  stacked_align = "center",
+  group_align = "left",
+  ncol = NULL,
+  nrow = NULL
 )
 }
 \description{

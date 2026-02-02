@@ -10,9 +10,11 @@
 #' - Converts single-item groups to standalone visualizations with group titles
 #' - Creates tab group objects for multi-item groups
 #' - Applies custom tab group labels if provided
+#' - Attaches cross_tab_filter_vars for client-side filtering when inputs are present
+#' @param filter_vars Character vector of filter_var values from add_input() calls (optional)
 #' @keywords internal
 .process_visualizations <- function(viz_input, data_path, tabgroup_labels = NULL,
-                                     shared_first_level = TRUE) {
+                                     shared_first_level = TRUE, filter_vars = NULL) {
   # Handle different input types
   if (is_content(viz_input)) {
     if (is.null(viz_input) || length(viz_input$items) == 0) {
@@ -23,6 +25,10 @@
     # Extract shared_first_level from collection if present
     if (!is.null(viz_input$shared_first_level)) {
       shared_first_level <- viz_input$shared_first_level
+    }
+    # Auto-detect filter_vars from content if not provided
+    if (is.null(filter_vars)) {
+      filter_vars <- .extract_filter_vars(viz_input)
     }
   } else if (is.list(viz_input)) {
     if (length(viz_input) == 0) {
@@ -45,6 +51,13 @@
     for (i in seq_along(viz_list)) {
       viz_list[[i]]$has_data <- TRUE
       viz_list[[i]]$multi_dataset <- TRUE
+    }
+  }
+  
+  # Attach cross-tab filter_vars for client-side filtering
+  if (!is.null(filter_vars) && length(filter_vars) > 0) {
+    for (i in seq_along(viz_list)) {
+      viz_list[[i]]$cross_tab_filter_vars <- filter_vars
     }
   }
 

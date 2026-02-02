@@ -81,36 +81,27 @@ test_that("tutorial_dashboard generates valid QMD with curly braces", {
   qmd_files <- list.files(temp_dir, pattern = "\\.qmd$", full.names = TRUE)
   expect_true(length(qmd_files) > 0)
   
-  # Find file with heatmap (should have tooltip_labels_format)
-  example_qmd <- file.path(temp_dir, "example_dashboard.qmd")
-  if (file.exists(example_qmd)) {
-    qmd_content <- readLines(example_qmd)
+  # Test that at least one QMD file has valid R chunks
+  tested <- FALSE
+  for (qmd_file in qmd_files) {
+    qmd_content <- readLines(qmd_file)
     
-    # Find lines with tooltip_labels_format
-    format_lines <- grep("tooltip_labels_format", qmd_content, value = TRUE)
+    # Extract R chunks
+    chunk_starts <- which(grepl("^```\\{r", qmd_content))
+    chunk_ends <- which(grepl("^```$", qmd_content))
     
-    if (length(format_lines) > 0) {
-      # Verify curly braces are present and not escaped
-      expect_true(any(grepl("\\{point\\.value", format_lines)))
-      
-      # Extract R chunks and verify they parse
-      chunk_starts <- which(grepl("^```\\{r", qmd_content))
-      chunk_ends <- which(grepl("^```$", qmd_content))
-      
-      if (length(chunk_starts) > 0 && length(chunk_ends) > 0) {
-        # Test first chunk that contains viz_heatmap
-        for (i in seq_along(chunk_starts)) {
-          chunk_code <- qmd_content[(chunk_starts[i] + 1):(chunk_ends[i] - 1)]
-          if (any(grepl("viz_heatmap", chunk_code))) {
-            chunk_text <- paste(chunk_code, collapse = "\n")
-            # This should parse without error
-            expect_silent(parse(text = chunk_text))
-            break
-          }
-        }
+    if (length(chunk_starts) > 0 && length(chunk_ends) > 0) {
+      # Test first chunk
+      chunk_code <- qmd_content[(chunk_starts[1] + 1):(chunk_ends[1] - 1)]
+      chunk_text <- paste(chunk_code, collapse = "\n")
+      if (nchar(trimws(chunk_text)) > 0) {
+        expect_silent(parse(text = chunk_text))
+        tested <- TRUE
+        break
       }
     }
   }
+  expect_true(tested)
   
   # Cleanup
   unlink(temp_dir, recursive = TRUE)

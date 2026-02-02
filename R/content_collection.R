@@ -1501,6 +1501,11 @@ add_input <- function(content,
                       value = NULL,
                       show_value = TRUE,
                       inline = TRUE,
+                      stacked = FALSE,
+                      stacked_align = c("center", "left", "right"),
+                      group_align = c("left", "center", "right"),
+                      ncol = NULL,
+                      nrow = NULL,
                       columns = NULL,
                       toggle_series = NULL,
                       override = FALSE,
@@ -1508,6 +1513,8 @@ add_input <- function(content,
                       size = c("md", "sm", "lg"),
                       help = NULL,
                       disabled = FALSE,
+                      add_all = FALSE,
+                      add_all_label = "All",
                       mt = NULL,
                       mr = NULL,
                       mb = NULL,
@@ -1520,6 +1527,8 @@ add_input <- function(content,
   
   type <- match.arg(type)
   size <- match.arg(size)
+  stacked_align <- match.arg(stacked_align)
+  group_align <- match.arg(group_align)
   
   # Validate required args
   if (missing(input_id) || is.null(input_id)) {
@@ -1529,10 +1538,71 @@ add_input <- function(content,
     stop("filter_var is required for add_input() - this should match the group_var in your visualization", call. = FALSE)
   }
   
-  # Options required for select/checkbox/radio/button_group types
+  # Get parent data for auto-deriving options
+  parent_data <- NULL
+  if (inherits(content, "sidebar_container") && !is.null(content$parent_content)) {
+    parent_data <- content$parent_content$data
+  } else if (is_content(content)) {
+    parent_data <- content$data
+  }
+  
+  # AUTO-DERIVE OPTIONS from data when not provided
+  # This is the R-first approach: user just says filter_var="column" and we figure out the rest
   if (type %in% c("select_multiple", "select_single", "checkbox", "radio", "button_group")) {
     if (is.null(options) && is.null(options_from)) {
-      stop("Either 'options' or 'options_from' must be provided for ", type, " input type", call. = FALSE)
+      # Try to auto-derive from data
+      if (!is.null(parent_data) && filter_var %in% names(parent_data)) {
+        data_values <- unique(as.character(parent_data[[filter_var]]))
+        data_values <- data_values[!is.na(data_values)]
+        data_values <- sort(data_values)
+        
+        if (length(data_values) > 0) {
+          options <- data_values
+          message("add_input(): Auto-derived ", length(options), " options from data column '", filter_var, "'")
+        } else {
+          stop("add_input(): Column '", filter_var, "' exists but has no non-NA values", call. = FALSE)
+        }
+      } else if (!is.null(parent_data) && !filter_var %in% names(parent_data)) {
+        stop("add_input(): Column '", filter_var, "' not found in data. ",
+             "Available columns: ", paste(names(parent_data), collapse = ", "), call. = FALSE)
+      } else {
+        stop("Either 'options' or 'options_from' must be provided for ", type, " input type ",
+             "(or ensure data is available for auto-derivation)", call. = FALSE)
+      }
+    }
+  }
+  
+  # ADD "All" OPTION for radio/select_single if requested
+  # This prepends an "All" option that represents selecting all values
+  if (add_all && type %in% c("radio", "select_single", "button_group")) {
+    options <- c(add_all_label, options)
+    # Default to "All" if no default specified
+    if (is.null(default_selected)) {
+      default_selected <- add_all_label
+    }
+  }
+  
+  # AUTO-SET default_selected to all options if not specified (for multi-select types)
+  if (is.null(default_selected) && type %in% c("select_multiple", "checkbox")) {
+    default_selected <- options
+  }
+  
+  # Validate filter options against data if data is available
+  # This catches mismatches early (e.g., "Male" vs "male")
+  if (!is.null(parent_data) && !is.null(options) && filter_var %in% names(parent_data)) {
+    data_values <- unique(as.character(parent_data[[filter_var]]))
+    data_values <- data_values[!is.na(data_values)]
+    
+    # Check if options match data values
+    mismatched <- setdiff(options, data_values)
+    if (length(mismatched) > 0) {
+      warning(
+        "add_input(): Some options don't match values in data column '", filter_var, "':\n",
+        "  Options not in data: ", paste(mismatched, collapse = ", "), "\n",
+        "  Actual data values: ", paste(sort(data_values), collapse = ", "), "\n",
+        "  This may result in empty charts or non-functional filters.",
+        call. = FALSE
+      )
     }
   }
   
@@ -1553,6 +1623,11 @@ add_input <- function(content,
     value = value,
     show_value = show_value,
     inline = inline,
+    stacked = stacked,
+    stacked_align = stacked_align,
+    group_align = group_align,
+    ncol = ncol,
+    nrow = nrow,
     columns = columns,
     toggle_series = toggle_series,
     override = override,
@@ -1599,6 +1674,11 @@ add_input <- function(content,
       value = value,
       show_value = show_value,
       inline = inline,
+      stacked = stacked,
+      stacked_align = stacked_align,
+      group_align = group_align,
+      ncol = ncol,
+      nrow = nrow,
       toggle_series = toggle_series,
       override = override,
       labels = labels,
@@ -1649,6 +1729,11 @@ add_input <- function(content,
     value = value,
     show_value = show_value,
     inline = inline,
+    stacked = stacked,
+    stacked_align = stacked_align,
+    group_align = group_align,
+    ncol = ncol,
+    nrow = nrow,
     toggle_series = toggle_series,
     override = override,
     labels = labels,
@@ -1665,6 +1750,67 @@ add_input <- function(content,
   input_block$.insertion_index <- insertion_idx
   content$items <- c(content$items, list(input_block))
   content
+}
+
+
+#' Add a filter control (simplified interface)
+#'
+#' A convenience wrapper around \code{\link{add_input}} for common filtering use cases.
+#' Options are automatically derived from the data column specified by \code{filter_var}.
+#' All values are selected by default.
+#'
+#' @param content A content_collection object
+#' @param filter_var The column name in your data to filter by (quoted or unquoted)
+#' @param label Optional label for the filter (defaults to the column name)
+#' @param type Filter type: "checkbox" (default), "select", or "radio"
+#' @param ... Additional arguments passed to \code{\link{add_input}}
+#' @return Updated content_collection
+#' @export
+#' @examples
+#' \dontrun{
+#' # Simplest usage - just specify the column!
+#' content <- create_content(data = mydata) %>%
+#'   add_sidebar() %>%
+#'     add_filter(filter_var = "education") %>%
+#'     add_filter(filter_var = "gender") %>%
+#'   end_sidebar() %>%
+#'   add_viz(type = "stackedbar", x_var = "region", stack_var = "outcome")
+#' }
+add_filter <- function(content,
+                       filter_var,
+                       label = NULL,
+                       type = c("checkbox", "select", "radio"),
+                       ...) {
+  
+  filter_var_str <- .as_var_string(rlang::enquo(filter_var))
+  type <- match.arg(type)
+  
+  # Map simplified type names to add_input types
+  input_type <- switch(type,
+    "checkbox" = "checkbox",
+    "select" = "select_multiple",
+    "radio" = "radio"
+  )
+  
+  # Generate input_id from filter_var
+  input_id <- paste0(filter_var_str, "_filter")
+  
+  # Use column name as label if not provided
+  if (is.null(label)) {
+    # Convert snake_case or camelCase to Title Case
+    label <- gsub("_", " ", filter_var_str)
+    label <- gsub("([a-z])([A-Z])", "\\1 \\2", label)
+    label <- paste0(toupper(substr(label, 1, 1)), substr(label, 2, nchar(label)), ":")
+  }
+  
+  add_input(
+    content = content,
+    input_id = input_id,
+    label = label,
+    type = input_type,
+    filter_var = filter_var_str,
+    ...
+  )
 }
 
 #' Start an input row
@@ -1892,5 +2038,46 @@ merge_collections <- function(c1, c2) {
   }
   
   result
+}
+
+#' Extract filter_var values from content collection
+#' 
+#' Internal helper to detect filter_var columns from add_input() calls.
+#' Used to enable automatic cross-tab filtering.
+#' 
+#' @param content A content_collection or list with sidebar/items
+#' @return Character vector of unique filter_var values
+#' @keywords internal
+.extract_filter_vars <- function(content) {
+  filter_vars <- character(0)
+  
+  # Check sidebar blocks
+  if (!is.null(content$sidebar) && !is.null(content$sidebar$blocks)) {
+    for (block in content$sidebar$blocks) {
+      if (!is.null(block$type) && block$type == "input" && !is.null(block$filter_var)) {
+        filter_vars <- c(filter_vars, block$filter_var)
+      }
+    }
+  }
+  
+  # Check content items (for input_row or standalone inputs)
+  if (!is.null(content$items)) {
+    for (item in content$items) {
+      if (!is.null(item$type) && item$type == "input" && !is.null(item$filter_var)) {
+        filter_vars <- c(filter_vars, item$filter_var)
+      }
+      # Check input_row blocks
+      if (!is.null(item$type) && item$type == "input_row" && !is.null(item$inputs)) {
+        for (inp in item$inputs) {
+          if (!is.null(inp$filter_var)) {
+            filter_vars <- c(filter_vars, inp$filter_var)
+          }
+        }
+      }
+    }
+  }
+  
+  # Return unique filter_vars
+  unique(filter_vars)
 }
 

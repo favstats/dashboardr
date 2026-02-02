@@ -367,6 +367,8 @@ Functions for adding interactive inputs to dashboards
 
 - [`add_input()`](https://favstats.github.io/dashboardr/reference/add_input.md)
   : Add an interactive input filter
+- [`add_filter()`](https://favstats.github.io/dashboardr/reference/add_filter.md)
+  : Add a filter control (simplified interface)
 - [`add_input_row()`](https://favstats.github.io/dashboardr/reference/add_input_row.md)
   : Start an input row
 - [`add_reset_button()`](https://favstats.github.io/dashboardr/reference/add_reset_button.md)

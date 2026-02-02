@@ -25,11 +25,6 @@
 <url><loc>https://favstats.github.io/dashboardr/articles/tutorial_dashboard_code.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/authors.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/index.html</loc></url>
-<url><loc>https://favstats.github.io/dashboardr/live-demos/showcase/about.html</loc></url>
-<url><loc>https://favstats.github.io/dashboardr/live-demos/showcase/demographics.html</loc></url>
-<url><loc>https://favstats.github.io/dashboardr/live-demos/showcase/index.html</loc></url>
-<url><loc>https://favstats.github.io/dashboardr/live-demos/showcase/political_attitudes.html</loc></url>
-<url><loc>https://favstats.github.io/dashboardr/live-demos/showcase/trust___social_capital.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/live-demos/tutorial/example_dashboard.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/live-demos/tutorial/index.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/live-demos/tutorial/showcase_dashboard.html</loc></url>
@@ -46,6 +41,7 @@
 <url><loc>https://favstats.github.io/dashboardr/reference/add_content.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/add_dashboard_page.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/add_divider.html</loc></url>
+<url><loc>https://favstats.github.io/dashboardr/reference/add_filter.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/add_gt.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/add_hc.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/add_html.html</loc></url>
@@ -111,6 +107,7 @@
 <url><loc>https://favstats.github.io/dashboardr/reference/dot-convert_haven.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/dot-create_pagination_nav_html.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/dot-extract_all_insertion_indices.html</loc></url>
+<url><loc>https://favstats.github.io/dashboardr/reference/dot-extract_filter_vars.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/dot-generate_DT_block.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/dot-generate_accordion_block.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/dot-generate_badge_block.html</loc></url>

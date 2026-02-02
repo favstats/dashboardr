@@ -397,6 +397,16 @@
     call_str <- arg_lines
   }
 
+  # FIRST: Extract cross-tab attributes BEFORE any wrapping that might strip them
+  cross_tab_lines <- c(
+    "",
+    "# Extract cross-tab data BEFORE wrapping (wrapping strips attributes)",
+    "cross_tab_data <- attr(result, 'cross_tab_data')",
+    "cross_tab_config <- attr(result, 'cross_tab_config')",
+    "cross_tab_id <- attr(result, 'cross_tab_id')"
+  )
+  call_str <- c(call_str, cross_tab_lines)
+  
   # Add height support - wrap in explicit height container 
   if (!is.null(spec$height)) {
     height_lines <- c(
@@ -412,6 +422,27 @@
     )
     call_str <- c(call_str, height_lines)
   }
+  
+  # Add cross-tab data embedding for client-side filtering (using extracted attributes)
+  embed_cross_tab_lines <- c(
+    "",
+    "# Embed cross-tab data for client-side filtering",
+    "if (!is.null(cross_tab_data)) {",
+    "  cross_tab_json <- jsonlite::toJSON(cross_tab_data, dataframe = 'rows')",
+    "  config_json <- jsonlite::toJSON(cross_tab_config, auto_unbox = TRUE)",
+    "  script_tag <- htmltools::tags$script(",
+    "    htmltools::HTML(paste0(",
+    "      'window.dashboardrCrossTab = window.dashboardrCrossTab || {};',",
+    "      'window.dashboardrCrossTab[\"', cross_tab_id, '\"] = {',",
+    "      'data: ', cross_tab_json, ',',",
+    "      'config: ', config_json,",
+    "      '};'",
+    "    ))",
+    "  )",
+    "  result <- htmltools::tagList(script_tag, result)",
+    "}"
+  )
+  call_str <- c(call_str, embed_cross_tab_lines)
 
   # Always print the result
   call_str <- c(call_str, "", "result")

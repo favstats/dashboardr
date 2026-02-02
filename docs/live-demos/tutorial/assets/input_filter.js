@@ -601,6 +601,17 @@
     charts.forEach(chart => {
       if (!chart || !chart.series) return;
       
+      // Check if this chart has cross-tab data for client-side filtering
+      const chartId = chart.options && chart.options.chart && chart.options.chart.id;
+      if (chartId && window.dashboardrCrossTab && window.dashboardrCrossTab[chartId]) {
+        const crossTabInfo = window.dashboardrCrossTab[chartId];
+        const result = rebuildFromCrossTab(chart, crossTabInfo, filters);
+        if (result) {
+          // Chart was rebuilt from cross-tab, skip normal filtering
+          return;
+        }
+      }
+      
       // Store original categories if not already stored
       if (!chart._originalCategories && chart.xAxis && chart.xAxis[0] && chart.xAxis[0].categories) {
         chart._originalCategories = chart.xAxis[0].categories.slice();
@@ -982,6 +993,114 @@
     });
     
     applyAllFilters();
+  }
+
+  /**
+   * Rebuild chart from cross-tab data based on current filters
+   * This enables true client-side data filtering by re-aggregating from pre-computed cross-tab
+   * 
+   * @param {Highcharts.Chart} chart - The chart to update
+   * @param {Object} crossTabInfo - Object with data array and config
+   * @param {Object} filters - Current filter selections (filterVar -> selected values)
+   * @returns {boolean} True if chart was rebuilt, false if cross-tab doesn't apply
+   */
+  function rebuildFromCrossTab(chart, crossTabInfo, filters) {
+    if (!crossTabInfo || !crossTabInfo.data || !crossTabInfo.config) {
+      return false;
+    }
+    
+    const { data, config } = crossTabInfo;
+    const { xVar, stackVar, filterVars, stackedType, stackOrder, xOrder } = config;
+    
+    // Check if any of our filter_vars have active filters
+    let hasActiveFilter = false;
+    for (const fv of filterVars) {
+      if (filters[fv] && filters[fv].length > 0) {
+        hasActiveFilter = true;
+        break;
+      }
+    }
+    
+    // If no active filters, we can skip (let original chart show)
+    // But we still need to show full data, so always rebuild
+    
+    // Step 1: Filter the cross-tab data based on filter selections
+    let filteredData = data.slice();
+    
+    for (const filterVar of filterVars) {
+      const selectedValues = filters[filterVar];
+      if (selectedValues && selectedValues.length > 0) {
+        filteredData = filteredData.filter(row => {
+          const rowValue = String(row[filterVar]);
+          return selectedValues.includes(rowValue);
+        });
+      }
+    }
+    
+    // Step 2: Sum by x_var and stack_var (drop filter dimensions)
+    const summed = {};
+    filteredData.forEach(row => {
+      const xVal = String(row[xVar]);
+      const stackVal = String(row[stackVar]);
+      const key = xVal + '|||' + stackVal;
+      
+      if (!summed[key]) {
+        summed[key] = { xVal, stackVal, n: 0 };
+      }
+      summed[key].n += row.n;
+    });
+    
+    // Step 3: Organize by x_var for percentage calculation
+    const byX = {};
+    Object.values(summed).forEach(item => {
+      if (!byX[item.xVal]) {
+        byX[item.xVal] = {};
+      }
+      byX[item.xVal][item.stackVal] = item.n;
+    });
+    
+    // Step 4: Calculate totals per x for percentage mode
+    const xTotals = {};
+    Object.keys(byX).forEach(xVal => {
+      xTotals[xVal] = Object.values(byX[xVal]).reduce((sum, n) => sum + n, 0);
+    });
+    
+    // Step 5: Build series data for each stack value
+    const isPercent = stackedType === 'percent';
+    const orderedX = xOrder && xOrder.length > 0 ? xOrder : Object.keys(byX);
+    const orderedStack = stackOrder && stackOrder.length > 0 ? stackOrder : 
+      [...new Set(Object.values(summed).map(s => s.stackVal))];
+    
+    // Update chart categories (x-axis)
+    if (chart.xAxis && chart.xAxis[0]) {
+      chart.xAxis[0].setCategories(orderedX, false);
+    }
+    
+    // Update each series
+    orderedStack.forEach((stackVal, seriesIdx) => {
+      const seriesData = orderedX.map(xVal => {
+        const count = (byX[xVal] && byX[xVal][stackVal]) ? byX[xVal][stackVal] : 0;
+        if (isPercent && xTotals[xVal] > 0) {
+          return (count / xTotals[xVal]) * 100;
+        }
+        return count;
+      });
+      
+      // Find the series by name or index
+      let series = chart.series.find(s => s.name === stackVal);
+      if (!series && seriesIdx < chart.series.length) {
+        series = chart.series[seriesIdx];
+      }
+      
+      if (series) {
+        series.setData(seriesData, false);
+      }
+    });
+    
+    // Redraw the chart
+    chart.redraw();
+    
+    return true;
   }
 
   // Track initialization state

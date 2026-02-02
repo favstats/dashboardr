@@ -23,7 +23,7 @@
 #'
 #' # Specify custom directory
 #' tutorial_dashboard(directory = "my_tutorial")
-#' 
+#'
 #' # Don't open browser
 #' tutorial_dashboard(open = FALSE)
 #' }
@@ -31,8 +31,7 @@ tutorial_dashboard <- function(directory = "tutorial_dashboard", open = "browser
   qmds_dir <- directory  # Use directory parameter for QMD files location
 
   # Load GSS data for realistic examples
-  data(gss_panel20, package = "gssr") # Data is now handled by the function scope
-  # Ensure gssr is imported and available via NAMESPACE
+  data(gss_panel20, package = "gssr")
   gss_clean <- gss_panel20 %>%
     dplyr::select(
       age_1a, sex_1a, degree_1a, region_1a,
@@ -564,7 +563,7 @@ create_dashboard(
 #'
 #' # Specify custom directory
 #' showcase_dashboard(directory = "my_showcase")
-#' 
+#'
 #' # Don't open browser
 #' showcase_dashboard(open = FALSE)
 #' }
@@ -583,14 +582,41 @@ gss_clean <- gss_panel20 %>%
   dplyr::mutate(
     # Convert haven labels to character for cleaner processing
     sex = as.character(haven::as_factor(sex_1a)),
-    degree = as.character(haven::as_factor(degree_1a)),
+    degree_raw = as.character(haven::as_factor(degree_1a)),
     region = as.character(haven::as_factor(region_1a)),
-    happy = as.character(haven::as_factor(happy_1a)),
+    happy_raw = as.character(haven::as_factor(happy_1a)),
     trust = as.character(haven::as_factor(trust_1a)),
     polviews = as.character(haven::as_factor(polviews_1a)),
     partyid = as.character(haven::as_factor(partyid_1a)),
-    class = as.character(haven::as_factor(class_1a)),
-    age = as.numeric(age_1a)
+    class_raw = as.character(haven::as_factor(class_1a)),
+    age = as.numeric(age_1a),
+    # Recode education levels
+    degree = dplyr::case_match(
+      degree_raw,
+      "Lt High School" ~ "less than high school",
+      "High School" ~ "high school",
+      "Junior College" ~ "associate/junior college",
+      "Bachelor" ~ "bachelor's",
+      "Graduate" ~ "graduate",
+      .default = degree_raw
+    ),
+    # Recode happiness to lowercase
+    happy = dplyr::case_match(
+      happy_raw,
+      "Very Happy" ~ "very happy",
+      "Pretty Happy" ~ "pretty happy",
+      "Not Too Happy" ~ "not too happy",
+      .default = tolower(happy_raw)
+    ),
+    # Recode social class
+    class = dplyr::case_match(
+      class_raw,
+      "Lower Class" ~ "lower class",
+      "Working Class" ~ "working class",
+      "Middle Class" ~ "middle class",
+      "Upper Class" ~ "upper class",
+      .default = tolower(class_raw)
+    )
   ) %>%
   dplyr::filter(!is.na(age), !is.na(sex), !is.na(degree))
 
@@ -609,8 +635,8 @@ analysis_vizzes <- create_content() %>%
           y_label = "Percentage",
           stack_label = "Happiness",
           stacked_type = "percent",
-          x_order = c("Lt High School", "High School", "Junior College", "Bachelor", "Graduate"),
-          stack_order = c("Very Happy", "Pretty Happy", "Not Too Happy"),
+          x_order = c("less than high school", "high school", "associate/junior college", "bachelor's", "graduate"),
+          stack_order = c("very happy", "pretty happy", "not too happy"),
           color_palette = c("#27ae60", "#f39c12", "#e74c3c"),
           height = 450,
           tabgroup = "happiness") %>%
@@ -621,7 +647,7 @@ analysis_vizzes <- create_content() %>%
           subtitle = "Are happier people younger or older?",
           x_label = "Happiness Level",
           y_label = "Age (years)",
-          x_order = c("Very Happy", "Pretty Happy", "Not Too Happy"),
+          x_order = c("very happy", "pretty happy", "not too happy"),
           color_palette = c("#27ae60", "#f39c12", "#e74c3c"),
           height = 450,
           tabgroup = "happiness") %>%
@@ -652,7 +678,7 @@ analysis_vizzes <- create_content() %>%
           subtitle = "Sample composition by highest degree attained",
           x_label = "Education Level",
           y_label = "Count",
-          x_order = c("Lt High School", "High School", "Junior College", "Bachelor", "Graduate"),
+          x_order = c("less than high school", "high school", "associate/junior college", "bachelor's", "graduate"),
           color_palette = c("#1abc9c", "#3498db", "#9b59b6", "#e74c3c", "#f39c12"),
           height = 400,
           tabgroup = "education") %>%
@@ -665,7 +691,7 @@ analysis_vizzes <- create_content() %>%
           x_label = "Education Level",
           y_label = "Region",
           value_label = "Mean Age",
-          x_order = c("Lt High School", "High School", "Junior College", "Bachelor", "Graduate"),
+          x_order = c("less than high school", "high school", "associate/junior college", "bachelor's", "graduate"),
           color_palette = c("#f7fbff", "#deebf7", "#9ecae1", "#3182bd", "#08519c"),
           height = 500,
           tabgroup = "education") %>%
@@ -677,19 +703,23 @@ analysis_vizzes <- create_content() %>%
 
 # Political Attitudes page: diverse visualizations
 summary_vizzes <- create_content() %>%
-  # Party identification by ideology - stackedbar
+  # Happiness by political ideology - stackedbar (ordered liberal to conservative)
   add_viz(type = "stackedbar",
           x_var = "polviews",
-          stack_var = "partyid",
-          title = "Party Identification by Political Ideology",
-          subtitle = "How party affiliation aligns with self-reported ideology",
+          stack_var = "happy",
+          title = "Happiness by Political Ideology",
+          subtitle = "How happiness varies across the political spectrum",
           x_label = "Political Views",
           y_label = "Percentage",
-          stack_label = "Party ID",
+          stack_label = "Happiness",
           stacked_type = "percent",
-          color_palette = c("#2166ac", "#67a9cf", "#d1e5f0", "#f7f7f7", "#fddbc7", "#ef8a62", "#b2182b"),
+          x_order = c("extremely liberal", "liberal", "slightly liberal", 
+                      "moderate, middle of the road",
+                      "slightly conservative", "conservative", "extremely conservative"),
+          stack_order = c("very happy", "pretty happy", "not too happy"),
+          color_palette = c("#27ae60", "#f39c12", "#e74c3c"),
           height = 500) %>%
-  # Trust by political views - heatmap
+  # Heatmap by ideology and social class
   add_viz(type = "heatmap",
           x_var = "polviews",
           y_var = "class",
@@ -699,7 +729,10 @@ summary_vizzes <- create_content() %>%
           x_label = "Political Views",
           y_label = "Social Class",
           value_label = "Mean Age",
-          y_order = c("Lower Class", "Working Class", "Middle Class", "Upper Class"),
+          x_order = c("extremely liberal", "liberal", "slightly liberal", 
+                      "moderate, middle of the road",
+                      "slightly conservative", "conservative", "extremely conservative"),
+          y_order = c("lower class", "working class", "middle class", "upper class"),
           color_palette = c("#f7fbff", "#c6dbef", "#6baed6", "#2171b5", "#08306b"),
           height = 450) %>%
   # Social class distribution - bar chart
@@ -710,61 +743,47 @@ summary_vizzes <- create_content() %>%
           subtitle = "Self-reported social class distribution",
           x_label = "Social Class",
           y_label = "Count",
-          x_order = c("Lower Class", "Working Class", "Middle Class", "Upper Class"),
+          x_order = c("lower class", "working class", "middle class", "upper class"),
           color_palette = c("#3498db", "#e74c3c"),
           height = 400)
 
 # Trust & Social Capital page with sidebar filters
+# NEW: Filters now use cross-tab client-side aggregation for true data filtering!
+# filter_var can be ANY column - the chart will recalculate based on selections
 sidebar_content <- create_content(data = gss_clean) %>%
-  add_sidebar(width = "280px", title = "Filters") %>%
-    add_input(
-      input_id = "region_filter",
-      label = "Region:",
-      type = "checkbox",
-      filter_var = "region",
-      options = c("New England", "Middle Atlantic", "E. Nor. Central", "W. Nor. Central",
-                  "South Atlantic", "E. Sou. Central", "W. Sou. Central", "Mountain", "Pacific")
-    ) %>%
+  add_sidebar(width = "280px", title = "Filter Data") %>%
     add_input(
       input_id = "education_filter",
-      label = "Education:",
-      type = "select_multiple",
+      label = "Education Level:",
+      type = "checkbox",
       filter_var = "degree",
-      options = c("Lt High School", "High School", "Junior College", "Bachelor", "Graduate"),
-      placeholder = "All levels"
+      options = c("less than high school", "high school", "associate/junior college", 
+                  "bachelor's", "graduate"),
+      default_selected = c("less than high school", "high school", "associate/junior college", 
+                           "bachelor's", "graduate")
     ) %>%
     add_input(
       input_id = "gender_filter",
       label = "Gender:",
-      type = "radio",
+      type = "checkbox",
       filter_var = "sex",
-      options = c("Male", "Female")
+      options = c("male", "female"),
+      default_selected = c("male", "female")
     ) %>%
   end_sidebar() %>%
-  # Trust by region - stackedbar
+  # Happiness by region - stackedbar (will recalculate based on education/gender filters)
   add_viz(type = "stackedbar",
           x_var = "region",
-          stack_var = "trust",
-          title = "Trust Levels by Region",
-          subtitle = "Can most people be trusted?",
+          stack_var = "happy",
+          title = "Happiness by Region",
+          subtitle = "Filter by education and gender to see how happiness varies",
           x_label = "Region",
           y_label = "Percentage",
-          stack_label = "Trust Level",
+          stack_label = "Happiness",
           stacked_type = "percent",
-          stack_order = c("Can Trust", "Depends", "Can't Be Too Careful"),
+          stack_order = c("very happy", "pretty happy", "not too happy"),
           color_palette = c("#27ae60", "#f39c12", "#e74c3c"),
-          height = 450) %>%
-  # Boxplot of age by trust level
-  add_viz(type = "boxplot",
-          x_var = "trust",
-          y_var = "age",
-          title = "Age Distribution by Trust Level",
-          subtitle = "Do trusting people tend to be older or younger?",
-          x_label = "Trust Level",
-          y_label = "Age (years)",
-          x_order = c("Can Trust", "Depends", "Can't Be Too Careful"),
-          color_palette = c("#27ae60", "#f39c12", "#e74c3c"),
-          height = 400)
+          height = 550)
 
 # Calculate metrics for value boxes (handling haven labels)
 n_respondents <- format(nrow(gss_clean), big.mark = ",")

@@ -12,6 +12,9 @@
 
 - Applies custom tab group labels if provided
 
+- Attaches cross_tab_filter_vars for client-side filtering when inputs
+  are present
+
 This function handles both viz_collection objects and plain lists of
 visualization specifications. It:
 
@@ -27,6 +30,9 @@ visualization specifications. It:
 
 - Applies custom tab group labels if provided
 
+- Attaches cross_tab_filter_vars for client-side filtering when inputs
+  are present
+
 ## Usage
 
 ``` r
@@ -34,6 +40,14 @@ visualization specifications. It:
   viz_input,
   data_path,
   tabgroup_labels = NULL,
-  shared_first_level = TRUE
+  shared_first_level = TRUE,
+  filter_vars = NULL
 )
 ```
+
+## Arguments
+
+- filter_vars:
+
+  Character vector of filter_var values from add_input() calls
+  (optional)

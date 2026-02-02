@@ -194,6 +194,26 @@
   has_sidebar <- !is.null(sidebar)
   sidebar_position <- if (has_sidebar) (sidebar$position %||% "left") else "left"
   
+  # Extract filter_vars from sidebar and content for cross-tab filtering
+  page_filter_vars <- character(0)
+  if (has_sidebar && !is.null(sidebar$blocks)) {
+    for (block in sidebar$blocks) {
+      if (!is.null(block$type) && block$type == "input" && !is.null(block$filter_var)) {
+        page_filter_vars <- c(page_filter_vars, block$filter_var)
+      }
+    }
+  }
+  # Also check content_blocks for filter_vars
+  if (!is.null(page$content_blocks)) {
+    for (block in page$content_blocks) {
+      if (is_content(block)) {
+        block_filter_vars <- .extract_filter_vars(block)
+        page_filter_vars <- c(page_filter_vars, block_filter_vars)
+      }
+    }
+  }
+  page_filter_vars <- unique(page_filter_vars)
+  
   # In dashboard format (with sidebar), viz titles should use ### instead of ##
   # to stay within the Column
   viz_heading_level <- if (has_sidebar) 3 else 2
@@ -278,7 +298,9 @@
             ), class = c("content_collection", "viz_collection"))
             
             # First process through viz_processing to handle tabgroup hierarchy
-            processed_specs <- .process_visualizations(viz_coll, page$data_path)
+            # Pass page_filter_vars for cross-tab filtering support
+            processed_specs <- .process_visualizations(viz_coll, page$data_path, 
+                                                        filter_vars = page_filter_vars)
             
             # Then generate the markdown
             if (!is.null(processed_specs) && length(processed_specs) > 0) {
@@ -420,7 +442,19 @@
     # Get lazy load settings
     lazy_load_charts <- page$lazy_load_charts %||% FALSE
     lazy_load_tabs <- page$lazy_load_tabs %||% FALSE
-    viz_content <- .generate_viz_from_specs(page$visualizations, lazy_load_charts, lazy_load_tabs, heading_level = viz_heading_level)
+    
+    # Add cross_tab_filter_vars to visualizations if filter_vars are available
+    viz_specs <- page$visualizations
+    if (length(page_filter_vars) > 0) {
+      viz_specs <- lapply(viz_specs, function(spec) {
+        if (is.null(spec$cross_tab_filter_vars)) {
+          spec$cross_tab_filter_vars <- page_filter_vars
+        }
+        spec
+      })
+    }
+    
+    viz_content <- .generate_viz_from_specs(viz_specs, lazy_load_charts, lazy_load_tabs, heading_level = viz_heading_level)
     content <- c(content, viz_content)
   } else if (isTRUE(is.null(page$text) || !nzchar(page$text))) {
     # Check if there's any content from various sources
@@ -1054,6 +1088,11 @@
     paste0("  value = ", .serialize_arg(block$value), ","),
     paste0("  show_value = ", .serialize_arg(block$show_value %||% TRUE), ","),
     paste0("  inline = ", .serialize_arg(block$inline %||% TRUE), ","),
+    paste0("  stacked = ", .serialize_arg(block$stacked %||% FALSE), ","),
+    paste0("  stacked_align = ", .serialize_arg(block$stacked_align %||% "center"), ","),
+    paste0("  group_align = ", .serialize_arg(block$group_align %||% "left"), ","),
+    paste0("  ncol = ", .serialize_arg(block$ncol), ","),
+    paste0("  nrow = ", .serialize_arg(block$nrow), ","),
     paste0("  toggle_series = ", .serialize_arg(block$toggle_series), ","),
     paste0("  override = ", .serialize_arg(block$override %||% FALSE), ","),
     paste0("  labels = ", .serialize_arg(block$labels), ","),
@@ -1110,6 +1149,11 @@
       paste0("    value = ", .serialize_arg(input$value), ","),
       paste0("    show_value = ", .serialize_arg(input$show_value %||% TRUE), ","),
       paste0("    inline = ", .serialize_arg(input$inline %||% TRUE), ","),
+      paste0("    stacked = ", .serialize_arg(input$stacked %||% FALSE), ","),
+      paste0("    stacked_align = ", .serialize_arg(input$stacked_align %||% "center"), ","),
+      paste0("    group_align = ", .serialize_arg(input$group_align %||% "left"), ","),
+      paste0("    ncol = ", .serialize_arg(input$ncol), ","),
+      paste0("    nrow = ", .serialize_arg(input$nrow), ","),
       paste0("    toggle_series = ", .serialize_arg(input$toggle_series), ","),
       paste0("    override = ", .serialize_arg(input$override %||% FALSE), ","),
       paste0("    labels = ", .serialize_arg(input$labels), ","),

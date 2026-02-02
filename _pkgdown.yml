@@ -300,6 +300,7 @@ reference:
   desc: Functions for adding interactive inputs to dashboards
   contents:
   - add_input
+  - add_filter
   - add_input_row
   - add_reset_button
   - enable_inputs

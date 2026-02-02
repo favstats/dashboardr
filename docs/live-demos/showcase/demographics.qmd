@@ -63,8 +63,8 @@ result <- viz_stackedbar(
   y_label = "Percentage",
   stack_label = "Happiness",
   stacked_type = "percent",
-  x_order = c("Lt High School", "High School", "Junior College", "Bachelor", "Graduate"),
-  stack_order = c("Very Happy", "Pretty Happy", "Not Too Happy"),
+  x_order = c("less than high school", "high school", "associate/junior college", "bachelor's", "graduate"),
+  stack_order = c("very happy", "pretty happy", "not too happy"),
   color_palette = c("#27ae60", "#f39c12", "#e74c3c")
 )
 

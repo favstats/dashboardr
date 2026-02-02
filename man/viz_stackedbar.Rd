@@ -37,7 +37,8 @@ viz_stackedbar(
   stack_map_values = NULL,
   horizontal = FALSE,
   weight_var = NULL,
-  data_labels_enabled = TRUE
+  data_labels_enabled = TRUE,
+  cross_tab_filter_vars = NULL
 )
 }
 \arguments{

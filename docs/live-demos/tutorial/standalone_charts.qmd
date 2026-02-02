@@ -73,6 +73,25 @@ result <- htmltools::div(
   result
 )
 
+# Embed cross-tab data for client-side filtering (if present)
+if (!is.null(attr(result, 'cross_tab_data'))) {
+  cross_tab <- attr(result, 'cross_tab_data')
+  chart_config <- attr(result, 'cross_tab_config')
+  chart_id <- attr(result, 'cross_tab_id')
+  cross_tab_json <- jsonlite::toJSON(cross_tab, dataframe = 'rows')
+  config_json <- jsonlite::toJSON(chart_config, auto_unbox = TRUE)
+  script_tag <- htmltools::tags$script(
+    htmltools::HTML(paste0(
+      'window.dashboardrCrossTab = window.dashboardrCrossTab || {};',
+      'window.dashboardrCrossTab["', chart_id, '"] = {',
+      'data: ', cross_tab_json, ',',
+      'config: ', config_json,
+      '};'
+    ))
+  )
+  result <- htmltools::tagList(script_tag, result)
+}
+
 result
 ```
 
@@ -133,6 +152,25 @@ result <- htmltools::div(
   style = 'height: 700px !important; min-height: 700px !important; width: 100%; overflow: visible;',
   result
 )
+
+# Embed cross-tab data for client-side filtering (if present)
+if (!is.null(attr(result, 'cross_tab_data'))) {
+  cross_tab <- attr(result, 'cross_tab_data')
+  chart_config <- attr(result, 'cross_tab_config')
+  chart_id <- attr(result, 'cross_tab_id')
+  cross_tab_json <- jsonlite::toJSON(cross_tab, dataframe = 'rows')
+  config_json <- jsonlite::toJSON(chart_config, auto_unbox = TRUE)
+  script_tag <- htmltools::tags$script(
+    htmltools::HTML(paste0(
+      'window.dashboardrCrossTab = window.dashboardrCrossTab || {};',
+      'window.dashboardrCrossTab["', chart_id, '"] = {',
+      'data: ', cross_tab_json, ',',
+      'config: ', config_json,
+      '};'
+    ))
+  )
+  result <- htmltools::tagList(script_tag, result)
+}
 
 result
 ```

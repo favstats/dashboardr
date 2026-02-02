@@ -190,12 +190,29 @@ enable_inputs <- function() {
 .generate_checkbox_html <- function(input_id, label, filter_var, options,
                                      default_selected, width, align, inline,
                                      size = "md", help = NULL, disabled = FALSE,
-                                     columns = NULL) {
+                                     columns = NULL, stacked = FALSE,
+                                     stacked_align = "center",
+                                     group_align = "left",
+                                     ncol = NULL, nrow = NULL) {
   if (is.null(default_selected)) default_selected <- options
   
- # Build layout class: inline takes priority, then columns, then default (stacked)
+ # Build layout class: stacked takes priority, then inline, then columns, then default (vertical)
   layout_class <- ""
-  if (inline) {
+  grid_style <- ""
+  if (stacked) {
+    layout_class <- paste0(" stacked align-", stacked_align, " group-", group_align)
+    # If ncol or nrow specified, use CSS grid
+    if (!is.null(ncol) && ncol > 0) {
+      layout_class <- paste0(layout_class, " stacked-grid")
+      grid_style <- sprintf("grid-template-columns: repeat(%d, 1fr);", ncol)
+    } else if (!is.null(nrow) && nrow > 0) {
+      # Calculate ncol from nrow and number of options
+      n_opts <- length(options)
+      calc_ncol <- ceiling(n_opts / nrow)
+      layout_class <- paste0(layout_class, " stacked-grid")
+      grid_style <- sprintf("grid-template-columns: repeat(%d, 1fr);", calc_ncol)
+    }
+  } else if (inline) {
     layout_class <- " inline"
   } else if (!is.null(columns) && columns %in% c(2, 3, 4)) {
     layout_class <- paste0(" grid-", columns)
@@ -211,7 +228,8 @@ enable_inputs <- function() {
     html_lines <- c(html_lines, paste0('  <label class="dashboardr-input-label">', label, '</label>'))
   }
   
-  html_lines <- c(html_lines, paste0('  <div id="', input_id, '" class="dashboardr-checkbox-group', layout_class, '" data-filter-var="', filter_var, '" data-input-type="checkbox">'))
+  style_attr <- if (nchar(grid_style) > 0) paste0(' style="', grid_style, '"') else ""
+  html_lines <- c(html_lines, paste0('  <div id="', input_id, '" class="dashboardr-checkbox-group', layout_class, '"', style_attr, ' data-filter-var="', filter_var, '" data-input-type="checkbox">'))
   
   for (i in seq_along(options)) {
     opt <- options[i]
@@ -242,12 +260,29 @@ enable_inputs <- function() {
 .generate_radio_html <- function(input_id, label, filter_var, options,
                                   default_selected, width, align, inline,
                                   size = "md", help = NULL, disabled = FALSE,
-                                  columns = NULL) {
+                                  columns = NULL, stacked = FALSE, 
+                                  stacked_align = "center",
+                                  group_align = "left",
+                                  ncol = NULL, nrow = NULL) {
   if (is.null(default_selected) && length(options) > 0) default_selected <- options[1]
   
-  # Build layout class: inline takes priority, then columns, then default (stacked)
+  # Build layout class: stacked takes priority, then inline, then columns, then default (vertical)
   layout_class <- ""
-  if (inline) {
+  grid_style <- ""
+  if (stacked) {
+    layout_class <- paste0(" stacked align-", stacked_align, " group-", group_align)
+    # If ncol or nrow specified, use CSS grid
+    if (!is.null(ncol) && ncol > 0) {
+      layout_class <- paste0(layout_class, " stacked-grid")
+      grid_style <- sprintf("grid-template-columns: repeat(%d, 1fr);", ncol)
+    } else if (!is.null(nrow) && nrow > 0) {
+      # Calculate ncol from nrow and number of options
+      n_opts <- length(options)
+      calc_ncol <- ceiling(n_opts / nrow)
+      layout_class <- paste0(layout_class, " stacked-grid")
+      grid_style <- sprintf("grid-template-columns: repeat(%d, 1fr);", calc_ncol)
+    }
+  } else if (inline) {
     layout_class <- " inline"
   } else if (!is.null(columns) && columns %in% c(2, 3, 4)) {
     layout_class <- paste0(" grid-", columns)
@@ -263,7 +298,8 @@ enable_inputs <- function() {
     html_lines <- c(html_lines, paste0('  <label class="dashboardr-input-label">', label, '</label>'))
   }
   
-  html_lines <- c(html_lines, paste0('  <div id="', input_id, '" class="dashboardr-radio-group', layout_class, '" data-filter-var="', filter_var, '" data-input-type="radio">'))
+  style_attr <- if (nchar(grid_style) > 0) paste0(' style="', grid_style, '"') else ""
+  html_lines <- c(html_lines, paste0('  <div id="', input_id, '" class="dashboardr-radio-group', layout_class, '"', style_attr, ' data-filter-var="', filter_var, '" data-input-type="radio">'))
   
   for (i in seq_along(options)) {
     opt <- options[i]
@@ -546,6 +582,11 @@ render_input <- function(input_id,
                          value = NULL,
                          show_value = TRUE,
                          inline = TRUE,
+                         stacked = FALSE,
+                         stacked_align = c("center", "left", "right"),
+                         group_align = c("left", "center", "right"),
+                         ncol = NULL,
+                         nrow = NULL,
                          columns = NULL,
                          toggle_series = NULL,
                          override = FALSE,
@@ -560,8 +601,9 @@ render_input <- function(input_id,
   
   type <- match.arg(type)
   align <- match.arg(align)
-
   size <- match.arg(size)
+  stacked_align <- match.arg(stacked_align)
+  group_align <- match.arg(group_align)
   
   # If options_from is specified, try to get options from the data
   if (is.null(options) && !is.null(options_from)) {
@@ -580,10 +622,10 @@ render_input <- function(input_id,
                                              size, help, disabled),
     "checkbox" = .generate_checkbox_html(input_id, label, filter_var, options,
                                           default_selected, width, align, inline,
-                                          size, help, disabled, columns),
+                                          size, help, disabled, columns, stacked, stacked_align, group_align, ncol, nrow),
     "radio" = .generate_radio_html(input_id, label, filter_var, options,
                                     default_selected, width, align, inline,
-                                    size, help, disabled, columns),
+                                    size, help, disabled, columns, stacked, stacked_align, group_align, ncol, nrow),
     "switch" = .generate_switch_html(input_id, label, filter_var, value, width, align,
                                       toggle_series, override, size, help, disabled),
     "slider" = .generate_slider_html(input_id, label, filter_var, min, max, step,
@@ -653,13 +695,17 @@ render_input_row <- function(inputs, style = "boxed", align = "center") {
         input$input_id, input$label, input$filter_var, options,
         input$default_selected, input$width %||% "300px", "center",
         input$inline %||% TRUE, input$size %||% "md", input$help,
-        input$disabled %||% FALSE, input$columns
+        input$disabled %||% FALSE, input$columns, input$stacked %||% FALSE,
+        input$stacked_align %||% "center", input$group_align %||% "left",
+        input$ncol, input$nrow
       ),
       "radio" = .generate_radio_html(
         input$input_id, input$label, input$filter_var, options,
         input$default_selected, input$width %||% "300px", "center",
         input$inline %||% TRUE, input$size %||% "md", input$help,
-        input$disabled %||% FALSE, input$columns
+        input$disabled %||% FALSE, input$columns, input$stacked %||% FALSE,
+        input$stacked_align %||% "center", input$group_align %||% "left",
+        input$ncol, input$nrow
       ),
       "switch" = .generate_switch_html(
         input$input_id, input$label, input$filter_var, input$value,

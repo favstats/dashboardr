@@ -10,14 +10,19 @@ specifications. It:
 \item Converts single-item groups to standalone visualizations with group titles
 \item Creates tab group objects for multi-item groups
 \item Applies custom tab group labels if provided
+\item Attaches cross_tab_filter_vars for client-side filtering when inputs are present
 }}
 \usage{
 .process_visualizations(
   viz_input,
   data_path,
   tabgroup_labels = NULL,
-  shared_first_level = TRUE
+  shared_first_level = TRUE,
+  filter_vars = NULL
 )
+}
+\arguments{
+\item{filter_vars}{Character vector of filter_var values from add_input() calls (optional)}
 }
 \description{
 This function handles both viz_collection objects and plain lists of visualization
@@ -28,6 +33,7 @@ specifications. It:
 \item Converts single-item groups to standalone visualizations with group titles
 \item Creates tab group objects for multi-item groups
 \item Applies custom tab group labels if provided
+\item Attaches cross_tab_filter_vars for client-side filtering when inputs are present
 }
 }
 \keyword{internal}

@@ -193,7 +193,9 @@ viz_stackedbar <- function(data,
                            stack_map_values = NULL,
                            horizontal = FALSE,
                            weight_var = NULL,
-                           data_labels_enabled = TRUE) {
+                           data_labels_enabled = TRUE,
+                           # Cross-tab filtering for sidebar inputs (auto-detected)
+                           cross_tab_filter_vars = NULL) {
 
   # Convert variable arguments to strings (supports both quoted and unquoted)
   x_var <- .as_var_string(rlang::enquo(x_var))
@@ -406,7 +408,8 @@ viz_stackedbar <- function(data,
     stack_map_values = stack_map_values,
     horizontal = horizontal,
     weight_var = weight_var,
-    data_labels_enabled = data_labels_enabled
+    data_labels_enabled = data_labels_enabled,
+    cross_tab_filter_vars = cross_tab_filter_vars
   )
 }
 
@@ -443,7 +446,8 @@ viz_stackedbar <- function(data,
                                   stack_map_values = NULL,
                                   horizontal = FALSE,
                                   weight_var = NULL,
-                                  data_labels_enabled = TRUE) {
+                                  data_labels_enabled = TRUE,
+                                  cross_tab_filter_vars = NULL) {
 
   # Validation for core function (x_var and stack_var are already strings)
   if (!x_var %in% names(data)) {
@@ -717,6 +721,41 @@ viz_stackedbar <- function(data,
   # Colors
   if (!is.null(color_palette)) {
     hchart_obj <- highcharter::hc_colors(hchart_obj, colors = color_palette)
+  }
+  
+  # Generate cross-tab for client-side filtering if filter_vars are provided
+  if (!is.null(cross_tab_filter_vars) && length(cross_tab_filter_vars) > 0) {
+    # Filter to valid columns that exist in data
+    valid_filter_vars <- cross_tab_filter_vars[cross_tab_filter_vars %in% names(data)]
+    
+    if (length(valid_filter_vars) > 0) {
+      # Compute cross-tab including filter variables
+      group_vars <- c(x_var, stack_var, valid_filter_vars)
+      cross_tab <- data %>%
+        dplyr::count(dplyr::across(dplyr::all_of(group_vars)), name = "n")
+      
+      # Generate unique chart ID
+      chart_id <- paste0("crosstab_", substr(digest::digest(paste(x_var, stack_var, collapse = "_")), 1, 8))
+      
+      # Chart config for JS
+      chart_config <- list(
+        chartId = chart_id,
+        xVar = x_var,
+        stackVar = stack_var,
+        filterVars = valid_filter_vars,
+        stackedType = stacked_type,
+        stackOrder = if (!is.null(stack_order)) stack_order else unique(as.character(cross_tab[[stack_var]])),
+        xOrder = if (!is.null(x_order)) x_order else unique(as.character(cross_tab[[x_var]]))
+      )
+      
+      # Store cross-tab and config as attributes on the chart
+      attr(hchart_obj, "cross_tab_data") <- cross_tab
+      attr(hchart_obj, "cross_tab_config") <- chart_config
+      attr(hchart_obj, "cross_tab_id") <- chart_id
+      
+      # Add the chart ID to the Highcharts options so JS can find it
+      hchart_obj <- highcharter::hc_chart(hchart_obj, id = chart_id)
+    }
   }
 
   return(hchart_obj)
