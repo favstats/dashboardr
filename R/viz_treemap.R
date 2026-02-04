@@ -31,6 +31,9 @@ utils::globalVariables(c("name", "value", "colorValue"))
 #' @param tooltip_format Custom tooltip format using Highcharts syntax (legacy).
 #'   For the simpler dashboardr placeholder syntax, use \code{tooltip} instead.
 #' @param credits Whether to show Highcharts credits (default FALSE)
+#' @param pre_aggregated Logical. If TRUE, skips summing and uses `value_var` directly.
+#'   Use this when your data is already aggregated (one row per leaf node).
+#'   Default is FALSE.
 #' @param ... Additional parameters passed to highcharter
 #'
 #' @return A highcharter treemap object
@@ -67,6 +70,7 @@ viz_treemap <- function(
     tooltip = NULL,
     tooltip_format = NULL,
     credits = FALSE,
+    pre_aggregated = FALSE,
     ...
 ) {
   # Convert variable arguments to strings (supports both quoted and unquoted)
@@ -146,17 +150,28 @@ viz_treemap <- function(
   if (!is.null(subgroup_var)) {
     # Two-level hierarchy - manually build to avoid highcharter::data_to_hierarchical stack issues
     
-    # 1. Aggregate for level 2 (subgroups)
-    l2_data <- plot_data %>%
-      dplyr::group_by(across(all_of(c(group_var, subgroup_var)))) %>%
-      dplyr::summarize(value = sum(.data[[value_var]], na.rm = TRUE), .groups = "drop") %>%
-      dplyr::mutate(
-        parent = as.character(.data[[group_var]]),
-        name = as.character(.data[[subgroup_var]]),
-        id = paste0(parent, "_", name)
-      )
+    # 1. Aggregate for level 2 (subgroups) - or use directly if pre-aggregated
+    if (pre_aggregated) {
+      # Data is already aggregated - use value_var directly
+      l2_data <- plot_data %>%
+        dplyr::mutate(
+          parent = as.character(.data[[group_var]]),
+          name = as.character(.data[[subgroup_var]]),
+          value = .data[[value_var]],
+          id = paste0(parent, "_", name)
+        )
+    } else {
+      l2_data <- plot_data %>%
+        dplyr::group_by(across(all_of(c(group_var, subgroup_var)))) %>%
+        dplyr::summarize(value = sum(.data[[value_var]], na.rm = TRUE), .groups = "drop") %>%
+        dplyr::mutate(
+          parent = as.character(.data[[group_var]]),
+          name = as.character(.data[[subgroup_var]]),
+          id = paste0(parent, "_", name)
+        )
+    }
     
-    # 2. Aggregate for level 1 (groups)
+    # 2. Aggregate for level 1 (groups) - always sum child values
     l1_data <- l2_data %>%
       dplyr::group_by(parent) %>%
       dplyr::summarize(value = sum(value, na.rm = TRUE), .groups = "drop") %>%
@@ -188,16 +203,29 @@ viz_treemap <- function(
     }
   } else {
     # Single-level - create simple list format
-    hc_data <- plot_data %>%
-      dplyr::group_by(.data[[group_var]]) %>%
-      dplyr::summarize(value = sum(.data[[value_var]], na.rm = TRUE), .groups = "drop") %>%
-      dplyr::mutate(
-        name = as.character(.data[[group_var]]),
-        colorValue = .data$value
-      ) %>%
-      dplyr::select(name, value, colorValue) %>%
-      as.list() %>%
-      purrr::transpose()
+    if (pre_aggregated) {
+      # Data is already aggregated - use value_var directly
+      hc_data <- plot_data %>%
+        dplyr::mutate(
+          name = as.character(.data[[group_var]]),
+          value = .data[[value_var]],
+          colorValue = .data[[value_var]]
+        ) %>%
+        dplyr::select(name, value, colorValue) %>%
+        as.list() %>%
+        purrr::transpose()
+    } else {
+      hc_data <- plot_data %>%
+        dplyr::group_by(.data[[group_var]]) %>%
+        dplyr::summarize(value = sum(.data[[value_var]], na.rm = TRUE), .groups = "drop") %>%
+        dplyr::mutate(
+          name = as.character(.data[[group_var]]),
+          colorValue = .data$value
+        ) %>%
+        dplyr::select(name, value, colorValue) %>%
+        as.list() %>%
+        purrr::transpose()
+    }
   }
   
   # Create the treemap

@@ -4,7 +4,7 @@
 \alias{add_hc}
 \title{Add a custom highcharter chart}
 \usage{
-add_hc(content, hc_object, height = "400px", tabgroup = NULL)
+add_hc(content, hc_object, height = NULL, tabgroup = NULL)
 }
 \arguments{
 \item{content}{A content_collection, page_object, or dashboard object}

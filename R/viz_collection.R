@@ -695,6 +695,10 @@ add_viz.page_object <- function(x, type = NULL, ..., tabgroup = NULL, title = NU
   })
   names(extra) <- extra_names
   
+  # Serialize data frame if provided (survives pipeline processing)
+  data_is_dataframe <- is.data.frame(data)
+  data_serialized <- if (data_is_dataframe) .serialize_arg(data) else NULL
+  
   viz_spec <- list(
     type = "viz",
     viz_type = type %||% defaults$type %||% "bar",
@@ -710,7 +714,9 @@ add_viz.page_object <- function(x, type = NULL, ..., tabgroup = NULL, title = NU
     text_after_viz = text_after_viz,
     height = height,
     filter = filter,
-    data = data,
+    data = if (data_is_dataframe) NULL else data,  # Only store name reference, not data frame
+    data_is_dataframe = data_is_dataframe,
+    data_serialized = data_serialized,  # Store serialized data frame string
     drop_na_vars = if (is.null(drop_na_vars) || isFALSE(drop_na_vars)) defaults$drop_na_vars else drop_na_vars,
     color_palette = defaults$color_palette,
     weight_var = defaults$weight_var
@@ -949,10 +955,13 @@ add_viz.default <- function(x, type = NULL, ..., tabgroup = NULL, title = NULL, 
   # Validate and process data parameter
   # data can be: NULL (inherit from collection), character (dataset name), or data.frame
   data_is_dataframe <- FALSE
+  data_serialized <- NULL
   if (!is.null(data)) {
     if (is.data.frame(data)) {
-      # Data frame passed directly - store in spec
+      # Data frame passed directly - serialize it so it survives pipeline processing
       data_is_dataframe <- TRUE
+      # Store as serialized R code that can reconstruct the data frame
+      data_serialized <- .serialize_arg(data)
     } else if (is.character(data) && length(data) == 1 && nchar(data) > 0) {
       # Dataset name (existing behavior)
       data_is_dataframe <- FALSE
@@ -978,8 +987,9 @@ add_viz.default <- function(x, type = NULL, ..., tabgroup = NULL, title = NULL, 
       text_after_viz = text_after_viz,
       height = height,
       filter = filter,
-      data = data,
+      data = if (data_is_dataframe) NULL else data,  # Only store name reference, not data frame
       data_is_dataframe = data_is_dataframe,
+      data_serialized = data_serialized,  # Store serialized data frame string
       drop_na_vars = drop_na_vars
     ),
     dot_args  # Add remaining parameters from defaults/dots
@@ -2664,13 +2674,17 @@ save_widget <- function(widget, file, selfcontained = TRUE) {
                        "text", "icon", "text_position", "text_before_tabset", 
                        "text_after_tabset", "text_before_viz", "text_after_viz",
                        "height", "filter", "has_data", "data_path", "data_is_dataframe",
-                       ".insertion_index", ".min_index", ".pagination_section", 
+                       "data_serialized", ".insertion_index", ".min_index", ".pagination_section", 
                        "nested_children", "drop_na_vars")
   
   viz_args <- item[!names(item) %in% internal_params]
   
-  # If data param is a string (dataset name), use the actual data
-  if (is.null(viz_args$data) || is.character(viz_args$data)) {
+  # Check if per-viz data was serialized (from add_viz(data = df))
+  if (!is.null(item$data_serialized) && nchar(item$data_serialized) > 0) {
+    # Deserialize the inline data frame
+    viz_args$data <- as.data.frame(eval(parse(text = item$data_serialized)))
+  } else if (is.null(viz_args$data) || is.character(viz_args$data)) {
+    # Use collection-level data if no per-viz data and data is NULL or a string reference
     viz_args$data <- data
   }
   
@@ -2755,6 +2769,7 @@ save_widget <- function(widget, file, selfcontained = TRUE) {
     "reactable" = .render_reactable_block_direct(block),
     "DT" = .render_dt_block_direct(block),
     "table" = .render_table_block_direct(block),
+    "hc" = .render_hc_block_direct(block),
     "input" = .render_input_block_direct(block),
     "input_row" = .render_input_row_block_direct(block),
     "modal" = .render_modal_block_direct(block),
@@ -3140,6 +3155,11 @@ save_widget <- function(widget, file, selfcontained = TRUE) {
     return(htmltools::div(style = "color: #999;", "[DataTable placeholder]"))
   }
   
+  # Check if data is already a DT datatable object
+  if (inherits(data, "datatables") || inherits(data, "htmlwidget")) {
+    return(data)
+  }
+  
   if (requireNamespace("DT", quietly = TRUE)) {
     tryCatch({
       DT::datatable(data, options = options)
@@ -3192,6 +3212,25 @@ save_widget <- function(widget, file, selfcontained = TRUE) {
     )
   } else {
     htmltools::div(style = "color: #999;", "[Table data not available]")
+  }
+}
+
+
+#' Render highcharter block
+#' @noRd
+.render_hc_block_direct <- function(block) {
+  hc_obj <- block$hc_object %||% block$object
+  
+  if (is.null(hc_obj)) {
+    return(htmltools::div(style = "color: #999;", "[Highcharter chart placeholder]"))
+  }
+  
+  # Check if it's a highchart object
+  if (requireNamespace("highcharter", quietly = TRUE) && inherits(hc_obj, "highchart")) {
+    # Highcharter objects are htmlwidgets, so they render directly
+    hc_obj
+  } else {
+    htmltools::div(style = "color: #999;", "[Highcharter chart - invalid object or package not available]")
   }
 }
 
@@ -4710,6 +4749,53 @@ knit_print.content_collection <- function(x, ..., options = NULL) {
       htmltools::tags$span(style = "color: #007bff; font-weight: 500;", paste0("🎚 Input: ", label)),
       htmltools::tags$span(style = "color: #6c757d; font-size: 0.9em; margin-left: 10px;", "(Interactive in full dashboard)")
     ))
+    
+  } else if (item_type == "gt") {
+    # gt table - delegate to render function
+    result <- .render_gt_block_direct(item)
+    if (!is.null(result)) {
+      return(htmltools::tags$div(style = "margin: 15px 0;", result))
+    }
+    
+  } else if (item_type == "reactable") {
+    # reactable table - delegate to render function
+    result <- .render_reactable_block_direct(item)
+    if (!is.null(result)) {
+      if (inherits(result, "htmlwidget")) {
+        widget_html <- htmlwidgets:::toHTML(result, standalone = FALSE, knitrOptions = options)
+        return(htmltools::tags$div(style = "margin: 15px 0;", widget_html))
+      }
+      return(htmltools::tags$div(style = "margin: 15px 0;", result))
+    }
+    
+  } else if (item_type == "DT") {
+    # DT datatable - delegate to render function
+    result <- .render_dt_block_direct(item)
+    if (!is.null(result)) {
+      if (inherits(result, "htmlwidget")) {
+        widget_html <- htmlwidgets:::toHTML(result, standalone = FALSE, knitrOptions = options)
+        return(htmltools::tags$div(style = "margin: 15px 0;", widget_html))
+      }
+      return(htmltools::tags$div(style = "margin: 15px 0;", result))
+    }
+    
+  } else if (item_type == "table") {
+    # Basic table - delegate to render function
+    result <- .render_table_block_direct(item)
+    if (!is.null(result)) {
+      return(htmltools::tags$div(style = "margin: 15px 0;", result))
+    }
+    
+  } else if (item_type == "hc") {
+    # Highcharter chart - delegate to render function
+    result <- .render_hc_block_direct(item)
+    if (!is.null(result)) {
+      if (inherits(result, "htmlwidget")) {
+        widget_html <- htmlwidgets:::toHTML(result, standalone = FALSE, knitrOptions = options)
+        return(htmltools::tags$div(style = "margin: 15px 0;", widget_html))
+      }
+      return(htmltools::tags$div(style = "margin: 15px 0;", result))
+    }
   }
   
   NULL

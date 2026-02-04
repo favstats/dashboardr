@@ -181,7 +181,12 @@ test_that("add_viz accepts data parameter override", {
   result <- create_viz(data = mtcars) %>%
     add_viz(type = "histogram", x_var = "x", data = custom_data)
   
-  expect_equal(result$items[[1]]$data, custom_data)
+  # Per-viz data frames are serialized to survive pipeline processing
+  expect_true(result$items[[1]]$data_is_dataframe)
+  expect_true(!is.null(result$items[[1]]$data_serialized))
+  # Verify the serialized data can be reconstructed
+  reconstructed <- as.data.frame(eval(parse(text = result$items[[1]]$data_serialized)))
+  expect_equal(reconstructed, custom_data)
 })
 
 test_that("add_viz accepts drop_na_vars parameter", {

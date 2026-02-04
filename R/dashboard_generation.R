@@ -286,6 +286,11 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
     total_pages <- length(pages_to_generate)
     current_page <- 0
     
+    # Global counters for table/hc objects across all pages
+    # These must be outside the page loop to avoid filename collisions
+    global_table_counter <- 0
+    global_hc_counter <- 0
+    
     # Determine if we'll also show landing page for last detection
     will_show_landing <- !is.null(proj$landing_page) && 
                          (is.null(preview_pages) || proj$landing_page %in% preview_pages)
@@ -334,16 +339,18 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
       build_info$regenerated <- c(build_info$regenerated, page_name)
 
       # Save table objects (entire styled objects for direct rendering)
+      # This handles both direct content_block items and items nested inside content collections
       if (!is.null(page$content_blocks)) {
-        table_counter <- 0
-        hc_counter <- 0
-        for (i in seq_along(page$content_blocks)) {
-          block <- page$content_blocks[[i]]
-          if (!inherits(block, "content_block")) next
+        # Helper function to process a single block
+        # Uses global counters to avoid filename collisions across pages
+        process_block <- function(block, block_path) {
+          if (!inherits(block, "content_block")) return(NULL)
+          
+          result <- list()
           
           # Handle table types
           if (isTRUE(block$type %in% c("table", "gt", "reactable", "DT"))) {
-            table_counter <- table_counter + 1
+            global_table_counter <<- global_table_counter + 1
             
             # Get the table object to save
             table_obj <- NULL
@@ -359,22 +366,50 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
             
             # Save the ENTIRE styled object (preserves all styling!)
             if (!is.null(table_obj)) {
-              obj_filename <- paste0("table_obj_", table_counter, ".rds")
+              obj_filename <- paste0("table_obj_", global_table_counter, ".rds")
               obj_filepath <- file.path(output_dir, obj_filename)
               saveRDS(table_obj, obj_filepath)
-              page$content_blocks[[i]]$table_file <- obj_filename
-              page$content_blocks[[i]]$table_var <- paste0("table_obj_", table_counter)
+              result$table_file <- obj_filename
+              result$table_var <- paste0("table_obj_", global_table_counter)
             }
           }
           
           # Handle highcharter objects
           if (isTRUE(block$type == "hc") && !is.null(block$hc_object)) {
-            hc_counter <- hc_counter + 1
-            hc_filename <- paste0("hc_obj_", hc_counter, ".rds")
+            global_hc_counter <<- global_hc_counter + 1
+            hc_filename <- paste0("hc_obj_", global_hc_counter, ".rds")
             hc_filepath <- file.path(output_dir, hc_filename)
             saveRDS(block$hc_object, hc_filepath)
-            page$content_blocks[[i]]$hc_file <- hc_filename
-            page$content_blocks[[i]]$hc_var <- paste0("hc_obj_", hc_counter)
+            result$hc_file <- hc_filename
+            result$hc_var <- paste0("hc_obj_", global_hc_counter)
+          }
+          
+          result
+        }
+        
+        for (i in seq_along(page$content_blocks)) {
+          block <- page$content_blocks[[i]]
+          
+          # Check if this is a content collection (may contain nested items)
+          if (is_content(block) && !is.null(block$items)) {
+            # Process items inside the content collection
+            for (j in seq_along(block$items)) {
+              item <- block$items[[j]]
+              updates <- process_block(item, c(i, j))
+              if (length(updates) > 0) {
+                for (name in names(updates)) {
+                  page$content_blocks[[i]]$items[[j]][[name]] <- updates[[name]]
+                }
+              }
+            }
+          } else {
+            # Direct content_block
+            updates <- process_block(block, i)
+            if (length(updates) > 0) {
+              for (name in names(updates)) {
+                page$content_blocks[[i]][[name]] <- updates[[name]]
+              }
+            }
           }
         }
       }
@@ -468,16 +503,18 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
           build_info$regenerated <- c(build_info$regenerated, landing_page_name)
           
           # Save table/hc objects for landing page (same as regular pages)
+          # This handles both direct content_block items and items nested inside content collections
+          # Uses the global counters defined at the start of the generation loop
           if (!is.null(landing_page$content_blocks)) {
-            table_counter <- 0
-            hc_counter <- 0
-            for (i in seq_along(landing_page$content_blocks)) {
-              block <- landing_page$content_blocks[[i]]
-              if (!inherits(block, "content_block")) next
+            # Helper function to process a single block
+            process_landing_block <- function(block) {
+              if (!inherits(block, "content_block")) return(NULL)
+              
+              result <- list()
               
               # Handle table types
               if (isTRUE(block$type %in% c("table", "gt", "reactable", "DT"))) {
-                table_counter <- table_counter + 1
+                global_table_counter <<- global_table_counter + 1
                 table_obj <- NULL
                 if (block$type == "table" && !is.null(block$table_object)) {
                   table_obj <- block$table_object
@@ -489,22 +526,50 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
                   table_obj <- block$table_data
                 }
                 if (!is.null(table_obj)) {
-                  obj_filename <- paste0("table_obj_", table_counter, ".rds")
+                  obj_filename <- paste0("table_obj_", global_table_counter, ".rds")
                   obj_filepath <- file.path(output_dir, obj_filename)
                   saveRDS(table_obj, obj_filepath)
-                  landing_page$content_blocks[[i]]$table_file <- obj_filename
-                  landing_page$content_blocks[[i]]$table_var <- paste0("table_obj_", table_counter)
+                  result$table_file <- obj_filename
+                  result$table_var <- paste0("table_obj_", global_table_counter)
                 }
               }
               
               # Handle highcharter objects
               if (isTRUE(block$type == "hc") && !is.null(block$hc_object)) {
-                hc_counter <- hc_counter + 1
-                hc_filename <- paste0("hc_obj_", hc_counter, ".rds")
+                global_hc_counter <<- global_hc_counter + 1
+                hc_filename <- paste0("hc_obj_", global_hc_counter, ".rds")
                 hc_filepath <- file.path(output_dir, hc_filename)
                 saveRDS(block$hc_object, hc_filepath)
-                landing_page$content_blocks[[i]]$hc_file <- hc_filename
-                landing_page$content_blocks[[i]]$hc_var <- paste0("hc_obj_", hc_counter)
+                result$hc_file <- hc_filename
+                result$hc_var <- paste0("hc_obj_", global_hc_counter)
+              }
+              
+              result
+            }
+            
+            for (i in seq_along(landing_page$content_blocks)) {
+              block <- landing_page$content_blocks[[i]]
+              
+              # Check if this is a content collection (may contain nested items)
+              if (is_content(block) && !is.null(block$items)) {
+                # Process items inside the content collection
+                for (j in seq_along(block$items)) {
+                  item <- block$items[[j]]
+                  updates <- process_landing_block(item)
+                  if (length(updates) > 0) {
+                    for (name in names(updates)) {
+                      landing_page$content_blocks[[i]]$items[[j]][[name]] <- updates[[name]]
+                    }
+                  }
+                }
+              } else {
+                # Direct content_block
+                updates <- process_landing_block(block)
+                if (length(updates) > 0) {
+                  for (name in names(updates)) {
+                    landing_page$content_blocks[[i]][[name]] <- updates[[name]]
+                  }
+                }
               }
             }
           }

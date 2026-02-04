@@ -50,6 +50,14 @@
 #' @param x_tooltip_suffix Optional string appended to x-axis category in tooltips.
 #' @param data_labels_enabled Logical. If TRUE, show value labels on bars.
 #'   Default TRUE.
+#' @param complete_groups Logical. When TRUE (default), ensures all x_var/group_var
+#'   combinations are present in the output, filling missing combinations with 0.
+#'   This prevents bar misalignment when some groups have no observations for 
+#'   certain categories. Set to FALSE to show only observed combinations.
+#'   Only applies when `group_var` is specified.
+#' @param y_var Optional character string. Name of a column containing pre-aggregated
+#'   counts or values. When provided, skips aggregation and uses these values directly.
+#'   Useful when working with already-aggregated data (e.g., Column 1: Group, Column 2: Count).
 #'
 #' @return A highcharter plot object.
 #'
@@ -132,13 +140,16 @@ viz_bar <- function(data,
                        tooltip_prefix = "",
                        tooltip_suffix = "",
                        x_tooltip_suffix = "",
-                       data_labels_enabled = TRUE) {
+                       data_labels_enabled = TRUE,
+                       complete_groups = TRUE,
+                       y_var = NULL) {
   
   # Convert variable arguments to strings (supports both quoted and unquoted)
   x_var <- .as_var_string(rlang::enquo(x_var))
   group_var <- .as_var_string(rlang::enquo(group_var))
   value_var <- .as_var_string(rlang::enquo(value_var))
   weight_var <- .as_var_string(rlang::enquo(weight_var))
+  y_var <- .as_var_string(rlang::enquo(y_var))
   
   # Input validation
   if (!is.data.frame(data)) {
@@ -163,6 +174,14 @@ viz_bar <- function(data,
   
   if (!is.null(value_var) && !is.numeric(data[[value_var]])) {
     stop(paste0("'", value_var, "' must be a numeric column for computing means."), call. = FALSE)
+  }
+  
+  if (!is.null(y_var) && !y_var %in% names(data)) {
+    stop(paste0("Column '", y_var, "' not found in data."), call. = FALSE)
+  }
+  
+  if (!is.null(y_var) && !is.numeric(data[[y_var]])) {
+    stop(paste0("'", y_var, "' must be a numeric column for pre-aggregated values."), call. = FALSE)
   }
   
   # If value_var is provided, automatically switch to mean mode
@@ -197,6 +216,7 @@ viz_bar <- function(data,
   if (!is.null(group_var)) vars_to_select <- c(vars_to_select, group_var)
   if (!is.null(value_var)) vars_to_select <- c(vars_to_select, value_var)
   if (!is.null(weight_var)) vars_to_select <- c(vars_to_select, weight_var)
+  if (!is.null(y_var)) vars_to_select <- c(vars_to_select, y_var)
   
   plot_data <- data %>%
     dplyr::select(dplyr::all_of(vars_to_select)) %>%
@@ -309,6 +329,39 @@ viz_bar <- function(data,
         dplyr::filter(!is.na(!!rlang::sym(value_var))) %>%
         dplyr::group_by(!!rlang::sym(x_var_plot), !!rlang::sym(group_var)) %>%
         .compute_error_metrics(value_var, error_bars, ci_level)
+      
+      # Complete all x_var/group_var combinations with zeros to prevent bar misalignment
+      if (isTRUE(complete_groups)) {
+        agg_data <- agg_data %>%
+          tidyr::complete(
+            !!rlang::sym(x_var_plot),
+            !!rlang::sym(group_var),
+            fill = list(n = 0, mean_val = NA_real_, sd_val = NA_real_, 
+                        se_val = NA_real_, t_val = NA_real_, ci_val = NA_real_,
+                        error_amount = NA_real_, low = NA_real_, high = NA_real_, 
+                        value = NA_real_)
+          )
+      }
+    }
+  } else if (!is.null(y_var)) {
+    # Pre-aggregated data - use y_var directly without aggregation
+    agg_data <- plot_data %>%
+      dplyr::rename(count = !!rlang::sym(y_var))
+    
+    if (bar_type == "percent") {
+      # Calculate percentage from pre-aggregated values
+      if (!is.null(group_var)) {
+        agg_data <- agg_data %>%
+          dplyr::group_by(!!rlang::sym(x_var_plot)) %>%
+          dplyr::mutate(value = round(count / sum(count) * 100, 1)) %>%
+          dplyr::ungroup()
+      } else {
+        agg_data <- agg_data %>%
+          dplyr::mutate(value = round(count / sum(count) * 100, 1))
+      }
+    } else {
+      agg_data <- agg_data %>%
+        dplyr::mutate(value = count)
     }
   } else if (is.null(group_var)) {
     # Simple bar chart - count by x_var
@@ -345,6 +398,16 @@ viz_bar <- function(data,
     } else {
       agg_data <- plot_data %>%
         dplyr::count(!!rlang::sym(x_var_plot), !!rlang::sym(group_var), name = "count")
+    }
+    
+    # Complete all x_var/group_var combinations with zeros to prevent bar misalignment
+    if (isTRUE(complete_groups)) {
+      agg_data <- agg_data %>%
+        tidyr::complete(
+          !!rlang::sym(x_var_plot),
+          !!rlang::sym(group_var),
+          fill = list(count = 0)
+        )
     }
     
     if (bar_type == "percent") {
@@ -411,12 +474,19 @@ viz_bar <- function(data,
   chart_type <- if (horizontal) "bar" else "column"
   hc <- hc %>% highcharter::hc_chart(type = chart_type)
   
+  # Get categories respecting factor level order if present
+  x_categories <- if (is.factor(agg_data[[x_var_plot]])) {
+    levels(agg_data[[x_var_plot]])
+  } else {
+    as.character(unique(agg_data[[x_var_plot]]))
+  }
+  
   # Set up axes
   if (horizontal) {
     # For horizontal bars, x-axis is categories (vertical), y-axis is values (horizontal)
     hc <- hc %>%
       highcharter::hc_xAxis(
-        categories = as.character(unique(agg_data[[x_var_plot]])),
+        categories = x_categories,
         title = list(text = final_x_label)
       ) %>%
       highcharter::hc_yAxis(title = list(text = final_y_label))
@@ -424,7 +494,7 @@ viz_bar <- function(data,
     # For vertical bars, x-axis is categories (horizontal), y-axis is values (vertical)
     hc <- hc %>%
       highcharter::hc_xAxis(
-        categories = as.character(unique(agg_data[[x_var_plot]])),
+        categories = x_categories,
         title = list(text = final_x_label)
       ) %>%
       highcharter::hc_yAxis(title = list(text = final_y_label))

@@ -22,6 +22,7 @@ viz_treemap(
   tooltip = NULL,
   tooltip_format = NULL,
   credits = FALSE,
+  pre_aggregated = FALSE,
   ...
 )
 }
@@ -63,6 +64,10 @@ See \code{\link{tooltip}} for full customization options.}
 For the simpler dashboardr placeholder syntax, use \code{tooltip} instead.}
 
 \item{credits}{Whether to show Highcharts credits (default FALSE)}
+
+\item{pre_aggregated}{Logical. If TRUE, skips summing and uses \code{value_var} directly.
+Use this when your data is already aggregated (one row per leaf node).
+Default is FALSE.}
 
 \item{...}{Additional parameters passed to highcharter}
 }

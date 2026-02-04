@@ -23,7 +23,7 @@
 #'     \item \code{"none"}: Use values directly without aggregation. Use for pre-aggregated data
 #'       where each row represents one observation per time/group combination.
 #'   }
-#' @param chart_type Character string. Type of chart: "stacked_area" or "line".
+#' @param chart_type Character string. Type of chart: "line" (default) or "stacked_area".
 #' @param title Optional main title for the chart.
 #' @param subtitle Optional subtitle for the chart.
 #' @param x_label Optional character string. Label for the x-axis. Defaults to time_var name.
@@ -166,7 +166,7 @@ viz_timeline <- function(data,
                             y_var,
                             group_var = NULL,
                             agg = c("percentage", "mean", "sum", "none"),
-                            chart_type = "stacked_area",
+                            chart_type = "line",
                             title = NULL,
                             subtitle = NULL,
                             x_label = NULL,
@@ -517,8 +517,12 @@ viz_timeline <- function(data,
         type = "category"
       )
   } else {
+    # For numeric time (e.g., years), prevent decimal ticks
     hc <- hc %>%
-      hc_xAxis(title = list(text = x_axis_title))
+      hc_xAxis(
+        title = list(text = x_axis_title),
+        allowDecimals = FALSE
+      )
   }
 
   # Apply color palette if provided
@@ -533,29 +537,84 @@ viz_timeline <- function(data,
       hc_plotOptions(area = list(stacking = "normal"))
 
     if (is.null(group_var)) {
-      y_levels_to_use <- if (!is.null(y_levels)) y_levels else unique(agg_data[[y_var]])
-      for(level in y_levels_to_use) {
+      # SPECIAL CASE: agg = "none" with no group_var - create single series
+      # (pre-aggregated data where each row is a data point, not a category)
+      if (agg == "none") {
         series_data <- agg_data %>%
-          filter(!!sym(y_var) == level) %>%
           arrange(!!sym(time_var_plot))
-
-        # For categorical time, use category names; for numeric, use values
+        
         if (is_time_categorical) {
           series_data <- series_data %>%
             mutate(x = as.character(!!sym(time_var_plot))) %>%
-            select(x, y = !!sym(value_col))
+            select(x, y = value)
         } else {
           series_data <- series_data %>%
-            select(x = !!sym(time_var_plot), y = !!sym(value_col))
+            select(x = !!sym(time_var_plot), y = value)
         }
-
+        
         hc <- hc %>%
           hc_add_series(
-            name = as.character(level),
+            name = y_var,
             data = list_parse2(series_data),
             type = "area"
           )
+      } else {
+        # Standard case: loop over unique y_var levels (for categorical responses)
+        y_levels_to_use <- if (!is.null(y_levels)) y_levels else unique(agg_data[[y_var]])
+        for(level in y_levels_to_use) {
+          series_data <- agg_data %>%
+            filter(!!sym(y_var) == level) %>%
+            arrange(!!sym(time_var_plot))
+
+          # For categorical time, use category names; for numeric, use values
+          if (is_time_categorical) {
+            series_data <- series_data %>%
+              mutate(x = as.character(!!sym(time_var_plot))) %>%
+              select(x, y = !!sym(value_col))
+          } else {
+            series_data <- series_data %>%
+              select(x = !!sym(time_var_plot), y = !!sym(value_col))
+          }
+
+          hc <- hc %>%
+            hc_add_series(
+              name = as.character(level),
+              data = list_parse2(series_data),
+              type = "area"
+            )
+        }
       }
+    } else {
+      # group_var is present - create one series per group
+      if (agg == "none") {
+        # Pre-aggregated data with groups - one series per group_var level
+        group_levels <- unique(agg_data[[group_var]])
+        
+        for (group_level in group_levels) {
+          series_data <- agg_data %>%
+            filter(!!sym(group_var) == group_level) %>%
+            arrange(!!sym(time_var_plot))
+          
+          if (nrow(series_data) == 0) next
+          
+          if (is_time_categorical) {
+            series_data <- series_data %>%
+              mutate(x = as.character(!!sym(time_var_plot))) %>%
+              select(x, y = value)
+          } else {
+            series_data <- series_data %>%
+              select(x = !!sym(time_var_plot), y = value)
+          }
+          
+          hc <- hc %>%
+            hc_add_series(
+              name = as.character(group_level),
+              data = list_parse2(series_data),
+              type = "area"
+            )
+        }
+      }
+      # Note: other agg modes with group_var are handled by existing code below
     }
 
   } else if (chart_type == "line") {

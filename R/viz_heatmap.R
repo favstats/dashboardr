@@ -57,6 +57,9 @@
 #'   Note: If `weight_var` is provided, weighted mean is used instead and this parameter is ignored.
 #' @param weight_var Optional string. Name of a weight variable to use for weighted mean aggregation.
 #'   When provided, the function uses `weighted.mean()` instead of the `agg_fun` parameter.
+#' @param pre_aggregated Logical. If TRUE, skips aggregation and uses `value_var` directly.
+#'   Use this when your data is already aggregated (one row per x/y combination).
+#'   Default is FALSE.
 #'
 #' @return A `highcharter` heatmap object.
 #'
@@ -220,7 +223,8 @@ viz_heatmap <- function(data,
                            x_map_values = NULL,
                            y_map_values = NULL,
                            agg_fun = mean,
-                           weight_var = NULL
+                           weight_var = NULL,
+                           pre_aggregated = FALSE
 ) {
 
   # Convert variable arguments to strings (supports both quoted and unquoted)
@@ -390,8 +394,14 @@ viz_heatmap <- function(data,
   initial_x_levels <- levels(df_processed$.x_plot)
   initial_y_levels <- levels(df_processed$.y_plot)
 
-  # AGGREGATION with complete
-  if (!is.null(weight_var)) {
+  # AGGREGATION with complete (or skip if pre_aggregated)
+  if (pre_aggregated) {
+    # Skip aggregation - use values directly, just ensure all combinations exist
+    df_plot_complete <- df_processed |>
+      dplyr::select(.x_plot, .y_plot, .value_plot) |>
+      tidyr::complete(.x_plot, .y_plot, fill = list(.value_plot = NA_real_)) |>
+      dplyr::arrange(.x_plot, .y_plot)
+  } else if (!is.null(weight_var)) {
     # Weighted aggregation using weighted mean
     df_plot_complete <- df_processed |>
       dplyr::group_by(.x_plot, .y_plot) |>
@@ -490,17 +500,18 @@ viz_heatmap <- function(data,
       data = df_plot_complete,
       type = "heatmap",
       highcharter::hcaes(x = .x_plot, y = .y_plot, value = .value_plot),
-      name = final_value_label, # Name for legend/series
-      plotOptions = list(
-        heatmap = list(
-          dataLabels = list(
-            enabled = data_labels_enabled,
-            format = tooltip_labels_format,
-            color = "#000000", # Label color, e.g., black
-            style = list(textOutline = "none")
-          ),
-          nullColor = na_color # Color for NA values
-        )
+      name = final_value_label # Name for legend/series
+    ) %>%
+    # plotOptions must be set separately (not inside hc_add_series)
+    highcharter::hc_plotOptions(
+      heatmap = list(
+        dataLabels = list(
+          enabled = data_labels_enabled,
+          format = tooltip_labels_format,
+          color = "#000000", # Label color, e.g., black
+          style = list(textOutline = "none")
+        ),
+        nullColor = na_color # Color for NA values
       )
     )
 

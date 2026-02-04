@@ -801,19 +801,32 @@
 .generate_hc_block <- function(block) {
   # Render the saved highcharter object
   hc_var <- if (!is.null(block$hc_var)) block$hc_var else "hc_obj"
-  height <- block$height %||% "400px"
   
-  lines <- c(
-    "",
-    "```{r}",
-    "#| echo: false",
-    paste0("#| fig-height: ", gsub("px", "", height)),
-    "",
-    # Output the htmlwidget object - it will render automatically
-    hc_var,
-    "```",
-    ""
-  )
+  # Only add fig-height if explicitly provided
+  if (!is.null(block$height) && nzchar(block$height)) {
+    height_line <- paste0("#| fig-height: ", gsub("px", "", block$height))
+    lines <- c(
+      "",
+      "```{r}",
+      "#| echo: false",
+      height_line,
+      "",
+      hc_var,
+      "```",
+      ""
+    )
+  } else {
+    # No height specified - let highcharter handle its own sizing
+    lines <- c(
+      "",
+      "```{r}",
+      "#| echo: false",
+      "",
+      hc_var,
+      "```",
+      ""
+    )
+  }
   
   lines
 }
@@ -1374,8 +1387,29 @@
   }
   
   # Load table objects from content blocks
+  # This handles both direct content_block items and items nested inside content collections
   if (!is.null(page$content_blocks)) {
-    table_blocks <- Filter(function(b) isTRUE(b$type %in% c("table", "gt", "reactable", "DT")) && !is.null(b$table_file), page$content_blocks)
+    # Helper to collect all blocks (direct and nested in content collections)
+    collect_blocks <- function(blocks, filter_fn) {
+      result <- list()
+      for (block in blocks) {
+        if (is_content(block) && !is.null(block$items)) {
+          # Content collection - check items
+          for (item in block$items) {
+            if (filter_fn(item)) {
+              result <- c(result, list(item))
+            }
+          }
+        } else if (filter_fn(block)) {
+          result <- c(result, list(block))
+        }
+      }
+      result
+    }
+    
+    table_blocks <- collect_blocks(page$content_blocks, function(b) {
+      isTRUE(b$type %in% c("table", "gt", "reactable", "DT")) && !is.null(b$table_file)
+    })
     if (length(table_blocks) > 0) {
       lines <- c(lines, "# Load styled table objects", "")
       for (block in table_blocks) {
@@ -1387,7 +1421,9 @@
     }
     
     # Load highcharter objects from content blocks
-    hc_blocks <- Filter(function(b) isTRUE(b$type == "hc") && !is.null(b$hc_file), page$content_blocks)
+    hc_blocks <- collect_blocks(page$content_blocks, function(b) {
+      isTRUE(b$type == "hc") && !is.null(b$hc_file)
+    })
     if (length(hc_blocks) > 0) {
       lines <- c(lines, "# Load custom highcharter charts", "")
       for (block in hc_blocks) {

@@ -56,7 +56,11 @@ test_that("add_viz accepts data frame as data parameter", {
   
   item <- viz$items[[1]]
   expect_true(item$data_is_dataframe)
-  expect_identical(item$data, mtcars)
+  # Data frames are serialized to survive pipeline processing
+  expect_true(!is.null(item$data_serialized))
+  reconstructed <- as.data.frame(eval(parse(text = item$data_serialized)))
+  # Compare data values (row.names may differ due to serialization)
+  expect_equal(reconstructed, mtcars, ignore_attr = TRUE)
 })
 
 test_that("add_viz accepts string as data parameter (dataset name)", {

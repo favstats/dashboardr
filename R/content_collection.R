@@ -586,7 +586,7 @@ add_reactable <- function(content, reactable_object, tabgroup = NULL) {
 #'   add_hc(my_chart) %>%
 #'   add_hc(another_chart, height = "500px", tabgroup = "My Charts")
 #' }
-add_hc <- function(content, hc_object, height = "400px", tabgroup = NULL) {
+add_hc <- function(content, hc_object, height = NULL, tabgroup = NULL) {
   # Validate it's a highcharter object
   if (!inherits(hc_object, "highchart")) {
     stop("hc_object must be a highcharter object (created with highchart() or hchart())", call. = FALSE)
@@ -686,6 +686,21 @@ add_table <- function(content, table_object, caption = NULL, tabgroup = NULL) {
 #'   add_DT(mtcars, options = list(pageLength = 5, scrollX = TRUE))
 #' }
 add_DT <- function(content, table_data, options = NULL, tabgroup = NULL, ...) {
+  # Auto-convert data frames to DT objects
+  if (is.data.frame(table_data) || is.matrix(table_data)) {
+    # Build DT::datatable with provided options
+    dt_args <- list(data = table_data)
+    if (!is.null(options)) {
+      dt_args$options <- options
+    }
+    # Add any extra arguments passed via ...
+    extra <- list(...)
+    if (length(extra) > 0) {
+      dt_args <- c(dt_args, extra)
+    }
+    table_data <- do.call(DT::datatable, dt_args)
+  }
+  
   dt_block <- structure(list(
     type = "DT",
     table_data = table_data,
@@ -2067,4 +2082,3 @@ merge_collections <- function(c1, c2) {
   # Return unique filter_vars
   unique(filter_vars)
 }
-

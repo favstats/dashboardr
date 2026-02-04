@@ -33,7 +33,9 @@ viz_bar(
   tooltip_prefix = "",
   tooltip_suffix = "",
   x_tooltip_suffix = "",
-  data_labels_enabled = TRUE
+  data_labels_enabled = TRUE,
+  complete_groups = TRUE,
+  y_var = NULL
 )
 }
 \arguments{
@@ -107,6 +109,16 @@ See \code{\link{tooltip}} for full customization options.}
 
 \item{data_labels_enabled}{Logical. If TRUE, show value labels on bars.
 Default TRUE.}
+
+\item{complete_groups}{Logical. When TRUE (default), ensures all x_var/group_var
+combinations are present in the output, filling missing combinations with 0.
+This prevents bar misalignment when some groups have no observations for
+certain categories. Set to FALSE to show only observed combinations.
+Only applies when \code{group_var} is specified.}
+
+\item{y_var}{Optional character string. Name of a column containing pre-aggregated
+counts or values. When provided, skips aggregation and uses these values directly.
+Useful when working with already-aggregated data (e.g., Column 1: Group, Column 2: Count).}
 }
 \value{
 A highcharter plot object.

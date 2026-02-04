@@ -281,10 +281,18 @@
   }
 
   # Build argument list (exclude internal params)
+
   args <- list()
 
-  # Add data argument if page has data (either single or multi-dataset)
-  if (("data_path" %in% names(spec) && !is.null(spec[["data_path"]])) || 
+  # Check if data is an inline data frame (stored as serialized string)
+  # This happens when add_viz(data = my_dataframe) is called with an actual data frame
+  if (!is.null(spec$data_serialized) && nchar(spec$data_serialized) > 0) {
+    # Wrap in as.data.frame() since viz functions expect data frames, not lists
+    args[["data"]] <- paste0("as.data.frame(", spec$data_serialized, ")")
+  } else if (!is.null(spec$data) && (is.data.frame(spec$data) || (is.list(spec$data) && !is.null(names(spec$data))))) {
+    # Legacy: data frame still in data field (fallback)
+    args[["data"]] <- paste0("as.data.frame(", .serialize_arg(spec$data), ")")
+  } else if (("data_path" %in% names(spec) && !is.null(spec[["data_path"]])) || 
       ("has_data" %in% names(spec) && isTRUE(spec$has_data))) {
     
     # Check if we should drop NAs for relevant variables
@@ -366,7 +374,8 @@
     "type", "viz_type", "data_path", "tabgroup", "text", "icon", "text_position", 
     "text_before_tabset", "text_after_tabset", "text_before_viz", "text_after_viz", 
     "height", "filter", "data", "has_data", "multi_dataset", "title_tabset", 
-    "nested_children", "drop_na_vars", "data_is_dataframe", 
+    "nested_children", "drop_na_vars", "data_is_dataframe", "data_serialized", "alter_data",
+    "cross_tab_filter_vars",  # Internal: used for client-side filtering
     ".insertion_index", ".min_index", ".pagination_section",
     # Legacy parameter names (already mapped to modern names above)
     "questions", "question_labels",  # Use x_vars, x_var_labels
