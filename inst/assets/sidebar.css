@@ -762,44 +762,67 @@
 
 /* =============================================================================
    FLOATING SIDEBAR TOGGLE FOR BSLIB/QUARTO (Mobile)
-   Toggle button floats top-right, sidebar fully hidden when collapsed
+   Toggle button floats on same side as sidebar, no extra space when collapsed
 ============================================================================= */
 
 @media (max-width: 991.98px) {
-  /* Keep sidebar layout as-is but ensure proper stacking */
+  /* Force layout to not reserve any space for collapsed sidebar */
   .bslib-sidebar-layout,
   [data-bslib-sidebar-layout] {
     position: relative !important;
+    display: block !important;
+    gap: 0 !important;
   }
   
-  /* When sidebar is open, it displays normally */
-  /* When collapsed, hide the sidebar completely */
+  /* When collapsed, completely remove sidebar from flow */
   .bslib-sidebar-layout.sidebar-collapsed > .sidebar,
   .bslib-sidebar-layout[data-bslib-sidebar-open="false"] > .sidebar,
-  [data-bslib-sidebar-layout][data-bslib-sidebar-open="false"] > .sidebar {
+  [data-bslib-sidebar-layout][data-bslib-sidebar-open="false"] > .sidebar,
+  .bslib-sidebar-layout.sidebar-collapsed > aside,
+  .bslib-sidebar-layout[data-bslib-sidebar-open="false"] > aside {
     display: none !important;
+    width: 0 !important;
+    min-width: 0 !important;
+    max-width: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border: none !important;
   }
   
-  /* Make the toggle button float top-right - subtle style */
+  /* Main content fills entire width when collapsed */
+  .bslib-sidebar-layout.sidebar-collapsed > .main,
+  .bslib-sidebar-layout.sidebar-collapsed > main,
+  .bslib-sidebar-layout[data-bslib-sidebar-open="false"] > .main,
+  .bslib-sidebar-layout[data-bslib-sidebar-open="false"] > main,
+  [data-bslib-sidebar-layout][data-bslib-sidebar-open="false"] > .main,
+  [data-bslib-sidebar-layout][data-bslib-sidebar-open="false"] > main {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+  
+  /* Toggle button - LEFT side (default, for left sidebar) */
   .bslib-sidebar-layout .bslib-sidebar-toggle,
   .sidebar .bslib-sidebar-toggle,
   .bslib-sidebar-layout > .collapse-toggle,
   [data-bslib-sidebar-layout] .bslib-sidebar-toggle {
     position: fixed !important;
-    top: 5rem !important;
+    top: 8rem !important;
     bottom: auto !important;
-    right: 0.75rem !important;
-    left: auto !important;
+    left: 0.75rem !important;
+    right: auto !important;
     z-index: 1100 !important;
-    width: 36px !important;
-    height: 36px !important;
-    min-width: 36px !important;
-    min-height: 36px !important;
+    width: 32px !important;
+    height: 32px !important;
+    min-width: 32px !important;
+    min-height: 32px !important;
     border-radius: 6px !important;
-    background-color: rgba(255, 255, 255, 0.85) !important;
+    background-color: rgba(255, 255, 255, 0.9) !important;
     color: #666 !important;
-    border: 1px solid rgba(0, 0, 0, 0.08) !important;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08) !important;
+    border: 1px solid rgba(0, 0, 0, 0.1) !important;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1) !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
@@ -809,42 +832,56 @@
     -webkit-backdrop-filter: blur(8px) !important;
   }
   
+  /* Toggle button - RIGHT side (for right sidebar) */
+  .bslib-sidebar-layout.sidebar-right .bslib-sidebar-toggle,
+  .bslib-sidebar-layout[data-bslib-sidebar-position="right"] .bslib-sidebar-toggle,
+  [data-bslib-sidebar-layout][data-bslib-sidebar-position="right"] .bslib-sidebar-toggle,
+  .sidebar[style*="right"] .bslib-sidebar-toggle,
+  .sidebar-right .bslib-sidebar-toggle {
+    left: auto !important;
+    right: 0.75rem !important;
+  }
+  
   .bslib-sidebar-layout .bslib-sidebar-toggle:hover,
   .sidebar .bslib-sidebar-toggle:hover {
     background-color: rgba(255, 255, 255, 1) !important;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12) !important;
-    border-color: rgba(0, 0, 0, 0.12) !important;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15) !important;
+    border-color: rgba(0, 0, 0, 0.15) !important;
   }
   
-  /* Style the icon inside the toggle - dark for contrast */
+  /* Style the icon */
   .bslib-sidebar-layout .bslib-sidebar-toggle svg,
-  .sidebar .bslib-sidebar-toggle svg,
-  .bslib-sidebar-layout .bslib-sidebar-toggle .collapse-icon,
-  .sidebar .bslib-sidebar-toggle .collapse-icon {
-    width: 16px !important;
-    height: 16px !important;
+  .sidebar .bslib-sidebar-toggle svg {
+    width: 14px !important;
+    height: 14px !important;
     fill: #555 !important;
     stroke: #555 !important;
     color: #555 !important;
   }
 }
 
-/* Small mobile - adjust top position for smaller header */
+/* Small mobile */
 @media (max-width: 575.98px) {
   .bslib-sidebar-layout .bslib-sidebar-toggle,
   .sidebar .bslib-sidebar-toggle {
-    top: 4.5rem !important;
-    width: 32px !important;
-    height: 32px !important;
-    min-width: 32px !important;
-    min-height: 32px !important;
+    top: 7rem !important;
+    width: 28px !important;
+    height: 28px !important;
+    min-width: 28px !important;
+    min-height: 28px !important;
+    left: 0.5rem !important;
+  }
+  
+  .bslib-sidebar-layout.sidebar-right .bslib-sidebar-toggle,
+  .bslib-sidebar-layout[data-bslib-sidebar-position="right"] .bslib-sidebar-toggle {
+    left: auto !important;
     right: 0.5rem !important;
   }
   
   .bslib-sidebar-layout .bslib-sidebar-toggle svg,
   .sidebar .bslib-sidebar-toggle svg {
-    width: 14px !important;
-    height: 14px !important;
+    width: 12px !important;
+    height: 12px !important;
   }
 }
 
