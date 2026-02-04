@@ -194,43 +194,33 @@ ul.task-list li input[type="checkbox"] {
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js@10.2.0/public/assets/styles/choices.min.css" class="bslib-grid-item html-fill-item">
 <script src="https://cdn.jsdelivr.net/npm/choices.js@10.2.0/public/assets/scripts/choices.min.js"></script>
-<link rel="stylesheet" href="assets/input_filter.css?v=20260204035431" class="bslib-grid-item html-fill-item">
-<script src="assets/filter_hook.js?v=20260204035431"></script>
-<script src="assets/input_filter.js?v=20260204035431"></script>
-<link rel="stylesheet" href="assets/sidebar.css?v=20260204035431" class="bslib-grid-item html-fill-item">
+<link rel="stylesheet" href="assets/input_filter.css?v=20260204040200" class="bslib-grid-item html-fill-item">
+<script src="assets/filter_hook.js?v=20260204040200"></script>
+<script src="assets/input_filter.js?v=20260204040200"></script>
+<link rel="stylesheet" href="assets/sidebar.css?v=20260204040201" class="bslib-grid-item html-fill-item">
 <script>
 (function() {
-  function detectSidebarPosition() {
+  function markLeftSidebars() {
     var layouts = document.querySelectorAll('.bslib-sidebar-layout, [data-bslib-sidebar-layout]');
     layouts.forEach(function(layout) {
-      var children = Array.from(layout.children);
-      var sidebar = layout.querySelector('.sidebar, aside');
-      var main = layout.querySelector('.main, main');
-      
-      if (sidebar && main) {
-        // If main comes before sidebar in DOM, it's a right sidebar
-        var sidebarIndex = children.indexOf(sidebar);
-        var mainIndex = children.indexOf(main);
-        
-        if (mainIndex < sidebarIndex || mainIndex === 0) {
-          layout.setAttribute('data-sidebar-position', 'right');
-          layout.classList.add('sidebar-right');
-        } else {
-          layout.setAttribute('data-sidebar-position', 'left');
-          layout.classList.add('sidebar-left');
-        }
+      // Quarto already adds 'sidebar-right' class for right sidebars
+      // We only need to add 'sidebar-left' for sidebars that are NOT right
+      if (!layout.classList.contains('sidebar-right')) {
+        layout.classList.add('sidebar-left');
+        layout.setAttribute('data-sidebar-position', 'left');
+      } else {
+        layout.setAttribute('data-sidebar-position', 'right');
       }
     });
   }
   
   // Run on DOM ready and after short delay for dynamic content
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', detectSidebarPosition);
+    document.addEventListener('DOMContentLoaded', markLeftSidebars);
   } else {
-    detectSidebarPosition();
+    markLeftSidebars();
   }
-  setTimeout(detectSidebarPosition, 100);
-  setTimeout(detectSidebarPosition, 500);
+  setTimeout(markLeftSidebars, 100);
 })();
 </script>
 <div class="bslib-sidebar-layout html-fill-item html-fill-container" data-bslib-sidebar-open="desktop" data-bslib-sidebar-init="true" style=" --bslib-sidebar-width: 280px" data-bslib-sidebar-border="false" data-bslib-sidebar-border-radius="false"><div class="main html-fill-container html-fill-item"><div class="sidebar-content html-fill-item html-fill-container">
@@ -242,8 +232,8 @@ grid-auto-rows: minmax(0, 1fr);">
 <div class="card cell bslib-card html-fill-container html-fill-item" data-bslib-card-init="" data-require-bs-caller="card()" data-full-screen="false">
 <div class="card-body html-fill-item html-fill-container">
 <div class="cell-output-display html-fill-item html-fill-container">
-<div class="highchart html-widget html-fill-item html-fill-container" id="htmlwidget-147ff989dfed898a16a1" style="width:100%;height:433px;"></div>
-<script type="application/json" data-for="htmlwidget-147ff989dfed898a16a1">{"x":{"hc_opts":{"chart":{"reflow":true,"type":"line"},"title":{"text":"GDP Growth Over Time"},"yAxis":{"title":{"text":"Growth Rate (%)"}},"credits":{"enabled":false},"exporting":{"enabled":false},"boost":{"enabled":false},"plotOptions":{"series":{"label":{"enabled":false},"turboThreshold":0},"treemap":{"layoutAlgorithm":"squarified"}},"xAxis":{"title":{"text":"Year"},"allowDecimals":false},"series":[{"name":"Netherlands","data":[[2018,2.990984705675221],[2019,2.746014333891778],[2020,3.679049227519664],[2021,3.667323573066156],[2022,3.087562292765466],[2023,3.164037487953548],[2024,4.716094953238813]],"type":"line"},{"name":"Germany","data":[[2018,1.889284931109691],[2019,1.890348251370011],[2020,2.049437987785784],[2021,1.663550797518194],[2022,2.177172530859235],[2023,3.128555737321109],[2024,2.300508750759246]],"type":"line"},{"name":"France","data":[[2018,1.989162323402096],[2019,1.602590670652897],[2020,1.804208889358501],[2021,2.40925111930993],[2022,2.996852476618274],[2023,3.036087077783752],[2024,3.278192811974138]],"type":"line"},{"name":"United Kingdom","data":[[2018,1.712981599850684],[2019,1.486030407925196],[2020,1.57395728725767],[2021,1.926204396201326],[2022,1.680636373889185],[2023,2.214732389546246],[2024,0.8296162101528388]],"type":"line"},{"name":"Italy","data":[[2018,1.211090534555103],[2019,1.152596411219054],[2020,1.303957788420197],[2021,1.94823168513038],[2022,2.417366560568647],[2023,2.204821813408217],[2024,2.556350427450864]],"type":"line"}]},"theme":{"chart":{"backgroundColor":"transparent"},"colors":["#7cb5ec","#434348","#90ed7d","#f7a35c","#8085e9","#f15c80","#e4d354","#2b908f","#f45b5b","#91e8e1"]},"conf_opts":{"global":{"Date":null,"VMLRadialGradientURL":"http =//code.highcharts.com/list(version)/gfx/vml-radial-gradient.png","canvasToolsURL":"http =//code.highcharts.com/list(version)/modules/canvas-tools.js","getTimezoneOffset":null,"timezoneOffset":0,"useUTC":true},"lang":{"contextButtonTitle":"Chart context menu","decimalPoint":".","downloadCSV":"Download CSV","downloadJPEG":"Download JPEG image","downloadPDF":"Download PDF document","downloadPNG":"Download PNG image","downloadSVG":"Download SVG vector image","downloadXLS":"Download XLS","drillUpText":"◁ Back to {series.name}","exitFullscreen":"Exit from full screen","exportData":{"annotationHeader":"Annotations","categoryDatetimeHeader":"DateTime","categoryHeader":"Category"},"hideData":"Hide data table","invalidDate":null,"loading":"Loading...","months":["January","February","March","April","May","June","July","August","September","October","November","December"],"noData":"No data to display","numericSymbolMagnitude":1000,"numericSymbols":["k","M","G","T","P","E"],"printChart":"Print chart","resetZoom":"Reset zoom","resetZoomTitle":"Reset zoom level 1:1","shortMonths":["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],"shortWeekdays":["Sat","Sun","Mon","Tue","Wed","Thu","Fri"],"thousandsSep":" ","viewData":"View data table","viewFullscreen":"View in full screen","weekdays":["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]}},"type":"chart","fonts":[],"debug":false},"evals":[],"jsHooks":[]}</script>
+<div class="highchart html-widget html-fill-item html-fill-container" id="htmlwidget-539c115fb82e4ea82b88" style="width:100%;height:433px;"></div>
+<script type="application/json" data-for="htmlwidget-539c115fb82e4ea82b88">{"x":{"hc_opts":{"chart":{"reflow":true,"type":"line"},"title":{"text":"GDP Growth Over Time"},"yAxis":{"title":{"text":"Growth Rate (%)"}},"credits":{"enabled":false},"exporting":{"enabled":false},"boost":{"enabled":false},"plotOptions":{"series":{"label":{"enabled":false},"turboThreshold":0},"treemap":{"layoutAlgorithm":"squarified"}},"xAxis":{"title":{"text":"Year"},"allowDecimals":false},"series":[{"name":"Netherlands","data":[[2018,2.990984705675221],[2019,2.746014333891778],[2020,3.679049227519664],[2021,3.667323573066156],[2022,3.087562292765466],[2023,3.164037487953548],[2024,4.716094953238813]],"type":"line"},{"name":"Germany","data":[[2018,1.889284931109691],[2019,1.890348251370011],[2020,2.049437987785784],[2021,1.663550797518194],[2022,2.177172530859235],[2023,3.128555737321109],[2024,2.300508750759246]],"type":"line"},{"name":"France","data":[[2018,1.989162323402096],[2019,1.602590670652897],[2020,1.804208889358501],[2021,2.40925111930993],[2022,2.996852476618274],[2023,3.036087077783752],[2024,3.278192811974138]],"type":"line"},{"name":"United Kingdom","data":[[2018,1.712981599850684],[2019,1.486030407925196],[2020,1.57395728725767],[2021,1.926204396201326],[2022,1.680636373889185],[2023,2.214732389546246],[2024,0.8296162101528388]],"type":"line"},{"name":"Italy","data":[[2018,1.211090534555103],[2019,1.152596411219054],[2020,1.303957788420197],[2021,1.94823168513038],[2022,2.417366560568647],[2023,2.204821813408217],[2024,2.556350427450864]],"type":"line"}]},"theme":{"chart":{"backgroundColor":"transparent"},"colors":["#7cb5ec","#434348","#90ed7d","#f7a35c","#8085e9","#f15c80","#e4d354","#2b908f","#f45b5b","#91e8e1"]},"conf_opts":{"global":{"Date":null,"VMLRadialGradientURL":"http =//code.highcharts.com/list(version)/gfx/vml-radial-gradient.png","canvasToolsURL":"http =//code.highcharts.com/list(version)/modules/canvas-tools.js","getTimezoneOffset":null,"timezoneOffset":0,"useUTC":true},"lang":{"contextButtonTitle":"Chart context menu","decimalPoint":".","downloadCSV":"Download CSV","downloadJPEG":"Download JPEG image","downloadPDF":"Download PDF document","downloadPNG":"Download PNG image","downloadSVG":"Download SVG vector image","downloadXLS":"Download XLS","drillUpText":"◁ Back to {series.name}","exitFullscreen":"Exit from full screen","exportData":{"annotationHeader":"Annotations","categoryDatetimeHeader":"DateTime","categoryHeader":"Category"},"hideData":"Hide data table","invalidDate":null,"loading":"Loading...","months":["January","February","March","April","May","June","July","August","September","October","November","December"],"noData":"No data to display","numericSymbolMagnitude":1000,"numericSymbols":["k","M","G","T","P","E"],"printChart":"Print chart","resetZoom":"Reset zoom","resetZoomTitle":"Reset zoom level 1:1","shortMonths":["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],"shortWeekdays":["Sat","Sun","Mon","Tue","Wed","Thu","Fri"],"thousandsSep":" ","viewData":"View data table","viewFullscreen":"View in full screen","weekdays":["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]}},"type":"chart","fonts":[],"debug":false},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>
 <bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()">

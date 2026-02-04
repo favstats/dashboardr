@@ -857,20 +857,32 @@
     transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
     backdrop-filter: blur(12px) saturate(180%) !important;
     -webkit-backdrop-filter: blur(12px) saturate(180%) !important;
-    /* Default: LEFT position (for left sidebar) */
+    /* Default position - will be overridden based on state */
     left: 0.75rem !important;
     right: auto !important;
   }
   
-  /* LEFT sidebar: explicitly keep button on left (including when collapsed) */
-  .bslib-sidebar-layout:not(.sidebar-right) .collapse-toggle,
-  .bslib-sidebar-layout.sidebar-left .collapse-toggle,
-  .bslib-sidebar-layout[data-sidebar-position="left"] .collapse-toggle {
+  /* ===== LEFT SIDEBAR ===== */
+  /* LEFT sidebar COLLAPSED: button on LEFT */
+  .bslib-sidebar-layout:not(.sidebar-right).sidebar-collapsed .collapse-toggle,
+  .bslib-sidebar-layout:not(.sidebar-right)[data-bslib-sidebar-open="false"] .collapse-toggle,
+  .bslib-sidebar-layout.sidebar-left.sidebar-collapsed .collapse-toggle,
+  .bslib-sidebar-layout.sidebar-left[data-bslib-sidebar-open="false"] .collapse-toggle {
     left: 0.75rem !important;
     right: auto !important;
   }
   
-  /* RIGHT sidebar: button on right */
+  /* LEFT sidebar OPEN: button on RIGHT edge of sidebar (avoid overlap) */
+  .bslib-sidebar-layout:not(.sidebar-right):not(.sidebar-collapsed) .collapse-toggle,
+  .bslib-sidebar-layout:not(.sidebar-right)[data-bslib-sidebar-open="desktop"] .collapse-toggle,
+  .bslib-sidebar-layout:not(.sidebar-right)[data-bslib-sidebar-open="true"] .collapse-toggle,
+  .bslib-sidebar-layout.sidebar-left:not(.sidebar-collapsed) .collapse-toggle {
+    left: auto !important;
+    right: 0.75rem !important;
+  }
+  
+  /* ===== RIGHT SIDEBAR ===== */
+  /* RIGHT sidebar (any state): button on RIGHT */
   .bslib-sidebar-layout.sidebar-right .collapse-toggle,
   .bslib-sidebar-layout[data-sidebar-position="right"] .collapse-toggle {
     left: auto !important;
@@ -920,16 +932,23 @@
     border-radius: 6px !important;
   }
   
-  /* Left sidebar button on small mobile - keep on left */
-  .bslib-sidebar-layout:not(.sidebar-right) .collapse-toggle,
-  .bslib-sidebar-layout.sidebar-left .collapse-toggle {
+  /* Left sidebar COLLAPSED: button on left */
+  .bslib-sidebar-layout:not(.sidebar-right).sidebar-collapsed .collapse-toggle,
+  .bslib-sidebar-layout:not(.sidebar-right)[data-bslib-sidebar-open="false"] .collapse-toggle {
     left: 0.5rem !important;
     right: auto !important;
   }
   
-  /* Right sidebar button on small mobile */
-  .bslib-sidebar-layout.sidebar-right .collapse-toggle,
-  .bslib-sidebar-layout[data-sidebar-position="right"] .collapse-toggle {
+  /* Left sidebar OPEN: button on right */
+  .bslib-sidebar-layout:not(.sidebar-right):not(.sidebar-collapsed) .collapse-toggle,
+  .bslib-sidebar-layout:not(.sidebar-right)[data-bslib-sidebar-open="desktop"] .collapse-toggle,
+  .bslib-sidebar-layout:not(.sidebar-right)[data-bslib-sidebar-open="true"] .collapse-toggle {
+    left: auto !important;
+    right: 0.5rem !important;
+  }
+  
+  /* Right sidebar: always on right */
+  .bslib-sidebar-layout.sidebar-right .collapse-toggle {
     left: auto !important;
     right: 0.5rem !important;
   }
