@@ -121,8 +121,7 @@ result <- viz_stackedbar(
   stack_label = "Sector",
   stacked_type = "counts",
   stack_order = c("Research", "Industry", "Government"),
-  color_palette = c("#4F46E5", "#0EA5E9", "#22C55E"),
-  cross_tab_filter_vars = "segment"
+  color_palette = c("#4F46E5", "#0EA5E9", "#22C55E")
 )
 
 # Extract cross-tab data BEFORE wrapping (wrapping strips attributes)

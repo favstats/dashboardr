@@ -1,0 +1,86 @@
+[
+  {
+    "objectID": "slider.html#slider-input",
+    "href": "slider.html#slider-input",
+    "title": " Slider",
+    "section": "Slider Input",
+    "text": "Slider Input\nThe slider input filters data by a numeric range. Use labels to display custom text instead of numbers.\nadd_input(\n  input_id = \"decade_slider\",\n  label = \"Starting Decade\",\n  type = \"slider\",\n  filter_var = \"decade\",\n  min = 1,\n  max = 6,\n  step = 1,\n  value = 1,\n  show_value = TRUE,\n  labels = c(\"1970s\", \"1980s\", \"1990s\", \"2000s\", \"2010s\", \"2020s\"),\n  width = \"500px\"\n)\n\n\n\n\n\n  \n    Starting Decade\n    1970s\n  \n  \n    \n    \n      1970s\n      2020s\n    \n  \n  Drag to filter data from a specific decade onwards."
+  },
+  {
+    "objectID": "slider.html#open-access-adoption",
+    "href": "slider.html#open-access-adoption",
+    "title": " Slider",
+    "section": "Open Access Adoption",
+    "text": "Open Access Adoption"
+  },
+  {
+    "objectID": "switch.html#switch-toggle",
+    "href": "switch.html#switch-toggle",
+    "title": " Switch",
+    "section": "Switch Toggle",
+    "text": "Switch Toggle\nThe switch input toggles a specific series on/off. Use toggle_series to specify which series to control.\nadd_input(\n  input_id = \"show_average\",\n  label = \"Show Global Average\",\n  type = \"switch\",\n  filter_var = \"country\",\n  toggle_series = \"Global Average\",\n  override = TRUE,\n  value = TRUE\n)\n\n\n\n\n\n  Select Countries\n  \n    United States\n    United Kingdom\n    Germany\n    France\n    Japan\n    China\n    Brazil\n    Australia\n  \n\n\n\n  \n    Show Global Average\n    \n      \n      \n    \n  \n  Toggle benchmark line on/off."
+  },
+  {
+    "objectID": "switch.html#female-authorship-with-benchmark",
+    "href": "switch.html#female-authorship-with-benchmark",
+    "title": " Switch",
+    "section": "Female Authorship with Benchmark",
+    "text": "Female Authorship with Benchmark"
+  },
+  {
+    "objectID": "checkbox.html#checkbox-input",
+    "href": "checkbox.html#checkbox-input",
+    "title": " Checkbox",
+    "section": "Checkbox Input",
+    "text": "Checkbox Input\nThe checkbox input allows multiple selections with all options visible. Great for 3-6 options.\nadd_input(\n  input_id = \"segment_filter\",\n  label = \"Show Sectors\",\n  type = \"checkbox\",\n  filter_var = \"segment\",\n  options = c(\"Research\", \"Industry\", \"Government\"),\n  default_selected = c(\"Research\", \"Industry\", \"Government\"),\n  inline = TRUE\n)\n\n\n\n\n\n  Show Sectors\n  \n    \n      \n      \n      Research\n    \n    \n      \n      \n      Industry\n    \n    \n      \n      \n      Government\n    \n  \n  Check/uncheck to show/hide sectors in the chart."
+  },
+  {
+    "objectID": "checkbox.html#publications-by-sector",
+    "href": "checkbox.html#publications-by-sector",
+    "title": " Checkbox",
+    "section": "Publications by Sector",
+    "text": "Publications by Sector"
+  },
+  {
+    "objectID": "combined.html#combined-inputs",
+    "href": "combined.html#combined-inputs",
+    "title": " Combined",
+    "section": "Combined Inputs",
+    "text": "Combined Inputs\nMultiple inputs can work together. Here, a select dropdown filters countries while a switch toggles the benchmark.\ncontent &lt;- create_content() %&gt;%\n  add_input_row(style = \"inline\", align = \"center\") %&gt;%\n    add_input(\n      input_id = \"country_filter\",\n      label = \"Select Countries\",\n      filter_var = \"country\",\n      options = countries_by_region,\n      default_selected = c(\"United States\", \"Germany\"),\n      width = \"450px\"\n    ) %&gt;%\n    add_input(\n      input_id = \"show_average\",\n      label = \"Show Benchmark\",\n      type = \"switch\",\n      filter_var = \"country\",\n      toggle_series = \"Global Average\",\n      override = TRUE,\n      value = TRUE\n    ) %&gt;%\n  end_input_row()\n\n\n\n\n\n  Select Countries\n  \n    \n      United States\n      Brazil\n    \n    \n      United Kingdom\n      Germany\n      France\n    \n    \n      Japan\n      China\n      Australia\n    \n    \n      Global Average\n    \n  \n  Select countries to compare.\n\n\n\n  \n    Show Benchmark\n    \n      \n      \n    \n  \n  Toggle global average line."
+  },
+  {
+    "objectID": "combined.html#global-publication-trends",
+    "href": "combined.html#global-publication-trends",
+    "title": " Combined",
+    "section": "Global Publication Trends",
+    "text": "Global Publication Trends"
+  },
+  {
+    "objectID": "about.html",
+    "href": "about.html",
+    "title": " About",
+    "section": "",
+    "text": "This dashboard demonstrates all interactive input types in dashboardr.\n\n\n\n\n\nType\nBest For\nSelection\n\n\n\n\nselect_multiple\nMany categories (10+)\nMultiple\n\n\nselect_single\nMany categories, pick one\nSingle\n\n\ncheckbox\nFew categories (3-6)\nMultiple\n\n\nradio\nMutually exclusive choices\nSingle\n\n\nslider\nNumeric ranges\nRange\n\n\nswitch\nToggle series on/off\nBoolean\n\n\n\n\n\n\nThe filter_var parameter must match the grouping variable in your visualization:\n# Visualization groups by country\nadd_viz(type = \"timeline\", group_var = \"country\", ...)\n\n# Input filters by country - must match!\nadd_input(filter_var = \"country\", ...)\n\n\n\n\ndashboardr Documentation\nAdvanced Features Guide"
+  },
+  {
+    "objectID": "about.html#about-this-demo",
+    "href": "about.html#about-this-demo",
+    "title": " About",
+    "section": "",
+    "text": "This dashboard demonstrates all interactive input types in dashboardr.\n\n\n\n\n\nType\nBest For\nSelection\n\n\n\n\nselect_multiple\nMany categories (10+)\nMultiple\n\n\nselect_single\nMany categories, pick one\nSingle\n\n\ncheckbox\nFew categories (3-6)\nMultiple\n\n\nradio\nMutually exclusive choices\nSingle\n\n\nslider\nNumeric ranges\nRange\n\n\nswitch\nToggle series on/off\nBoolean\n\n\n\n\n\n\nThe filter_var parameter must match the grouping variable in your visualization:\n# Visualization groups by country\nadd_viz(type = \"timeline\", group_var = \"country\", ...)\n\n# Input filters by country - must match!\nadd_input(filter_var = \"country\", ...)\n\n\n\n\ndashboardr Documentation\nAdvanced Features Guide"
+  },
+  {
+    "objectID": "index.html#select-dropdown-input",
+    "href": "index.html#select-dropdown-input",
+    "title": " Select",
+    "section": "Select Dropdown Input",
+    "text": "Select Dropdown Input\nThe select input creates a searchable dropdown. Use select_multiple for multi-select or select_single for single selection.\nThis example uses grouped options to organize countries by region:\nadd_input(\n  input_id = \"country_filter\",\n  label = \"Select Countries\",\n  type = \"select_multiple\",\n  filter_var = \"country\",\n  options = list(\n    \"Americas\" = c(\"United States\", \"Brazil\"),\n    \"Europe\" = c(\"United Kingdom\", \"Germany\", \"France\"),\n    \"Asia-Pacific\" = c(\"Japan\", \"China\", \"Australia\"),\n    \"Benchmarks\" = c(\"Global Average\")\n  ),\n  default_selected = c(\"United States\", \"Germany\"),\n  placeholder = \"Choose countries to compare...\",\n  width = \"500px\"\n)\n\n\n\n\n\n  Select Countries\n  \n    \n      United States\n      Brazil\n    \n    \n      United Kingdom\n      Germany\n      France\n    \n    \n      Japan\n      China\n      Australia\n    \n    \n      Global Average\n    \n  \n  Countries are grouped by region. Select multiple to compare."
+  },
+  {
+    "objectID": "index.html#female-authorship-trends",
+    "href": "index.html#female-authorship-trends",
+    "title": " Select",
+    "section": "Female Authorship Trends",
+    "text": "Female Authorship Trends"
+  }
+]

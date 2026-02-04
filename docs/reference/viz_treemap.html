@@ -120,6 +120,7 @@ Treemaps are useful for showing proportional data in a space-efficient way.</p>
 <span>  tooltip <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  tooltip_format <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  credits <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  pre_aggregated <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -198,6 +199,12 @@ For the simpler dashboardr placeholder syntax, use <code>tooltip</code> instead.
 
 <dt id="arg-credits">credits<a class="anchor" aria-label="anchor" href="#arg-credits"></a></dt>
 <dd><p>Whether to show Highcharts credits (default FALSE)</p></dd>
+
+
+<dt id="arg-pre-aggregated">pre_aggregated<a class="anchor" aria-label="anchor" href="#arg-pre-aggregated"></a></dt>
+<dd><p>Logical. If TRUE, skips summing and uses <code>value_var</code> directly.
+Use this when your data is already aggregated (one row per leaf node).
+Default is FALSE.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>

@@ -7,7 +7,7 @@ directly without using dashboardr's viz\_\* functions.
 ## Usage
 
 ``` r
-add_hc(content, hc_object, height = "400px", tabgroup = NULL)
+add_hc(content, hc_object, height = NULL, tabgroup = NULL)
 ```
 
 ## Arguments

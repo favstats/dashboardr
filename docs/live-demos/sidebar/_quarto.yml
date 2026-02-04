@@ -1,0 +1,49 @@
+project:
+  type: website
+  output-dir: docs
+  resources:
+    - assets/
+
+website:
+  title: "Sidebar Demo"
+  navbar:
+    left:
+      - href: gdp_growth.qmd
+        text: "{{< iconify ph chart-line-up >}} GDP Growth"
+      - href: unemployment.qmd
+        text: "{{< iconify ph users >}} Unemployment"
+      - href: combined.qmd
+        text: "{{< iconify ph arrows-merge >}} Combined"
+      - href: slider_demo.qmd
+        text: "{{< iconify ph sliders-horizontal >}} Slider Demo"
+      - href: about.qmd
+        text: "{{< iconify ph info >}} About"
+    search: true
+  bread-crumbs: true
+  page-navigation: false
+  back-to-top-navigation: false
+  reader-mode: false
+  page-footer:
+    right: |
+      <span style="font-size: 0.75rem; opacity: 0.6; color: inherit; font-weight: 400;">Built with <a href="https://favstats.github.io/dashboardr/" style="color: inherit; text-decoration: none; font-weight: 500;" target="_blank" rel="noopener">dashboardr</a></span>
+
+format:
+  html:
+    prefer-html: true
+    theme:
+      - cosmo
+      - _tabset_minimal.scss
+
+    css:
+      - assets/modal.css
+      - assets/pagination.css
+    mainfont: "Fira Sans"
+    fontsize: 16px
+    monofont: "Fira Code"
+    page-layout: full
+    include-in-header:
+      text: |
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Fira+Sans:wght@300;400;500;600;700&family=Fira+Code:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+        <script src="assets/tab-scroll-fix.js"></script>

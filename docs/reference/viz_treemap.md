@@ -25,6 +25,7 @@ viz_treemap(
   tooltip = NULL,
   tooltip_format = NULL,
   credits = FALSE,
+  pre_aggregated = FALSE,
   ...
 )
 ```
@@ -105,6 +106,12 @@ viz_treemap(
 - credits:
 
   Whether to show Highcharts credits (default FALSE)
+
+- pre_aggregated:
+
+  Logical. If TRUE, skips summing and uses `value_var` directly. Use
+  this when your data is already aggregated (one row per leaf node).
+  Default is FALSE.
 
 - ...:
 

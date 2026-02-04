@@ -71,6 +71,7 @@ blocks, interactive inputs, and layout helpers. Here’s what you can add:
 |----|----|----|
 | **[Visualizations](#visualization-types)** | Bar, Stacked Bar, Histogram, Density, Boxplot, Timeline, Heatmap, Scatter, Treemap, Map | [`add_viz()`](https://favstats.github.io/dashboardr/reference/add_viz.md), [`add_vizzes()`](https://favstats.github.io/dashboardr/reference/add_vizzes.md) |
 | **[Content Blocks](#content-blocks)** | Text, Callouts, Cards, Accordions, Quotes, Badges, Metrics, Value Boxes, Code, Images, Videos, iframes, HTML | [`add_text()`](https://favstats.github.io/dashboardr/reference/add_text.md), [`add_callout()`](https://favstats.github.io/dashboardr/reference/add_callout.md), [`add_card()`](https://favstats.github.io/dashboardr/reference/add_card.md), [`add_accordion()`](https://favstats.github.io/dashboardr/reference/add_accordion.md), [`add_quote()`](https://favstats.github.io/dashboardr/reference/add_quote.md), [`add_badge()`](https://favstats.github.io/dashboardr/reference/add_badge.md), [`add_metric()`](https://favstats.github.io/dashboardr/reference/add_metric.md), [`add_value_box()`](https://favstats.github.io/dashboardr/reference/add_value_box.md), [`add_code()`](https://favstats.github.io/dashboardr/reference/add_code.md), [`add_image()`](https://favstats.github.io/dashboardr/reference/add_image.md), [`add_html()`](https://favstats.github.io/dashboardr/reference/add_html.md) |
+| **[Tables & Custom Charts](#tables-and-custom-charts)** | gt Tables, Reactable, DT DataTables, Basic Tables, Custom Highcharter Charts | [`add_gt()`](https://favstats.github.io/dashboardr/reference/add_gt.md), [`add_reactable()`](https://favstats.github.io/dashboardr/reference/add_reactable.md), [`add_DT()`](https://favstats.github.io/dashboardr/reference/add_DT.md), [`add_table()`](https://favstats.github.io/dashboardr/reference/add_table.md), [`add_hc()`](https://favstats.github.io/dashboardr/reference/add_hc.md) |
 | **Interactive Inputs** *(see [Advanced Features](https://favstats.github.io/dashboardr/articles/advanced-features.md))* | Dropdowns, Checkboxes, Sliders, Radio buttons | [`add_input_row()`](https://favstats.github.io/dashboardr/reference/add_input_row.md), [`add_input()`](https://favstats.github.io/dashboardr/reference/add_input.md) |
 | **[Layout Helpers](#layout-helpers)** | Dividers, Spacers, Pagination markers | [`add_divider()`](https://favstats.github.io/dashboardr/reference/add_divider.md), [`add_spacer()`](https://favstats.github.io/dashboardr/reference/add_spacer.md), [`add_pagination()`](https://favstats.github.io/dashboardr/reference/add_pagination.md) |
 
@@ -1691,9 +1692,9 @@ video_example %>% preview()
 
 Preview
 
-# Ein Fehler ist aufgetreten.
+# Er is een fout opgetreden.
 
-JavaScript kann nicht ausgeführt werden.
+JavaScript kan niet worden uitgevoerd.
 
 ### iframes
 
@@ -1743,6 +1744,420 @@ Preview
 ### Custom HTML Block
 
 Style anything with raw HTML!
+
+## 📊 Tables and Custom Charts
+
+Beyond visualizations created with
+[`add_viz()`](https://favstats.github.io/dashboardr/reference/add_viz.md),
+you can embed tables and custom charts directly into content
+collections.
+
+### gt Tables
+
+Use
+[`add_gt()`](https://favstats.github.io/dashboardr/reference/add_gt.md)
+to embed publication-quality tables created with the [gt
+package](https://gt.rstudio.com/):
+
+``` r
+# Create a summary table
+summary_data <- gss %>%
+  group_by(degree) %>%
+  summarise(
+    n = n(),
+    mean_age = round(mean(age, na.rm = TRUE), 1),
+    .groups = "drop"
+  )
+
+gt_example <- create_content() %>%
+  add_text("### Summary Statistics by Education") %>%
+  add_gt(
+    gt::gt(summary_data) %>%
+      gt::cols_label(degree = "Education", n = "Count", mean_age = "Mean Age")
+  )
+
+print(gt_example)
+#> -- Content Collection ──────────────────────────────────────────────────────────
+#> 2 items | ✖ no data
+#> 
+#> ℹ [Text]
+#> • [gt]
+```
+
+``` r
+gt_example %>% preview()
+```
+
+Preview
+
+Summary Statistics by Education
+
+|        Education         | Count | Mean Age |
+|:------------------------:|------:|---------:|
+|  less than high school   |   242 |     49.5 |
+|       high school        |  1361 |     50.0 |
+| associate/junior college |   277 |     49.6 |
+|        bachelor's        |   677 |     51.0 |
+|         graduate         |   440 |     52.5 |
+
+You can also pass a data frame directly - it will be converted to a gt
+table automatically:
+
+``` r
+simple_gt <- create_content() %>%
+  add_gt(head(summary_data, 3), caption = "Top 3 Education Levels")
+
+simple_gt %>% preview()
+```
+
+Preview
+
+|          degree          |    n | mean_age |
+|:------------------------:|-----:|---------:|
+|  less than high school   |  242 |     49.5 |
+|       high school        | 1361 |     50.0 |
+| associate/junior college |  277 |     49.6 |
+
+### Reactable Tables
+
+For interactive tables with sorting and filtering, use
+[`add_reactable()`](https://favstats.github.io/dashboardr/reference/add_reactable.md):
+
+``` r
+reactable_example <- create_content() %>%
+  add_text("### Interactive Summary Table") %>%
+  add_reactable(
+    reactable::reactable(summary_data, searchable = TRUE, striped = TRUE)
+  )
+
+print(reactable_example)
+#> -- Content Collection ──────────────────────────────────────────────────────────
+#> 2 items | ✖ no data
+#> 
+#> ℹ [Text]
+#> • [reactable]
+```
+
+``` r
+reactable_example %>% preview()
+```
+
+Preview
+
+Interactive Summary Table
+
+### DT DataTables
+
+For feature-rich interactive tables, use
+[`add_DT()`](https://favstats.github.io/dashboardr/reference/add_DT.md):
+
+``` r
+dt_example <- create_content() %>%
+  add_text("### DataTable with Search and Pagination") %>%
+  add_DT(summary_data, options = list(pageLength = 5))
+
+print(dt_example)
+#> -- Content Collection ──────────────────────────────────────────────────────────
+#> 2 items | ✖ no data
+#> 
+#> ℹ [Text]
+#> • [DT]
+```
+
+``` r
+dt_example %>% preview()
+```
+
+Preview
+
+DataTable with Search and Pagination
+
+### Basic Tables
+
+For simple tables without dependencies, use
+[`add_table()`](https://favstats.github.io/dashboardr/reference/add_table.md):
+
+``` r
+table_example <- create_content() %>%
+  add_table(head(summary_data, 3), caption = "Sample Data")
+
+print(table_example)
+#> -- Content Collection ──────────────────────────────────────────────────────────
+#> 1 items | ✖ no data
+#> 
+#> • [table]
+```
+
+``` r
+table_example %>% preview()
+```
+
+Preview
+
+Sample Data
+
+| degree                   | n    | mean_age |
+|--------------------------|------|----------|
+| less than high school    | 242  | 49.5     |
+| high school              | 1361 | 50       |
+| associate/junior college | 277  | 49.6     |
+
+### Custom Highcharter Charts
+
+When you need a visualization that goes beyond what
+[`add_viz()`](https://favstats.github.io/dashboardr/reference/add_viz.md)
+offers, use
+[`add_hc()`](https://favstats.github.io/dashboardr/reference/add_hc.md)
+to embed any [highcharter](https://jkunst.com/highcharter/) chart:
+
+``` r
+library(highcharter)
+
+# Create a custom chart
+custom_chart <- highchart() %>%
+  hc_chart(type = "pie") %>%
+  hc_title(text = "Education Distribution") %>%
+  hc_add_series(
+    name = "Count",
+    data = list(
+      list(name = "Less than HS", y = sum(gss$degree == "less than high school")),
+      list(name = "High School", y = sum(gss$degree == "high school")),
+      list(name = "Junior College", y = sum(gss$degree == "junior college")),
+      list(name = "Bachelor", y = sum(gss$degree == "bachelor")),
+      list(name = "Graduate", y = sum(gss$degree == "graduate"))
+    )
+  )
+
+hc_example <- create_content() %>%
+  add_text("### Custom Pie Chart") %>%
+  add_hc(custom_chart)
+
+print(hc_example)
+#> -- Content Collection ──────────────────────────────────────────────────────────
+#> 2 items | ✖ no data
+#> 
+#> ℹ [Text]
+#> • [hc]
+```
+
+``` r
+hc_example %>% preview()
+```
+
+Preview
+
+Custom Pie Chart
+
+This is useful for:
+
+- Chart types not available in
+  [`add_viz()`](https://favstats.github.io/dashboardr/reference/add_viz.md)
+  (pie charts, gauges, etc.)
+- Highly customized visualizations
+- Integrating existing highcharter code
+
+## 📈 Working with Pre-aggregated Data
+
+While dashboardr was designed with survey data in mind (where you
+typically count or aggregate responses), it works equally well with data
+that’s already aggregated.
+
+### Bar Charts with Pre-aggregated Data
+
+Use the `y_var` parameter to specify a column containing pre-computed
+values:
+
+``` r
+# Pre-aggregated data (e.g., from a database or API)
+country_stats <- data.frame(
+  country = c("USA", "Germany", "France", "UK", "Japan"),
+  population_millions = c(331, 83, 67, 67, 126),
+  gdp_trillions = c(21.4, 3.8, 2.6, 2.8, 5.1)
+)
+
+# Use y_var to plot pre-aggregated values directly
+preagg_bar <- create_content(data = country_stats) %>%
+  add_viz(
+    type = "bar",
+    x_var = "country",
+    y_var = "population_millions",  # Pre-computed values
+    title = "Population by Country (Millions)",
+    x_order = c("USA", "Japan", "Germany", "UK", "France")
+  )
+
+preagg_bar %>% preview()
+```
+
+Preview
+
+Population by Country (Millions)
+
+This also works for grouped bar charts:
+
+``` r
+# Pre-aggregated grouped data
+quarterly_sales <- data.frame(
+  quarter = rep(c("Q1", "Q2", "Q3", "Q4"), each = 2),
+  region = rep(c("North", "South"), 4),
+  revenue = c(100, 80, 120, 95, 150, 110, 130, 100)
+)
+
+grouped_preagg <- create_content(data = quarterly_sales) %>%
+  add_viz(
+    type = "bar",
+    x_var = "quarter",
+    group_var = "region",
+    y_var = "revenue",
+    title = "Quarterly Revenue by Region"
+  )
+
+grouped_preagg %>% preview()
+```
+
+Preview
+
+Quarterly Revenue by Region
+
+### Stacked Bars with Pre-aggregated Data
+
+The `y_var` parameter works the same way for stacked bar charts:
+
+``` r
+# Pre-aggregated stacked data
+satisfaction_data <- data.frame(
+  department = rep(c("Sales", "Engineering", "HR"), each = 3),
+  rating = rep(c("Satisfied", "Neutral", "Dissatisfied"), 3),
+  count = c(45, 30, 10, 60, 25, 15, 35, 20, 5)
+)
+
+stacked_preagg <- create_content(data = satisfaction_data) %>%
+  add_viz(
+    type = "stackedbar",
+    x_var = "department",
+    stack_var = "rating",
+    y_var = "count",  # Pre-computed counts
+    title = "Employee Satisfaction by Department"
+  )
+
+stacked_preagg %>% preview()
+```
+
+Preview
+
+Employee Satisfaction by Department
+
+### Histograms with Pre-aggregated Data
+
+For pre-binned histogram data:
+
+``` r
+# Pre-binned data (e.g., from a reporting system)
+age_bins <- data.frame(
+  age_group = c("18-25", "26-35", "36-45", "46-55", "56-65", "65+"),
+  count = c(150, 280, 320, 290, 210, 180)
+)
+
+hist_preagg <- create_content(data = age_bins) %>%
+  add_viz(
+    type = "histogram",
+    x_var = "age_group",
+    y_var = "count",  # Pre-computed bin counts
+    title = "Age Distribution"
+  )
+
+hist_preagg %>% preview()
+```
+
+Preview
+
+Age Distribution
+
+### Timelines with Pre-aggregated Data
+
+Use `agg = "none"` to skip aggregation for timeline data:
+
+``` r
+# Pre-aggregated time series
+yearly_metrics <- data.frame(
+  year = c(2020, 2021, 2022, 2023),
+  value = c(1250, 1380, 1420, 1510)
+)
+
+timeline_preagg <- create_content(data = yearly_metrics) %>%
+  add_viz(
+    type = "timeline",
+    time_var = "year",
+    y_var = "value",
+    agg = "none",  # Use values directly, no aggregation
+    title = "Yearly Performance Trend"
+  )
+
+timeline_preagg %>% preview()
+```
+
+Preview
+
+Yearly Performance Trend
+
+### Heatmaps with Pre-aggregated Data
+
+Use `pre_aggregated = TRUE` to skip the aggregation step:
+
+``` r
+# Pre-computed heatmap values (one row per cell)
+correlation_data <- data.frame(
+  var1 = rep(c("Age", "Income", "Education"), each = 3),
+  var2 = rep(c("Age", "Income", "Education"), 3),
+  correlation = c(1.0, 0.35, 0.28, 0.35, 1.0, 0.52, 0.28, 0.52, 1.0)
+)
+
+heatmap_preagg <- create_content(data = correlation_data) %>%
+  add_viz(
+    type = "heatmap",
+    x_var = "var1",
+    y_var = "var2",
+    value_var = "correlation",
+    pre_aggregated = TRUE,  # Skip aggregation
+    title = "Correlation Matrix",
+    color_min = -1,
+    color_max = 1
+  )
+
+heatmap_preagg %>% preview()
+```
+
+Preview
+
+Correlation Matrix
+
+### Treemaps with Pre-aggregated Data
+
+Use `pre_aggregated = TRUE` to use values directly without summing:
+
+``` r
+# Pre-aggregated hierarchical data
+budget_data <- data.frame(
+  category = c("Marketing", "Marketing", "Engineering", "Engineering", "Operations"),
+  subcategory = c("Digital", "Events", "Frontend", "Backend", "Support"),
+  amount = c(50000, 30000, 80000, 120000, 45000)
+)
+
+treemap_preagg <- create_content(data = budget_data) %>%
+  add_viz(
+    type = "treemap",
+    group_var = "category",
+    subgroup_var = "subcategory",
+    value_var = "amount",
+    pre_aggregated = TRUE,  # Use amounts directly
+    title = "Budget Allocation"
+  )
+
+treemap_preagg %>% preview()
+```
+
+Preview
+
+Budget Allocation
 
 ## 🔲 Layout Helpers
 

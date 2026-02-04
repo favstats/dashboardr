@@ -150,8 +150,7 @@ result <- viz_timeline(
   chart_type = "line",
   subtitle = "Toggle the global average to compare against individual countries",
   x_label = "Decade",
-  y_label = "% Female Authors",
-  cross_tab_filter_vars = "country"
+  y_label = "% Female Authors"
 )
 
 # Extract cross-tab data BEFORE wrapping (wrapping strips attributes)

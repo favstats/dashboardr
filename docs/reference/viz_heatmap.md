@@ -43,7 +43,8 @@ viz_heatmap(
   x_map_values = NULL,
   y_map_values = NULL,
   agg_fun = mean,
-  weight_var = NULL
+  weight_var = NULL,
+  pre_aggregated = FALSE
 )
 ```
 
@@ -208,6 +209,12 @@ viz_heatmap(
   aggregation. When provided, the function uses
   [`weighted.mean()`](https://rdrr.io/r/stats/weighted.mean.html)
   instead of the `agg_fun` parameter.
+
+- pre_aggregated:
+
+  Logical. If TRUE, skips aggregation and uses `value_var` directly. Use
+  this when your data is already aggregated (one row per x/y
+  combination). Default is FALSE.
 
 ## Value
 

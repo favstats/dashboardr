@@ -147,7 +147,8 @@ as explicit categories.</p>
 <span>  x_map_values <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  y_map_values <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  agg_fun <span class="op">=</span> <span class="va">mean</span>,</span>
-<span>  weight_var <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  weight_var <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  pre_aggregated <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -300,6 +301,12 @@ Note: If <code>weight_var</code> is provided, weighted mean is used instead and 
 <dt id="arg-weight-var">weight_var<a class="anchor" aria-label="anchor" href="#arg-weight-var"></a></dt>
 <dd><p>Optional string. Name of a weight variable to use for weighted mean aggregation.
 When provided, the function uses <code><a href="https://rdrr.io/r/stats/weighted.mean.html" class="external-link">weighted.mean()</a></code> instead of the <code>agg_fun</code> parameter.</p></dd>
+
+
+<dt id="arg-pre-aggregated">pre_aggregated<a class="anchor" aria-label="anchor" href="#arg-pre-aggregated"></a></dt>
+<dd><p>Logical. If TRUE, skips aggregation and uses <code>value_var</code> directly.
+Use this when your data is already aggregated (one row per x/y combination).
+Default is FALSE.</p></dd>
 
 </dl></div>
     <div class="section level2">
