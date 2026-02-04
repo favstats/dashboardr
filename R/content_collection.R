@@ -567,7 +567,7 @@ add_reactable <- function(content, reactable_object, tabgroup = NULL) {
 #' 
 #' @param content A content_collection, page_object, or dashboard object
 #' @param hc_object A highcharter object created with highcharter::highchart() or hchart()
-#' @param height Optional height for the chart (e.g., "400px", "50vh"). Defaults to "400px"
+#' @param height Optional height for the chart (e.g., "400px", "50vh"). If NULL (default), no height is set and highcharter handles its own sizing
 #' @param tabgroup Optional tabgroup for organizing content (character vector for nested tabs)
 #' @return Updated content object
 #' @export
@@ -586,7 +586,7 @@ add_reactable <- function(content, reactable_object, tabgroup = NULL) {
 #'   add_hc(my_chart) %>%
 #'   add_hc(another_chart, height = "500px", tabgroup = "My Charts")
 #' }
-add_hc <- function(content, hc_object, height = "400px", tabgroup = NULL) {
+add_hc <- function(content, hc_object, height = NULL, tabgroup = NULL) {
   # Validate it's a highcharter object
   if (!inherits(hc_object, "highchart")) {
     stop("hc_object must be a highcharter object (created with highchart() or hchart())", call. = FALSE)

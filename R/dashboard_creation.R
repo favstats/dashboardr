@@ -815,8 +815,18 @@ add_dashboard_page <- function(proj, name, data = NULL, data_path = NULL,
 
         # If not found, create a new descriptive filename
         if (is.null(dataset_path)) {
-          data_file_name <- paste0(dataset_name, "_", nrow(dataset), "obs.rds")
+          base_name <- paste0(dataset_name, "_", nrow(dataset), "obs")
+          data_file_name <- paste0(base_name, ".rds")
           dataset_path <- data_file_name
+          
+          # Handle filename collisions - add counter if path already exists
+          if (dataset_path %in% names(proj$data_files)) {
+            counter <- 2
+            while (paste0(base_name, "_", counter, ".rds") %in% names(proj$data_files)) {
+              counter <- counter + 1
+            }
+            dataset_path <- paste0(base_name, "_", counter, ".rds")
+          }
 
           # Track this dataset
           if (is.null(proj$data_files)) {
@@ -859,6 +869,15 @@ add_dashboard_page <- function(proj, name, data = NULL, data_path = NULL,
         }
         data_name <- paste0(data_name, "_", nrow(data), "obs")
         data_path <- paste0(data_name, ".rds")
+        
+        # Handle filename collisions - add counter if path already exists
+        if (data_path %in% names(proj$data_files)) {
+          counter <- 2
+          while (paste0(data_name, "_", counter, ".rds") %in% names(proj$data_files)) {
+            counter <- counter + 1
+          }
+          data_path <- paste0(data_name, "_", counter, ".rds")
+        }
 
         # Track this dataset
         if (is.null(proj$data_files)) {
