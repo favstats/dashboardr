@@ -766,36 +766,34 @@
 ============================================================================= */
 
 @media (max-width: 991.98px) {
-  /* Base layout with smooth transitions */
+  /* Base layout */
   .bslib-sidebar-layout,
   [data-bslib-sidebar-layout] {
     position: relative !important;
-    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1) !important;
   }
   
-  /* Sidebar with beautiful slide animation */
+  /* COLLAPSED STATE: Force block layout to eliminate all gaps */
+  .bslib-sidebar-layout.sidebar-collapsed,
+  .bslib-sidebar-layout[data-bslib-sidebar-open="false"],
+  [data-bslib-sidebar-layout][data-bslib-sidebar-open="false"] {
+    display: block !important;
+    gap: 0 !important;
+  }
+  
+  /* Sidebar smooth transitions when OPEN */
   .bslib-sidebar-layout > .sidebar,
   [data-bslib-sidebar-layout] > .sidebar {
-    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1),
-                opacity 0.25s ease,
-                width 0.35s cubic-bezier(0.4, 0, 0.2, 1),
-                padding 0.35s cubic-bezier(0.4, 0, 0.2, 1) !important;
-    will-change: transform, opacity, width;
+    transition: opacity 0.3s ease, 
+                transform 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
   }
   
-  /* When open: sidebar slides in beautifully */
-  .bslib-sidebar-layout:not(.sidebar-collapsed) > .sidebar,
-  .bslib-sidebar-layout[data-bslib-sidebar-open="true"] > .sidebar {
-    transform: translateX(0) !important;
-    opacity: 1 !important;
-  }
-  
-  /* When collapsed: slide out and hide completely */
+  /* When collapsed: COMPLETELY REMOVE sidebar */
   .bslib-sidebar-layout.sidebar-collapsed > .sidebar,
   .bslib-sidebar-layout[data-bslib-sidebar-open="false"] > .sidebar,
-  [data-bslib-sidebar-layout][data-bslib-sidebar-open="false"] > .sidebar {
-    transform: translateX(-100%) !important;
-    opacity: 0 !important;
+  [data-bslib-sidebar-layout][data-bslib-sidebar-open="false"] > .sidebar,
+  .bslib-sidebar-layout.sidebar-collapsed > aside,
+  .bslib-sidebar-layout[data-bslib-sidebar-open="false"] > aside {
+    display: none !important;
     width: 0 !important;
     min-width: 0 !important;
     max-width: 0 !important;
@@ -803,31 +801,34 @@
     margin: 0 !important;
     border: none !important;
     overflow: hidden !important;
+    visibility: hidden !important;
+    position: absolute !important;
     pointer-events: none !important;
   }
   
-  /* Right sidebar slides out to the right */
-  .bslib-sidebar-layout > .sidebar:last-child.sidebar-collapsed,
-  .bslib-sidebar-layout.sidebar-collapsed > .sidebar:last-child {
-    transform: translateX(100%) !important;
-  }
-  
-  /* Main content smooth transition */
+  /* Main content with smooth transition */
   .bslib-sidebar-layout > .main,
   .bslib-sidebar-layout > main,
   [data-bslib-sidebar-layout] > .main {
-    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
   }
   
-  /* Main content fills width when collapsed */
+  /* Main content fills FULL WIDTH when collapsed - aggressive! */
   .bslib-sidebar-layout.sidebar-collapsed > .main,
   .bslib-sidebar-layout.sidebar-collapsed > main,
   .bslib-sidebar-layout[data-bslib-sidebar-open="false"] > .main,
-  .bslib-sidebar-layout[data-bslib-sidebar-open="false"] > main {
+  .bslib-sidebar-layout[data-bslib-sidebar-open="false"] > main,
+  [data-bslib-sidebar-layout][data-bslib-sidebar-open="false"] > .main,
+  [data-bslib-sidebar-layout][data-bslib-sidebar-open="false"] > main {
     width: 100% !important;
     max-width: 100% !important;
+    min-width: 100% !important;
     flex: 1 1 100% !important;
     margin: 0 !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
   }
   
   /* =========== TOGGLE BUTTON - Floating, subtle =========== */
