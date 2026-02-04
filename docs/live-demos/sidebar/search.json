@@ -1,0 +1,9 @@
+[
+  {
+    "objectID": "about.html",
+    "href": "about.html",
+    "title": " About",
+    "section": "",
+    "text": "About This Dashboard\nThis dashboard demonstrates the multi-page sidebar feature in dashboardr.\nEach page can have:\n\nIts own sidebar (or none)\nDifferent input types (checkbox, radio, select, slider)\nLeft or right sidebar position\nIndependent filtering for that page’s visualizations\nMulti-column grid layouts for checkboxes (using columns = 2)\n\n\n\n\nFeatures Demonstrated\n\nGDP Growth: Left sidebar with checkbox filters in 2-column grid\nUnemployment: Left sidebar with multi-select dropdown\nCombined: Right sidebar with radio buttons + checkboxes\nSlider Demo: Left sidebar with year slider + checkboxes\n\n\nData is simulated for demonstration purposes."
+  }
+]

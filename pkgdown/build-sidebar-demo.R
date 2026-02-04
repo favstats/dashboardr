@@ -108,7 +108,7 @@ page1_content <- create_content(data = gdp_data) %>%
     x_label = "Year"
   )
 
-page1 <- create_page("GDP Growth", data = gdp_data, icon = "ph:chart-line-up") %>%
+page1 <- create_page("GDP Growth", data = gdp_data, icon = "ph:chart-line-up", is_landing_page = TRUE) %>%
   add_content(page1_content)
 
 # =============================================================================

@@ -1,5 +1,5 @@
 ---
-title: "{{< iconify ph users >}} Unemployment"
+title: "{{< iconify ph chart-line-up >}} GDP Growth"
 format: dashboard
 ---
 
@@ -51,7 +51,7 @@ cat('Dataset loaded:', nrow(data), 'rows,', ncol(data), 'columns\n')
 ### Country Filter
 
 
-Select countries using dropdown.
+Select countries to compare GDP growth rates.
 
 
 ---
@@ -61,9 +61,9 @@ Select countries using dropdown.
 #| echo: false
 #| results: 'asis'
 dashboardr::render_input(
-  input_id = "country_select",
-  label = "Select Countries:",
-  type = "select_multiple",
+  input_id = "country_filter",
+  label = "Countries:",
+  type = "checkbox",
   filter_var = "country",
   options = c("Netherlands", "Germany", "France", "United Kingdom", "Italy"),
   options_from = NULL,
@@ -94,27 +94,26 @@ dashboardr::render_input(
 <div style='height: 1rem;'></div>
 
 
-<span class='badge badge-primary'>Eurostat Data</span>
-
-
-*Unemployment as % of labor force*
+::: {.callout-note}
+GDP growth is the annual percentage change in real GDP.
+:::
 
 
 ## Column
 
-### Unemployment Rate Over Time
+### GDP Growth Rate by Country
 
-```{r timeline-value-country}
-# Unemployment Rate Over Time
+```{r timeline-value-country-4}
+# GDP Growth Rate by Country
 result <- viz_timeline(
   data = data,
-  title = "Unemployment Rate Over Time",
+  title = "GDP Growth Rate by Country",
   time_var = "year",
   y_var = "value",
   group_var = "country",
   agg = "none",
   chart_type = "line",
-  y_label = "Unemployment Rate (%)",
+  y_label = "Growth Rate (%)",
   x_label = "Year"
 )
 

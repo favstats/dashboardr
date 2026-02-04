@@ -8,7 +8,7 @@ website:
   title: "Sidebar Demo"
   navbar:
     left:
-      - href: gdp_growth.qmd
+      - href: index.qmd
         text: "{{< iconify ph chart-line-up >}} GDP Growth"
       - href: unemployment.qmd
         text: "{{< iconify ph users >}} Unemployment"

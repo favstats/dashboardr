@@ -58,7 +58,7 @@ cat(';</script>')
 
 ### Economic Indicators Over Time
 
-```{r timeline-value-country-3}
+```{r timeline-value-country-2}
 # Economic Indicators Over Time
 result <- viz_timeline(
   data = data,

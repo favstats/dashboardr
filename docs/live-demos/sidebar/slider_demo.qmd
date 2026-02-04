@@ -140,7 +140,7 @@ Move the slider to filter data from a specific year onwards.
 
 ### GDP Growth Over Time
 
-```{r timeline-value-country-4}
+```{r timeline-value-country-3}
 # GDP Growth Over Time
 result <- viz_timeline(
   data = data,
