@@ -637,3 +637,36 @@ section {
 "
   knitr::asis_output(css)
 }
+
+
+#' Embed cross-tab data for client-side filtering
+#'
+#' Internal helper that extracts cross-tab attributes from a visualization
+#' and embeds them as JavaScript for client-side filtering. Used by generated
+#' QMD code when interactive inputs are present.
+#'
+#' @param result A visualization result (highchart object)
+#' @return The result wrapped with cross-tab JavaScript if applicable
+#' @keywords internal
+.embed_cross_tab <- function(result) {
+  cross_tab_data <- attr(result, "cross_tab_data")
+  cross_tab_config <- attr(result, "cross_tab_config")
+  cross_tab_id <- attr(result, "cross_tab_id")
+  
+ if (!is.null(cross_tab_data)) {
+    cross_tab_json <- jsonlite::toJSON(cross_tab_data, dataframe = "rows")
+    config_json <- jsonlite::toJSON(cross_tab_config, auto_unbox = TRUE)
+    script_tag <- htmltools::tags$script(
+      htmltools::HTML(paste0(
+        "window.dashboardrCrossTab = window.dashboardrCrossTab || {};",
+        "window.dashboardrCrossTab[\"", cross_tab_id, "\"] = {",
+        "data: ", cross_tab_json, ",",
+        "config: ", config_json,
+        "};"
+      ))
+    )
+    result <- htmltools::tagList(script_tag, result)
+  }
+  
+  result
+}
