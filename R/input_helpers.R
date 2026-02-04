@@ -19,40 +19,30 @@ enable_sidebar <- function() {
   # Add version parameter to bust cache
   version <- format(Sys.time(), "%Y%m%d%H%M%S")
   
-  # JavaScript to detect sidebar position (left vs right) and add data attribute
+  # JavaScript to add sidebar-left class for left sidebars (Quarto already adds sidebar-right for right sidebars)
   sidebar_position_script <- "
 (function() {
-  function detectSidebarPosition() {
+  function markLeftSidebars() {
     var layouts = document.querySelectorAll('.bslib-sidebar-layout, [data-bslib-sidebar-layout]');
     layouts.forEach(function(layout) {
-      var children = Array.from(layout.children);
-      var sidebar = layout.querySelector('.sidebar, aside');
-      var main = layout.querySelector('.main, main');
-      
-      if (sidebar && main) {
-        // If main comes before sidebar in DOM, it's a right sidebar
-        var sidebarIndex = children.indexOf(sidebar);
-        var mainIndex = children.indexOf(main);
-        
-        if (mainIndex < sidebarIndex || mainIndex === 0) {
-          layout.setAttribute('data-sidebar-position', 'right');
-          layout.classList.add('sidebar-right');
-        } else {
-          layout.setAttribute('data-sidebar-position', 'left');
-          layout.classList.add('sidebar-left');
-        }
+      // Quarto already adds 'sidebar-right' class for right sidebars
+      // We only need to add 'sidebar-left' for sidebars that are NOT right
+      if (!layout.classList.contains('sidebar-right')) {
+        layout.classList.add('sidebar-left');
+        layout.setAttribute('data-sidebar-position', 'left');
+      } else {
+        layout.setAttribute('data-sidebar-position', 'right');
       }
     });
   }
   
   // Run on DOM ready and after short delay for dynamic content
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', detectSidebarPosition);
+    document.addEventListener('DOMContentLoaded', markLeftSidebars);
   } else {
-    detectSidebarPosition();
+    markLeftSidebars();
   }
-  setTimeout(detectSidebarPosition, 100);
-  setTimeout(detectSidebarPosition, 500);
+  setTimeout(markLeftSidebars, 100);
 })();
 "
   
