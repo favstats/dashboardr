@@ -766,10 +766,16 @@
 ============================================================================= */
 
 @media (max-width: 991.98px) {
-  /* Force layout to not reserve any space for collapsed sidebar */
+  /* Base positioning for the layout */
   .bslib-sidebar-layout,
   [data-bslib-sidebar-layout] {
     position: relative !important;
+  }
+  
+  /* ONLY when collapsed: force block layout to remove gaps */
+  .bslib-sidebar-layout.sidebar-collapsed,
+  .bslib-sidebar-layout[data-bslib-sidebar-open="false"],
+  [data-bslib-sidebar-layout][data-bslib-sidebar-open="false"] {
     display: block !important;
     gap: 0 !important;
   }
