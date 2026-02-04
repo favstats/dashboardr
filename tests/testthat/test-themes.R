@@ -241,3 +241,90 @@ test_that("apply_theme works in pipe chains", {
   expect_s3_class(result, "dashboard_project")
   expect_equal(result$navbar_bg_color, "#ffffff")
 })
+
+
+# ===================================================================
+# Theme Validation Tests
+# ===================================================================
+
+test_that("apply_theme validates color parameters", {
+  # Invalid type (numeric instead of character)
+  expect_error(
+    apply_theme(theme = list(navbar_bg_color = 123)),
+    "must be a single character string"
+  )
+  
+  # Invalid hex color
+  expect_error(
+    apply_theme(theme = list(linkcolor = "#GGG")),
+    "invalid color value"
+  )
+  
+  # Valid colors should work
+  expect_no_error(apply_theme(theme = list(navbar_bg_color = "#CB0D0D")))
+  expect_no_error(apply_theme(theme = list(linkcolor = "red")))
+  expect_no_error(apply_theme(theme = list(fontcolor = "rgb(255, 0, 0)")))
+})
+
+test_that("apply_theme validates size parameters", {
+  # Missing units
+  expect_error(
+    apply_theme(theme = list(fontsize = "16")),
+    "must include units"
+  )
+  
+  # Numeric instead of character
+  expect_error(
+    apply_theme(theme = list(fontsize = 16)),
+    "must be a character string with units"
+  )
+  
+  # Valid sizes should work
+  expect_no_error(apply_theme(theme = list(fontsize = "16px")))
+  expect_no_error(apply_theme(theme = list(max_width = "1200px")))
+  expect_no_error(apply_theme(theme = list(margin_left = "2rem")))
+  expect_no_error(apply_theme(theme = list(margin_top = "5%")))
+})
+
+test_that("apply_theme validates linestretch as numeric", {
+  # String instead of numeric
+  expect_error(
+    apply_theme(theme = list(linestretch = "1.5")),
+    "must be a single number"
+  )
+  
+  # Valid numeric should work
+  expect_no_error(apply_theme(theme = list(linestretch = 1.6)))
+})
+
+test_that("apply_theme validates font parameters", {
+  # Non-character type
+  expect_error(
+    apply_theme(theme = list(mainfont = 123)),
+    "must be a character string"
+  )
+  
+  # Invalid characters that would break SCSS
+  expect_error(
+    apply_theme(theme = list(mainfont = "Font{bad}")),
+    "invalid characters"
+  )
+  
+  # Valid fonts should work
+  expect_no_error(apply_theme(theme = list(mainfont = "Fira Sans")))
+  expect_no_error(apply_theme(theme = list(monofont = "JetBrains Mono")))
+})
+
+test_that("built-in themes pass validation", {
+  # All built-in themes should pass validation
+
+  expect_no_error(apply_theme(theme = theme_ascor()))
+  expect_no_error(apply_theme(theme = theme_uva()))
+  expect_no_error(apply_theme(theme = theme_academic()))
+  expect_no_error(apply_theme(theme = theme_modern()))
+  expect_no_error(apply_theme(theme = theme_modern("purple")))
+  expect_no_error(apply_theme(theme = theme_modern("green")))
+  expect_no_error(apply_theme(theme = theme_modern("orange")))
+  expect_no_error(apply_theme(theme = theme_modern("white")))
+  expect_no_error(apply_theme(theme = theme_clean()))
+})

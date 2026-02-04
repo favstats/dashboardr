@@ -1,3 +1,158 @@
+# ===================================================================
+# Theme Validation Helpers
+# ===================================================================
+
+#' Validate a CSS color value
+#' @noRd
+.validate_color <- function(value, param_name) {
+  if (is.null(value)) return(invisible(NULL))
+  
+  if (!is.character(value) || length(value) != 1) {
+    stop(sprintf(
+      "Theme error: '%s' must be a single character string, got %s.\n  Example: %s = \"#CB0D0D\" or %s = \"red\"",
+      param_name, class(value)[1], param_name, param_name
+    ), call. = FALSE)
+  }
+  
+  # Valid patterns: hex (#RGB, #RRGGBB, #RRGGBBAA), rgb(), rgba(), hsl(), hsla(), named colors
+  valid_patterns <- c(
+    "^#[0-9A-Fa-f]{3}$",           # #RGB
+    "^#[0-9A-Fa-f]{6}$",           # #RRGGBB
+    "^#[0-9A-Fa-f]{8}$",           # #RRGGBBAA
+    "^rgb\\s*\\(",                  # rgb(...)
+    "^rgba\\s*\\(",                 # rgba(...)
+    "^hsl\\s*\\(",                  # hsl(...)
+    "^hsla\\s*\\(",                 # hsla(...)
+    "^var\\s*\\("                   # var(--custom-prop)
+  )
+  
+  # Common named colors (subset for validation)
+  named_colors <- c(
+    "transparent", "inherit", "currentColor",
+    "black", "white", "red", "green", "blue", "yellow", "orange", "purple",
+    "pink", "gray", "grey", "brown", "cyan", "magenta", "lime", "navy",
+    "teal", "maroon", "olive", "silver", "aqua", "fuchsia"
+  )
+  
+  is_valid <- any(sapply(valid_patterns, function(p) grepl(p, value, ignore.case = TRUE))) ||
+              tolower(value) %in% named_colors
+  
+  if (!is_valid) {
+    stop(sprintf(
+      "Theme error: '%s' has invalid color value: \"%s\"\n  Valid formats: hex (#RRGGBB), rgb(), rgba(), or named color (e.g., \"red\")\n  Example: %s = \"#CB0D0D\"",
+      param_name, value, param_name
+    ), call. = FALSE)
+  }
+  
+  invisible(NULL)
+}
+
+#' Validate a CSS size value (must have units)
+#' @noRd
+.validate_size <- function(value, param_name) {
+  if (is.null(value)) return(invisible(NULL))
+  
+  if (!is.character(value) || length(value) != 1) {
+    stop(sprintf(
+      "Theme error: '%s' must be a character string with units, got %s.\n  Example: %s = \"16px\" or %s = \"1.2rem\"",
+      param_name, class(value)[1], param_name, param_name
+    ), call. = FALSE)
+  }
+  
+  # Valid CSS units
+  valid_pattern <- "^[0-9]+(\\.[0-9]+)?(px|em|rem|%|vh|vw|pt|cm|mm|in|ex|ch|vmin|vmax)$"
+  
+  if (!grepl(valid_pattern, value, ignore.case = TRUE)) {
+    stop(sprintf(
+      "Theme error: '%s' has invalid size value: \"%s\"\n  Size values must include units (px, em, rem, %%, vh, etc.)\n  Example: %s = \"16px\" or %s = \"1.5rem\"",
+      param_name, value, param_name, param_name
+    ), call. = FALSE)
+  }
+  
+  invisible(NULL)
+}
+
+#' Validate a numeric value
+#' @noRd
+.validate_numeric <- function(value, param_name) {
+  if (is.null(value)) return(invisible(NULL))
+  
+  if (!is.numeric(value) || length(value) != 1) {
+    stop(sprintf(
+      "Theme error: '%s' must be a single number, got %s.\n  Example: %s = 1.6",
+      param_name, class(value)[1], param_name
+    ), call. = FALSE)
+  }
+  
+  invisible(NULL)
+}
+
+#' Validate a font name
+#' @noRd
+.validate_font <- function(value, param_name) {
+  if (is.null(value)) return(invisible(NULL))
+  
+  if (!is.character(value) || length(value) != 1) {
+    stop(sprintf(
+      "Theme error: '%s' must be a character string, got %s.\n  Example: %s = \"Fira Sans\"",
+      param_name, class(value)[1], param_name
+    ), call. = FALSE)
+  }
+  
+  # Check for obviously invalid characters that would break SCSS
+  if (grepl("[{};<>]", value)) {
+    stop(sprintf(
+      "Theme error: '%s' contains invalid characters: \"%s\"\n  Font names should not contain {, }, ;, <, or >\n  Example: %s = \"Fira Sans\"",
+      param_name, value, param_name
+    ), call. = FALSE)
+  }
+  
+  invisible(NULL)
+}
+
+#' Validate all theme parameters
+#' @noRd
+.validate_theme <- function(theme) {
+  # Color parameters
+  color_params <- c("navbar_bg_color", "navbar_text_color", "navbar_text_hover_color",
+                    "linkcolor", "fontcolor", "backgroundcolor", "monobackgroundcolor")
+  for (param in color_params) {
+    if (!is.null(theme[[param]])) {
+      .validate_color(theme[[param]], param)
+    }
+  }
+  
+
+  # Size parameters (must have units)
+  size_params <- c("fontsize", "max_width", "margin_left", "margin_right", 
+                   "margin_top", "margin_bottom")
+  for (param in size_params) {
+    if (!is.null(theme[[param]])) {
+      .validate_size(theme[[param]], param)
+    }
+  }
+  
+  # Numeric parameters
+  if (!is.null(theme$linestretch)) {
+    .validate_numeric(theme$linestretch, "linestretch")
+  }
+  
+  # Font parameters
+  font_params <- c("mainfont", "monofont")
+  for (param in font_params) {
+    if (!is.null(theme[[param]])) {
+      .validate_font(theme[[param]], param)
+    }
+  }
+  
+  invisible(NULL)
+}
+
+
+# ===================================================================
+# Theme Application
+# ===================================================================
+
 #' Apply Theme to Dashboard
 #'
 #' Applies a theme to an existing dashboard_project object or returns theme parameters
@@ -51,6 +206,11 @@ apply_theme <- function(proj = NULL, theme, ...) {
       theme[[param_name]] <- overrides[[param_name]]
     }
   }
+  
+  # Validate all theme parameters BEFORE applying
+
+  # This prevents invalid values from corrupting Quarto's SASS cache
+  .validate_theme(theme)
   
   if (is.null(proj)) {
     # Just return the theme (with overrides applied)
