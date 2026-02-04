@@ -762,40 +762,14 @@
 
 /* =============================================================================
    FLOATING SIDEBAR TOGGLE FOR BSLIB/QUARTO (Mobile)
-   Toggle button floats on same side as sidebar, smooth animations
+   Toggle button floats on same side as sidebar, no extra space when collapsed
 ============================================================================= */
 
 @media (max-width: 991.98px) {
-  /* Base layout with smooth transitions */
+  /* Base positioning for the layout */
   .bslib-sidebar-layout,
   [data-bslib-sidebar-layout] {
     position: relative !important;
-  }
-  
-  /* Sidebar with smooth slide animation - SLOWER (0.5s) */
-  .bslib-sidebar-layout > .sidebar,
-  .bslib-sidebar-layout > aside,
-  [data-bslib-sidebar-layout] > .sidebar {
-    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1),
-                opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-                width 0.5s cubic-bezier(0.4, 0, 0.2, 1),
-                padding 0.5s cubic-bezier(0.4, 0, 0.2, 1) !important;
-    transform-origin: left center;
-  }
-  
-  /* Right sidebar: animate from right */
-  .bslib-sidebar-layout.sidebar-right > .sidebar,
-  .bslib-sidebar-layout.sidebar-right > aside {
-    transform-origin: right center !important;
-  }
-  
-  /* Main content smooth transition */
-  .bslib-sidebar-layout > .main,
-  .bslib-sidebar-layout > main,
-  [data-bslib-sidebar-layout] > .main {
-    transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1),
-                margin 0.5s cubic-bezier(0.4, 0, 0.2, 1),
-                flex 0.5s cubic-bezier(0.4, 0, 0.2, 1) !important;
   }
   
   /* ONLY when collapsed: force block layout to remove gaps */
@@ -806,30 +780,19 @@
     gap: 0 !important;
   }
   
-  /* When collapsed: slide sidebar out and hide */
+  /* When collapsed, completely remove sidebar from flow */
   .bslib-sidebar-layout.sidebar-collapsed > .sidebar,
-  .bslib-sidebar-layout.sidebar-collapsed > aside,
   .bslib-sidebar-layout[data-bslib-sidebar-open="false"] > .sidebar,
-  .bslib-sidebar-layout[data-bslib-sidebar-open="false"] > aside,
-  [data-bslib-sidebar-layout][data-bslib-sidebar-open="false"] > .sidebar {
-    transform: translateX(-100%) !important;
-    opacity: 0 !important;
+  [data-bslib-sidebar-layout][data-bslib-sidebar-open="false"] > .sidebar,
+  .bslib-sidebar-layout.sidebar-collapsed > aside,
+  .bslib-sidebar-layout[data-bslib-sidebar-open="false"] > aside {
+    display: none !important;
     width: 0 !important;
     min-width: 0 !important;
     max-width: 0 !important;
     padding: 0 !important;
     margin: 0 !important;
     border: none !important;
-    overflow: hidden !important;
-    pointer-events: none !important;
-  }
-  
-  /* Right sidebar: slide out to right */
-  .bslib-sidebar-layout.sidebar-right.sidebar-collapsed > .sidebar,
-  .bslib-sidebar-layout.sidebar-right.sidebar-collapsed > aside,
-  .bslib-sidebar-layout.sidebar-right[data-bslib-sidebar-open="false"] > .sidebar,
-  .bslib-sidebar-layout.sidebar-right[data-bslib-sidebar-open="false"] > aside {
-    transform: translateX(100%) !important;
   }
   
   /* Main content fills entire width when collapsed */
@@ -837,7 +800,8 @@
   .bslib-sidebar-layout.sidebar-collapsed > main,
   .bslib-sidebar-layout[data-bslib-sidebar-open="false"] > .main,
   .bslib-sidebar-layout[data-bslib-sidebar-open="false"] > main,
-  [data-bslib-sidebar-layout][data-bslib-sidebar-open="false"] > .main {
+  [data-bslib-sidebar-layout][data-bslib-sidebar-open="false"] > .main,
+  [data-bslib-sidebar-layout][data-bslib-sidebar-open="false"] > main {
     width: 100% !important;
     max-width: 100% !important;
     margin: 0 !important;
@@ -845,10 +809,11 @@
     padding-right: 0 !important;
   }
   
-  /* Toggle button base styles - LEFT side (default for left sidebar) */
+  /* Toggle button - LEFT side (default, for left sidebar) */
+  .bslib-sidebar-layout .bslib-sidebar-toggle,
+  .sidebar .bslib-sidebar-toggle,
   .bslib-sidebar-layout > .collapse-toggle,
-  .bslib-sidebar-layout .collapse-toggle,
-  [data-bslib-sidebar-layout] > .collapse-toggle {
+  [data-bslib-sidebar-layout] .bslib-sidebar-toggle {
     position: fixed !important;
     top: 8rem !important;
     bottom: auto !important;
@@ -868,47 +833,43 @@
     align-items: center !important;
     justify-content: center !important;
     cursor: pointer !important;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    transition: all 0.2s ease !important;
     backdrop-filter: blur(8px) !important;
     -webkit-backdrop-filter: blur(8px) !important;
   }
   
-  /* Toggle button - RIGHT side for RIGHT sidebar */
-  .bslib-sidebar-layout.sidebar-right > .collapse-toggle,
-  .bslib-sidebar-layout.sidebar-right .collapse-toggle {
+  /* Toggle button - RIGHT side (for right sidebar) */
+  .bslib-sidebar-layout.sidebar-right .bslib-sidebar-toggle,
+  .bslib-sidebar-layout[data-bslib-sidebar-position="right"] .bslib-sidebar-toggle,
+  [data-bslib-sidebar-layout][data-bslib-sidebar-position="right"] .bslib-sidebar-toggle,
+  .sidebar[style*="right"] .bslib-sidebar-toggle,
+  .sidebar-right .bslib-sidebar-toggle {
     left: auto !important;
     right: 0.75rem !important;
   }
   
-  .bslib-sidebar-layout > .collapse-toggle:hover,
-  .bslib-sidebar-layout .collapse-toggle:hover {
+  .bslib-sidebar-layout .bslib-sidebar-toggle:hover,
+  .sidebar .bslib-sidebar-toggle:hover {
     background-color: rgba(255, 255, 255, 1) !important;
     box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15) !important;
     border-color: rgba(0, 0, 0, 0.15) !important;
-    transform: scale(1.05) !important;
-  }
-  
-  .bslib-sidebar-layout > .collapse-toggle:active,
-  .bslib-sidebar-layout .collapse-toggle:active {
-    transform: scale(0.95) !important;
   }
   
   /* Style the icon */
-  .bslib-sidebar-layout > .collapse-toggle svg,
-  .bslib-sidebar-layout .collapse-toggle svg {
+  .bslib-sidebar-layout .bslib-sidebar-toggle svg,
+  .sidebar .bslib-sidebar-toggle svg {
     width: 14px !important;
     height: 14px !important;
     fill: #555 !important;
     stroke: #555 !important;
     color: #555 !important;
-    transition: transform 0.3s ease !important;
   }
 }
 
 /* Small mobile */
 @media (max-width: 575.98px) {
-  .bslib-sidebar-layout > .collapse-toggle,
-  .bslib-sidebar-layout .collapse-toggle {
+  .bslib-sidebar-layout .bslib-sidebar-toggle,
+  .sidebar .bslib-sidebar-toggle {
     top: 7rem !important;
     width: 28px !important;
     height: 28px !important;
@@ -917,14 +878,14 @@
     left: 0.5rem !important;
   }
   
-  .bslib-sidebar-layout.sidebar-right > .collapse-toggle,
-  .bslib-sidebar-layout.sidebar-right .collapse-toggle {
+  .bslib-sidebar-layout.sidebar-right .bslib-sidebar-toggle,
+  .bslib-sidebar-layout[data-bslib-sidebar-position="right"] .bslib-sidebar-toggle {
     left: auto !important;
     right: 0.5rem !important;
   }
   
-  .bslib-sidebar-layout > .collapse-toggle svg,
-  .bslib-sidebar-layout .collapse-toggle svg {
+  .bslib-sidebar-layout .bslib-sidebar-toggle svg,
+  .sidebar .bslib-sidebar-toggle svg {
     width: 12px !important;
     height: 12px !important;
   }
