@@ -836,7 +836,7 @@
   .sidebar .bslib-sidebar-toggle,
   [data-bslib-sidebar-layout] .bslib-sidebar-toggle {
     position: fixed !important;
-    top: 7.5rem !important;
+    top: 9rem !important;
     bottom: auto !important;
     z-index: 1100 !important;
     width: 34px !important;
@@ -856,18 +856,14 @@
     transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
     backdrop-filter: blur(12px) saturate(180%) !important;
     -webkit-backdrop-filter: blur(12px) saturate(180%) !important;
-  }
-  
-  /* DEFAULT: Button on LEFT (for left sidebar - sidebar is first child) */
-  .bslib-sidebar-layout .bslib-sidebar-toggle {
+    /* Default: LEFT position */
     left: 0.75rem !important;
     right: auto !important;
   }
   
-  /* RIGHT sidebar detection: sidebar is the LAST child in the layout */
-  .bslib-sidebar-layout > .sidebar:last-child ~ .bslib-sidebar-toggle,
-  .bslib-sidebar-layout:has(> .sidebar:last-child) .bslib-sidebar-toggle,
-  .bslib-sidebar-layout:has(> .main:first-child) .bslib-sidebar-toggle {
+  /* RIGHT sidebar: button on right - using data attribute set by JS */
+  .bslib-sidebar-layout[data-sidebar-position="right"] .bslib-sidebar-toggle,
+  .bslib-sidebar-layout.sidebar-right .bslib-sidebar-toggle {
     left: auto !important;
     right: 0.75rem !important;
   }
@@ -905,11 +901,11 @@
   }
 }
 
-/* Small mobile - slightly smaller button */
+/* Small mobile - slightly smaller button, lower position */
 @media (max-width: 575.98px) {
   .bslib-sidebar-layout .bslib-sidebar-toggle,
   .sidebar .bslib-sidebar-toggle {
-    top: 7rem !important;
+    top: 8rem !important;
     width: 30px !important;
     height: 30px !important;
     min-width: 30px !important;
@@ -918,8 +914,9 @@
     border-radius: 6px !important;
   }
   
-  /* Right sidebar button */
-  .bslib-sidebar-layout:has(> .main:first-child) .bslib-sidebar-toggle {
+  /* Right sidebar button on small mobile */
+  .bslib-sidebar-layout[data-sidebar-position="right"] .bslib-sidebar-toggle,
+  .bslib-sidebar-layout.sidebar-right .bslib-sidebar-toggle {
     left: auto !important;
     right: 0.5rem !important;
   }
@@ -930,6 +927,11 @@
     height: 14px !important;
   }
 }
+
+/* =============================================================================
+   SIDEBAR POSITION DETECTION SCRIPT (injected via enable_sidebar)
+   Detects if sidebar is on left or right and adds data attribute
+============================================================================= */
 
 /* =============================================================================
    DARK MODE SUPPORT (if Quarto dark theme is used)

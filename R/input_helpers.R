@@ -19,10 +19,50 @@ enable_sidebar <- function() {
   # Add version parameter to bust cache
   version <- format(Sys.time(), "%Y%m%d%H%M%S")
   
+  # JavaScript to detect sidebar position (left vs right) and add data attribute
+  sidebar_position_script <- "
+(function() {
+  function detectSidebarPosition() {
+    var layouts = document.querySelectorAll('.bslib-sidebar-layout, [data-bslib-sidebar-layout]');
+    layouts.forEach(function(layout) {
+      var children = Array.from(layout.children);
+      var sidebar = layout.querySelector('.sidebar, aside');
+      var main = layout.querySelector('.main, main');
+      
+      if (sidebar && main) {
+        // If main comes before sidebar in DOM, it's a right sidebar
+        var sidebarIndex = children.indexOf(sidebar);
+        var mainIndex = children.indexOf(main);
+        
+        if (mainIndex < sidebarIndex || mainIndex === 0) {
+          layout.setAttribute('data-sidebar-position', 'right');
+          layout.classList.add('sidebar-right');
+        } else {
+          layout.setAttribute('data-sidebar-position', 'left');
+          layout.classList.add('sidebar-left');
+        }
+      }
+    });
+  }
+  
+  // Run on DOM ready and after short delay for dynamic content
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', detectSidebarPosition);
+  } else {
+    detectSidebarPosition();
+  }
+  setTimeout(detectSidebarPosition, 100);
+  setTimeout(detectSidebarPosition, 500);
+})();
+"
+  
   htmltools::tagList(
     htmltools::tags$link(
       rel = "stylesheet",
       href = paste0("assets/sidebar.css?v=", version)
+    ),
+    htmltools::tags$script(
+      htmltools::HTML(sidebar_position_script)
     )
   )
 }
