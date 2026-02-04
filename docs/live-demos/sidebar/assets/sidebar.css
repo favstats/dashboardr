@@ -832,9 +832,10 @@
   }
   
   /* =========== TOGGLE BUTTON - Floating, subtle =========== */
-  .bslib-sidebar-layout .bslib-sidebar-toggle,
-  .sidebar .bslib-sidebar-toggle,
-  [data-bslib-sidebar-layout] .bslib-sidebar-toggle {
+  /* Target the actual Quarto/bslib collapse-toggle button */
+  .bslib-sidebar-layout .collapse-toggle,
+  .bslib-sidebar-layout button.collapse-toggle,
+  [data-bslib-sidebar-layout] .collapse-toggle {
     position: fixed !important;
     top: 9rem !important;
     bottom: auto !important;
@@ -861,16 +862,15 @@
     right: auto !important;
   }
   
-  /* RIGHT sidebar: button on right - using data attribute set by JS */
-  .bslib-sidebar-layout[data-sidebar-position="right"] .bslib-sidebar-toggle,
-  .bslib-sidebar-layout.sidebar-right .bslib-sidebar-toggle {
+  /* RIGHT sidebar: button on right */
+  .bslib-sidebar-layout.sidebar-right .collapse-toggle,
+  .bslib-sidebar-layout[data-sidebar-position="right"] .collapse-toggle {
     left: auto !important;
     right: 0.75rem !important;
   }
   
   /* Hover: subtle lift effect */
-  .bslib-sidebar-layout .bslib-sidebar-toggle:hover,
-  .sidebar .bslib-sidebar-toggle:hover {
+  .bslib-sidebar-layout .collapse-toggle:hover {
     background-color: rgba(255, 255, 255, 1) !important;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12), 
                 0 2px 4px rgba(0, 0, 0, 0.06) !important;
@@ -879,14 +879,13 @@
   }
   
   /* Active: press effect */
-  .bslib-sidebar-layout .bslib-sidebar-toggle:active {
+  .bslib-sidebar-layout .collapse-toggle:active {
     transform: translateY(0) scale(0.97) !important;
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1) !important;
   }
   
   /* Icon styling */
-  .bslib-sidebar-layout .bslib-sidebar-toggle svg,
-  .sidebar .bslib-sidebar-toggle svg {
+  .bslib-sidebar-layout .collapse-toggle svg {
     width: 16px !important;
     height: 16px !important;
     fill: #444 !important;
@@ -895,16 +894,16 @@
     transition: transform 0.25s ease !important;
   }
   
-  /* Icon rotates when sidebar opens/closes */
-  .bslib-sidebar-layout.sidebar-collapsed .bslib-sidebar-toggle svg {
+  /* Icon rotates when sidebar closes */
+  .bslib-sidebar-layout.sidebar-collapsed .collapse-toggle svg,
+  .bslib-sidebar-layout[data-bslib-sidebar-open="false"] .collapse-toggle svg {
     transform: rotate(180deg) !important;
   }
 }
 
 /* Small mobile - slightly smaller button, lower position */
 @media (max-width: 575.98px) {
-  .bslib-sidebar-layout .bslib-sidebar-toggle,
-  .sidebar .bslib-sidebar-toggle {
+  .bslib-sidebar-layout .collapse-toggle {
     top: 8rem !important;
     width: 30px !important;
     height: 30px !important;
@@ -915,14 +914,13 @@
   }
   
   /* Right sidebar button on small mobile */
-  .bslib-sidebar-layout[data-sidebar-position="right"] .bslib-sidebar-toggle,
-  .bslib-sidebar-layout.sidebar-right .bslib-sidebar-toggle {
+  .bslib-sidebar-layout.sidebar-right .collapse-toggle,
+  .bslib-sidebar-layout[data-sidebar-position="right"] .collapse-toggle {
     left: auto !important;
     right: 0.5rem !important;
   }
   
-  .bslib-sidebar-layout .bslib-sidebar-toggle svg,
-  .sidebar .bslib-sidebar-toggle svg {
+  .bslib-sidebar-layout .collapse-toggle svg {
     width: 14px !important;
     height: 14px !important;
   }
