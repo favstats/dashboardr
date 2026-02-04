@@ -761,105 +761,76 @@
 }
 
 /* =============================================================================
-   MOBILE SIDEBAR - Full-screen overlay with smooth animations
+   FLOATING SIDEBAR TOGGLE FOR BSLIB/QUARTO (Mobile)
+   Smooth animations, button matches sidebar side, no extra space when collapsed
 ============================================================================= */
 
 @media (max-width: 991.98px) {
-  /* Base layout - relative for positioning context */
+  /* Base layout with smooth transitions */
   .bslib-sidebar-layout,
   [data-bslib-sidebar-layout] {
     position: relative !important;
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1) !important;
   }
   
-  /* -------------------------------------------------------------------------
-     SIDEBAR OPEN STATE - Full screen overlay
-  ------------------------------------------------------------------------- */
+  /* Sidebar with beautiful slide animation */
   .bslib-sidebar-layout > .sidebar,
   [data-bslib-sidebar-layout] > .sidebar {
-    position: fixed !important;
-    top: 0 !important;
-    left: 0 !important;
-    right: 0 !important;
-    bottom: 0 !important;
-    width: 100% !important;
-    max-width: 100% !important;
-    height: 100vh !important;
-    height: 100dvh !important;
-    z-index: 1050 !important;
-    background-color: var(--sidebar-bg, #ffffff) !important;
-    padding: 4rem 1.5rem 2rem 1.5rem !important;
-    overflow-y: auto !important;
-    overflow-x: hidden !important;
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 1rem !important;
-    /* Animation */
-    opacity: 1 !important;
+    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+                opacity 0.25s ease,
+                width 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+                padding 0.35s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    will-change: transform, opacity, width;
+  }
+  
+  /* When open: sidebar slides in beautifully */
+  .bslib-sidebar-layout:not(.sidebar-collapsed) > .sidebar,
+  .bslib-sidebar-layout[data-bslib-sidebar-open="true"] > .sidebar {
     transform: translateX(0) !important;
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-                opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    opacity: 1 !important;
   }
   
-  /* Right sidebar slides from right */
-  .bslib-sidebar-layout.sidebar-right > .sidebar,
-  .bslib-sidebar-layout[data-bslib-sidebar-position="right"] > .sidebar,
-  [data-bslib-sidebar-layout][data-bslib-sidebar-position="right"] > .sidebar {
-    left: 0 !important;
-    right: 0 !important;
-  }
-  
-  /* Nice content distribution in sidebar */
-  .bslib-sidebar-layout > .sidebar > *,
-  [data-bslib-sidebar-layout] > .sidebar > * {
-    flex-shrink: 0 !important;
-  }
-  
-  .bslib-sidebar-layout > .sidebar h3,
-  .bslib-sidebar-layout > .sidebar .h3 {
-    font-size: 1.25rem !important;
-    margin-bottom: 1.25rem !important;
-    padding-bottom: 0.75rem !important;
-    border-bottom: 1px solid var(--sidebar-border, rgba(0,0,0,0.08)) !important;
-  }
-  
-  .bslib-sidebar-layout > .sidebar .form-group,
-  .bslib-sidebar-layout > .sidebar .input-group {
-    margin-bottom: 1.5rem !important;
-  }
-  
-  /* -------------------------------------------------------------------------
-     SIDEBAR COLLAPSED STATE - Hidden with animation
-  ------------------------------------------------------------------------- */
+  /* When collapsed: slide out and hide completely */
   .bslib-sidebar-layout.sidebar-collapsed > .sidebar,
   .bslib-sidebar-layout[data-bslib-sidebar-open="false"] > .sidebar,
   [data-bslib-sidebar-layout][data-bslib-sidebar-open="false"] > .sidebar {
-    opacity: 0 !important;
     transform: translateX(-100%) !important;
+    opacity: 0 !important;
+    width: 0 !important;
+    min-width: 0 !important;
+    max-width: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border: none !important;
+    overflow: hidden !important;
     pointer-events: none !important;
-    visibility: hidden !important;
   }
   
-  /* Right sidebar slides out to right */
-  .bslib-sidebar-layout.sidebar-right.sidebar-collapsed > .sidebar,
-  .bslib-sidebar-layout.sidebar-right[data-bslib-sidebar-open="false"] > .sidebar,
-  .bslib-sidebar-layout[data-bslib-sidebar-position="right"].sidebar-collapsed > .sidebar,
-  .bslib-sidebar-layout[data-bslib-sidebar-position="right"][data-bslib-sidebar-open="false"] > .sidebar {
+  /* Right sidebar slides out to the right */
+  .bslib-sidebar-layout > .sidebar:last-child.sidebar-collapsed,
+  .bslib-sidebar-layout.sidebar-collapsed > .sidebar:last-child {
     transform: translateX(100%) !important;
   }
   
-  /* Main content - full width always on mobile */
+  /* Main content smooth transition */
   .bslib-sidebar-layout > .main,
   .bslib-sidebar-layout > main,
-  [data-bslib-sidebar-layout] > .main,
-  [data-bslib-sidebar-layout] > main {
+  [data-bslib-sidebar-layout] > .main {
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  }
+  
+  /* Main content fills width when collapsed */
+  .bslib-sidebar-layout.sidebar-collapsed > .main,
+  .bslib-sidebar-layout.sidebar-collapsed > main,
+  .bslib-sidebar-layout[data-bslib-sidebar-open="false"] > .main,
+  .bslib-sidebar-layout[data-bslib-sidebar-open="false"] > main {
     width: 100% !important;
     max-width: 100% !important;
+    flex: 1 1 100% !important;
     margin: 0 !important;
   }
   
-  /* -------------------------------------------------------------------------
-     TOGGLE BUTTON - Floating, positioned based on sidebar side
-  ------------------------------------------------------------------------- */
+  /* =========== TOGGLE BUTTON - Floating, subtle =========== */
   .bslib-sidebar-layout .bslib-sidebar-toggle,
   .sidebar .bslib-sidebar-toggle,
   [data-bslib-sidebar-layout] .bslib-sidebar-toggle {
@@ -867,56 +838,53 @@
     top: 7.5rem !important;
     bottom: auto !important;
     z-index: 1100 !important;
-    width: 36px !important;
-    height: 36px !important;
-    min-width: 36px !important;
-    min-height: 36px !important;
+    width: 34px !important;
+    height: 34px !important;
+    min-width: 34px !important;
+    min-height: 34px !important;
     border-radius: 8px !important;
-    background-color: rgba(255, 255, 255, 0.95) !important;
+    background-color: rgba(255, 255, 255, 0.92) !important;
     color: #555 !important;
-    border: 1px solid rgba(0, 0, 0, 0.1) !important;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+    border: 1px solid rgba(0, 0, 0, 0.08) !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08), 
+                0 1px 2px rgba(0, 0, 0, 0.04) !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
     cursor: pointer !important;
-    backdrop-filter: blur(10px) !important;
-    -webkit-backdrop-filter: blur(10px) !important;
-    /* Smooth animation */
-    transition: transform 0.2s ease,
-                box-shadow 0.2s ease,
-                background-color 0.2s ease !important;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    backdrop-filter: blur(12px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(12px) saturate(180%) !important;
   }
   
-  /* DEFAULT: Left sidebar = button on LEFT */
-  .bslib-sidebar-layout .bslib-sidebar-toggle,
-  .sidebar .bslib-sidebar-toggle,
-  [data-bslib-sidebar-layout] .bslib-sidebar-toggle {
+  /* DEFAULT: Button on LEFT (for left sidebar - sidebar is first child) */
+  .bslib-sidebar-layout .bslib-sidebar-toggle {
     left: 0.75rem !important;
     right: auto !important;
   }
   
-  /* RIGHT sidebar = button on RIGHT */
-  .bslib-sidebar-layout.sidebar-right .bslib-sidebar-toggle,
-  .bslib-sidebar-layout[data-bslib-sidebar-position="right"] .bslib-sidebar-toggle,
-  [data-bslib-sidebar-layout][data-bslib-sidebar-position="right"] .bslib-sidebar-toggle,
-  .sidebar-right .bslib-sidebar-toggle {
+  /* RIGHT sidebar detection: sidebar is the LAST child in the layout */
+  .bslib-sidebar-layout > .sidebar:last-child ~ .bslib-sidebar-toggle,
+  .bslib-sidebar-layout:has(> .sidebar:last-child) .bslib-sidebar-toggle,
+  .bslib-sidebar-layout:has(> .main:first-child) .bslib-sidebar-toggle {
     left: auto !important;
     right: 0.75rem !important;
   }
   
-  /* Hover effect */
+  /* Hover: subtle lift effect */
   .bslib-sidebar-layout .bslib-sidebar-toggle:hover,
   .sidebar .bslib-sidebar-toggle:hover {
-    background-color: #ffffff !important;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
-    transform: scale(1.05) !important;
+    background-color: rgba(255, 255, 255, 1) !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12), 
+                0 2px 4px rgba(0, 0, 0, 0.06) !important;
+    border-color: rgba(0, 0, 0, 0.12) !important;
+    transform: translateY(-1px) !important;
   }
   
-  /* Active/pressed effect */
-  .bslib-sidebar-layout .bslib-sidebar-toggle:active,
-  .sidebar .bslib-sidebar-toggle:active {
-    transform: scale(0.95) !important;
+  /* Active: press effect */
+  .bslib-sidebar-layout .bslib-sidebar-toggle:active {
+    transform: translateY(0) scale(0.97) !important;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1) !important;
   }
   
   /* Icon styling */
@@ -927,41 +895,30 @@
     fill: #444 !important;
     stroke: #444 !important;
     color: #444 !important;
-    transition: transform 0.2s ease !important;
+    transition: transform 0.25s ease !important;
   }
   
-  /* When sidebar is open, move button to top-right corner of overlay */
-  .bslib-sidebar-layout:not(.sidebar-collapsed) .bslib-sidebar-toggle,
-  .bslib-sidebar-layout[data-bslib-sidebar-open="true"] .bslib-sidebar-toggle,
-  .bslib-sidebar-layout:not([data-bslib-sidebar-open="false"]) .bslib-sidebar-toggle {
-    top: 1rem !important;
-    right: 1rem !important;
-    left: auto !important;
+  /* Icon rotates when sidebar opens/closes */
+  .bslib-sidebar-layout.sidebar-collapsed .bslib-sidebar-toggle svg {
+    transform: rotate(180deg) !important;
   }
 }
 
-/* -------------------------------------------------------------------------
-   Small mobile adjustments
-------------------------------------------------------------------------- */
+/* Small mobile - slightly smaller button */
 @media (max-width: 575.98px) {
-  .bslib-sidebar-layout > .sidebar,
-  [data-bslib-sidebar-layout] > .sidebar {
-    padding: 3.5rem 1rem 1.5rem 1rem !important;
-  }
-  
   .bslib-sidebar-layout .bslib-sidebar-toggle,
   .sidebar .bslib-sidebar-toggle {
     top: 7rem !important;
-    width: 32px !important;
-    height: 32px !important;
-    min-width: 32px !important;
-    min-height: 32px !important;
+    width: 30px !important;
+    height: 30px !important;
+    min-width: 30px !important;
+    min-height: 30px !important;
     left: 0.5rem !important;
     border-radius: 6px !important;
   }
   
-  .bslib-sidebar-layout.sidebar-right .bslib-sidebar-toggle,
-  .bslib-sidebar-layout[data-bslib-sidebar-position="right"] .bslib-sidebar-toggle {
+  /* Right sidebar button */
+  .bslib-sidebar-layout:has(> .main:first-child) .bslib-sidebar-toggle {
     left: auto !important;
     right: 0.5rem !important;
   }
@@ -970,13 +927,6 @@
   .sidebar .bslib-sidebar-toggle svg {
     width: 14px !important;
     height: 14px !important;
-  }
-  
-  /* Open state button position */
-  .bslib-sidebar-layout:not(.sidebar-collapsed) .bslib-sidebar-toggle,
-  .bslib-sidebar-layout[data-bslib-sidebar-open="true"] .bslib-sidebar-toggle {
-    top: 0.75rem !important;
-    right: 0.75rem !important;
   }
 }
 
