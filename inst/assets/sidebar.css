@@ -837,7 +837,7 @@
   .bslib-sidebar-layout button.collapse-toggle,
   [data-bslib-sidebar-layout] .collapse-toggle {
     position: fixed !important;
-    top: 9rem !important;
+    top: 7.5rem !important;
     bottom: auto !important;
     z-index: 1100 !important;
     width: 34px !important;
@@ -857,7 +857,15 @@
     transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
     backdrop-filter: blur(12px) saturate(180%) !important;
     -webkit-backdrop-filter: blur(12px) saturate(180%) !important;
-    /* Default: LEFT position */
+    /* Default: LEFT position (for left sidebar) */
+    left: 0.75rem !important;
+    right: auto !important;
+  }
+  
+  /* LEFT sidebar: explicitly keep button on left (including when collapsed) */
+  .bslib-sidebar-layout:not(.sidebar-right) .collapse-toggle,
+  .bslib-sidebar-layout.sidebar-left .collapse-toggle,
+  .bslib-sidebar-layout[data-sidebar-position="left"] .collapse-toggle {
     left: 0.75rem !important;
     right: auto !important;
   }
@@ -901,16 +909,22 @@
   }
 }
 
-/* Small mobile - slightly smaller button, lower position */
+/* Small mobile - slightly smaller button */
 @media (max-width: 575.98px) {
   .bslib-sidebar-layout .collapse-toggle {
-    top: 8rem !important;
+    top: 7rem !important;
     width: 30px !important;
     height: 30px !important;
     min-width: 30px !important;
     min-height: 30px !important;
-    left: 0.5rem !important;
     border-radius: 6px !important;
+  }
+  
+  /* Left sidebar button on small mobile - keep on left */
+  .bslib-sidebar-layout:not(.sidebar-right) .collapse-toggle,
+  .bslib-sidebar-layout.sidebar-left .collapse-toggle {
+    left: 0.5rem !important;
+    right: auto !important;
   }
   
   /* Right sidebar button on small mobile */
