@@ -68,14 +68,11 @@ if (!success) {
 # Step 3: Run demos
 if (!skip_demos) {
   success <- run_step("Running demos", {
-    # Find demo files
-    demo_dir <- file.path("docs", "demos")
-    if (dir.exists(demo_dir)) {
-      demo_files <- list.files(demo_dir, pattern = "\\.R$", full.names = TRUE)
-      for (demo_file in demo_files) {
-        cli::cli_alert_info("Running {basename(demo_file)}")
-        source(demo_file, local = new.env())
-      }
+    demo_script <- file.path("pkgdown", "build-all-demos.R")
+    if (file.exists(demo_script)) {
+      source(demo_script, local = new.env())
+    } else {
+      cli::cli_alert_warning("Demo script not found: {demo_script}")
     }
     TRUE
   })
