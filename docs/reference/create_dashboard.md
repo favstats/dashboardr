@@ -94,7 +94,8 @@ create_dashboard(
   lazy_load_tabs = NULL,
   lazy_debug = FALSE,
   pagination_separator = "of",
-  pagination_position = "bottom"
+  pagination_position = "bottom",
+  powered_by_dashboardr = TRUE
 )
 ```
 
@@ -431,6 +432,13 @@ create_dashboard(
   bottom), "top" (inline with page title), or "both" (top and bottom).
   This sets the default for all paginated pages. Individual pages can
   override this by passing position to add_pagination().
+
+- powered_by_dashboardr:
+
+  Whether to automatically add "Powered by dashboardr" branding
+  (default: TRUE). When TRUE, adds a badge-style branding element. Can
+  be overridden by explicitly calling add_powered_by_dashboardr() with
+  custom options, or set to FALSE to disable entirely.
 
 ## Value
 

@@ -7,7 +7,7 @@ with .modal-link class to trigger the modal.
 
 ``` r
 add_modal(
-  content_collection,
+  x,
   modal_id,
   title = NULL,
   modal_content = NULL,
@@ -18,10 +18,6 @@ add_modal(
 ```
 
 ## Arguments
-
-- content_collection:
-
-  A content_collection or viz_collection to add modal to
 
 - modal_id:
 
@@ -47,6 +43,10 @@ add_modal(
 - ...:
 
   Additional content (data.frames will be converted to tables)
+
+- content_collection:
+
+  A content_collection or viz_collection to add modal to
 
 ## Value
 
@@ -84,6 +84,15 @@ content <- create_content() %>%
     modal_id = "data",
     title = "Raw Data",
     modal_content = head(mtcars, 10)
+  )
+
+# Works with page objects too
+page <- create_page("Results", data = my_data, type = "bar") %>%
+  add_text("[View details](#info){.modal-link}") %>%
+  add_modal(
+    modal_id = "info",
+    title = "More Info",
+    modal_content = "Additional details..."
   )
 } # }
 ```

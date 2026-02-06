@@ -5,7 +5,7 @@ Show custom progress message
 ## Usage
 
 ``` r
-.progress_msg(msg, icon = "▪", show_progress = TRUE)
+.progress_msg(msg, icon = "<U+25AA>", show_progress = TRUE)
 ```
 
 ## Arguments

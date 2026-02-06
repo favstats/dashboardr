@@ -173,7 +173,7 @@ test_that("add_content requires a page_object", {
 
 test_that("add_content requires a content collection", {
   page <- create_page("Test")
-  expect_error(add_content(page, "not content"), "'content' must be a content collection")
+  expect_error(add_content(page, "not content"), "must be a content collection")
 })
 
 test_that("add_pages adds pages to a dashboard", {

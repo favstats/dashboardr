@@ -170,7 +170,7 @@ Functions for creating and managing dashboards
 - [`create_page()`](https://favstats.github.io/dashboardr/reference/create_page.md)
   : Create a page object
 - [`add_content()`](https://favstats.github.io/dashboardr/reference/add_content.md)
-  : Add content collection to a page
+  : Add content collection(s) to a page
 - [`generate_dashboard()`](https://favstats.github.io/dashboardr/reference/generate_dashboard.md)
   : Generate all dashboard files
 - [`generate_dashboards()`](https://favstats.github.io/dashboardr/reference/generate_dashboards.md)

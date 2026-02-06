@@ -28,7 +28,7 @@ the piping workflow with add_landingpage() and add_page()."><meta property="og:i
 
     <a class="navbar-brand me-2" href="../index.html">dashboardr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -191,7 +191,8 @@ the piping workflow with add_landingpage() and add_page().</p>
 <span>  lazy_load_tabs <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  lazy_debug <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  pagination_separator <span class="op">=</span> <span class="st">"of"</span>,</span>
-<span>  pagination_position <span class="op">=</span> <span class="st">"bottom"</span></span>
+<span>  pagination_position <span class="op">=</span> <span class="st">"bottom"</span>,</span>
+<span>  powered_by_dashboardr <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -506,6 +507,10 @@ horizontal scrolling issues on mobile.</p></dd>
 
 <dt id="arg-pagination-position">pagination_position<a class="anchor" aria-label="anchor" href="#arg-pagination-position"></a></dt>
 <dd><p>Default position for pagination controls: "bottom" (default, sticky at bottom), "top" (inline with page title), or "both" (top and bottom). This sets the default for all paginated pages. Individual pages can override this by passing position to add_pagination().</p></dd>
+
+
+<dt id="arg-powered-by-dashboardr">powered_by_dashboardr<a class="anchor" aria-label="anchor" href="#arg-powered-by-dashboardr"></a></dt>
+<dd><p>Whether to automatically add "Powered by dashboardr" branding (default: TRUE). When TRUE, adds a badge-style branding element. Can be overridden by explicitly calling add_powered_by_dashboardr() with custom options, or set to FALSE to disable entirely.</p></dd>
 
 </dl></div>
     <div class="section level2">

@@ -1,6 +1,32 @@
 # Changelog
 
-## dashboardr (development version)
+## dashboardr 0.2.0
+
+### Bug Fixes
+
+#### Pagination Fix
+
+- **Fixed
+  [`add_pagination()`](https://favstats.github.io/dashboardr/reference/add_pagination.md)
+  duplicating content across all pages**: When using the `+` operator to
+  add visualizations to a page, the `viz_embedded_in_content` flag
+  caused `.generate_default_page_content()` to use the original full
+  `content_blocks` instead of the correctly-split paginated
+  `visualizations`. Each paginated page now correctly contains only its
+  designated content section.
+
+#### Tabgroup Improvements
+
+- **Fixed `shared_first_level` behavior for nested tabgroups**: The
+  `shared_first_level` feature (which wraps multiple top-level tabgroups
+  into a single shared tabset) is now automatically disabled when any of
+  the top-level tabgroups contain nested children. This prevents
+  redundant wrapper tabsets when using deeply nested tabgroup structures
+  like `category/wave/breakdown`.
+
+------------------------------------------------------------------------
+
+## dashboardr 0.1.0
 
 ### Unified Stacked Bar Chart Function
 

@@ -14,7 +14,7 @@ viz_timeline(
   y_var,
   group_var = NULL,
   agg = c("percentage", "mean", "sum", "none"),
-  chart_type = "stacked_area",
+  chart_type = "line",
   title = NULL,
   subtitle = NULL,
   x_label = NULL,
@@ -80,7 +80,7 @@ viz_timeline(
 
 - chart_type:
 
-  Character string. Type of chart: "stacked_area" or "line".
+  Character string. Type of chart: "line" (default) or "stacked_area".
 
 - title:
 

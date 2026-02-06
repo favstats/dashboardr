@@ -118,7 +118,7 @@ A `highcharter` density plot object.
 ``` r
 # Basic density plot
 data(gss_panel20)
-#> Warning: data set ‘gss_panel20’ not found
+#> Warning: data set 'gss_panel20' not found
 
 # Example 1: Simple density of age
 plot1 <- viz_density(

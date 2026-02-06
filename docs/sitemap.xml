@@ -152,6 +152,7 @@
 <url><loc>https://favstats.github.io/dashboardr/reference/dot-check_for_icons.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/dot-convert_haven.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/dot-create_pagination_nav_html.html</loc></url>
+<url><loc>https://favstats.github.io/dashboardr/reference/dot-embed_cross_tab.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/dot-extract_all_insertion_indices.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/dot-extract_filter_vars.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/dot-generate_DT_block.html</loc></url>
@@ -174,6 +175,7 @@
 <url><loc>https://favstats.github.io/dashboardr/reference/dot-generate_input_row_block.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/dot-generate_lazy_load_script.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/dot-generate_metric_block.html</loc></url>
+<url><loc>https://favstats.github.io/dashboardr/reference/dot-generate_modal_block.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/dot-generate_number_html.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/dot-generate_paginated_page_files.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/dot-generate_pagination_nav.html</loc></url>

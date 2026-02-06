@@ -26,7 +26,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">dashboardr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -94,9 +94,25 @@
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="development version" id="dashboardr-development-version">dashboardr (development version)<a class="anchor" aria-label="anchor" href="#dashboardr-development-version"></a></h2>
+<h2 class="pkg-version" data-toc-text="0.2.0" id="dashboardr-020">dashboardr 0.2.0<a class="anchor" aria-label="anchor" href="#dashboardr-020"></a></h2>
 <div class="section level3">
-<h3 id="unified-stacked-bar-chart-function-development-version">Unified Stacked Bar Chart Function<a class="anchor" aria-label="anchor" href="#unified-stacked-bar-chart-function-development-version"></a></h3>
+<h3 id="bug-fixes-0-2-0">Bug Fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-2-0"></a></h3>
+<div class="section level4">
+<h4 id="pagination-fix-0-2-0">Pagination Fix<a class="anchor" aria-label="anchor" href="#pagination-fix-0-2-0"></a></h4>
+<ul><li>
+<strong>Fixed <code><a href="../reference/add_pagination.html">add_pagination()</a></code> duplicating content across all pages</strong>: When using the <code>+</code> operator to add visualizations to a page, the <code>viz_embedded_in_content</code> flag caused <code>.generate_default_page_content()</code> to use the original full <code>content_blocks</code> instead of the correctly-split paginated <code>visualizations</code>. Each paginated page now correctly contains only its designated content section.</li>
+</ul></div>
+<div class="section level4">
+<h4 id="tabgroup-improvements-0-2-0">Tabgroup Improvements<a class="anchor" aria-label="anchor" href="#tabgroup-improvements-0-2-0"></a></h4>
+<ul><li>
+<strong>Fixed <code>shared_first_level</code> behavior for nested tabgroups</strong>: The <code>shared_first_level</code> feature (which wraps multiple top-level tabgroups into a single shared tabset) is now automatically disabled when any of the top-level tabgroups contain nested children. This prevents redundant wrapper tabsets when using deeply nested tabgroup structures like <code>category/wave/breakdown</code>.</li>
+</ul><hr></div>
+</div>
+</div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.1.0" id="dashboardr-010">dashboardr 0.1.0<a class="anchor" aria-label="anchor" href="#dashboardr-010"></a></h2>
+<div class="section level3">
+<h3 id="unified-stacked-bar-chart-function-0-1-0">Unified Stacked Bar Chart Function<a class="anchor" aria-label="anchor" href="#unified-stacked-bar-chart-function-0-1-0"></a></h3>
 <p><code><a href="../reference/viz_stackedbar.html">viz_stackedbar()</a></code> is now a unified function that supports <strong>two modes</strong>:</p>
 <p><strong>Mode 1: Grouped/Crosstab</strong> (use <code>x_var</code> + <code>stack_var</code>)</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
@@ -117,9 +133,9 @@
 <p>The <code><a href="../reference/viz_stackedbars.html">viz_stackedbars()</a></code> function is soft-deprecated and will continue to work, but we recommend using <code><a href="../reference/viz_stackedbar.html">viz_stackedbar()</a></code> for all new code.</p>
 </div>
 <div class="section level3">
-<h3 id="breaking-changes-development-version">Breaking Changes<a class="anchor" aria-label="anchor" href="#breaking-changes-development-version"></a></h3>
+<h3 id="breaking-changes-0-1-0">Breaking Changes<a class="anchor" aria-label="anchor" href="#breaking-changes-0-1-0"></a></h3>
 <div class="section level4">
-<h4 id="visualization-function-renaming-development-version">Visualization Function Renaming<a class="anchor" aria-label="anchor" href="#visualization-function-renaming-development-version"></a></h4>
+<h4 id="visualization-function-renaming-0-1-0">Visualization Function Renaming<a class="anchor" aria-label="anchor" href="#visualization-function-renaming-0-1-0"></a></h4>
 <p>All <code>create_*</code> visualization functions have been renamed to <code>viz_*</code> for clarity and to distinguish them from dashboard-level creation functions:</p>
 <table class="table"><thead><tr><th>Old Name</th>
 <th>New Name</th>
@@ -145,7 +161,7 @@
 <p><strong>Migration:</strong> Simply replace <code>create_</code> with <code>viz_</code> in your code.</p>
 </div>
 <div class="section level4">
-<h4 id="timeline-parameter-renaming-development-version">Timeline Parameter Renaming<a class="anchor" aria-label="anchor" href="#timeline-parameter-renaming-development-version"></a></h4>
+<h4 id="timeline-parameter-renaming-0-1-0">Timeline Parameter Renaming<a class="anchor" aria-label="anchor" href="#timeline-parameter-renaming-0-1-0"></a></h4>
 <p>Timeline chart parameters have been renamed for consistency with other visualization types:</p>
 <table class="table"><thead><tr><th>Old Name</th>
 <th>New Name</th>
@@ -166,9 +182,9 @@
 </tr></tbody></table></div>
 </div>
 <div class="section level3">
-<h3 id="new-features-development-version">New Features<a class="anchor" aria-label="anchor" href="#new-features-development-version"></a></h3>
+<h3 id="new-features-0-1-0">New Features<a class="anchor" aria-label="anchor" href="#new-features-0-1-0"></a></h3>
 <div class="section level4">
-<h4 id="error-bars-support-in-bar-charts-development-version">Error Bars Support in Bar Charts<a class="anchor" aria-label="anchor" href="#error-bars-support-in-bar-charts-development-version"></a></h4>
+<h4 id="error-bars-support-in-bar-charts-0-1-0">Error Bars Support in Bar Charts<a class="anchor" aria-label="anchor" href="#error-bars-support-in-bar-charts-0-1-0"></a></h4>
 <p><code><a href="../reference/viz_bar.html">viz_bar()</a></code> now supports error bars for displaying uncertainty in mean values:</p>
 <ul><li>New <code>value_var</code> parameter: When provided, bars show the mean of this variable per category (instead of counts)</li>
 <li>New <code>error_bars</code> parameter: Choose from “none” (default), “sd” (standard deviation), “se” (standard error), or “ci” (confidence interval)</li>
@@ -196,7 +212,7 @@
 <span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level4">
-<h4 id="early-validation-for-visualizations-development-version">Early Validation for Visualizations<a class="anchor" aria-label="anchor" href="#early-validation-for-visualizations-development-version"></a></h4>
+<h4 id="early-validation-for-visualizations-0-1-0">Early Validation for Visualizations<a class="anchor" aria-label="anchor" href="#early-validation-for-visualizations-0-1-0"></a></h4>
 <ul><li>
 <code><a href="../reference/preview.html">preview()</a></code> now automatically validates all visualization specs before rendering, catching missing required parameters (like <code>stack_var</code> for stacked bar charts) and invalid column names early with helpful error messages</li>
 <li>New <code><a href="../reference/validate_specs.html">validate_specs()</a></code> function for manual validation of content collections</li>
@@ -204,27 +220,27 @@
 <code>print(collection, check = TRUE)</code> validates specs while viewing the structure</li>
 </ul></div>
 <div class="section level4">
-<h4 id="new-visualization-types-development-version">New Visualization Types<a class="anchor" aria-label="anchor" href="#new-visualization-types-development-version"></a></h4>
+<h4 id="new-visualization-types-0-1-0">New Visualization Types<a class="anchor" aria-label="anchor" href="#new-visualization-types-0-1-0"></a></h4>
 <ul><li>
 <code><a href="../reference/viz_density.html">viz_density()</a></code>: Create kernel density estimate plots for visualizing continuous distributions. Supports grouped densities, adjustable bandwidth, rug marks, and weighted estimation.</li>
 <li>
 <code><a href="../reference/viz_boxplot.html">viz_boxplot()</a></code>: Create interactive box-and-whisker plots. Supports grouped boxplots, horizontal orientation, outlier display, and weighted percentiles.</li>
 </ul></div>
 <div class="section level4">
-<h4 id="histogram-improvements-development-version">Histogram Improvements<a class="anchor" aria-label="anchor" href="#histogram-improvements-development-version"></a></h4>
+<h4 id="histogram-improvements-0-1-0">Histogram Improvements<a class="anchor" aria-label="anchor" href="#histogram-improvements-0-1-0"></a></h4>
 <ul><li>Fixed handling of character-numeric values (e.g., “25”, “30”) - now correctly converted to numeric for binning</li>
 <li>Improved default bin labels to show readable ranges (e.g., “18-29” instead of “[18,30)”)</li>
 <li>Added <code>data_labels_enabled</code> parameter to control display of value labels on bars</li>
 </ul></div>
 <div class="section level4">
-<h4 id="data-labels-control-development-version">Data Labels Control<a class="anchor" aria-label="anchor" href="#data-labels-control-development-version"></a></h4>
+<h4 id="data-labels-control-0-1-0">Data Labels Control<a class="anchor" aria-label="anchor" href="#data-labels-control-0-1-0"></a></h4>
 <ul><li>Added <code>data_labels_enabled</code> parameter to <code><a href="../reference/viz_histogram.html">viz_histogram()</a></code>, <code><a href="../reference/viz_bar.html">viz_bar()</a></code>, <code><a href="../reference/viz_stackedbar.html">viz_stackedbar()</a></code>, and <code><a href="../reference/viz_stackedbars.html">viz_stackedbars()</a></code> - allows hiding value labels on bars for cleaner visualizations</li>
 <li>Renamed <code>show_labels</code> to <code>data_labels_enabled</code> in <code><a href="../reference/viz_treemap.html">viz_treemap()</a></code> for consistency (old parameter still works with deprecation warning)</li>
 <li>
 <code><a href="../reference/viz_heatmap.html">viz_heatmap()</a></code> already had <code>data_labels_enabled</code> - now all viz functions use the same parameter name</li>
 </ul></div>
 <div class="section level4">
-<h4 id="documentation-development-version">Documentation<a class="anchor" aria-label="anchor" href="#documentation-development-version"></a></h4>
+<h4 id="documentation-0-1-0">Documentation<a class="anchor" aria-label="anchor" href="#documentation-0-1-0"></a></h4>
 <ul><li>Added new visualization vignettes: <code>density_vignette</code>, <code>boxplot_vignette</code>, <code>histogram_vignette</code>, <code>scatter_vignette</code>, <code>treemap_vignette</code>, <code>map_vignette</code>
 </li>
 <li>Interactive inputs demo and documentation in <code><a href="../articles/advanced-features.html">vignette("advanced-features")</a></code>
@@ -233,7 +249,7 @@
 </ul></div>
 </div>
 <div class="section level3">
-<h3 id="bug-fixes-development-version">Bug Fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-development-version"></a></h3>
+<h3 id="bug-fixes-0-1-0">Bug Fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-1-0"></a></h3>
 <ul><li>Fixed Unicode/emoji rendering issues in console output</li>
 <li>Fixed nested tabgroup rendering in <code><a href="../reference/preview.html">preview()</a></code>
 </li>

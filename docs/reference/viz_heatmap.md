@@ -275,7 +275,7 @@ This function performs the following steps:
 ``` r
 # Load the dataset
 data(gss_panel20)
-#> Warning: data set ‘gss_panel20’ not found
+#> Warning: data set 'gss_panel20' not found
 
 # Example 1: Basic heatmap – no mapped values or other customization
 viz_heatmap(

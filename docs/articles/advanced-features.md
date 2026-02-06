@@ -89,13 +89,13 @@ filtered <- create_content(data = gss, type = "bar") %>%
   add_viz(x_var = "happy", title = "Female", filter = ~ sex == "female", tabgroup = "Female")
 
 print(filtered)
-#> -- Content Collection ──────────────────────────────────────────────────────────
-#> 2 items | ✔ data: 2997 rows x 8 cols
+#> -- Content Collection ----------------------------------------------------------
+#> 2 items | v data: 2997 rows x 8 cols
 #> 
-#> ❯ [Tab] Male (1 viz)
-#>   • [Viz] Male (bar) x=happy +filter
-#> ❯ [Tab] Female (1 viz)
-#>   • [Viz] Female (bar) x=happy +filter
+#> > [Tab] Male (1 viz)
+#>   * [Viz] Male (bar) x=happy +filter
+#> > [Tab] Female (1 viz)
+#>   * [Viz] Female (bar) x=happy +filter
 ```
 
 ``` r
@@ -132,15 +132,15 @@ complex <- create_content(data = gss, type = "bar") %>%
           filter = ~ age > 55, tabgroup = "Olders")
 
 print(complex)
-#> -- Content Collection ──────────────────────────────────────────────────────────
-#> 3 items | ✔ data: 2997 rows x 8 cols
+#> -- Content Collection ----------------------------------------------------------
+#> 3 items | v data: 2997 rows x 8 cols
 #> 
-#> ❯ [Tab] Youngsters (1 viz)
-#>   • [Viz] Young Adults (18-35) (bar) x=happy +filter
-#> ❯ [Tab] Middlers (1 viz)
-#>   • [Viz] Middle Age (36-55) (bar) x=happy +filter
-#> ❯ [Tab] Olders (1 viz)
-#>   • [Viz] Older Adults (55+) (bar) x=happy +filter
+#> > [Tab] Youngsters (1 viz)
+#>   * [Viz] Young Adults (18-35) (bar) x=happy +filter
+#> > [Tab] Middlers (1 viz)
+#>   * [Viz] Middle Age (36-55) (bar) x=happy +filter
+#> > [Tab] Olders (1 viz)
+#>   * [Viz] Older Adults (55+) (bar) x=happy +filter
 ```
 
 ``` r
@@ -220,15 +220,15 @@ gender_comparison <- create_content(data = gss, type = "bar") %>%
           filter = ~ sex == "female", title_tabset = "Female", tabgroup = "education")
 
 print(gender_comparison)
-#> -- Content Collection ──────────────────────────────────────────────────────────
-#> 4 items | ✔ data: 2997 rows x 8 cols
+#> -- Content Collection ----------------------------------------------------------
+#> 4 items | v data: 2997 rows x 8 cols
 #> 
-#> ❯ [Tab] happiness (2 vizs)
-#>   • [Viz] Happiness (bar) x=happy +filter
-#>   • [Viz] Happiness (bar) x=happy +filter
-#> ❯ [Tab] education (2 vizs)
-#>   • [Viz] Education (bar) x=degree +filter
-#>   • [Viz] Education (bar) x=degree +filter
+#> > [Tab] happiness (2 vizs)
+#>   * [Viz] Happiness (bar) x=happy +filter
+#>   * [Viz] Happiness (bar) x=happy +filter
+#> > [Tab] education (2 vizs)
+#>   * [Viz] Education (bar) x=degree +filter
+#>   * [Viz] Education (bar) x=degree +filter
 ```
 
 ``` r
@@ -291,14 +291,14 @@ batch <- create_content(data = gss, type = "bar") %>%
   add_vizzes(x_var = vars, title = labels, tabgroup = "survey")
 
 print(batch)
-#> -- Content Collection ──────────────────────────────────────────────────────────
-#> 4 items | ✔ data: 2997 rows x 8 cols
+#> -- Content Collection ----------------------------------------------------------
+#> 4 items | v data: 2997 rows x 8 cols
 #> 
-#> ❯ [Tab] survey (4 vizs)
-#>   • [Viz] Education (bar) x=degree
-#>   • [Viz] Race (bar) x=race
-#>   • [Viz] Happiness (bar) x=happy
-#>   • [Viz] Politics (bar) x=polviews
+#> > [Tab] survey (4 vizs)
+#>   * [Viz] Education (bar) x=degree
+#>   * [Viz] Race (bar) x=race
+#>   * [Viz] Happiness (bar) x=happy
+#>   * [Viz] Politics (bar) x=polviews
 ```
 
 ``` r
@@ -869,13 +869,13 @@ weighted_collection <- create_content(data = gss, type = "bar", weight_var = "wt
   add_viz(x_var = "happy", title = "Happiness", tabgroup = "weighted")
 
 print(weighted_collection)
-#> -- Content Collection ──────────────────────────────────────────────────────────
-#> 3 items | ✔ data: 2997 rows x 8 cols
+#> -- Content Collection ----------------------------------------------------------
+#> 3 items | v data: 2997 rows x 8 cols
 #> 
-#> ❯ [Tab] weighted (3 vizs)
-#>   • [Viz] Education (bar) x=degree
-#>   • [Viz] Race (bar) x=race
-#>   • [Viz] Happiness (bar) x=happy
+#> > [Tab] weighted (3 vizs)
+#>   * [Viz] Education (bar) x=degree
+#>   * [Viz] Race (bar) x=race
+#>   * [Viz] Happiness (bar) x=happy
 ```
 
 ``` r
@@ -1059,6 +1059,209 @@ create_page("Analysis", icon = "bi:graph-up")     # Different set
 create_page("About", icon = "mdi:information")    # Another set
 ```
 
+## 🪟 Modals
+
+Modals are popup overlays that display additional content without
+navigating away from the current page. They’re perfect for showing
+detailed explanations, images, data tables, or supplementary information
+that users can access on demand.
+
+### Why Use Modals?
+
+- **Contextual information**: Show detailed explanations for chart
+  elements without cluttering the main view
+- **Image galleries**: Display full-size images when users click on
+  thumbnails
+- **Data tables**: Show raw data or methodology details on demand
+- **Progressive disclosure**: Keep the main page clean while making
+  details available
+
+### Basic Modal Usage
+
+Creating a modal requires two parts: 1. A **trigger link** that users
+click 2. The **modal content** that appears in the popup
+
+Use
+[`add_modal()`](https://favstats.github.io/dashboardr/reference/add_modal.md)
+in your content pipeline, then reference it with a markdown link:
+
+``` r
+content <- create_content() %>%
+  add_text(
+    "## Survey Results",
+    "",
+    "The response rate was 78%. [View methodology](#methodology){.modal-link}"
+  ) %>%
+  add_modal(
+    modal_id = "methodology",
+    title = "Survey Methodology",
+    modal_content = "Data was collected via online questionnaire from March 1-15, 2024. 
+                     The sample was weighted to match national demographics."
+  )
+```
+
+The `{.modal-link}` class on the markdown link tells dashboardr to open
+the content as a modal instead of navigating to a new page.
+
+### Modal with Image
+
+Show images in a modal - great for displaying full-size charts,
+diagrams, or photos:
+
+``` r
+content <- create_content() %>%
+  add_text("[View the survey question](#question-img){.modal-link}") %>%
+  add_modal(
+    modal_id = "question-img",
+    title = "Question Wording",
+    image = "question_screenshot.png",
+    image_width = "80%",  # Control the image size
+    modal_content = "Respondents were shown this question as part of the survey."
+  )
+```
+
+### Modal with Data Table
+
+Pass a data.frame directly and it will be automatically converted to an
+HTML table:
+
+``` r
+# Show summary statistics in a modal
+summary_data <- data.frame(
+  Metric = c("Mean", "Median", "SD", "N"),
+  Value = c(3.42, 3.5, 1.23, 1247)
+)
+
+content <- create_content() %>%
+  add_text("[View summary statistics](#stats){.modal-link}") %>%
+  add_modal(
+    modal_id = "stats",
+    title = "Summary Statistics",
+    modal_content = summary_data
+  )
+```
+
+### Modal Parameters
+
+| Parameter | Description | Example |
+|----|----|----|
+| `modal_id` | Unique identifier (used in link) | `"details"`, `"chart-info"` |
+| `title` | Heading displayed at top of modal | `"More Information"` |
+| `modal_content` | Text, HTML, or data.frame | `"Description..."` or `my_df` |
+| `image` | Path or URL to an image | `"images/chart.png"` |
+| `image_width` | Width of the image | `"100%"`, `"70%"`, `"500px"` |
+
+### Multiple Modals on One Page
+
+You can add as many modals as needed - just ensure each has a unique
+`modal_id`:
+
+``` r
+content <- create_content() %>%
+  add_text(
+    "## Results Overview",
+    "",
+    "- Demographics: [see details](#demo-modal){.modal-link}",
+    "- Methodology: [see details](#method-modal){.modal-link}",
+    "- Limitations: [see details](#limits-modal){.modal-link}"
+  ) %>%
+  add_modal(
+    modal_id = "demo-modal",
+    title = "Demographics",
+    modal_content = "Sample was 52% female, median age 42..."
+  ) %>%
+  add_modal(
+    modal_id = "method-modal", 
+    title = "Methodology",
+    modal_content = "Online panel survey conducted..."
+  ) %>%
+  add_modal(
+    modal_id = "limits-modal",
+    title = "Limitations",
+    modal_content = "This study has several limitations..."
+  )
+```
+
+### Complete Example
+
+Here’s a full example showing modals used with visualizations:
+
+``` r
+library(dashboardr)
+library(dplyr)
+
+# Create page with charts and modals for additional context
+results_page <- create_page("Results", data = gss, type = "bar") %>%
+  add_text(
+    "## Survey Results",
+    "",
+    "These charts show key findings from our analysis.",
+    "[Learn about our methodology](#methodology){.modal-link}"
+  ) %>%
+  add_viz(
+    x_var = "happy",
+    title = "Happiness Distribution",
+    tabgroup = "findings"
+  ) %>%
+  add_text(
+    "",
+    "[View the original survey question](#question){.modal-link}"
+  ) %>%
+  add_modal(
+    modal_id = "methodology",
+    title = "Survey Methodology",
+    modal_content = "<p>Data from the General Social Survey (GSS), a nationally 
+                     representative survey of US adults conducted since 1972.</p>
+                     <p>Weights were applied to adjust for sampling design.</p>"
+  ) %>%
+  add_modal(
+    modal_id = "question",
+    title = "Survey Question",
+    image = "happiness_question.png",
+    image_width = "70%",
+    modal_content = "Respondents were asked: 'Taken all together, how would you 
+                     say things are these days - would you say that you are very happy, 
+                     pretty happy, or not too happy?'"
+  )
+
+# Generate the dashboard
+create_dashboard(title = "GSS Analysis", output_dir = "gss_modals") %>%
+  add_page(results_page) %>%
+  generate_dashboard(render = TRUE)
+```
+
+### Low-Level Modal Functions
+
+For more control, you can use the underlying helper functions directly:
+
+- [`enable_modals()`](https://favstats.github.io/dashboardr/reference/enable_modals.md) -
+  Adds the CSS/JS for modal functionality
+- `modal_link(text, modal_id)` - Creates a clickable link
+- `modal_content(modal_id, ...)` - Creates the modal container
+
+``` r
+# Using low-level functions (rarely needed)
+library(htmltools)
+
+# In a Quarto/R Markdown document:
+enable_modals()
+
+# Create a link
+modal_link("Click for details", "my-modal", class = "btn btn-primary")
+
+# Create the modal content
+modal_content(
+  modal_id = "my-modal",
+  title = "Details",
+  image = "chart.png",
+  text = "This chart shows..."
+)
+```
+
+Most users should stick with
+[`add_modal()`](https://favstats.github.io/dashboardr/reference/add_modal.md)
+in their pipelines for a cleaner workflow.
+
 ## 🧭 Navbar Customization
 
 The navbar is the main navigation bar at the top of your dashboard. You
@@ -1194,14 +1397,14 @@ modern_page <- create_page("Modern", data = gss, type = "bar", tabset_theme = "m
   add_viz(x_var = "race", title = "Race", tabgroup = "B")
 
 print(modern_page)
-#> -- Page: Modern ─────────────────────────────────────────────────
-#> ✔ data: 2997 rows x 8 cols | default: bar 
+#> -- Page: Modern -------------------------------------------------
+#> v data: 2997 rows x 8 cols | default: bar 
 #> 2 items
 #> 
-#> ❯ [Tab] A (1 viz)
-#>   • [Viz] Education (bar) x=degree
-#> ❯ [Tab] B (1 viz)
-#>   • [Viz] Race (bar) x=race
+#> > [Tab] A (1 viz)
+#>   * [Viz] Education (bar) x=degree
+#> > [Tab] B (1 viz)
+#>   * [Viz] Race (bar) x=race
 ```
 
 > **Note:** Tab themes are fully rendered in the generated dashboard.
@@ -1246,14 +1449,14 @@ blue_tabs <- create_page(
   add_viz(x_var = "happy", title = "Happiness", tabgroup = "attitudes")
 
 print(blue_tabs)
-#> -- Page: Blue Theme ─────────────────────────────────────────────
-#> ✔ data: 2997 rows x 8 cols | default: bar 
+#> -- Page: Blue Theme ---------------------------------------------
+#> v data: 2997 rows x 8 cols | default: bar 
 #> 2 items
 #> 
-#> ❯ [Tab] demo (1 viz)
-#>   • [Viz] Education (bar) x=degree
-#> ❯ [Tab] attitudes (1 viz)
-#>   • [Viz] Happiness (bar) x=happy
+#> > [Tab] demo (1 viz)
+#>   * [Viz] Education (bar) x=degree
+#> > [Tab] attitudes (1 viz)
+#>   * [Viz] Happiness (bar) x=happy
 ```
 
 > **Note:** Custom tab colors (like `tabset_colors`) are only visible in
@@ -1287,16 +1490,16 @@ corporate <- create_page(
   add_viz(x_var = "happy", title = "Satisfaction", tabgroup = "Q3")
 
 print(corporate)
-#> -- Page: Corporate ──────────────────────────────────────────────
-#> ✔ data: 2997 rows x 8 cols | default: bar 
+#> -- Page: Corporate ----------------------------------------------
+#> v data: 2997 rows x 8 cols | default: bar 
 #> 3 items
 #> 
-#> ❯ [Tab] Q1 (1 viz)
-#>   • [Viz] Education (bar) x=degree
-#> ❯ [Tab] Q2 (1 viz)
-#>   • [Viz] Demographics (bar) x=race
-#> ❯ [Tab] Q3 (1 viz)
-#>   • [Viz] Satisfaction (bar) x=happy
+#> > [Tab] Q1 (1 viz)
+#>   * [Viz] Education (bar) x=degree
+#> > [Tab] Q2 (1 viz)
+#>   * [Viz] Demographics (bar) x=race
+#> > [Tab] Q3 (1 viz)
+#>   * [Viz] Satisfaction (bar) x=happy
 ```
 
 ### Example: Dark Theme
@@ -1324,14 +1527,14 @@ dark_tabs <- create_page(
   add_viz(x_var = "happy", title = "Results", tabgroup = "Analysis")
 
 print(dark_tabs)
-#> -- Page: Dark Theme ─────────────────────────────────────────────
-#> ✔ data: 2997 rows x 8 cols | default: bar 
+#> -- Page: Dark Theme ---------------------------------------------
+#> v data: 2997 rows x 8 cols | default: bar 
 #> 2 items
 #> 
-#> ❯ [Tab] Data (1 viz)
-#>   • [Viz] Education (bar) x=degree
-#> ❯ [Tab] Analysis (1 viz)
-#>   • [Viz] Results (bar) x=happy
+#> > [Tab] Data (1 viz)
+#>   * [Viz] Education (bar) x=degree
+#> > [Tab] Analysis (1 viz)
+#>   * [Viz] Results (bar) x=happy
 ```
 
 > **Note:** Tab styling (custom colors, themes) is fully visible only in

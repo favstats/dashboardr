@@ -6,7 +6,7 @@ This is a simple nested menu structure.
 ## Usage
 
 ``` r
-navbar_menu(text, pages, icon = NULL)
+navbar_menu(text, pages, icon = NULL, align = c("left", "right"))
 ```
 
 ## Arguments
@@ -22,6 +22,10 @@ navbar_menu(text, pages, icon = NULL)
 - icon:
 
   Optional icon for the menu button
+
+- align:
+
+  Where to place the menu in the navbar: "left" (default) or "right"
 
 ## Value
 

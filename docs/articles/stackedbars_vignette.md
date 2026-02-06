@@ -257,12 +257,12 @@ plot1 <- viz_stackedbars(
     ## viz_stackedbars() will continue to work but consider updating your code.
 
     ## Warning: `trust_1a` and `fair_1a` have conflicting value labels.
-    ## ℹ Labels for these values will be taken from `trust_1a`.
-    ## ✖ Values: 1 and 2
+    ## i Labels for these values will be taken from `trust_1a`.
+    ## x Values: 1 and 2
 
     ## Warning: `trust_1a` and `helpful_1a` have conflicting value labels.
-    ## ℹ Labels for these values will be taken from `trust_1a`.
-    ## ✖ Values: 1 and 2
+    ## i Labels for these values will be taken from `trust_1a`.
+    ## x Values: 1 and 2
 
 ``` r
 plot1
@@ -290,12 +290,12 @@ plot2 <- viz_stackedbars(
 ```
 
     ## Warning: `trust_1a` and `fair_1a` have conflicting value labels.
-    ## ℹ Labels for these values will be taken from `trust_1a`.
-    ## ✖ Values: 1 and 2
+    ## i Labels for these values will be taken from `trust_1a`.
+    ## x Values: 1 and 2
 
     ## Warning: `trust_1a` and `helpful_1a` have conflicting value labels.
-    ## ℹ Labels for these values will be taken from `trust_1a`.
-    ## ✖ Values: 1 and 2
+    ## i Labels for these values will be taken from `trust_1a`.
+    ## x Values: 1 and 2
 
 ``` r
 plot2
@@ -370,12 +370,12 @@ plot3 <- viz_stackedbars(
 ```
 
     ## Warning: `trust_1a` and `fair_1a` have conflicting value labels.
-    ## ℹ Labels for these values will be taken from `trust_1a`.
-    ## ✖ Values: 1 and 2
+    ## i Labels for these values will be taken from `trust_1a`.
+    ## x Values: 1 and 2
 
     ## Warning: `trust_1a` and `helpful_1a` have conflicting value labels.
-    ## ℹ Labels for these values will be taken from `trust_1a`.
-    ## ✖ Values: 1 and 2
+    ## i Labels for these values will be taken from `trust_1a`.
+    ## x Values: 1 and 2
 
     ## Warning: stack_order provided with stack_map_values. Ensure stack_order refers
     ## to the *new* mapped labels.
@@ -408,12 +408,12 @@ plot4 <- viz_stackedbars(
 ```
 
     ## Warning: `trust_1a` and `fair_1a` have conflicting value labels.
-    ## ℹ Labels for these values will be taken from `trust_1a`.
-    ## ✖ Values: 1 and 2
+    ## i Labels for these values will be taken from `trust_1a`.
+    ## x Values: 1 and 2
 
     ## Warning: `trust_1a` and `helpful_1a` have conflicting value labels.
-    ## ℹ Labels for these values will be taken from `trust_1a`.
-    ## ✖ Values: 1 and 2
+    ## i Labels for these values will be taken from `trust_1a`.
+    ## x Values: 1 and 2
 
 ``` r
 plot4
@@ -726,12 +726,12 @@ if (nrow(college_data) > 50) {
 ```
 
     ## Warning: `trust_1a` and `fair_1a` have conflicting value labels.
-    ## ℹ Labels for these values will be taken from `trust_1a`.
-    ## ✖ Values: 1 and 2
+    ## i Labels for these values will be taken from `trust_1a`.
+    ## x Values: 1 and 2
 
     ## Warning: `trust_1a` and `helpful_1a` have conflicting value labels.
-    ## ℹ Labels for these values will be taken from `trust_1a`.
-    ## ✖ Values: 1 and 2
+    ## i Labels for these values will be taken from `trust_1a`.
+    ## x Values: 1 and 2
 
     ## [1] "College-educated chart:"
 
@@ -761,11 +761,11 @@ if (nrow(high_school_data) > 50) {
 ```
 
     ## Warning: `trust_1a` and `fair_1a` have conflicting value labels.
-    ## ℹ Labels for these values will be taken from `trust_1a`.
-    ## ✖ Values: 1 and 2
+    ## i Labels for these values will be taken from `trust_1a`.
+    ## x Values: 1 and 2
     ## `trust_1a` and `helpful_1a` have conflicting value labels.
-    ## ℹ Labels for these values will be taken from `trust_1a`.
-    ## ✖ Values: 1 and 2
+    ## i Labels for these values will be taken from `trust_1a`.
+    ## x Values: 1 and 2
 
     ## [1] "High school educated chart:"
 
@@ -805,12 +805,12 @@ plot9 <- viz_stackedbars(
 ```
 
     ## Warning: `trust_1a` and `fair_1a` have conflicting value labels.
-    ## ℹ Labels for these values will be taken from `trust_1a`.
-    ## ✖ Values: 1 and 2
+    ## i Labels for these values will be taken from `trust_1a`.
+    ## x Values: 1 and 2
 
     ## Warning: `trust_1a` and `helpful_1a` have conflicting value labels.
-    ## ℹ Labels for these values will be taken from `trust_1a`.
-    ## ✖ Values: 1 and 2
+    ## i Labels for these values will be taken from `trust_1a`.
+    ## x Values: 1 and 2
 
 ``` r
 plot9
@@ -853,8 +853,8 @@ viz_stackedbars(
 ```
 
     ## Warning: `trust_1a` and `fair_1a` have conflicting value labels.
-    ## ℹ Labels for these values will be taken from `trust_1a`.
-    ## ✖ Values: 1 and 2
+    ## i Labels for these values will be taken from `trust_1a`.
+    ## x Values: 1 and 2
 
 ## 💡 Best Practices and Tips
 
@@ -888,12 +888,12 @@ plot10 <- viz_stackedbars(
 ```
 
     ## Warning: `trust_1a` and `fair_1a` have conflicting value labels.
-    ## ℹ Labels for these values will be taken from `trust_1a`.
-    ## ✖ Values: 1 and 2
+    ## i Labels for these values will be taken from `trust_1a`.
+    ## x Values: 1 and 2
 
     ## Warning: `trust_1a` and `helpful_1a` have conflicting value labels.
-    ## ℹ Labels for these values will be taken from `trust_1a`.
-    ## ✖ Values: 1 and 2
+    ## i Labels for these values will be taken from `trust_1a`.
+    ## x Values: 1 and 2
 
 ``` r
 plot10

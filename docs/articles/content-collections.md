@@ -85,12 +85,12 @@ content <- create_content(data = gss, type = "bar") %>%
   add_callout(paste0("Sample size: ", nrow(gss)), type = "note")
 
 print(content)
-#> -- Content Collection ──────────────────────────────────────────────────────────
-#> 3 items | ✔ data: 2997 rows x 15 cols
+#> -- Content Collection ----------------------------------------------------------
+#> 3 items | v data: 2997 rows x 15 cols
 #> 
-#> • [Viz] Education (bar) x=degree
-#> ℹ [Text]
-#> ⚠ [Callout]
+#> * [Viz] Education (bar) x=degree
+#> i [Text] "## Analysis Key findings:"
+#> ! [Callout]
 ```
 
 ``` r
@@ -170,12 +170,12 @@ content <- create_content(
   add_viz(x_var = "sex", title = "Sex (count)", bar_type = "count")
 
 print(content)
-#> -- Content Collection ──────────────────────────────────────────────────────────
-#> 3 items | ✔ data: 2997 rows x 15 cols
+#> -- Content Collection ----------------------------------------------------------
+#> 3 items | v data: 2997 rows x 15 cols
 #> 
-#> • [Viz] Education (bar) x=degree
-#> • [Viz] Race (vertical) (bar) x=race
-#> • [Viz] Sex (count) (bar) x=sex
+#> * [Viz] Education (bar) x=degree
+#> * [Viz] Race (vertical) (bar) x=race
+#> * [Viz] Sex (count) (bar) x=sex
 ```
 
 ``` r
@@ -361,13 +361,13 @@ attitudes <- create_content(data = gss, type = "bar") %>%
 
 combined <- demographics + attitudes
 print(combined)
-#> -- Content Collection ──────────────────────────────────────────────────────────
-#> 2 items | ✔ data: 2997 rows x 15 cols
+#> -- Content Collection ----------------------------------------------------------
+#> 2 items | v data: 2997 rows x 15 cols
 #> 
-#> ❯ [Tab] Demo (1 viz)
-#>   • [Viz] Education (bar) x=degree
-#> ❯ [Tab] Attitudes (1 viz)
-#>   • [Viz] Happiness (bar) x=happy
+#> > [Tab] Demo (1 viz)
+#>   * [Viz] Education (bar) x=degree
+#> > [Tab] Attitudes (1 viz)
+#>   * [Viz] Happiness (bar) x=happy
 ```
 
 ``` r
@@ -393,13 +393,13 @@ all_content <- demographics %>%
   combine_viz(attitudes)
 
 print(all_content)
-#> -- Content Collection ──────────────────────────────────────────────────────────
-#> 2 items | ✔ data: 2997 rows x 15 cols
+#> -- Content Collection ----------------------------------------------------------
+#> 2 items | v data: 2997 rows x 15 cols
 #> 
-#> ❯ [Tab] Demo (1 viz)
-#>   • [Viz] Education (bar) x=degree
-#> ❯ [Tab] Attitudes (1 viz)
-#>   • [Viz] Happiness (bar) x=happy
+#> > [Tab] Demo (1 viz)
+#>   * [Viz] Education (bar) x=degree
+#> > [Tab] Attitudes (1 viz)
+#>   * [Viz] Happiness (bar) x=happy
 ```
 
 ## 📊 Visualization Types
@@ -1027,15 +1027,15 @@ content <- create_content(data = gss, type = "bar") %>%
   add_viz(x_var = "polviews", title = "Politics", tabgroup = "attitudes")
 
 print(content)
-#> -- Content Collection ──────────────────────────────────────────────────────────
-#> 4 items | ✔ data: 2997 rows x 15 cols
+#> -- Content Collection ----------------------------------------------------------
+#> 4 items | v data: 2997 rows x 15 cols
 #> 
-#> ❯ [Tab] demographics (2 vizs)
-#>   • [Viz] Education (bar) x=degree
-#>   • [Viz] Race (bar) x=race
-#> ❯ [Tab] attitudes (2 vizs)
-#>   • [Viz] Happiness (bar) x=happy
-#>   • [Viz] Politics (bar) x=polviews
+#> > [Tab] demographics (2 vizs)
+#>   * [Viz] Education (bar) x=degree
+#>   * [Viz] Race (bar) x=race
+#> > [Tab] attitudes (2 vizs)
+#>   * [Viz] Happiness (bar) x=happy
+#>   * [Viz] Politics (bar) x=polviews
 ```
 
 ### Nested Tabgroups
@@ -1059,21 +1059,21 @@ nested <- create_content(data = gss, type = "bar") %>%
           tabgroup = "Attitudes/Politics")
 
 print(nested)
-#> -- Content Collection ──────────────────────────────────────────────────────────
-#> 5 items | ✔ data: 2997 rows x 15 cols
+#> -- Content Collection ----------------------------------------------------------
+#> 5 items | v data: 2997 rows x 15 cols
 #> 
-#> ❯ [Tab] Demographics (3 tabs)
-#>   ❯ [Tab] Education (1 viz)
-#>     • [Viz] Education Level (bar) x=degree
-#>   ❯ [Tab] Race (1 viz)
-#>     • [Viz] Race Distribution (bar) x=race
-#>   ❯ [Tab] Age (1 viz)
-#>     • [Viz] Age Distribution (bar) x=age
-#> ❯ [Tab] Attitudes (2 tabs)
-#>   ❯ [Tab] Wellbeing (1 viz)
-#>     • [Viz] General Happiness (bar) x=happy
-#>   ❯ [Tab] Politics (1 viz)
-#>     • [Viz] Political Views (bar) x=polviews
+#> > [Tab] Demographics (3 tabs)
+#>   > [Tab] Education (1 viz)
+#>     * [Viz] Education Level (bar) x=degree
+#>   > [Tab] Race (1 viz)
+#>     * [Viz] Race Distribution (bar) x=race
+#>   > [Tab] Age (1 viz)
+#>     * [Viz] Age Distribution (bar) x=age
+#> > [Tab] Attitudes (2 tabs)
+#>   > [Tab] Wellbeing (1 viz)
+#>     * [Viz] General Happiness (bar) x=happy
+#>   > [Tab] Politics (1 viz)
+#>     * [Viz] Political Views (bar) x=polviews
 ```
 
 ``` r
@@ -1121,13 +1121,13 @@ labeled <- create_content(data = gss, type = "bar") %>%
   )
 
 print(labeled)
-#> -- Content Collection ──────────────────────────────────────────────────────────
-#> 2 items | ✔ data: 2997 rows x 15 cols
+#> -- Content Collection ----------------------------------------------------------
+#> 2 items | v data: 2997 rows x 15 cols
 #> 
-#> ❯ [Tab] demo (1 viz)
-#>   • [Viz] Education (bar) x=degree
-#> ❯ [Tab] attitudes (1 viz)
-#>   • [Viz] Happiness (bar) x=happy
+#> > [Tab] demo (1 viz)
+#>   * [Viz] Education (bar) x=degree
+#> > [Tab] attitudes (1 viz)
+#>   * [Viz] Happiness (bar) x=happy
 ```
 
 ``` r
@@ -1222,10 +1222,10 @@ text_example <- create_content() %>%
   )
 
 print(text_example)
-#> -- Content Collection ──────────────────────────────────────────────────────────
-#> 1 items | ✖ no data
+#> -- Content Collection ----------------------------------------------------------
+#> 1 items | x no data
 #> 
-#> ℹ [Text]
+#> i [Text] "## Key Findings This analysis reveals **three i..."
 ```
 
 ``` r
@@ -1282,14 +1282,14 @@ callout_gallery <- create_content() %>%
   add_callout("Important highlights critical information.", type = "important", title = "Important")
 
 print(callout_gallery)
-#> -- Content Collection ──────────────────────────────────────────────────────────
-#> 5 items | ✖ no data
+#> -- Content Collection ----------------------------------------------------------
+#> 5 items | x no data
 #> 
-#> ⚠ [Callout] Note
-#> ⚠ [Callout] Pro Tip
-#> ⚠ [Callout] Warning
-#> ⚠ [Callout] Caution
-#> ⚠ [Callout] Important
+#> ! [Callout] Note
+#> ! [Callout] Pro Tip
+#> ! [Callout] Warning
+#> ! [Callout] Caution
+#> ! [Callout] Important
 ```
 
 ``` r
@@ -1371,11 +1371,11 @@ card_example <- create_content() %>%
   )
 
 print(card_example)
-#> -- Content Collection ──────────────────────────────────────────────────────────
-#> 2 items | ✖ no data
+#> -- Content Collection ----------------------------------------------------------
+#> 2 items | x no data
 #> 
-#> ◼ [Card] Key Finding
-#> ◼ [Card]
+#> [x] [Card] Key Finding
+#> [x] [Card]
 ```
 
 ``` r
@@ -1407,11 +1407,11 @@ accordion_example <- create_content() %>%
   )
 
 print(accordion_example)
-#> -- Content Collection ──────────────────────────────────────────────────────────
-#> 2 items | ✖ no data
+#> -- Content Collection ----------------------------------------------------------
+#> 2 items | x no data
 #> 
-#> ☰ [Accordion] Click to expand: Methodology
-#> ☰ [Accordion] Click to expand: Data Sources
+#> = [Accordion] Click to expand: Methodology
+#> = [Accordion] Click to expand: Data Sources
 ```
 
 ``` r
@@ -1441,10 +1441,10 @@ quote_example <- create_content() %>%
   )
 
 print(quote_example)
-#> -- Content Collection ──────────────────────────────────────────────────────────
-#> 1 items | ✖ no data
+#> -- Content Collection ----------------------------------------------------------
+#> 1 items | x no data
 #> 
-#> • [quote]
+#> * [quote]
 ```
 
 ``` r
@@ -1455,7 +1455,7 @@ Preview
 
 > The only true wisdom is in knowing you know nothing.
 >
-> — Socrates
+> \<U+2014\> Socrates
 
 ### Badges
 
@@ -1472,16 +1472,16 @@ badge_example <- create_content() %>%
   add_badge("Secondary", color = "secondary")
 
 print(badge_example)
-#> -- Content Collection ──────────────────────────────────────────────────────────
-#> 7 items | ✖ no data
+#> -- Content Collection ----------------------------------------------------------
+#> 7 items | x no data
 #> 
-#> ℹ [Text]
-#> • [badge]
-#> • [badge]
-#> • [badge]
-#> • [badge]
-#> • [badge]
-#> • [badge]
+#> i [Text] "Status indicators:"
+#> * [badge]
+#> * [badge]
+#> * [badge]
+#> * [badge]
+#> * [badge]
+#> * [badge]
 ```
 
 ``` r
@@ -1507,10 +1507,10 @@ metric_example <- create_content() %>%
   )
 
 print(metric_example)
-#> -- Content Collection ──────────────────────────────────────────────────────────
-#> 1 items | ✖ no data
+#> -- Content Collection ----------------------------------------------------------
+#> 1 items | x no data
 #> 
-#> • [metric] Total Respondents
+#> * [metric] Total Respondents
 ```
 
 ``` r
@@ -1538,10 +1538,10 @@ value_box_example <- create_content() %>%
   )
 
 print(value_box_example)
-#> -- Content Collection ──────────────────────────────────────────────────────────
-#> 1 items | ✖ no data
+#> -- Content Collection ----------------------------------------------------------
+#> 1 items | x no data
 #> 
-#> • [value_box] Revenue
+#> * [value_box] Revenue
 ```
 
 ``` r
@@ -1567,10 +1567,10 @@ value_row_example <- create_content() %>%
   end_value_box_row()
 
 print(value_row_example)
-#> -- Content Collection ──────────────────────────────────────────────────────────
-#> 1 items | ✖ no data
+#> -- Content Collection ----------------------------------------------------------
+#> 1 items | x no data
 #> 
-#> • [value_box_row]
+#> * [value_box_row]
 ```
 
 ``` r
@@ -1603,10 +1603,10 @@ code_example <- create_content() %>%
   )
 
 print(code_example)
-#> -- Content Collection ──────────────────────────────────────────────────────────
-#> 1 items | ✖ no data
+#> -- Content Collection ----------------------------------------------------------
+#> 1 items | x no data
 #> 
-#> • [Code]
+#> * [Code]
 ```
 
 ``` r
@@ -1637,10 +1637,10 @@ image_example <- create_content() %>%
   )
 
 print(image_example)
-#> -- Content Collection ──────────────────────────────────────────────────────────
-#> 1 items | ✖ no data
+#> -- Content Collection ----------------------------------------------------------
+#> 1 items | x no data
 #> 
-#> ◉ [Image]
+#> (*) [Image]
 image_example %>% preview()
 ```
 
@@ -1683,10 +1683,10 @@ video_example <- create_content() %>%
   )
 
 print(video_example)
-#> -- Content Collection ──────────────────────────────────────────────────────────
-#> 1 items | ✖ no data
+#> -- Content Collection ----------------------------------------------------------
+#> 1 items | x no data
 #> 
-#> • [iframe]
+#> * [iframe]
 video_example %>% preview()
 ```
 
@@ -1709,10 +1709,10 @@ iframe_example <- create_content() %>%
   )
 
 print(iframe_example)
-#> -- Content Collection ──────────────────────────────────────────────────────────
-#> 1 items | ✖ no data
+#> -- Content Collection ----------------------------------------------------------
+#> 1 items | x no data
 #> 
-#> • [iframe]
+#> * [iframe]
 iframe_example %>% preview()
 ```
 
@@ -1729,10 +1729,10 @@ html_example <- create_content() %>%
   add_html('<div style="background: linear-gradient(to right, #667eea, #764ba2); color: white; padding: 20px; border-radius: 8px; text-align: center;"><h3>Custom HTML Block</h3><p>Style anything with raw HTML!</p></div>')
 
 print(html_example)
-#> -- Content Collection ──────────────────────────────────────────────────────────
-#> 1 items | ✖ no data
+#> -- Content Collection ----------------------------------------------------------
+#> 1 items | x no data
 #> 
-#> • [html]
+#> * [html]
 ```
 
 ``` r
@@ -1775,13 +1775,3070 @@ gt_example <- create_content() %>%
     gt::gt(summary_data) %>%
       gt::cols_label(degree = "Education", n = "Count", mean_age = "Mean Age")
   )
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+00A1>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+00A2>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+00A3>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+00A4>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+00A5>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+00A6>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+00A7>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+00A8>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+00A9>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+00AA>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+00AB>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+00AC>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+00AE>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+00AF>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+00B0>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+00B1>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+00B2>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+00B3>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+00B4>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+00B5>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+00B6>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+00B7>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+00B9>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+00BA>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+00BB>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+00BC>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+00BD>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+00BE>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+00BF>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+00C0>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+00C1>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+00C2>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+00C3>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+00C4>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+00C5>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+00C6>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+00C7>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+00C8>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+00C9>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+00CA>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+00CB>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+00CC>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+00CD>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+00CE>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+00CF>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+00D0>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+00D1>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+00D2>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+00D3>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+00D4>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+00D5>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+00D6>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+00D7>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+00D8>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+00D9>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+00DA>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+00DB>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+00DC>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+00DD>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+00DE>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+00DF>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+00E0>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+00E1>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+00E2>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+00E3>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+00E4>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+00E5>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+00E6>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+00E7>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+00E8>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+00E9>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+00EA>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+00EB>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+00EC>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+00ED>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+00EE>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+00EF>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+00F0>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+00F1>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+00F2>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+00F3>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+00F4>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+00F5>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+00F6>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+00F7>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+00F8>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+00F9>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+00FA>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+00FB>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+00FC>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+00FD>:' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+00FE>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+00FF>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0100>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0101>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0102>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0103>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0104>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0105>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0108>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0109>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+010A>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+010B>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+010C>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+010D>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+010E>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+010F>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0110>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0111>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0112>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0113>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0114>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0115>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0116>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0117>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0118>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0119>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+011A>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+011B>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+011C>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+011D>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+011E>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+011F>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0120>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0121>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0122>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0123>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0124>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0125>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0126>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0127>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0128>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0129>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+012A>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+012B>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+012C>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+012D>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+012E>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+012F>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0130>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0131>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0132>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0133>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0134>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0135>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0136>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0137>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0138>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0139>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+013A>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+013B>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+013C>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+013D>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+013E>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+013F>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0140>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0141>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0142>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0143>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0144>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0145>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0146>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0147>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0148>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0149>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+014A>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+014B>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+014C>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+014D>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+014E>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+014F>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0150>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0151>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0152>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0153>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0154>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0155>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0156>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0157>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0158>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0159>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+015A>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+015B>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+015C>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+015D>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+015E>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+015F>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0160>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0161>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0162>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0163>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0164>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0165>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0166>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0167>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0168>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0169>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+016A>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+016B>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+016C>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+016D>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+016E>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+016F>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0170>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0171>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0172>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0173>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0174>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0175>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0176>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0177>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0178>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0179>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+017A>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+017B>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+017C>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+017D>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+017E>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0192>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0195>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+019E>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+01E7>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+01F5>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0228>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0229>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0259>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+025B>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0278>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0294>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+029E>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+02B7>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+02C6>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+02C7>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+02D8>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+02D9>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+02DA>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+02DB>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+02DC>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+02DD>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0307>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0308>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0386>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0388>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0389>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+038A>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+038C>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+038E>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+038F>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0390>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0391>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0392>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0393>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0394>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0398>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+039B>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+039E>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+03A0>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+03A3>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+03A5>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+03A6>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+03A8>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+03A9>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+03AA>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+03AB>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+03AC>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+03AD>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+03AE>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+03AF>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+03B0>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+03CA>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+03CB>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+03CC>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+03CD>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+03CE>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0251>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+03B1>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+03B2>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+03B3>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+03B4>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+03B5>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+03B6>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+03B7>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+03B8>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+03B9>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+03BA>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+03BB>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+03BC>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+03BD>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+03BE>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+03BF>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+03C0>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+03C1>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+03C2>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+03C3>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+03C4>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+03C5>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+03C6>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+03C7>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+03C8>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+03C9>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+03D1>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+03D2>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+03D5>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+03D6>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+03F0>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+03F1>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+03F5>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+03F6>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0400>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0401>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0402>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0403>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0404>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0405>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0406>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0407>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0408>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0409>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+040A>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+040B>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+040C>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+040D>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+040E>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+040F>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0410>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0411>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0412>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0413>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0414>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0415>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0416>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0417>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0418>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0419>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+041A>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+041B>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+041C>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+041D>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+041E>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+041F>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0420>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0421>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0422>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0423>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0424>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0425>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0426>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0427>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0428>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0429>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+042A>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+042B>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+042C>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+042D>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+042E>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+042F>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0430>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0431>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0432>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0433>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0434>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0435>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0436>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0437>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0438>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0439>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+043A>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+043B>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+043C>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+043D>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+043E>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+043F>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0440>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0441>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0442>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0443>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0444>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0445>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0446>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0447>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0448>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0449>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+044A>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+044B>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+044C>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+044D>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+044E>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+044F>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0450>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0451>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0452>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0453>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0454>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0455>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0456>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0457>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0458>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0459>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+045A>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+045B>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+045C>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+045D>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+045E>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+045F>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0460>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0461>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0462>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0463>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0464>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0465>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0466>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0467>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0468>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0469>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+046A>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+046B>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+046C>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+046D>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+046E>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+046F>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0470>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0471>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0472>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0473>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0474>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0475>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0476>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0477>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0478>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0479>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+047A>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+047B>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+047C>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+047D>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+047E>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+047F>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0480>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0481>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0482>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0488>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0489>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+048C>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+048D>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+048E>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+048F>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0490>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0491>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0492>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0493>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0494>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0495>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0496>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0497>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0498>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0499>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+049A>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+049B>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+049C>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+049D>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+049E>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+049F>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+04A0>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+04A1>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+04A2>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+04A3>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+04A4>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+04A5>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+04A6>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+04A7>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+04A8>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+04A9>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+04AA>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+04AB>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+04AC>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+04AD>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+04AE>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+04AF>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+04B0>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+04B1>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+04B2>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+04B3>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+04B4>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+04B5>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+04B6>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+04B7>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+04B8>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+04B9>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+04BA>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+04BB>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+04BC>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+04BD>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+04BE>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+04BF>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+04C0>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+04C1>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+04C2>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+04C3>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+04C4>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+04C5>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+04C6>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+04C7>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+04C8>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+04CB>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+04CC>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+04CD>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+04CE>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+04D0>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+04D1>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+04D2>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+04D3>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+04D4>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+04D5>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+04D6>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+04D7>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+04D8>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+04D9>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+04DA>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+04DB>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+04DC>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+04DD>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+04DE>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+04DF>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+04E0>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+04E1>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+04E2>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+04E3>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+04E4>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+04E5>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+04E6>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+04E7>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+04E8>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+04E9>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+04EC>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+04ED>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+04EE>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+04EF>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+04F0>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+04F1>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+04F2>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+04F3>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+04F4>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+04F5>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+04F6>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+04F7>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+04F8>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+04F9>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+04FA>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+04FB>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+04FC>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+04FD>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+04FE>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+04FF>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+0E3F>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2000>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2001>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2002>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2003>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2004>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2005>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2006>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2007>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2008>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2009>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+200A>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+200C>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2011>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2013>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2014>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2015>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2016>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2018>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2019>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+201A>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+201C>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+201D>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+201E>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2020>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2021>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2022>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2026>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2030>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2031>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2032>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2033>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2034>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2035>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2039>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+203A>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+203B>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+203D>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2044>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+204E>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2052>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2057>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+205F>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2060>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+20A1>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+20A4>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+20A6>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+20A9>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+20AB>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+20AC>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+20B1>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2102>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2103>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2109>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+210A>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+210B>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+210C>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+210D>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+210E>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+210F>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2110>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2111>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2112>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2113>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2115>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2116>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2117>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2118>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+211E>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2119>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+211A>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+211B>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+211C>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+211D>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2120>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2122>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2124>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2126>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2127>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2128>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+212A>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+212B>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+212C>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+212D>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+212E>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+212F>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2130>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2131>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2133>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2134>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2135>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2136>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2137>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2138>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2153>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2154>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2155>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2156>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2157>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2158>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2159>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+215A>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+215B>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+215C>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+215D>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+215E>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2190>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2191>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2192>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2193>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2194>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2195>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2196>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2197>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2198>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2199>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+219A>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+219B>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+219C>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+219D>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+219E>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+21A0>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+21A2>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+21A3>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+21A6>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+21A9>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+21AA>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+21AB>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+21AC>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+21AD>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+21AE>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+21B0>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+21B1>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+21B6>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+21B7>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+21BA>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+21BB>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+21BC>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+21BD>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+21BE>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+21BF>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+21C0>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+21C1>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+21C2>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+21C3>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+21C4>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+21C5>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+21C6>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+21C7>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+21C8>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+21C9>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+21CA>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+21CB>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+21CC>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+21CD>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+21CE>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+21CF>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+21D0>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+21D1>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+21D2>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+21D3>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+21D4>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+21D5>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+21DA>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+21DB>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+21DD>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+21F5>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2200>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2201>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2202>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2203>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2204>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2205>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2206>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2207>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2208>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2209>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+220A>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+220B>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+220C>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+220D>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+220E>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+220F>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2210>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2211>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2212>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2213>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2214>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2215>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2216>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2217>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2218>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2219>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+221A>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+221B>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+221C>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+221D>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+221E>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+221F>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2220>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2221>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2222>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2223>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2224>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2225>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2226>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2227>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2228>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2229>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+222A>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+222B>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+222C>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+222D>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+222E>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+222F>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2230>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2231>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2234>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2235>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+223A>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+223B>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+223C>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+223D>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+223E>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2240>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2241>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2243>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2244>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2245>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2246>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2247>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2248>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2249>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+224A>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+224B>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+224C>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+224D>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+224E>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+224F>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2250>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2251>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2252>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2253>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2254>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2255>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2256>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2257>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2259>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+225B>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+225C>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2260>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2261>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2262>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2264>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2265>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2266>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2267>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2268>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2269>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+226A>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+226B>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+226C>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+226D>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+226E>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+226F>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2270>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2271>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2272>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2273>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2274>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2275>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2276>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2277>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2278>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2279>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+227A>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+227B>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+227C>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+227D>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+227E>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+227F>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2280>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2281>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2282>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2283>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2284>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2285>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2286>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2287>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2288>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2289>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+228A>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+228B>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+228E>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+228F>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2290>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2291>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2292>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2293>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2294>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2295>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2296>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2297>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2298>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2299>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+229A>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+229B>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+229D>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+229E>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+229F>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+22A0>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+22A1>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+22A2>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+22A3>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+22A4>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+22A5>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+22A7>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+22A8>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+22A9>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+22AA>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+22AB>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+22AC>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+22AD>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+22AE>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+22AF>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+22B2>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+22B3>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+22B4>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+22B5>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+22B6>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+22B7>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+22B8>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+22B9>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+22BA>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+22BB>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+22BE>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+22C0>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+22C1>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+22C2>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+22C3>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+22C4>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+22C5>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+22C6>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+22C7>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+22C8>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+22C9>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+22CA>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+22CB>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+22CC>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+22CD>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+22CE>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+22CF>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+22D0>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+22D1>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+22D2>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+22D3>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+22D4>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+22D6>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+22D7>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+22D8>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+22D9>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+22DA>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+22DB>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+22DE>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+22DF>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+22E2>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+22E3>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+22E6>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+22E7>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+22E8>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+22E9>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+22EA>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+22EB>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+22EC>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+22ED>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+22EE>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+22EF>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+22F0>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+22F1>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2305>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2306>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2308>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2309>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+230A>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+230B>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2315>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2316>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+231C>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+231D>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+231E>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+231F>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2322>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2323>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+23B0>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+23B1>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2329>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+232A>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2422>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2423>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+25A0>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+25A1>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+25AA>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+25AD>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+25B3>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+25B4>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+25B5>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+25B8>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+25B9>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+25BD>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+25BE>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+25BF>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+25C2>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+25C3>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+25CA>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+25CB>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+25E6>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+25EF>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2662>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+266A>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2669>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+266D>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+266E>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+266F>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+27E8>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+27E9>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+27F5>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+27F6>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+27F7>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+27F8>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+27F9>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+27FA>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+27FC>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+27FF>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2993>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+29EB>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2A0F>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2A16>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2A3F>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2A6E>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2A75>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2A7D>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2A7E>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2A85>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2A86>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2A87>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2A88>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2A89>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2A8A>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2A8B>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2A8C>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2A95>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2A96>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2AAF>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2AB0>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2AB5>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2AB6>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2AB7>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2AB8>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2AB9>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2ABA>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2AC5>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2AC6>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2ACB>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2ACC>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+2AFD>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+3008>' to native encoding
+#> Warning in
+#> str2expression(readLines(system.file("latex_unicode/latex_unicode_conversion.txt",
+#> : unable to translate '<U+3009>' to native encoding
 
 print(gt_example)
-#> -- Content Collection ──────────────────────────────────────────────────────────
-#> 2 items | ✖ no data
+#> -- Content Collection ----------------------------------------------------------
+#> 2 items | x no data
 #> 
-#> ℹ [Text]
-#> • [gt]
+#> i [Text] "### Summary Statistics by Education"
+#> * [gt]
 ```
 
 ``` r
@@ -1831,11 +4888,11 @@ reactable_example <- create_content() %>%
   )
 
 print(reactable_example)
-#> -- Content Collection ──────────────────────────────────────────────────────────
-#> 2 items | ✖ no data
+#> -- Content Collection ----------------------------------------------------------
+#> 2 items | x no data
 #> 
-#> ℹ [Text]
-#> • [reactable]
+#> i [Text] "### Interactive Summary Table"
+#> * [reactable]
 ```
 
 ``` r
@@ -1857,11 +4914,11 @@ dt_example <- create_content() %>%
   add_DT(summary_data, options = list(pageLength = 5))
 
 print(dt_example)
-#> -- Content Collection ──────────────────────────────────────────────────────────
-#> 2 items | ✖ no data
+#> -- Content Collection ----------------------------------------------------------
+#> 2 items | x no data
 #> 
-#> ℹ [Text]
-#> • [DT]
+#> i [Text] "### DataTable with Search and Pagination"
+#> * [DT]
 ```
 
 ``` r
@@ -1882,10 +4939,10 @@ table_example <- create_content() %>%
   add_table(head(summary_data, 3), caption = "Sample Data")
 
 print(table_example)
-#> -- Content Collection ──────────────────────────────────────────────────────────
-#> 1 items | ✖ no data
+#> -- Content Collection ----------------------------------------------------------
+#> 1 items | x no data
 #> 
-#> • [table]
+#> * [table]
 ```
 
 ``` r
@@ -1933,11 +4990,11 @@ hc_example <- create_content() %>%
   add_hc(custom_chart)
 
 print(hc_example)
-#> -- Content Collection ──────────────────────────────────────────────────────────
-#> 2 items | ✖ no data
+#> -- Content Collection ----------------------------------------------------------
+#> 2 items | x no data
 #> 
-#> ℹ [Text]
-#> • [hc]
+#> i [Text] "### Custom Pie Chart"
+#> * [hc]
 ```
 
 ``` r
@@ -2172,12 +5229,12 @@ divider_content <- create_content(data = gss, type = "bar") %>%
   add_viz(x_var = "happy", title = "Happiness")
 
 print(divider_content)
-#> -- Content Collection ──────────────────────────────────────────────────────────
-#> 3 items | ✔ data: 2997 rows x 15 cols
+#> -- Content Collection ----------------------------------------------------------
+#> 3 items | v data: 2997 rows x 15 cols
 #> 
-#> • [Viz] Education (bar) x=degree
-#> ─ [Divider]
-#> • [Viz] Happiness (bar) x=happy
+#> * [Viz] Education (bar) x=degree
+#> - [Divider]
+#> * [Viz] Happiness (bar) x=happy
 ```
 
 ``` r
@@ -2203,12 +5260,12 @@ spacer_example <- create_content() %>%
   add_text("Content below (after 3rem spacer)")
 
 print(spacer_example)
-#> -- Content Collection ──────────────────────────────────────────────────────────
-#> 3 items | ✖ no data
+#> -- Content Collection ----------------------------------------------------------
+#> 3 items | x no data
 #> 
-#> ℹ [Text]
-#> • [spacer]
-#> ℹ [Text]
+#> i [Text] "Content above"
+#> * [spacer]
+#> i [Text] "Content below (after 3rem spacer)"
 ```
 
 ``` r

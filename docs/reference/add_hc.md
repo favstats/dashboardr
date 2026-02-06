@@ -22,8 +22,8 @@ add_hc(content, hc_object, height = NULL, tabgroup = NULL)
 
 - height:
 
-  Optional height for the chart (e.g., "400px", "50vh"). Defaults to
-  "400px"
+  Optional height for the chart (e.g., "400px", "50vh"). If NULL
+  (default), no height is set and highcharter handles its own sizing
 
 - tabgroup:
 
