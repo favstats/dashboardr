@@ -2067,4 +2067,3 @@ merge_collections <- function(c1, c2) {
   # Return unique filter_vars
   unique(filter_vars)
 }
-

@@ -69,7 +69,7 @@ print(dashboard)
 #> 
 #> 📊 DASHBOARD PROJECT ====================================================
 #> │ 🏷️  Title: My Dashboard
-#> │ 📁 Output: /Users/favstats/Dropbox/postdoc/my_dashboard
+#> │ 📁 Output: my_dashboard
 #> │
 #> │ ⚙️  FEATURES:
 #> │    • 🔍 Search
@@ -420,7 +420,7 @@ print(survey_dashboard)
 #> 
 #> 📊 DASHBOARD PROJECT ====================================================
 #> │ 🏷️  Title: GSS Data Explorer
-#> │ 📁 Output: /Users/favstats/Dropbox/postdoc/gss_out
+#> │ 📁 Output: gss_out
 #> │
 #> │ ⚙️  FEATURES:
 #> │    • 🔍 Search

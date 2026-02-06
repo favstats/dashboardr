@@ -761,6 +761,211 @@
 }
 
 /* =============================================================================
+   FLOATING SIDEBAR TOGGLE FOR BSLIB/QUARTO (Mobile)
+   Smooth animations, button matches sidebar side, no extra space when collapsed
+============================================================================= */
+
+@media (max-width: 991.98px) {
+  /* Base layout */
+  .bslib-sidebar-layout,
+  [data-bslib-sidebar-layout] {
+    position: relative !important;
+  }
+  
+  /* COLLAPSED STATE: Force block layout to eliminate all gaps */
+  .bslib-sidebar-layout.sidebar-collapsed,
+  .bslib-sidebar-layout[data-bslib-sidebar-open="false"],
+  [data-bslib-sidebar-layout][data-bslib-sidebar-open="false"] {
+    display: block !important;
+    gap: 0 !important;
+  }
+  
+  /* Sidebar smooth transitions when OPEN */
+  .bslib-sidebar-layout > .sidebar,
+  [data-bslib-sidebar-layout] > .sidebar {
+    transition: opacity 0.3s ease, 
+                transform 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  }
+  
+  /* When collapsed: COMPLETELY REMOVE sidebar */
+  .bslib-sidebar-layout.sidebar-collapsed > .sidebar,
+  .bslib-sidebar-layout[data-bslib-sidebar-open="false"] > .sidebar,
+  [data-bslib-sidebar-layout][data-bslib-sidebar-open="false"] > .sidebar,
+  .bslib-sidebar-layout.sidebar-collapsed > aside,
+  .bslib-sidebar-layout[data-bslib-sidebar-open="false"] > aside {
+    display: none !important;
+    width: 0 !important;
+    min-width: 0 !important;
+    max-width: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border: none !important;
+    overflow: hidden !important;
+    visibility: hidden !important;
+    position: absolute !important;
+    pointer-events: none !important;
+  }
+  
+  /* Main content with smooth transition */
+  .bslib-sidebar-layout > .main,
+  .bslib-sidebar-layout > main,
+  [data-bslib-sidebar-layout] > .main {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  }
+  
+  /* Main content fills FULL WIDTH when collapsed - aggressive! */
+  .bslib-sidebar-layout.sidebar-collapsed > .main,
+  .bslib-sidebar-layout.sidebar-collapsed > main,
+  .bslib-sidebar-layout[data-bslib-sidebar-open="false"] > .main,
+  .bslib-sidebar-layout[data-bslib-sidebar-open="false"] > main,
+  [data-bslib-sidebar-layout][data-bslib-sidebar-open="false"] > .main,
+  [data-bslib-sidebar-layout][data-bslib-sidebar-open="false"] > main {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 100% !important;
+    flex: 1 1 100% !important;
+    margin: 0 !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+  
+  /* =========== TOGGLE BUTTON - Floating, subtle =========== */
+  /* Target the actual Quarto/bslib collapse-toggle button */
+  .bslib-sidebar-layout .collapse-toggle,
+  .bslib-sidebar-layout button.collapse-toggle,
+  [data-bslib-sidebar-layout] .collapse-toggle {
+    position: fixed !important;
+    top: 7.5rem !important;
+    bottom: auto !important;
+    z-index: 1100 !important;
+    width: 34px !important;
+    height: 34px !important;
+    min-width: 34px !important;
+    min-height: 34px !important;
+    border-radius: 8px !important;
+    background-color: rgba(255, 255, 255, 0.92) !important;
+    color: #555 !important;
+    border: 1px solid rgba(0, 0, 0, 0.08) !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08), 
+                0 1px 2px rgba(0, 0, 0, 0.04) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer !important;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    backdrop-filter: blur(12px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(12px) saturate(180%) !important;
+  }
+  
+  /* ===== BUTTON POSITION BASED ON SIDEBAR STATE ===== */
+  
+  /* DEFAULT: button on LEFT */
+  .bslib-sidebar-layout .collapse-toggle {
+    left: 0.75rem !important;
+    right: auto !important;
+  }
+  
+  /* LEFT sidebar OPEN (desktop or true): button on RIGHT */
+  .bslib-sidebar-layout:not(.sidebar-right)[data-bslib-sidebar-open="desktop"] .collapse-toggle,
+  .bslib-sidebar-layout:not(.sidebar-right)[data-bslib-sidebar-open="true"] .collapse-toggle {
+    left: auto !important;
+    right: 0.75rem !important;
+  }
+  
+  /* LEFT sidebar COLLAPSED (false): button on LEFT - explicit override */
+  .bslib-sidebar-layout:not(.sidebar-right)[data-bslib-sidebar-open="false"] .collapse-toggle {
+    left: 0.75rem !important;
+    right: auto !important;
+  }
+  
+  /* RIGHT sidebar (any state): button on RIGHT */
+  .bslib-sidebar-layout.sidebar-right .collapse-toggle {
+    left: auto !important;
+    right: 0.75rem !important;
+  }
+  
+  /* Hover: subtle lift effect */
+  .bslib-sidebar-layout .collapse-toggle:hover {
+    background-color: rgba(255, 255, 255, 1) !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12), 
+                0 2px 4px rgba(0, 0, 0, 0.06) !important;
+    border-color: rgba(0, 0, 0, 0.12) !important;
+    transform: translateY(-1px) !important;
+  }
+  
+  /* Active: press effect */
+  .bslib-sidebar-layout .collapse-toggle:active {
+    transform: translateY(0) scale(0.97) !important;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1) !important;
+  }
+  
+  /* Icon styling */
+  .bslib-sidebar-layout .collapse-toggle svg {
+    width: 16px !important;
+    height: 16px !important;
+    fill: #444 !important;
+    stroke: #444 !important;
+    color: #444 !important;
+    transition: transform 0.25s ease !important;
+  }
+  
+  /* Icon rotates when sidebar closes */
+  .bslib-sidebar-layout.sidebar-collapsed .collapse-toggle svg,
+  .bslib-sidebar-layout[data-bslib-sidebar-open="false"] .collapse-toggle svg {
+    transform: rotate(180deg) !important;
+  }
+}
+
+/* Small mobile - slightly smaller button */
+@media (max-width: 575.98px) {
+  .bslib-sidebar-layout .collapse-toggle {
+    top: 7rem !important;
+    width: 30px !important;
+    height: 30px !important;
+    min-width: 30px !important;
+    min-height: 30px !important;
+    border-radius: 6px !important;
+  }
+  
+  /* DEFAULT: button on LEFT */
+  .bslib-sidebar-layout .collapse-toggle {
+    left: 0.5rem !important;
+    right: auto !important;
+  }
+  
+  /* LEFT sidebar OPEN (desktop or true): button on RIGHT */
+  .bslib-sidebar-layout:not(.sidebar-right)[data-bslib-sidebar-open="desktop"] .collapse-toggle,
+  .bslib-sidebar-layout:not(.sidebar-right)[data-bslib-sidebar-open="true"] .collapse-toggle {
+    left: auto !important;
+    right: 0.5rem !important;
+  }
+  
+  /* LEFT sidebar COLLAPSED (false): button on LEFT - explicit override */
+  .bslib-sidebar-layout:not(.sidebar-right)[data-bslib-sidebar-open="false"] .collapse-toggle {
+    left: 0.5rem !important;
+    right: auto !important;
+  }
+  
+  /* RIGHT sidebar (any state): button on RIGHT */
+  .bslib-sidebar-layout.sidebar-right .collapse-toggle {
+    left: auto !important;
+    right: 0.5rem !important;
+  }
+  
+  .bslib-sidebar-layout .collapse-toggle svg {
+    width: 14px !important;
+    height: 14px !important;
+  }
+}
+
+/* =============================================================================
+   SIDEBAR POSITION DETECTION SCRIPT (injected via enable_sidebar)
+   Detects if sidebar is on left or right and adds data attribute
+============================================================================= */
+
+/* =============================================================================
    DARK MODE SUPPORT (if Quarto dark theme is used)
 ============================================================================= */
 

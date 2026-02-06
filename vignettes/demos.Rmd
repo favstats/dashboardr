@@ -26,6 +26,10 @@ knitr::opts_chunk$set(
 - **Interactive Inputs** - Gallery of input types (select, slider, switch, checkbox). [View Demo](../live-demos/inputs/index.html)
 - **Sidebar Demo** - Page sidebars with filters (checkbox, dropdown, slider). [View Demo](../live-demos/sidebar/index.html)
 
+### Real-World Dashboards
+
+- **DigIQ Monitor** - The first public full-fledged dashboard built with dashboardr! A comprehensive digital competence monitor for Dutch citizens (ages 10-100), featuring 11 dimension pages, multilingual support (Dutch/English), paginated visualizations, and interactive modals. [View Live →](https://www.digiqmonitor.nl/)
+
 ### Tabset Theme Demos
 
 Each tabset theme has its own demo dashboard showing 1, 2, and 3-level nested tabs:

@@ -160,24 +160,34 @@ navbar_section <- function(text, sidebar_id, icon = NULL) {
 #' @param text Display text for the dropdown menu button
 #' @param pages Character vector of page names to include in the dropdown
 #' @param icon Optional icon for the menu button
+#' @param align Where to place the menu in the navbar: "left" (default) or "right"
 #' @return List containing navbar menu configuration
 #' @export
 #' @examples
 #' \dontrun{
-#' # Create a simple dropdown menu
+#' # Create a simple dropdown menu (left-aligned by default)
 #' dimensions_menu <- navbar_menu(
 #'   text = "Dimensions",
 #'   pages = c("Strategic Information", "Critical Information"),
 #'   icon = "ph:book"
 #' )
 #' 
+#' # Create a right-aligned menu
+#' more_info_menu <- navbar_menu(
+#'   text = "More Info",
+#'   pages = c("About", "Wave 1"),
+#'   icon = "ph:info",
+#'   align = "right"
+#' )
+#' 
 #' dashboard <- create_dashboard(
-#'   navbar_sections = list(dimensions_menu)
+#'   navbar_sections = list(dimensions_menu, more_info_menu)
 #' )
 #' }
-navbar_menu <- function(text, pages, icon = NULL) {
+navbar_menu <- function(text, pages, icon = NULL, align = c("left", "right")) {
   
   # Validate required parameters
+
   if (is.null(text) || !is.character(text) || length(text) != 1 || nchar(text) == 0) {
     stop("text must be a non-empty character string")
   }
@@ -185,11 +195,14 @@ navbar_menu <- function(text, pages, icon = NULL) {
     stop("pages must be a non-empty character vector")
   }
   
+  align <- match.arg(align)
+  
   # Build the navbar menu configuration
   menu <- list(
     type = "menu",
     text = text,
-    menu_pages = pages  # Use menu_pages to distinguish from sidebar reference
+    menu_pages = pages,  # Use menu_pages to distinguish from sidebar reference
+    align = align
   )
   
   # Add icon if provided

@@ -243,26 +243,44 @@ add_callout.page_object <- function(page, text, type = "note", title = NULL, tab
 }
 
 
-#' Add content collection to a page
+#' Add content collection(s) to a page
 #'
-#' Add a pre-built content collection (from create_viz/create_content) to a page.
+#' Add one or more pre-built content collections (from create_viz/create_content) to a page.
 #' Use this when you have complex content built separately.
 #'
 #' @param page A page_object created by create_page()
-#' @param content A content collection (from create_viz/create_content)
+#' @param ... One or more content collections (from create_viz/create_content)
 #'
 #' @return The updated page_object
 #' @export
-add_content <- function(page, content) {
+#' @examples
+#' \dontrun{
+#' # Add a single collection
+#' page %>% add_content(my_viz)
+#'
+#' # Add multiple collections at once
+#' page %>% add_content(viz1, viz2, viz3)
+#' }
+add_content <- function(page, ...) {
   if (!inherits(page, "page_object")) {
     stop("'page' must be a page_object created by create_page()")
   }
 
-  if (!is_content(content)) {
-    stop("'content' must be a content collection (from create_viz/create_content)")
+  contents <- list(...)
+  
+  if (length(contents) == 0) {
+    warning("No content provided to add_content()")
+    return(page)
   }
-
-  page$content <- c(page$content, list(content))
+  
+  for (i in seq_along(contents)) {
+    content <- contents[[i]]
+    if (!is_content(content)) {
+      stop("Argument ", i + 1, " must be a content collection (from create_viz/create_content)")
+    }
+    page$content <- c(page$content, list(content))
+  }
+  
   page
 }
 

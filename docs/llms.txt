@@ -137,6 +137,13 @@ See dashboardr in action:
 
 Both use real data from the General Social Survey (GSS).
 
+### Real-World Dashboard
+
+- [**DigIQ Monitor**](https://www.digiqmonitor.nl/) - The first public
+  dashboard built with dashboardr! Digital competence insights for Dutch
+  citizens, featuring 11 dimensions, multilingual support, and paginated
+  visualizations.
+
 ## Contributing
 
 Contributions welcome! Please submit a Pull Request.

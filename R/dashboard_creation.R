@@ -98,6 +98,7 @@
 #' @param lazy_debug Enable debug logging to browser console for lazy loading (default: FALSE). When TRUE, prints timing information for each chart load.
 #' @param pagination_separator Text to show in pagination navigation (e.g., "of" → "1 of 3"), default: "of". Applies to all paginated pages unless overridden at page level.
 #' @param pagination_position Default position for pagination controls: "bottom" (default, sticky at bottom), "top" (inline with page title), or "both" (top and bottom). This sets the default for all paginated pages. Individual pages can override this by passing position to add_pagination().
+#' @param powered_by_dashboardr Whether to automatically add "Powered by dashboardr" branding (default: TRUE). When TRUE, adds a badge-style branding element. Can be overridden by explicitly calling add_powered_by_dashboardr() with custom options, or set to FALSE to disable entirely.
 #' @return A dashboard_project object
 #' @export
 #' @examples
@@ -258,8 +259,9 @@ create_dashboard <- function(output_dir = "site",
                              lazy_load_margin = "200px",
                              lazy_load_tabs = NULL,
                              lazy_debug = FALSE,
-                             pagination_separator = "of",
-                             pagination_position = "bottom") {
+                            pagination_separator = "of",
+                            pagination_position = "bottom",
+                            powered_by_dashboardr = TRUE) {
 
   output_dir <- .resolve_output_dir(output_dir, allow_inside_pkg)
 
@@ -391,6 +393,7 @@ create_dashboard <- function(output_dir = "site",
     lazy_debug = lazy_debug,
     pagination_separator = pagination_separator,
     pagination_position = pagination_position,
+    powered_by_dashboardr = powered_by_dashboardr,
     pages = list(),
     data_files = NULL
   ), class = "dashboard_project")

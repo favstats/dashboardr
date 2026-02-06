@@ -68,11 +68,6 @@ result <- viz_stackedbar(
   color_palette = c("#27ae60", "#f39c12", "#e74c3c")
 )
 
-# Extract cross-tab data BEFORE wrapping (wrapping strips attributes)
-cross_tab_data <- attr(result, 'cross_tab_data')
-cross_tab_config <- attr(result, 'cross_tab_config')
-cross_tab_id <- attr(result, 'cross_tab_id')
-
 # Force container height with explicit wrapper
 if (inherits(result, 'highchart')) {
   result <- highcharter::hc_size(result, height = 450)
@@ -81,22 +76,6 @@ result <- htmltools::div(
   style = 'height: 450px !important; min-height: 450px !important; width: 100%; overflow: visible;',
   result
 )
-
-# Embed cross-tab data for client-side filtering
-if (!is.null(cross_tab_data)) {
-  cross_tab_json <- jsonlite::toJSON(cross_tab_data, dataframe = 'rows')
-  config_json <- jsonlite::toJSON(cross_tab_config, auto_unbox = TRUE)
-  script_tag <- htmltools::tags$script(
-    htmltools::HTML(paste0(
-      'window.dashboardrCrossTab = window.dashboardrCrossTab || {};',
-      'window.dashboardrCrossTab["', cross_tab_id, '"] = {',
-      'data: ', cross_tab_json, ',',
-      'config: ', config_json,
-      '};'
-    ))
-  )
-  result <- htmltools::tagList(script_tag, result)
-}
 
 result
 ```
@@ -118,11 +97,6 @@ result <- viz_boxplot(
   color_palette = c("#27ae60", "#f39c12", "#e74c3c")
 )
 
-# Extract cross-tab data BEFORE wrapping (wrapping strips attributes)
-cross_tab_data <- attr(result, 'cross_tab_data')
-cross_tab_config <- attr(result, 'cross_tab_config')
-cross_tab_id <- attr(result, 'cross_tab_id')
-
 # Force container height with explicit wrapper
 if (inherits(result, 'highchart')) {
   result <- highcharter::hc_size(result, height = 450)
@@ -131,22 +105,6 @@ result <- htmltools::div(
   style = 'height: 450px !important; min-height: 450px !important; width: 100%; overflow: visible;',
   result
 )
-
-# Embed cross-tab data for client-side filtering
-if (!is.null(cross_tab_data)) {
-  cross_tab_json <- jsonlite::toJSON(cross_tab_data, dataframe = 'rows')
-  config_json <- jsonlite::toJSON(cross_tab_config, auto_unbox = TRUE)
-  script_tag <- htmltools::tags$script(
-    htmltools::HTML(paste0(
-      'window.dashboardrCrossTab = window.dashboardrCrossTab || {};',
-      'window.dashboardrCrossTab["', cross_tab_id, '"] = {',
-      'data: ', cross_tab_json, ',',
-      'config: ', config_json,
-      '};'
-    ))
-  )
-  result <- htmltools::tagList(script_tag, result)
-}
 
 result
 ```
@@ -175,11 +133,6 @@ result <- viz_histogram(
   color_palette = "#3498db"
 )
 
-# Extract cross-tab data BEFORE wrapping (wrapping strips attributes)
-cross_tab_data <- attr(result, 'cross_tab_data')
-cross_tab_config <- attr(result, 'cross_tab_config')
-cross_tab_id <- attr(result, 'cross_tab_id')
-
 # Force container height with explicit wrapper
 if (inherits(result, 'highchart')) {
   result <- highcharter::hc_size(result, height = 400)
@@ -188,22 +141,6 @@ result <- htmltools::div(
   style = 'height: 400px !important; min-height: 400px !important; width: 100%; overflow: visible;',
   result
 )
-
-# Embed cross-tab data for client-side filtering
-if (!is.null(cross_tab_data)) {
-  cross_tab_json <- jsonlite::toJSON(cross_tab_data, dataframe = 'rows')
-  config_json <- jsonlite::toJSON(cross_tab_config, auto_unbox = TRUE)
-  script_tag <- htmltools::tags$script(
-    htmltools::HTML(paste0(
-      'window.dashboardrCrossTab = window.dashboardrCrossTab || {};',
-      'window.dashboardrCrossTab["', cross_tab_id, '"] = {',
-      'data: ', cross_tab_json, ',',
-      'config: ', config_json,
-      '};'
-    ))
-  )
-  result <- htmltools::tagList(script_tag, result)
-}
 
 result
 ```
@@ -223,11 +160,6 @@ result <- viz_density(
   color_palette = c("#3498db", "#e74c3c")
 )
 
-# Extract cross-tab data BEFORE wrapping (wrapping strips attributes)
-cross_tab_data <- attr(result, 'cross_tab_data')
-cross_tab_config <- attr(result, 'cross_tab_config')
-cross_tab_id <- attr(result, 'cross_tab_id')
-
 # Force container height with explicit wrapper
 if (inherits(result, 'highchart')) {
   result <- highcharter::hc_size(result, height = 400)
@@ -236,22 +168,6 @@ result <- htmltools::div(
   style = 'height: 400px !important; min-height: 400px !important; width: 100%; overflow: visible;',
   result
 )
-
-# Embed cross-tab data for client-side filtering
-if (!is.null(cross_tab_data)) {
-  cross_tab_json <- jsonlite::toJSON(cross_tab_data, dataframe = 'rows')
-  config_json <- jsonlite::toJSON(cross_tab_config, auto_unbox = TRUE)
-  script_tag <- htmltools::tags$script(
-    htmltools::HTML(paste0(
-      'window.dashboardrCrossTab = window.dashboardrCrossTab || {};',
-      'window.dashboardrCrossTab["', cross_tab_id, '"] = {',
-      'data: ', cross_tab_json, ',',
-      'config: ', config_json,
-      '};'
-    ))
-  )
-  result <- htmltools::tagList(script_tag, result)
-}
 
 result
 ```
@@ -280,11 +196,6 @@ result <- viz_bar(
   color_palette = c("#1abc9c", "#3498db", "#9b59b6", "#e74c3c", "#f39c12")
 )
 
-# Extract cross-tab data BEFORE wrapping (wrapping strips attributes)
-cross_tab_data <- attr(result, 'cross_tab_data')
-cross_tab_config <- attr(result, 'cross_tab_config')
-cross_tab_id <- attr(result, 'cross_tab_id')
-
 # Force container height with explicit wrapper
 if (inherits(result, 'highchart')) {
   result <- highcharter::hc_size(result, height = 400)
@@ -293,22 +204,6 @@ result <- htmltools::div(
   style = 'height: 400px !important; min-height: 400px !important; width: 100%; overflow: visible;',
   result
 )
-
-# Embed cross-tab data for client-side filtering
-if (!is.null(cross_tab_data)) {
-  cross_tab_json <- jsonlite::toJSON(cross_tab_data, dataframe = 'rows')
-  config_json <- jsonlite::toJSON(cross_tab_config, auto_unbox = TRUE)
-  script_tag <- htmltools::tags$script(
-    htmltools::HTML(paste0(
-      'window.dashboardrCrossTab = window.dashboardrCrossTab || {};',
-      'window.dashboardrCrossTab["', cross_tab_id, '"] = {',
-      'data: ', cross_tab_json, ',',
-      'config: ', config_json,
-      '};'
-    ))
-  )
-  result <- htmltools::tagList(script_tag, result)
-}
 
 result
 ```
@@ -334,11 +229,6 @@ result <- viz_heatmap(
   tooltip_labels_format = "{point.value:.1f}"
 )
 
-# Extract cross-tab data BEFORE wrapping (wrapping strips attributes)
-cross_tab_data <- attr(result, 'cross_tab_data')
-cross_tab_config <- attr(result, 'cross_tab_config')
-cross_tab_id <- attr(result, 'cross_tab_id')
-
 # Force container height with explicit wrapper
 if (inherits(result, 'highchart')) {
   result <- highcharter::hc_size(result, height = 500)
@@ -347,22 +237,6 @@ result <- htmltools::div(
   style = 'height: 500px !important; min-height: 500px !important; width: 100%; overflow: visible;',
   result
 )
-
-# Embed cross-tab data for client-side filtering
-if (!is.null(cross_tab_data)) {
-  cross_tab_json <- jsonlite::toJSON(cross_tab_data, dataframe = 'rows')
-  config_json <- jsonlite::toJSON(cross_tab_config, auto_unbox = TRUE)
-  script_tag <- htmltools::tags$script(
-    htmltools::HTML(paste0(
-      'window.dashboardrCrossTab = window.dashboardrCrossTab || {};',
-      'window.dashboardrCrossTab["', cross_tab_id, '"] = {',
-      'data: ', cross_tab_json, ',',
-      'config: ', config_json,
-      '};'
-    ))
-  )
-  result <- htmltools::tagList(script_tag, result)
-}
 
 result
 ```

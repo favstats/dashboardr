@@ -101,6 +101,8 @@ navbar:
         href: live-demos/tutorial/index.html
       - text: "🚀 Showcase Dashboard"
         href: live-demos/showcase/index.html
+      - text: "🌍 DigIQ Monitor"
+        href: https://www.digiqmonitor.nl/
       - text: -------
       - text: "🎨 Tabset Themes"
       - text: "   Pills"

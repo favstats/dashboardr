@@ -25,6 +25,14 @@ the exact R code used.
   slider). [View
   Demo](https://favstats.github.io/dashboardr/live-demos/sidebar/index.md)
 
+### Real-World Dashboards
+
+- **DigIQ Monitor** - The first public full-fledged dashboard built with
+  dashboardr! A comprehensive digital competence monitor for Dutch
+  citizens (ages 10-100), featuring 11 dimension pages, multilingual
+  support (Dutch/English), paginated visualizations, and interactive
+  modals. [View Live →](https://www.digiqmonitor.nl/)
+
 ### Tabset Theme Demos
 
 Each tabset theme has its own demo dashboard showing 1, 2, and 3-level

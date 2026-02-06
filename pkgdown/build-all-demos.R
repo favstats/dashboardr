@@ -84,9 +84,9 @@ tryCatch({
   tutorial_dir <- file.path(pkg_root, "docs", "live-demos", "tutorial")
   if (dir.exists(tutorial_dir)) unlink(tutorial_dir, recursive = TRUE)
   dir.create(tutorial_dir, recursive = TRUE, showWarnings = FALSE)
-  
+
   tutorial_dashboard(directory = tutorial_dir, open = FALSE)
-  
+
   if (check_html(tutorial_dir)) {
     results$tutorial <- "✅ Success"
     cat("   ✅ Tutorial dashboard created\n")
@@ -107,9 +107,9 @@ tryCatch({
   showcase_dir <- file.path(pkg_root, "docs", "live-demos", "showcase")
   if (dir.exists(showcase_dir)) unlink(showcase_dir, recursive = TRUE)
   dir.create(showcase_dir, recursive = TRUE, showWarnings = FALSE)
-  
+
   showcase_dashboard(directory = showcase_dir, open = FALSE)
-  
+
   if (check_html(showcase_dir)) {
     results$showcase <- "✅ Success"
     cat("   ✅ Showcase dashboard created\n")
@@ -128,12 +128,12 @@ tryCatch({
 cat("\n📊 [3/5] Building Tabset Theme Dashboards (6 themes)...\n")
 tryCatch({
   source(file.path(pkg_root, "pkgdown", "build-tabsets-demo.R"), local = TRUE)
-  
+
   # Check if any tabset themes were created
   tabsets_base <- file.path(pkg_root, "docs", "live-demos", "tabsets")
   themes <- c("pills", "modern", "minimal", "classic", "underline", "segmented")
   success_count <- sum(sapply(themes, function(t) check_html(file.path(tabsets_base, t))))
-  
+
   if (success_count == 6) {
     results$tabsets <- "✅ All 6 themes"
   } else if (success_count > 0) {
@@ -152,7 +152,7 @@ tryCatch({
 cat("\n📊 [4/5] Building Inputs Dashboard...\n")
 tryCatch({
   source(file.path(pkg_root, "pkgdown", "build-inputs-demo.R"), local = TRUE)
-  
+
   inputs_dir <- file.path(pkg_root, "docs", "live-demos", "inputs")
   if (check_html(inputs_dir)) {
     results$inputs <- "✅ Success"
@@ -170,7 +170,7 @@ tryCatch({
 cat("\n📊 [5/5] Building Overlay Dashboard...\n")
 tryCatch({
   source(file.path(pkg_root, "pkgdown", "build-overlay-demo.R"), local = TRUE)
-  
+
   overlay_dir <- file.path(pkg_root, "docs", "live-demos", "overlay")
   if (check_html(overlay_dir)) {
     results$overlay <- "✅ Success"

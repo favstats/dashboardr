@@ -71,6 +71,12 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
     stop("proj must be a dashboard_project object")
   }
   
+  # Auto-add powered_by_dashboardr branding if enabled (default TRUE)
+  if (isTRUE(proj$powered_by_dashboardr) && is.null(proj$powered_by_applied)) {
+    proj <- add_powered_by_dashboardr(proj, style = "badge", size = "large")
+    proj$powered_by_applied <- TRUE  # Mark as applied to avoid duplicate
+  }
+  
   # Validate preview parameter
   preview_pages <- NULL
   if (!is.null(preview)) {

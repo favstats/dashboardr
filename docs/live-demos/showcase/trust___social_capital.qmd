@@ -138,14 +138,8 @@ result <- viz_stackedbar(
   stack_label = "Happiness",
   stacked_type = "percent",
   stack_order = c("very happy", "pretty happy", "not too happy"),
-  color_palette = c("#27ae60", "#f39c12", "#e74c3c"),
-  cross_tab_filter_vars = c("degree", "sex")
+  color_palette = c("#27ae60", "#f39c12", "#e74c3c")
 )
-
-# Extract cross-tab data BEFORE wrapping (wrapping strips attributes)
-cross_tab_data <- attr(result, 'cross_tab_data')
-cross_tab_config <- attr(result, 'cross_tab_config')
-cross_tab_id <- attr(result, 'cross_tab_id')
 
 # Force container height with explicit wrapper
 if (inherits(result, 'highchart')) {
@@ -156,21 +150,7 @@ result <- htmltools::div(
   result
 )
 
-# Embed cross-tab data for client-side filtering
-if (!is.null(cross_tab_data)) {
-  cross_tab_json <- jsonlite::toJSON(cross_tab_data, dataframe = 'rows')
-  config_json <- jsonlite::toJSON(cross_tab_config, auto_unbox = TRUE)
-  script_tag <- htmltools::tags$script(
-    htmltools::HTML(paste0(
-      'window.dashboardrCrossTab = window.dashboardrCrossTab || {};',
-      'window.dashboardrCrossTab["', cross_tab_id, '"] = {',
-      'data: ', cross_tab_json, ',',
-      'config: ', config_json,
-      '};'
-    ))
-  )
-  result <- htmltools::tagList(script_tag, result)
-}
+result <- dashboardr:::.embed_cross_tab(result)
 
 result
 ```

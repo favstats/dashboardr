@@ -253,7 +253,7 @@ print(my_dashboard)
 #> 
 #> 📊 DASHBOARD PROJECT ====================================================
 #> │ 🏷️  Title: GSS Explorer
-#> │ 📁 Output: /Users/favstats/Dropbox/postdoc/my_dashboard
+#> │ 📁 Output: my_dashboard
 #> │
 #> │ ⚙️  FEATURES:
 #> │    • 🔍 Search
@@ -299,13 +299,7 @@ Demographic Overview
 
 Explore how GSS respondents break down by key categories.
 
-Demographics
-
-Attitudes
-
-Education
-
-Happiness
+*2 visualization(s) - data not available for inline preview*
 
 ## ⚡ Your first Dashboard in 1 Minute
 
@@ -395,7 +389,7 @@ print(onemin_dashboard)
 #> 
 #> 📊 DASHBOARD PROJECT ====================================================
 #> │ 🏷️  Title: GSS Data Explorer
-#> │ 📁 Output: /Users/favstats/Dropbox/postdoc/gss_dashboard
+#> │ 📁 Output: gss_dashboard
 #> │
 #> │ ⚙️  FEATURES:
 #> │    • 🔍 Search
@@ -431,19 +425,7 @@ Interactive visualizations of American attitudes and demographics.
 
 *Select a page from the navigation bar to begin.*
 
-Overview
-
-Analysis
-
-Education
-
-Race
-
-Gender
-
-Happiness by Education
-
-Happiness by Politics
+*1 visualization(s) - data not available for inline preview*
 
 This dashboard explores data from the [General Social
 Survey](https://gss.norc.org/) (GSS),

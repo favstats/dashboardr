@@ -361,3 +361,129 @@ test_that("navbar_menu uses correct QMD filenames", {
   
 })
 
+test_that("navbar_menu with align='right' works correctly", {
+  # Test that the align parameter is stored
+
+  menu <- navbar_menu(
+    text = "More Info",
+    pages = c("About", "Wave 1"),
+    icon = "ph:info",
+    align = "right"
+  )
+  
+  expect_equal(menu$align, "right")
+  expect_equal(menu$text, "More Info")
+  expect_equal(menu$menu_pages, c("About", "Wave 1"))
+})
+
+test_that("right-aligned navbar_menu pages don't appear as individual navbar items", {
+  # This tests the fix for the bug where pages in right-aligned dropdown menus
+
+  # were also appearing as separate navbar items
+  
+  left_menu <- navbar_menu(
+    text = "Dimensions",
+    pages = c("Skills", "Knowledge"),
+    icon = "ph:book"
+  )
+  
+  right_menu <- navbar_menu(
+    text = "More Info",
+    pages = c("About", "Wave 1"),
+    icon = "ph:info",
+    align = "right"
+  )
+  
+  dashboard <- create_dashboard(
+    output_dir = tempfile("right_align_test"),
+    title = "Test Dashboard",
+    navbar_sections = list(left_menu, right_menu)
+  ) %>%
+    add_page("Home", text = "Home page", is_landing_page = TRUE) %>%
+    add_page("Skills", text = "Skills content") %>%
+    add_page("Knowledge", text = "Knowledge content") %>%
+    add_page("About", text = "About content", icon = "ph:info-fill") %>%
+    add_page("Wave 1", text = "Wave 1 content", icon = "ph:number-one")
+  
+  generate_dashboard(dashboard, render = FALSE)
+  
+  yaml_file <- file.path(dashboard$output_dir, "_quarto.yml")
+  yaml_content <- readLines(yaml_file, warn = FALSE)
+  yaml_text <- paste(yaml_content, collapse = "\n")
+  
+  # Check both left: and right: sections exist
+  expect_true(grepl("left:", yaml_text))
+  expect_true(grepl("right:", yaml_text))
+  
+  # Find the left: section
+  left_idx <- which(grepl("^\\s+left:", yaml_content))[1]
+  right_idx <- which(grepl("^\\s+right:", yaml_content))[1]
+  
+  # Get content between left: and right: (the left navbar section)
+  left_section <- yaml_content[(left_idx + 1):(right_idx - 1)]
+  left_text <- paste(left_section, collapse = "\n")
+  
+  # About and Wave 1 should NOT appear as individual items in the left section
+  # They should only be inside the right-aligned dropdown menu
+  # Count how many times "about.qmd" appears - should only be once (inside the right menu)
+  about_in_left <- sum(grepl("about\\.qmd", left_section, ignore.case = TRUE))
+  wave1_in_left <- sum(grepl("wave_1\\.qmd", left_section, ignore.case = TRUE))
+  
+  expect_equal(about_in_left, 0, info = "About should not appear in left navbar section")
+  expect_equal(wave1_in_left, 0, info = "Wave 1 should not appear in left navbar section")
+  
+  # But they SHOULD appear in the right section (inside the dropdown)
+  right_section <- yaml_content[(right_idx + 1):length(yaml_content)]
+  right_text <- paste(right_section, collapse = "\n")
+  
+  expect_true(grepl("about\\.qmd", right_text, ignore.case = TRUE), 
+              info = "About should appear in right navbar dropdown")
+  expect_true(grepl("wave_1\\.qmd", right_text, ignore.case = TRUE), 
+              info = "Wave 1 should appear in right navbar dropdown")
+  
+  # Verify the dropdown menu structure exists in the right section
+  expect_true(grepl("menu:", right_text), 
+              info = "Dropdown menu should exist in right section")
+  expect_true(grepl("More Info", right_text), 
+              info = "Menu text should appear in right section")
+})
+
+test_that("mixed left and right navbar_menus work correctly", {
+  # Test with multiple menus, some left-aligned and some right-aligned
+  
+  dims_menu <- navbar_menu(
+    text = "Dimensions",
+    pages = c("Strategic", "Critical")
+  )
+  
+  info_menu <- navbar_menu(
+    text = "Info",
+    pages = c("About"),
+    align = "right"
+  )
+  
+  dashboard <- create_dashboard(
+    output_dir = tempfile("mixed_align"),
+    title = "Test",
+    navbar_sections = list(dims_menu, info_menu)
+  ) %>%
+    add_page("Home", text = "Home", is_landing_page = TRUE) %>%
+    add_page("Strategic", text = "Strategic content") %>%
+    add_page("Critical", text = "Critical content") %>%
+    add_page("About", text = "About content") %>%
+    add_page("Standalone", text = "Not in any menu")  # This should appear as individual item
+  
+  generate_dashboard(dashboard, render = FALSE)
+  
+  yaml_file <- file.path(dashboard$output_dir, "_quarto.yml")
+  yaml_content <- readLines(yaml_file, warn = FALSE)
+  yaml_text <- paste(yaml_content, collapse = "\n")
+  
+  # Standalone page should appear as individual item (not in any menu)
+  expect_true(grepl("standalone\\.qmd", yaml_text, ignore.case = TRUE))
+  
+  # Both menus should exist
+  menu_count <- sum(grepl("^\\s+menu:", yaml_content))
+  expect_equal(menu_count, 2, info = "Should have 2 dropdown menus")
+})
+

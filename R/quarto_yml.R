@@ -137,12 +137,29 @@
   }
 
   # Add navigation links - support both regular pages and navbar sections
+  # Initialize right_sections before the if block so it's available for right navbar processing
+  right_sections <- list()
+  
   if (!is.null(proj$navbar_sections) && length(proj$navbar_sections) > 0) {
     # Collect pages that are in menus or sidebars
     pages_in_sections <- character(0)
     
-    # Hybrid navigation mode - add navbar sections that link to sidebar groups
-    for (section in proj$navbar_sections) {
+    # Separate left and right aligned sections
+    left_sections <- list()
+    for (sec in proj$navbar_sections) {
+      if (!is.null(sec$align) && sec$align == "right") {
+        right_sections <- c(right_sections, list(sec))
+        # Also track pages in right-aligned sections so they don't appear as individual navbar items
+        if (!is.null(sec$menu_pages)) {
+          pages_in_sections <- c(pages_in_sections, sec$menu_pages)
+        }
+      } else {
+        left_sections <- c(left_sections, list(sec))
+      }
+    }
+    
+    # Hybrid navigation mode - add LEFT-ALIGNED navbar sections that link to sidebar groups
+    for (section in left_sections) {
       if (!is.null(section$sidebar)) {
         # This is a sidebar reference (hybrid navigation)
         yaml_lines <- c(yaml_lines, paste0("      - sidebar:", section$sidebar))
@@ -347,11 +364,76 @@
     }
   }
   
-  # Add right section if we have right-aligned pages OR tools OR custom elements
-  if (has_right_pages || length(tools) > 0 || length(custom_navbar_right) > 0) {
+  # Add right section if we have right-aligned pages OR tools OR custom elements OR right sections
+  has_right_sections <- length(right_sections) > 0
+  if (has_right_pages || length(tools) > 0 || length(custom_navbar_right) > 0 || has_right_sections) {
     yaml_lines <- c(yaml_lines, "    right:")
     
-    # First, add right-aligned pages
+    # First, add right-aligned navbar sections (menus/dropdowns)
+    if (has_right_sections) {
+      for (section in right_sections) {
+        if (!is.null(section$menu_pages)) {
+          # This is a dropdown menu
+          text_content <- paste0("\"", section$text, "\"")
+          if (!is.null(section$icon)) {
+            icon_shortcode <- if (grepl("{{< iconify", section$icon, fixed = TRUE)) {
+              section$icon
+            } else {
+              icon(section$icon)
+            }
+            text_content <- paste0("\"", icon_shortcode, " ", section$text, "\"")
+          }
+          yaml_lines <- c(yaml_lines,
+            paste0("      - text: ", text_content),
+            "        menu:"
+          )
+          
+          # Add menu items for each page
+          for (page_name in section$menu_pages) {
+            if (!is.null(proj$pages[[page_name]])) {
+              page <- proj$pages[[page_name]]
+              
+              # Generate filename same way as other pages
+              filename <- tolower(gsub("[^a-zA-Z0-9]", "_", page_name))
+              page_qmd <- paste0(filename, ".qmd")
+              
+              # Get page text with icon if available
+              page_text_content <- paste0("\"", page_name, "\"")
+              if (!is.null(page$icon)) {
+                page_icon <- if (grepl("{{< iconify", page$icon, fixed = TRUE)) {
+                  page$icon
+                } else {
+                  icon(page$icon)
+                }
+                page_text_content <- paste0("\"", page_icon, " ", page_name, "\"")
+              }
+              
+              yaml_lines <- c(yaml_lines,
+                paste0("          - href: ", page_qmd),
+                paste0("            text: ", page_text_content)
+              )
+            }
+          }
+        } else if (!is.null(section$href)) {
+          # This is a regular right-aligned link
+          text_content <- paste0("\"", section$text, "\"")
+          if (!is.null(section$icon)) {
+            icon_shortcode <- if (grepl("{{< iconify", section$icon, fixed = TRUE)) {
+              section$icon
+            } else {
+              icon(section$icon)
+            }
+            text_content <- paste0("\"", icon_shortcode, " ", section$text, "\"")
+          }
+          yaml_lines <- c(yaml_lines,
+            paste0("      - href: ", section$href),
+            paste0("        text: ", text_content)
+          )
+        }
+      }
+    }
+    
+    # Next, add right-aligned pages
     if (has_right_pages) {
       for (page_name in names(pages_right)) {
         page <- pages_right[[page_name]]
