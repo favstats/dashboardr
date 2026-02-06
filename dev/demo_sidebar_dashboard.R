@@ -362,9 +362,11 @@ explorer_content <- create_content(data = page_data) %>%
     title_map  = list(key_response = key_response_map)
   )
 
-dashboard <- create_dashboard(output_dir, "GSS Explorer", theme = "litera") %>%
+dashboard <- create_dashboard("11111", "GSS Explorer", theme = "litera") %>%
   add_page("Explorer", data = page_data, content = explorer_content)
 
-generate_dashboard(dashboard, render = !isTRUE(getOption("dashboardr.no_render", FALSE)))
+generate_dashboard(dashboard, render = T)
+
+# generate_dashboard(dashboard, render = !isTRUE(getOption("dashboardr.no_render", FALSE)))
 message("Dashboard generated in: ", output_dir)
 

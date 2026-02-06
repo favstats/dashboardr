@@ -12,6 +12,18 @@
   styleEl.textContent = '.dashboardr-sw-hidden { display: none !important; height: 0 !important; min-height: 0 !important; overflow: hidden !important; margin: 0 !important; padding: 0 !important; }';
   document.head.appendChild(styleEl);
 
+  // Override bslib's grid row sizing in sidebar layouts so charts aren't squished.
+  // CSS !important can't override bslib's inline styles, so we do it via JS.
+  function fixChartMinHeight() {
+    var minH = getComputedStyle(document.documentElement)
+                .getPropertyValue('--chart-min-height').trim() || '400px';
+    document.querySelectorAll('.sidebar-content .bslib-grid[style*="grid-template-rows"]')
+      .forEach(function(grid) {
+        grid.style.setProperty('grid-template-rows', 'none', 'important');
+        grid.style.setProperty('grid-auto-rows', 'minmax(' + minH + ', max-content)', 'important');
+      });
+  }
+
   function collectInputValues() {
     var values = {};
     var els = document.querySelectorAll('select, input[type="radio"]:checked');
@@ -118,12 +130,19 @@
 
   document.addEventListener('change', evaluateAllShowWhen);
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', evaluateAllShowWhen);
+    document.addEventListener('DOMContentLoaded', function() {
+      evaluateAllShowWhen();
+      fixChartMinHeight();
+    });
   } else {
     evaluateAllShowWhen();
+    fixChartMinHeight();
   }
-  // Re-run after short delay for async-rendered charts
-  setTimeout(evaluateAllShowWhen, 500);
-  setTimeout(evaluateAllShowWhen, 2000);
-  window.addEventListener('load', evaluateAllShowWhen);
+  // Re-run after short delay for async-rendered charts and bslib init
+  setTimeout(function() { evaluateAllShowWhen(); fixChartMinHeight(); }, 500);
+  setTimeout(function() { evaluateAllShowWhen(); fixChartMinHeight(); }, 2000);
+  window.addEventListener('load', function() {
+    evaluateAllShowWhen();
+    fixChartMinHeight();
+  });
 })();
