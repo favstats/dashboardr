@@ -97,10 +97,12 @@ result <- viz_timeline(
   color_palette = c("#27ae60", "#f39c12", "#e74c3c")
 )
 
-# Force container height with explicit wrapper
+# Set chart height
 if (inherits(result, 'highchart')) {
   result <- highcharter::hc_size(result, height = 450)
 }
+
+# Force container height with explicit wrapper
 result <- htmltools::div(
   style = 'height: 450px !important; min-height: 450px !important; width: 100%; overflow: visible;',
   result

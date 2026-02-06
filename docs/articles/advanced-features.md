@@ -809,6 +809,172 @@ On mobile devices (screens \< 768px wide), sidebars automatically:
 - Take full width of the screen
 - Maintain all functionality
 
+## 🔄 Cross-Tab Filtering & Dynamic Titles
+
+For sidebar dashboards where inputs control multiple visualizations,
+dashboardr supports **client-side cross-tab filtering** — charts rebuild
+instantly without server round-trips.
+
+> **🔗 See it in action:** Check out the [GSS Explorer
+> Demo](https://favstats.github.io/dashboardr/live-demos/sidebar-gss/index.md)
+> to see cross-tab filtering, conditional visibility, dynamic titles,
+> and consistent colors all working together!
+
+### Conditional Visibility with show_when
+
+Use `show_when` to show or hide a visualization based on the current
+sidebar input values. This lets you display different chart types
+depending on user selections:
+
+``` r
+# Show a stacked bar for single-year views
+add_viz(
+  type      = "stackedbar",
+  x_var     = "response",
+  stack_var = "group",
+  y_var     = "n",
+  show_when = ~ time_period %in% c("2022", "2024") & breakdown != "Overall"
+)
+
+# Show a timeline for the "Over Time" view
+add_viz(
+  type     = "timeline",
+  time_var = "year",
+  y_var    = "score",
+  show_when = ~ time_period == "Over Time"
+)
+```
+
+The `show_when` formula uses the same operators as R: `==`, `!=`,
+`%in%`, combined with `&` (and) and `|` (or). Hidden charts fully
+collapse — no empty space left behind.
+
+### Dynamic Titles with Placeholders
+
+Chart titles can include `{placeholder}` tokens that are automatically
+replaced with the current sidebar input value:
+
+``` r
+add_viz(
+  type  = "stackedbar",
+  title = "{dimension}: {question} by {breakdown} ({time_period})",
+  ...
+)
+```
+
+When the user selects “Race” in the sidebar, `{breakdown}` becomes
+“Race” in the title. Placeholders are matched by `input_id`.
+
+### Derived Placeholders with title_map
+
+Sometimes you need a placeholder whose value is *derived* from an input
+— not the input value itself. For example, showing which response value
+is tracked in a timeline (e.g., “Legal” for marijuana, “Favor” for death
+penalty).
+
+Use `title_map` with a simple named vector:
+
+``` r
+# Pre-compute the mapping from your existing objects
+key_response_map <- setNames(key_resp[question_var], names(question_var))
+# Result: c("Marijuana Legalization" = "Legal", "Death Penalty" = "Favor", ...)
+
+add_viz(
+  type      = "timeline",
+  title     = "{question}: % responding '{key_response}' by {breakdown}",
+  title_map = list(key_response = key_response_map),
+  ...
+)
+```
+
+The system auto-detects which sidebar input the mapping corresponds to —
+you just provide the named vector. When the user selects “Marijuana
+Legalization”, `{key_response}` becomes “Legal”.
+
+### Consistent Colors with Named color_palette
+
+By default, Highcharts assigns colors positionally. When stacked bars
+and timelines add series in different orders, the same group gets
+different colors. Fix this with a **named** `color_palette`:
+
+``` r
+# Define once
+group_colors <- c(
+  "Male" = "#F28E2B", "Female" = "#E15759",
+  "White" = "#EDC948", "Black" = "#59A14F", "Other" = "#76B7B2",
+  "18-29" = "#BAB0AC", "30-44" = "#9C755F", "45-59" = "#FF9DA7", "60+" = "#B07AA1"
+)
+
+# Use in both charts — "Male" is always #F28E2B
+add_viz(type = "stackedbar", color_palette = group_colors, ...)
+add_viz(type = "timeline", color_palette = group_colors, ...)
+```
+
+Named palettes map colors by series name. Unnamed vectors
+(`c("#F28E2B", "#E15759")`) still work as positional cycles for
+backwards compatibility.
+
+### Series Ordering with group_order
+
+Control the order series appear in timeline charts:
+
+``` r
+add_viz(
+  type        = "timeline",
+  group_var   = "breakdown_value",
+  group_order = c("Male", "Female", "White", "Black", "Other"),
+  ...
+)
+```
+
+This ensures the legend and series order matches across chart types. Use
+[`rev()`](https://rdrr.io/r/base/rev.html) if the visual order needs to
+be reversed to match a horizontal stacked bar’s legend.
+
+### Complete Sidebar Example
+
+``` r
+library(dashboardr)
+
+# Define color and order vectors
+all_groups <- c("All", "Male", "Female", "White", "Black", "Other")
+group_colors <- c(
+  "All" = "#4E79A7", "Male" = "#F28E2B", "Female" = "#E15759",
+  "White" = "#EDC948", "Black" = "#59A14F", "Other" = "#76B7B2"
+)
+
+explorer <- create_content(data = page_data) %>%
+  add_sidebar(width = "250px", title = "Controls") %>%
+    add_input(input_id = "question", label = "Question",
+              type = "radio", filter_var = "question",
+              options = c("Trust", "Fairness")) %>%
+    add_input(input_id = "breakdown", label = "Compare by",
+              type = "radio", filter_var = "breakdown_type",
+              options = c("Overall", "Sex", "Race")) %>%
+  end_sidebar() %>%
+  add_viz(
+    type          = "stackedbar",
+    x_var         = "response",
+    stack_var     = "breakdown_value",
+    y_var         = "n",
+    title         = "{question} by {breakdown}",
+    color_palette = group_colors,
+    stack_order   = all_groups,
+    show_when     = ~ breakdown != "Overall"
+  ) %>%
+  add_viz(
+    type          = "timeline",
+    time_var      = "year",
+    y_var         = "score",
+    group_var     = "breakdown_value",
+    agg           = "none",
+    title         = "{question}: trend by {breakdown}",
+    color_palette = group_colors,
+    group_order   = rev(all_groups),
+    show_when     = ~ time_period == "Over Time"
+  )
+```
+
 ## ⚖️ Survey Weights
 
 Survey data often requires weighting to produce

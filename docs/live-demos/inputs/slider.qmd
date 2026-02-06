@@ -122,19 +122,22 @@ result <- viz_timeline(
   chart_type = "line",
   subtitle = "Percentage of publications available as open access",
   x_label = "Decade",
-  y_label = "% Open Access"
+  y_label = "% Open Access",
+  cross_tab_filter_vars = "decade"
 )
 
-# Force container height with explicit wrapper
+# Set chart height
 if (inherits(result, 'highchart')) {
   result <- highcharter::hc_size(result, height = 450)
 }
+
+result <- dashboardr:::.embed_cross_tab(result)
+
+# Force container height with explicit wrapper
 result <- htmltools::div(
   style = 'height: 450px !important; min-height: 450px !important; width: 100%; overflow: visible;',
   result
 )
-
-result <- dashboardr:::.embed_cross_tab(result)
 
 result
 ```

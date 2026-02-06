@@ -172,11 +172,30 @@
     )
   }
   
+  # When show_when is set, inject wrapper div via R output so it appears in HTML (Quarto ::: div does not preserve data-show-when)
+  show_when_json <- NULL
+  if (!is.null(spec$show_when)) {
+    show_when_json <- .parse_show_when(spec$show_when)
+  }
+  use_show_when_wrapper <- !is.null(show_when_json)
+
   # Simple R chunk - caching enabled for performance
+  chunk_header <- paste0("```{r ", chunk_label, "}")
+  if (use_show_when_wrapper) {
+    chunk_header <- c(chunk_header, "#| results: 'asis'")
+  }
   lines <- c(lines,
-    paste0("```{r ", chunk_label, "}"),
+    chunk_header,
     paste0("# ", spec$title %||% paste(spec$viz_type, "visualization"))
   )
+
+  if (use_show_when_wrapper) {
+    # Use the show_when_open() helper to emit the wrapper div
+    # Single-quote the JSON so no extra escaping is needed
+    lines <- c(lines,
+      paste0("show_when_open('", show_when_json, "')")
+    )
+  }
 
   # Dispatch to appropriate generator
   if ("viz_type" %in% names(spec) && !is.null(spec$viz_type)) {
@@ -185,6 +204,10 @@
     lines <- c(lines, .generate_function_viz(spec))
   } else {
     lines <- c(lines, .generate_auto_viz(spec_name, spec))
+  }
+
+  if (use_show_when_wrapper) {
+    lines <- c(lines, "show_when_close()")
   }
 
   lines <- c(lines, "```")
@@ -212,6 +235,7 @@
   }
 
   lines <- c(lines, "")
+
   lines
 }
 
@@ -375,7 +399,8 @@
     "text_before_tabset", "text_after_tabset", "text_before_viz", "text_after_viz", 
     "height", "filter", "data", "has_data", "multi_dataset", "title_tabset", 
     "nested_children", "drop_na_vars", "data_is_dataframe", "data_serialized", "alter_data",
-    "cross_tab_filter_vars",  # Internal: used for client-side filtering
+    "show_when",  # Used only for wrapper div (data-show-when), not passed to viz_*()
+    "cross_tab_filter_vars",  # Handled separately below: only passed to viz types that support it
     ".insertion_index", ".min_index", ".pagination_section",
     # Legacy parameter names (already mapped to modern names above)
     "questions", "question_labels",  # Use x_vars, x_var_labels
@@ -386,6 +411,13 @@
     if (!param %in% exclude_params) {
       args[[param]] <- .serialize_arg(spec[[param]])
     }
+  }
+
+  # Pass cross_tab_filter_vars only to viz types that support it
+  cross_tab_supported_types <- c("stackedbar", "stackedbars", "timeline")
+  if (spec$viz_type %in% cross_tab_supported_types &&
+      !is.null(spec$cross_tab_filter_vars) && length(spec$cross_tab_filter_vars) > 0) {
+    args[["cross_tab_filter_vars"]] <- .serialize_arg(spec$cross_tab_filter_vars)
   }
 
   # Format function call with proper indentation
@@ -406,26 +438,33 @@
     call_str <- arg_lines
   }
 
-  # Add height support - wrap in explicit height container 
+  # Set chart height BEFORE cross-tab embed (hc_size must run on the highchart object)
   if (!is.null(spec$height)) {
-    height_lines <- c(
+    call_str <- c(call_str,
       "",
-      "# Force container height with explicit wrapper",
+      "# Set chart height",
       paste0("if (inherits(result, 'highchart')) {"),
       paste0("  result <- highcharter::hc_size(result, height = ", spec$height, ")"),
-      paste0("}"),
+      paste0("}")
+    )
+  }
+
+  # Embed cross-tab data BEFORE the height div wrapper (attributes live on the highchart)
+  has_cross_tab <- !is.null(spec$cross_tab_filter_vars) && length(spec$cross_tab_filter_vars) > 0
+  if (has_cross_tab) {
+    call_str <- c(call_str, "", "result <- dashboardr:::.embed_cross_tab(result)")
+  }
+
+  # Wrap in explicit height container AFTER cross-tab embed
+  if (!is.null(spec$height)) {
+    call_str <- c(call_str,
+      "",
+      "# Force container height with explicit wrapper",
       paste0("result <- htmltools::div("),
       paste0("  style = 'height: ", spec$height, "px !important; min-height: ", spec$height, "px !important; width: 100%; overflow: visible;',"),
       paste0("  result"),
       paste0(")")
     )
-    call_str <- c(call_str, height_lines)
-  }
-  
-  # Only add cross-tab embedding when there are interactive inputs
-  has_cross_tab <- !is.null(spec$cross_tab_filter_vars) && length(spec$cross_tab_filter_vars) > 0
-  if (has_cross_tab) {
-    call_str <- c(call_str, "", "result <- dashboardr:::.embed_cross_tab(result)")
   }
 
   # Always print the result

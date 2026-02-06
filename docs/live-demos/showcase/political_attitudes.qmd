@@ -58,10 +58,12 @@ result <- viz_stackedbar(
   color_palette = c("#27ae60", "#f39c12", "#e74c3c")
 )
 
-# Force container height with explicit wrapper
+# Set chart height
 if (inherits(result, 'highchart')) {
   result <- highcharter::hc_size(result, height = 500)
 }
+
+# Force container height with explicit wrapper
 result <- htmltools::div(
   style = 'height: 500px !important; min-height: 500px !important; width: 100%; overflow: visible;',
   result
@@ -91,10 +93,12 @@ result <- viz_heatmap(
   tooltip_labels_format = "{point.value:.1f}"
 )
 
-# Force container height with explicit wrapper
+# Set chart height
 if (inherits(result, 'highchart')) {
   result <- highcharter::hc_size(result, height = 450)
 }
+
+# Force container height with explicit wrapper
 result <- htmltools::div(
   style = 'height: 450px !important; min-height: 450px !important; width: 100%; overflow: visible;',
   result
@@ -119,10 +123,12 @@ result <- viz_bar(
   color_palette = c("#3498db", "#e74c3c")
 )
 
-# Force container height with explicit wrapper
+# Set chart height
 if (inherits(result, 'highchart')) {
   result <- highcharter::hc_size(result, height = 400)
 }
+
+# Force container height with explicit wrapper
 result <- htmltools::div(
   style = 'height: 400px !important; min-height: 400px !important; width: 100%; overflow: visible;',
   result

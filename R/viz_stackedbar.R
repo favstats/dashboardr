@@ -195,7 +195,8 @@ viz_stackedbar <- function(data,
                            weight_var = NULL,
                            data_labels_enabled = TRUE,
                            # Cross-tab filtering for sidebar inputs (auto-detected)
-                           cross_tab_filter_vars = NULL) {
+                           cross_tab_filter_vars = NULL,
+                           title_map = NULL) {
 
   # Convert variable arguments to strings (supports both quoted and unquoted)
   x_var <- .as_var_string(rlang::enquo(x_var))
@@ -409,7 +410,8 @@ viz_stackedbar <- function(data,
     horizontal = horizontal,
     weight_var = weight_var,
     data_labels_enabled = data_labels_enabled,
-    cross_tab_filter_vars = cross_tab_filter_vars
+    cross_tab_filter_vars = cross_tab_filter_vars,
+    title_map = title_map
   )
 }
 
@@ -447,7 +449,8 @@ viz_stackedbar <- function(data,
                                   horizontal = FALSE,
                                   weight_var = NULL,
                                   data_labels_enabled = TRUE,
-                                  cross_tab_filter_vars = NULL) {
+                                  cross_tab_filter_vars = NULL,
+                                  title_map = NULL) {
 
   # Validation for core function (x_var and stack_var are already strings)
   if (!x_var %in% names(data)) {
@@ -611,8 +614,13 @@ viz_stackedbar <- function(data,
         dplyr::count(.x_var_col, .stack_var_col, name = "n")
     }
   } else {
+    # When y_var is provided (pre-aggregated counts), aggregate by summing
+    # across x/stack groups.  This is essential when extra columns exist
+    # (e.g. cross_tab_filter_vars like dimension, question, time_period)
+    # because the data may contain multiple rows per x/stack combination.
     plot_data <- plot_data |>
-      dplyr::rename(n = !!rlang::sym(y_var))
+      dplyr::group_by(.x_var_col, .stack_var_col) |>
+      dplyr::summarise(n = sum(!!rlang::sym(y_var), na.rm = TRUE), .groups = "drop")
   }
 
   # HIGHCHARTER
@@ -655,7 +663,7 @@ viz_stackedbar <- function(data,
 
   # Stacking and data labels
   data_label_format <- if (stacked_type == "percent") '{point.percentage:.1f}%' else '{point.y:.0f}'
-  stacking_type_hc <- if (stacked_type == "percent") "percent" else "counts"
+  stacking_type_hc <- if (stacked_type == "percent") "percent" else "normal"
 
   series_type <- if (horizontal) "bar" else "column"
 
@@ -718,9 +726,21 @@ viz_stackedbar <- function(data,
     )
   }
 
-  # Colors
+  # Colors: named vector = per-series color map; unnamed = positional cycle
   if (!is.null(color_palette)) {
-    hchart_obj <- highcharter::hc_colors(hchart_obj, colors = color_palette)
+    if (!is.null(names(color_palette))) {
+      # Named: resolve to positional order matching stack levels
+      stack_levels <- levels(plot_data$.stack_var_col)
+      resolved_colors <- vapply(stack_levels, function(lv) {
+        if (lv %in% names(color_palette)) color_palette[[lv]] else NA_character_
+      }, character(1))
+      resolved_colors <- resolved_colors[!is.na(resolved_colors)]
+      if (length(resolved_colors) > 0) {
+        hchart_obj <- highcharter::hc_colors(hchart_obj, colors = unname(resolved_colors))
+      }
+    } else {
+      hchart_obj <- highcharter::hc_colors(hchart_obj, colors = color_palette)
+    }
   }
   
   # Generate cross-tab for client-side filtering if filter_vars are provided
@@ -730,9 +750,16 @@ viz_stackedbar <- function(data,
     
     if (length(valid_filter_vars) > 0) {
       # Compute cross-tab including filter variables
+      # Use sum(y_var) when data already has a count/value column; fall back to counting rows
       group_vars <- c(x_var, stack_var, valid_filter_vars)
-      cross_tab <- data %>%
-        dplyr::count(dplyr::across(dplyr::all_of(group_vars)), name = "n")
+      if (!is.null(y_var) && y_var %in% names(data) && is.numeric(data[[y_var]])) {
+        cross_tab <- data %>%
+          dplyr::group_by(dplyr::across(dplyr::all_of(group_vars))) %>%
+          dplyr::summarise(n = sum(.data[[y_var]], na.rm = TRUE), .groups = "drop")
+      } else {
+        cross_tab <- data %>%
+          dplyr::count(dplyr::across(dplyr::all_of(group_vars)), name = "n")
+      }
       
       # Generate unique chart ID
       chart_id <- paste0("crosstab_", substr(digest::digest(paste(x_var, stack_var, collapse = "_")), 1, 8))
@@ -745,8 +772,23 @@ viz_stackedbar <- function(data,
         filterVars = valid_filter_vars,
         stackedType = stacked_type,
         stackOrder = if (!is.null(stack_order)) stack_order else unique(as.character(cross_tab[[stack_var]])),
-        xOrder = if (!is.null(x_order)) x_order else unique(as.character(cross_tab[[x_var]]))
+        xOrder = if (!is.null(x_order)) x_order else unique(as.character(cross_tab[[x_var]])),
+        colorMap = if (!is.null(color_palette) && !is.null(names(color_palette))) as.list(color_palette) else NULL
       )
+
+      # Dynamic title: if title contains {var} placeholders, store the template
+      if (!is.null(title) && grepl("\\{\\w+\\}", title)) {
+        chart_config$titleTemplate <- title
+      }
+
+      # Title map: derived placeholders from named vectors
+      if (!is.null(title_map) && is.list(title_map)) {
+        tl_js <- lapply(names(title_map), function(nm) {
+          list(values = as.list(title_map[[nm]]))
+        })
+        names(tl_js) <- names(title_map)
+        chart_config$titleLookups <- tl_js
+      }
       
       # Store cross-tab and config as attributes on the chart
       attr(hchart_obj, "cross_tab_data") <- cross_tab

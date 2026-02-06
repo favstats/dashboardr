@@ -81,9 +81,22 @@
   
   # Auto-enable inputs if needed (flag set by add_input())
   if (isTRUE(page$needs_inputs)) {
+    args <- character(0)
+    if (isTRUE(page$needs_linked_inputs)) args <- c(args, "linked = TRUE")
+    if (isTRUE(page$needs_show_when)) args <- c(args, "show_when = TRUE")
+    enable_call <- paste0("dashboardr::enable_inputs(", paste(args, collapse = ", "), ")")
     content <- c(content,
       "```{r, echo=FALSE, results='asis'}",
-      "dashboardr::enable_inputs()",
+      enable_call,
+      "```",
+      ""
+    )
+  }
+  # Show_when without inputs (e.g. conditional viz only)
+  if (!isTRUE(page$needs_inputs) && isTRUE(page$needs_show_when)) {
+    content <- c(content,
+      "```{r, echo=FALSE, results='asis'}",
+      "dashboardr::enable_show_when()",
       "```",
       ""
     )
@@ -213,7 +226,20 @@
     }
   }
   page_filter_vars <- unique(page_filter_vars)
-  
+  # #region agent log
+  tryCatch({
+    log_line <- jsonlite::toJSON(list(
+      location = "page_generation.R:filter_vars",
+      message = "extract",
+      data = list(page_filter_vars = page_filter_vars, has_sidebar = has_sidebar),
+      timestamp = as.numeric(Sys.time()) * 1000,
+      sessionId = "debug-session",
+      hypothesisId = "H4"
+    ), auto_unbox = TRUE)
+    cat(log_line, "\n", file = "/Users/favstats/Dropbox/postdoc/dashboardr/.cursor/debug.log", append = TRUE)
+  }, error = function(e) {})
+  # #endregion
+
   # In dashboard format (with sidebar), viz titles should use ### instead of ##
   # to stay within the Column
   viz_heading_level <- if (has_sidebar) 3 else 2
@@ -1103,12 +1129,23 @@
 #' @param page Page object (for data access)
 #' @return Character vector of markdown lines
 #' @keywords internal
-.generate_input_block <- function(block, page = NULL) {
+.generate_input_block <- function(block, page = NULL, next_block = NULL) {
   # Generate R chunk that renders the input widget
   # Note: margin parameters (mt, mr, mb, ml) are only used in render_input_row, not render_input
   # Use input_type if available (sidebar inputs), otherwise fall back to type
   input_widget_type <- block$input_type %||% block$type
-  
+
+  # Linked inputs: if next block is a linked child of this block, pass linked_child_id and options_by_parent
+  linked_child_id <- NULL
+  options_by_parent <- NULL
+  if (!is.null(next_block) &&
+      identical(next_block$type, "input") &&
+      identical(next_block$.linked_parent_id, block$input_id) &&
+      !is.null(next_block$.options_by_parent)) {
+    linked_child_id <- next_block$input_id
+    options_by_parent <- next_block$.options_by_parent
+  }
+
   lines <- c(
     "",
     "```{r}",
@@ -1140,7 +1177,15 @@
     paste0("  labels = ", .serialize_arg(block$labels), ","),
     paste0("  size = ", .serialize_arg(block$size %||% "md"), ","),
     paste0("  help = ", .serialize_arg(block$help), ","),
-    paste0("  disabled = ", .serialize_arg(block$disabled %||% FALSE)),
+    paste0("  disabled = ", .serialize_arg(block$disabled %||% FALSE))
+  )
+  if (!is.null(linked_child_id) && !is.null(options_by_parent)) {
+    lines <- c(lines,
+      paste0("  , linked_child_id = ", .serialize_arg(linked_child_id)),
+      paste0("  , options_by_parent = ", .serialize_arg(options_by_parent))
+    )
+  }
+  lines <- c(lines,
     ")",
     "```",
     ""
@@ -1287,12 +1332,14 @@
   }
   
   # Generate content for each block in the sidebar
-  for (block in sidebar$blocks) {
+  for (i in seq_along(sidebar$blocks)) {
+    block <- sidebar$blocks[[i]]
+    next_block <- if (i < length(sidebar$blocks)) sidebar$blocks[[i + 1]] else NULL
     block_type <- block$type %||% ""
     
     block_content <- switch(block_type,
       "text" = c("", block$content, ""),
-      "input" = .generate_input_block(block, page),
+      "input" = .generate_input_block(block, page, next_block = next_block),
       "input_row" = .generate_input_row_block(block, page),
       "image" = .generate_image_block(block),
       "badge" = .generate_badge_block(block),
@@ -1312,6 +1359,50 @@
   }
   
   lines
+}
+
+#' Parse show_when formula into JSON condition for data-show-when attribute
+#' @param formula A one-sided formula (e.g. ~ time_period == "Over Time")
+#' @return JSON string, or NULL if formula is NULL
+#' @keywords internal
+.parse_show_when <- function(formula) {
+  if (is.null(formula)) return(NULL)
+  if (!inherits(formula, "formula")) {
+    stop("show_when must be a formula (use ~ prefix)", call. = FALSE)
+  }
+  expr <- rlang::f_rhs(formula)
+  condition <- .expr_to_condition(expr)
+  jsonlite::toJSON(condition, auto_unbox = TRUE)
+}
+
+#' Convert R expression to condition list for show_when (eq, neq, in, and, or)
+#' @param expr Unevaluated expression from formula RHS
+#' @return List structure for JSON serialization
+#' @keywords internal
+.expr_to_condition <- function(expr) {
+  if (!is.call(expr)) {
+    stop("Invalid show_when expression", call. = FALSE)
+  }
+  op <- as.character(expr[[1]])
+  if (op == "==") {
+    list(var = as.character(expr[[2]]), op = "eq", val = eval(expr[[3]], envir = baseenv()))
+  } else if (op == "!=") {
+    list(var = as.character(expr[[2]]), op = "neq", val = eval(expr[[3]], envir = baseenv()))
+  } else if (op == "%in%") {
+    list(var = as.character(expr[[2]]), op = "in", val = eval(expr[[3]], envir = baseenv()))
+  } else if (op == "&" || identical(op, "&&")) {
+    list(op = "and", conditions = list(
+      .expr_to_condition(expr[[2]]),
+      .expr_to_condition(expr[[3]])
+    ))
+  } else if (op == "|" || identical(op, "||")) {
+    list(op = "or", conditions = list(
+      .expr_to_condition(expr[[2]]),
+      .expr_to_condition(expr[[3]])
+    ))
+  } else {
+    stop("Unsupported operator in show_when: ", op, call. = FALSE)
+  }
 }
 
 #' Collect unique filters from all visualizations
@@ -1352,6 +1443,19 @@
     ")",
     ""
   )
+
+  # Ensure show_when helpers are available even if installed package version
+  # predates their addition (Quarto renders in a fresh R process)
+  if (isTRUE(page$needs_show_when)) {
+    lines <- c(lines,
+      "# Conditional-visibility helpers (fallback for older package versions)",
+      "if (!exists('show_when_open', mode = 'function')) {",
+      "  show_when_open  <- function(j) cat(paste0('<div class=\"viz-show-when\" data-show-when=\\'', j, '\\'>\\n'))",
+      "  show_when_close <- function()  cat('</div>\\n')",
+      "}",
+      ""
+    )
+  }
 
   # Add data loading if data_path is present
   if (!is.null(page$data_path)) {

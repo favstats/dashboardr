@@ -650,12 +650,12 @@ combine_viz <- function(...) {
 #'     title = "Age Distribution of Survey Respondents by Gender and Region"  # Long viz title
 #'   )
 #' }
-add_viz <- function(x, type = NULL, ..., tabgroup = NULL, title = NULL, title_tabset = NULL, text = NULL, icon = NULL, text_position = NULL, text_before_tabset = NULL, text_after_tabset = NULL, text_before_viz = NULL, text_after_viz = NULL, height = NULL, filter = NULL, data = NULL, drop_na_vars = FALSE) {
+add_viz <- function(x, type = NULL, ..., tabgroup = NULL, title = NULL, title_tabset = NULL, text = NULL, icon = NULL, text_position = NULL, text_before_tabset = NULL, text_after_tabset = NULL, text_before_viz = NULL, text_after_viz = NULL, height = NULL, filter = NULL, data = NULL, drop_na_vars = FALSE, show_when = NULL) {
   UseMethod("add_viz")
 }
 
 #' @export
-add_viz.page_object <- function(x, type = NULL, ..., tabgroup = NULL, title = NULL, title_tabset = NULL, text = NULL, icon = NULL, text_position = NULL, text_before_tabset = NULL, text_after_tabset = NULL, text_before_viz = NULL, text_after_viz = NULL, height = NULL, filter = NULL, data = NULL, drop_na_vars = FALSE) {
+add_viz.page_object <- function(x, type = NULL, ..., tabgroup = NULL, title = NULL, title_tabset = NULL, text = NULL, icon = NULL, text_position = NULL, text_before_tabset = NULL, text_after_tabset = NULL, text_before_viz = NULL, text_after_viz = NULL, height = NULL, filter = NULL, data = NULL, drop_na_vars = FALSE, show_when = NULL) {
   # Capture the calling environment for proper evaluation of symbols
   call_env <- parent.frame()
   
@@ -669,7 +669,7 @@ add_viz.page_object <- function(x, type = NULL, ..., tabgroup = NULL, title = NU
   extra_names <- setdiff(names(call_args), c("x", "type", "tabgroup", "title", 
     "title_tabset", "text", "icon", "text_position", "text_before_tabset",
     "text_after_tabset", "text_before_viz", "text_after_viz", "height", 
-    "filter", "data", "drop_na_vars"))
+    "filter", "data", "drop_na_vars", "show_when"))
   
   # Convert SINGLE variable parameters from symbols to strings (NSE support)
   var_params <- c("x_var", "y_var", "group_var", "stack_var", "weight_var", 
@@ -719,7 +719,8 @@ add_viz.page_object <- function(x, type = NULL, ..., tabgroup = NULL, title = NU
     data_serialized = data_serialized,  # Store serialized data frame string
     drop_na_vars = if (is.null(drop_na_vars) || isFALSE(drop_na_vars)) defaults$drop_na_vars else drop_na_vars,
     color_palette = defaults$color_palette,
-    weight_var = defaults$weight_var
+    weight_var = defaults$weight_var,
+    show_when = show_when
   )
   
   # Add any extra parameters from ...
@@ -732,7 +733,7 @@ add_viz.page_object <- function(x, type = NULL, ..., tabgroup = NULL, title = NU
 }
 
 #' @export
-add_viz.default <- function(x, type = NULL, ..., tabgroup = NULL, title = NULL, title_tabset = NULL, text = NULL, icon = NULL, text_position = NULL, text_before_tabset = NULL, text_after_tabset = NULL, text_before_viz = NULL, text_after_viz = NULL, height = NULL, filter = NULL, data = NULL, drop_na_vars = FALSE) {
+add_viz.default <- function(x, type = NULL, ..., tabgroup = NULL, title = NULL, title_tabset = NULL, text = NULL, icon = NULL, text_position = NULL, text_before_tabset = NULL, text_after_tabset = NULL, text_before_viz = NULL, text_after_viz = NULL, height = NULL, filter = NULL, data = NULL, drop_na_vars = FALSE, show_when = NULL) {
   # Capture the calling environment for proper evaluation of symbols
   call_env <- parent.frame()
   
@@ -760,7 +761,7 @@ add_viz.default <- function(x, type = NULL, ..., tabgroup = NULL, title = NULL, 
   dot_args_raw <- call_args[!names(call_args) %in% c("type", "tabgroup", "title", 
     "title_tabset", "text", "icon", "text_position", "text_before_tabset",
     "text_after_tabset", "text_before_viz", "text_after_viz", "height", 
-    "filter", "data", "drop_na_vars")]
+    "filter", "data", "drop_na_vars", "show_when")]
   
   # Convert SINGLE variable parameters from symbols to strings (NSE support)
   var_params <- c("x_var", "y_var", "group_var", "stack_var", "weight_var", 
@@ -813,6 +814,9 @@ add_viz.default <- function(x, type = NULL, ..., tabgroup = NULL, title = NULL, 
   if ("drop_na_vars" %in% names(call_args)) {
     merged_params$drop_na_vars <- drop_na_vars
   }
+  if ("show_when" %in% names(call_args)) {
+    merged_params$show_when <- show_when
+  }
 
   # Extract final values from merged_params
   # NOTE: Use [[]] instead of $ to avoid partial matching (text_before_viz would match $text!)
@@ -856,7 +860,7 @@ add_viz.default <- function(x, type = NULL, ..., tabgroup = NULL, title = NULL, 
   }
 
   # Now apply merged_params from dots to the ... parameters
-  dot_args <- merged_params[!names(merged_params) %in% c("type", "tabgroup", "title", "title_tabset", "text", "icon", "text_position", "text_before_tabset", "text_after_tabset", "text_before_viz", "text_after_viz", "height", "filter", "data", "drop_na_vars")]
+  dot_args <- merged_params[!names(merged_params) %in% c("type", "tabgroup", "title", "title_tabset", "text", "icon", "text_position", "text_before_tabset", "text_after_tabset", "text_before_viz", "text_after_viz", "height", "filter", "data", "drop_na_vars", "show_when")]
 
   # Validate supported visualization types
   supported_types <- c("map", "treemap", "stackedbar", "stackedbars", "heatmap", "histogram", "timeline", "bar", "scatter", "density", "boxplot")
@@ -952,6 +956,16 @@ add_viz.default <- function(x, type = NULL, ..., tabgroup = NULL, title = NULL, 
     }
   }
 
+  # Validate show_when parameter (formula for conditional visibility)
+  if (!is.null(show_when)) {
+    if (!inherits(show_when, "formula")) {
+      stop("show_when must be a formula (e.g., ~ time_period == \"Over Time\") or NULL")
+    }
+    if (length(show_when) != 2) {
+      stop("show_when formula must have the form ~ condition (one-sided formula)")
+    }
+  }
+
   # Validate and process data parameter
   # data can be: NULL (inherit from collection), character (dataset name), or data.frame
   data_is_dataframe <- FALSE
@@ -990,7 +1004,8 @@ add_viz.default <- function(x, type = NULL, ..., tabgroup = NULL, title = NULL, 
       data = if (data_is_dataframe) NULL else data,  # Only store name reference, not data frame
       data_is_dataframe = data_is_dataframe,
       data_serialized = data_serialized,  # Store serialized data frame string
-      drop_na_vars = drop_na_vars
+      drop_na_vars = drop_na_vars,
+      show_when = show_when
     ),
     dot_args  # Add remaining parameters from defaults/dots
   )
@@ -2694,7 +2709,7 @@ save_widget <- function(widget, file, selfcontained = TRUE) {
                        "text_after_tabset", "text_before_viz", "text_after_viz",
                        "height", "filter", "has_data", "data_path", "data_is_dataframe",
                        "data_serialized", ".insertion_index", ".min_index", ".pagination_section", 
-                       "nested_children", "drop_na_vars")
+                       "nested_children", "drop_na_vars", "show_when")
   
   viz_args <- item[!names(item) %in% internal_params]
   
@@ -4566,12 +4581,19 @@ knit_print.content_collection <- function(x, ..., options = NULL) {
   if (!is.null(item$viz_type) || item_type == "viz") {
     # Visualization
     viz_result <- tryCatch(.render_viz_direct(item, data), error = function(e) NULL)
-    if (!is.null(viz_result) && inherits(viz_result, "htmlwidget")) {
-      widget_html <- htmlwidgets:::toHTML(viz_result, standalone = FALSE, knitrOptions = options)
+    if (!is.null(viz_result)) {
       title_html <- if (!is.null(item$title) && nchar(item$title) > 0) {
         htmltools::tags$div(class = "preview-h4", style = "font-size: 1em; font-weight: bold; margin: 10px 0;", item$title)
       } else NULL
-      return(htmltools::tagList(title_html, widget_html, htmltools::tags$div(style = "margin-bottom: 15px;")))
+
+      if (inherits(viz_result, "htmlwidget")) {
+        widget_html <- htmlwidgets:::toHTML(viz_result, standalone = FALSE, knitrOptions = options)
+        return(htmltools::tagList(title_html, widget_html, htmltools::tags$div(style = "margin-bottom: 15px;")))
+      } else {
+        # Wrapped in a tag (e.g., div with height) — convert as-is
+        widget_html <- htmltools::HTML(as.character(viz_result))
+        return(htmltools::tagList(title_html, widget_html, htmltools::tags$div(style = "margin-bottom: 15px;")))
+      }
     }
     
   } else if (item_type == "text") {

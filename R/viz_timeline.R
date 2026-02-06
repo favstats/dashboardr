@@ -189,7 +189,11 @@ viz_timeline <- function(data,
                             na_label_group = "(Missing)",
                             tooltip = NULL,
                             tooltip_prefix = "",
-                            tooltip_suffix = "") {
+                            tooltip_suffix = "",
+                            group_order = NULL,
+                            # Cross-tab filtering for sidebar inputs (auto-detected)
+                            cross_tab_filter_vars = NULL,
+                            title_map = NULL) {
 
   # Convert variable arguments to strings (supports both quoted and unquoted)
   time_var <- .as_var_string(rlang::enquo(time_var))
@@ -526,8 +530,14 @@ viz_timeline <- function(data,
   }
 
   # Apply color palette if provided
-  if (!is.null(color_palette)) {
+  # Named vector = per-series color map; unnamed = positional color cycle
+  .color_named <- if (!is.null(color_palette) && !is.null(names(color_palette))) color_palette else NULL
+  if (!is.null(color_palette) && is.null(names(color_palette))) {
     hc <- hc %>% highcharter::hc_colors(color_palette)
+  }
+  .sc <- function(nm) {
+    nm <- as.character(nm)
+    if (!is.null(.color_named) && nm %in% names(.color_named)) .color_named[[nm]] else NULL
   }
 
   # Create chart based on type
@@ -580,7 +590,8 @@ viz_timeline <- function(data,
             hc_add_series(
               name = as.character(level),
               data = list_parse2(series_data),
-              type = "area"
+              type = "area",
+              color = .sc(level)
             )
         }
       }
@@ -589,6 +600,9 @@ viz_timeline <- function(data,
       if (agg == "none") {
         # Pre-aggregated data with groups - one series per group_var level
         group_levels <- unique(agg_data[[group_var]])
+        if (!is.null(group_order)) {
+          group_levels <- intersect(group_order, group_levels)
+        }
         
         for (group_level in group_levels) {
           series_data <- agg_data %>%
@@ -610,7 +624,8 @@ viz_timeline <- function(data,
             hc_add_series(
               name = as.character(group_level),
               data = list_parse2(series_data),
-              type = "area"
+              type = "area",
+              color = .sc(group_level)
             )
         }
       }
@@ -647,6 +662,9 @@ viz_timeline <- function(data,
       }
 
       group_levels <- unique(agg_data[[group_var]])
+      if (!is.null(group_order)) {
+        group_levels <- intersect(group_order, group_levels)
+      }
 
       for (group_level in group_levels) {
         series_data <- agg_data %>%
@@ -669,15 +687,14 @@ viz_timeline <- function(data,
           hc_add_series(
             name = as.character(group_level),
             data = list_parse2(series_data),
-            type = "line"
+            type = "line",
+            color = .sc(group_level)
           )
       }
 
-      return(hc)
     }
-    
     # For non-percentage modes (none, mean, sum), use simpler chart generation
-    if (agg != "percentage") {
+    else if (agg != "percentage") {
       if (is.null(group_var)) {
         # Single series - just plot value over time
         series_data <- agg_data %>%
@@ -701,6 +718,9 @@ viz_timeline <- function(data,
       } else {
         # Multiple series - one per group
         group_levels <- unique(agg_data[[group_var]])
+        if (!is.null(group_order)) {
+          group_levels <- intersect(group_order, group_levels)
+        }
         
         for (group_level in group_levels) {
           series_data <- agg_data %>%
@@ -722,15 +742,15 @@ viz_timeline <- function(data,
             hc_add_series(
               name = as.character(group_level),
               data = list_parse2(series_data),
-              type = "line"
+              type = "line",
+              color = .sc(group_level)
             )
         }
       }
       
-      return(hc)
     }
-
     # Percentage mode: original behavior with y_var levels
+    else
     if (is.null(group_var)) {
       y_levels_to_use <- if (!is.null(y_levels)) y_levels else unique(agg_data[[y_var]])
       for(level in y_levels_to_use) {
@@ -752,12 +772,16 @@ viz_timeline <- function(data,
           hc_add_series(
             name = as.character(level),
             data = list_parse2(series_data),
-            type = "line"
+            type = "line",
+            color = .sc(level)
           )
       }
     } else {
       y_levels_to_use <- if (!is.null(y_levels)) y_levels else unique(agg_data[[y_var]])
       group_levels <- unique(agg_data[[group_var]])
+      if (!is.null(group_order)) {
+        group_levels <- intersect(group_order, group_levels)
+      }
 
       for(resp_level in y_levels_to_use) {
         for(group_level in group_levels) {
@@ -789,7 +813,8 @@ viz_timeline <- function(data,
               hc_add_series(
                 name = series_name,
                 data = list_parse2(series_data),
-                type = "line"
+                type = "line",
+                color = .sc(group_level)
               )
           }
         }
@@ -823,6 +848,56 @@ viz_timeline <- function(data,
         headerFormat = "<b>{point.x}</b><br>",
         pointFormat = paste0("{series.name}: ", pre, "{point.y:.1f}", suf)
       )
+  }
+
+  # Generate cross-tab for client-side filtering if filter_vars are provided
+  if (!is.null(cross_tab_filter_vars) && length(cross_tab_filter_vars) > 0) {
+    valid_filter_vars <- cross_tab_filter_vars[cross_tab_filter_vars %in% names(data)]
+
+    if (length(valid_filter_vars) > 0) {
+      # Build cross-tab: group by time + group + filter vars, keep y_var
+      ct_group_vars <- c(time_var, valid_filter_vars)
+      if (!is.null(group_var)) ct_group_vars <- c(ct_group_vars, group_var)
+
+      cross_tab <- data %>%
+        dplyr::group_by(dplyr::across(dplyr::all_of(ct_group_vars))) %>%
+        dplyr::summarise(value = mean(!!rlang::sym(y_var), na.rm = TRUE), .groups = "drop")
+
+      chart_id <- paste0("crosstab_", substr(digest::digest(
+        paste(time_var, group_var %||% "", collapse = "_")), 1, 8))
+
+      chart_config <- list(
+        chartId    = chart_id,
+        chartType  = "timeline",
+        timeVar    = time_var,
+        yVar       = y_var,
+        groupVar   = group_var,
+        filterVars = valid_filter_vars,
+        groupOrder = if (!is.null(group_order)) as.list(group_order) else NULL,
+        colorMap = if (!is.null(.color_named)) as.list(.color_named) else NULL
+      )
+
+      # Dynamic title: if title contains {var} placeholders, store the template
+      if (!is.null(title) && grepl("\\{\\w+\\}", title)) {
+        chart_config$titleTemplate <- title
+      }
+
+      # Title map: derived placeholders from named vectors
+      # e.g. title_map = list(key_response = c("Marijuana" = "Legal", ...))
+      if (!is.null(title_map) && is.list(title_map)) {
+        tl_js <- lapply(names(title_map), function(nm) {
+          list(values = as.list(title_map[[nm]]))
+        })
+        names(tl_js) <- names(title_map)
+        chart_config$titleLookups <- tl_js
+      }
+
+      attr(hc, "cross_tab_data")   <- cross_tab
+      attr(hc, "cross_tab_config") <- chart_config
+      attr(hc, "cross_tab_id")     <- chart_id
+
+      hc <- highcharter::hc_chart(hc, id = chart_id)
+    }
   }
 
   return(hc)

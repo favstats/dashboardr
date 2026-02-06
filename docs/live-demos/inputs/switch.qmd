@@ -150,19 +150,22 @@ result <- viz_timeline(
   chart_type = "line",
   subtitle = "Toggle the global average to compare against individual countries",
   x_label = "Decade",
-  y_label = "% Female Authors"
+  y_label = "% Female Authors",
+  cross_tab_filter_vars = "country"
 )
 
-# Force container height with explicit wrapper
+# Set chart height
 if (inherits(result, 'highchart')) {
   result <- highcharter::hc_size(result, height = 450)
 }
+
+result <- dashboardr:::.embed_cross_tab(result)
+
+# Force container height with explicit wrapper
 result <- htmltools::div(
   style = 'height: 450px !important; min-height: 450px !important; width: 100%; overflow: visible;',
   result
 )
-
-result <- dashboardr:::.embed_cross_tab(result)
 
 result
 ```

@@ -120,19 +120,30 @@
   } else if (is.character(arg)) {
     if (length(arg) == 1) {
       # Don't quote special identifiers like 'data' or R expressions
-      if (arg %in% c("data", "readRDS('dashboard_data.rds')")) {
+      if (is.null(names(arg)) && arg %in% c("data", "readRDS('dashboard_data.rds')")) {
         return(arg)
       }
       # Quote string literals and escape internal quotes
       # Note: Curly braces don't need escaping in R strings
       escaped <- gsub('"', '\\"', arg, fixed = TRUE)
-      return(paste0('"', escaped, '"'))
+      quoted <- paste0('"', escaped, '"')
+      # Include name if present (e.g., c("key" = "value"))
+      if (!is.null(names(arg)) && nchar(names(arg)) > 0) {
+        return(paste0('"', names(arg), '" = ', quoted))
+      }
+      return(quoted)
     } else {
       # Create c() vector for multiple strings
-      escaped_args <- sapply(arg, function(x) {
-        escaped <- gsub('"', '\\"', x, fixed = TRUE)
-        paste0('"', escaped, '"')
-      })
+      nms <- names(arg)
+      escaped_args <- vapply(seq_along(arg), function(i) {
+        escaped <- gsub('"', '\\"', arg[[i]], fixed = TRUE)
+        quoted <- paste0('"', escaped, '"')
+        if (!is.null(nms) && nchar(nms[i]) > 0) {
+          paste0('"', nms[i], '" = ', quoted)
+        } else {
+          quoted
+        }
+      }, character(1))
       return(paste0("c(", paste(escaped_args, collapse = ", "), ")"))
     }
   } else if (is.numeric(arg)) {
@@ -654,6 +665,12 @@ section {
   cross_tab_id <- attr(result, "cross_tab_id")
   
  if (!is.null(cross_tab_data)) {
+    # Strip haven_labelled columns to prevent jsonlite::toJSON C stack overflow
+    for (col in names(cross_tab_data)) {
+      if (inherits(cross_tab_data[[col]], "haven_labelled")) {
+        cross_tab_data[[col]] <- as.vector(cross_tab_data[[col]])
+      }
+    }
     cross_tab_json <- jsonlite::toJSON(cross_tab_data, dataframe = "rows")
     config_json <- jsonlite::toJSON(cross_tab_config, auto_unbox = TRUE)
     script_tag <- htmltools::tags$script(

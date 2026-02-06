@@ -399,6 +399,22 @@ create_dashboard <- function(output_dir = "site",
   ), class = "dashboard_project")
 }
 
+#' Recursively check if any spec in a list has show_when set
+#' @param specs List of visualization specs (may contain nested_children)
+#' @return Logical
+#' @keywords internal
+.specs_contain_show_when <- function(specs) {
+  if (is.null(specs) || length(specs) == 0) return(FALSE)
+  for (s in specs) {
+    if (!is.list(s)) next
+    if (!is.null(s$show_when)) return(TRUE)
+    if (!is.null(s$nested_children) && length(s$nested_children) > 0) {
+      if (.specs_contain_show_when(s$nested_children)) return(TRUE)
+    }
+  }
+  FALSE
+}
+
 #' Add a page to the dashboard
 #'
 #' Universal function for adding any type of page to the dashboard. Can create
@@ -966,6 +982,17 @@ add_dashboard_page <- function(proj, name, data = NULL, data_path = NULL,
       !is.null(content$sidebar) && isTRUE(content$sidebar$needs_metric_data)) {
     needs_metric_data <- TRUE
   }
+
+  # Check if linked (cascading) inputs are used in sidebar
+  needs_linked_inputs <- FALSE
+  if (!is.null(combined_input) && is_content(combined_input) && 
+      !is.null(combined_input$sidebar) && isTRUE(combined_input$sidebar$needs_linked_inputs)) {
+    needs_linked_inputs <- TRUE
+  }
+  if (!is.null(content) && is_content(content) && 
+      !is.null(content$sidebar) && isTRUE(content$sidebar$needs_linked_inputs)) {
+    needs_linked_inputs <- TRUE
+  }
   
   # Extract tabgroup_labels from visualizations or combined_input
   page_tabgroup_labels <- NULL
@@ -992,7 +1019,16 @@ add_dashboard_page <- function(proj, name, data = NULL, data_path = NULL,
       }
     }
   }
-  
+  if (!is.null(page_sidebar) && isTRUE(page_sidebar$needs_linked_inputs)) {
+    needs_linked_inputs <- TRUE
+  }
+
+  # Check if any visualization uses show_when (conditional visibility)
+  needs_show_when <- FALSE
+  if (!is.null(viz_specs) && length(viz_specs) > 0) {
+    needs_show_when <- .specs_contain_show_when(viz_specs)
+  }
+
   # Create page record
   page <- list(
     name = name,
@@ -1007,6 +1043,8 @@ add_dashboard_page <- function(proj, name, data = NULL, data_path = NULL,
     needs_modals = needs_modals,
     needs_inputs = needs_inputs,
     needs_metric_data = needs_metric_data,
+    needs_linked_inputs = needs_linked_inputs,
+    needs_show_when = needs_show_when,
     time_var = time_var,
     text = text,
     icon = icon,

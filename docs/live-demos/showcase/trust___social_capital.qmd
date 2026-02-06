@@ -138,19 +138,22 @@ result <- viz_stackedbar(
   stack_label = "Happiness",
   stacked_type = "percent",
   stack_order = c("very happy", "pretty happy", "not too happy"),
-  color_palette = c("#27ae60", "#f39c12", "#e74c3c")
+  color_palette = c("#27ae60", "#f39c12", "#e74c3c"),
+  cross_tab_filter_vars = c("degree", "sex")
 )
 
-# Force container height with explicit wrapper
+# Set chart height
 if (inherits(result, 'highchart')) {
   result <- highcharter::hc_size(result, height = 550)
 }
+
+result <- dashboardr:::.embed_cross_tab(result)
+
+# Force container height with explicit wrapper
 result <- htmltools::div(
   style = 'height: 550px !important; min-height: 550px !important; width: 100%; overflow: visible;',
   result
 )
-
-result <- dashboardr:::.embed_cross_tab(result)
 
 result
 ```

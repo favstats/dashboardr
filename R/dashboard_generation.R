@@ -197,6 +197,8 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
     input_filter_css <- system.file("assets", "input_filter.css", package = "dashboardr")
     input_filter_js <- system.file("assets", "input_filter.js", package = "dashboardr")
     filter_hook_js <- system.file("assets", "filter_hook.js", package = "dashboardr")
+    linked_inputs_js <- system.file("assets", "linked_inputs.js", package = "dashboardr")
+    show_when_js <- system.file("assets", "show_when.js", package = "dashboardr")
     choices_css <- system.file("assets", "choices.min.css", package = "dashboardr")
     choices_js <- system.file("assets", "choices.min.js", package = "dashboardr")
     tab_scroll_fix_js <- system.file("assets", "tab-scroll-fix.js", package = "dashboardr")
@@ -219,6 +221,12 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
     }
     if (file.exists(filter_hook_js)) {
       file.copy(filter_hook_js, file.path(assets_dir, "filter_hook.js"), overwrite = TRUE)
+    }
+    if (file.exists(linked_inputs_js)) {
+      file.copy(linked_inputs_js, file.path(assets_dir, "linked_inputs.js"), overwrite = TRUE)
+    }
+    if (file.exists(show_when_js)) {
+      file.copy(show_when_js, file.path(assets_dir, "show_when.js"), overwrite = TRUE)
     }
     if (file.exists(choices_css)) {
       file.copy(choices_css, file.path(assets_dir, "choices.min.css"), overwrite = TRUE)

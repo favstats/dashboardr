@@ -79,7 +79,7 @@ check_html <- function(dir) {
 # -----------------------------------------------------------------------------
 # 1. Tutorial Dashboard
 # -----------------------------------------------------------------------------
-cat("\n📊 [1/5] Building Tutorial Dashboard...\n")
+cat("\n📊 [1/6] Building Tutorial Dashboard...\n")
 tryCatch({
   tutorial_dir <- file.path(pkg_root, "docs", "live-demos", "tutorial")
   if (dir.exists(tutorial_dir)) unlink(tutorial_dir, recursive = TRUE)
@@ -102,7 +102,7 @@ tryCatch({
 # -----------------------------------------------------------------------------
 # 2. Showcase Dashboard
 # -----------------------------------------------------------------------------
-cat("\n📊 [2/5] Building Showcase Dashboard...\n")
+cat("\n📊 [2/6] Building Showcase Dashboard...\n")
 tryCatch({
   showcase_dir <- file.path(pkg_root, "docs", "live-demos", "showcase")
   if (dir.exists(showcase_dir)) unlink(showcase_dir, recursive = TRUE)
@@ -125,7 +125,7 @@ tryCatch({
 # -----------------------------------------------------------------------------
 # 3. Tabset Theme Dashboards (6 themes)
 # -----------------------------------------------------------------------------
-cat("\n📊 [3/5] Building Tabset Theme Dashboards (6 themes)...\n")
+cat("\n📊 [3/6] Building Tabset Theme Dashboards (6 themes)...\n")
 tryCatch({
   source(file.path(pkg_root, "pkgdown", "build-tabsets-demo.R"), local = TRUE)
 
@@ -149,7 +149,7 @@ tryCatch({
 # -----------------------------------------------------------------------------
 # 4. Inputs Dashboard
 # -----------------------------------------------------------------------------
-cat("\n📊 [4/5] Building Inputs Dashboard...\n")
+cat("\n📊 [4/6] Building Inputs Dashboard...\n")
 tryCatch({
   source(file.path(pkg_root, "pkgdown", "build-inputs-demo.R"), local = TRUE)
 
@@ -167,7 +167,7 @@ tryCatch({
 # -----------------------------------------------------------------------------
 # 5. Overlay Dashboard
 # -----------------------------------------------------------------------------
-cat("\n📊 [5/5] Building Overlay Dashboard...\n")
+cat("\n📊 [5/6] Building Overlay Dashboard...\n")
 tryCatch({
   source(file.path(pkg_root, "pkgdown", "build-overlay-demo.R"), local = TRUE)
 
@@ -179,6 +179,32 @@ tryCatch({
   }
 }, error = function(e) {
   results$overlay <<- paste("❌", e$message)
+  cat("   ❌ Error:", e$message, "\n")
+})
+
+# -----------------------------------------------------------------------------
+# 6. Sidebar GSS Explorer Demo
+# -----------------------------------------------------------------------------
+cat("\n📊 [6/6] Building Sidebar GSS Explorer Demo...\n")
+tryCatch({
+  sidebar_dir <- file.path(pkg_root, "docs", "live-demos", "sidebar-gss")
+  if (dir.exists(sidebar_dir)) unlink(sidebar_dir, recursive = TRUE)
+  dir.create(sidebar_dir, recursive = TRUE, showWarnings = FALSE)
+
+  # Source the demo script with overridden output_dir
+  demo_env <- new.env(parent = globalenv())
+  demo_env$output_dir <- sidebar_dir
+  source(file.path(pkg_root, "dev", "demo_sidebar_dashboard.R"), local = demo_env)
+
+  if (check_html(sidebar_dir)) {
+    results$sidebar_gss <- "✅ Success"
+    cat("   ✅ Sidebar GSS Explorer created\n")
+  } else {
+    results$sidebar_gss <- "⚠️  QMD only (needs Quarto)"
+    cat("   ⚠️  QMD created, needs Quarto render\n")
+  }
+}, error = function(e) {
+  results$sidebar_gss <<- paste("❌", e$message)
   cat("   ❌ Error:", e$message, "\n")
 })
 
@@ -196,6 +222,7 @@ cat(sprintf("Showcase            %s\n", results$showcase %||% "Not run"))
 cat(sprintf("Tabset Themes       %s\n", results$tabsets %||% "Not run"))
 cat(sprintf("Inputs              %s\n", results$inputs %||% "Not run"))
 cat(sprintf("Overlay             %s\n", results$overlay %||% "Not run"))
+cat(sprintf("Sidebar GSS         %s\n", results$sidebar_gss %||% "Not run"))
 
 cat("\n📁 Output location:", file.path(pkg_root, "docs", "live-demos"), "\n")
 
@@ -215,3 +242,4 @@ for (theme in c("pills", "modern", "minimal", "classic", "underline", "segmented
 }
 cat("   https://favstats.github.io/dashboardr/live-demos/inputs/index.html\n")
 cat("   https://favstats.github.io/dashboardr/live-demos/overlay/index.html\n")
+cat("   https://favstats.github.io/dashboardr/live-demos/sidebar-gss/index.html\n")

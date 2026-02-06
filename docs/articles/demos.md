@@ -25,6 +25,17 @@ the exact R code used.
   slider). [View
   Demo](https://favstats.github.io/dashboardr/live-demos/sidebar/index.md)
 
+### Advanced Demos
+
+- **GSS Explorer (Sidebar)** - Full sidebar dashboard with cross-tab
+  filtering, conditional visibility, dynamic titles, and consistent
+  colors.
+  [Code](https://favstats.github.io/dashboardr/dev/demo_sidebar_dashboard.R)
+  \| [View
+  Demo](https://favstats.github.io/dashboardr/live-demos/sidebar-gss/index.md)
+  \|
+  [Documentation](https://favstats.github.io/dashboardr/articles/advanced-features.html#cross-tab-filtering-dynamic-titles)
+
 ### Real-World Dashboards
 
 - **DigIQ Monitor** - The first public full-fledged dashboard built with

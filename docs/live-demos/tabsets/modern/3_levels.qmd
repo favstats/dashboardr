@@ -47,20 +47,17 @@ cat('Dataset loaded:', nrow(data), 'rows,', ncol(data), 'columns\n')
 
 ```
 
-
-::: {.panel-tabset}
-
-### Survey Results
+## Survey Results
 
 
 ::: {.panel-tabset}
 
-##### Satisfaction
+### Satisfaction
 
 
 ::: {.panel-tabset}
 
-###### By Age
+##### By Age
 
 
 ```{r survey-satisfaction-age}
@@ -80,10 +77,12 @@ result <- viz_stackedbar(
   tooltip_suffix = "%"
 )
 
-# Force container height with explicit wrapper
+# Set chart height
 if (inherits(result, 'highchart')) {
   result <- highcharter::hc_size(result, height = 460)
 }
+
+# Force container height with explicit wrapper
 result <- htmltools::div(
   style = 'height: 460px !important; min-height: 460px !important; width: 100%; overflow: visible;',
   result
@@ -93,7 +92,7 @@ result
 ```
 
 
-###### By Education
+##### By Education
 
 
 ```{r survey-satisfaction-education}
@@ -113,10 +112,12 @@ result <- viz_stackedbar(
   tooltip_suffix = "%"
 )
 
-# Force container height with explicit wrapper
+# Set chart height
 if (inherits(result, 'highchart')) {
   result <- highcharter::hc_size(result, height = 460)
 }
+
+# Force container height with explicit wrapper
 result <- htmltools::div(
   style = 'height: 460px !important; min-height: 460px !important; width: 100%; overflow: visible;',
   result
@@ -129,12 +130,12 @@ result
 :::
 
 
-##### Demographics
+### Demographics
 
 
 ::: {.panel-tabset}
 
-###### By Age
+##### By Age
 
 
 ```{r survey-demographics-age}
@@ -154,10 +155,12 @@ result <- viz_stackedbar(
   tooltip_suffix = "%"
 )
 
-# Force container height with explicit wrapper
+# Set chart height
 if (inherits(result, 'highchart')) {
   result <- highcharter::hc_size(result, height = 460)
 }
+
+# Force container height with explicit wrapper
 result <- htmltools::div(
   style = 'height: 460px !important; min-height: 460px !important; width: 100%; overflow: visible;',
   result
@@ -167,7 +170,7 @@ result
 ```
 
 
-###### By Education
+##### By Education
 
 
 ```{r survey-demographics-education}
@@ -188,10 +191,12 @@ result <- viz_stackedbar(
   horizontal = TRUE
 )
 
-# Force container height with explicit wrapper
+# Set chart height
 if (inherits(result, 'highchart')) {
   result <- highcharter::hc_size(result, height = 460)
 }
+
+# Force container height with explicit wrapper
 result <- htmltools::div(
   style = 'height: 460px !important; min-height: 460px !important; width: 100%; overflow: visible;',
   result
@@ -206,18 +211,17 @@ result
 
 :::
 
-
-### Analysis
-
-
-::: {.panel-tabset}
-
-##### Trends
+## Analysis
 
 
 ::: {.panel-tabset}
 
-###### Regional
+### Trends
+
+
+::: {.panel-tabset}
+
+##### Regional
 
 
 ```{r analysis-trends-regional}
@@ -238,10 +242,12 @@ result <- viz_stackedbar(
   horizontal = TRUE
 )
 
-# Force container height with explicit wrapper
+# Set chart height
 if (inherits(result, 'highchart')) {
   result <- highcharter::hc_size(result, height = 460)
 }
+
+# Force container height with explicit wrapper
 result <- htmltools::div(
   style = 'height: 460px !important; min-height: 460px !important; width: 100%; overflow: visible;',
   result
@@ -251,7 +257,7 @@ result
 ```
 
 
-###### Educational
+##### Educational
 
 
 ```{r analysis-trends-educational}
@@ -271,10 +277,12 @@ result <- viz_stackedbar(
   tooltip_suffix = "%"
 )
 
-# Force container height with explicit wrapper
+# Set chart height
 if (inherits(result, 'highchart')) {
   result <- highcharter::hc_size(result, height = 460)
 }
+
+# Force container height with explicit wrapper
 result <- htmltools::div(
   style = 'height: 460px !important; min-height: 460px !important; width: 100%; overflow: visible;',
   result
@@ -282,9 +290,6 @@ result <- htmltools::div(
 
 result
 ```
-
-
-:::
 
 
 :::

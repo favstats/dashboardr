@@ -1298,6 +1298,16 @@ end_sidebar <- function(sidebar_container) {
     stop("end_sidebar() must be called on a sidebar_container (created by add_sidebar())", call. = FALSE)
   }
   
+  needs_linked_inputs <- isTRUE(sidebar_container$needs_linked_inputs)
+  if (!needs_linked_inputs && !is.null(sidebar_container$blocks)) {
+    for (b in sidebar_container$blocks) {
+      if (!is.null(b$.linked_parent_id)) {
+        needs_linked_inputs <- TRUE
+        break
+      }
+    }
+  }
+
   # Create the final sidebar block with all styling options
   sidebar_block <- structure(list(
     type = "sidebar",
@@ -1311,9 +1321,10 @@ end_sidebar <- function(sidebar_container) {
     open = sidebar_container$open,
     class = sidebar_container$class,
     needs_inputs = sidebar_container$needs_inputs %||% FALSE,
-    needs_metric_data = sidebar_container$needs_metric_data %||% FALSE
+    needs_metric_data = sidebar_container$needs_metric_data %||% FALSE,
+    needs_linked_inputs = needs_linked_inputs
   ), class = "content_block")
-  
+
   # Handle page_object parent
   if (!is.null(sidebar_container$parent_page)) {
     parent_page <- sidebar_container$parent_page
@@ -1326,24 +1337,103 @@ end_sidebar <- function(sidebar_container) {
     if (isTRUE(sidebar_container$needs_metric_data)) {
       parent_page$needs_metric_data <- TRUE
     }
+    if (isTRUE(needs_linked_inputs)) {
+      parent_page$needs_linked_inputs <- TRUE
+    }
     return(parent_page)
   }
-  
+
   # Handle content collection parent
   parent_content <- sidebar_container$parent_content
   parent_content$sidebar <- sidebar_block
-  
+
   # Propagate needs_inputs flag
   if (isTRUE(sidebar_container$needs_inputs)) {
     parent_content$needs_inputs <- TRUE
   }
-  
+
   # Propagate needs_metric_data flag
   if (isTRUE(sidebar_container$needs_metric_data)) {
     parent_content$needs_metric_data <- TRUE
   }
-  
+
+  if (isTRUE(needs_linked_inputs)) {
+    parent_content$needs_linked_inputs <- TRUE
+  }
+
   parent_content
+}
+
+#' Add linked parent-child inputs (cascading dropdowns)
+#'
+#' Creates two linked select inputs where the child's available options depend on
+#' the parent's current selection. Use inside a sidebar (after \code{add_sidebar()}).
+#'
+#' @param x A sidebar_container (from \code{add_sidebar()}).
+#' @param parent List with: \code{id}, \code{label}, \code{options}; optionally
+#'   \code{default_selected}, \code{filter_var}.
+#' @param child List with: \code{id}, \code{label}, \code{options_by_parent}
+#'   (named list mapping each parent value to a character vector of child options);
+#'   optionally \code{filter_var}.
+#' @param type Input type for parent: \code{"select"} (default) or \code{"radio"}.
+#' @return The modified sidebar_container for piping.
+#' @export
+#' @examples
+#' \dontrun{
+#' add_sidebar() %>%
+#'   add_linked_inputs(
+#'     parent = list(id = "dimension", label = "Dimension",
+#'                   options = c("AI", "Safety", "Digital Health")),
+#'     child = list(id = "question", label = "Question",
+#'                  options_by_parent = list(
+#'                    "AI" = c("Overall", "Using AI Tools"),
+#'                    "Safety" = c("Overall", "Passwords", "Phishing"),
+#'                    "Digital Health" = c("Overall", "Screen Time")
+#'                  ))
+#'   ) %>%
+#'   end_sidebar()
+#' }
+add_linked_inputs <- function(x, parent, child, type = "select") {
+  if (!inherits(x, "sidebar_container")) {
+    stop("add_linked_inputs() must be used inside add_sidebar()", call. = FALSE)
+  }
+  stopifnot(is.list(parent), is.list(child))
+  if (is.null(parent$id) || is.null(parent$label) || is.null(parent$options)) {
+    stop("parent must have id, label, and options", call. = FALSE)
+  }
+  if (is.null(child$id) || is.null(child$label) || is.null(child$options_by_parent)) {
+    stop("child must have id, label, and options_by_parent", call. = FALSE)
+  }
+
+  parent_type <- if (type == "select") "select_single" else "radio"
+  parent_filter <- parent$filter_var %||% parent$id
+  child_filter <- child$filter_var %||% child$id
+  default_parent <- parent$default_selected %||% parent$options[1]
+  initial_child_options <- child$options_by_parent[[default_parent]]
+  if (is.null(initial_child_options)) {
+    stop("options_by_parent must contain a key for default parent value: ", default_parent, call. = FALSE)
+  }
+
+  x <- add_input(x,
+    input_id = parent$id,
+    label = parent$label,
+    type = parent_type,
+    filter_var = parent_filter,
+    options = parent$options,
+    default_selected = parent$default_selected %||% parent$options[1]
+  )
+  x <- add_input(x,
+    input_id = child$id,
+    label = child$label,
+    type = "select_single",
+    filter_var = child_filter,
+    options = initial_child_options,
+    default_selected = initial_child_options[1],
+    .linked_parent_id = parent$id,
+    .options_by_parent = child$options_by_parent
+  )
+  x$needs_linked_inputs <- TRUE
+  x
 }
 
 # ============================================
@@ -1519,7 +1609,9 @@ add_input <- function(content,
                       mr = NULL,
                       mb = NULL,
                       ml = NULL,
-                      tabgroup = NULL) {
+                      tabgroup = NULL,
+                      .linked_parent_id = NULL,
+                      .options_by_parent = NULL) {
   
   # Convert variable arguments to strings (supports both quoted and unquoted)
   filter_var <- .as_var_string(rlang::enquo(filter_var))
@@ -1689,7 +1781,9 @@ add_input <- function(content,
       labels = labels,
       size = size,
       help = help,
-      disabled = disabled
+      disabled = disabled,
+      .linked_parent_id = .linked_parent_id,
+      .options_by_parent = .options_by_parent
     ), class = "content_block")
     content$blocks <- c(content$blocks, list(input_block))
     content$needs_inputs <- TRUE

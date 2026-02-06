@@ -1,3 +1,56 @@
+# dashboardr 0.2.1
+
+## New Features
+
+### Sidebar Dashboards with Cross-Tab Filtering
+
+New sidebar-based dashboard pattern with client-side cross-tab filtering. Sidebar radio/checkbox inputs dynamically filter and rebuild Highcharts visualizations (stacked bars and timelines) without server round-trips.
+
+- **`show_when`**: Conditionally show/hide visualizations based on sidebar input values. Uses formula syntax (e.g., `show_when = ~ time_period == "Over Time"`). Hidden elements fully collapse in layout, including empty `bslib-grid` containers.
+
+- **`title_map`**: Dynamic chart titles that interpolate sidebar input values. Uses `{placeholder}` syntax in titles with a simple named-vector mapping. Auto-detects which input to read from — no manual wiring needed.
+  ```r
+  title_map = list(key_response = c("Marijuana" = "Legal", "Gun Control" = "Favor"))
+  ```
+
+- **`group_order`** (timeline): Control the order of series in timeline charts. Pass a character vector to enforce consistent series/legend ordering across chart types.
+
+- **Named `color_palette`**: Pass a named character vector to `color_palette` to assign fixed colors per series name, ensuring consistent colors across stacked bars and timelines.
+  ```r
+  color_palette = c("Male" = "#F28E2B", "Female" = "#E15759", "White" = "#EDC948")
+  ```
+  Unnamed vectors still work as positional color cycles (backwards compatible).
+
+### Stacked Bar Enhancements
+
+- `viz_stackedbar()` now supports `title_map` for dynamic title interpolation, matching timeline functionality.
+- Named `color_palette` resolves colors by stack-level name, not just position.
+
+### Timeline Enhancements
+
+- `viz_timeline()` now supports `group_order` for explicit series ordering.
+- Named `color_palette` assigns colors per group name, preserved during client-side filter rebuilds.
+- `title_map` with auto-detection of the relevant sidebar input.
+
+### Client-Side Filtering (JS)
+
+- Stacked bar and timeline charts embed cross-tab data and config as HTML attributes, enabling instant client-side rebuilds when sidebar inputs change.
+- Color maps (`colorMap`) and group order (`groupOrder`) are embedded in chart config and respected during JS rebuilds.
+- Dynamic title interpolation via `titleTemplate` and `titleLookups` in the chart config.
+
+## Bug Fixes
+
+- Fixed C stack overflow when serializing `haven_labelled` columns in cross-tab data.
+- Fixed `.serialize_arg()` to correctly preserve names in named character vectors.
+- Fixed empty `bslib-grid` containers still occupying space when their children are hidden by `show_when` (now uses `!important` CSS class).
+- Fixed dynamic title `{placeholder}` not interpolating due to chart ID matching mismatch in JS.
+
+## Demo
+
+- New **GSS Explorer** sidebar demo (`dev/demo_sidebar_dashboard.R`) showcasing all new features: sidebar inputs, conditional visibility, dynamic titles, cross-tab filtering, named color palettes, and consistent series ordering.
+
+---
+
 # dashboardr 0.2.0
 
 ## Bug Fixes

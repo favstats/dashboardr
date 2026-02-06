@@ -63,6 +63,10 @@ enable_sidebar <- function() {
 #' of Highcharts visualizations via multi-select dropdowns.
 #' Uses Choices.js for a polished multi-select experience.
 #'
+#' @param linked If TRUE, also include script for linked (cascading) parent-child
+#'   select inputs. Set automatically when the page uses \code{add_linked_inputs()}.
+#' @param show_when If TRUE, also include script for conditional viz visibility
+#'   (\code{show_when} in \code{add_viz()}). Set automatically when the page uses it.
 #' @return HTML tags to include input filter functionality
 #' @export
 #'
@@ -70,12 +74,14 @@ enable_sidebar <- function() {
 #' \dontrun{
 #' # In your dashboard page content:
 #' enable_inputs()
+#' enable_inputs(linked = TRUE)  # when using add_linked_inputs()
+#' enable_inputs(show_when = TRUE)  # when using show_when in add_viz()
 #' }
-enable_inputs <- function() {
+enable_inputs <- function(linked = FALSE, show_when = FALSE) {
   # Add version parameter to bust cache
   version <- format(Sys.time(), "%Y%m%d%H%M%S")
   
-  htmltools::tagList(
+  out <- htmltools::tagList(
     # Choices.js from CDN
     htmltools::tags$link(
       rel = "stylesheet",
@@ -97,6 +103,64 @@ enable_inputs <- function() {
       src = paste0("assets/input_filter.js?v=", version)
     )
   )
+  if (isTRUE(linked)) {
+    out <- htmltools::tagList(out, htmltools::tags$script(
+      src = paste0("assets/linked_inputs.js?v=", version)
+    ))
+  }
+  if (isTRUE(show_when)) {
+    out <- htmltools::tagList(out, htmltools::tags$script(
+      src = paste0("assets/show_when.js?v=", version)
+    ))
+  }
+  out
+}
+
+#' Enable show_when (conditional visibility) script only
+#'
+#' Includes the JavaScript that evaluates \code{data-show-when} on viz containers.
+#' Called automatically when a page has visualizations with \code{show_when} but no inputs.
+#'
+#' @return HTML script tag for show_when.js
+#' @export
+enable_show_when <- function() {
+  version <- format(Sys.time(), "%Y%m%d%H%M%S")
+  htmltools::tags$script(src = paste0("assets/show_when.js?v=", version))
+}
+
+# =================================================================
+# SHOW-WHEN WRAPPER HELPERS
+# =================================================================
+
+#' Open a conditional-visibility wrapper
+#'
+#' Emits an opening \code{<div>} with the \code{data-show-when} attribute so
+#' that \code{show_when.js} can show/hide the enclosed content based on input
+#' state.
+#'
+#' This is used in generated \code{.qmd} chunks — users typically do not need
+#' to call it directly.
+#'
+#' @param condition_json A JSON string describing the condition
+#'   (e.g. \code{'{"var":"time_period","op":"in","val":["Wave 1","Wave 2"]}'}).
+#' @return Called for its side-effect (\code{cat()}).
+#' @export
+show_when_open <- function(condition_json) {
+  cat(paste0(
+    '<div class="viz-show-when" data-show-when=\'',
+    condition_json,
+    '\'>\n'
+  ))
+}
+
+#' Close a conditional-visibility wrapper
+#'
+#' Emits the closing \code{</div>} that matches \code{\link{show_when_open}}.
+#'
+#' @return Called for its side-effect (\code{cat()}).
+#' @export
+show_when_close <- function() {
+  cat("</div>\n")
 }
 
 # =================================================================
@@ -623,7 +687,9 @@ render_input <- function(input_id,
                          labels = NULL,
                          size = c("md", "sm", "lg"),
                          help = NULL,
-                         disabled = FALSE) {
+                         disabled = FALSE,
+                         linked_child_id = NULL,
+                         options_by_parent = NULL) {
   
   # Convert variable arguments to strings (supports both quoted and unquoted)
   filter_var <- .as_var_string(rlang::enquo(filter_var))
@@ -673,7 +739,18 @@ render_input <- function(input_id,
       ""
     }
   )
-  
+
+  # Wrap in div with data attributes for linked (cascading) child when applicable
+  if (!is.null(linked_child_id) && !is.null(options_by_parent)) {
+    opts_json <- jsonlite::toJSON(options_by_parent, auto_unbox = TRUE)
+    html <- paste0(
+      '<div data-linked-child-id="', htmltools::htmlEscape(linked_child_id), '" ',
+      'data-options-by-parent=\'', opts_json, '\'>',
+      html,
+      '</div>'
+    )
+  }
+
   knitr::asis_output(html)
 }
 

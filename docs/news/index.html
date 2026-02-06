@@ -26,7 +26,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">dashboardr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -94,6 +94,60 @@
     </div>
 
     <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.2.1" id="dashboardr-021">dashboardr 0.2.1<a class="anchor" aria-label="anchor" href="#dashboardr-021"></a></h2>
+<div class="section level3">
+<h3 id="new-features-0-2-1">New Features<a class="anchor" aria-label="anchor" href="#new-features-0-2-1"></a></h3>
+<div class="section level4">
+<h4 id="sidebar-dashboards-with-cross-tab-filtering-0-2-1">Sidebar Dashboards with Cross-Tab Filtering<a class="anchor" aria-label="anchor" href="#sidebar-dashboards-with-cross-tab-filtering-0-2-1"></a></h4>
+<p>New sidebar-based dashboard pattern with client-side cross-tab filtering. Sidebar radio/checkbox inputs dynamically filter and rebuild Highcharts visualizations (stacked bars and timelines) without server round-trips.</p>
+<ul><li><p><strong><code>show_when</code></strong>: Conditionally show/hide visualizations based on sidebar input values. Uses formula syntax (e.g., <code>show_when = ~ time_period == "Over Time"</code>). Hidden elements fully collapse in layout, including empty <code>bslib-grid</code> containers.</p></li>
+<li>
+<p><strong><code>title_map</code></strong>: Dynamic chart titles that interpolate sidebar input values. Uses <code>{placeholder}</code> syntax in titles with a simple named-vector mapping. Auto-detects which input to read from — no manual wiring needed.</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">title_map</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>key_response <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Marijuana"</span> <span class="op">=</span> <span class="st">"Legal"</span>, <span class="st">"Gun Control"</span> <span class="op">=</span> <span class="st">"Favor"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+</li>
+<li><p><strong><code>group_order</code></strong> (timeline): Control the order of series in timeline charts. Pass a character vector to enforce consistent series/legend ordering across chart types.</p></li>
+<li>
+<p><strong>Named <code>color_palette</code></strong>: Pass a named character vector to <code>color_palette</code> to assign fixed colors per series name, ensuring consistent colors across stacked bars and timelines.</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">color_palette</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Male"</span> <span class="op">=</span> <span class="st">"#F28E2B"</span>, <span class="st">"Female"</span> <span class="op">=</span> <span class="st">"#E15759"</span>, <span class="st">"White"</span> <span class="op">=</span> <span class="st">"#EDC948"</span><span class="op">)</span></span></code></pre></div>
+<p>Unnamed vectors still work as positional color cycles (backwards compatible).</p>
+</li>
+</ul></div>
+<div class="section level4">
+<h4 id="stacked-bar-enhancements-0-2-1">Stacked Bar Enhancements<a class="anchor" aria-label="anchor" href="#stacked-bar-enhancements-0-2-1"></a></h4>
+<ul><li>
+<code><a href="../reference/viz_stackedbar.html">viz_stackedbar()</a></code> now supports <code>title_map</code> for dynamic title interpolation, matching timeline functionality.</li>
+<li>Named <code>color_palette</code> resolves colors by stack-level name, not just position.</li>
+</ul></div>
+<div class="section level4">
+<h4 id="timeline-enhancements-0-2-1">Timeline Enhancements<a class="anchor" aria-label="anchor" href="#timeline-enhancements-0-2-1"></a></h4>
+<ul><li>
+<code><a href="../reference/viz_timeline.html">viz_timeline()</a></code> now supports <code>group_order</code> for explicit series ordering.</li>
+<li>Named <code>color_palette</code> assigns colors per group name, preserved during client-side filter rebuilds.</li>
+<li>
+<code>title_map</code> with auto-detection of the relevant sidebar input.</li>
+</ul></div>
+<div class="section level4">
+<h4 id="client-side-filtering-js-0-2-1">Client-Side Filtering (JS)<a class="anchor" aria-label="anchor" href="#client-side-filtering-js-0-2-1"></a></h4>
+<ul><li>Stacked bar and timeline charts embed cross-tab data and config as HTML attributes, enabling instant client-side rebuilds when sidebar inputs change.</li>
+<li>Color maps (<code>colorMap</code>) and group order (<code>groupOrder</code>) are embedded in chart config and respected during JS rebuilds.</li>
+<li>Dynamic title interpolation via <code>titleTemplate</code> and <code>titleLookups</code> in the chart config.</li>
+</ul></div>
+</div>
+<div class="section level3">
+<h3 id="bug-fixes-0-2-1">Bug Fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-2-1"></a></h3>
+<ul><li>Fixed C stack overflow when serializing <code>haven_labelled</code> columns in cross-tab data.</li>
+<li>Fixed <code><a href="../reference/dot-serialize_arg.html">.serialize_arg()</a></code> to correctly preserve names in named character vectors.</li>
+<li>Fixed empty <code>bslib-grid</code> containers still occupying space when their children are hidden by <code>show_when</code> (now uses <code>!important</code> CSS class).</li>
+<li>Fixed dynamic title <code>{placeholder}</code> not interpolating due to chart ID matching mismatch in JS.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="demo-0-2-1">Demo<a class="anchor" aria-label="anchor" href="#demo-0-2-1"></a></h3>
+<ul><li>New <strong>GSS Explorer</strong> sidebar demo (<code>dev/demo_sidebar_dashboard.R</code>) showcasing all new features: sidebar inputs, conditional visibility, dynamic titles, cross-tab filtering, named color palettes, and consistent series ordering.</li>
+</ul><hr></div>
+</div>
+    <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.2.0" id="dashboardr-020">dashboardr 0.2.0<a class="anchor" aria-label="anchor" href="#dashboardr-020"></a></h2>
 <div class="section level3">
 <h3 id="bug-fixes-0-2-0">Bug Fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-2-0"></a></h3>
@@ -115,16 +169,16 @@
 <h3 id="unified-stacked-bar-chart-function-0-1-0">Unified Stacked Bar Chart Function<a class="anchor" aria-label="anchor" href="#unified-stacked-bar-chart-function-0-1-0"></a></h3>
 <p><code><a href="../reference/viz_stackedbar.html">viz_stackedbar()</a></code> is now a unified function that supports <strong>two modes</strong>:</p>
 <p><strong>Mode 1: Grouped/Crosstab</strong> (use <code>x_var</code> + <code>stack_var</code>)</p>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Show how one variable breaks down by another</span></span>
 <span><span class="fu"><a href="../reference/viz_stackedbar.html">viz_stackedbar</a></span><span class="op">(</span><span class="va">data</span>, x_var <span class="op">=</span> <span class="st">"education"</span>, stack_var <span class="op">=</span> <span class="st">"gender"</span><span class="op">)</span></span></code></pre></div>
 <p><strong>Mode 2: Multi-Variable/Battery</strong> (use <code>x_vars</code>)</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Compare multiple survey questions side-by-side</span></span>
 <span><span class="fu"><a href="../reference/viz_stackedbar.html">viz_stackedbar</a></span><span class="op">(</span><span class="va">data</span>, x_vars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"q1"</span>, <span class="st">"q2"</span>, <span class="st">"q3"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>This eliminates confusion between <code><a href="../reference/viz_stackedbar.html">viz_stackedbar()</a></code> and <code><a href="../reference/viz_stackedbars.html">viz_stackedbars()</a></code> - you now only need to remember one function! The function automatically detects which mode to use based on the parameters you provide.</p>
 <p><strong>Migration from <code><a href="../reference/viz_stackedbars.html">viz_stackedbars()</a></code>:</strong> Simply change the function name - all parameters work the same way:</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Old way (still works, shows deprecation notice)</span></span>
 <span><span class="fu"><a href="../reference/viz_stackedbars.html">viz_stackedbars</a></span><span class="op">(</span><span class="va">data</span>, x_vars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"q1"</span>, <span class="st">"q2"</span>, <span class="st">"q3"</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
@@ -192,7 +246,7 @@
 <li>Customizable appearance via <code>error_bar_color</code> and <code>error_bar_width</code> parameters</li>
 <li>Works with both simple and grouped bar charts</li>
 </ul><p>Example usage:</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Bar chart with means and 95% CI</span></span>
 <span><span class="fu"><a href="../reference/viz_bar.html">viz_bar</a></span><span class="op">(</span></span>
 <span>  data <span class="op">=</span> <span class="va">mtcars</span>,</span>

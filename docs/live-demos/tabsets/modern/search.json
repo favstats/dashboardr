@@ -18,28 +18,56 @@
     "href": "2_levels.html",
     "title": " 2 Levels",
     "section": "",
-    "text": "Use / to create parent and child tabs:\nadd_viz(..., tabgroup = \"satisfaction/by_age\") %&gt;%\nadd_viz(..., tabgroup = \"satisfaction/by_education\") %&gt;%\nadd_viz(..., tabgroup = \"education/by_age\")\n\nSatisfaction AnalysisEducation Analysis\n\n\n\nBy AgeBy EducationBy Region\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nBy AgeBy Region"
+    "text": "Use / to create parent and child tabs:\nadd_viz(..., tabgroup = \"satisfaction/by_age\") %&gt;%\nadd_viz(..., tabgroup = \"satisfaction/by_education\") %&gt;%\nadd_viz(..., tabgroup = \"education/by_age\")"
   },
   {
     "objectID": "2_levels.html#two-level-nested-tabs",
     "href": "2_levels.html#two-level-nested-tabs",
     "title": " 2 Levels",
     "section": "",
-    "text": "Use / to create parent and child tabs:\nadd_viz(..., tabgroup = \"satisfaction/by_age\") %&gt;%\nadd_viz(..., tabgroup = \"satisfaction/by_education\") %&gt;%\nadd_viz(..., tabgroup = \"education/by_age\")\n\nSatisfaction AnalysisEducation Analysis\n\n\n\nBy AgeBy EducationBy Region\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nBy AgeBy Region"
+    "text": "Use / to create parent and child tabs:\nadd_viz(..., tabgroup = \"satisfaction/by_age\") %&gt;%\nadd_viz(..., tabgroup = \"satisfaction/by_education\") %&gt;%\nadd_viz(..., tabgroup = \"education/by_age\")"
+  },
+  {
+    "objectID": "2_levels.html#satisfaction-analysis",
+    "href": "2_levels.html#satisfaction-analysis",
+    "title": " 2 Levels",
+    "section": "Satisfaction Analysis",
+    "text": "Satisfaction Analysis\n\nBy AgeBy EducationBy Region"
+  },
+  {
+    "objectID": "2_levels.html#education-analysis",
+    "href": "2_levels.html#education-analysis",
+    "title": " 2 Levels",
+    "section": "Education Analysis",
+    "text": "Education Analysis\n\nBy AgeBy Region"
   },
   {
     "objectID": "3_levels.html",
     "href": "3_levels.html",
     "title": " 3 Levels",
     "section": "",
-    "text": "Add more / for deeper nesting:\nadd_viz(..., tabgroup = \"survey/satisfaction/age\") %&gt;%\nadd_viz(..., tabgroup = \"survey/demographics/education\") %&gt;%\nadd_viz(..., tabgroup = \"analysis/trends/regional\")\n\nSurvey ResultsAnalysis\n\n\n\nSatisfactionDemographics\n\n\n\nBy AgeBy Education\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nBy AgeBy Education\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nTrends\n\n\n\nRegionalEducational"
+    "text": "Add more / for deeper nesting:\nadd_viz(..., tabgroup = \"survey/satisfaction/age\") %&gt;%\nadd_viz(..., tabgroup = \"survey/demographics/education\") %&gt;%\nadd_viz(..., tabgroup = \"analysis/trends/regional\")"
   },
   {
     "objectID": "3_levels.html#three-level-nested-tabs",
     "href": "3_levels.html#three-level-nested-tabs",
     "title": " 3 Levels",
     "section": "",
-    "text": "Add more / for deeper nesting:\nadd_viz(..., tabgroup = \"survey/satisfaction/age\") %&gt;%\nadd_viz(..., tabgroup = \"survey/demographics/education\") %&gt;%\nadd_viz(..., tabgroup = \"analysis/trends/regional\")\n\nSurvey ResultsAnalysis\n\n\n\nSatisfactionDemographics\n\n\n\nBy AgeBy Education\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nBy AgeBy Education\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nTrends\n\n\n\nRegionalEducational"
+    "text": "Add more / for deeper nesting:\nadd_viz(..., tabgroup = \"survey/satisfaction/age\") %&gt;%\nadd_viz(..., tabgroup = \"survey/demographics/education\") %&gt;%\nadd_viz(..., tabgroup = \"analysis/trends/regional\")"
+  },
+  {
+    "objectID": "3_levels.html#survey-results",
+    "href": "3_levels.html#survey-results",
+    "title": " 3 Levels",
+    "section": "Survey Results",
+    "text": "Survey Results\n\nSatisfactionDemographics\n\n\n\nBy AgeBy Education\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nBy AgeBy Education"
+  },
+  {
+    "objectID": "3_levels.html#analysis",
+    "href": "3_levels.html#analysis",
+    "title": " 3 Levels",
+    "section": "Analysis",
+    "text": "Analysis\n\nTrends\n\n\n\nRegionalEducational"
   },
   {
     "objectID": "index.html",

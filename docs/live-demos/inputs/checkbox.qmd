@@ -121,19 +121,22 @@ result <- viz_stackedbar(
   stack_label = "Sector",
   stacked_type = "counts",
   stack_order = c("Research", "Industry", "Government"),
-  color_palette = c("#4F46E5", "#0EA5E9", "#22C55E")
+  color_palette = c("#4F46E5", "#0EA5E9", "#22C55E"),
+  cross_tab_filter_vars = "segment"
 )
 
-# Force container height with explicit wrapper
+# Set chart height
 if (inherits(result, 'highchart')) {
   result <- highcharter::hc_size(result, height = 450)
 }
+
+result <- dashboardr:::.embed_cross_tab(result)
+
+# Force container height with explicit wrapper
 result <- htmltools::div(
   style = 'height: 450px !important; min-height: 450px !important; width: 100%; overflow: visible;',
   result
 )
-
-result <- dashboardr:::.embed_cross_tab(result)
 
 result
 ```

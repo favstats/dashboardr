@@ -26,6 +26,10 @@ knitr::opts_chunk$set(
 - **Interactive Inputs** - Gallery of input types (select, slider, switch, checkbox). [View Demo](../live-demos/inputs/index.html)
 - **Sidebar Demo** - Page sidebars with filters (checkbox, dropdown, slider). [View Demo](../live-demos/sidebar/index.html)
 
+### Advanced Demos
+
+- **GSS Explorer (Sidebar)** - Full sidebar dashboard with cross-tab filtering, conditional visibility, dynamic titles, and consistent colors. [Code](../dev/demo_sidebar_dashboard.R) | [View Demo](../live-demos/sidebar-gss/index.html) | [Documentation](advanced-features.html#cross-tab-filtering-dynamic-titles)
+
 ### Real-World Dashboards
 
 - **DigIQ Monitor** - The first public full-fledged dashboard built with dashboardr! A comprehensive digital competence monitor for Dutch citizens (ages 10-100), featuring 11 dimension pages, multilingual support (Dutch/English), paginated visualizations, and interactive modals. [View Live →](https://www.digiqmonitor.nl/)
