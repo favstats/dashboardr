@@ -226,19 +226,6 @@
     }
   }
   page_filter_vars <- unique(page_filter_vars)
-  # #region agent log
-  tryCatch({
-    log_line <- jsonlite::toJSON(list(
-      location = "page_generation.R:filter_vars",
-      message = "extract",
-      data = list(page_filter_vars = page_filter_vars, has_sidebar = has_sidebar),
-      timestamp = as.numeric(Sys.time()) * 1000,
-      sessionId = "debug-session",
-      hypothesisId = "H4"
-    ), auto_unbox = TRUE)
-    cat(log_line, "\n", file = "/Users/favstats/Dropbox/postdoc/dashboardr/.cursor/debug.log", append = TRUE)
-  }, error = function(e) {})
-  # #endregion
 
   # In dashboard format (with sidebar), viz titles should use ### instead of ##
   # to stay within the Column

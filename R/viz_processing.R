@@ -59,19 +59,6 @@
     for (i in seq_along(viz_list)) {
       viz_list[[i]]$cross_tab_filter_vars <- filter_vars
     }
-    # #region agent log
-    tryCatch({
-      log_line <- jsonlite::toJSON(list(
-        location = "viz_processing.R:cross_tab",
-        message = "attach",
-        data = list(filter_vars = filter_vars, n_specs = length(viz_list)),
-        timestamp = as.numeric(Sys.time()) * 1000,
-        sessionId = "debug-session",
-        hypothesisId = "H4-H5"
-      ), auto_unbox = TRUE)
-      cat(log_line, "\n", file = "/Users/favstats/Dropbox/postdoc/dashboardr/.cursor/debug.log", append = TRUE)
-    }, error = function(e) {})
-    # #endregion
   }
 
   # IMPORTANT: Extract pagination markers and assign section numbers BEFORE processing hierarchy
