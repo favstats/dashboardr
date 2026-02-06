@@ -56,9 +56,10 @@ create_viz <- function(data = NULL, tabgroup_labels = NULL, shared_first_level =
   
   # Convert SINGLE variable parameters from symbols to strings (NSE support)
   # e.g., x_var = mpg becomes x_var = "mpg"
-  var_params <- c("x_var", "y_var", "group_var", "stack_var", "weight_var", 
+  var_params <- c("x_var", "y_var", "group_var", "stack_var", "weight_var",
                   "time_var", "region_var", "value_var", "color_var", "size_var",
-                  "join_var", "click_var", "subgroup_var")
+                  "join_var", "click_var", "subgroup_var", "from_var", "to_var",
+                  "low_var", "high_var")
   # Vector params should be evaluated, not converted to strings
   # e.g., x_vars = my_vec evaluates to the actual vector
   var_vector_params <- c("x_vars", "tooltip_vars")
@@ -139,10 +140,10 @@ create_viz <- function(data = NULL, tabgroup_labels = NULL, shared_first_level =
 `+.viz_collection` <- function(e1, e2) {
   # Validate inputs
   if (!is_content(e1)) {
-    stop("Left operand must be a content collection")
+    stop("Left operand must be a content collection", call. = FALSE)
   }
   if (missing(e2) || !is_content(e2)) {
-    stop("Right operand must be a content collection")
+    stop("Right operand must be a content collection", call. = FALSE)
   }
 
   # Delegate to combine_content() which handles all attribute preservation
@@ -161,10 +162,10 @@ create_viz <- function(data = NULL, tabgroup_labels = NULL, shared_first_level =
 #' @export
 `+.content_collection` <- function(e1, e2) {
   if (!is_content(e1)) {
-    stop("Left operand must be a content collection")
+    stop("Left operand must be a content collection", call. = FALSE)
   }
   if (missing(e2) || !is_content(e2)) {
-    stop("Right operand must be a content collection")
+    stop("Right operand must be a content collection", call. = FALSE)
   }
 
   combine_content(e1, e2)
@@ -204,7 +205,7 @@ combine_content <- function(...) {
   # Validate all are content collections
   for (i in seq_along(collections)) {
     if (!is_content(collections[[i]])) {
-      stop("All arguments must be content collections")
+      stop("All arguments must be content collections", call. = FALSE)
     }
   }
 
@@ -397,20 +398,6 @@ combine_viz <- function(...) {
   combine_content(...)
 }
 
-#' Sort visualizations by tabgroup hierarchy
-#'
-#' Internal helper to ensure nested tabs appear after their parent tabs.
-#' Groups visualizations so that children appear immediately after their parent
-#' at the same hierarchy level. For example:
-#' - "sis" (Wave 1)
-#' - "sis/age/item1" (Wave 1) - nested under first "sis"
-#' - "sis" (Wave 2)
-#' - "sis/age/item1" (Wave 2) - nested under second "sis"
-#'
-#' @param viz_list List of visualization specifications
-#' @return Sorted list of visualizations
-
-
 #' Parse tabgroup into normalized hierarchy
 #'
 #' Internal helper to parse tabgroup parameter from various formats into a
@@ -437,7 +424,7 @@ combine_viz <- function(...) {
         levels <- trimws(levels)  # Remove whitespace
         levels <- levels[nzchar(levels)]  # Remove empty strings
         if (length(levels) == 0) {
-          stop("tabgroup cannot be empty after parsing")
+          stop("tabgroup cannot be empty after parsing", call. = FALSE)
         }
         return(levels)
       } else {
@@ -462,81 +449,9 @@ combine_viz <- function(...) {
 
   stop("tabgroup must be either:\n",
        "  - A string: 'demographics' or 'demographics/details/regional'\n",
-       "  - A named numeric vector: c('1' = 'demographics', '2' = 'details')")
+       "  - A named numeric vector: c('1' = 'demographics', '2' = 'details')",
+       call. = FALSE)
 }
-
-#' Add a visualization to the collection
-#'
-#' Adds a single visualization specification to an existing collection.
-#' Visualizations with the same tabgroup value will be organized into
-#' tabs on the generated page. Supports nested tabsets through hierarchy notation.
-#'
-#' @param viz_collection A viz_collection object
-#' @param type Visualization type: "stackedbar", "heatmap", "histogram", "timeline", "scatter", "bar"
-#' @param ... Additional parameters passed to the visualization function
-#' @param tabgroup Optional group ID for organizing related visualizations. Supports:
-#'   - Simple string: `"demographics"` for a single tab group
-#'   - Slash notation: `"demographics/details"` or `"demographics/details/regional"` for nested tabs
-#'   - Named numeric vector: `c("1" = "demographics", "2" = "details", "3" = "regional")` for explicit hierarchy
-#' @param title Display title for the visualization (shown above the chart)
-#' @param title_tabset Optional tab label. If NULL, uses `title` for the tab label.
-#'   Use this when you want a short tab name but a longer, descriptive visualization title.
-#' @param text Optional markdown text to display above the visualization
-#' @param icon Optional iconify icon shortcode for the visualization
-#' @param text_position Position of text relative to visualization ("above" or "below")
-#' @param height Optional height in pixels for highcharter visualizations (numeric value)
-#' @param filter Optional filter expression to subset data for this visualization. Use formula syntax:
-#'   `~ condition`. Examples: `~ wave == 1`, `~ age > 18`, `~ wave %in% c(1, 2, 3)`
-#' @param data Optional dataset name when using multiple datasets. Can be:
-#'   - NULL: Uses default dataset (or only dataset if single)
-#'   - String: Name of dataset from named list (e.g., "survey", "demographics")
-#' @return The updated viz_collection object
-#' @export
-#' @examples
-#' \dontrun{
-#' # Simple tabgroup
-#' page1_viz <- create_viz() %>%
-#'   add_viz(type = "stackedbar", x_var = "education", stack_var = "gender",
-#'           title = "Education by Gender", tabgroup = "demographics")
-#'
-#' # Nested tabgroups using slash notation
-#' page2_viz <- create_viz() %>%
-#'   add_viz(type = "stackedbar", title = "Overview",
-#'           tabgroup = "demographics") %>%
-#'   add_viz(type = "stackedbar", title = "Details",
-#'           tabgroup = "demographics/details")
-#'
-#' # Nested tabgroups using named numeric vector
-#' page3_viz <- create_viz() %>%
-#'   add_viz(type = "stackedbar", title = "Regional Details",
-#'           tabgroup = c("1" = "demographics", "2" = "details", "3" = "regional"))
-#'
-#' # Filter data per visualization
-#' page4_viz <- create_viz() %>%
-#'   add_viz(type = "histogram", x_var = "response",
-#'           title = "Wave 1", filter = ~ wave == 1) %>%
-#'   add_viz(type = "histogram", x_var = "response",
-#'           title = "Wave 2", filter = ~ wave == 2) %>%
-#'   add_viz(type = "histogram", x_var = "response",
-#'           title = "All Waves", filter = ~ wave %in% c(1, 2, 3))
-#'
-#' # Multiple datasets
-#' page5_viz <- create_viz() %>%
-#'   add_viz(type = "histogram", x_var = "age", data = "demographics") %>%
-#'   add_viz(type = "histogram", x_var = "response", data = "survey") %>%
-#'   add_viz(type = "histogram", x_var = "outcome", data = "outcomes")
-#'
-#' # Separate tab label from visualization title
-#' page6_viz <- create_viz() %>%
-#'   add_viz(
-#'     type = "histogram",
-#'     x_var = "age",
-#'     tabgroup = "demographics",
-#'     title_tabset = "Age",  # Short tab label
-#'     title = "Age Distribution of Survey Respondents by Gender and Region"  # Long viz title
-#'   )
-#' }
-
 
 #' Sort visualizations by tabgroup hierarchy
 #'
@@ -567,25 +482,13 @@ combine_viz <- function(...) {
   viz_list[sort_order]
 }
 
-#' Parse tabgroup into normalized hierarchy
-#'
-#' Internal helper to parse tabgroup parameter from various formats into a
-#' standardized character vector representing the hierarchy.
-#'
-#' @param tabgroup Can be:
-#'   - NULL: no tabgroup
-#'   - Character string: "level1" or "level1/level2/level3" (slash notation)
-#'   - Named numeric vector: c("1" = "level1", "2" = "level2", "3" = "level3")
-#' @return Character vector of hierarchy levels, or NULL
-
-
 #' Add a visualization to the collection
 #'
 #' Adds a single visualization specification to an existing collection.
 #' Visualizations with the same tabgroup value will be organized into
 #' tabs on the generated page. Supports nested tabsets through hierarchy notation.
 #'
-#' @param viz_collection A viz_collection object
+#' @param x A viz_collection or page_object to add visualization to
 #' @param type Visualization type: "stackedbar", "heatmap", "histogram", "timeline", "scatter", "bar"
 #' @param ... Additional parameters passed to the visualization function
 #' @param tabgroup Optional group ID for organizing related visualizations. Supports:
@@ -601,9 +504,15 @@ combine_viz <- function(...) {
 #' @param height Optional height in pixels for highcharter visualizations (numeric value)
 #' @param filter Optional filter expression to subset data for this visualization. Use formula syntax:
 #'   `~ condition`. Examples: `~ wave == 1`, `~ age > 18`, `~ wave %in% c(1, 2, 3)`
+#' @param text_before_tabset Optional markdown text to display before the tabset
+#' @param text_after_tabset Optional markdown text to display after the tabset
+#' @param text_before_viz Optional markdown text to display before the visualization
+#' @param text_after_viz Optional markdown text to display after the visualization
 #' @param data Optional dataset name when using multiple datasets. Can be:
 #'   - NULL: Uses default dataset (or only dataset if single)
 #'   - String: Name of dataset from named list (e.g., "survey", "demographics")
+#' @param drop_na_vars Whether to drop NA values from variables (default FALSE)
+#' @param show_when Conditional display expression for sidebar-driven visibility
 #' @return The updated viz_collection object
 #' @export
 #' @examples
@@ -672,11 +581,12 @@ add_viz.page_object <- function(x, type = NULL, ..., tabgroup = NULL, title = NU
     "filter", "data", "drop_na_vars", "show_when"))
   
   # Convert SINGLE variable parameters from symbols to strings (NSE support)
-  var_params <- c("x_var", "y_var", "group_var", "stack_var", "weight_var", 
+  var_params <- c("x_var", "y_var", "group_var", "stack_var", "weight_var",
                   "time_var", "region_var", "value_var", "color_var", "size_var",
-                  "join_var", "click_var", "subgroup_var")
+                  "join_var", "click_var", "subgroup_var", "from_var", "to_var",
+                  "low_var", "high_var")
   var_vector_params <- c("x_vars", "tooltip_vars")
-  
+
   extra <- lapply(extra_names, function(nm) {
     val <- call_args[[nm]]
     if (nm %in% var_params && is.symbol(val)) {
@@ -741,7 +651,9 @@ add_viz.default <- function(x, type = NULL, ..., tabgroup = NULL, title = NULL, 
   
   # Validate first argument
   if (!is_content(viz_collection)) {
-    stop("First argument must be a content collection or page_object")
+    stop("First argument must be a content collection or page_object.\n",
+         "\u2139 See https://favstats.github.io/dashboardr/reference/add_viz.html",
+         call. = FALSE)
   }
 
   # Get explicitly provided arguments (not defaults) - UNEVALUATED
@@ -764,11 +676,12 @@ add_viz.default <- function(x, type = NULL, ..., tabgroup = NULL, title = NULL, 
     "filter", "data", "drop_na_vars", "show_when")]
   
   # Convert SINGLE variable parameters from symbols to strings (NSE support)
-  var_params <- c("x_var", "y_var", "group_var", "stack_var", "weight_var", 
+  var_params <- c("x_var", "y_var", "group_var", "stack_var", "weight_var",
                   "time_var", "region_var", "value_var", "color_var", "size_var",
-                  "join_var", "click_var", "subgroup_var")
+                  "join_var", "click_var", "subgroup_var", "from_var", "to_var",
+                  "low_var", "high_var")
   var_vector_params <- c("x_vars", "tooltip_vars")
-  
+
   dot_args <- lapply(names(dot_args_raw), function(nm) {
     val <- dot_args_raw[[nm]]
     if (nm %in% var_params && is.symbol(val)) {
@@ -863,7 +776,7 @@ add_viz.default <- function(x, type = NULL, ..., tabgroup = NULL, title = NULL, 
   dot_args <- merged_params[!names(merged_params) %in% c("type", "tabgroup", "title", "title_tabset", "text", "icon", "text_position", "text_before_tabset", "text_after_tabset", "text_before_viz", "text_after_viz", "height", "filter", "data", "drop_na_vars", "show_when")]
 
   # Validate supported visualization types
-  supported_types <- c("map", "treemap", "stackedbar", "stackedbars", "heatmap", "histogram", "timeline", "bar", "scatter", "density", "boxplot")
+  supported_types <- c("map", "treemap", "stackedbar", "stackedbars", "heatmap", "histogram", "timeline", "bar", "scatter", "density", "boxplot", "pie", "donut", "lollipop", "dumbbell", "gauge", "funnel", "pyramid", "sankey", "waffle")
 
   # Validate type parameter
   if (is.null(type) || !is.character(type) || length(type) != 1 || nchar(type) == 0) {
@@ -888,43 +801,43 @@ add_viz.default <- function(x, type = NULL, ..., tabgroup = NULL, title = NULL, 
   # Validate title parameter
   if (!is.null(title)) {
     if (!is.character(title) || length(title) != 1) {
-      stop("title must be a character string or NULL")
+      stop("title must be a character string or NULL", call. = FALSE)
     }
   }
 
   # Validate text parameter (backward compatibility)
   if (!is.null(text)) {
     if (!is.character(text) || length(text) != 1) {
-      stop("text must be a character string or NULL")
+      stop("text must be a character string or NULL", call. = FALSE)
     }
   }
 
   # Validate new text positioning parameters
   if (!is.null(text_before_tabset)) {
     if (!is.character(text_before_tabset) || length(text_before_tabset) != 1) {
-      stop("text_before_tabset must be a character string or NULL")
+      stop("text_before_tabset must be a character string or NULL", call. = FALSE)
     }
   }
   if (!is.null(text_after_tabset)) {
     if (!is.character(text_after_tabset) || length(text_after_tabset) != 1) {
-      stop("text_after_tabset must be a character string or NULL")
+      stop("text_after_tabset must be a character string or NULL", call. = FALSE)
     }
   }
   if (!is.null(text_before_viz)) {
     if (!is.character(text_before_viz) || length(text_before_viz) != 1) {
-      stop("text_before_viz must be a character string or NULL")
+      stop("text_before_viz must be a character string or NULL", call. = FALSE)
     }
   }
   if (!is.null(text_after_viz)) {
     if (!is.character(text_after_viz) || length(text_after_viz) != 1) {
-      stop("text_after_viz must be a character string or NULL")
+      stop("text_after_viz must be a character string or NULL", call. = FALSE)
     }
   }
 
   # Validate icon parameter
   if (!is.null(icon)) {
     if (!is.character(icon) || length(icon) != 1) {
-      stop("icon must be a character string or NULL")
+      stop("icon must be a character string or NULL", call. = FALSE)
     }
     # Validate icon format (should be "collection:name" or already formatted shortcode)
     if (!grepl("^[a-zA-Z0-9_-]+:[a-zA-Z0-9_-]+$", icon) &&
@@ -936,33 +849,33 @@ add_viz.default <- function(x, type = NULL, ..., tabgroup = NULL, title = NULL, 
 
   # Validate text_position
   if (!text_position %in% c("above", "below")) {
-    stop("text_position must be either 'above' or 'below'")
+    stop("text_position must be either 'above' or 'below'", call. = FALSE)
   }
 
   # Validate height parameter
   if (!is.null(height)) {
     if (!is.numeric(height) || length(height) != 1 || height <= 0) {
-      stop("height must be a positive numeric value or NULL")
+      stop("height must be a positive numeric value or NULL", call. = FALSE)
     }
   }
 
   # Validate filter parameter
   if (!is.null(filter)) {
     if (!inherits(filter, "formula")) {
-      stop("filter must be a formula (e.g., ~ wave == 1) or NULL")
+      stop("filter must be a formula (e.g., ~ wave == 1) or NULL", call. = FALSE)
     }
     if (length(filter) != 2) {
-      stop("filter formula must have the form ~ condition (one-sided formula)")
+      stop("filter formula must have the form ~ condition (one-sided formula)", call. = FALSE)
     }
   }
 
   # Validate show_when parameter (formula for conditional visibility)
   if (!is.null(show_when)) {
     if (!inherits(show_when, "formula")) {
-      stop("show_when must be a formula (e.g., ~ time_period == \"Over Time\") or NULL")
+      stop("show_when must be a formula (e.g., ~ time_period == \"Over Time\") or NULL", call. = FALSE)
     }
     if (length(show_when) != 2) {
-      stop("show_when formula must have the form ~ condition (one-sided formula)")
+      stop("show_when formula must have the form ~ condition (one-sided formula)", call. = FALSE)
     }
   }
 
@@ -980,7 +893,7 @@ add_viz.default <- function(x, type = NULL, ..., tabgroup = NULL, title = NULL, 
       # Dataset name (existing behavior)
       data_is_dataframe <- FALSE
     } else {
-      stop("data must be a data frame, a non-empty character string (dataset name), or NULL")
+      stop("data must be a data frame, a non-empty character string (dataset name), or NULL", call. = FALSE)
     }
   }
 
@@ -1019,84 +932,6 @@ add_viz.default <- function(x, type = NULL, ..., tabgroup = NULL, title = NULL, 
 
   viz_collection
 }
-
-#' Add Multiple Visualizations at Once
-#'
-#' @description
-#' Convenience function to add multiple visualizations in a loop by expanding
-#' vector parameters. Automatically detects which parameters should be expanded
-#' to create multiple visualizations. This is useful when creating many similar
-#' visualizations that differ only in one or two parameters.
-#'
-#' @param viz_collection A viz_collection object from create_viz()
-#' @param ... Visualization parameters. Parameters with multiple values will be
-#'   expanded to create multiple visualizations. Common parameters with single
-#'   values will be applied to all visualizations.
-#' @param .tabgroup_template Optional. Template string for tabgroup with `{i}` placeholder
-#'   for the iteration index (e.g., `"skills/age/item{i}"`). You can also use
-#'   parameter names in the template (e.g., `"skills/{y_var}"`).
-#'   If NULL, tabgroup must be provided as a vector of the same length as expandable parameters.
-#' @param .title_template Optional. Template string for title with `{i}` placeholder.
-#'
-#' @details
-#' The function identifies "expandable" parameters (y_var, x_var, y_var,
-#' stack_var, questions) and creates one visualization per value. Other parameters
-#' are applied to all visualizations. All expandable vector parameters must have
-#' the same length.
-#'
-#' Templates use glue syntax:
-#' - `{i}` is replaced with the iteration number (1, 2, 3, ...)
-#' - `{param_name}` is replaced with the current value of that parameter
-#'
-#' @return The updated viz_collection object with multiple visualizations added
-#'
-#' @export
-#'
-#' @examples
-#' \dontrun{
-#' # Basic expansion - create 3 timeline visualizations
-#' viz <- create_viz(type = "timeline", time_var = "wave", chart_type = "line") |>
-#'   add_vizzes(
-#'     y_var = c("SInfo1", "SInfo2", "SInfo3"),
-#'     group_var = "AgeGroup",  # Same for all
-#'     .tabgroup_template = "skills/age/item{i}"
-#'   )
-#'
-#' # Parallel expansion - titles match the variables
-#' viz <- create_viz(type = "stackedbar") |>
-#'   add_vizzes(
-#'     x_var = c("Age", "Gender", "Education"),
-#'     title = c("By Age", "By Gender", "By Education"),
-#'     .tabgroup_template = "demographics/demo{i}"
-#'   )
-#'
-#' # Use variable names in template
-#' viz <- create_viz(type = "timeline") |>
-#'   add_vizzes(
-#'     y_var = c("SInfo1", "SInfo2", "SInfo3"),
-#'     .tabgroup_template = "skills/{y_var}"
-#'   )
-#'
-#' # Helper function pattern
-#' add_all_questions <- function(viz, vars, group_var, tbgrp, demographic, wave) {
-#'   wave_path <- tolower(gsub(" ", "", wave))
-#'   viz |> add_vizzes(
-#'     y_var = vars,
-#'     group_var = group_var,
-#'     .tabgroup_template = glue::glue("{tbgrp}/{wave_path}/{demographic}/item{{i}}")
-#'   )
-#' }
-#'
-#' viz <- create_viz(type = "timeline", time_var = "wave") |>
-#'   add_all_questions(
-#'     vars = c("var1", "var2", "var3"),
-#'     group_var = "AgeGroup",
-#'     tbgrp = "skills",
-#'     demographic = "age",
-#'     wave = "Over Time"
-#'   )
-#' }
-
 
 #' Add Multiple Visualizations at Once
 #'
@@ -1285,7 +1120,7 @@ add_vizzes <- function(viz_collection, ...,
 #' }
 set_tabgroup_labels <- function(viz_collection, labels = NULL, ...) {
   if (!is_content(viz_collection)) {
-    stop("First argument must be a content collection")
+    stop("First argument must be a content collection", call. = FALSE)
   }
 
   # Get key-value pairs from ...
@@ -1300,30 +1135,11 @@ set_tabgroup_labels <- function(viz_collection, labels = NULL, ...) {
     # New style: direct key-value pairs
     viz_collection$tabgroup_labels <- dots
   } else {
-    stop("Either provide 'labels' argument or key-value pairs via ...")
+    stop("Either provide 'labels' argument or key-value pairs via ...", call. = FALSE)
   }
 
   viz_collection
 }
-
-#' Create a single visualization specification
-#'
-#' Helper function to create individual viz specs that can be combined
-#' into a list or used directly in add_page().
-#'
-#' @param type Visualization type
-#' @param ... Additional parameters
-#' @param tabgroup Optional group ID
-#' @param title Display title
-#' @return A list containing the visualization specification
-#' @export
-#' @examples
-#' \dontrun{
-#' viz1 <- spec_viz(type = "heatmap", x_var = "party", y_var = "ideology")
-#' viz2 <- spec_viz(type = "histogram", x_var = "age")
-#' page_viz <- list(viz1, viz2)
-#' }
-
 
 #' Create a single visualization specification
 #'
@@ -1350,85 +1166,6 @@ spec_viz <- function(type, ..., tabgroup = NULL, title = NULL) {
     ...
   )
 }
-
-# ===================================================================
-# Core Dashboard Functions
-# ===================================================================
-
-#' Create a new dashboard project
-#'
-#' Initializes a dashboard project object that can be built up using
-#' the piping workflow with add_landingpage() and add_page().
-#'
-#' @param output_dir Directory for generated files
-#' @param title Overall title for the dashboard site
-#' @param logo Optional logo filename (will be copied to output directory)
-#' @param favicon Optional favicon filename (will be copied to output directory)
-#' @param github GitHub repository URL (optional)
-#' @param twitter Twitter profile URL (optional)
-#' @param linkedin LinkedIn profile URL (optional)
-#' @param email Email address (optional)
-#' @param website Website URL (optional)
-#' @param search Enable search functionality (default: TRUE)
-#' @param theme Bootstrap theme (cosmo, flatly, journal, etc.) (optional)
-#' @param custom_css Path to custom CSS file (optional)
-#' @param custom_scss Path to custom SCSS file (optional)
-#' @param author Author name for the site (optional)
-#' @param description Site description for SEO (optional)
-#' @param page_footer Custom footer text (optional)
-#' @param date Site creation/update date (optional)
-#' @param sidebar Enable/disable global sidebar (default: FALSE)
-#' @param sidebar_style Sidebar style (floating, docked, etc.) (optional)
-#' @param sidebar_background Sidebar background color (optional)
-#' @param navbar_style Navbar style (default, dark, light) (optional)
-#' @param navbar_brand Custom brand text (optional)
-#' @param navbar_toggle Mobile menu toggle behavior (optional)
-#' @param math Enable/disable math rendering (katex, mathjax) (optional)
-#' @param code_folding Code folding behavior (none, show, hide) (optional)
-#' @param code_tools Code tools (copy, download, etc.) (optional)
-#' @param toc Table of contents (floating, left, right) (optional)
-#' @param toc_depth TOC depth level (default: 3)
-#' @param google_analytics Google Analytics ID (optional)
-#' @param plausible Plausible analytics domain (optional)
-#' @param gtag Google Tag Manager ID (optional)
-#' @param value_boxes Enable value box styling (default: FALSE)
-#' @param metrics_style Metrics display style (optional)
-#' @param shiny Enable Shiny interactivity (default: FALSE)
-#' @param observable Enable Observable JS (default: FALSE)
-#' @param jupyter Enable Jupyter widgets (default: FALSE)
-#' @param publish_dir Custom publish directory (optional)
-#' @param github_pages GitHub Pages configuration (optional)
-#' @param netlify Netlify deployment settings (optional)
-#' @param allow_inside_pkg Allow output directory inside package (default FALSE)
-#' @param warn_before_overwrite Warn before overwriting existing files (default TRUE)
-#' @param sidebar_groups List of sidebar groups for hybrid navigation (optional)
-#' @param navbar_sections List of navbar sections that link to sidebar groups (optional)
-#' @return A dashboard_project object
-#' @export
-#' @examples
-#' \dontrun{
-#' # Basic dashboard
-#' dashboard <- create_dashboard("my_dashboard", "My Analysis Dashboard")
-#'
-#' # Comprehensive dashboard with all features
-#' dashboard <- create_dashboard(
-#'   "my_dashboard",
-#'   "My Analysis Dashboard",
-#'   logo = "logo.png",
-#'   github = "https://github.com/username/repo",
-#'   twitter = "https://twitter.com/username",
-#'   theme = "cosmo",
-#'   author = "Dr. Jane Smith",
-#'   description = "Comprehensive data analysis dashboard",
-#'   page_footer = "© 2024 Company Name",
-#'   sidebar = TRUE,
-#'   toc = "floating",
-#'   google_analytics = "GA-XXXXXXXXX",
-#'   value_boxes = TRUE,
-#'   shiny = TRUE
-#' )
-#' }
-
 
 #' Print Visualization Collection
 #'
@@ -1733,41 +1470,6 @@ print.viz_collection <- function(x, render = FALSE, check = FALSE, ...) {
     cat(indent_str, cli::symbol$cross, " ", cli::col_red("<UNKNOWN>"), "\n", sep = "")
   }
 }
-
-# ===================================================================
-# Hybrid Navigation Helper Functions
-# ===================================================================
-
-#' Create a sidebar group for hybrid navigation
-#'
-#' Helper function to create a sidebar group configuration for use with
-#' hybrid navigation. Each group can have its own styling and contains
-#' a list of pages.
-#'
-#' @param id Unique identifier for the sidebar group
-#' @param title Display title for the sidebar group
-#' @param pages Character vector of page names to include in this group
-#' @param style Sidebar style (docked, floating, etc.) (optional)
-#' @param background Background color (optional)
-#' @param foreground Foreground color (optional)
-#' @param border Show border (optional)
-#' @param alignment Alignment (left, right) (optional)
-#' @param collapse_level Collapse level for navigation (optional)
-#' @param pinned Whether sidebar is pinned (optional)
-#' @param tools List of tools to add to sidebar (optional)
-#' @return List containing sidebar group configuration
-#' @export
-#' @examples
-#' \dontrun{
-#' # Create a sidebar group for analysis pages
-#' analysis_group <- sidebar_group(
-#'   id = "analysis",
-#'   title = "Data Analysis",
-#'   pages = c("overview", "demographics", "findings"),
-#'   style = "docked",
-#'   background = "light"
-#' )
-#' }
 
 # ===================================================================
 # Pagination
@@ -2107,7 +1809,6 @@ preview <- function(collection, title = "Preview", open = TRUE, clean = FALSE,
 #' Validate visualization specifications in a collection
 #'
 #' Checks all visualization specs in a collection for common errors before
-
 #' rendering. This includes verifying required parameters are present and
 #' that specified column names exist in the data.
 #'
@@ -2341,6 +2042,8 @@ validate_specs <- function(collection, verbose = TRUE, data = NULL) {
 }
 
 #' Print method for dashboardr_widget - opens in viewer
+#' @param x A dashboardr_widget object to print
+#' @param ... Additional arguments (currently ignored)
 #' @export
 print.dashboardr_widget <- function(x, ...) {
   # Save to temp file and open
@@ -2722,6 +2425,14 @@ save_widget <- function(widget, file, selfcontained = TRUE) {
     viz_args$data <- data
   }
   
+  # Handle alias types: inject default params before dispatch
+
+  if (identical(viz_type, "donut")) {
+    viz_args$inner_size <- viz_args$inner_size %||% "50%"
+  } else if (identical(viz_type, "pyramid")) {
+    viz_args$reversed <- viz_args$reversed %||% TRUE
+  }
+
   # Call the appropriate visualization function
   viz_fn <- switch(viz_type,
     "histogram" = viz_histogram,
@@ -2735,13 +2446,22 @@ save_widget <- function(widget, file, selfcontained = TRUE) {
     "treemap" = viz_treemap,
     "density" = viz_density,
     "boxplot" = viz_boxplot,
+    "pie" = viz_pie,
+    "donut" = viz_pie,
+    "lollipop" = viz_lollipop,
+    "dumbbell" = viz_dumbbell,
+    "gauge" = viz_gauge,
+    "funnel" = viz_funnel,
+    "pyramid" = viz_funnel,
+    "sankey" = viz_sankey,
+    "waffle" = viz_waffle,
     NULL
   )
-  
- if (is.null(viz_fn)) {
+
+  if (is.null(viz_fn)) {
     stop("Unknown visualization type: ", viz_type, call. = FALSE)
   }
-  
+
   # Call the function with arguments
   result <- do.call(viz_fn, viz_args)
   
@@ -2992,7 +2712,7 @@ save_widget <- function(widget, file, selfcontained = TRUE) {
   htmltools::tags$blockquote(
     htmltools::p(quote_text),
     if (!is.null(attribution)) {
-      htmltools::tags$cite(paste0("— ", attribution))
+      htmltools::tags$cite(paste0("\u2014 ", attribution))
     }
   )
 }
@@ -4301,7 +4021,7 @@ save_widget <- function(widget, file, selfcontained = TRUE) {
     "divider" = "---",
     "code" = paste0("```", block$language %||% "r", "\n", block$code, "\n```"),
     "html" = block$html %||% block$content,
-    "quote" = paste0("> ", block$text, if (!is.null(block$citation)) paste0("\n> — ", block$citation) else ""),
+    "quote" = paste0("> ", block$text, if (!is.null(block$citation)) paste0("\n> \u2014 ", block$citation) else ""),
     "image" = paste0("![", block$alt %||% "", "](", block$src, ")"),
     NULL
   )
@@ -4346,7 +4066,9 @@ save_widget <- function(widget, file, selfcontained = TRUE) {
 #' }
 add_powered_by_dashboardr <- function(dashboard, size = "small", style = "default") {
   if (!inherits(dashboard, "dashboard_project")) {
-    stop("First argument must be a dashboard project created with create_dashboard()")
+    stop("First argument must be a dashboard project created with create_dashboard().\n",
+         "\u2139 See https://favstats.github.io/dashboardr/reference/create_dashboard.html",
+         call. = FALSE)
   }
 
   # Validate inputs
@@ -4470,12 +4192,12 @@ add_powered_by_dashboardr <- function(dashboard, size = "small", style = "defaul
 #'
 #' @param x A content_collection or viz_collection object
 #' @param ... Additional arguments (currently ignored)
+#' @param options Knitr chunk options (currently ignored)
 #'
 #' @return A knitr asis_output object containing the rendered HTML
 #'
 #' @details
 #' This method enables "show the viz" behavior in documents while preserving
-
 #' the structure print for console debugging. Simply output a collection with
 #' inline data to see the rendered visualization:
 #'
@@ -4590,7 +4312,7 @@ knit_print.content_collection <- function(x, ..., options = NULL) {
         widget_html <- htmlwidgets:::toHTML(viz_result, standalone = FALSE, knitrOptions = options)
         return(htmltools::tagList(title_html, widget_html, htmltools::tags$div(style = "margin-bottom: 15px;")))
       } else {
-        # Wrapped in a tag (e.g., div with height) — convert as-is
+        # Wrapped in a tag (e.g., div with height) \u2014 convert as-is
         widget_html <- htmltools::HTML(as.character(viz_result))
         return(htmltools::tagList(title_html, widget_html, htmltools::tags$div(style = "margin-bottom: 15px;")))
       }
@@ -4672,7 +4394,7 @@ knit_print.content_collection <- function(x, ..., options = NULL) {
     return(htmltools::tags$blockquote(
       style = "border-left: 4px solid #6c757d; padding-left: 16px; margin: 20px 0; font-style: italic; color: #495057;",
       htmltools::tags$p(style = "margin: 0 0 8px 0;", quote_text),
-      if (nchar(attribution) > 0) htmltools::tags$footer(style = "font-size: 0.9em; color: #6c757d;", paste0("— ", attribution))
+      if (nchar(attribution) > 0) htmltools::tags$footer(style = "font-size: 0.9em; color: #6c757d;", paste0("\u2014 ", attribution))
     ))
     
   } else if (item_type == "metric") {
@@ -4787,7 +4509,7 @@ knit_print.content_collection <- function(x, ..., options = NULL) {
     label <- item$label %||% item$input_id %||% "Filter"
     return(htmltools::tags$div(
       style = "background: #f0f7ff; border: 1px dashed #007bff; border-radius: 4px; padding: 12px; margin: 15px 0;",
-      htmltools::tags$span(style = "color: #007bff; font-weight: 500;", paste0("🎚 Input: ", label)),
+      htmltools::tags$span(style = "color: #007bff; font-weight: 500;", paste0("\U0001f39a Input: ", label)),
       htmltools::tags$span(style = "color: #6c757d; font-size: 0.9em; margin-left: 10px;", "(Interactive in full dashboard)")
     ))
     

@@ -347,24 +347,38 @@ describe("sidebar demo dashboard generation", {
     demo_script <- file.path(testthat::test_path(), "..", "..", "dev", "demo_sidebar_dashboard.R")
     skip_if(!file.exists(demo_script), "demo_sidebar_dashboard.R not found")
 
+    # Normalize to absolute path before changing working directory
+    demo_script <- normalizePath(demo_script)
+
+    # Use a temp working directory so the hardcoded "11111" output_dir
+    # from create_dashboard() lands inside it
     temp_dir <- tempfile("demo_test")
     dir.create(temp_dir, recursive = TRUE)
+    on.exit(unlink(temp_dir, recursive = TRUE), add = TRUE)
 
-    # Source the demo in a controlled environment with overridden output_dir
+    old_wd <- setwd(temp_dir)
+    on.exit(setwd(old_wd), add = TRUE)
+
+    # Read the demo script and strip devtools::load_all() — package is already
+    # loaded during testing, and the temp dir has no DESCRIPTION file
+    script_lines <- readLines(demo_script)
+    script_lines <- script_lines[!grepl("^devtools::load_all", script_lines)]
+    script_text <- paste(script_lines, collapse = "\n")
+
     env <- new.env(parent = globalenv())
-    env$output_dir <- temp_dir
-    old_opt <- getOption("dashboardr.no_render")
-    options(dashboardr.no_render = TRUE)
-    on.exit(options(dashboardr.no_render = old_opt), add = TRUE)
     capture.output(
-      suppressWarnings(source(demo_script, local = env)),
+      suppressWarnings(eval(parse(text = script_text), envir = env)),
       type = "message"
     )
 
-    # Check that QMD was generated
-    qmd_files <- list.files(temp_dir, pattern = "\\.qmd$")
+    # The demo creates dashboard in "11111/" sub-directory
+    output_subdir <- file.path(temp_dir, "11111")
+    qmd_files <- if (dir.exists(output_subdir)) {
+      list.files(output_subdir, pattern = "\\.qmd$")
+    } else {
+      # Fallback: check all subdirectories
+      list.files(temp_dir, pattern = "\\.qmd$", recursive = TRUE)
+    }
     expect_true(length(qmd_files) > 0)
-
-    unlink(temp_dir, recursive = TRUE)
   })
 })

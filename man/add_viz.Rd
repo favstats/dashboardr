@@ -2,7 +2,7 @@
 % Please edit documentation in R/viz_collection.R
 \name{add_viz}
 \alias{add_viz}
-\title{Parse tabgroup into normalized hierarchy}
+\title{Add a visualization to the collection}
 \usage{
 add_viz(
   x,
@@ -21,10 +21,13 @@ add_viz(
   height = NULL,
   filter = NULL,
   data = NULL,
-  drop_na_vars = FALSE
+  drop_na_vars = FALSE,
+  show_when = NULL
 )
 }
 \arguments{
+\item{x}{A viz_collection or page_object to add visualization to}
+
 \item{type}{Visualization type: "stackedbar", "heatmap", "histogram", "timeline", "scatter", "bar"}
 
 \item{...}{Additional parameters passed to the visualization function}
@@ -47,6 +50,14 @@ Use this when you want a short tab name but a longer, descriptive visualization 
 
 \item{text_position}{Position of text relative to visualization ("above" or "below")}
 
+\item{text_before_tabset}{Optional markdown text to display before the tabset}
+
+\item{text_after_tabset}{Optional markdown text to display after the tabset}
+
+\item{text_before_viz}{Optional markdown text to display before the visualization}
+
+\item{text_after_viz}{Optional markdown text to display after the visualization}
+
 \item{height}{Optional height in pixels for highcharter visualizations (numeric value)}
 
 \item{filter}{Optional filter expression to subset data for this visualization. Use formula syntax:
@@ -58,21 +69,17 @@ Use this when you want a short tab name but a longer, descriptive visualization 
 \item String: Name of dataset from named list (e.g., "survey", "demographics")
 }}
 
-\item{viz_collection}{A viz_collection object}
+\item{drop_na_vars}{Whether to drop NA values from variables (default FALSE)}
+
+\item{show_when}{Conditional display expression for sidebar-driven visibility}
 }
 \value{
-Character vector of hierarchy levels, or NULL
-Add a visualization to the collection
-
-Adds a single visualization specification to an existing collection.
-Visualizations with the same tabgroup value will be organized into
-tabs on the generated page. Supports nested tabsets through hierarchy notation.
-
 The updated viz_collection object
 }
 \description{
-Internal helper to parse tabgroup parameter from various formats into a
-standardized character vector representing the hierarchy.
+Adds a single visualization specification to an existing collection.
+Visualizations with the same tabgroup value will be organized into
+tabs on the generated page. Supports nested tabsets through hierarchy notation.
 }
 \examples{
 \dontrun{

@@ -59,7 +59,7 @@ create_content <- function(data = NULL, tabgroup_labels = NULL, shared_first_lev
 #' Adds a text block to a content collection. Can be used standalone or in a pipe.
 #' Supports viz_collection as first argument for seamless piping.
 #'
-#' @param content_collection A content_collection, viz_collection, or NULL
+#' @param x A content_collection, viz_collection, sidebar_container, page_object, or NULL
 #' @param text Markdown text content (can be multi-line)
 #' @param tabgroup Optional tabgroup for organizing content (character vector for nested tabs)
 #' @param ... Additional text lines (will be combined with newlines)
@@ -132,7 +132,7 @@ add_text <- function(x = NULL, text, ..., tabgroup = NULL) {
     content_collection$items <- list(old_block)
     is_pipeable <- TRUE
   } else {
-    stop("First argument must be a content collection, page_object, sidebar_container, content_block, character string, or NULL")
+    stop("First argument must be a content collection, page_object, sidebar_container, content_block, character string, or NULL", call. = FALSE)
   }
   
   # Combine all text arguments from ...
@@ -249,12 +249,12 @@ add_image <- function(content_collection = NULL, src, alt = NULL, caption = NULL
     content_collection$items <- list(old_block)
     is_pipeable <- TRUE
   } else {
-    stop("First argument must be a content collection, sidebar_container, content_block, or NULL")
+    stop("First argument must be a content collection, sidebar_container, content_block, or NULL", call. = FALSE)
   }
   
   # Validate src
   if (is.null(src) || !is.character(src) || length(src) != 1 || nchar(src) == 0) {
-    stop("src must be a non-empty character string")
+    stop("src must be a non-empty character string", call. = FALSE)
   }
   
   # Validate and match align
@@ -262,22 +262,22 @@ add_image <- function(content_collection = NULL, src, alt = NULL, caption = NULL
   
   # Validate optional parameters
   if (!is.null(alt) && (!is.character(alt) || length(alt) != 1)) {
-    stop("alt must be a character string or NULL")
+    stop("alt must be a character string or NULL", call. = FALSE)
   }
   if (!is.null(caption) && (!is.character(caption) || length(caption) != 1)) {
-    stop("caption must be a character string or NULL")
+    stop("caption must be a character string or NULL", call. = FALSE)
   }
   if (!is.null(width) && (!is.character(width) || length(width) != 1)) {
-    stop("width must be a character string or NULL")
+    stop("width must be a character string or NULL", call. = FALSE)
   }
   if (!is.null(height) && (!is.character(height) || length(height) != 1)) {
-    stop("height must be a character string or NULL")
+    stop("height must be a character string or NULL", call. = FALSE)
   }
   if (!is.null(link) && (!is.character(link) || length(link) != 1)) {
-    stop("link must be a character string or NULL")
+    stop("link must be a character string or NULL", call. = FALSE)
   }
   if (!is.null(class) && (!is.character(class) || length(class) != 1)) {
-    stop("class must be a character string or NULL")
+    stop("class must be a character string or NULL", call. = FALSE)
   }
   
   # Create image block
@@ -311,7 +311,7 @@ add_image <- function(content_collection = NULL, src, alt = NULL, caption = NULL
 }
 
 #' Add callout box
-#' @param content A content_collection or viz_collection object
+#' @param x A content_collection, viz_collection, sidebar_container, or page_object
 #' @param text Callout content
 #' @param type Callout type (note/tip/warning/caution/important)
 #' @param title Optional title
@@ -340,7 +340,7 @@ add_callout <- function(x, text, type = c("note", "tip", "warning", "caution", "
   
   content <- x
   if (!is_content(content)) {
-    stop("First argument must be a content collection, sidebar_container, or page_object")
+    stop("First argument must be a content collection, sidebar_container, or page_object", call. = FALSE)
   }
   
   type <- match.arg(type)
@@ -387,7 +387,7 @@ add_divider <- function(content, style = "default", tabgroup = NULL) {
   }
   
   if (!is_content(content)) {
-    stop("First argument must be a content collection, sidebar_container, or page_object")
+    stop("First argument must be a content collection, sidebar_container, or page_object", call. = FALSE)
   }
   
   insertion_idx <- length(content$items) + 1
@@ -422,7 +422,7 @@ add_code <- function(content, code, language = "r", caption = NULL, filename = N
   }
   
   if (!is_content(content)) {
-    stop("First argument must be a content collection or page_object")
+    stop("First argument must be a content collection or page_object", call. = FALSE)
   }
   
   insertion_idx <- length(content$items) + 1
@@ -457,7 +457,7 @@ add_spacer <- function(content, height = "2rem", tabgroup = NULL) {
   }
   
   if (!is_content(content)) {
-    stop("First argument must be a content collection, sidebar_container, or page_object")
+    stop("First argument must be a content collection, sidebar_container, or page_object", call. = FALSE)
   }
   
   insertion_idx <- length(content$items) + 1
@@ -503,7 +503,7 @@ add_gt <- function(content, gt_object, caption = NULL, tabgroup = NULL) {
   }
   
   if (!is_content(content)) {
-    stop("First argument must be a content collection or page_object")
+    stop("First argument must be a content collection or page_object", call. = FALSE)
   }
   
   insertion_idx <- length(content$items) + 1
@@ -549,7 +549,7 @@ add_reactable <- function(content, reactable_object, tabgroup = NULL) {
   }
   
   if (!is_content(content)) {
-    stop("First argument must be a content collection or page_object")
+    stop("First argument must be a content collection or page_object", call. = FALSE)
   }
   
   insertion_idx <- length(content$items) + 1
@@ -561,7 +561,6 @@ add_reactable <- function(content, reactable_object, tabgroup = NULL) {
 #' Add a custom highcharter chart
 #' 
 #' Add a pre-built highcharter chart to your dashboard. This allows you to
-
 #' create complex, customized highcharter visualizations and include them
 #' directly without using dashboardr's viz_* functions.
 #' 
@@ -621,7 +620,7 @@ add_hc <- function(content, hc_object, height = NULL, tabgroup = NULL) {
   }
   
   if (!is_content(content)) {
-    stop("First argument must be a content collection, page_object, or dashboard_project")
+    stop("First argument must be a content collection, page_object, or dashboard_project", call. = FALSE)
   }
   
   insertion_idx <- length(content$items) + 1
@@ -651,7 +650,7 @@ add_table <- function(content, table_object, caption = NULL, tabgroup = NULL) {
   }
   
   if (!is_content(content)) {
-    stop("First argument must be a content collection or page_object")
+    stop("First argument must be a content collection or page_object", call. = FALSE)
   }
   
   insertion_idx <- length(content$items) + 1
@@ -700,7 +699,7 @@ add_DT <- function(content, table_data, options = NULL, tabgroup = NULL, ...) {
   }
   
   if (!is_content(content)) {
-    stop("First argument must be a content collection or page_object")
+    stop("First argument must be a content collection or page_object", call. = FALSE)
   }
   
   insertion_idx <- length(content$items) + 1
@@ -734,7 +733,7 @@ add_video <- function(content, src, caption = NULL, width = NULL, height = NULL,
   }
   
   if (!is_content(content)) {
-    stop("First argument must be a content collection or page_object")
+    stop("First argument must be a content collection or page_object", call. = FALSE)
   }
   
   insertion_idx <- length(content$items) + 1
@@ -766,7 +765,7 @@ add_iframe <- function(content, src, height = "500px", width = "100%", tabgroup 
   }
   
   if (!is_content(content)) {
-    stop("First argument must be a content collection or page_object")
+    stop("First argument must be a content collection or page_object", call. = FALSE)
   }
   
   insertion_idx <- length(content$items) + 1
@@ -804,7 +803,7 @@ add_accordion <- function(content, title, text, open = FALSE, tabgroup = NULL) {
   }
   
   if (!is_content(content)) {
-    stop("First argument must be a content collection, sidebar_container, or page_object")
+    stop("First argument must be a content collection, sidebar_container, or page_object", call. = FALSE)
   }
   
   insertion_idx <- length(content$items) + 1
@@ -842,7 +841,7 @@ add_card <- function(content, text, title = NULL, footer = NULL, tabgroup = NULL
   }
   
   if (!is_content(content)) {
-    stop("First argument must be a content collection, sidebar_container, or page_object")
+    stop("First argument must be a content collection, sidebar_container, or page_object", call. = FALSE)
   }
   
   insertion_idx <- length(content$items) + 1
@@ -876,7 +875,7 @@ add_html <- function(content, html, tabgroup = NULL) {
   }
   
   if (!is_content(content)) {
-    stop("First argument must be a content collection, sidebar_container, or page_object")
+    stop("First argument must be a content collection, sidebar_container, or page_object", call. = FALSE)
   }
   
   insertion_idx <- length(content$items) + 1
@@ -908,7 +907,7 @@ add_quote <- function(content, quote, attribution = NULL, cite = NULL, tabgroup 
   }
   
   if (!is_content(content)) {
-    stop("First argument must be a content collection or page_object")
+    stop("First argument must be a content collection or page_object", call. = FALSE)
   }
   
   insertion_idx <- length(content$items) + 1
@@ -944,7 +943,7 @@ add_badge <- function(content, text, color = "primary", tabgroup = NULL) {
   }
   
   if (!is_content(content)) {
-    stop("First argument must be a content collection, sidebar_container, or page_object")
+    stop("First argument must be a content collection, sidebar_container, or page_object", call. = FALSE)
   }
   
   insertion_idx <- length(content$items) + 1
@@ -986,7 +985,7 @@ add_metric <- function(content, value, title, icon = NULL, color = NULL, subtitl
   }
   
   if (!is_content(content)) {
-    stop("First argument must be a content collection, sidebar_container, or page_object")
+    stop("First argument must be a content collection, sidebar_container, or page_object", call. = FALSE)
   }
   
   insertion_idx <- length(content$items) + 1
@@ -1021,8 +1020,8 @@ add_metric <- function(content, value, title, icon = NULL, color = NULL, subtitl
 #' content <- create_content() %>%
 #'   add_value_box(
 #'     title = "Total Revenue",
-#'     value = "€1,234,567",
-#'     logo_text = "💰",
+#'     value = "EUR 1,234,567",
+#'     logo_text = "$",
 #'     bg_color = "#2E86AB"
 #'   )
 #'   
@@ -1030,7 +1029,7 @@ add_metric <- function(content, value, title, icon = NULL, color = NULL, subtitl
 #' content <- create_content() %>%
 #'   add_value_box_row() %>%
 #'     add_value_box(title = "Users", value = "1,234") %>%
-#'     add_value_box(title = "Revenue", value = "€56K")
+#'     add_value_box(title = "Revenue", value = "EUR 56K")
 #' }
 add_value_box <- function(content, title, value, logo_url = NULL, logo_text = NULL, 
                           bg_color = "#2c3e50", description = NULL, 
@@ -1056,7 +1055,7 @@ add_value_box <- function(content, title, value, logo_url = NULL, logo_text = NU
   
   # Otherwise, add as a standalone value box
   if (!inherits(content, "content_collection")) {
-    stop("First argument must be a content_collection object or value_box_row_container")
+    stop("First argument must be a content_collection object or value_box_row_container", call. = FALSE)
   }
   
   value_box_block <- structure(c(list(type = "value_box", tabgroup = tabgroup), box_spec), class = "content_block")
@@ -1080,7 +1079,7 @@ add_value_box <- function(content, title, value, logo_url = NULL, logo_text = NU
 #' content <- create_content() %>%
 #'   add_value_box_row() %>%
 #'     add_value_box(title = "Users", value = "1,234", bg_color = "#2E86AB") %>%
-#'     add_value_box(title = "Revenue", value = "€56K", bg_color = "#F18F01") %>%
+#'     add_value_box(title = "Revenue", value = "EUR 56K", bg_color = "#F18F01") %>%
 #'     add_value_box(title = "Growth", value = "+23%", bg_color = "#A23B72") %>%
 #'   end_value_box_row()
 #' }
@@ -1098,7 +1097,7 @@ add_value_box_row <- function(content, tabgroup = NULL) {
   }
   
   if (!is_content(content)) {
-    stop("First argument must be a content collection or page_object")
+    stop("First argument must be a content collection or page_object", call. = FALSE)
   }
   
   # Create a special row container that add_value_box will detect
@@ -1125,13 +1124,13 @@ add_value_box_row <- function(content, tabgroup = NULL) {
 #' content <- create_content() %>%
 #'   add_value_box_row() %>%
 #'     add_value_box(title = "Users", value = "1,234") %>%
-#'     add_value_box(title = "Revenue", value = "€56K") %>%
+#'     add_value_box(title = "Revenue", value = "EUR 56K") %>%
 #'   end_value_box_row() %>%
 #'   add_text("More content after the row...")
 #' }
 end_value_box_row <- function(row_container) {
   if (!inherits(row_container, "value_box_row_container")) {
-    stop("end_value_box_row() must be called on a value_box_row_container (created by add_value_box_row())")
+    stop("end_value_box_row() must be called on a value_box_row_container (created by add_value_box_row())", call. = FALSE)
   }
   
   # Create the final value_box_row block with all collected boxes
@@ -1476,8 +1475,22 @@ add_linked_inputs <- function(x, parent, child, type = "select") {
 #'   labels are shown at the min/max positions.
 #' @param size Size variant: "sm" (small), "md" (medium, default), or "lg" (large)
 #' @param help Help text displayed below the input
+#' @param stacked Whether to stack options vertically (for checkbox/radio). Default FALSE.
+#' @param stacked_align Alignment when stacked: "center" (default), "left", or "right"
+#' @param group_align Alignment for option groups: "left" (default), "center", or "right"
+#' @param ncol Number of columns for grid layout of options
+#' @param nrow Number of rows for grid layout of options
+#' @param columns Column configuration for grid layout
 #' @param disabled Whether the input is disabled (default FALSE)
+#' @param add_all Whether to add an "All" option (default FALSE)
+#' @param add_all_label Label for the "All" option (default "All")
+#' @param mt Margin top (CSS value, e.g., "10px")
+#' @param mr Margin right (CSS value)
+#' @param mb Margin bottom (CSS value)
+#' @param ml Margin left (CSS value)
 #' @param tabgroup Optional tabgroup for organizing content
+#' @param .linked_parent_id Internal. ID of linked parent input for cascading inputs
+#' @param .options_by_parent Internal. Named list mapping parent values to child options
 #' @return Updated content_collection or input_row_container
 #' @export
 #' @examples
@@ -2039,18 +2052,7 @@ end_input_row <- function(row_container) {
 # ============================================
 # OPERATOR OVERLOADING FOR + SYNTAX
 # ============================================
-# Note: +.content_collection is defined in viz_collection.R to avoid duplication
-
-#' Combine viz collections using + operator
-#'
-#' @param e1 First viz_collection
-#' @param e2 Second viz_collection
-#' @return A merged collection containing items from both
-#' @rdname plus-viz_collection
-#' @export
-`+.viz_collection` <- function(e1, e2) {
-  merge_collections(e1, e2)
-}
+# Note: +.viz_collection is defined in viz_collection.R to avoid duplication
 
 #' Merge two content/viz collections
 #'

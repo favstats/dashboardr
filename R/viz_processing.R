@@ -457,12 +457,6 @@
 #' @param tree Hierarchy tree to convert
 #' @param tabgroup_labels Custom labels for tabgroups
 #' @param is_nested_context Whether we're in a nested context (processing children)
-
-
-#' Convert hierarchy tree to flat list of viz specs and nested tabgroups
-#' @param tree Hierarchy tree to convert
-#' @param tabgroup_labels Custom labels for tabgroups
-#' @param is_nested_context Whether we're in a nested context (processing children)
 #' @param shared_first_level When TRUE (default), wrap multiple top-level tabgroups
 #'   into a single invisible parent tabgroup so they share a tabset
 #' @noRd
@@ -704,15 +698,6 @@
   result
 }
 
-#' This function handles both viz_collection objects and plain lists of visualization
-#' specifications. It:
-#' - Attaches data_path to each visualization
-#' - Groups visualizations by their tabgroup parameter (supports nested hierarchies)
-#' - Converts single-item groups to standalone visualizations with group titles
-#' - Creates tab group objects for multi-item groups
-#' - Applies custom tab group labels if provided
-
-
 #' Reorganize nested tabs to match with filter-matched parents
 #' 
 #' When we have multiple parent tabs with different filters (e.g., Wave 1, Wave 2),
@@ -804,16 +789,6 @@
   
   return(tree)
 }
-
-#' Merge filtered trees into final structure
-#'
-#' Takes trees grouped by root name and filter, and merges them so that
-#' each filter group becomes a separate parent tab with its own nested structure.
-#'
-#' @param all_trees List of trees grouped by root name, then by filter
-#' @param tabgroup_labels Custom labels for tabgroups
-#' @return Final list of visualization specifications with nested tabgroups
-
 
 #' Merge filtered trees into final structure
 #'
@@ -1018,13 +993,6 @@
   paste(deparse(viz$filter[[2]]), collapse = " ")
 }
 
-#' Reorganize nested tabs to match with filter-matched parents
-#' 
-#' When we have multiple parent tabs with different filters (e.g., Wave 1, Wave 2),
-#' and nested tabs with matching filters, we need to nest each child under its
-#' matching parent, not create a shared nested structure.
-
-
 #' Collect unique filters from all visualizations
 #'
 #' @param visualizations List of visualization specifications
@@ -1093,10 +1061,3 @@
   
   result
 }
-
-#' Find the dataset name for a given filter
-#'
-#' @param filter Formula filter to find
-#' @param filter_map List of filter mappings from .collect_unique_filters()
-#' @return Character string of dataset name, or "data" if no filter
-

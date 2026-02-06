@@ -1,0 +1,180 @@
+---
+title: "{{< iconify ph trend-up >}} Trends"
+format: dashboard
+---
+
+```{r, include=FALSE}
+# Initialize dashboardr page configuration (CSS/JS for charts)
+dashboardr:::.page_config()
+```
+
+```{r, echo=FALSE, results='asis'}
+dashboardr::enable_inputs()
+```
+
+```{r, echo=FALSE, results='asis'}
+# Enable chart export buttons (download as PNG/SVG/PDF/CSV)
+dashboardr::enable_chart_export()
+```
+
+```{r, echo=FALSE, results='asis'}
+dashboardr::enable_sidebar()
+```
+
+```{r setup}
+#| echo: false
+#| warning: false
+#| message: false
+#| error: false
+#| results: 'hide'
+
+# Load dashboardr (includes dplyr, highcharter as dependencies)
+library(dashboardr)
+
+# Global chunk options
+knitr::opts_chunk$set(
+  echo = FALSE,
+  warning = FALSE,
+  message = FALSE,
+  error = FALSE,
+  fig.width = 12,
+  fig.height = 8,
+  dpi = 300
+)
+
+# Load data
+data <- readRDS('dataset_small_600obs.rds')
+
+# Data summary
+cat('Dataset loaded:', nrow(data), 'rows,', ncol(data), 'columns\n')
+
+```
+
+
+## {.sidebar width="260px"}
+
+### Trend Controls
+
+
+```{r}
+#| echo: false
+#| results: 'asis'
+dashboardr::render_input(
+  input_id = "year_range",
+  label = "Year Range",
+  type = "radio",
+  filter_var = "year",
+  options = c("2019", "2020", "2021", "2022", "2023", "2024"),
+  options_from = NULL,
+  default_selected = "2024",
+  placeholder = "Select...",
+  width = "300px",
+  min = 0,
+  max = 100,
+  step = 1,
+  value = NULL,
+  show_value = TRUE,
+  inline = TRUE,
+  stacked = TRUE,
+  stacked_align = "center",
+  group_align = "left",
+  ncol = NULL,
+  nrow = NULL,
+  toggle_series = NULL,
+  override = FALSE,
+  labels = NULL,
+  size = "md",
+  help = NULL,
+  disabled = FALSE
+)
+```
+
+
+## Column
+
+
+## Engagement Trends
+
+Timeline with reference lines and annotations.
+
+### Engagement Score by Department Over Time
+
+```{r timeline-avg-engagement-department}
+# Engagement Score by Department Over Time
+result <- viz_timeline(
+  data = as.data.frame(list("year" = c(2019, 2019, 2019, 2019, 2019, 2020, 2020, 2020, 2020, 2020, 2021, 2021, 2021, 2021, 2021, 2022, 2022, 2022, 2022, 2022, 2023, 2023, 2023, 2023, 2023, 2024, 2024, 2024, 2024, 2024), "department" = c("Engineering", "Finance", "HR", "Marketing", "Sales", "Engineering", "Finance", "HR", "Marketing", "Sales", "Engineering", "Finance", "HR", "Marketing", "Sales", "Engineering", "Finance", "HR", "Marketing", "Sales", "Engineering", "Finance", "HR", "Marketing", "Sales", "Engineering", "Finance", "HR", "Marketing", "Sales"), "avg_engagement" = c(72.5, 70.2, 66.9, 72.8, 70.4, 68.9, 70.8, 75.6, 72.4, 69.9, 71.7, 69.4, 71.7, 68.7, 74.8, 74.1, 75.2, 71.5, 72.4, 72.9, 71.7, 76, 70.4, 68.4, 78, 73, 65.2, 71.1, 76.1, 70.1))),
+  title = "Engagement Score by Department Over Time",
+  time_var = "year",
+  y_var = "avg_engagement",
+  group_var = "department",
+  agg = "none",
+  x_label = "Year",
+  y_label = "Avg Engagement Score",
+  color_palette = c("Engineering" = "#4E79A7", "Marketing" = "#F28E2B", "Sales" = "#E15759", "HR" = "#76B7B2", "Finance" = "#59A14F"),
+  cross_tab_filter_vars = "year"
+)
+
+# Set chart height
+if (inherits(result, 'highchart')) {
+  result <- highcharter::hc_size(result, height = 500)
+}
+
+# Enable chart export button
+if (inherits(result, 'highchart')) {
+  result <- highcharter::hc_exporting(result, enabled = TRUE)
+}
+
+# Add y-axis reference lines
+if (inherits(result, 'highchart')) {
+  result <- highcharter::hc_yAxis(result, plotLines = list(list("value" = 75, "color" = "#2ca02c", "width" = 2, "dashStyle" = "dash", "zIndex" = 4, "label" = list("text" = "Target", "style" = list("fontSize" = "11px", "color" = "#2ca02c")))))
+}
+
+# Add annotations
+if (inherits(result, 'highchart')) {
+  result <- highcharter::hc_annotations(result, list(list("labels" = list(list("point" = list("x" = 2020, "y" = 0, "xAxis" = 0, "yAxis" = 0), "text" = "COVID Impact", "backgroundColor" = "#E15759", "borderColor" = "#E15759", "style" = list("fontSize" = "11px")), list("point" = list("x" = 2023, "y" = 0, "xAxis" = 0, "yAxis" = 0), "text" = "New Initiative", "backgroundColor" = "#4E79A7", "borderColor" = "#4E79A7", "style" = list("fontSize" = "11px"))), "labelOptions" = list("shape" = "callout", "borderRadius" = 4, "padding" = 6))))
+}
+
+result <- dashboardr:::.embed_cross_tab(result)
+
+# Force container height with explicit wrapper
+result <- htmltools::div(
+  style = 'height: 500px !important; min-height: 500px !important; width: 100%; overflow: visible;',
+  result
+)
+
+result
+```
+
+
+<div style='height: 1.5rem;'></div>
+
+
+## Satisfaction Distribution Over Time
+
+### Satisfaction Composition by Year
+
+```{r stackedbar-year-satisfaction}
+# Satisfaction Composition by Year
+result <- viz_stackedbar(
+  data = as.data.frame(list("year" = c(2019, 2019, 2019, 2019, 2019, 2020, 2020, 2020, 2020, 2020, 2021, 2021, 2021, 2021, 2021, 2022, 2022, 2022, 2022, 2022, 2023, 2023, 2023, 2023, 2023, 2024, 2024, 2024, 2024, 2024), "satisfaction" = c("Dissatisfied", "Neutral", "Satisfied", "Very Dissatisfied", "Very Satisfied", "Dissatisfied", "Neutral", "Satisfied", "Very Dissatisfied", "Very Satisfied", "Dissatisfied", "Neutral", "Satisfied", "Very Dissatisfied", "Very Satisfied", "Dissatisfied", "Neutral", "Satisfied", "Very Dissatisfied", "Very Satisfied", "Dissatisfied", "Neutral", "Satisfied", "Very Dissatisfied", "Very Satisfied", "Dissatisfied", "Neutral", "Satisfied", "Very Dissatisfied", "Very Satisfied"), "n" = c(17, 31, 34, 6, 16, 10, 21, 33, 9, 20, 14, 30, 32, 6, 24, 11, 32, 38, 6, 26, 11, 20, 27, 7, 16, 14, 28, 43, 6, 12))),
+  title = "Satisfaction Composition by Year",
+  x_var = "year",
+  stack_var = "satisfaction",
+  y_var = "n",
+  stacked_type = "percent",
+  stack_order = c("Very Satisfied", "Satisfied", "Neutral", "Dissatisfied", "Very Dissatisfied"),
+  color_palette = c("#59A14F", "#76B7B2", "#BAB0AC", "#F28E2B", "#E15759"),
+  tooltip_suffix = "%",
+  cross_tab_filter_vars = "year"
+)
+
+# Enable chart export button
+if (inherits(result, 'highchart')) {
+  result <- highcharter::hc_exporting(result, enabled = TRUE)
+}
+
+result <- dashboardr:::.embed_cross_tab(result)
+
+result
+```
+

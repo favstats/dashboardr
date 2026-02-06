@@ -17,7 +17,7 @@ render_value_box <- function(title, value, bg_color = "#2c3e50", logo_url = NULL
   } else if (!is.null(logo_text)) {
     paste0("<div style='font-size: 3rem; font-weight: 700; opacity: 0.3;'>", logo_text, "</div>")
   } else {
-    "<div style='font-size: 3rem; opacity: 0.3;'>📊</div>"
+    "<div style='font-size: 3rem; opacity: 0.3;'>\U0001f4ca</div>"
   }
   
   # Build the value box HTML
@@ -72,7 +72,7 @@ render_value_box_row <- function(boxes) {
     } else if (!is.null(box$logo_text)) {
       paste0("<div style='font-size: 3rem; font-weight: 700; opacity: 0.3;'>", box$logo_text, "</div>")
     } else {
-      "<div style='font-size: 3rem; opacity: 0.3;'>📊</div>"
+      "<div style='font-size: 3rem; opacity: 0.3;'>\U0001f4ca</div>"
     }
     
     # Build individual value box

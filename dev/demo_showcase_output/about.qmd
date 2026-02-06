@@ -1,0 +1,66 @@
+---
+title: "{{< iconify ph info >}} About"
+format: html
+---
+
+```{r, include=FALSE}
+# Initialize dashboardr page configuration (CSS/JS for charts)
+dashboardr:::.page_config()
+```
+
+# New Features Showcase
+
+This dashboard demonstrates every new feature added in dashboardr v0.3.
+
+## New Visualization Types
+
+| Type | Function | Description |
+|------|----------|-------------|
+| Pie | `viz_pie()` | Classic pie chart with labels and tooltips |
+| Donut | `viz_pie()` via `type = "donut"` | Pie with inner cut-out (auto 50%) |
+| Lollipop | `viz_lollipop()` | Stem + dot, a clean bar chart alternative |
+| Dumbbell | `viz_dumbbell()` | Two-point comparison per category |
+| Gauge | `viz_gauge()` | KPI speedometer with color bands |
+| Funnel | `viz_funnel()` | Sequential stage drop-off |
+| Pyramid | `viz_funnel()` via `type = "pyramid"` | Reversed funnel |
+| Sankey | `viz_sankey()` | Flow diagram between nodes |
+| Waffle | `viz_waffle()` | Grid-of-squares proportional chart |
+
+## Chart Export
+
+Every chart on this dashboard has an export button (top-right hamburger menu).
+Supported formats: PNG, SVG, PDF, CSV, XLS, and fullscreen mode.
+
+Set per-chart with `export = TRUE` or dashboard-wide with `chart_export = TRUE`.
+
+## Reference Lines & Annotations
+
+Timeline charts now support:
+
+- `reference_lines`: horizontal/vertical guidelines (e.g. targets, thresholds)
+- `annotations`: labeled markers for notable events
+
+## show_when Comparison Operators
+
+The conditional visibility system now supports:
+
+- `~ score > 50` (greater than)
+- `~ score < 100` (less than)
+- `~ year >= 2020` (greater than or equal)
+- `~ score <= 75` (less than or equal)
+- `~ !active` (negation)
+
+Combined with the existing `==`, `!=`, `%in%`, `&`, and `|` operators,
+this makes `show_when` a complete conditional logic system.
+
+## Built With
+
+- [dashboardr](https://github.com/favstats/dashboardr) - Static HTML dashboards in R
+- [Highcharts](https://www.highcharts.com/) via highcharter - Interactive charts
+- [Quarto](https://quarto.org/) - Document rendering engine
+
+```{r, echo=FALSE, results='asis'}
+# Enable chart export buttons (download as PNG/SVG/PDF/CSV)
+dashboardr::enable_chart_export()
+```
+

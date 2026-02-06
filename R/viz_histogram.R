@@ -48,11 +48,9 @@
 #' @return A `highcharter` histogram (column) plot object.
 #'
 #' @examples
-#'
-#' #We will work with data from the GSS. The GSS dataset (`gssr`) is a dependency of
-#' #our `dashboardr` package.
-#'
-#'data(gss_panel20)
+#' \dontrun{
+#' # We will work with data from the GSS.
+#' data(gss_panel20)
 #'
 #' # Example 1: Basic histogram of age distribution
 #' plot1 <- viz_histogram(
@@ -120,8 +118,7 @@
 #'   color_palette = "seagreen"
 #' )
 #' plot5
-#'
-#'
+#' }
 #'
 #' @details
 #' This function performs the following steps:
@@ -195,7 +192,7 @@ viz_histogram <- function(data,
     stop("`data` must be a data frame.", call. = FALSE)
   }
   if (is.null(x_var)) {
-    dashboardr:::.stop_with_hint("x_var", example = "viz_histogram(data, x_var = \"age\")")
+    .stop_with_hint("x_var", example = "viz_histogram(data, x_var = \"age\")")
   }
   if (!x_var %in% names(data)) {
     stop(paste0("Column '", x_var, "' not found in data."), call. = FALSE)
@@ -354,7 +351,7 @@ viz_histogram <- function(data,
   if (!is.null(title)) hc <- hc %>% highcharter::hc_title(text = title)
   if (!is.null(subtitle)) hc <- hc %>% highcharter::hc_subtitle(text = subtitle)
 
-  # ─── Axis labels & categories ─────────────────────────────────────────────
+  # \u2500\u2500\u2500 Axis labels & categories \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
   final_x <- x_label %||% x_var
   default_y <- if (histogram_type == "percent") "Percentage" else "Count"
   final_y <- y_label %||% default_y
@@ -399,7 +396,7 @@ viz_histogram <- function(data,
       )
     )
 
-  # ─── TOOLTIP ───────────────────────────────────────────────────────────────
+  # \u2500\u2500\u2500 TOOLTIP \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
   if (!is.null(tooltip)) {
     # Use new unified tooltip system when custom tooltip is provided
     tooltip_result <- .process_tooltip_config(

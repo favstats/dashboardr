@@ -62,6 +62,7 @@
 #' @return A highcharter plot object.
 #'
 #' @examples
+#' \dontrun{
 #' # Simple bar chart showing counts (default)
 #' plot1 <- viz_bar(
 #'   data = survey_data,
@@ -87,6 +88,7 @@
 #'   group_order = c("Low (1-9)", "Middle (10-19)", "High (20-29)")
 #' )
 #' plot3
+#' }
 #'
 #' # Bar chart with means and error bars (95% CI)
 #' plot4 <- viz_bar(
@@ -157,7 +159,7 @@ viz_bar <- function(data,
   }
   
   if (is.null(x_var)) {
-    dashboardr:::.stop_with_hint("x_var", example = "viz_bar(data, x_var = \"category\")")
+    .stop_with_hint("x_var", example = "viz_bar(data, x_var = \"category\")")
   }
 
   if (!x_var %in% names(data)) {
@@ -647,7 +649,7 @@ viz_bar <- function(data,
       )
     )
   
-  # ─── TOOLTIP ───────────────────────────────────────────────────────────────
+  # \u2500\u2500\u2500 TOOLTIP \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
   # Calculate total for percentage calculation in tooltips
   total_value <- if (bar_type == "percent") {
     100  # For percent type, total is always 100

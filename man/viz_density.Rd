@@ -76,6 +76,7 @@ highcharter. Supports grouped densities, weighted kernel density
 estimation, and customization options.
 }
 \examples{
+\dontrun{
 # Basic density plot
 data(gss_panel20)
 
@@ -109,5 +110,6 @@ plot3 <- viz_density(
   bandwidth = 3
 )
 plot3
+}
 
 }

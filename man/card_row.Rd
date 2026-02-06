@@ -15,24 +15,11 @@ card_row(..., cols = 2, class = NULL)
 }
 \value{
 HTML div element with Bootstrap row classes containing the cards
-
-HTML div element with Bootstrap row classes containing the cards
 }
 \description{
 Helper function to display multiple cards in a responsive Bootstrap row layout.
 }
 \examples{
-\dontrun{
-# Display two cards in a row
-card_row(card1, card2)
-
-# Display three cards in a row (3 columns)
-card_row(card1, card2, card3, cols = 3)
-}
-Display cards in a Bootstrap row
-
-Helper function to display multiple cards in a responsive Bootstrap row layout.
-
 \dontrun{
 # Display two cards in a row
 card_row(card1, card2)

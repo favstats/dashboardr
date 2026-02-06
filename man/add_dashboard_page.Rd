@@ -78,15 +78,13 @@ list of file paths for multiple datasets}
 
 \item{lazy_debug}{Override debug mode for lazy loading on this page (default: NULL = inherit from dashboard)}
 
-\item{pagination_separator}{Text to show in pagination navigation (e.g., "of" → "1 of 3"), default: NULL = inherit from dashboard}
+\item{pagination_separator}{Text to show in pagination navigation (e.g., "of" -> "1 of 3"), default: NULL = inherit from dashboard}
 
 \item{time_var}{Name of the time/x-axis column in the data (e.g., "year", "decade", "date").
 Used by input filters when switching metrics. If NULL (default), the JavaScript will try to
 auto-detect from common column names (year, decade, time, date).}
 }
 \value{
-The updated dashboard_project object
-
 The updated dashboard_project object
 }
 \description{
@@ -95,30 +93,6 @@ landing pages, analysis pages, about pages, or any combination of text and
 visualizations. All content is markdown-compatible.
 }
 \examples{
-\dontrun{
-# Landing page
-dashboard <- create_dashboard("test") \%>\%
-  add_page("Welcome", text = "# Welcome\n\nThis is the main page.", is_landing_page = TRUE)
-
-# Analysis page with data and visualizations
-dashboard <- dashboard \%>\%
-  add_page("Demographics", data = survey_data, visualizations = demo_viz)
-
-# Text-only about page
-dashboard <- dashboard \%>\%
-  add_page("About", text = "# About This Study\n\nThis dashboard shows...")
-
-# Mixed content page
-dashboard <- dashboard \%>\%
-  add_page("Results", text = "# Key Findings\n\nHere are the results:",
-           visualizations = results_viz, icon = "ph:chart-line")
-}
-Add a page to the dashboard
-
-Universal function for adding any type of page to the dashboard. Can create
-landing pages, analysis pages, about pages, or any combination of text and
-visualizations. All content is markdown-compatible.
-
 \dontrun{
 # Landing page
 dashboard <- create_dashboard("test") \%>\%

@@ -30,7 +30,6 @@ Imports:
     highcharter,
     htmltools,
     htmlwidgets,
-    httr,
     jsonlite,
     quarto,
     rlang,
@@ -38,12 +37,25 @@ Imports:
     tidyr,
     tidyselect,
     usethis,
-    digest,
-    withr
+    digest
 Suggests:
+  countrycode,
+  devtools,
+  DT,
+  gapminder,
+  gt,
   gssr,
   haven,
-  testthat (>= 3.0.0)
+  httr,
+  knitr,
+  purrr,
+  reactable,
+  rstudioapi,
+  stringr,
+  testthat (>= 3.0.0),
+  withr,
+  yaml
+VignetteBuilder: knitr
 Config/testthat/edition: 3
 Additional_repositories: https://kjhealy.r-universe.dev
 Remotes: 

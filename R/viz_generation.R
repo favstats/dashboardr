@@ -250,23 +250,7 @@
 #' @keywords internal
 #' @details
 #' This function:
-#' - Maps visualization types to function names (e.g., "stackedbar" → "viz_stackedbar")
-#' - Excludes internal parameters (type, data_path, tabgroup, text, icon, text_position)
-#' - Serializes all other parameters using .serialize_arg()
-
-
-#' Generate R code for typed visualizations
-#'
-#' Internal function that generates R code for specific visualization types
-#' (stackedbar, heatmap, histogram, timeline, scatter, bar) by mapping type names to
-#' function names and serializing parameters.
-#'
-#' @param spec Visualization specification list containing type and parameters
-#' @return Character vector of R code lines for the visualization
-#' @keywords internal
-#' @details
-#' This function:
-#' - Maps visualization types to function names (e.g., "stackedbar" → "viz_stackedbar")
+#' - Maps visualization types to function names (e.g., "stackedbar" -> "viz_stackedbar")
 #' - Excludes internal parameters (type, data_path, tabgroup, text, icon, text_position)
 #' - Serializes all other parameters using .serialize_arg()
 #' - Formats the function call with proper indentation
@@ -287,6 +271,15 @@
                          "scatter" = "viz_scatter",
                          "density" = "viz_density",
                          "boxplot" = "viz_boxplot",
+                         "pie" = "viz_pie",
+                         "donut" = "viz_pie",
+                         "lollipop" = "viz_lollipop",
+                         "dumbbell" = "viz_dumbbell",
+                         "gauge" = "viz_gauge",
+                         "funnel" = "viz_funnel",
+                         "pyramid" = "viz_funnel",
+                         "sankey" = "viz_sankey",
+                         "waffle" = "viz_waffle",
                          spec$viz_type
   )
 
@@ -356,6 +349,24 @@
       } else if (spec$viz_type == "boxplot") {
         if (!is.null(spec$y_var)) vars_to_clean <- c(vars_to_clean, spec$y_var)
         if (!is.null(spec$x_var)) vars_to_clean <- c(vars_to_clean, spec$x_var)
+      } else if (spec$viz_type %in% c("pie", "donut")) {
+        if (!is.null(spec$x_var)) vars_to_clean <- c(vars_to_clean, spec$x_var)
+      } else if (spec$viz_type == "lollipop") {
+        if (!is.null(spec$x_var)) vars_to_clean <- c(vars_to_clean, spec$x_var)
+        if (!is.null(spec$group_var)) vars_to_clean <- c(vars_to_clean, spec$group_var)
+      } else if (spec$viz_type == "dumbbell") {
+        if (!is.null(spec$x_var)) vars_to_clean <- c(vars_to_clean, spec$x_var)
+        if (!is.null(spec$low_var)) vars_to_clean <- c(vars_to_clean, spec$low_var)
+        if (!is.null(spec$high_var)) vars_to_clean <- c(vars_to_clean, spec$high_var)
+      } else if (spec$viz_type %in% c("funnel", "pyramid")) {
+        if (!is.null(spec$x_var)) vars_to_clean <- c(vars_to_clean, spec$x_var)
+        if (!is.null(spec$y_var)) vars_to_clean <- c(vars_to_clean, spec$y_var)
+      } else if (spec$viz_type == "sankey") {
+        if (!is.null(spec$from_var)) vars_to_clean <- c(vars_to_clean, spec$from_var)
+        if (!is.null(spec$to_var)) vars_to_clean <- c(vars_to_clean, spec$to_var)
+        if (!is.null(spec$value_var)) vars_to_clean <- c(vars_to_clean, spec$value_var)
+      } else if (spec$viz_type == "waffle") {
+        if (!is.null(spec$x_var)) vars_to_clean <- c(vars_to_clean, spec$x_var)
       }
       
       # Build data pipeline with drop_na if we have variables
@@ -392,6 +403,16 @@
     spec$y_filter_combine <- spec$response_filter_combine
   }
   
+  # Handle type aliases that need default parameter injection
+  if (spec$viz_type == "donut") {
+    # "donut" is a pie with inner_size, set default if not specified
+    if (is.null(spec$inner_size)) spec$inner_size <- "50%"
+  }
+  if (spec$viz_type == "pyramid") {
+    # "pyramid" is a reversed funnel
+    if (is.null(spec$reversed)) spec$reversed <- TRUE
+  }
+
   # Parameters to exclude: internal params and legacy parameter names
   exclude_params <- c(
     # Internal parameters
@@ -400,6 +421,9 @@
     "height", "filter", "data", "has_data", "multi_dataset", "title_tabset", 
     "nested_children", "drop_na_vars", "data_is_dataframe", "data_serialized", "alter_data",
     "show_when",  # Used only for wrapper div (data-show-when), not passed to viz_*()
+    "export",     # Handled at generation level: enables hc_exporting() on the chart
+    "annotations",      # Handled at generation level: adds plotLines/annotations to chart
+    "reference_lines",  # Handled at generation level: adds plotLines to yAxis
     "cross_tab_filter_vars",  # Handled separately below: only passed to viz types that support it
     ".insertion_index", ".min_index", ".pagination_section",
     # Legacy parameter names (already mapped to modern names above)
@@ -446,6 +470,103 @@
       paste0("if (inherits(result, 'highchart')) {"),
       paste0("  result <- highcharter::hc_size(result, height = ", spec$height, ")"),
       paste0("}")
+    )
+  }
+
+  # Enable chart export button if export = TRUE on this specific viz
+  if (isTRUE(spec$export)) {
+    call_str <- c(call_str,
+      "",
+      "# Enable chart export button",
+      "if (inherits(result, 'highchart')) {",
+      "  result <- highcharter::hc_exporting(result, enabled = TRUE)",
+      "}"
+    )
+  }
+
+  # Add reference lines (horizontal/vertical lines on the chart)
+  if (!is.null(spec$reference_lines) && length(spec$reference_lines) > 0) {
+    ref_lines_json <- .serialize_arg(lapply(spec$reference_lines, function(rl) {
+      line <- list(value = rl$y %||% rl$x %||% rl$value)
+      line$color <- rl$color %||% "#333333"
+      line$width <- rl$width %||% 2
+      line$dashStyle <- rl$dash %||% rl$style %||% "Solid"
+      line$zIndex <- rl$zIndex %||% 4
+      if (!is.null(rl$label)) {
+        line$label <- list(text = rl$label, style = list(fontSize = "11px", color = line$color))
+      }
+      line
+    }))
+    # Determine axis: y-axis lines if 'y' specified, x-axis if 'x' specified
+    has_y_lines <- any(vapply(spec$reference_lines, function(rl) !is.null(rl$y), logical(1)))
+    has_x_lines <- any(vapply(spec$reference_lines, function(rl) !is.null(rl$x), logical(1)))
+    if (has_y_lines) {
+      y_ref_lines <- .serialize_arg(lapply(
+        Filter(function(rl) !is.null(rl$y), spec$reference_lines),
+        function(rl) {
+          line <- list(value = rl$y, color = rl$color %||% "#333333",
+                       width = rl$width %||% 2, dashStyle = rl$dash %||% rl$style %||% "Solid",
+                       zIndex = rl$zIndex %||% 4)
+          if (!is.null(rl$label)) line$label <- list(text = rl$label, style = list(fontSize = "11px", color = line$color))
+          line
+        }
+      ))
+      call_str <- c(call_str, "",
+        "# Add y-axis reference lines",
+        paste0("if (inherits(result, 'highchart')) {"),
+        paste0("  result <- highcharter::hc_yAxis(result, plotLines = ", y_ref_lines, ")"),
+        "}"
+      )
+    }
+    if (has_x_lines) {
+      x_ref_lines <- .serialize_arg(lapply(
+        Filter(function(rl) !is.null(rl$x), spec$reference_lines),
+        function(rl) {
+          line <- list(value = rl$x, color = rl$color %||% "#333333",
+                       width = rl$width %||% 2, dashStyle = rl$dash %||% rl$style %||% "Solid",
+                       zIndex = rl$zIndex %||% 4)
+          if (!is.null(rl$label)) line$label <- list(text = rl$label, style = list(fontSize = "11px", color = line$color))
+          line
+        }
+      ))
+      call_str <- c(call_str, "",
+        "# Add x-axis reference lines",
+        paste0("if (inherits(result, 'highchart')) {"),
+        paste0("  result <- highcharter::hc_xAxis(result, plotLines = ", x_ref_lines, ")"),
+        "}"
+      )
+    }
+  }
+
+  # Add annotations (labeled markers on the chart)
+  if (!is.null(spec$annotations) && length(spec$annotations) > 0) {
+    annotations_json <- .serialize_arg(list(list(
+      labels = lapply(spec$annotations, function(ann) {
+        label <- list(
+          point = list(
+            x = ann$x,
+            y = ann$y %||% 0,
+            xAxis = 0,
+            yAxis = 0
+          ),
+          text = ann$label %||% "",
+          backgroundColor = ann$color %||% "rgba(255,255,255,0.9)",
+          borderColor = ann$color %||% "#333333",
+          style = list(fontSize = "11px")
+        )
+        label
+      }),
+      labelOptions = list(
+        shape = "callout",
+        borderRadius = 4,
+        padding = 6
+      )
+    )))
+    call_str <- c(call_str, "",
+      "# Add annotations",
+      paste0("if (inherits(result, 'highchart')) {"),
+      paste0("  result <- highcharter::hc_annotations(result, ", annotations_json, ")"),
+      "}"
     )
   }
 
@@ -1107,29 +1228,6 @@
   lines
 }
 
-# ===================================================================
-# Quarto File Generation
-# ===================================================================
-
-#' Generate _quarto.yml configuration file
-#'
-#' Internal function that generates the complete Quarto website configuration
-#' file based on the dashboard project settings. Handles all Quarto website
-#' features including navigation, styling, analytics, and deployment options.
-#'
-#' @param proj A dashboard_project object containing all configuration settings
-#' @return Character vector of YAML lines for the _quarto.yml file
-#' @details
-#' This function generates a comprehensive Quarto configuration including:
-#' - Project type and output directory
-#' - Website title, favicon, and branding
-#' - Navbar with social media links and search
-#' - Sidebar with auto-generated navigation
-#' - Format settings (theme, CSS, math, code features)
-#' - Analytics (Google Analytics, Plausible, GTag)
-#' - Deployment settings (GitHub Pages, Netlify)
-#' - Iconify filter for icon support
-
 #' Generate unique R chunk label for a visualization
 #'
 #' Internal function that creates a unique, descriptive R chunk label based on
@@ -1236,12 +1334,12 @@
   }
   
   # Ensure uniqueness by tracking used labels
-  # Store in a package environment to persist across function calls within a generation
-  if (!exists(".chunk_label_tracker", envir = .GlobalEnv)) {
-    assign(".chunk_label_tracker", list(), envir = .GlobalEnv)
+  # Store in a package-level environment to persist across function calls within a generation
+  if (!exists(".chunk_label_tracker", envir = .dashboardr_pkg_env)) {
+    assign(".chunk_label_tracker", list(), envir = .dashboardr_pkg_env)
   }
   
-  tracker <- get(".chunk_label_tracker", envir = .GlobalEnv)
+  tracker <- get(".chunk_label_tracker", envir = .dashboardr_pkg_env)
   
   # Check if label already used
   if (label %in% names(tracker)) {
@@ -1254,7 +1352,7 @@
   }
   
   # Update tracker
-  assign(".chunk_label_tracker", tracker, envir = .GlobalEnv)
+  assign(".chunk_label_tracker", tracker, envir = .dashboardr_pkg_env)
   
   label
 }

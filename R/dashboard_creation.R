@@ -21,13 +21,29 @@
 #' @param theme Bootstrap theme (cosmo, flatly, journal, etc.) (optional)
 #' @param custom_css Path to custom CSS file (optional)
 #' @param custom_scss Path to custom SCSS file (optional)
+#' @param tabset_theme Tabset theme: "minimal" (default), "modern", "pills", "classic",
+#'   "underline", "segmented", or "none"
+#' @param tabset_colors Named list of tabset colors (e.g., list(active_bg = "#2563eb"))
 #' @param author Author name for the site (optional)
 #' @param description Site description for SEO (optional)
 #' @param page_footer Custom footer text (optional)
 #' @param date Site creation/update date (optional)
 #' @param sidebar Enable/disable global sidebar (default: FALSE)
 #' @param sidebar_style Sidebar style (floating, docked, etc.) (optional)
+#' @param sidebar_foreground Sidebar foreground (text) color (optional)
+#' @param sidebar_border Whether to show sidebar border (default TRUE)
+#' @param sidebar_alignment Sidebar alignment: "left" (default) or "right"
+#' @param sidebar_collapse_level Heading level at which sidebar items collapse (default 2)
+#' @param sidebar_pinned Whether sidebar is pinned open (default FALSE)
+#' @param sidebar_tools Sidebar tools configuration (optional)
+#' @param sidebar_contents Sidebar contents configuration (optional)
 #' @param sidebar_background Sidebar background color (optional)
+#' @param breadcrumbs Whether to show breadcrumbs navigation (default TRUE)
+#' @param page_navigation Whether to show prev/next page navigation (default FALSE)
+#' @param back_to_top Whether to show a back-to-top button (default FALSE)
+#' @param reader_mode Whether to enable reader mode (default FALSE)
+#' @param repo_url Repository URL for source code link (optional)
+#' @param repo_actions Repository actions configuration (optional)
 #' @param navbar_style Navbar style (default, dark, light) (optional)
 #' @param navbar_bg_color Navbar background color (CSS color value, e.g., "#2563eb", "rgb(37, 99, 235)") (optional)
 #' @param navbar_text_color Navbar text color (CSS color value, e.g., "#ffffff", "rgb(255, 255, 255)") (optional)
@@ -57,7 +73,7 @@
 #' @param toc_depth TOC depth level (default: 3)
 #' @param page_layout Quarto page layout mode. Default is "full" for better mobile responsiveness.
 #'   Other options: "article" (constrained width), "custom". See Quarto docs for details.
-#' @param mobile_toc Logical. If TRUE, adds a collapsible mobile-friendly TOC button (📑 icon)
+#' @param mobile_toc Logical. If TRUE, adds a collapsible mobile-friendly TOC button
 #'   that appears in the top-right corner. Useful for mobile/tablet viewing. Default: FALSE.
 #' @param viewport_width Numeric or character. Controls mobile viewport behavior. Default is NULL
 #'   (standard responsive behavior). Set to a number (e.g., 1200) to force desktop rendering width
@@ -96,9 +112,10 @@
 #' @param lazy_load_margin Distance from viewport to start loading charts (default: "200px"). Larger values mean charts start loading earlier.
 #' @param lazy_load_tabs Only render charts in the active tab (default: TRUE when lazy_load_charts is TRUE). Charts in hidden tabs load when the tab is clicked.
 #' @param lazy_debug Enable debug logging to browser console for lazy loading (default: FALSE). When TRUE, prints timing information for each chart load.
-#' @param pagination_separator Text to show in pagination navigation (e.g., "of" → "1 of 3"), default: "of". Applies to all paginated pages unless overridden at page level.
+#' @param pagination_separator Text to show in pagination navigation (e.g., "of" -> "1 of 3"), default: "of". Applies to all paginated pages unless overridden at page level.
 #' @param pagination_position Default position for pagination controls: "bottom" (default, sticky at bottom), "top" (inline with page title), or "both" (top and bottom). This sets the default for all paginated pages. Individual pages can override this by passing position to add_pagination().
 #' @param powered_by_dashboardr Whether to automatically add "Powered by dashboardr" branding (default: TRUE). When TRUE, adds a badge-style branding element. Can be overridden by explicitly calling add_powered_by_dashboardr() with custom options, or set to FALSE to disable entirely.
+#' @param chart_export Whether to enable chart export functionality (default FALSE)
 #' @return A dashboard_project object
 #' @export
 #' @examples
@@ -116,7 +133,7 @@
 #'   theme = "cosmo",
 #'   author = "Dr. Jane Smith",
 #'   description = "Comprehensive data analysis dashboard",
-#'   page_footer = "© 2024 Company Name",
+#'   page_footer = "(c) 2024 Company Name",
 #'   sidebar = TRUE,
 #'   toc = "floating",
 #'   google_analytics = "GA-XXXXXXXXX",
@@ -138,7 +155,7 @@
 #'   "styled_dashboard",
 #'   "Beautifully Styled Dashboard",
 #'   navbar_bg_color = "#1e40af",     # Deep blue navbar
-#'   mainfont = "Fira Sans",           # Smooth, modern (default choice) ⭐
+#'   mainfont = "Fira Sans",           # Smooth, modern (default choice)
 #'   fontsize = "16px",
 #'   fontcolor = "#1f2937",            # Dark gray for readability
 #'   linkcolor = "#2563eb",            # Vibrant blue links
@@ -261,7 +278,8 @@ create_dashboard <- function(output_dir = "site",
                              lazy_debug = FALSE,
                             pagination_separator = "of",
                             pagination_position = "bottom",
-                            powered_by_dashboardr = TRUE) {
+                            powered_by_dashboardr = TRUE,
+                            chart_export = FALSE) {
 
   output_dir <- .resolve_output_dir(output_dir, allow_inside_pkg)
 
@@ -284,7 +302,7 @@ create_dashboard <- function(output_dir = "site",
   # Validate tabset_colors if provided
   if (!is.null(tabset_colors)) {
     if (!is.list(tabset_colors)) {
-      stop("tabset_colors must be a named list (e.g., list(active_bg = '#2563eb', active_text = '#fff'))")
+      stop("tabset_colors must be a named list (e.g., list(active_bg = '#2563eb', active_text = '#fff'))", call. = FALSE)
     }
     valid_color_keys <- c("inactive_bg", "inactive_text", "active_bg", "active_text", "hover_bg", "hover_text")
     invalid_keys <- setdiff(names(tabset_colors), valid_color_keys)
@@ -394,6 +412,7 @@ create_dashboard <- function(output_dir = "site",
     pagination_separator = pagination_separator,
     pagination_position = pagination_position,
     powered_by_dashboardr = powered_by_dashboardr,
+    chart_export = chart_export,
     pages = list(),
     data_files = NULL
   ), class = "dashboard_project")
@@ -430,54 +449,6 @@ create_dashboard <- function(output_dir = "site",
 #' @param template Optional custom template file path
 #' @param params Parameters for template substitution
 #' @param visualizations Content collection or list of visualization specs
-#' @param text Optional markdown text content for the page
-#' @param icon Optional iconify icon shortcode (e.g., "ph:users-three")
-#' @param is_landing_page Whether this should be the landing page (default: FALSE)
-#' @param tabset_theme Optional tabset theme for this page (overrides dashboard-level theme)
-#' @param tabset_colors Optional tabset colors for this page (overrides dashboard-level colors)
-#' @param navbar_align Position of page in navbar: "left" (default) or "right"
-#' @param overlay Whether to show a loading overlay on page load (default: FALSE)
-#' @param overlay_theme Theme for loading overlay: "light", "glass", "dark", or "accent" (default: "light")
-#' @param overlay_text Text to display in loading overlay (default: "Loading")
-#' @param overlay_duration Duration in milliseconds for how long overlay stays visible (default: 2200)
-#' @return The updated dashboard_project object
-#' @export
-#' @examples
-#' \dontrun{
-#' # Landing page
-#' dashboard <- create_dashboard("test") %>%
-#'   add_page("Welcome", text = "# Welcome\n\nThis is the main page.", is_landing_page = TRUE)
-#'
-#' # Analysis page with data and visualizations
-#' dashboard <- dashboard %>%
-#'   add_page("Demographics", data = survey_data, visualizations = demo_viz)
-#'
-#' # Text-only about page
-#' dashboard <- dashboard %>%
-#'   add_page("About", text = "# About This Study\n\nThis dashboard shows...")
-#'
-#' # Mixed content page
-#' dashboard <- dashboard %>%
-#'   add_page("Results", text = "# Key Findings\n\nHere are the results:",
-#'            visualizations = results_viz, icon = "ph:chart-line")
-#' }
-
-
-#' Add a page to the dashboard
-#'
-#' Universal function for adding any type of page to the dashboard. Can create
-#' landing pages, analysis pages, about pages, or any combination of text and
-#' visualizations. All content is markdown-compatible.
-#'
-#' @param proj A dashboard_project object
-#' @param name Page display name
-#' @param data Optional data frame to save for this page. Can also be a named list of data frames
-#'   for using multiple datasets: `list(survey = df1, demographics = df2)`
-#' @param data_path Path to existing data file (alternative to data parameter). Can also be a named
-#'   list of file paths for multiple datasets
-#' @param template Optional custom template file path
-#' @param params Parameters for template substitution
-#' @param visualizations Content collection or list of visualization specs
 #' @param content Alternative to visualizations - supports content collections
 #' @param text Optional markdown text content for the page
 #' @param icon Optional iconify icon shortcode (e.g., "ph:users-three")
@@ -493,7 +464,7 @@ create_dashboard <- function(output_dir = "site",
 #' @param lazy_load_margin Override viewport margin for lazy loading on this page (default: NULL = inherit from dashboard)
 #' @param lazy_load_tabs Override tab-aware lazy loading for this page (default: NULL = inherit from dashboard)
 #' @param lazy_debug Override debug mode for lazy loading on this page (default: NULL = inherit from dashboard)
-#' @param pagination_separator Text to show in pagination navigation (e.g., "of" → "1 of 3"), default: NULL = inherit from dashboard
+#' @param pagination_separator Text to show in pagination navigation (e.g., "of" -> "1 of 3"), default: NULL = inherit from dashboard
 #' @param time_var Name of the time/x-axis column in the data (e.g., "year", "decade", "date").
 #'   Used by input filters when switching metrics. If NULL (default), the JavaScript will try to 
 #'   auto-detect from common column names (year, decade, time, date).
@@ -539,7 +510,7 @@ add_dashboard_page <- function(proj, name, data = NULL, data_path = NULL,
                                pagination_separator = NULL,
                                time_var = NULL) {
   if (!inherits(proj, "dashboard_project")) {
-    stop("proj must be a dashboard_project object")
+    stop("proj must be a dashboard_project object", call. = FALSE)
   }
 
  # If 'name' is a page_object, delegate to add_pages
@@ -738,7 +709,7 @@ add_dashboard_page <- function(proj, name, data = NULL, data_path = NULL,
         } else if (is_block) {
           content_list <- c(content_list, list(item))
         } else {
-          stop("content/visualizations items must be content collection, content_block, or list of these")
+          stop("content/visualizations items must be content collection, content_block, or list of these", call. = FALSE)
         }
       }
       
@@ -762,7 +733,7 @@ add_dashboard_page <- function(proj, name, data = NULL, data_path = NULL,
         content_blocks <- content_list
       }
     } else {
-      stop("content/visualizations must be a content collection, content_block, or list of these")
+      stop("content/visualizations must be a content collection, content_block, or list of these", call. = FALSE)
     }
   }
 
@@ -817,7 +788,7 @@ add_dashboard_page <- function(proj, name, data = NULL, data_path = NULL,
 
         # Validate that each dataset is actually a data frame
         if (!is.data.frame(dataset)) {
-          stop("Dataset '", dataset_name, "' must be a data frame, got: ", class(dataset)[1])
+          stop("Dataset '", dataset_name, "' must be a data frame, got: ", class(dataset)[1], call. = FALSE)
         }
 
         # Check if we've already queued this exact dataset
@@ -1061,6 +1032,7 @@ add_dashboard_page <- function(proj, name, data = NULL, data_path = NULL,
     lazy_load_tabs = lazy_load_tabs %||% proj$lazy_load_tabs,
     lazy_debug = lazy_debug %||% proj$lazy_debug,
     pagination_separator = pagination_separator %||% proj$pagination_separator %||% "of",
+    chart_export = proj$chart_export %||% FALSE,
     tabgroup_labels = page_tabgroup_labels
   )
 
@@ -1078,8 +1050,7 @@ add_dashboard_page <- function(proj, name, data = NULL, data_path = NULL,
 #'
 #' Convenient alias for \code{\link{add_dashboard_page}}. Adds a new page to a dashboard project.
 #'
-#' @param proj Dashboard project object created by \code{\link{create_dashboard}}.
-#' @param ... All arguments passed to \code{\link{add_dashboard_page}}.
+#' @inheritParams add_dashboard_page
 #'
 #' @return Modified dashboard project with the new page added.
 #'
@@ -1087,20 +1058,6 @@ add_dashboard_page <- function(proj, name, data = NULL, data_path = NULL,
 #'
 #' @export
 add_page <- add_dashboard_page
-
-
-#' Create iconify icon shortcode
-#'
-#' Helper function to generate iconify icon shortcodes for use in pages and visualizations.
-#'
-#' @param icon_name Icon name in format "collection:name" (e.g., "ph:users-three")
-#' @return Iconify shortcode string
-#' @export
-#' @examples
-#' \dontrun{
-#' icon("ph:users-three")  # Returns iconify shortcode
-#' icon("emojione:flag-for-united-states")  # Returns iconify shortcode
-#' }
 
 
 #' Print Dashboard Project
@@ -1413,25 +1370,3 @@ print.dashboard_project <- function(x, ...) {
   .cat_utf8("\u2550\u2550 ", strrep("\u2550", 73), "\n\n")
   invisible(x)
 }
-
-#' Print Visualization Collection
-#'
-#' Displays a formatted summary of a visualization collection, including hierarchical
-#' tabgroup structure, visualization types, titles, filters, and defaults.
-#'
-#' @param x A content collection created by \code{\link{create_viz}}.
-#' @param ... Additional arguments (currently ignored).
-#'
-#' @return Invisibly returns the input object \code{x}.
-#'
-#' @details
-#' The print method displays:
-#' \itemize{
-#'   \item Total number of visualizations
-#'   \item Default parameters (if set)
-#'   \item Hierarchical tree structure showing tabgroup organization
-#'   \item Visualization types with emoji indicators
-#'   \item Filter status for each visualization
-#' }
-#'
-

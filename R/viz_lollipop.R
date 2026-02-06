@@ -1,0 +1,377 @@
+# =================================================================
+# Lollipop Chart Visualization
+# =================================================================
+
+#' Create a Lollipop Chart
+#'
+#' Creates an interactive lollipop chart using highcharter. A lollipop chart
+#' is a bar chart variant that uses a line (stem) and dot instead of a full bar,
+#' making it easier to read when there are many categories.
+#'
+#' @param data A data frame containing the data.
+#' @param x_var Character string. Name of the categorical variable for the axis.
+#' @param y_var Optional character string. Name of a numeric column with pre-aggregated
+#'   values. When provided, skips counting and uses these values directly.
+#' @param group_var Optional character string. Name of grouping variable for separate
+#'   series (creates multiple dots per category).
+#' @param value_var Optional character string. Name of a numeric variable to aggregate
+#'   (shows mean per category instead of counts).
+#' @param title Optional main title for the chart.
+#' @param subtitle Optional subtitle for the chart.
+#' @param x_label Optional label for the category axis.
+#' @param y_label Optional label for the value axis.
+#' @param horizontal Logical. If TRUE (default), creates horizontal lollipops.
+#' @param bar_type Character string. "count" (default), "percent", or "mean".
+#' @param color_palette Optional character vector of colors.
+#' @param x_order Optional character vector specifying the order of categories.
+#' @param group_order Optional character vector specifying the order of groups.
+#' @param sort_by_value Logical. If TRUE, sort categories by value. Default FALSE.
+#' @param sort_desc Logical. Sort direction when sort_by_value = TRUE. Default TRUE.
+#' @param weight_var Optional character string. Name of weight variable.
+#' @param dot_size Numeric. Size of the dots in pixels. Default 8.
+#' @param stem_width Numeric. Width of the stem lines in pixels. Default 2.
+#' @param data_labels_enabled Logical. If TRUE (default), show value labels.
+#' @param tooltip A tooltip configuration created with \code{\link{tooltip}()},
+#'   OR a format string with \{placeholders\}.
+#' @param tooltip_prefix Optional string prepended to tooltip values.
+#' @param tooltip_suffix Optional string appended to tooltip values.
+#'
+#' @return A highcharter plot object.
+#'
+#' @examples
+#' \dontrun{
+#' # Simple lollipop chart
+#' viz_lollipop(mtcars, x_var = "cyl", title = "Cars by Cylinders")
+#'
+#' # Horizontal with pre-aggregated data
+#' df <- data.frame(country = c("US", "UK", "DE"), score = c(85, 72, 68))
+#' viz_lollipop(df, x_var = "country", y_var = "score", horizontal = TRUE)
+#' }
+#' @export
+viz_lollipop <- function(data,
+                         x_var,
+                         y_var = NULL,
+                         group_var = NULL,
+                         value_var = NULL,
+                         title = NULL,
+                         subtitle = NULL,
+                         x_label = NULL,
+                         y_label = NULL,
+                         horizontal = TRUE,
+                         bar_type = "count",
+                         color_palette = NULL,
+                         x_order = NULL,
+                         group_order = NULL,
+                         sort_by_value = FALSE,
+                         sort_desc = TRUE,
+                         weight_var = NULL,
+                         dot_size = 8,
+                         stem_width = 2,
+                         data_labels_enabled = TRUE,
+                         tooltip = NULL,
+                         tooltip_prefix = "",
+                         tooltip_suffix = "") {
+
+  # Convert variable arguments to strings
+  x_var <- .as_var_string(rlang::enquo(x_var))
+  y_var <- .as_var_string(rlang::enquo(y_var))
+  group_var <- .as_var_string(rlang::enquo(group_var))
+  value_var <- .as_var_string(rlang::enquo(value_var))
+  weight_var <- .as_var_string(rlang::enquo(weight_var))
+
+  # Input validation
+  if (!is.data.frame(data)) {
+    stop("`data` must be a data frame.", call. = FALSE)
+  }
+
+  if (is.null(x_var)) {
+    .stop_with_hint("x_var", example = 'viz_lollipop(data, x_var = "category")')
+  }
+
+  if (!x_var %in% names(data)) {
+    stop(paste0("Column '", x_var, "' not found in data."), call. = FALSE)
+  }
+
+  if (!is.null(y_var) && !y_var %in% names(data)) {
+    stop(paste0("Column '", y_var, "' not found in data."), call. = FALSE)
+  }
+
+  if (!is.null(group_var) && !group_var %in% names(data)) {
+    stop(paste0("Column '", group_var, "' not found in data."), call. = FALSE)
+  }
+
+  if (!is.null(value_var) && !value_var %in% names(data)) {
+    stop(paste0("Column '", value_var, "' not found in data."), call. = FALSE)
+  }
+
+  # If value_var is provided, switch to mean mode
+  if (!is.null(value_var) && bar_type == "count") {
+    bar_type <- "mean"
+  }
+
+  # Select relevant variables
+  vars_to_select <- x_var
+  if (!is.null(y_var)) vars_to_select <- c(vars_to_select, y_var)
+  if (!is.null(group_var)) vars_to_select <- c(vars_to_select, group_var)
+  if (!is.null(value_var)) vars_to_select <- c(vars_to_select, value_var)
+  if (!is.null(weight_var)) vars_to_select <- c(vars_to_select, weight_var)
+
+  plot_data <- data %>%
+    dplyr::select(dplyr::all_of(vars_to_select)) %>%
+    dplyr::filter(!is.na(!!rlang::sym(x_var)))
+
+  if (!is.null(group_var)) {
+    plot_data <- plot_data %>% dplyr::filter(!is.na(!!rlang::sym(group_var)))
+  }
+
+  # Handle haven_labelled variables
+  if (requireNamespace("haven", quietly = TRUE)) {
+    if (inherits(plot_data[[x_var]], "haven_labelled")) {
+      plot_data <- plot_data %>%
+        dplyr::mutate(!!rlang::sym(x_var) := haven::as_factor(!!rlang::sym(x_var), levels = "labels"))
+    }
+    if (!is.null(group_var) && inherits(plot_data[[group_var]], "haven_labelled")) {
+      plot_data <- plot_data %>%
+        dplyr::mutate(!!rlang::sym(group_var) := haven::as_factor(!!rlang::sym(group_var), levels = "labels"))
+    }
+  }
+
+  # Apply ordering
+  if (!is.null(x_order)) {
+    plot_data <- plot_data %>%
+      dplyr::mutate(!!rlang::sym(x_var) := factor(!!rlang::sym(x_var), levels = x_order))
+  }
+  if (!is.null(group_var) && !is.null(group_order)) {
+    plot_data <- plot_data %>%
+      dplyr::mutate(!!rlang::sym(group_var) := factor(!!rlang::sym(group_var), levels = group_order))
+  }
+
+  # Aggregate data
+  if (!is.null(y_var)) {
+    # Pre-aggregated
+    agg_data <- plot_data %>%
+      dplyr::rename(value = !!rlang::sym(y_var))
+  } else if (bar_type == "mean" && !is.null(value_var)) {
+    # Mean aggregation
+    if (is.null(group_var)) {
+      agg_data <- plot_data %>%
+        dplyr::group_by(!!rlang::sym(x_var)) %>%
+        dplyr::summarize(value = round(mean(!!rlang::sym(value_var), na.rm = TRUE), 2),
+                         .groups = "drop")
+    } else {
+      agg_data <- plot_data %>%
+        dplyr::group_by(!!rlang::sym(x_var), !!rlang::sym(group_var)) %>%
+        dplyr::summarize(value = round(mean(!!rlang::sym(value_var), na.rm = TRUE), 2),
+                         .groups = "drop")
+    }
+  } else {
+    # Count aggregation
+    if (is.null(group_var)) {
+      if (!is.null(weight_var)) {
+        agg_data <- plot_data %>%
+          dplyr::count(!!rlang::sym(x_var), wt = !!rlang::sym(weight_var), name = "count")
+      } else {
+        agg_data <- plot_data %>%
+          dplyr::count(!!rlang::sym(x_var), name = "count")
+      }
+      if (bar_type == "percent") {
+        agg_data <- agg_data %>%
+          dplyr::mutate(value = round(count / sum(count) * 100, 1))
+      } else {
+        agg_data <- agg_data %>%
+          dplyr::mutate(value = count)
+      }
+    } else {
+      if (!is.null(weight_var)) {
+        agg_data <- plot_data %>%
+          dplyr::count(!!rlang::sym(x_var), !!rlang::sym(group_var),
+                       wt = !!rlang::sym(weight_var), name = "count")
+      } else {
+        agg_data <- plot_data %>%
+          dplyr::count(!!rlang::sym(x_var), !!rlang::sym(group_var), name = "count")
+      }
+      if (bar_type == "percent") {
+        agg_data <- agg_data %>%
+          dplyr::group_by(!!rlang::sym(x_var)) %>%
+          dplyr::mutate(value = round(count / sum(count) * 100, 1)) %>%
+          dplyr::ungroup()
+      } else {
+        agg_data <- agg_data %>%
+          dplyr::mutate(value = count)
+      }
+    }
+  }
+
+  # Sort by value
+  if (isTRUE(sort_by_value) && is.null(group_var)) {
+    agg_data <- agg_data %>%
+      dplyr::arrange(if (sort_desc) dplyr::desc(value) else value) %>%
+      dplyr::mutate(!!rlang::sym(x_var) := factor(!!rlang::sym(x_var),
+                                                    levels = !!rlang::sym(x_var)))
+  }
+
+  # Set up axis labels
+  final_x_label <- x_label %||% x_var
+  final_y_label <- y_label %||% switch(bar_type,
+    "percent" = "Percentage",
+    "mean" = paste0("Mean ", value_var),
+    "Count"
+  )
+
+  # Get categories
+  x_categories <- if (is.factor(agg_data[[x_var]])) {
+    levels(agg_data[[x_var]])
+  } else {
+    as.character(unique(agg_data[[x_var]]))
+  }
+
+  # Create chart - lollipop is a line chart with markers and lineWidth=0 stems
+  # We use a combination approach: scatter for dots + column with very thin width for stems
+  hc <- highcharter::highchart()
+
+  if (!is.null(title)) hc <- hc %>% highcharter::hc_title(text = title)
+  if (!is.null(subtitle)) hc <- hc %>% highcharter::hc_subtitle(text = subtitle)
+
+  # Configure axes
+  chart_type <- if (horizontal) "bar" else "column"
+
+  hc <- hc %>%
+    highcharter::hc_chart(type = chart_type) %>%
+    highcharter::hc_xAxis(
+      categories = x_categories,
+      title = list(text = final_x_label)
+    ) %>%
+    highcharter::hc_yAxis(title = list(text = final_y_label))
+
+  # Add series - use column type with very narrow pointWidth for stems,
+  # and overlay with marker-only series for dots
+  if (is.null(group_var)) {
+    series_data <- agg_data %>%
+      dplyr::arrange(match(as.character(!!rlang::sym(x_var)), x_categories)) %>%
+      dplyr::pull(value)
+
+    # Stem series (thin bars)
+    hc <- hc %>%
+      highcharter::hc_add_series(
+        name = final_y_label,
+        data = series_data,
+        type = chart_type,
+        pointWidth = stem_width,
+        showInLegend = FALSE,
+        colorByPoint = TRUE,
+        dataLabels = list(enabled = FALSE)
+      )
+
+    # Dot series (scatter overlay)
+    dot_data <- lapply(seq_along(series_data), function(i) {
+      list(x = i - 1, y = series_data[i])
+    })
+
+    hc <- hc %>%
+      highcharter::hc_add_series(
+        name = final_y_label,
+        data = dot_data,
+        type = "scatter",
+        showInLegend = FALSE,
+        marker = list(
+          radius = dot_size / 2,
+          symbol = "circle"
+        ),
+        colorByPoint = TRUE,
+        dataLabels = list(
+          enabled = data_labels_enabled,
+          format = if (bar_type == "percent") "{point.y:.1f}%" else "{point.y:.0f}"
+        )
+      )
+
+    if (!is.null(color_palette)) {
+      hc <- hc %>% highcharter::hc_colors(color_palette)
+    }
+  } else {
+    # Grouped lollipops
+    group_levels <- if (!is.null(group_order)) {
+      group_order
+    } else {
+      unique(agg_data[[group_var]])
+    }
+
+    for (i in seq_along(group_levels)) {
+      grp <- group_levels[i]
+      grp_data <- agg_data %>%
+        dplyr::filter(!!rlang::sym(group_var) == grp) %>%
+        dplyr::arrange(match(as.character(!!rlang::sym(x_var)), x_categories)) %>%
+        dplyr::pull(value)
+
+      # Stem
+      hc <- hc %>%
+        highcharter::hc_add_series(
+          name = as.character(grp),
+          data = grp_data,
+          type = chart_type,
+          pointWidth = stem_width,
+          showInLegend = FALSE,
+          dataLabels = list(enabled = FALSE)
+        )
+    }
+
+    # Dots for each group
+    for (i in seq_along(group_levels)) {
+      grp <- group_levels[i]
+      grp_data <- agg_data %>%
+        dplyr::filter(!!rlang::sym(group_var) == grp) %>%
+        dplyr::arrange(match(as.character(!!rlang::sym(x_var)), x_categories)) %>%
+        dplyr::pull(value)
+
+      dot_data <- lapply(seq_along(grp_data), function(j) {
+        list(x = j - 1, y = grp_data[j])
+      })
+
+      hc <- hc %>%
+        highcharter::hc_add_series(
+          name = as.character(grp),
+          data = dot_data,
+          type = "scatter",
+          marker = list(radius = dot_size / 2, symbol = "circle"),
+          dataLabels = list(
+            enabled = data_labels_enabled,
+            format = if (bar_type == "percent") "{point.y:.1f}%" else "{point.y:.0f}"
+          )
+        )
+    }
+
+    if (!is.null(color_palette)) {
+      hc <- hc %>% highcharter::hc_colors(color_palette)
+    }
+  }
+
+  # Tooltip
+  if (!is.null(tooltip)) {
+    tooltip_result <- .process_tooltip_config(
+      tooltip = tooltip,
+      tooltip_prefix = tooltip_prefix,
+      tooltip_suffix = tooltip_suffix,
+      x_tooltip_suffix = NULL,
+      chart_type = "lollipop",
+      context = list(bar_type = bar_type, x_label = final_x_label, y_label = final_y_label)
+    )
+    hc <- .apply_tooltip_to_hc(hc, tooltip_result)
+  } else {
+    pre <- if (is.null(tooltip_prefix) || tooltip_prefix == "") "" else tooltip_prefix
+    suf <- if (is.null(tooltip_suffix) || tooltip_suffix == "") "" else tooltip_suffix
+
+    tooltip_fn <- sprintf(
+      "function() {
+         var cat = this.point.category || this.series.chart.xAxis[0].categories[this.point.x] || this.x;
+         return '<b>' + cat + '</b><br/>' +
+                '%s' + this.y.toLocaleString() + '%s';
+       }",
+      pre, suf
+    )
+    hc <- hc %>% highcharter::hc_tooltip(
+      formatter = highcharter::JS(tooltip_fn),
+      useHTML = TRUE
+    )
+  }
+
+  return(hc)
+}

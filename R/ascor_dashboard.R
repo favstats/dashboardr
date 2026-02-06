@@ -32,7 +32,8 @@ ascor_dashboard <- function(directory = "ascor_dashboard") {
   qmds_dir <- directory
   
   # Load GSS data for demonstration
-  data(gss_panel20, package = "gssr")
+  gss_panel20 <- NULL
+  data(gss_panel20, package = "gssr", envir = environment())
   gss_clean <- gss_panel20 %>%
     dplyr::select(
       age_1a, sex_1a, degree_1a, region_1a,
@@ -164,7 +165,7 @@ ascor_dashboard <- function(directory = "ascor_dashboard") {
     # Metadata
     author = "Amsterdam School of Communication Research",
     description = "Research dashboard showcasing communication science data analysis",
-    page_footer = "© 2025 University of Amsterdam - ASCoR",
+    page_footer = "\u00a9 2025 University of Amsterdam - ASCoR",
     
     # Features
     search = TRUE,
@@ -285,9 +286,9 @@ ascor_dashboard <- function(directory = "ascor_dashboard") {
     )
   
   # Generate the dashboard
-  cat("\n╔════════════════════════════════════════════════════╗\n")
-  cat("║  🎓 Generating ASCoR Dashboard (UvA)             ║\n")
-  cat("╚════════════════════════════════════════════════════╝\n\n")
+  cat("\n\u2554\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2557\n")
+  cat("\u2551  \U0001f393 Generating ASCoR Dashboard (UvA)             \u2551\n")
+  cat("\u255a\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u255d\n\n")
   
   generate_dashboard(dashboard, render = TRUE, open = "browser")
   

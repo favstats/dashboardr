@@ -130,6 +130,7 @@ Can display error bars (standard deviation, standard error, or confidence interv
 when showing means via \code{value_var}.
 }
 \examples{
+\dontrun{
 # Simple bar chart showing counts (default)
 plot1 <- viz_bar(
   data = survey_data,
@@ -155,6 +156,7 @@ plot3 <- viz_bar(
   group_order = c("Low (1-9)", "Middle (10-19)", "High (20-29)")
 )
 plot3
+}
 
 # Bar chart with means and error bars (95\% CI)
 plot4 <- viz_bar(

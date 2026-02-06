@@ -7,13 +7,13 @@
 add_text(x = NULL, text, ..., tabgroup = NULL)
 }
 \arguments{
+\item{x}{A content_collection, viz_collection, sidebar_container, page_object, or NULL}
+
 \item{text}{Markdown text content (can be multi-line)}
 
 \item{...}{Additional text lines (will be combined with newlines)}
 
 \item{tabgroup}{Optional tabgroup for organizing content (character vector for nested tabs)}
-
-\item{content_collection}{A content_collection, viz_collection, or NULL}
 }
 \value{
 Updated content_collection object

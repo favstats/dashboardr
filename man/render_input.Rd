@@ -33,7 +33,9 @@ render_input(
   labels = NULL,
   size = c("md", "sm", "lg"),
   help = NULL,
-  disabled = FALSE
+  disabled = FALSE,
+  linked_child_id = NULL,
+  options_by_parent = NULL
 )
 }
 \arguments{
@@ -71,6 +73,18 @@ Can also be a named list for grouped options in selects.}
 
 \item{inline}{Whether to display options inline (for checkbox/radio)}
 
+\item{stacked}{Whether to stack options vertically (for checkbox/radio). Default FALSE.}
+
+\item{stacked_align}{Alignment when stacked: "center" (default), "left", or "right"}
+
+\item{group_align}{Alignment for option groups: "left" (default), "center", or "right"}
+
+\item{ncol}{Number of columns for grid layout of options}
+
+\item{nrow}{Number of rows for grid layout of options}
+
+\item{columns}{Column configuration for grid layout}
+
 \item{toggle_series}{For switch type: name of the series to toggle on/off}
 
 \item{override}{For switch type: if TRUE, switch overrides other filters for this series}
@@ -82,6 +96,10 @@ Can also be a named list for grouped options in selects.}
 \item{help}{Help text displayed below the input}
 
 \item{disabled}{Whether the input is disabled}
+
+\item{linked_child_id}{ID of linked child input for cascading inputs}
+
+\item{options_by_parent}{Named list mapping parent values to child options}
 }
 \value{
 HTML output (invisible)

@@ -2,15 +2,15 @@
 #' @description
 #' These functions have been renamed to use the `viz_*` prefix for clarity.
 #' Please use the new names:
-#' - `create_histogram()` → `viz_histogram()`
-#' - `create_bar()` → `viz_bar()`
-#' - `create_stackedbar()` → `viz_stackedbar()`
-#' - `create_stackedbars()` → `viz_stackedbars()`
-#' - `create_timeline()` → `viz_timeline()`
-#' - `create_heatmap()` → `viz_heatmap()`
-#' - `create_scatter()` → `viz_scatter()`
-#' - `create_map()` → `viz_map()`
-#' - `create_treemap()` → `viz_treemap()`
+#' - `create_histogram()` -> `viz_histogram()`
+#' - `create_bar()` -> `viz_bar()`
+#' - `create_stackedbar()` -> `viz_stackedbar()`
+#' - `create_stackedbars()` -> `viz_stackedbars()`
+#' - `create_timeline()` -> `viz_timeline()`
+#' - `create_heatmap()` -> `viz_heatmap()`
+#' - `create_scatter()` -> `viz_scatter()`
+#' - `create_map()` -> `viz_map()`
+#' - `create_treemap()` -> `viz_treemap()`
 #'
 #' The old names will continue to work but are deprecated and will be
 #' removed in a future version.

@@ -269,7 +269,7 @@ viz_treemap <- function(
     hc <- hc %>% highcharter::hc_subtitle(text = subtitle)
   }
   
-  # ─── TOOLTIP ───────────────────────────────────────────────────────────────
+  # \u2500\u2500\u2500 TOOLTIP \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
   if (!is.null(tooltip) && !is.null(tooltip_format)) {
     # Prefer tooltip_format if both are provided (for backwards compat)
     hc <- hc %>% highcharter::hc_tooltip(pointFormat = tooltip_format)

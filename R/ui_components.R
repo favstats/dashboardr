@@ -60,43 +60,6 @@ icon <- function(icon_name) {
 #'   footer = "Website: janesmith.com"
 #' )
 #' }
-
-
-#' Create a Bootstrap card component
-#'
-#' Helper function to create Bootstrap card components for displaying content in a structured way.
-#' Useful for author profiles, feature highlights, or any content that benefits from card layout.
-#'
-#' @param content Card content (text, HTML, or other elements)
-#' @param title Optional card title
-#' @param image Optional image URL or path
-#' @param image_alt Alt text for the image
-#' @param footer Optional card footer content
-#' @param class Additional CSS classes for the card
-#' @param style Additional inline styles for the card
-#' @return HTML div element with Bootstrap card classes
-#' @export
-#' @examples
-#' \dontrun{
-#' # Simple text card
-#' card("This is a simple card with just text content")
-#'
-#' # Card with title and image
-#' card(
-#'   content = "This is the card body content",
-#'   title = "Card Title",
-#'   image = "https://example.com/image.jpg",
-#'   image_alt = "Description of image"
-#' )
-#'
-#' # Author card
-#' card(
-#'   content = "Dr. Jane Smith is a researcher specializing in data science and visualization.",
-#'   title = "Dr. Jane Smith",
-#'   image = "https://example.com/jane.jpg",
-#'   footer = "Website: janesmith.com"
-#' )
-#' }
 card <- function(content, title = NULL, image = NULL, image_alt = NULL,
                 footer = NULL, class = NULL, style = NULL) {
 
@@ -175,25 +138,6 @@ card <- function(content, title = NULL, image = NULL, image_alt = NULL,
 #' # Display three cards in a row (3 columns)
 #' card_row(card1, card2, card3, cols = 3)
 #' }
-
-
-#' Display cards in a Bootstrap row
-#'
-#' Helper function to display multiple cards in a responsive Bootstrap row layout.
-#'
-#' @param ... Card objects to display
-#' @param cols Number of columns per row (default: 2)
-#' @param class Additional CSS classes for the row
-#' @return HTML div element with Bootstrap row classes containing the cards
-#' @export
-#' @examples
-#' \dontrun{
-#' # Display two cards in a row
-#' card_row(card1, card2)
-#'
-#' # Display three cards in a row (3 columns)
-#' card_row(card1, card2, card3, cols = 3)
-#' }
 card_row <- function(..., cols = 2, class = NULL) {
   cards <- list(...)
 
@@ -210,36 +154,6 @@ card_row <- function(..., cols = 2, class = NULL) {
 
   return(row_div)
 }
-
-#' Create multi-line markdown text content
-#'
-#' Helper function to create readable multi-line markdown text content for pages.
-#' Automatically handles line breaks and formatting for better readability.
-#'
-#' @param ... Text content as separate arguments or character vectors
-#' @return Single character string with proper line breaks
-#' @export
-#' @examples
-#' \dontrun{
-#' # Method 1: Separate arguments
-#' text_content <- md_text(
-#'   "# Welcome",
-#'   "",
-#'   "This is a multi-line text block.",
-#'   "",
-#'   "## Features",
-#'   "- Feature 1",
-#'   "- Feature 2"
-#' )
-#'
-#' # Method 2: Character vectors
-#' lines <- c("# About", "", "This is about our study.")
-#' text_content <- md_text(lines)
-#'
-#' # Use in add_page
-#' add_page("About", text = text_content)
-#' }
-
 
 #' Create multi-line markdown text content
 #'
@@ -313,15 +227,4 @@ text_lines <- function(lines) {
 # NOTE: add_image() is now in R/content_collection.R for pipeable syntax
 # Keeping this comment for reference
 
-# ===================================================================
-# Automatic Iconify Extension Installation
-# ===================================================================
-
-#' Check if any icons are used in the dashboard
-#'
-#' Internal function to detect if iconify shortcodes are present
-#' in the dashboard content.
-#'
-#' @param proj A dashboard_project object
-#' @return Logical indicating if icons are present
 

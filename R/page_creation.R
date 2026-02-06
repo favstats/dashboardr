@@ -102,7 +102,7 @@ create_page <- function(name,
   weight_var <- .as_var_string(rlang::enquo(weight_var))
 
   if (missing(name) || is.null(name) || !is.character(name) || nchar(name) == 0) {
-    stop("'name' is required and must be a non-empty string")
+    stop("'name' is required and must be a non-empty string", call. = FALSE)
   }
 
   navbar_align <- match.arg(navbar_align)
@@ -190,7 +190,7 @@ create_page <- function(name,
 #' @export
 add_text.page_object <- function(page, text, ..., tabgroup = NULL) {
   if (!inherits(page, "page_object")) {
-    stop("First argument must be a page_object created by create_page()")
+    stop("First argument must be a page_object created by create_page()", call. = FALSE)
   }
 
   # Combine text and ... into lines
@@ -224,7 +224,7 @@ add_text.page_object <- function(page, text, ..., tabgroup = NULL) {
 #' @export
 add_callout.page_object <- function(page, text, type = "note", title = NULL, tabgroup = NULL) {
   if (!inherits(page, "page_object")) {
-    stop("First argument must be a page_object created by create_page()")
+    stop("First argument must be a page_object created by create_page()", call. = FALSE)
   }
 
   callout_spec <- structure(
@@ -263,7 +263,7 @@ add_callout.page_object <- function(page, text, type = "note", title = NULL, tab
 #' }
 add_content <- function(page, ...) {
   if (!inherits(page, "page_object")) {
-    stop("'page' must be a page_object created by create_page()")
+    stop("'page' must be a page_object created by create_page()", call. = FALSE)
   }
 
   contents <- list(...)
@@ -276,7 +276,7 @@ add_content <- function(page, ...) {
   for (i in seq_along(contents)) {
     content <- contents[[i]]
     if (!is_content(content)) {
-      stop("Argument ", i + 1, " must be a content collection (from create_viz/create_content)")
+      stop("Argument ", i + 1, " must be a content collection (from create_viz/create_content)", call. = FALSE)
     }
     page$content <- c(page$content, list(content))
   }
@@ -307,7 +307,7 @@ add_content <- function(page, ...) {
 #' }
 set_tabgroup_labels.page_object <- function(page, ...) {
   if (!inherits(page, "page_object")) {
-    stop("First argument must be a page_object")
+    stop("First argument must be a page_object", call. = FALSE)
   }
   
   labels <- list(...)
@@ -341,7 +341,7 @@ set_tabgroup_labels.page_object <- function(page, ...) {
 #' }
 add_pages <- function(proj, ...) {
   if (!inherits(proj, "dashboard_project")) {
-    stop("'proj' must be a dashboard_project object")
+    stop("'proj' must be a dashboard_project object", call. = FALSE)
   }
 
   pages <- list(...)
@@ -353,7 +353,7 @@ add_pages <- function(proj, ...) {
 
   for (page in pages) {
     if (!inherits(page, "page_object")) {
-      stop("All arguments must be page_objects created by create_page()")
+      stop("All arguments must be page_objects created by create_page()", call. = FALSE)
     }
 
     proj <- .add_page_from_object(proj, page)
@@ -443,6 +443,8 @@ add_pages <- function(proj, ...) {
 
 
 #' Print method for page objects
+#' @param x A page_object to print
+#' @param ... Additional arguments (currently ignored)
 #' @export
 print.page_object <- function(x, ...) {
   rule_char <- cli::symbol$line

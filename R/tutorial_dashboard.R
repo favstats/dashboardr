@@ -38,7 +38,8 @@ tutorial_dashboard <- function(directory = "tutorial_dashboard", open = "browser
   }
 
   # Load GSS panel data for cross-sectional charts
-  data(gss_panel20, package = "gssr")
+  gss_panel20 <- NULL
+  data(gss_panel20, package = "gssr", envir = environment())
   gss_clean <- gss_panel20 %>%
     dplyr::mutate(
       degree = as.character(haven::as_factor(degree_1a)),
@@ -49,7 +50,8 @@ tutorial_dashboard <- function(directory = "tutorial_dashboard", open = "browser
     dplyr::filter(!is.na(degree), !is.na(happy), !is.na(sex))
 
   # Load GSS all data for time series (timeline chart)
-  data(gss_all, package = "gssr")
+  gss_all <- NULL
+  data(gss_all, package = "gssr", envir = environment())
   gss_time <- gss_all %>%
     dplyr::mutate(
       happy = as.character(haven::as_factor(happy))
@@ -379,7 +381,7 @@ generate_dashboard(dashboard)
     navbar_text_hover_color = "lightgrey",
     author = "dashboardr team",
     description = "This is a tutorial dashboard that demonstrates how to use the functionality and logic.",
-    page_footer = "© 2025 dashboardr Package - All Rights Reserved",
+    page_footer = "\u00a9 2025 dashboardr Package - All Rights Reserved",
     date = "2024-01-15",
     page_navigation = TRUE,
     back_to_top = TRUE,
@@ -417,12 +419,12 @@ generate_dashboard(dashboard)
           "",
           "```",
           "tutorial_dashboard/",
-          "├── _quarto.yml              # Project config (title, theme, navigation)",
-          "├── index.qmd                # Landing page (this page)",
-          "├── charts.qmd               # Bar and stacked bar charts",
-          "├── timeline.qmd             # Time series chart (uses gss_all data)",
-          "├── text___content.qmd       # Text and content blocks demo",
-          "└── showcase_dashboard.qmd   # Full feature demonstration",
+          "\u251c\u2500\u2500 _quarto.yml              # Project config (title, theme, navigation)",
+          "\u251c\u2500\u2500 index.qmd                # Landing page (this page)",
+          "\u251c\u2500\u2500 charts.qmd               # Bar and stacked bar charts",
+          "\u251c\u2500\u2500 timeline.qmd             # Time series chart (uses gss_all data)",
+          "\u251c\u2500\u2500 text___content.qmd       # Text and content blocks demo",
+          "\u2514\u2500\u2500 showcase_dashboard.qmd   # Full feature demonstration",
           "```",
           "",
           "**Key files:**",
@@ -612,7 +614,8 @@ showcase_dashboard <- function(directory = "showcase_dashboard", open = "browser
   }
 
 # Load GSS data for realistic examples
-data(gss_panel20, package = "gssr")
+gss_panel20 <- NULL
+data(gss_panel20, package = "gssr", envir = environment())
 gss_clean <- gss_panel20 %>%
   dplyr::select(
     age_1a, sex_1a, degree_1a, region_1a,
@@ -917,7 +920,7 @@ dashboard <- create_dashboard(
   navbar_text_hover_color = "lightgrey",
   author = "GSS Research Team",
   description = "Comprehensive data analysis dashboard with all features",
-  page_footer = "© 2025 dashboardr Package - All Rights Reserved",
+  page_footer = "\u00a9 2025 dashboardr Package - All Rights Reserved",
   date = "2024-01-15",
   tabset_theme = "minimal",
   page_navigation = TRUE,

@@ -39,13 +39,13 @@ sidebar_group <- function(id, title, pages, style = NULL, background = NULL,
 
   # Validate required parameters
   if (is.null(id) || !is.character(id) || length(id) != 1 || nchar(id) == 0) {
-    stop("id must be a non-empty character string")
+    stop("id must be a non-empty character string", call. = FALSE)
   }
   if (is.null(title) || !is.character(title) || length(title) != 1 || nchar(title) == 0) {
-    stop("title must be a non-empty character string")
+    stop("title must be a non-empty character string", call. = FALSE)
   }
   if (is.null(pages) || !is.character(pages) || length(pages) == 0) {
-    stop("pages must be a non-empty character vector")
+    stop("pages must be a non-empty character vector", call. = FALSE)
   }
 
   # Build the sidebar group configuration
@@ -84,32 +84,14 @@ sidebar_group <- function(id, title, pages, style = NULL, background = NULL,
 #' analysis_section <- navbar_section("Analysis", "analysis", "ph:chart-bar")
 #' reference_section <- navbar_section("Reference", "reference", "ph:book")
 #' }
-
-
-#' Create a navbar section for hybrid navigation
-#'
-#' Helper function to create a navbar section that links to a sidebar group
-#' for hybrid navigation. This creates dropdown-style navigation.
-#'
-#' @param text Display text for the navbar item
-#' @param sidebar_id ID of the sidebar group to link to
-#' @param icon Optional icon for the navbar item
-#' @return List containing navbar section configuration
-#' @export
-#' @examples
-#' \dontrun{
-#' # Create navbar sections that link to sidebar groups
-#' analysis_section <- navbar_section("Analysis", "analysis", "ph:chart-bar")
-#' reference_section <- navbar_section("Reference", "reference", "ph:book")
-#' }
 navbar_section <- function(text, sidebar_id, icon = NULL) {
 
   # Validate required parameters
   if (is.null(text) || !is.character(text) || length(text) != 1 || nchar(text) == 0) {
-    stop("text must be a non-empty character string")
+    stop("text must be a non-empty character string", call. = FALSE)
   }
   if (is.null(sidebar_id) || !is.character(sidebar_id) || length(sidebar_id) != 1 || nchar(sidebar_id) == 0) {
-    stop("sidebar_id must be a non-empty character string")
+    stop("sidebar_id must be a non-empty character string", call. = FALSE)
   }
 
   # Build the navbar section configuration
@@ -126,31 +108,6 @@ navbar_section <- function(text, sidebar_id, icon = NULL) {
 
   section
 }
-
-#' Create a navbar dropdown menu
-#'
-#' Creates a dropdown menu in the navbar without requiring sidebar groups.
-#' This is a simple nested menu structure.
-#'
-#' @param text Display text for the dropdown menu button
-#' @param pages Character vector of page names to include in the dropdown
-#' @param icon Optional icon for the menu button
-#' @return List containing navbar menu configuration
-#' @export
-#' @examples
-#' \dontrun{
-#' # Create a simple dropdown menu
-#' dimensions_menu <- navbar_menu(
-#'   text = "Dimensions",
-#'   pages = c("Strategic Information", "Critical Information"),
-#'   icon = "ph:book"
-#' )
-#' 
-#' dashboard <- create_dashboard(
-#'   navbar_sections = list(dimensions_menu)
-#' )
-#' }
-
 
 #' Create a navbar dropdown menu
 #'
@@ -189,12 +146,12 @@ navbar_menu <- function(text, pages, icon = NULL, align = c("left", "right")) {
   # Validate required parameters
 
   if (is.null(text) || !is.character(text) || length(text) != 1 || nchar(text) == 0) {
-    stop("text must be a non-empty character string")
+    stop("text must be a non-empty character string", call. = FALSE)
   }
   if (is.null(pages) || !is.character(pages) || length(pages) == 0) {
-    stop("pages must be a non-empty character vector")
+    stop("pages must be a non-empty character vector", call. = FALSE)
   }
-  
+
   align <- match.arg(align)
   
   # Build the navbar menu configuration
@@ -264,15 +221,15 @@ navbar_menu <- function(text, pages, icon = NULL, align = c("left", "right")) {
 add_navbar_element <- function(proj, text = NULL, icon = NULL, href, 
                                align = c("right", "left")) {
   if (!inherits(proj, "dashboard_project")) {
-    stop("proj must be a dashboard_project object from create_dashboard()")
+    stop("proj must be a dashboard_project object from create_dashboard()", call. = FALSE)
   }
-  
+
   if (is.null(text) && is.null(icon)) {
-    stop("Either text or icon (or both) must be provided")
+    stop("Either text or icon (or both) must be provided", call. = FALSE)
   }
-  
+
   if (missing(href) || is.null(href) || !is.character(href) || length(href) != 1 || nchar(href) == 0) {
-    stop("href must be a non-empty URL string")
+    stop("href must be a non-empty URL string", call. = FALSE)
   }
   
   align <- match.arg(align)

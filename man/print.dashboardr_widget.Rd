@@ -6,6 +6,11 @@
 \usage{
 \method{print}{dashboardr_widget}(x, ...)
 }
+\arguments{
+\item{x}{A dashboardr_widget object to print}
+
+\item{...}{Additional arguments (currently ignored)}
+}
 \description{
 Print method for dashboardr_widget - opens in viewer
 }

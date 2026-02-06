@@ -45,7 +45,7 @@
 #'   Example: `c("#FFFFFF", "#7CB5EC")` for white to light blue. Can also be a single color for gradient start.
 #' @param na_color Optional string. Color for NA values in `value_var` cells. Default "transparent".
 #' @param data_labels_enabled Logical. If TRUE, display data labels on each cell. Default TRUE.
-#' @param tooltip_labels_format Optional string. Format for data labels. Default "{point.value}".
+#' @param tooltip_labels_format Optional string. Format for data labels. Default "\{point.value\}".
 #' @param include_na Logical. If TRUE, treats NA values in `x_var` or `y_var`
 #'   as explicit categories using `na_label_x` and `na_label_y`. If FALSE (default),
 #'   rows with NA in `x_var` or `y_var` are excluded from aggregation.
@@ -64,11 +64,11 @@
 #' @return A `highcharter` heatmap object.
 #'
 #' @examples
-#'
+#' \dontrun{
 #' # Load the dataset
 #' data(gss_panel20)
 #'
-#' # Example 1: Basic heatmap – no mapped values or other customization
+#' # Example 1: Basic heatmap - no mapped values or other customization
 #' viz_heatmap(
 #'   data = gss_panel20,
 #'   x_var = "degree_1a",
@@ -159,8 +159,7 @@
 #' subtitle = "Custom order and relabeled categories",
 #' color_palette = c("#ffffe0", "#31a354")
 #' )
-#'
-#'
+#' }
 #'
 #' @details
 #' This function performs the following steps:
@@ -238,13 +237,13 @@ viz_heatmap <- function(data,
     stop("`data` must be a data frame.", call. = FALSE)
   }
   if (is.null(x_var)) {
-    dashboardr:::.stop_with_hint("x_var", example = "viz_heatmap(data, x_var = \"country\", y_var = \"year\", value_var = \"population\")")
+    .stop_with_hint("x_var", example = "viz_heatmap(data, x_var = \"country\", y_var = \"year\", value_var = \"population\")")
   }
   if (is.null(y_var)) {
-    dashboardr:::.stop_with_hint("y_var", example = "viz_heatmap(data, x_var = \"country\", y_var = \"year\", value_var = \"population\")")
+    .stop_with_hint("y_var", example = "viz_heatmap(data, x_var = \"country\", y_var = \"year\", value_var = \"population\")")
   }
   if (is.null(value_var)) {
-    dashboardr:::.stop_with_hint("value_var", example = "viz_heatmap(data, x_var = \"country\", y_var = \"year\", value_var = \"population\")")
+    .stop_with_hint("value_var", example = "viz_heatmap(data, x_var = \"country\", y_var = \"year\", value_var = \"population\")")
   }
   required_vars <- c(x_var, y_var, value_var)
   if (!all(required_vars %in% names(data))) {
@@ -515,7 +514,7 @@ viz_heatmap <- function(data,
       )
     )
 
-  # ─── TOOLTIP ───────────────────────────────────────────────────────────────
+  # \u2500\u2500\u2500 TOOLTIP \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
   if (!is.null(tooltip)) {
     # Use new unified tooltip system
     tooltip_result <- .process_tooltip_config(

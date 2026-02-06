@@ -103,7 +103,7 @@ Example: \code{c("#FFFFFF", "#7CB5EC")} for white to light blue. Can also be a s
 
 \item{data_labels_enabled}{Logical. If TRUE, display data labels on each cell. Default TRUE.}
 
-\item{tooltip_labels_format}{Optional string. Format for data labels. Default "{point.value}".}
+\item{tooltip_labels_format}{Optional string. Format for data labels. Default "\{point.value\}".}
 
 \item{include_na}{Logical. If TRUE, treats NA values in \code{x_var} or \code{y_var}
 as explicit categories using \code{na_label_x} and \code{na_label_y}. If FALSE (default),
@@ -164,11 +164,11 @@ filling missing \code{value_var} with \code{NA_real_} (which will appear as \cod
 }
 }
 \examples{
-
+\dontrun{
 # Load the dataset
 data(gss_panel20)
 
-# Example 1: Basic heatmap – no mapped values or other customization
+# Example 1: Basic heatmap - no mapped values or other customization
 viz_heatmap(
   data = gss_panel20,
   x_var = "degree_1a",
@@ -259,7 +259,6 @@ title = "Average Income by Education Level and Sex",
 subtitle = "Custom order and relabeled categories",
 color_palette = c("#ffffe0", "#31a354")
 )
-
-
+}
 
 }

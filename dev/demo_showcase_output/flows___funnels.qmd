@@ -1,0 +1,136 @@
+---
+title: "{{< iconify ph funnel >}} Flows & Funnels"
+format: html
+---
+
+```{r, include=FALSE}
+# Initialize dashboardr page configuration (CSS/JS for charts)
+dashboardr:::.page_config()
+```
+
+```{r, echo=FALSE, results='asis'}
+# Enable chart export buttons (download as PNG/SVG/PDF/CSV)
+dashboardr::enable_chart_export()
+```
+
+```{r setup}
+#| echo: false
+#| warning: false
+#| message: false
+#| error: false
+#| results: 'hide'
+
+# Load dashboardr (includes dplyr, highcharter as dependencies)
+library(dashboardr)
+
+# Global chunk options
+knitr::opts_chunk$set(
+  echo = FALSE,
+  warning = FALSE,
+  message = FALSE,
+  error = FALSE,
+  fig.width = 12,
+  fig.height = 8,
+  dpi = 300
+)
+
+```
+
+
+## Recruitment Pipeline
+
+Funnel charts visualise drop-off through sequential stages.
+
+## Hiring Funnel: Applications to Hires
+
+```{r hiring-funnel-applications-to-hires}
+# Hiring Funnel: Applications to Hires
+result <- viz_funnel(
+  data = as.data.frame(list("stage" = c("Applications", "Phone Screen", "Technical Interview", "On-site Interview", "Offer Extended", "Hired"), "count" = c(5000, 2200, 900, 450, 180, 120))),
+  title = "Hiring Funnel: Applications to Hires",
+  x_var = "stage",
+  y_var = "count",
+  color_palette = c("#264653", "#2A9D8F", "#E9C46A", "#F4A261", "#E76F51", "#E15759"),
+  show_conversion = TRUE
+)
+
+# Enable chart export button
+if (inherits(result, 'highchart')) {
+  result <- highcharter::hc_exporting(result, enabled = TRUE)
+}
+
+result
+```
+
+
+<div style='height: 1.5rem;'></div>
+
+
+## Pyramid View
+
+The same data reversed into a pyramid shape.
+
+## Hiring Pyramid (Reversed Funnel)
+
+```{r hiring-pyramid-reversed-funnel}
+# Hiring Pyramid (Reversed Funnel)
+result <- viz_funnel(
+  data = as.data.frame(list("stage" = c("Applications", "Phone Screen", "Technical Interview", "On-site Interview", "Offer Extended", "Hired"), "count" = c(5000, 2200, 900, 450, 180, 120))),
+  title = "Hiring Pyramid (Reversed Funnel)",
+  x_var = "stage",
+  y_var = "count",
+  color_palette = c("#E15759", "#E76F51", "#F4A261", "#E9C46A", "#2A9D8F", "#264653"),
+  reversed = TRUE
+)
+
+# Enable chart export button
+if (inherits(result, 'highchart')) {
+  result <- highcharter::hc_exporting(result, enabled = TRUE)
+}
+
+result
+```
+
+
+<div style='height: 1.5rem;'></div>
+
+
+## Budget Allocation (Sankey Diagram)
+
+Sankey diagrams trace flows from source to destination nodes.
+
+## Annual Budget Flow ($M)
+
+```{r annual-budget-flow-m}
+# Annual Budget Flow ($M)
+result <- viz_sankey(
+  data = as.data.frame(list("from" = c("Revenue", "Revenue", "Revenue", "OpEx", "OpEx", "OpEx", "CapEx", "CapEx", "R&D", "R&D"), "to" = c("OpEx", "CapEx", "R&D", "Salaries", "Marketing Spend", "Operations", "Equipment", "Real Estate", "Product Dev", "Innovation Lab"), "value" = c(45, 20, 35, 25, 10, 10, 12, 8, 22, 13))),
+  title = "Annual Budget Flow ($M)",
+  from_var = "from",
+  to_var = "to",
+  value_var = "value",
+  subtitle = "Revenue allocation through departments",
+  color_palette = c("Revenue" = "#264653", "OpEx" = "#2A9D8F", "CapEx" = "#E9C46A", "R&D" = "#F4A261", "Salaries" = "#76B7B2", "Marketing Spend" = "#F28E2B", "Operations" = "#BAB0AC", "Equipment" = "#9C755F", "Real Estate" = "#FF9DA7", "Product Dev" = "#E15759", "Innovation Lab" = "#B07AA1"),
+  node_width = 25,
+  node_padding = 12
+)
+
+# Set chart height
+if (inherits(result, 'highchart')) {
+  result <- highcharter::hc_size(result, height = 500)
+}
+
+# Enable chart export button
+if (inherits(result, 'highchart')) {
+  result <- highcharter::hc_exporting(result, enabled = TRUE)
+}
+
+# Force container height with explicit wrapper
+result <- htmltools::div(
+  style = 'height: 500px !important; min-height: 500px !important; width: 100%; overflow: visible;',
+  result
+)
+
+result
+```
+

@@ -79,7 +79,11 @@ create_blockquote("AlgoSoc question here", preset = algosoc_style)
 
 # Define multiple custom styles and reuse
 survey_style <- list(border_color = "#6f42c1", background_color = "#f8f5ff")
-important_style <- list(border_color = "#e74c3c", background_color = "#ffebee", border_width = "8px")
+important_style <- list(
+  border_color = "#e74c3c",
+  background_color = "#ffebee",
+  border_width = "8px"
+)
 
 create_blockquote("Survey question 1", preset = survey_style)
 create_blockquote("Survey question 2", preset = survey_style)
@@ -108,9 +112,9 @@ result <- create_blockquote(
   preset = "question",
   use_class = TRUE
 )
-# Add the CSS to your document header
-cat(result$css)
-# Use the HTML in your content
-cat(result$html)
+# View the CSS component (an htmltools tag)
+result$css
+# View the HTML component
+result$html
 
 }

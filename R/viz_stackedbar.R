@@ -10,7 +10,6 @@
 #' **Mode 1: Grouped/Crosstab Mode** (use `x_var` + `stack_var`)
 #'
 #' Creates a stacked bar chart from long/tidy data where one column provides
-
 #' the x-axis categories and another column provides the stack segments.
 #' This is ideal for cross-tabulating responses by demographic groups.
 #'
@@ -24,18 +23,14 @@
 #' provided.
 #'
 #' @param data A data frame containing the survey data.
-#'
-#' @section Mode 1 Parameters (Grouped/Crosstab):
-#' @param x_var String. Name of the column for X-axis categories. Use this
-#'   together with `stack_var` for crosstab-style charts.
+#' @param x_var String. Name of the column for X-axis categories (Mode 1: Grouped/Crosstab).
+#'   Use this together with `stack_var` for crosstab-style charts.
 #' @param stack_var String. Name of the column whose values define the stacks.
 #'   Required when using `x_var`.
 #' @param y_var Optional string. Name of a pre-computed count column. If NULL
 #'   (default), the function counts occurrences.
-#'
-#' @section Mode 2 Parameters (Multi-Variable/Battery):
-#' @param x_vars Character vector of column names to compare. Each column becomes
-#'   a bar on the x-axis, and the values within each column become the stacks.
+#' @param x_vars Character vector of column names to compare (Mode 2: Multi-Variable/Battery).
+#'   Each column becomes a bar on the x-axis, and the values within each column become the stacks.
 #'   Use this for comparing multiple survey questions with the same response scale.
 #' @param x_var_labels Optional character vector of display labels for the variables.
 #'   Must be the same length as `x_vars`. If NULL, column names are used.
@@ -44,8 +39,6 @@
 #'   This sets the order of the stacks in multi-variable mode.
 #' @param show_var_tooltip Logical. If TRUE (default), shows enhanced tooltips
 #'   with variable labels in multi-variable mode.
-#'
-#' @section Common Parameters:
 #' @param title Optional string. Main chart title.
 #' @param subtitle Optional string. Chart subtitle.
 #' @param x_label Optional string. X-axis label. Defaults to empty in crosstab mode
@@ -77,16 +70,19 @@
 #' @param horizontal Logical. If TRUE, creates horizontal bars. Default FALSE.
 #' @param weight_var Optional string. Name of a weight variable for weighted counts.
 #' @param data_labels_enabled Logical. If TRUE, show value labels on bars. Default TRUE.
+#' @param cross_tab_filter_vars Character vector. Variables for cross-tab filtering
+#'   (typically auto-detected from sidebar inputs).
+#' @param title_map Named list mapping variable names to custom display titles
+#'   for dynamic title updates when filtering by cross-tab variables.
 #'
 #' @return An interactive `highcharter` bar chart plot object.
 #'
 #' @examples
+#' \dontrun{
 #' library(gssr)
 #' data(gss_panel20)
 #'
-#' # ============================================================
 #' # MODE 1: Grouped/Crosstab - One variable broken down by another
-#' # ============================================================
 #'
 #' # Example 1: Education by Gender (counts)
 #' plot1 <- viz_stackedbar(
@@ -108,15 +104,14 @@
 #'   tooltip_suffix = "%"
 #' )
 #'
-#' # ============================================================
 #' # MODE 2: Multi-Variable/Battery - Compare multiple questions
-#' # ============================================================
 #'
 #' # Example 3: Compare multiple attitude questions
 #' plot3 <- viz_stackedbar(
 #'   data = gss_panel20,
 #'   x_vars = c("trust_1a", "fair_1a", "helpful_1a"),
-#'   x_var_labels = c("Trust Others", "Others Are Fair", "Others Are Helpful"),
+#'   x_var_labels = c("Trust Others", "Others Are Fair",
+#'     "Others Are Helpful"),
 #'   title = "Social Trust Battery",
 #'   stacked_type = "percent",
 #'   tooltip_suffix = "%"
@@ -130,6 +125,7 @@
 #'   stacked_type = "percent",
 #'   horizontal = TRUE
 #' )
+#' }
 #'
 #' @seealso
 #' \code{\link{viz_bar}} for simple (non-stacked) bar charts
@@ -154,10 +150,6 @@
 #' - Supports binning of continuous variables
 #' - Handles missing values explicitly or implicitly
 #'
-
-########################################################################
-
-# Unified function that supports both modes
 viz_stackedbar <- function(data,
                            # Mode 1 parameters (crosstab)
                            x_var = NULL,

@@ -1,0 +1,134 @@
+---
+title: "{{< iconify ph arrows-out-line-horizontal >}} Comparisons"
+format: html
+---
+
+```{r, include=FALSE}
+# Initialize dashboardr page configuration (CSS/JS for charts)
+dashboardr:::.page_config()
+```
+
+```{r, echo=FALSE, results='asis'}
+# Enable chart export buttons (download as PNG/SVG/PDF/CSV)
+dashboardr::enable_chart_export()
+```
+
+```{r setup}
+#| echo: false
+#| warning: false
+#| message: false
+#| error: false
+#| results: 'hide'
+
+# Load dashboardr (includes dplyr, highcharter as dependencies)
+library(dashboardr)
+
+# Global chunk options
+knitr::opts_chunk$set(
+  echo = FALSE,
+  warning = FALSE,
+  message = FALSE,
+  error = FALSE,
+  fig.width = 12,
+  fig.height = 8,
+  dpi = 300
+)
+
+```
+
+
+## Engagement by Salary Band
+
+Lollipop charts offer a cleaner alternative to bar charts for ranked data.
+
+
+<div style='height: 0.5rem;'></div>
+
+## Average Engagement Score by Salary Band
+
+```{r average-engagement-score-by-salary-band}
+# Average Engagement Score by Salary Band
+result <- viz_lollipop(
+  data = as.data.frame(list("salary_band" = structure(c(2L, 3L, 1L, 4L), levels = c("< $60K", "$60K-$90K", "$90K-$120K", "> $120K"), class = "factor"), "avg_score" = c(71.1, 72.2, 71.7, 72.7))),
+  title = "Average Engagement Score by Salary Band",
+  x_var = "salary_band",
+  y_var = "avg_score",
+  x_label = "Salary Band",
+  y_label = "Engagement Score",
+  horizontal = TRUE,
+  sort_by_value = TRUE,
+  color_palette = "#4E79A7"
+)
+
+# Enable chart export button
+if (inherits(result, 'highchart')) {
+  result <- highcharter::hc_exporting(result, enabled = TRUE)
+}
+
+result
+```
+
+
+<div style='height: 1.5rem;'></div>
+
+
+## Engagement Change: 2021 vs 2024
+
+Dumbbell charts highlight the gap between two time points per category.
+
+## Department Engagement: Before & After Initiative
+
+```{r department-engagement-before-after-initiative}
+# Department Engagement: Before & After Initiative
+result <- viz_dumbbell(
+  data = as.data.frame(list("department" = c("Engineering", "Marketing", "Sales", "HR", "Finance"), "score_2021" = c(65, 58, 62, 70, 60), "score_2024" = c(78, 72, 68, 82, 75))),
+  title = "Department Engagement: Before & After Initiative",
+  x_var = "department",
+  low_var = "score_2021",
+  high_var = "score_2024",
+  low_label = "2021",
+  high_label = "2024",
+  low_color = "#E15759",
+  high_color = "#59A14F",
+  sort_by_gap = TRUE,
+  horizontal = TRUE
+)
+
+# Enable chart export button
+if (inherits(result, 'highchart')) {
+  result <- highcharter::hc_exporting(result, enabled = TRUE)
+}
+
+result
+```
+
+
+<div style='height: 1.5rem;'></div>
+
+
+## Department Composition (Waffle)
+
+Waffle charts use a grid of squares for an intuitive part-to-whole view.
+
+## Workforce Distribution (Waffle Grid)
+
+```{r workforce-distribution-waffle-grid}
+# Workforce Distribution (Waffle Grid)
+result <- viz_waffle(
+  data = as.data.frame(list("department" = c("Engineering", "Finance", "HR", "Marketing", "Sales"), "n" = c(171, 72, 70, 127, 160))),
+  title = "Workforce Distribution (Waffle Grid)",
+  x_var = "department",
+  y_var = "n",
+  total = 100,
+  rows = 10,
+  color_palette = c("#4E79A7", "#F28E2B", "#E15759", "#76B7B2", "#59A14F")
+)
+
+# Enable chart export button
+if (inherits(result, 'highchart')) {
+  result <- highcharter::hc_exporting(result, enabled = TRUE)
+}
+
+result
+```
+

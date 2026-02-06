@@ -2,7 +2,7 @@
 % Please edit documentation in R/viz_collection.R
 \name{print.viz_collection}
 \alias{print.viz_collection}
-\title{Create a new dashboard project}
+\title{Print Visualization Collection}
 \usage{
 \method{print}{viz_collection}(x, render = FALSE, check = FALSE, ...)
 }
@@ -16,101 +16,13 @@ instead of showing the structure. Default is FALSE.}
 Useful for catching errors early before attempting to render.}
 
 \item{...}{Additional arguments (currently ignored).}
-
-\item{output_dir}{Directory for generated files}
-
-\item{title}{Overall title for the dashboard site}
-
-\item{logo}{Optional logo filename (will be copied to output directory)}
-
-\item{favicon}{Optional favicon filename (will be copied to output directory)}
-
-\item{github}{GitHub repository URL (optional)}
-
-\item{twitter}{Twitter profile URL (optional)}
-
-\item{linkedin}{LinkedIn profile URL (optional)}
-
-\item{email}{Email address (optional)}
-
-\item{website}{Website URL (optional)}
-
-\item{search}{Enable search functionality (default: TRUE)}
-
-\item{theme}{Bootstrap theme (cosmo, flatly, journal, etc.) (optional)}
-
-\item{custom_css}{Path to custom CSS file (optional)}
-
-\item{custom_scss}{Path to custom SCSS file (optional)}
-
-\item{author}{Author name for the site (optional)}
-
-\item{description}{Site description for SEO (optional)}
-
-\item{page_footer}{Custom footer text (optional)}
-
-\item{date}{Site creation/update date (optional)}
-
-\item{sidebar}{Enable/disable global sidebar (default: FALSE)}
-
-\item{sidebar_style}{Sidebar style (floating, docked, etc.) (optional)}
-
-\item{sidebar_background}{Sidebar background color (optional)}
-
-\item{navbar_style}{Navbar style (default, dark, light) (optional)}
-
-\item{navbar_brand}{Custom brand text (optional)}
-
-\item{navbar_toggle}{Mobile menu toggle behavior (optional)}
-
-\item{math}{Enable/disable math rendering (katex, mathjax) (optional)}
-
-\item{code_folding}{Code folding behavior (none, show, hide) (optional)}
-
-\item{code_tools}{Code tools (copy, download, etc.) (optional)}
-
-\item{toc}{Table of contents (floating, left, right) (optional)}
-
-\item{toc_depth}{TOC depth level (default: 3)}
-
-\item{google_analytics}{Google Analytics ID (optional)}
-
-\item{plausible}{Plausible analytics domain (optional)}
-
-\item{gtag}{Google Tag Manager ID (optional)}
-
-\item{value_boxes}{Enable value box styling (default: FALSE)}
-
-\item{metrics_style}{Metrics display style (optional)}
-
-\item{shiny}{Enable Shiny interactivity (default: FALSE)}
-
-\item{observable}{Enable Observable JS (default: FALSE)}
-
-\item{jupyter}{Enable Jupyter widgets (default: FALSE)}
-
-\item{publish_dir}{Custom publish directory (optional)}
-
-\item{github_pages}{GitHub Pages configuration (optional)}
-
-\item{netlify}{Netlify deployment settings (optional)}
-
-\item{allow_inside_pkg}{Allow output directory inside package (default FALSE)}
-
-\item{warn_before_overwrite}{Warn before overwriting existing files (default TRUE)}
-
-\item{sidebar_groups}{List of sidebar groups for hybrid navigation (optional)}
-
-\item{navbar_sections}{List of navbar sections that link to sidebar groups (optional)}
 }
 \value{
-A dashboard_project object
-
 Invisibly returns the input object \code{x}.
 }
 \description{
-Initializes a dashboard project object that can be built up using
-the piping workflow with add_landingpage() and add_page().
+Displays a formatted summary of a visualization collection, including hierarchical
+tabgroup structure, visualization types, titles, filters, and defaults.
 }
 \details{
 The print method displays:
@@ -128,33 +40,4 @@ of showing the structure. This is useful for quick visualization in the console.
 Use \code{print(x, check = TRUE)} to validate all visualization specs before
 printing. This catches missing required parameters and invalid column names
 early, providing clearer error messages than Quarto rendering errors.
-}
-\examples{
-\dontrun{
-# Basic dashboard
-dashboard <- create_dashboard("my_dashboard", "My Analysis Dashboard")
-
-# Comprehensive dashboard with all features
-dashboard <- create_dashboard(
-  "my_dashboard",
-  "My Analysis Dashboard",
-  logo = "logo.png",
-  github = "https://github.com/username/repo",
-  twitter = "https://twitter.com/username",
-  theme = "cosmo",
-  author = "Dr. Jane Smith",
-  description = "Comprehensive data analysis dashboard",
-  page_footer = "© 2024 Company Name",
-  sidebar = TRUE,
-  toc = "floating",
-  google_analytics = "GA-XXXXXXXXX",
-  value_boxes = TRUE,
-  shiny = TRUE
-)
-}
-Print Visualization Collection
-
-Displays a formatted summary of a visualization collection, including hierarchical
-tabgroup structure, visualization types, titles, filters, and defaults.
-
 }

@@ -3,7 +3,7 @@
 \name{add_pagination}
 \alias{add_pagination}
 \alias{add_pagination.page_object}
-\title{Create a sidebar group for hybrid navigation}
+\title{Add pagination break to visualization collection}
 \usage{
 add_pagination(viz_collection, position = NULL)
 
@@ -15,60 +15,21 @@ add_pagination.page_object(viz_collection, position = NULL)
 \item{position}{Position for pagination controls: "bottom" (sticky at bottom),
 "top" (inline with page title), "both" (top and bottom), or NULL (default - uses
 dashboard-level setting from create_dashboard). Per-page override of the dashboard default.}
-
-\item{id}{Unique identifier for the sidebar group}
-
-\item{title}{Display title for the sidebar group}
-
-\item{pages}{Character vector of page names to include in this group}
-
-\item{style}{Sidebar style (docked, floating, etc.) (optional)}
-
-\item{background}{Background color (optional)}
-
-\item{foreground}{Foreground color (optional)}
-
-\item{border}{Show border (optional)}
-
-\item{alignment}{Alignment (left, right) (optional)}
-
-\item{collapse_level}{Collapse level for navigation (optional)}
-
-\item{pinned}{Whether sidebar is pinned (optional)}
-
-\item{tools}{List of tools to add to sidebar (optional)}
 }
 \value{
-List containing sidebar group configuration
-
 Updated viz_collection object
 }
 \description{
-Helper function to create a sidebar group configuration for use with
-hybrid navigation. Each group can have its own styling and contains
-a list of pages.
-}
-\examples{
-\dontrun{
-# Create a sidebar group for analysis pages
-analysis_group <- sidebar_group(
-  id = "analysis",
-  title = "Data Analysis",
-  pages = c("overview", "demographics", "findings"),
-  style = "docked",
-  background = "light"
-)
-}
-Add pagination break to visualization collection
-
 Insert a pagination marker that splits the visualization collection into
 separate HTML pages. Each section will be rendered as its own page file
 (e.g., analysis.html, analysis_p2.html, analysis_p3.html) with automatic
 Previous/Next navigation between them.
-
+}
+\details{
 This provides TRUE performance benefits - each page loads independently,
 dramatically reducing initial render time and file size for large dashboards.
-
+}
+\examples{
 \dontrun{
 # Split 150 charts into 3 pages of 50 each
 vizzes <- create_viz()

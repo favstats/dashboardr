@@ -106,7 +106,7 @@ recode_degree <- function(deg) {
   case_when(
     deg %in% c(0, 1) ~ "HS or Less",
     deg == 2          ~ "Some College",
-    deg %in% c(3, 4) ~ "Bachelor's+",
+    deg %in% c(3, 4) ~ "Bachelors+",
     TRUE              ~ NA_character_
   )
 }
@@ -258,7 +258,7 @@ all_groups <- c(
   "Male", "Female",
   "Other", "Black", "White",
   "60+", "45-59", "30-44", "18-29",
-  "Bachelor's+", "Some College", "HS or Less",
+  "Bachelors+", "Some College", "HS or Less",
   "Conservative", "Moderate", "Liberal"
 )
 
@@ -269,7 +269,7 @@ group_colors <- c(
   "Other"          = "#76B7B2", "Black"          = "#59A14F", "White" = "#EDC948",
   "60+"            = "#B07AA1", "45-59"          = "#FF9DA7",
   "30-44"          = "#9C755F", "18-29"          = "#BAB0AC",
-  "Bachelor's+"    = "#4E79A7", "Some College"   = "#F28E2B",
+  "Bachelors+"    = "#4E79A7", "Some College"   = "#F28E2B",
   "HS or Less"     = "#E15759",
   "Conservative"   = "#E15759", "Moderate"       = "#76B7B2",
   "Liberal"        = "#4E79A7"

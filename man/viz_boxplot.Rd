@@ -79,6 +79,7 @@ grouped boxplots, horizontal orientation, outlier display, and
 weighted percentile calculations.
 }
 \examples{
+\dontrun{
 # Basic boxplot
 data(gss_panel20)
 
@@ -111,5 +112,6 @@ plot3 <- viz_boxplot(
   show_outliers = FALSE
 )
 plot3
+}
 
 }

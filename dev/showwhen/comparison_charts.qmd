@@ -1,0 +1,168 @@
+---
+title: "Comparison Charts"
+format: dashboard
+---
+
+```{r, include=FALSE}
+# Initialize dashboardr page configuration (CSS/JS for charts)
+dashboardr:::.page_config()
+```
+
+```{r, echo=FALSE, results='asis'}
+dashboardr::enable_inputs(show_when = TRUE)
+```
+
+```{r, echo=FALSE, results='asis'}
+dashboardr::enable_sidebar()
+```
+
+```{r setup}
+#| echo: false
+#| warning: false
+#| message: false
+#| error: false
+#| results: 'hide'
+
+# Load dashboardr (includes dplyr, highcharter as dependencies)
+library(dashboardr)
+
+# Global chunk options
+knitr::opts_chunk$set(
+  echo = FALSE,
+  warning = FALSE,
+  message = FALSE,
+  error = FALSE,
+  fig.width = 12,
+  fig.height = 8,
+  dpi = 300
+)
+
+# Conditional-visibility helpers (fallback for older package versions)
+if (!exists('show_when_open', mode = 'function')) {
+  show_when_open  <- function(j) cat(paste0('<div class="viz-show-when" data-show-when=\'', j, '\'>\n'))
+  show_when_close <- function()  cat('</div>\n')
+}
+
+```
+
+
+## {.sidebar width="280px"}
+
+### Controls
+
+
+```{r}
+#| echo: false
+#| results: 'asis'
+dashboardr::render_input(
+  input_id = "chart4",
+  label = "Select Chart",
+  type = "radio",
+  filter_var = "chart_type",
+  options = c("Lollipop", "Dumbbell", "Gauge", "Waffle"),
+  options_from = NULL,
+  default_selected = "Lollipop",
+  placeholder = "Select...",
+  width = "300px",
+  min = 0,
+  max = 100,
+  step = 1,
+  value = NULL,
+  show_value = TRUE,
+  inline = TRUE,
+  stacked = TRUE,
+  stacked_align = "center",
+  group_align = "left",
+  ncol = NULL,
+  nrow = NULL,
+  toggle_series = NULL,
+  override = FALSE,
+  labels = NULL,
+  size = "md",
+  help = NULL,
+  disabled = FALSE
+)
+```
+
+
+## Column
+
+### Lollipop Chart
+
+```{r lollipop-chart}
+#| results: 'asis'
+# Lollipop Chart
+show_when_open('{"var":"chart_type","op":"eq","val":"Lollipop"}')
+result <- viz_lollipop(
+  data = as.data.frame(list("time_period" = c("2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time"), "breakdown_type" = c("Overall", "Overall", "Overall", "Gender", "Gender", "Gender", "Age", "Age", "Age", "Overall", "Overall", "Overall", "Gender", "Gender", "Gender", "Age", "Age", "Age", "Overall", "Overall", "Overall", "Gender", "Gender", "Gender", "Age", "Age", "Age", "Overall", "Overall", "Overall", "Gender", "Gender", "Gender", "Age", "Age", "Age", "Overall", "Overall", "Overall", "Gender", "Gender", "Gender", "Age", "Age", "Age"), "category" = c("Engineering", "Engineering", "Engineering", "Engineering", "Engineering", "Engineering", "Engineering", "Engineering", "Engineering", "Marketing", "Marketing", "Marketing", "Marketing", "Marketing", "Marketing", "Marketing", "Marketing", "Marketing", "Sales", "Sales", "Sales", "Sales", "Sales", "Sales", "Sales", "Sales", "Sales", "HR", "HR", "HR", "HR", "HR", "HR", "HR", "HR", "HR", "Finance", "Finance", "Finance", "Finance", "Finance", "Finance", "Finance", "Finance", "Finance"), "avg_score" = c(83, 89.7, 66.9, 83.3, 83.4, 57.4, 84.4, 87.2, 79.3, 81.4, 63.4, 65.9, 59.4, 66.1, 59.9, 59.1, 57.2, 83.8, 59.5, 58.7, 89.7, 58.7, 76.1, 63.5, 80.9, 89, 57.2, 64.3, 54.6, 78, 52.4, 48.9, 88.7, 86.5, 60.3, 74, 76.3, 86.3, 65.1, 50.4, 71.7, 68.4, 48.5, 86.3, 57.2))),
+  title = "Lollipop Chart",
+  x_var = "category",
+  y_var = "avg_score",
+  horizontal = TRUE
+)
+
+result <- dashboardr:::.embed_cross_tab(result)
+
+result
+show_when_close()
+```
+
+### Dumbbell Chart
+
+```{r dumbbell-chart}
+#| results: 'asis'
+# Dumbbell Chart
+show_when_open('{"var":"chart_type","op":"eq","val":"Dumbbell"}')
+result <- viz_dumbbell(
+  data = as.data.frame(list("time_period" = c("2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time"), "breakdown_type" = c("Overall", "Overall", "Overall", "Gender", "Gender", "Gender", "Age", "Age", "Age", "Overall", "Overall", "Overall", "Gender", "Gender", "Gender", "Age", "Age", "Age", "Overall", "Overall", "Overall", "Gender", "Gender", "Gender", "Age", "Age", "Age", "Overall", "Overall", "Overall", "Gender", "Gender", "Gender", "Age", "Age", "Age", "Overall", "Overall", "Overall", "Gender", "Gender", "Gender", "Age", "Age", "Age"), "department" = c("Engineering", "Engineering", "Engineering", "Engineering", "Engineering", "Engineering", "Engineering", "Engineering", "Engineering", "Marketing", "Marketing", "Marketing", "Marketing", "Marketing", "Marketing", "Marketing", "Marketing", "Marketing", "Sales", "Sales", "Sales", "Sales", "Sales", "Sales", "Sales", "Sales", "Sales", "HR", "HR", "HR", "HR", "HR", "HR", "HR", "HR", "HR", "Finance", "Finance", "Finance", "Finance", "Finance", "Finance", "Finance", "Finance", "Finance"), "low_val" = c(49, 47, 44, 44, 51, 50, 57, 58, 53, 57, 46, 43, 55, 41, 55, 47, 54, 55, 51, 46, 54, 59, 41, 60, 44, 43, 51, 51, 55, 50, 48, 42, 46, 45, 49, 41, 44, 57, 49, 60, 59, 55, 50, 48, 51), "high_val" = c(76, 75, 70, 68, 81, 79, 87, 74, 85, 72, 71, 67, 87, 76, 75, 71, 80, 67, 66, 79, 77, 86, 87, 85, 70, 71, 69, 79, 82, 82, 79, 86, 69, 68, 75, 86, 68, 89, 71, 88, 85, 79, 65, 90, 66))),
+  title = "Dumbbell Chart",
+  x_var = "department",
+  low_var = "low_val",
+  high_var = "high_val",
+  horizontal = TRUE
+)
+
+result <- dashboardr:::.embed_cross_tab(result)
+
+result
+show_when_close()
+```
+
+### Gauge Chart
+
+```{r gauge-chart}
+#| results: 'asis'
+# Gauge Chart
+show_when_open('{"var":"chart_type","op":"eq","val":"Gauge"}')
+result <- viz_gauge(
+  title = "Gauge Chart",
+  value = 73
+)
+
+result <- dashboardr:::.embed_cross_tab(result)
+
+result
+show_when_close()
+```
+
+### Waffle Chart
+
+```{r waffle-chart}
+#| results: 'asis'
+# Waffle Chart
+show_when_open('{"var":"chart_type","op":"eq","val":"Waffle"}')
+result <- viz_waffle(
+  data = as.data.frame(list("time_period" = c("2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time"), "breakdown_type" = c("Overall", "Overall", "Overall", "Gender", "Gender", "Gender", "Age", "Age", "Age", "Overall", "Overall", "Overall", "Gender", "Gender", "Gender", "Age", "Age", "Age", "Overall", "Overall", "Overall", "Gender", "Gender", "Gender", "Age", "Age", "Age", "Overall", "Overall", "Overall", "Gender", "Gender", "Gender", "Age", "Age", "Age", "Overall", "Overall", "Overall", "Gender", "Gender", "Gender", "Age", "Age", "Age"), "category" = c("Engineering", "Engineering", "Engineering", "Engineering", "Engineering", "Engineering", "Engineering", "Engineering", "Engineering", "Marketing", "Marketing", "Marketing", "Marketing", "Marketing", "Marketing", "Marketing", "Marketing", "Marketing", "Sales", "Sales", "Sales", "Sales", "Sales", "Sales", "Sales", "Sales", "Sales", "HR", "HR", "HR", "HR", "HR", "HR", "HR", "HR", "HR", "Finance", "Finance", "Finance", "Finance", "Finance", "Finance", "Finance", "Finance", "Finance"), "count" = c(30, 30, 30, 30, 30, 30, 30, 30, 30, 25, 25, 25, 25, 25, 25, 25, 25, 25, 20, 20, 20, 20, 20, 20, 20, 20, 20, 15, 15, 15, 15, 15, 15, 15, 15, 15, 10, 10, 10, 10, 10, 10, 10, 10, 10))),
+  title = "Waffle Chart",
+  x_var = "category",
+  y_var = "count",
+  total = 100,
+  rows = 10
+)
+
+result <- dashboardr:::.embed_cross_tab(result)
+
+result
+show_when_close()
+```
+

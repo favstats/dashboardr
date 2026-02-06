@@ -31,39 +31,12 @@ card(
 }
 \value{
 HTML div element with Bootstrap card classes
-
-HTML div element with Bootstrap card classes
 }
 \description{
 Helper function to create Bootstrap card components for displaying content in a structured way.
 Useful for author profiles, feature highlights, or any content that benefits from card layout.
 }
 \examples{
-\dontrun{
-# Simple text card
-card("This is a simple card with just text content")
-
-# Card with title and image
-card(
-  content = "This is the card body content",
-  title = "Card Title",
-  image = "https://example.com/image.jpg",
-  image_alt = "Description of image"
-)
-
-# Author card
-card(
-  content = "Dr. Jane Smith is a researcher specializing in data science and visualization.",
-  title = "Dr. Jane Smith",
-  image = "https://example.com/jane.jpg",
-  footer = "Website: janesmith.com"
-)
-}
-Create a Bootstrap card component
-
-Helper function to create Bootstrap card components for displaying content in a structured way.
-Useful for author profiles, feature highlights, or any content that benefits from card layout.
-
 \dontrun{
 # Simple text card
 card("This is a simple card with just text content")

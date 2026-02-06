@@ -4,7 +4,14 @@
 \alias{enable_inputs}
 \title{Enable Input Filter Functionality}
 \usage{
-enable_inputs()
+enable_inputs(linked = FALSE, show_when = FALSE)
+}
+\arguments{
+\item{linked}{If TRUE, also include script for linked (cascading) parent-child
+select inputs. Set automatically when the page uses \code{add_linked_inputs()}.}
+
+\item{show_when}{If TRUE, also include script for conditional viz visibility
+(\code{show_when} in \code{add_viz()}). Set automatically when the page uses it.}
 }
 \value{
 HTML tags to include input filter functionality
@@ -18,5 +25,7 @@ Uses Choices.js for a polished multi-select experience.
 \dontrun{
 # In your dashboard page content:
 enable_inputs()
+enable_inputs(linked = TRUE)  # when using add_linked_inputs()
+enable_inputs(show_when = TRUE)  # when using show_when in add_viz()
 }
 }

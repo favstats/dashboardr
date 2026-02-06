@@ -4,7 +4,7 @@
 \alias{.generate_input_block}
 \title{Generate input block markdown}
 \usage{
-.generate_input_block(block, page = NULL)
+.generate_input_block(block, page = NULL, next_block = NULL)
 }
 \arguments{
 \item{block}{Input content block}

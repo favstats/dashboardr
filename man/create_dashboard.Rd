@@ -93,7 +93,8 @@ create_dashboard(
   lazy_debug = FALSE,
   pagination_separator = "of",
   pagination_position = "bottom",
-  powered_by_dashboardr = TRUE
+  powered_by_dashboardr = TRUE,
+  chart_export = FALSE
 )
 }
 \arguments{
@@ -123,6 +124,11 @@ create_dashboard(
 
 \item{custom_scss}{Path to custom SCSS file (optional)}
 
+\item{tabset_theme}{Tabset theme: "minimal" (default), "modern", "pills", "classic",
+"underline", "segmented", or "none"}
+
+\item{tabset_colors}{Named list of tabset colors (e.g., list(active_bg = "#2563eb"))}
+
 \item{author}{Author name for the site (optional)}
 
 \item{description}{Site description for SEO (optional)}
@@ -136,6 +142,32 @@ create_dashboard(
 \item{sidebar_style}{Sidebar style (floating, docked, etc.) (optional)}
 
 \item{sidebar_background}{Sidebar background color (optional)}
+
+\item{sidebar_foreground}{Sidebar foreground (text) color (optional)}
+
+\item{sidebar_border}{Whether to show sidebar border (default TRUE)}
+
+\item{sidebar_alignment}{Sidebar alignment: "left" (default) or "right"}
+
+\item{sidebar_collapse_level}{Heading level at which sidebar items collapse (default 2)}
+
+\item{sidebar_pinned}{Whether sidebar is pinned open (default FALSE)}
+
+\item{sidebar_tools}{Sidebar tools configuration (optional)}
+
+\item{sidebar_contents}{Sidebar contents configuration (optional)}
+
+\item{breadcrumbs}{Whether to show breadcrumbs navigation (default TRUE)}
+
+\item{page_navigation}{Whether to show prev/next page navigation (default FALSE)}
+
+\item{back_to_top}{Whether to show a back-to-top button (default FALSE)}
+
+\item{reader_mode}{Whether to enable reader mode (default FALSE)}
+
+\item{repo_url}{Repository URL for source code link (optional)}
+
+\item{repo_actions}{Repository actions configuration (optional)}
 
 \item{navbar_style}{Navbar style (default, dark, light) (optional)}
 
@@ -203,7 +235,7 @@ This format includes ad-blocker bypass and doesn't require specifying your domai
 \item{page_layout}{Quarto page layout mode. Default is "full" for better mobile responsiveness.
 Other options: "article" (constrained width), "custom". See Quarto docs for details.}
 
-\item{mobile_toc}{Logical. If TRUE, adds a collapsible mobile-friendly TOC button (📑 icon)
+\item{mobile_toc}{Logical. If TRUE, adds a collapsible mobile-friendly TOC button
 that appears in the top-right corner. Useful for mobile/tablet viewing. Default: FALSE.}
 
 \item{viewport_width}{Numeric or character. Controls mobile viewport behavior. Default is NULL
@@ -256,11 +288,13 @@ horizontal scrolling issues on mobile.}
 
 \item{lazy_debug}{Enable debug logging to browser console for lazy loading (default: FALSE). When TRUE, prints timing information for each chart load.}
 
-\item{pagination_separator}{Text to show in pagination navigation (e.g., "of" → "1 of 3"), default: "of". Applies to all paginated pages unless overridden at page level.}
+\item{pagination_separator}{Text to show in pagination navigation (e.g., "of" -> "1 of 3"), default: "of". Applies to all paginated pages unless overridden at page level.}
 
 \item{pagination_position}{Default position for pagination controls: "bottom" (default, sticky at bottom), "top" (inline with page title), or "both" (top and bottom). This sets the default for all paginated pages. Individual pages can override this by passing position to add_pagination().}
 
 \item{powered_by_dashboardr}{Whether to automatically add "Powered by dashboardr" branding (default: TRUE). When TRUE, adds a badge-style branding element. Can be overridden by explicitly calling add_powered_by_dashboardr() with custom options, or set to FALSE to disable entirely.}
+
+\item{chart_export}{Whether to enable chart export functionality (default FALSE)}
 }
 \value{
 A dashboard_project object
@@ -284,7 +318,7 @@ dashboard <- create_dashboard(
   theme = "cosmo",
   author = "Dr. Jane Smith",
   description = "Comprehensive data analysis dashboard",
-  page_footer = "© 2024 Company Name",
+  page_footer = "(c) 2024 Company Name",
   sidebar = TRUE,
   toc = "floating",
   google_analytics = "GA-XXXXXXXXX",
@@ -306,7 +340,7 @@ dashboard <- create_dashboard(
   "styled_dashboard",
   "Beautifully Styled Dashboard",
   navbar_bg_color = "#1e40af",     # Deep blue navbar
-  mainfont = "Fira Sans",           # Smooth, modern (default choice) ⭐
+  mainfont = "Fira Sans",           # Smooth, modern (default choice)
   fontsize = "16px",
   fontcolor = "#1f2937",            # Dark gray for readability
   linkcolor = "#2563eb",            # Vibrant blue links

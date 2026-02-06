@@ -22,14 +22,14 @@ and preserves special cases like data references.
 \details{
 This function handles:
 \itemize{
-\item NULL values → "NULL"
-\item Character strings → quoted strings with escaped quotes
-\item Numeric values → unquoted numbers
-\item Logical values → "TRUE"/"FALSE"
-\item Named lists → "list(name1 = value1, name2 = value2)"
-\item Unnamed lists → "list(value1, value2)"
-\item Special identifiers like "data" → unquoted
-\item Complex objects → deparsed representation
+\item NULL values -> "NULL"
+\item Character strings -> quoted strings with escaped quotes
+\item Numeric values -> unquoted numbers
+\item Logical values -> "TRUE"/"FALSE"
+\item Named lists -> "list(name1 = value1, name2 = value2)"
+\item Unnamed lists -> "list(value1, value2)"
+\item Special identifiers like "data" -> unquoted
+\item Complex objects -> deparsed representation
 }
 }
 \keyword{internal}

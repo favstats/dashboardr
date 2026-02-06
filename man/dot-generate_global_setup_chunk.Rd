@@ -2,25 +2,18 @@
 % Please edit documentation in R/page_generation.R
 \name{.generate_global_setup_chunk}
 \alias{.generate_global_setup_chunk}
-\title{Collect unique filters from all visualizations}
+\title{Generate global setup chunk for QMD files}
 \usage{
 .generate_global_setup_chunk(page)
 }
 \arguments{
 \item{page}{Page object containing data_path and visualizations}
-
-\item{visualizations}{List of visualization specifications}
 }
 \value{
-List of unique filter formulas with generated names, including source dataset
-Generate global setup chunk for QMD files
-
-Creates a comprehensive setup chunk that includes libraries, data loading,
-filtered datasets, and global settings to avoid repetition in individual visualizations.
-
 Character vector of setup chunk lines
 }
 \description{
-Collect unique filters from all visualizations
+Creates a comprehensive setup chunk that includes libraries, data loading,
+filtered datasets, and global settings to avoid repetition in individual visualizations.
 }
 \keyword{internal}

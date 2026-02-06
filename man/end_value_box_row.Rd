@@ -18,7 +18,7 @@ Must be called after add_value_box_row() and all add_value_box() calls.
 content <- create_content() \%>\%
   add_value_box_row() \%>\%
     add_value_box(title = "Users", value = "1,234") \%>\%
-    add_value_box(title = "Revenue", value = "€56K") \%>\%
+    add_value_box(title = "Revenue", value = "EUR 56K") \%>\%
   end_value_box_row() \%>\%
   add_text("More content after the row...")
 }

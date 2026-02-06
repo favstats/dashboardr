@@ -1,3 +1,6 @@
+# Package-level environment for internal state (avoids global env assignments)
+.dashboardr_pkg_env <- new.env(parent = emptyenv())
+
 # Package startup messages and checks
 
 .onAttach <- function(libname, pkgname) {

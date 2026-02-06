@@ -104,9 +104,6 @@
             }
           });
           choicesInstances[inputId] = choices;
-          // #region agent log
-          try{fetch('http://127.0.0.1:7242/ingest/cbfd47d0-c39e-4a3e-892f-ab3041f60f5c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'input_filter.js:choicesInit',message:'Choices.js instance created',data:{inputId:inputId,hasAddEventListener:typeof choices.addEventListener==='function',hasPassedElement:!!choices.passedElement,passedElementType:choices.passedElement?typeof choices.passedElement.element:'none'},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H5'})}).catch(function(){});}catch(e){}
-          // #endregion
           // Choices.js may not fire native 'change' on the select; listen on the instance if available
           if (typeof choices.addEventListener === 'function') {
             choices.addEventListener('change', () => {
@@ -133,9 +130,6 @@
       defaultValues[inputId] = { selected: selected.slice() };
 
       input.addEventListener('change', () => {
-        // #region agent log
-        try{fetch('http://127.0.0.1:7242/ingest/cbfd47d0-c39e-4a3e-892f-ab3041f60f5c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'input_filter.js:selectChangeHandler',message:'select native change fired',data:{inputId:inputId,filterVar:filterVar,newSelected:getSelectedValues(input)},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H5'})}).catch(function(){});}catch(e){}
-        // #endregion
         const selected = getSelectedValues(input);
         inputState[inputId].selected = selected;
         applyAllFilters();
@@ -220,9 +214,6 @@
       const radios = group.querySelectorAll('input[type="radio"]');
       radios.forEach(radio => {
         radio.addEventListener('change', () => {
-          // #region agent log
-          try{fetch('http://127.0.0.1:7242/ingest/cbfd47d0-c39e-4a3e-892f-ab3041f60f5c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'input_filter.js:radioChangeHandler',message:'radio change fired',data:{inputId:inputId,filterVar:filterVar,newSelected:getRadioValue(group)},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H1'})}).catch(function(){});}catch(e){}
-          // #endregion
           inputState[inputId].selected = getRadioValue(group);
           applyAllFilters();
         });
@@ -580,10 +571,6 @@
       return setTimeout(applyAllFilters, 200);
     }
 
-    // #region agent log
-    try{fetch('http://127.0.0.1:7242/ingest/cbfd47d0-c39e-4a3e-892f-ab3041f60f5c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'input_filter.js:applyAllFilters:entry',message:'applyAllFilters called',data:{chartCount:charts.length,inputStateKeys:Object.keys(inputState),inputStateSummary:Object.fromEntries(Object.entries(inputState).map(function(e){return[e[0],{filterVar:e[1].filterVar,selected:e[1].selected,inputType:e[1].inputType}]}))},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H1'})}).catch(function(){});}catch(e){}
-    // #endregion
-
     // Collect all active filters with their metadata
     const filters = {};
     const sliderFilters = {};
@@ -619,18 +606,11 @@
       }
     });
 
-    // #region agent log
-    try{fetch('http://127.0.0.1:7242/ingest/cbfd47d0-c39e-4a3e-892f-ab3041f60f5c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'input_filter.js:applyAllFilters:filters',message:'filters collected',data:{filters:filters,sliderFilters:sliderFilters,switchFilters:switchFilters,textFilters:textFilters,numberFilters:numberFilters,periodFilters:periodFilters,hasCrossTab:!!window.dashboardrCrossTab,crossTabKeys:window.dashboardrCrossTab?Object.keys(window.dashboardrCrossTab):[]},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H2-H3'})}).catch(function(){});}catch(e){}
-    // #endregion
-
     charts.forEach(chart => {
       if (!chart || !chart.series) return;
       
       // Check if this chart has cross-tab data for client-side filtering
       const chartId = chart.options && chart.options.chart && chart.options.chart.id;
-      // #region agent log
-      try{fetch('http://127.0.0.1:7242/ingest/cbfd47d0-c39e-4a3e-892f-ab3041f60f5c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'input_filter.js:applyAllFilters:chartLookup',message:'chart cross-tab lookup',data:{chartId:chartId,hasCrossTabGlobal:!!window.dashboardrCrossTab,crossTabKeys:window.dashboardrCrossTab?Object.keys(window.dashboardrCrossTab):[],matchFound:!!(chartId&&window.dashboardrCrossTab&&window.dashboardrCrossTab[chartId])},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H2'})}).catch(function(){});}catch(e){}
-      // #endregion
       if (chartId && window.dashboardrCrossTab && window.dashboardrCrossTab[chartId]) {
         const crossTabInfo = window.dashboardrCrossTab[chartId];
         const result = rebuildFromCrossTab(chart, crossTabInfo, filters);

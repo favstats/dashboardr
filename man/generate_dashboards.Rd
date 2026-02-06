@@ -2,7 +2,7 @@
 % Please edit documentation in R/dashboard_generation.R
 \name{generate_dashboards}
 \alias{generate_dashboards}
-\title{Process visualizations into organized specs with tab groups}
+\title{Generate multiple dashboards}
 \usage{
 generate_dashboards(
   dashboards,
@@ -36,17 +36,8 @@ sub-dashboards that will be output into subdirectories of the main's docs folder
 \item Use list names as subdirectory names (e.g., list(main = ..., US = ..., DE = ...))
 \item Click navigation like \code{click_url_template = "\{iso2c\}/index.html"} will work
 }}
-
-\item{viz_input}{Either a viz_collection object or a plain list of visualization specs}
-
-\item{data_path}{Path to the data file for this page (will be attached to each viz)}
-
-\item{tabgroup_labels}{Optional named list/vector of custom display labels for tab groups}
 }
 \value{
-List of processed visualization specs, with standalone visualizations first,
-followed by tab group objects
-
 Invisibly returns a list of results, one per dashboard, containing:
 \itemize{
 \item \code{success}: logical, whether generation succeeded
@@ -57,14 +48,6 @@ Invisibly returns a list of results, one per dashboard, containing:
 }
 }
 \description{
-Unified internal function that handles both viz_collection and plain list inputs,
-organizing visualizations into standalone items and tab groups based on their
-tabgroup parameter.
-}
-\details{
-Build a hierarchy key from a tabgroup vector
-Generate multiple dashboards
-
 Generates a list of dashboard projects in batch, with progress tracking
 and error handling. Useful for generating many related dashboards
 (e.g., one per country, per topic, etc.) in a single workflow.

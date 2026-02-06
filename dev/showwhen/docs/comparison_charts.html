@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.5.57">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Comparison Charts – show_when: All 20 Viz Types</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script src="site_libs/quarto-dashboard/quarto-dashboard.js"></script>
+<script src="site_libs/quarto-dashboard/stickythead.js"></script>
+<script src="site_libs/quarto-dashboard/datatables.min.js" kdttablesentinel="true"></script>
+<script src="site_libs/quarto-dashboard/pdfmake.min.js" kdttablesentinel="true"></script>
+<script src="site_libs/quarto-dashboard/vfs_fonts.js" kdttablesentinel="true"></script>
+<script src="site_libs/quarto-dashboard/web-components.js" type="module"></script>
+<script src="site_libs/quarto-dashboard/components.js"></script>
+<link href="site_libs/quarto-dashboard/datatables.min.css" rel="stylesheet" kdttablesentinel="true">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<link href="site_libs/htmltools-fill-0.5.9/fill.css" rel="stylesheet">
+<script src="site_libs/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<script src="site_libs/jquery-3.5.1/jquery.min.js"></script>
+<script src="site_libs/proj4js-2.3.15/proj4.js"></script>
+<link href="site_libs/highcharts-9.3.1/css/motion.css" rel="stylesheet">
+<script src="site_libs/highcharts-9.3.1/highcharts.js"></script>
+<script src="site_libs/highcharts-9.3.1/highcharts-3d.js"></script>
+<script src="site_libs/highcharts-9.3.1/highcharts-more.js"></script>
+<script src="site_libs/highcharts-9.3.1/modules/stock.js"></script>
+<script src="site_libs/highcharts-9.3.1/modules/map.js"></script>
+<script src="site_libs/highcharts-9.3.1/modules/data.js"></script>
+<script src="site_libs/highcharts-9.3.1/modules/exporting.js"></script>
+<script src="site_libs/highcharts-9.3.1/modules/offline-exporting.js"></script>
+<script src="site_libs/highcharts-9.3.1/modules/drilldown.js"></script>
+<script src="site_libs/highcharts-9.3.1/modules/item-series.js"></script>
+<script src="site_libs/highcharts-9.3.1/modules/overlapping-datalabels.js"></script>
+<script src="site_libs/highcharts-9.3.1/modules/annotations.js"></script>
+<script src="site_libs/highcharts-9.3.1/modules/export-data.js"></script>
+<script src="site_libs/highcharts-9.3.1/modules/funnel.js"></script>
+<script src="site_libs/highcharts-9.3.1/modules/heatmap.js"></script>
+<script src="site_libs/highcharts-9.3.1/modules/treemap.js"></script>
+<script src="site_libs/highcharts-9.3.1/modules/sankey.js"></script>
+<script src="site_libs/highcharts-9.3.1/modules/dependency-wheel.js"></script>
+<script src="site_libs/highcharts-9.3.1/modules/organization.js"></script>
+<script src="site_libs/highcharts-9.3.1/modules/solid-gauge.js"></script>
+<script src="site_libs/highcharts-9.3.1/modules/streamgraph.js"></script>
+<script src="site_libs/highcharts-9.3.1/modules/sunburst.js"></script>
+<script src="site_libs/highcharts-9.3.1/modules/vector.js"></script>
+<script src="site_libs/highcharts-9.3.1/modules/wordcloud.js"></script>
+<script src="site_libs/highcharts-9.3.1/modules/xrange.js"></script>
+<script src="site_libs/highcharts-9.3.1/modules/tilemap.js"></script>
+<script src="site_libs/highcharts-9.3.1/modules/venn.js"></script>
+<script src="site_libs/highcharts-9.3.1/modules/gantt.js"></script>
+<script src="site_libs/highcharts-9.3.1/modules/timeline.js"></script>
+<script src="site_libs/highcharts-9.3.1/modules/parallel-coordinates.js"></script>
+<script src="site_libs/highcharts-9.3.1/modules/bullet.js"></script>
+<script src="site_libs/highcharts-9.3.1/modules/coloraxis.js"></script>
+<script src="site_libs/highcharts-9.3.1/modules/dumbbell.js"></script>
+<script src="site_libs/highcharts-9.3.1/modules/lollipop.js"></script>
+<script src="site_libs/highcharts-9.3.1/modules/series-label.js"></script>
+<script src="site_libs/highcharts-9.3.1/plugins/motion.js"></script>
+<script src="site_libs/highcharts-9.3.1/custom/reset.js"></script>
+<script src="site_libs/highcharts-9.3.1/modules/boost.js"></script>
+<script src="site_libs/highchart-binding-0.9.4/highchart.js"></script>
+
+
+</head>
+
+<body class="quarto-dashboard nav-fixed dashboard-fill dashboard-sidebar fullcontent">
+
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">show_when: All 20 Viz Types</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="./classic_charts.html"> 
+<span class="menu-text">Classic Charts</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./advanced_charts.html"> 
+<span class="menu-text">Advanced Charts</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./stacked_pie_donut.html"> 
+<span class="menu-text">Stacked/Pie/Donut</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link active" href="./comparison_charts.html" aria-current="page"> 
+<span class="menu-text">Comparison Charts</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./flow_charts.html"> 
+<span class="menu-text">Flow Charts</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+<header id="quarto-dashboard-header">
+<nav class="navbar navbar-expand-md slim" data-bs-theme="dark">
+  <div class="navbar-container container-fluid">
+    <button class="navbar-toggler hidden" type="button" data-bs-toggle="collapse" data-bs-target="#dashboard-collapse" aria-controls="dashboard-collapse" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>    
+
+
+    <div class="navbar-brand-container">       
+
+      <div class="navbar-title">
+        <div class="navbar-title-text"><a href="#">Comparison Charts</a></div>
+        
+        
+      </div>
+    </div>
+</div>
+</nav>
+</header></header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-layout-custom page-navbar quarto-dashboard-content bslib-gap-spacing html-fill-container bslib-page-fill dashboard-sidebar-container">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+<!-- main -->
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js@10.2.0/public/assets/styles/choices.min.css" class="bslib-grid-item html-fill-item">
+<script src="https://cdn.jsdelivr.net/npm/choices.js@10.2.0/public/assets/scripts/choices.min.js"></script>
+<link rel="stylesheet" href="assets/input_filter.css?v=20260206230640" class="bslib-grid-item html-fill-item">
+<script src="assets/filter_hook.js?v=20260206230640"></script>
+<script src="assets/input_filter.js?v=20260206230640"></script>
+<script src="assets/show_when.js?v=20260206230640"></script>
+<link rel="stylesheet" href="assets/sidebar.css?v=20260206230640" class="bslib-grid-item html-fill-item">
+<script>
+(function() {
+  function markLeftSidebars() {
+    var layouts = document.querySelectorAll('.bslib-sidebar-layout, [data-bslib-sidebar-layout]');
+    layouts.forEach(function(layout) {
+      // Quarto already adds 'sidebar-right' class for right sidebars
+      // We only need to add 'sidebar-left' for sidebars that are NOT right
+      if (!layout.classList.contains('sidebar-right')) {
+        layout.classList.add('sidebar-left');
+        layout.setAttribute('data-sidebar-position', 'left');
+      } else {
+        layout.setAttribute('data-sidebar-position', 'right');
+      }
+    });
+  }
+  
+  // Run on DOM ready and after short delay for dynamic content
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', markLeftSidebars);
+  } else {
+    markLeftSidebars();
+  }
+  setTimeout(markLeftSidebars, 100);
+})();
+</script>
+<div class="bslib-sidebar-layout html-fill-item html-fill-container" data-bslib-sidebar-open="desktop" data-bslib-sidebar-init="true" style=" --bslib-sidebar-width: 280px" data-bslib-sidebar-border="false" data-bslib-sidebar-border-radius="false"><div class="main html-fill-container html-fill-item"><div class="sidebar-content html-fill-item html-fill-container">
+<div class="bslib-grid html-fill-item html-fill-container" style="display: grid; grid-template-columns: minmax(3em, 1fr);
+grid-auto-rows: minmax(0, 1fr);">
+<div class="bslib-grid html-fill-item html-fill-container" style="display: grid; grid-template-rows: minmax(3em, max-content) minmax(3em, max-content) minmax(3em, max-content) minmax(3em, max-content); grid-auto-columns: minmax(0, 1fr);">
+<div class="bslib-grid html-fill-item html-fill-container" style="display: grid; grid-template-columns: minmax(3em, 1fr);
+grid-auto-rows: minmax(0, 1fr);">
+<div class="card bslib-card html-fill-container html-fill-item" data-fill="false" data-bslib-card-init="" data-require-bs-caller="card()" data-full-screen="false">
+<div class="card-body html-fill-item html-fill-container">
+<div class="viz-show-when html-fill-item html-fill-container" data-show-when="{&quot;var&quot;:&quot;chart_type&quot;,&quot;op&quot;:&quot;eq&quot;,&quot;val&quot;:&quot;Lollipop&quot;}">
+<div class="highchart html-widget html-fill-item html-fill-container" id="htmlwidget-01db99c98dc942069120" style="width:100%;height:433px;"></div>
+<script type="application/json" data-for="htmlwidget-01db99c98dc942069120">{"x":{"hc_opts":{"chart":{"reflow":true,"type":"bar"},"title":{"text":"Lollipop Chart"},"yAxis":{"title":{"text":"Count"}},"credits":{"enabled":false},"exporting":{"enabled":false},"boost":{"enabled":false},"plotOptions":{"series":{"label":{"enabled":false},"turboThreshold":0},"treemap":{"layoutAlgorithm":"squarified"}},"xAxis":{"categories":["Engineering","Marketing","Sales","HR","Finance"],"title":{"text":"category"}},"series":[{"data":[83,89.7,66.90000000000001,83.3,83.40000000000001,57.4,84.40000000000001,87.2,79.3,81.40000000000001,63.4,65.90000000000001,59.4,66.09999999999999,59.9,59.1,57.2,83.8,59.5,58.7,89.7,58.7,76.09999999999999,63.5,80.90000000000001,89,57.2,64.3,54.6,78,52.4,48.9,88.7,86.5,60.3,74,76.3,86.3,65.09999999999999,50.4,71.7,68.40000000000001,48.5,86.3,57.2],"name":"Count","type":"bar","pointWidth":2,"showInLegend":false,"colorByPoint":true,"dataLabels":{"enabled":false}},{"name":"Count","data":[{"x":0,"y":83},{"x":1,"y":89.7},{"x":2,"y":66.90000000000001},{"x":3,"y":83.3},{"x":4,"y":83.40000000000001},{"x":5,"y":57.4},{"x":6,"y":84.40000000000001},{"x":7,"y":87.2},{"x":8,"y":79.3},{"x":9,"y":81.40000000000001},{"x":10,"y":63.4},{"x":11,"y":65.90000000000001},{"x":12,"y":59.4},{"x":13,"y":66.09999999999999},{"x":14,"y":59.9},{"x":15,"y":59.1},{"x":16,"y":57.2},{"x":17,"y":83.8},{"x":18,"y":59.5},{"x":19,"y":58.7},{"x":20,"y":89.7},{"x":21,"y":58.7},{"x":22,"y":76.09999999999999},{"x":23,"y":63.5},{"x":24,"y":80.90000000000001},{"x":25,"y":89},{"x":26,"y":57.2},{"x":27,"y":64.3},{"x":28,"y":54.6},{"x":29,"y":78},{"x":30,"y":52.4},{"x":31,"y":48.9},{"x":32,"y":88.7},{"x":33,"y":86.5},{"x":34,"y":60.3},{"x":35,"y":74},{"x":36,"y":76.3},{"x":37,"y":86.3},{"x":38,"y":65.09999999999999},{"x":39,"y":50.4},{"x":40,"y":71.7},{"x":41,"y":68.40000000000001},{"x":42,"y":48.5},{"x":43,"y":86.3},{"x":44,"y":57.2}],"type":"scatter","showInLegend":false,"marker":{"radius":4,"symbol":"circle"},"colorByPoint":true,"dataLabels":{"enabled":true,"format":"{point.y:.0f}"}}],"tooltip":{"formatter":"function() {\n         var cat = this.point.category || this.series.chart.xAxis[0].categories[this.point.x] || this.x;\n         return '<b>' + cat + '<\/b><br/>' +\n                '' + this.y.toLocaleString() + '';\n       }","useHTML":true}},"theme":{"chart":{"backgroundColor":"transparent"},"colors":["#7cb5ec","#434348","#90ed7d","#f7a35c","#8085e9","#f15c80","#e4d354","#2b908f","#f45b5b","#91e8e1"]},"conf_opts":{"global":{"Date":null,"VMLRadialGradientURL":"http =//code.highcharts.com/list(version)/gfx/vml-radial-gradient.png","canvasToolsURL":"http =//code.highcharts.com/list(version)/modules/canvas-tools.js","getTimezoneOffset":null,"timezoneOffset":0,"useUTC":true},"lang":{"contextButtonTitle":"Chart context menu","decimalPoint":".","downloadCSV":"Download CSV","downloadJPEG":"Download JPEG image","downloadPDF":"Download PDF document","downloadPNG":"Download PNG image","downloadSVG":"Download SVG vector image","downloadXLS":"Download XLS","drillUpText":"◁ Back to {series.name}","exitFullscreen":"Exit from full screen","exportData":{"annotationHeader":"Annotations","categoryDatetimeHeader":"DateTime","categoryHeader":"Category"},"hideData":"Hide data table","invalidDate":null,"loading":"Loading...","months":["January","February","March","April","May","June","July","August","September","October","November","December"],"noData":"No data to display","numericSymbolMagnitude":1000,"numericSymbols":["k","M","G","T","P","E"],"printChart":"Print chart","resetZoom":"Reset zoom","resetZoomTitle":"Reset zoom level 1:1","shortMonths":["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],"shortWeekdays":["Sat","Sun","Mon","Tue","Wed","Thu","Fri"],"thousandsSep":" ","viewData":"View data table","viewFullscreen":"View in full screen","weekdays":["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]}},"type":"chart","fonts":[],"debug":false},"evals":["hc_opts.tooltip.formatter"],"jsHooks":[]}</script>
+</div>
+</div>
+<bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()">
+    <template>Expand</template>
+    <span class="bslib-full-screen-enter badge rounded-pill">
+        <svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24" style="height:1em;width:1em;" aria-hidden="true" role="img"><path d="M20 5C20 4.4 19.6 4 19 4H13C12.4 4 12 3.6 12 3C12 2.4 12.4 2 13 2H21C21.6 2 22 2.4 22 3V11C22 11.6 21.6 12 21 12C20.4 12 20 11.6 20 11V5ZM4 19C4 19.6 4.4 20 5 20H11C11.6 20 12 20.4 12 21C12 21.6 11.6 22 11 22H3C2.4 22 2 21.6 2 21V13C2 12.4 2.4 12 3 12C3.6 12 4 12.4 4 13V19Z"></path></svg>
+    </span>
+</bslib-tooltip><script data-bslib-card-init="">bslib.Card.initializeAllCards();</script></div>
+</div>
+<div class="bslib-grid html-fill-item html-fill-container" style="display: grid; grid-template-columns: minmax(3em, 1fr);
+grid-auto-rows: minmax(0, 1fr);">
+<div class="card bslib-card html-fill-container html-fill-item" data-fill="false" data-bslib-card-init="" data-require-bs-caller="card()" data-full-screen="false">
+<div class="card-body html-fill-item html-fill-container">
+<div class="viz-show-when html-fill-item html-fill-container" data-show-when="{&quot;var&quot;:&quot;chart_type&quot;,&quot;op&quot;:&quot;eq&quot;,&quot;val&quot;:&quot;Dumbbell&quot;}">
+<div class="highchart html-widget html-fill-item html-fill-container" id="htmlwidget-d82ea2f5a98631dcd413" style="width:100%;height:433px;"></div>
+<script type="application/json" data-for="htmlwidget-d82ea2f5a98631dcd413">{"x":{"hc_opts":{"chart":{"reflow":true,"type":"dumbbell","inverted":true},"title":{"text":"Dumbbell Chart"},"yAxis":{"title":{"text":""}},"credits":{"enabled":false},"exporting":{"enabled":false},"boost":{"enabled":false},"plotOptions":{"series":{"label":{"enabled":false},"turboThreshold":0},"treemap":{"layoutAlgorithm":"squarified"}},"xAxis":{"categories":["Engineering","Engineering","Engineering","Engineering","Engineering","Engineering","Engineering","Engineering","Engineering","Marketing","Marketing","Marketing","Marketing","Marketing","Marketing","Marketing","Marketing","Marketing","Sales","Sales","Sales","Sales","Sales","Sales","Sales","Sales","Sales","HR","HR","HR","HR","HR","HR","HR","HR","HR","Finance","Finance","Finance","Finance","Finance","Finance","Finance","Finance","Finance"],"title":{"text":"department"}},"series":[{"name":"Low - High","data":[{"name":"Engineering","low":49,"high":76},{"name":"Engineering","low":47,"high":75},{"name":"Engineering","low":44,"high":70},{"name":"Engineering","low":44,"high":68},{"name":"Engineering","low":51,"high":81},{"name":"Engineering","low":50,"high":79},{"name":"Engineering","low":57,"high":87},{"name":"Engineering","low":58,"high":74},{"name":"Engineering","low":53,"high":85},{"name":"Marketing","low":57,"high":72},{"name":"Marketing","low":46,"high":71},{"name":"Marketing","low":43,"high":67},{"name":"Marketing","low":55,"high":87},{"name":"Marketing","low":41,"high":76},{"name":"Marketing","low":55,"high":75},{"name":"Marketing","low":47,"high":71},{"name":"Marketing","low":54,"high":80},{"name":"Marketing","low":55,"high":67},{"name":"Sales","low":51,"high":66},{"name":"Sales","low":46,"high":79},{"name":"Sales","low":54,"high":77},{"name":"Sales","low":59,"high":86},{"name":"Sales","low":41,"high":87},{"name":"Sales","low":60,"high":85},{"name":"Sales","low":44,"high":70},{"name":"Sales","low":43,"high":71},{"name":"Sales","low":51,"high":69},{"name":"HR","low":51,"high":79},{"name":"HR","low":55,"high":82},{"name":"HR","low":50,"high":82},{"name":"HR","low":48,"high":79},{"name":"HR","low":42,"high":86},{"name":"HR","low":46,"high":69},{"name":"HR","low":45,"high":68},{"name":"HR","low":49,"high":75},{"name":"HR","low":41,"high":86},{"name":"Finance","low":44,"high":68},{"name":"Finance","low":57,"high":89},{"name":"Finance","low":49,"high":71},{"name":"Finance","low":60,"high":88},{"name":"Finance","low":59,"high":85},{"name":"Finance","low":55,"high":79},{"name":"Finance","low":50,"high":65},{"name":"Finance","low":48,"high":90},{"name":"Finance","low":51,"high":66}],"type":"dumbbell","lowColor":"#E15759","color":"#4E79A7","connectorColor":"#999999","connectorWidth":2,"marker":{"radius":6},"dataLabels":{"enabled":false}}],"legend":{"enabled":true},"tooltip":{"formatter":"function() {\n         var cat = this.point.name || this.point.category || '';\n         var low = this.point.low;\n         var high = this.point.high;\n         var diff = (high - low).toFixed(1);\n         return '<b>' + cat + '<\/b><br/>' +\n                'Low: ' + low.toLocaleString() + '<br/>' +\n                'High: ' + high.toLocaleString() + '<br/>' +\n                '<span style=\"color:#666;font-size:0.9em\">Difference: ' + diff + '<\/span>';\n       }","useHTML":true}},"theme":{"chart":{"backgroundColor":"transparent"},"colors":["#7cb5ec","#434348","#90ed7d","#f7a35c","#8085e9","#f15c80","#e4d354","#2b908f","#f45b5b","#91e8e1"]},"conf_opts":{"global":{"Date":null,"VMLRadialGradientURL":"http =//code.highcharts.com/list(version)/gfx/vml-radial-gradient.png","canvasToolsURL":"http =//code.highcharts.com/list(version)/modules/canvas-tools.js","getTimezoneOffset":null,"timezoneOffset":0,"useUTC":true},"lang":{"contextButtonTitle":"Chart context menu","decimalPoint":".","downloadCSV":"Download CSV","downloadJPEG":"Download JPEG image","downloadPDF":"Download PDF document","downloadPNG":"Download PNG image","downloadSVG":"Download SVG vector image","downloadXLS":"Download XLS","drillUpText":"◁ Back to {series.name}","exitFullscreen":"Exit from full screen","exportData":{"annotationHeader":"Annotations","categoryDatetimeHeader":"DateTime","categoryHeader":"Category"},"hideData":"Hide data table","invalidDate":null,"loading":"Loading...","months":["January","February","March","April","May","June","July","August","September","October","November","December"],"noData":"No data to display","numericSymbolMagnitude":1000,"numericSymbols":["k","M","G","T","P","E"],"printChart":"Print chart","resetZoom":"Reset zoom","resetZoomTitle":"Reset zoom level 1:1","shortMonths":["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],"shortWeekdays":["Sat","Sun","Mon","Tue","Wed","Thu","Fri"],"thousandsSep":" ","viewData":"View data table","viewFullscreen":"View in full screen","weekdays":["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]}},"type":"chart","fonts":[],"debug":false},"evals":["hc_opts.tooltip.formatter"],"jsHooks":[]}</script>
+</div>
+</div>
+<bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()">
+    <template>Expand</template>
+    <span class="bslib-full-screen-enter badge rounded-pill">
+        <svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24" style="height:1em;width:1em;" aria-hidden="true" role="img"><path d="M20 5C20 4.4 19.6 4 19 4H13C12.4 4 12 3.6 12 3C12 2.4 12.4 2 13 2H21C21.6 2 22 2.4 22 3V11C22 11.6 21.6 12 21 12C20.4 12 20 11.6 20 11V5ZM4 19C4 19.6 4.4 20 5 20H11C11.6 20 12 20.4 12 21C12 21.6 11.6 22 11 22H3C2.4 22 2 21.6 2 21V13C2 12.4 2.4 12 3 12C3.6 12 4 12.4 4 13V19Z"></path></svg>
+    </span>
+</bslib-tooltip><script data-bslib-card-init="">bslib.Card.initializeAllCards();</script></div>
+</div>
+<div class="bslib-grid html-fill-item html-fill-container" style="display: grid; grid-template-columns: minmax(3em, 1fr);
+grid-auto-rows: minmax(0, 1fr);">
+<div class="card bslib-card html-fill-container html-fill-item" data-fill="false" data-bslib-card-init="" data-require-bs-caller="card()" data-full-screen="false">
+<div class="card-body html-fill-item html-fill-container">
+<div class="viz-show-when html-fill-item html-fill-container" data-show-when="{&quot;var&quot;:&quot;chart_type&quot;,&quot;op&quot;:&quot;eq&quot;,&quot;val&quot;:&quot;Gauge&quot;}">
+<div class="highchart html-widget html-fill-item html-fill-container" id="htmlwidget-c892e8b3b41567e48249" style="width:100%;height:433px;"></div>
+<script type="application/json" data-for="htmlwidget-c892e8b3b41567e48249">{"x":{"hc_opts":{"chart":{"reflow":true,"type":"solidgauge","height":300},"title":{"text":"Gauge Chart"},"yAxis":{"title":{"text":null},"min":0,"max":100,"lineWidth":0,"tickWidth":0,"minorTickWidth":0,"labels":{"enabled":false}},"credits":{"enabled":false},"exporting":{"enabled":false},"boost":{"enabled":false},"plotOptions":{"series":{"label":{"enabled":false},"turboThreshold":0},"treemap":{"layoutAlgorithm":"squarified"}},"pane":{"startAngle":-90,"endAngle":90,"background":[{"backgroundColor":"#e6e6e6","innerRadius":"60%","outerRadius":"100%","shape":"arc","borderWidth":0}],"center":["50%","70%"],"size":"100%"},"series":[{"name":"Gauge Chart","data":[{"y":73,"color":"#4E79A7"}],"innerRadius":"60%","radius":"100%","rounded":true,"dataLabels":{"enabled":true,"format":"{y}","borderWidth":0,"style":{"fontSize":"24px","fontWeight":"bold","textOutline":"none"},"y":-20}}],"tooltip":{"pointFormat":"<span style=\"font-size:1.2em; font-weight:bold\">{point.y}<\/span><br/><span style=\"color:#666\">Range: 0 - 100<\/span>"}},"theme":{"chart":{"backgroundColor":"transparent"},"colors":["#7cb5ec","#434348","#90ed7d","#f7a35c","#8085e9","#f15c80","#e4d354","#2b908f","#f45b5b","#91e8e1"]},"conf_opts":{"global":{"Date":null,"VMLRadialGradientURL":"http =//code.highcharts.com/list(version)/gfx/vml-radial-gradient.png","canvasToolsURL":"http =//code.highcharts.com/list(version)/modules/canvas-tools.js","getTimezoneOffset":null,"timezoneOffset":0,"useUTC":true},"lang":{"contextButtonTitle":"Chart context menu","decimalPoint":".","downloadCSV":"Download CSV","downloadJPEG":"Download JPEG image","downloadPDF":"Download PDF document","downloadPNG":"Download PNG image","downloadSVG":"Download SVG vector image","downloadXLS":"Download XLS","drillUpText":"◁ Back to {series.name}","exitFullscreen":"Exit from full screen","exportData":{"annotationHeader":"Annotations","categoryDatetimeHeader":"DateTime","categoryHeader":"Category"},"hideData":"Hide data table","invalidDate":null,"loading":"Loading...","months":["January","February","March","April","May","June","July","August","September","October","November","December"],"noData":"No data to display","numericSymbolMagnitude":1000,"numericSymbols":["k","M","G","T","P","E"],"printChart":"Print chart","resetZoom":"Reset zoom","resetZoomTitle":"Reset zoom level 1:1","shortMonths":["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],"shortWeekdays":["Sat","Sun","Mon","Tue","Wed","Thu","Fri"],"thousandsSep":" ","viewData":"View data table","viewFullscreen":"View in full screen","weekdays":["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]}},"type":"chart","fonts":[],"debug":false},"evals":[],"jsHooks":[]}</script>
+</div>
+</div>
+<bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()">
+    <template>Expand</template>
+    <span class="bslib-full-screen-enter badge rounded-pill">
+        <svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24" style="height:1em;width:1em;" aria-hidden="true" role="img"><path d="M20 5C20 4.4 19.6 4 19 4H13C12.4 4 12 3.6 12 3C12 2.4 12.4 2 13 2H21C21.6 2 22 2.4 22 3V11C22 11.6 21.6 12 21 12C20.4 12 20 11.6 20 11V5ZM4 19C4 19.6 4.4 20 5 20H11C11.6 20 12 20.4 12 21C12 21.6 11.6 22 11 22H3C2.4 22 2 21.6 2 21V13C2 12.4 2.4 12 3 12C3.6 12 4 12.4 4 13V19Z"></path></svg>
+    </span>
+</bslib-tooltip><script data-bslib-card-init="">bslib.Card.initializeAllCards();</script></div>
+</div>
+<div class="bslib-grid html-fill-item html-fill-container" style="display: grid; grid-template-columns: minmax(3em, 1fr);
+grid-auto-rows: minmax(0, 1fr);">
+<div class="card bslib-card html-fill-container html-fill-item" data-fill="false" data-bslib-card-init="" data-require-bs-caller="card()" data-full-screen="false">
+<div class="card-body html-fill-item html-fill-container">
+<div class="viz-show-when html-fill-item html-fill-container" data-show-when="{&quot;var&quot;:&quot;chart_type&quot;,&quot;op&quot;:&quot;eq&quot;,&quot;val&quot;:&quot;Waffle&quot;}">
+<div class="highchart html-widget html-fill-item html-fill-container" id="htmlwidget-e3592a8ba639c5f5e938" style="width:100%;height:433px;"></div>
+<script type="application/json" data-for="htmlwidget-e3592a8ba639c5f5e938">{"x":{"hc_opts":{"chart":{"reflow":true,"type":"heatmap","height":400},"title":{"text":"Waffle Chart"},"yAxis":{"title":{"text":null},"visible":false,"min":-0.5,"max":9.5},"credits":{"enabled":false},"exporting":{"enabled":false},"boost":{"enabled":false},"plotOptions":{"series":{"label":{"enabled":false},"turboThreshold":0},"treemap":{"layoutAlgorithm":"squarified"},"heatmap":{"borderRadius":2,"pointPadding":1}},"series":[{"data":[{"x":0,"y":9,"value":1,"name":"Engineering","count":30,"pct":3.3},{"x":1,"y":9,"value":1,"name":"Engineering","count":30,"pct":3.3},{"x":2,"y":9,"value":1,"name":"Engineering","count":30,"pct":3.3},{"x":3,"y":9,"value":1,"name":"Engineering","count":30,"pct":3.3},{"x":4,"y":9,"value":2,"name":"Engineering","count":30,"pct":3.3},{"x":5,"y":9,"value":2,"name":"Engineering","count":30,"pct":3.3},{"x":6,"y":9,"value":2,"name":"Engineering","count":30,"pct":3.3},{"x":7,"y":9,"value":3,"name":"Engineering","count":30,"pct":3.3},{"x":8,"y":9,"value":3,"name":"Engineering","count":30,"pct":3.3},{"x":9,"y":9,"value":3,"name":"Engineering","count":30,"pct":3.3},{"x":0,"y":8,"value":4,"name":"Engineering","count":30,"pct":3.3},{"x":1,"y":8,"value":4,"name":"Engineering","count":30,"pct":3.3},{"x":2,"y":8,"value":4,"name":"Engineering","count":30,"pct":3.3},{"x":3,"y":8,"value":5,"name":"Engineering","count":30,"pct":3.3},{"x":4,"y":8,"value":5,"name":"Engineering","count":30,"pct":3.3},{"x":5,"y":8,"value":5,"name":"Engineering","count":30,"pct":3.3},{"x":6,"y":8,"value":6,"name":"Engineering","count":30,"pct":3.3},{"x":7,"y":8,"value":6,"name":"Engineering","count":30,"pct":3.3},{"x":8,"y":8,"value":6,"name":"Engineering","count":30,"pct":3.3},{"x":9,"y":8,"value":7,"name":"Engineering","count":30,"pct":3.3},{"x":0,"y":7,"value":7,"name":"Engineering","count":30,"pct":3.3},{"x":1,"y":7,"value":7,"name":"Engineering","count":30,"pct":3.3},{"x":2,"y":7,"value":8,"name":"Engineering","count":30,"pct":3.3},{"x":3,"y":7,"value":8,"name":"Engineering","count":30,"pct":3.3},{"x":4,"y":7,"value":8,"name":"Engineering","count":30,"pct":3.3},{"x":5,"y":7,"value":9,"name":"Engineering","count":30,"pct":3.3},{"x":6,"y":7,"value":9,"name":"Engineering","count":30,"pct":3.3},{"x":7,"y":7,"value":9,"name":"Engineering","count":30,"pct":3.3},{"x":8,"y":7,"value":10,"name":"Marketing","count":25,"pct":2.8},{"x":9,"y":7,"value":10,"name":"Marketing","count":25,"pct":2.8},{"x":0,"y":6,"value":10,"name":"Marketing","count":25,"pct":2.8},{"x":1,"y":6,"value":11,"name":"Marketing","count":25,"pct":2.8},{"x":2,"y":6,"value":11,"name":"Marketing","count":25,"pct":2.8},{"x":3,"y":6,"value":11,"name":"Marketing","count":25,"pct":2.8},{"x":4,"y":6,"value":12,"name":"Marketing","count":25,"pct":2.8},{"x":5,"y":6,"value":12,"name":"Marketing","count":25,"pct":2.8},{"x":6,"y":6,"value":12,"name":"Marketing","count":25,"pct":2.8},{"x":7,"y":6,"value":13,"name":"Marketing","count":25,"pct":2.8},{"x":8,"y":6,"value":13,"name":"Marketing","count":25,"pct":2.8},{"x":9,"y":6,"value":13,"name":"Marketing","count":25,"pct":2.8},{"x":0,"y":5,"value":14,"name":"Marketing","count":25,"pct":2.8},{"x":1,"y":5,"value":14,"name":"Marketing","count":25,"pct":2.8},{"x":2,"y":5,"value":14,"name":"Marketing","count":25,"pct":2.8},{"x":3,"y":5,"value":15,"name":"Marketing","count":25,"pct":2.8},{"x":4,"y":5,"value":15,"name":"Marketing","count":25,"pct":2.8},{"x":5,"y":5,"value":15,"name":"Marketing","count":25,"pct":2.8},{"x":6,"y":5,"value":16,"name":"Marketing","count":25,"pct":2.8},{"x":7,"y":5,"value":16,"name":"Marketing","count":25,"pct":2.8},{"x":8,"y":5,"value":16,"name":"Marketing","count":25,"pct":2.8},{"x":9,"y":5,"value":17,"name":"Marketing","count":25,"pct":2.8},{"x":0,"y":4,"value":17,"name":"Marketing","count":25,"pct":2.8},{"x":1,"y":4,"value":17,"name":"Marketing","count":25,"pct":2.8},{"x":2,"y":4,"value":18,"name":"Marketing","count":25,"pct":2.8},{"x":3,"y":4,"value":18,"name":"Marketing","count":25,"pct":2.8},{"x":4,"y":4,"value":18,"name":"Marketing","count":25,"pct":2.8},{"x":5,"y":4,"value":19,"name":"Sales","count":20,"pct":2.2},{"x":6,"y":4,"value":19,"name":"Sales","count":20,"pct":2.2},{"x":7,"y":4,"value":20,"name":"Sales","count":20,"pct":2.2},{"x":8,"y":4,"value":20,"name":"Sales","count":20,"pct":2.2},{"x":9,"y":4,"value":21,"name":"Sales","count":20,"pct":2.2},{"x":0,"y":3,"value":21,"name":"Sales","count":20,"pct":2.2},{"x":1,"y":3,"value":22,"name":"Sales","count":20,"pct":2.2},{"x":2,"y":3,"value":22,"name":"Sales","count":20,"pct":2.2},{"x":3,"y":3,"value":23,"name":"Sales","count":20,"pct":2.2},{"x":4,"y":3,"value":23,"name":"Sales","count":20,"pct":2.2},{"x":5,"y":3,"value":24,"name":"Sales","count":20,"pct":2.2},{"x":6,"y":3,"value":24,"name":"Sales","count":20,"pct":2.2},{"x":7,"y":3,"value":25,"name":"Sales","count":20,"pct":2.2},{"x":8,"y":3,"value":25,"name":"Sales","count":20,"pct":2.2},{"x":9,"y":3,"value":26,"name":"Sales","count":20,"pct":2.2},{"x":0,"y":2,"value":26,"name":"Sales","count":20,"pct":2.2},{"x":1,"y":2,"value":27,"name":"Sales","count":20,"pct":2.2},{"x":2,"y":2,"value":27,"name":"Sales","count":20,"pct":2.2},{"x":3,"y":2,"value":28,"name":"HR","count":15,"pct":1.7},{"x":4,"y":2,"value":28,"name":"HR","count":15,"pct":1.7},{"x":5,"y":2,"value":29,"name":"HR","count":15,"pct":1.7},{"x":6,"y":2,"value":29,"name":"HR","count":15,"pct":1.7},{"x":7,"y":2,"value":30,"name":"HR","count":15,"pct":1.7},{"x":8,"y":2,"value":30,"name":"HR","count":15,"pct":1.7},{"x":9,"y":2,"value":31,"name":"HR","count":15,"pct":1.7},{"x":0,"y":1,"value":31,"name":"HR","count":15,"pct":1.7},{"x":1,"y":1,"value":32,"name":"HR","count":15,"pct":1.7},{"x":2,"y":1,"value":32,"name":"HR","count":15,"pct":1.7},{"x":3,"y":1,"value":33,"name":"HR","count":15,"pct":1.7},{"x":4,"y":1,"value":33,"name":"HR","count":15,"pct":1.7},{"x":5,"y":1,"value":34,"name":"HR","count":15,"pct":1.7},{"x":6,"y":1,"value":34,"name":"HR","count":15,"pct":1.7},{"x":7,"y":1,"value":35,"name":"HR","count":15,"pct":1.7},{"x":8,"y":1,"value":35,"name":"HR","count":15,"pct":1.7},{"x":9,"y":1,"value":36,"name":"HR","count":15,"pct":1.7},{"x":0,"y":0,"value":36,"name":"HR","count":15,"pct":1.7},{"x":1,"y":0,"value":37,"name":"Finance","count":10,"pct":1.1},{"x":2,"y":0,"value":38,"name":"Finance","count":10,"pct":1.1},{"x":3,"y":0,"value":39,"name":"Finance","count":10,"pct":1.1},{"x":4,"y":0,"value":40,"name":"Finance","count":10,"pct":1.1},{"x":5,"y":0,"value":41,"name":"Finance","count":10,"pct":1.1},{"x":6,"y":0,"value":42,"name":"Finance","count":10,"pct":1.1},{"x":7,"y":0,"value":43,"name":"Finance","count":10,"pct":1.1},{"x":8,"y":0,"value":44,"name":"Finance","count":10,"pct":1.1},{"x":9,"y":0,"value":45,"name":"Finance","count":10,"pct":1.1}],"borderColor":"white","borderWidth":1,"dataLabels":{"enabled":false},"colsize":1,"rowsize":1}],"xAxis":{"visible":false,"min":-0.5,"max":9.5},"colorAxis":{"min":0.5,"max":45.5,"dataClasses":[{"from":0.5,"to":1.5,"color":"#4E79A7","name":"Engineering"},{"from":1.5,"to":2.5,"color":"#F28E2B","name":"Engineering"},{"from":2.5,"to":3.5,"color":"#E15759","name":"Engineering"},{"from":3.5,"to":4.5,"color":"#76B7B2","name":"Engineering"},{"from":4.5,"to":5.5,"color":"#59A14F","name":"Engineering"},{"from":5.5,"to":6.5,"color":"#EDC948","name":"Engineering"},{"from":6.5,"to":7.5,"color":"#B07AA1","name":"Engineering"},{"from":7.5,"to":8.5,"color":"#FF9DA7","name":"Engineering"},{"from":8.5,"to":9.5,"color":"#9C755F","name":"Engineering"},{"from":9.5,"to":10.5,"color":"#BAB0AC","name":"Marketing"},{"from":10.5,"to":11.5,"color":"#4E79A7","name":"Marketing"},{"from":11.5,"to":12.5,"color":"#F28E2B","name":"Marketing"},{"from":12.5,"to":13.5,"color":"#E15759","name":"Marketing"},{"from":13.5,"to":14.5,"color":"#76B7B2","name":"Marketing"},{"from":14.5,"to":15.5,"color":"#59A14F","name":"Marketing"},{"from":15.5,"to":16.5,"color":"#EDC948","name":"Marketing"},{"from":16.5,"to":17.5,"color":"#B07AA1","name":"Marketing"},{"from":17.5,"to":18.5,"color":"#FF9DA7","name":"Marketing"},{"from":18.5,"to":19.5,"color":"#9C755F","name":"Sales"},{"from":19.5,"to":20.5,"color":"#BAB0AC","name":"Sales"},{"from":20.5,"to":21.5,"color":"#4E79A7","name":"Sales"},{"from":21.5,"to":22.5,"color":"#F28E2B","name":"Sales"},{"from":22.5,"to":23.5,"color":"#E15759","name":"Sales"},{"from":23.5,"to":24.5,"color":"#76B7B2","name":"Sales"},{"from":24.5,"to":25.5,"color":"#59A14F","name":"Sales"},{"from":25.5,"to":26.5,"color":"#EDC948","name":"Sales"},{"from":26.5,"to":27.5,"color":"#B07AA1","name":"Sales"},{"from":27.5,"to":28.5,"color":"#FF9DA7","name":"HR"},{"from":28.5,"to":29.5,"color":"#9C755F","name":"HR"},{"from":29.5,"to":30.5,"color":"#BAB0AC","name":"HR"},{"from":30.5,"to":31.5,"color":"#4E79A7","name":"HR"},{"from":31.5,"to":32.5,"color":"#F28E2B","name":"HR"},{"from":32.5,"to":33.5,"color":"#E15759","name":"HR"},{"from":33.5,"to":34.5,"color":"#76B7B2","name":"HR"},{"from":34.5,"to":35.5,"color":"#59A14F","name":"HR"},{"from":35.5,"to":36.5,"color":"#EDC948","name":"HR"},{"from":36.5,"to":37.5,"color":"#B07AA1","name":"Finance"},{"from":37.5,"to":38.5,"color":"#FF9DA7","name":"Finance"},{"from":38.5,"to":39.5,"color":"#9C755F","name":"Finance"},{"from":39.5,"to":40.5,"color":"#BAB0AC","name":"Finance"},{"from":40.5,"to":41.5,"color":"#4E79A7","name":"Finance"},{"from":41.5,"to":42.5,"color":"#F28E2B","name":"Finance"},{"from":42.5,"to":43.5,"color":"#E15759","name":"Finance"},{"from":43.5,"to":44.5,"color":"#76B7B2","name":"Finance"},{"from":44.5,"to":45.5,"color":"#59A14F","name":"Finance"}]},"legend":{"enabled":true,"layout":"horizontal","align":"center","verticalAlign":"bottom"},"tooltip":{"formatter":"function() {\n         return '<b>' + this.point.name + '<\/b><br/>' +\n                '' + this.point.count.toLocaleString() + '<br/>' +\n                '<span style=\"color:#666;font-size:0.9em\">' +\n                this.point.pct + '% of total<\/span>';\n       }","useHTML":true}},"theme":{"chart":{"backgroundColor":"transparent"},"colors":["#7cb5ec","#434348","#90ed7d","#f7a35c","#8085e9","#f15c80","#e4d354","#2b908f","#f45b5b","#91e8e1"]},"conf_opts":{"global":{"Date":null,"VMLRadialGradientURL":"http =//code.highcharts.com/list(version)/gfx/vml-radial-gradient.png","canvasToolsURL":"http =//code.highcharts.com/list(version)/modules/canvas-tools.js","getTimezoneOffset":null,"timezoneOffset":0,"useUTC":true},"lang":{"contextButtonTitle":"Chart context menu","decimalPoint":".","downloadCSV":"Download CSV","downloadJPEG":"Download JPEG image","downloadPDF":"Download PDF document","downloadPNG":"Download PNG image","downloadSVG":"Download SVG vector image","downloadXLS":"Download XLS","drillUpText":"◁ Back to {series.name}","exitFullscreen":"Exit from full screen","exportData":{"annotationHeader":"Annotations","categoryDatetimeHeader":"DateTime","categoryHeader":"Category"},"hideData":"Hide data table","invalidDate":null,"loading":"Loading...","months":["January","February","March","April","May","June","July","August","September","October","November","December"],"noData":"No data to display","numericSymbolMagnitude":1000,"numericSymbols":["k","M","G","T","P","E"],"printChart":"Print chart","resetZoom":"Reset zoom","resetZoomTitle":"Reset zoom level 1:1","shortMonths":["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],"shortWeekdays":["Sat","Sun","Mon","Tue","Wed","Thu","Fri"],"thousandsSep":" ","viewData":"View data table","viewFullscreen":"View in full screen","weekdays":["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]}},"type":"chart","fonts":[],"debug":false},"evals":["hc_opts.tooltip.formatter"],"jsHooks":[]}</script>
+</div>
+</div>
+<bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()">
+    <template>Expand</template>
+    <span class="bslib-full-screen-enter badge rounded-pill">
+        <svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24" style="height:1em;width:1em;" aria-hidden="true" role="img"><path d="M20 5C20 4.4 19.6 4 19 4H13C12.4 4 12 3.6 12 3C12 2.4 12.4 2 13 2H21C21.6 2 22 2.4 22 3V11C22 11.6 21.6 12 21 12C20.4 12 20 11.6 20 11V5ZM4 19C4 19.6 4.4 20 5 20H11C11.6 20 12 20.4 12 21C12 21.6 11.6 22 11 22H3C2.4 22 2 21.6 2 21V13C2 12.4 2.4 12 3 12C3.6 12 4 12.4 4 13V19Z"></path></svg>
+    </span>
+</bslib-tooltip><script data-bslib-card-init="">bslib.Card.initializeAllCards();</script></div><div id="3ade8a4a-fb1d-4a6c-8409-ac45482d5fc9" class="hidden html-fill-item html-fill-container">
+
+</div>
+</div>
+</div>
+</div>
+</div></div><aside id="bslib-sidebar-1" class="sidebar html-fill-container html-fill-item"><div class="html-fill-container html-fill-item">
+<section id="controls">
+<div class="h3">
+Controls
+</div>
+<div class="dashboardr-input-group align-center size-md" style="width: 300px;">
+  <label class="dashboardr-input-label">Select Chart</label>
+  <div id="chart4" class="dashboardr-radio-group stacked align-center group-left" data-filter-var="chart_type" data-input-type="radio">
+    <label class="dashboardr-radio">
+      <input type="radio" id="chart4_1" name="chart4" value="Lollipop" checked="">
+      <span class="dashboardr-radio-mark"></span>
+      <span class="dashboardr-radio-text">Lollipop</span>
+    </label>
+    <label class="dashboardr-radio">
+      <input type="radio" id="chart4_2" name="chart4" value="Dumbbell">
+      <span class="dashboardr-radio-mark"></span>
+      <span class="dashboardr-radio-text">Dumbbell</span>
+    </label>
+    <label class="dashboardr-radio">
+      <input type="radio" id="chart4_3" name="chart4" value="Gauge">
+      <span class="dashboardr-radio-mark"></span>
+      <span class="dashboardr-radio-text">Gauge</span>
+    </label>
+    <label class="dashboardr-radio">
+      <input type="radio" id="chart4_4" name="chart4" value="Waffle">
+      <span class="dashboardr-radio-mark"></span>
+      <span class="dashboardr-radio-text">Waffle</span>
+    </label>
+  </div>
+<script>if(typeof dashboardrFilterHook!=="undefined")dashboardrFilterHook("chart4","chart_type");</script>
+</div>
+</section>
+</div></aside>
+<button class="collapse-toggle" type="button" title="Toggle sidebar" aria-expanded="true" aria-controls="bslib-sidebar-1">
+    <svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 16 16" class="bi bi-chevron-left collapse-icon" style="fill:currentColor;" aria-hidden="true" role="img">
+      <path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"></path>
+    </svg>
+</button>
+<script data-bslib-sidebar-init="">
+bslib.Sidebar.initCollapsibleAll()
+</script>
+</div>
+
+
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
+<p><a href="https://favstats.github.io/dashboardr/" target="_blank" rel="noopener" style="display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.25rem 0.5rem; background: rgba(0, 0, 0, 0.05); border-radius: 4px; font-size: 1rem; color: inherit; text-decoration: none; opacity: 0.8; transition: opacity 0.2s ease, background 0.2s ease;" onmouseover="this.style.opacity='1'; this.style.background='rgba(0, 0, 0, 0.08)';" onmouseout="this.style.opacity='0.8'; this.style.background='rgba(0, 0, 0, 0.05)';"><img src="https://raw.githubusercontent.com/favstats/dashboardr/refs/heads/main/man/figures/logo.svg" alt="dashboardr logo" style="width: 24px; height: 24px; object-fit: contain;"><span style="font-weight: 500;">Powered by dashboardr</span></a></p>
+</div>
+  </div>
+</footer>
+
+<script type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (_event) {
+  if (window.bslib.Card) {
+    window.bslib.Card.initializeAllCards();
+  }
+}); 
+</script>
+  
+
+
+
+</body></html>

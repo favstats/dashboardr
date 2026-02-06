@@ -136,10 +136,8 @@ vs. the factor levels.
 }
 }
 \examples{
-
-#We will work with data from the GSS. The GSS dataset (`gssr`) is a dependency of
-#our `dashboardr` package.
-
+\dontrun{
+# We will work with data from the GSS.
 data(gss_panel20)
 
 # Example 1: Basic histogram of age distribution
@@ -208,7 +206,6 @@ plot5 <- viz_histogram(
   color_palette = "seagreen"
 )
 plot5
-
-
+}
 
 }

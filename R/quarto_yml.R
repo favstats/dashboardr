@@ -1095,8 +1095,8 @@
 
   if (!is.null(proj$plausible)) {
     # Plausible analytics - supports two formats:
-    # 1. Simple domain string: "example.com" → uses Quarto's built-in plausible integration
-    # 2. List with script_hash: list(domain = "example.com", script_hash = "pa-XXX") → uses custom proxy script
+    # 1. Simple domain string: "example.com" \u2192 uses Quarto's built-in plausible integration
+    # 2. List with script_hash: list(domain = "example.com", script_hash = "pa-XXX") \u2192 uses custom proxy script
     
     if (is.list(proj$plausible) && !is.null(proj$plausible$script_hash)) {
       # Proxy script format with custom hash (for ad-blocker bypass)
@@ -1214,7 +1214,7 @@
     yaml_lines <- c(yaml_lines, "          ")
     yaml_lines <- c(yaml_lines, "              var button = document.createElement(\"button\");")
     yaml_lines <- c(yaml_lines, "              button.id = \"toggle-toc\";")
-    yaml_lines <- c(yaml_lines, "              button.innerHTML = \"📑\";")
+    yaml_lines <- c(yaml_lines, "              button.innerHTML = \"\U0001f4d1\";")
     yaml_lines <- c(yaml_lines, "              button.style.position = \"fixed\";")
     yaml_lines <- c(yaml_lines, "              button.style.top = \"15px\";")
     yaml_lines <- c(yaml_lines, "              button.style.right = \"15px\";")
@@ -1436,7 +1436,7 @@
         totalLoadTime += loadTime;
         chartTimings.push({ id: chartId, time: loadTime });
         
-        console.log(`📊 Chart loaded: ${chartId} (${loadTime.toFixed(2)}ms)`);
+        console.log(`\U0001f4ca Chart loaded: ${chartId} (${loadTime.toFixed(2)}ms)`);
         console.log(`   Total: ${totalChartsLoaded} charts, Avg: ${(totalLoadTime/totalChartsLoaded).toFixed(2)}ms`);
       }
     }, 50);
@@ -1451,7 +1451,7 @@
     const batch = chartQueue.splice(0, batchSize);
     
     if (DEBUG) {
-      console.log(`⚡ Processing batch of ${batch.length} charts (${chartQueue.length} remaining)`);
+      console.log(`\u26a1 Processing batch of ${batch.length} charts (${chartQueue.length} remaining)`);
     }
     
     batch.forEach(container => initChart(container));
@@ -1465,7 +1465,7 @@
       isProcessingQueue = false;
       
       if (DEBUG && totalChartsLoaded > 0) {
-        console.log(`✅ All charts loaded! Summary:`);
+        console.log(`\u2705 All charts loaded! Summary:`);
         console.log(`   Total charts: ${totalChartsLoaded}`);
         console.log(`   Total time: ${totalLoadTime.toFixed(2)}ms`);
         console.log(`   Average time per chart: ${(totalLoadTime/totalChartsLoaded).toFixed(2)}ms`);
@@ -1709,13 +1709,6 @@
 # Custom Progress Display
 # ===================================================================
 
-#' Show custom progress message
-#'
-#' @param msg Message to display
-#' @param icon Emoji or symbol to prefix
-#' @param show_progress Whether to show progress
-
-
 #' Check if any icons are used in the dashboard
 #'
 #' Internal function to detect if iconify shortcodes are present
@@ -1761,15 +1754,6 @@
 
   FALSE
 }
-
-#' Install iconify extension automatically
-#'
-#' Downloads and installs the official iconify extension to the project directory
-#' if icons are detected in the dashboard.
-#'
-#' @param output_dir The dashboard output directory
-#' @return Logical indicating if installation was successful
-
 
 #' Install iconify extension automatically
 #'
@@ -1848,18 +1832,5 @@
     return(FALSE)
   })
 }
-
-# ===================================================================
-# CLI Output and Display Functions
-# ===================================================================
-
-#' Show beautiful dashboard summary
-#'
-#' Internal function that displays a comprehensive summary of the generated
-#' dashboard files and provides helpful guidance to users.
-#'
-#' @param proj A dashboard_project object
-#' @param output_dir Path to the output directory
-#' @return Invisible NULL
 
 

@@ -103,21 +103,21 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
     preview_pages <- names(proj$pages)[tolower(names(proj$pages)) %in% preview]
     
     if (!quiet) {
-      message("📄 Preview mode: Generating only ", length(preview_pages), " page(s): ", 
+      message("\U0001f4c4 Preview mode: Generating only ", length(preview_pages), " page(s): ", 
               paste(preview_pages, collapse = ", "))
     }
   }
   
   # Show progress header
-  .progress_header(paste0("🚀 Generating Dashboard: ", proj$title), show_progress)
+  .progress_header(paste0("\U0001f680 Generating Dashboard: ", proj$title), show_progress)
   
   # Reset chunk label tracker for new generation
-  if (exists(".chunk_label_tracker", envir = .GlobalEnv)) {
-    rm(".chunk_label_tracker", envir = .GlobalEnv)
+  if (exists(".chunk_label_tracker", envir = .dashboardr_pkg_env)) {
+    rm(".chunk_label_tracker", envir = .dashboardr_pkg_env)
   }
 
   output_dir <- .resolve_output_dir(proj$output_dir, proj$allow_inside_pkg)
-  .progress_msg("Output directory:", "📁", show_progress)
+  .progress_msg("Output directory:", "\U0001f4c1", show_progress)
   if (show_progress) cat("   ", output_dir, "\n")
 
   if (!dir.exists(output_dir)) {
@@ -151,7 +151,7 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
 
   tryCatch({
     # Setup phase
-    .progress_section("⚙️  Setup", show_progress)
+    .progress_section("\u2699\ufe0f  Setup", show_progress)
     setup_start <- Sys.time()
     
     # Check if icons are used and install iconify extension if needed
@@ -283,8 +283,8 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
     # Page generation
     if (show_progress) {
       cat("\n")
-      cat("║\n")
-      cat("║ 📄 GENERATING PAGES:\n")
+      cat("\u2551\n")
+      cat("\u2551 \U0001f4c4 GENERATING PAGES:\n")
     }
     
     # Calculate total pages to generate
@@ -512,7 +512,7 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
           new_manifest$pages[[landing_page_name]] <- list(hash = .compute_hash(landing_page))
           
           landing_elapsed <- as.numeric(difftime(Sys.time(), landing_start, units = "secs"))
-          .progress_step(paste0(landing_page_name, " [🏠 Landing] (skipped)"), landing_elapsed, show_progress, is_last = TRUE, use_page_style = TRUE)
+          .progress_step(paste0(landing_page_name, " [\U0001f3e0 Landing] (skipped)"), landing_elapsed, show_progress, is_last = TRUE, use_page_style = TRUE)
         } else {
           build_info$regenerated <- c(build_info$regenerated, landing_page_name)
           
@@ -606,7 +606,7 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
           build_info$qmd_files <- c(build_info$qmd_files, "index.qmd")
           
           landing_elapsed <- as.numeric(difftime(Sys.time(), landing_start, units = "secs"))
-          .progress_step(paste0(landing_page_name, " [🏠 Landing]"), landing_elapsed, show_progress, is_last = TRUE, use_page_style = TRUE)
+          .progress_step(paste0(landing_page_name, " [\U0001f3e0 Landing]"), landing_elapsed, show_progress, is_last = TRUE, use_page_style = TRUE)
         }
       }
     }
@@ -655,7 +655,7 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
       # Skip rendering if incremental and nothing changed
       if (incremental && length(build_info$regenerated) == 0) {
         if (!quiet) {
-          message("✓ All pages unchanged - skipping Quarto rendering (incremental mode)")
+          message("\u2713 All pages unchanged - skipping Quarto rendering (incremental mode)")
           message("  Use render = TRUE, incremental = FALSE to force re-render")
           if (open == "browser") {
             message("  Note: Opening existing HTML (if available)")
@@ -664,7 +664,7 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
         render_success <- TRUE  # Consider it successful since nothing needed rendering
         render_was_skipped <- TRUE
       } else {
-        .progress_section("🎨 Rendering Dashboard", show_progress)
+        .progress_section("\U0001f3a8 Rendering Dashboard", show_progress)
         render_start <- Sys.time()
         render_success <- .render_dashboard(output_dir, open, quiet, show_progress, proj$publish_dir, build_info$qmd_files)
         render_elapsed <- as.numeric(difftime(Sys.time(), render_start, units = "secs"))
@@ -673,7 +673,7 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
           .progress_step("Rendering complete", render_elapsed, show_progress)
         } else {
           if (!quiet) {
-            message("\n❌ Rendering FAILED")
+            message("\n\u274c Rendering FAILED")
             message("   QMD files were generated successfully, but Quarto rendering failed")
             message("   Check the error/warning messages above for details")
           }
@@ -711,14 +711,6 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
     }
 
   }, error = function(e) {
-    cat("\n=== DETAILED ERROR DEBUG ===\n")
-    cat("Error message:", e$message, "\n\n")
-    cat("Call stack with details:\n")
-    calls <- sys.calls()
-    for(i in seq_along(calls)) {
-      cat(sprintf("%d: %s\n", i, deparse(calls[[i]])[1]))
-    }
-    cat("\n=== END DEBUG ===\n\n")
     stop("Failed to generate dashboard: ", e$message, call. = FALSE)
   })
 
@@ -765,9 +757,9 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
   rmarkdown_files <- list.files(output_dir, pattern = "\\.rmarkdown$", recursive = TRUE)
   if (length(rmarkdown_files) > 0) {
     stop(
-      "\n❌ REMNANT .rmarkdown FILE DETECTED\n\n",
+      "\n\u274c REMNANT .rmarkdown FILE DETECTED\n\n",
       "Found .rmarkdown file(s) in output directory:\n",
-      paste("  •", rmarkdown_files, collapse = "\n"), "\n\n",
+      paste("  \u2022", rmarkdown_files, collapse = "\n"), "\n\n",
       "These files cause Quarto rendering to fail with cryptic errors.\n\n",
       "To fix:\n",
       "  1. Delete the .rmarkdown file(s)\n",
@@ -841,8 +833,8 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
             "  3. Landing page has different name\n",
             "\n",
             "  Try:\n",
-            "  • Check for errors in Quarto output above\n",
-            "  • Look in: ", publish_dir_abs
+            "  \u2022 Check for errors in Quarto output above\n",
+            "  \u2022 Look in: ", publish_dir_abs
           )
         }
       }
@@ -873,35 +865,6 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
 # Custom Print Methods for Better User Experience
 # ===================================================================
 
-#' Print Dashboard Project
-#'
-#' Displays a comprehensive summary of a dashboard project, including metadata,
-#' features, pages, visualizations, and integrations.
-#'
-#' @param x A dashboard_project object created by \code{\link{create_dashboard}}.
-#' @param ... Additional arguments (currently ignored).
-#'
-#' @return Invisibly returns the input object \code{x}.
-#'
-#' @details
-#' The print method displays:
-#' \itemize{
-#'   \item Project metadata (title, author, description)
-#'   \item Output directory
-#'   \item Enabled features (sidebar, search, themes, Shiny, Observable)
-#'   \item Integrations (GitHub, Twitter, LinkedIn, Analytics)
-#'   \item Page structure with properties:
-#'     \itemize{
-#'       \item 🏠 Landing page indicator
-#'       \item ⏳ Loading overlay indicator
-#'       \item → Right-aligned navbar indicator
-#'       \item 💾 Associated datasets
-#'       \item Nested visualization hierarchies
-#'     }
-#' }
-#'
-
-
 #' Show beautiful dashboard summary
 #'
 #' Internal function that displays a comprehensive summary of the generated
@@ -915,15 +878,15 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
   if (!show_progress) return(invisible(NULL))
   
   cat("\n")
-  cat("╔═══════════════════════════════════════════════════╗\n")
-  cat("║     🎉 DASHBOARD GENERATED SUCCESSFULLY! 🎉      ║\n")
-  cat("╚═══════════════════════════════════════════════════╝\n")
+  cat("\u2554\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2557\n")
+  cat("\u2551     \U0001f389 DASHBOARD GENERATED SUCCESSFULLY! \U0001f389      \u2551\n")
+  cat("\u255a\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u255d\n")
   cat("\n")
 
   # Dashboard info with enhanced formatting
-  cat("📊 Dashboard:", proj$title, "\n")
-  cat("📁 Location:", output_dir, "\n")
-  cat("📄 Pages:", length(proj$pages), "\n")
+  cat("\U0001f4ca Dashboard:", proj$title, "\n")
+  cat("\U0001f4c1 Location:", output_dir, "\n")
+  cat("\U0001f4c4 Pages:", length(proj$pages), "\n")
 
   # Count visualizations
   total_viz <- 0
@@ -932,15 +895,15 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
       total_viz <- total_viz + length(page$visualizations)
     }
   }
-  cat("📈 Visualizations:", total_viz, "\n")
+  cat("\U0001f4c8 Visualizations:", total_viz, "\n")
   
   # Show build info if available (incremental builds)
   if (!is.null(build_info)) {
     if (length(build_info$regenerated) > 0) {
-      cat("🔄 Regenerated:", length(build_info$regenerated), "page(s)\n")
+      cat("\U0001f504 Regenerated:", length(build_info$regenerated), "page(s)\n")
     }
     if (length(build_info$skipped) > 0) {
-      cat("⏭️  Skipped:", length(build_info$skipped), "unchanged page(s)\n")
+      cat("\u23ed\ufe0f  Skipped:", length(build_info$skipped), "unchanged page(s)\n")
     }
   }
   
@@ -955,12 +918,12 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
       secs <- round(elapsed_time %% 60, 1)
       paste0(mins, " min ", secs, " sec")
     }
-    cat("⏱️  Total time:", time_str, "\n")
+    cat("\u23f1\ufe0f  Total time:", time_str, "\n")
   }
 
   cat("\n")
-  cat("📁 GENERATED FILES:\n")
-  cat(paste(rep("─", 30), collapse = ""), "\n")
+  cat("\U0001f4c1 GENERATED FILES:\n")
+  cat(paste(rep("\u2500", 30), collapse = ""), "\n")
 
   # List all generated files (exclude site_libs and hidden files)
   files <- list.files(output_dir, recursive = TRUE, full.names = FALSE)
@@ -975,19 +938,19 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
 
   # Display QMD files (pages)
   if (length(qmd_files) > 0) {
-    cat("📄 Pages (QMD files):\n")
+    cat("\U0001f4c4 Pages (QMD files):\n")
     for (file in sort(qmd_files)) {
       page_name <- gsub("\\.qmd$", "", file)
       page_name <- gsub("_", " ", page_name)
       page_name <- tools::toTitleCase(page_name)
-      cat("   • ", file, " → ", page_name, "\n", sep = "")
+      cat("   \u2022 ", file, " \u2192 ", page_name, "\n", sep = "")
     }
     cat("\n")
   }
 
   # Display data files with page mapping
   if (length(rds_files) > 0) {
-    cat("💾 Data files:\n")
+    cat("\U0001f4be Data files:\n")
     
     # Build mapping from data files to pages
     data_to_pages <- list()
@@ -1027,9 +990,9 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
       # Show which pages use this data
       if (!is.null(data_to_pages[[file]]) && length(data_to_pages[[file]]$pages) > 0) {
         pages_str <- paste(data_to_pages[[file]]$pages, collapse = ", ")
-        cat("   • ", file, " (", size_str, ") → Used by: ", pages_str, "\n", sep = "")
+        cat("   \u2022 ", file, " (", size_str, ") \u2192 Used by: ", pages_str, "\n", sep = "")
       } else {
-        cat("   • ", file, " (", size_str, ")\n", sep = "")
+        cat("   \u2022 ", file, " (", size_str, ")\n", sep = "")
       }
     }
     cat("\n")
@@ -1037,9 +1000,9 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
 
   # Display configuration files
   if (length(yml_files) > 0) {
-    cat("⚙️  Configuration:\n")
+    cat("\u2699\ufe0f  Configuration:\n")
     for (file in sort(yml_files)) {
-      cat("   • ", file, "\n", sep = "")
+      cat("   \u2022 ", file, "\n", sep = "")
     }
     cat("\n")
   }
@@ -1061,32 +1024,32 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
       }
     }, character(1))
     
-    cat("📎 Other files: ", paste(summary_parts, collapse = ", "), "\n\n", sep = "")
+    cat("\U0001f4ce Other files: ", paste(summary_parts, collapse = ", "), "\n\n", sep = "")
   }
 
   # Next steps
-  cat("🚀 NEXT STEPS:\n")
-  cat(paste(rep("─", 30), collapse = ""), "\n")
+  cat("\U0001f680 NEXT STEPS:\n")
+  cat(paste(rep("\u2500", 30), collapse = ""), "\n")
   cat("1. Explore your dashboard:\n")
-  cat("   • Open the rendered HTML in your browser\n")
-  cat("   • Check layouts, visualizations, and interactivity\n")
+  cat("   \u2022 Open the rendered HTML in your browser\n")
+  cat("   \u2022 Check layouts, visualizations, and interactivity\n")
   cat("\n")
   cat("2. Make changes in R:\n")
-  cat("   • Add/modify content with add_viz(), add_text(), etc.\n")
-  cat("   • Try different themes, layouts, and features\n")
+  cat("   \u2022 Add/modify content with add_viz(), add_text(), etc.\n")
+  cat("   \u2022 Try different themes, layouts, and features\n")
   cat("\n")
   cat("3. Regenerate:\n")
-  cat("   • Run generate_dashboard() again to see your changes\n")
+  cat("   \u2022 Run generate_dashboard() again to see your changes\n")
   cat("\n")
   cat("4. Deploy:\n")
-  cat("   • Use Quarto's publishing features (GitHub Pages, Netlify, etc.)\n")
+  cat("   \u2022 Use Quarto's publishing features (GitHub Pages, Netlify, etc.)\n")
   cat("\n")
-  cat("💡 Tip: You can also inspect/edit the .qmd files directly, useful for debugging when you encounter errors!\n")
+  cat("\U0001f4a1 Tip: You can also inspect/edit the .qmd files directly, useful for debugging when you encounter errors!\n")
   cat("\n")
 
 
-  cat("🎯 Happy dashing!\n")
-  cat(paste(rep("═", 50), collapse = ""), "\n")
+  cat("\U0001f3af Happy dashing!\n")
+  cat(paste(rep("\u2550", 50), collapse = ""), "\n")
   cat("\n")
 
   invisible(NULL)
@@ -1232,25 +1195,6 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
   # Return list of generated filenames for targeted rendering
   generated_files
 }
-
-# ===================================================================
-# Internal Visualization Processing
-# ===================================================================
-
-#' Process visualizations into organized specs with tab groups
-#'
-#' Unified internal function that handles both viz_collection and plain list inputs,
-#' organizing visualizations into standalone items and tab groups based on their
-#' tabgroup parameter.
-#'
-#' @param viz_input Either a viz_collection object or a plain list of visualization specs
-#' @param data_path Path to the data file for this page (will be attached to each viz)
-#' @param tabgroup_labels Optional named list/vector of custom display labels for tab groups
-#' @return List of processed visualization specs, with standalone visualizations first,
-#'         followed by tab group objects
-#' @details
-#' Build a hierarchy key from a tabgroup vector
-
 
 # ===================================================================
 # Batch Dashboard Generation

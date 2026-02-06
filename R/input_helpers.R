@@ -128,6 +128,70 @@ enable_show_when <- function() {
   htmltools::tags$script(src = paste0("assets/show_when.js?v=", version))
 }
 
+#' Enable chart export buttons (PNG/SVG/PDF/CSV)
+#'
+#' Injects a script that enables Highcharts export functionality on all charts.
+#' Charts will display a hamburger menu button that allows downloading in
+#' various formats (PNG, SVG, PDF, CSV, full-screen view).
+#'
+#' This is typically called automatically when \code{chart_export = TRUE} is set
+#' in \code{create_dashboard()}.
+#'
+#' @return HTML script tag that enables chart exporting
+#' @export
+enable_chart_export <- function() {
+  js_code <- "
+document.addEventListener('DOMContentLoaded', function() {
+  // Wait for Highcharts to be available
+  var checkHC = setInterval(function() {
+    if (typeof Highcharts !== 'undefined') {
+      clearInterval(checkHC);
+      // Set global default: enable exporting on all charts
+      Highcharts.setOptions({
+        exporting: {
+          enabled: true,
+          buttons: {
+            contextButton: {
+              menuItems: [
+                'viewFullscreen',
+                'separator',
+                'downloadPNG',
+                'downloadSVG',
+                'downloadPDF',
+                'separator',
+                'downloadCSV',
+                'downloadXLS'
+              ],
+              theme: {
+                fill: 'transparent',
+                stroke: 'none',
+                'stroke-width': 0,
+                r: 4,
+                states: {
+                  hover: { fill: '#f0f0f0' },
+                  select: { fill: '#e0e0e0' }
+                }
+              }
+            }
+          }
+        }
+      });
+      // Re-apply to any charts already rendered
+      if (Highcharts.charts) {
+        Highcharts.charts.forEach(function(chart) {
+          if (chart) {
+            chart.update({ exporting: { enabled: true } }, false);
+            chart.redraw();
+          }
+        });
+      }
+    }
+  }, 200);
+});
+"
+  htmltools::tags$script(htmltools::HTML(js_code))
+}
+
 # =================================================================
 # SHOW-WHEN WRAPPER HELPERS
 # =================================================================
@@ -138,7 +202,7 @@ enable_show_when <- function() {
 #' that \code{show_when.js} can show/hide the enclosed content based on input
 #' state.
 #'
-#' This is used in generated \code{.qmd} chunks — users typically do not need
+#' This is used in generated \code{.qmd} chunks -- users typically do not need
 #' to call it directly.
 #'
 #' @param condition_json A JSON string describing the condition
@@ -161,6 +225,42 @@ show_when_open <- function(condition_json) {
 #' @export
 show_when_close <- function() {
   cat("</div>\n")
+}
+
+#' Render a viz result as raw HTML
+#'
+#' In \code{results='asis'} chunks (e.g. when using \code{\link{show_when_open}}),
+#' bare htmlwidget objects are NOT rendered by knitr. This helper converts
+#' the widget (or tagList from \code{.embed_cross_tab}) to HTML and \code{cat()}s it
+#' so it appears in the output.
+#'
+#' @param result A highcharter object, htmlwidget, shiny.tag, or shiny.tag.list
+#' @return Called for its side-effect (\code{cat()}).
+#' @export
+#' @examples
+#' \dontrun{
+#' # In a QMD chunk with results='asis':
+#' show_when_open('{"var":"year","op":"eq","val":"2024"}')
+#' result <- viz_bar(data = df, x_var = "category")
+#' render_viz_html(result)
+#' show_when_close()
+#' }
+render_viz_html <- function(result) {
+  if (inherits(result, "htmlwidget")) {
+    # For bare htmlwidgets, use toHTML which includes dependencies
+    widget_html <- htmlwidgets:::toHTML(result, standalone = FALSE)
+    cat(as.character(widget_html))
+  } else if (inherits(result, c("shiny.tag", "shiny.tag.list"))) {
+    # For tagLists (e.g. from .embed_cross_tab wrapping script + widget),
+    # renderTags extracts HTML *and* dependency <script>/<link> tags.
+    # as.character() alone would drop the dependencies, leaving empty charts.
+    rendered <- htmltools::renderTags(result)
+    if (nzchar(rendered$head)) cat(rendered$head)
+    cat(rendered$html)
+  } else {
+    cat(as.character(result))
+  }
+  invisible(result)
 }
 
 # =================================================================
@@ -656,7 +756,15 @@ show_when_close <- function() {
 #' @param labels Custom labels for slider ticks (character vector)
 #' @param size Size variant: "sm", "md" (default), or "lg"
 #' @param help Help text displayed below the input
+#' @param stacked Whether to stack options vertically (for checkbox/radio). Default FALSE.
+#' @param stacked_align Alignment when stacked: "center" (default), "left", or "right"
+#' @param group_align Alignment for option groups: "left" (default), "center", or "right"
+#' @param ncol Number of columns for grid layout of options
+#' @param nrow Number of rows for grid layout of options
+#' @param columns Column configuration for grid layout
 #' @param disabled Whether the input is disabled
+#' @param linked_child_id ID of linked child input for cascading inputs
+#' @param options_by_parent Named list mapping parent values to child options
 #' @return HTML output (invisible)
 #' @export
 render_input <- function(input_id,
@@ -734,10 +842,12 @@ render_input <- function(input_id,
     "button_group" = .generate_button_group_html(input_id, label, filter_var, options,
                                                   default_selected, width, align,
                                                   size, help, disabled),
-    {
-      warning(paste0("Unknown input type: ", type))
-      ""
-    }
+    stop(
+      "Unknown input type: '", type, "'. Valid types: ",
+      "select_multiple, select_single, checkbox, radio, switch, slider, text, number, button_group. ",
+      "See https://favstats.github.io/dashboardr/ for details.",
+      call. = FALSE
+    )
   )
 
   # Wrap in div with data attributes for linked (cascading) child when applicable

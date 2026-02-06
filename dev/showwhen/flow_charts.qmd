@@ -1,0 +1,148 @@
+---
+title: "Flow Charts"
+format: dashboard
+---
+
+```{r, include=FALSE}
+# Initialize dashboardr page configuration (CSS/JS for charts)
+dashboardr:::.page_config()
+```
+
+```{r, echo=FALSE, results='asis'}
+dashboardr::enable_inputs(show_when = TRUE)
+```
+
+```{r, echo=FALSE, results='asis'}
+dashboardr::enable_sidebar()
+```
+
+```{r setup}
+#| echo: false
+#| warning: false
+#| message: false
+#| error: false
+#| results: 'hide'
+
+# Load dashboardr (includes dplyr, highcharter as dependencies)
+library(dashboardr)
+
+# Global chunk options
+knitr::opts_chunk$set(
+  echo = FALSE,
+  warning = FALSE,
+  message = FALSE,
+  error = FALSE,
+  fig.width = 12,
+  fig.height = 8,
+  dpi = 300
+)
+
+# Conditional-visibility helpers (fallback for older package versions)
+if (!exists('show_when_open', mode = 'function')) {
+  show_when_open  <- function(j) cat(paste0('<div class="viz-show-when" data-show-when=\'', j, '\'>\n'))
+  show_when_close <- function()  cat('</div>\n')
+}
+
+```
+
+
+## {.sidebar width="280px"}
+
+### Controls
+
+
+```{r}
+#| echo: false
+#| results: 'asis'
+dashboardr::render_input(
+  input_id = "chart5",
+  label = "Select Chart",
+  type = "select_single",
+  filter_var = "chart_type",
+  options = c("Funnel", "Pyramid", "Sankey"),
+  options_from = NULL,
+  default_selected = "Funnel",
+  placeholder = "Select...",
+  width = "300px",
+  min = 0,
+  max = 100,
+  step = 1,
+  value = NULL,
+  show_value = TRUE,
+  inline = TRUE,
+  stacked = FALSE,
+  stacked_align = "center",
+  group_align = "left",
+  ncol = NULL,
+  nrow = NULL,
+  toggle_series = NULL,
+  override = FALSE,
+  labels = NULL,
+  size = "md",
+  help = NULL,
+  disabled = FALSE
+)
+```
+
+
+## Column
+
+### Funnel Chart
+
+```{r funnel-chart}
+#| results: 'asis'
+# Funnel Chart
+show_when_open('{"var":"chart_type","op":"eq","val":"Funnel"}')
+result <- viz_funnel(
+  data = as.data.frame(list("time_period" = c("2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time"), "breakdown_type" = c("Overall", "Overall", "Overall", "Gender", "Gender", "Gender", "Age", "Age", "Age", "Overall", "Overall", "Overall", "Gender", "Gender", "Gender", "Age", "Age", "Age", "Overall", "Overall", "Overall", "Gender", "Gender", "Gender", "Age", "Age", "Age", "Overall", "Overall", "Overall", "Gender", "Gender", "Gender", "Age", "Age", "Age", "Overall", "Overall", "Overall", "Gender", "Gender", "Gender", "Age", "Age", "Age"), "stage" = c("Awareness", "Awareness", "Awareness", "Awareness", "Awareness", "Awareness", "Awareness", "Awareness", "Awareness", "Interest", "Interest", "Interest", "Interest", "Interest", "Interest", "Interest", "Interest", "Interest", "Consideration", "Consideration", "Consideration", "Consideration", "Consideration", "Consideration", "Consideration", "Consideration", "Consideration", "Intent", "Intent", "Intent", "Intent", "Intent", "Intent", "Intent", "Intent", "Intent", "Purchase", "Purchase", "Purchase", "Purchase", "Purchase", "Purchase", "Purchase", "Purchase", "Purchase"), "funnel_count" = c(4934, 4902, 4697, 1747, 4631, 3916, 4815, 4204, 4300, 4399, 4758, 3806, 1233, 3774, 3588, 4550, 3580, 4255, 3001, 4702, 1243, 1173, 3729, 1137, 1170, 3577, 3904, 1958, 2655, 764, 701, 2749, 685, 808, 2316, 3407, 904, 1001, 530, 185, 1533, 294, 766, 1950, 2599))),
+  title = "Funnel Chart",
+  x_var = "stage",
+  y_var = "funnel_count"
+)
+
+result <- dashboardr:::.embed_cross_tab(result)
+
+result
+show_when_close()
+```
+
+### Pyramid Chart
+
+```{r pyramid-chart}
+#| results: 'asis'
+# Pyramid Chart
+show_when_open('{"var":"chart_type","op":"eq","val":"Pyramid"}')
+result <- viz_funnel(
+  data = as.data.frame(list("time_period" = c("2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time"), "breakdown_type" = c("Overall", "Overall", "Overall", "Gender", "Gender", "Gender", "Age", "Age", "Age", "Overall", "Overall", "Overall", "Gender", "Gender", "Gender", "Age", "Age", "Age", "Overall", "Overall", "Overall", "Gender", "Gender", "Gender", "Age", "Age", "Age", "Overall", "Overall", "Overall", "Gender", "Gender", "Gender", "Age", "Age", "Age", "Overall", "Overall", "Overall", "Gender", "Gender", "Gender", "Age", "Age", "Age"), "stage" = c("Awareness", "Awareness", "Awareness", "Awareness", "Awareness", "Awareness", "Awareness", "Awareness", "Awareness", "Interest", "Interest", "Interest", "Interest", "Interest", "Interest", "Interest", "Interest", "Interest", "Consideration", "Consideration", "Consideration", "Consideration", "Consideration", "Consideration", "Consideration", "Consideration", "Consideration", "Intent", "Intent", "Intent", "Intent", "Intent", "Intent", "Intent", "Intent", "Intent", "Purchase", "Purchase", "Purchase", "Purchase", "Purchase", "Purchase", "Purchase", "Purchase", "Purchase"), "funnel_count" = c(4934, 4902, 4697, 1747, 4631, 3916, 4815, 4204, 4300, 4399, 4758, 3806, 1233, 3774, 3588, 4550, 3580, 4255, 3001, 4702, 1243, 1173, 3729, 1137, 1170, 3577, 3904, 1958, 2655, 764, 701, 2749, 685, 808, 2316, 3407, 904, 1001, 530, 185, 1533, 294, 766, 1950, 2599))),
+  title = "Pyramid Chart",
+  x_var = "stage",
+  y_var = "funnel_count",
+  reversed = TRUE
+)
+
+result <- dashboardr:::.embed_cross_tab(result)
+
+result
+show_when_close()
+```
+
+### Sankey Chart
+
+```{r sankey-chart}
+#| results: 'asis'
+# Sankey Chart
+show_when_open('{"var":"chart_type","op":"eq","val":"Sankey"}')
+result <- viz_sankey(
+  data = as.data.frame(list("time_period" = c("2022", "2022", "2022", "2022", "2022", "2024", "2024", "2024", "2024", "2024", "Over Time", "Over Time", "Over Time", "Over Time", "Over Time", "2022", "2022", "2022", "2022", "2022", "2024", "2024", "2024", "2024", "2024", "Over Time", "Over Time", "Over Time", "Over Time", "Over Time", "2022", "2022", "2022", "2022", "2022", "2024", "2024", "2024", "2024", "2024", "Over Time", "Over Time", "Over Time", "Over Time", "Over Time"), "breakdown_type" = c("Overall", "Overall", "Overall", "Overall", "Overall", "Overall", "Overall", "Overall", "Overall", "Overall", "Overall", "Overall", "Overall", "Overall", "Overall", "Gender", "Gender", "Gender", "Gender", "Gender", "Gender", "Gender", "Gender", "Gender", "Gender", "Gender", "Gender", "Gender", "Gender", "Gender", "Age", "Age", "Age", "Age", "Age", "Age", "Age", "Age", "Age", "Age", "Age", "Age", "Age", "Age", "Age"), "from" = c("Revenue", "Revenue", "Revenue", "OpEx", "OpEx", "Revenue", "Revenue", "Revenue", "OpEx", "OpEx", "Revenue", "Revenue", "Revenue", "OpEx", "OpEx", "Revenue", "Revenue", "Revenue", "OpEx", "OpEx", "Revenue", "Revenue", "Revenue", "OpEx", "OpEx", "Revenue", "Revenue", "Revenue", "OpEx", "OpEx", "Revenue", "Revenue", "Revenue", "OpEx", "OpEx", "Revenue", "Revenue", "Revenue", "OpEx", "OpEx", "Revenue", "Revenue", "Revenue", "OpEx", "OpEx"), "to" = c("OpEx", "CapEx", "R&D", "Salaries", "Marketing", "OpEx", "CapEx", "R&D", "Salaries", "Marketing", "OpEx", "CapEx", "R&D", "Salaries", "Marketing", "OpEx", "CapEx", "R&D", "Salaries", "Marketing", "OpEx", "CapEx", "R&D", "Salaries", "Marketing", "OpEx", "CapEx", "R&D", "Salaries", "Marketing", "OpEx", "CapEx", "R&D", "Salaries", "Marketing", "OpEx", "CapEx", "R&D", "Salaries", "Marketing", "OpEx", "CapEx", "R&D", "Salaries", "Marketing"), "flow" = c(45, 20, 35, 25, 10, 45, 20, 35, 25, 10, 45, 20, 35, 25, 10, 45, 20, 35, 25, 10, 45, 20, 35, 25, 10, 45, 20, 35, 25, 10, 45, 20, 35, 25, 10, 45, 20, 35, 25, 10, 45, 20, 35, 25, 10))),
+  title = "Sankey Chart",
+  from_var = "from",
+  to_var = "to",
+  value_var = "flow"
+)
+
+result <- dashboardr:::.embed_cross_tab(result)
+
+result
+show_when_close()
+```
+

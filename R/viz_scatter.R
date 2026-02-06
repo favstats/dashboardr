@@ -101,11 +101,11 @@ viz_scatter <- function(data,
   }
   
   if (is.null(x_var)) {
-    dashboardr:::.stop_with_hint("x_var", example = "viz_scatter(data, x_var = \"var1\", y_var = \"var2\")")
+    .stop_with_hint("x_var", example = "viz_scatter(data, x_var = \"var1\", y_var = \"var2\")")
   }
   
   if (is.null(y_var)) {
-    dashboardr:::.stop_with_hint("y_var", example = "viz_scatter(data, x_var = \"var1\", y_var = \"var2\")")
+    .stop_with_hint("y_var", example = "viz_scatter(data, x_var = \"var1\", y_var = \"var2\")")
   }
   
   if (!x_var %in% names(data)) {

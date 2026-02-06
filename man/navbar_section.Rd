@@ -15,24 +15,12 @@ navbar_section(text, sidebar_id, icon = NULL)
 }
 \value{
 List containing navbar section configuration
-
-List containing navbar section configuration
 }
 \description{
 Helper function to create a navbar section that links to a sidebar group
 for hybrid navigation. This creates dropdown-style navigation.
 }
 \examples{
-\dontrun{
-# Create navbar sections that link to sidebar groups
-analysis_section <- navbar_section("Analysis", "analysis", "ph:chart-bar")
-reference_section <- navbar_section("Reference", "reference", "ph:book")
-}
-Create a navbar section for hybrid navigation
-
-Helper function to create a navbar section that links to a sidebar group
-for hybrid navigation. This creates dropdown-style navigation.
-
 \dontrun{
 # Create navbar sections that link to sidebar groups
 analysis_section <- navbar_section("Analysis", "analysis", "ph:chart-bar")

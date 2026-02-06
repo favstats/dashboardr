@@ -106,14 +106,14 @@
 #' @keywords internal
 #' @details
 #' This function handles:
-#' - NULL values → "NULL"
-#' - Character strings → quoted strings with escaped quotes
-#' - Numeric values → unquoted numbers
-#' - Logical values → "TRUE"/"FALSE"
-#' - Named lists → "list(name1 = value1, name2 = value2)"
-#' - Unnamed lists → "list(value1, value2)"
-#' - Special identifiers like "data" → unquoted
-#' - Complex objects → deparsed representation
+#' - NULL values -> "NULL"
+#' - Character strings -> quoted strings with escaped quotes
+#' - Numeric values -> unquoted numbers
+#' - Logical values -> "TRUE"/"FALSE"
+#' - Named lists -> "list(name1 = value1, name2 = value2)"
+#' - Unnamed lists -> "list(value1, value2)"
+#' - Special identifiers like "data" -> unquoted
+#' - Complex objects -> deparsed representation
 .serialize_arg <- function(arg, arg_name = NULL) {
   if (is.null(arg)) {
     return("NULL")

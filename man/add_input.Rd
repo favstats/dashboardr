@@ -40,7 +40,9 @@ add_input(
   mr = NULL,
   mb = NULL,
   ml = NULL,
-  tabgroup = NULL
+  tabgroup = NULL,
+  .linked_parent_id = NULL,
+  .options_by_parent = NULL
 )
 }
 \arguments{
@@ -84,6 +86,18 @@ first option (for radio/button_group).}
 
 \item{inline}{Whether to display options inline (for checkbox/radio, default TRUE)}
 
+\item{stacked}{Whether to stack options vertically (for checkbox/radio). Default FALSE.}
+
+\item{stacked_align}{Alignment when stacked: "center" (default), "left", or "right"}
+
+\item{group_align}{Alignment for option groups: "left" (default), "center", or "right"}
+
+\item{ncol}{Number of columns for grid layout of options}
+
+\item{nrow}{Number of rows for grid layout of options}
+
+\item{columns}{Column configuration for grid layout}
+
 \item{toggle_series}{For switch type: name of the series to toggle visibility on/off}
 
 \item{override}{For switch type: if TRUE, the switch overrides other filters for this series}
@@ -97,7 +111,23 @@ labels are shown at the min/max positions.}
 
 \item{disabled}{Whether the input is disabled (default FALSE)}
 
+\item{add_all}{Whether to add an "All" option (default FALSE)}
+
+\item{add_all_label}{Label for the "All" option (default "All")}
+
+\item{mt}{Margin top (CSS value, e.g., "10px")}
+
+\item{mr}{Margin right (CSS value)}
+
+\item{mb}{Margin bottom (CSS value)}
+
+\item{ml}{Margin left (CSS value)}
+
 \item{tabgroup}{Optional tabgroup for organizing content}
+
+\item{.linked_parent_id}{Internal. ID of linked parent input for cascading inputs}
+
+\item{.options_by_parent}{Internal. Named list mapping parent values to child options}
 }
 \value{
 Updated content_collection or input_row_container

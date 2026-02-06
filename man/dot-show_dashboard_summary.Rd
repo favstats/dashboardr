@@ -2,7 +2,7 @@
 % Please edit documentation in R/dashboard_generation.R
 \name{.show_dashboard_summary}
 \alias{.show_dashboard_summary}
-\title{Print Dashboard Project}
+\title{Show beautiful dashboard summary}
 \usage{
 .show_dashboard_summary(
   proj,
@@ -16,39 +16,11 @@
 \item{proj}{A dashboard_project object}
 
 \item{output_dir}{Path to the output directory}
-
-\item{x}{A dashboard_project object created by \code{\link{create_dashboard}}.}
-
-\item{...}{Additional arguments (currently ignored).}
 }
 \value{
-Invisibly returns the input object \code{x}.
-
 Invisible NULL
 }
 \description{
-Displays a comprehensive summary of a dashboard project, including metadata,
-features, pages, visualizations, and integrations.
-}
-\details{
-The print method displays:
-\itemize{
-\item Project metadata (title, author, description)
-\item Output directory
-\item Enabled features (sidebar, search, themes, Shiny, Observable)
-\item Integrations (GitHub, Twitter, LinkedIn, Analytics)
-\item Page structure with properties:
-\itemize{
-\item 🏠 Landing page indicator
-\item ⏳ Loading overlay indicator
-\item → Right-aligned navbar indicator
-\item 💾 Associated datasets
-\item Nested visualization hierarchies
-}
-}
-
-Show beautiful dashboard summary
-
 Internal function that displays a comprehensive summary of the generated
 dashboard files and provides helpful guidance to users.
 }

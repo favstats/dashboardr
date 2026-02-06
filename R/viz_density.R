@@ -35,6 +35,7 @@
 #' @return A `highcharter` density plot object.
 #'
 #' @examples
+#' \dontrun{
 #' # Basic density plot
 #' data(gss_panel20)
 #' 
@@ -68,6 +69,7 @@
 #'   bandwidth = 3
 #' )
 #' plot3
+#' }
 #'
 #' @export
 viz_density <- function(data,
@@ -315,7 +317,7 @@ viz_density <- function(data,
       )
   }
   
-  # ─── TOOLTIP ───────────────────────────────────────────────────────────────
+  # \u2500\u2500\u2500 TOOLTIP \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
   if (!is.null(tooltip)) {
     # Use new unified tooltip system
     tooltip_result <- .process_tooltip_config(

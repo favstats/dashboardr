@@ -101,6 +101,17 @@
       ""
     )
   }
+
+  # Enable chart export buttons if requested
+  if (isTRUE(page$chart_export)) {
+    content <- c(content,
+      "```{r, echo=FALSE, results='asis'}",
+      "# Enable chart export buttons (download as PNG/SVG/PDF/CSV)",
+      "dashboardr::enable_chart_export()",
+      "```",
+      ""
+    )
+  }
   
   # Auto-enable sidebar styling if page has a sidebar
   # Check both page$sidebar and content_blocks for sidebar
@@ -912,9 +923,9 @@
   if (!is.null(block$attribution)) {
     lines <- c(lines, ">")
     if (!is.null(block$cite)) {
-      lines <- c(lines, paste0("> — [", block$attribution, "](", block$cite, ")"))
+      lines <- c(lines, paste0("> \u2014 [", block$attribution, "](", block$cite, ")"))
     } else {
-      lines <- c(lines, paste0("> — ", block$attribution))
+      lines <- c(lines, paste0("> \u2014 ", block$attribution))
     }
   }
   
@@ -1059,7 +1070,7 @@
       "<details style='background-color: #f8f9fa; border: 1px solid rgba(0, 0, 0, 0.08); border-radius: 8px; padding: 1rem; margin-top: 1rem;'>",
       "  <summary style='cursor: pointer; font-weight: 600; font-size: 0.9rem; user-select: none; list-style: none; display: flex; justify-content: space-between; align-items: center;'>",
       "    <span>", block$description_title, "</span>",
-      "    <span class='expand-icon' style='font-size: 0.8rem; opacity: 0.5; transition: transform 0.3s ease, opacity 0.3s ease; transform: rotate(0deg);'>▼</span>",
+      "    <span class='expand-icon' style='font-size: 0.8rem; opacity: 0.5; transition: transform 0.3s ease, opacity 0.3s ease; transform: rotate(0deg);'>\u25bc</span>",
       "  </summary>",
       "  <div style='margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid rgba(0, 0, 0, 0.1); font-size: 0.85rem;'>",
       "    ", description_text,
@@ -1387,16 +1398,30 @@
       .expr_to_condition(expr[[2]]),
       .expr_to_condition(expr[[3]])
     ))
+  } else if (op == ">") {
+    list(var = as.character(expr[[2]]), op = "gt", val = eval(expr[[3]], envir = baseenv()))
+  } else if (op == "<") {
+    list(var = as.character(expr[[2]]), op = "lt", val = eval(expr[[3]], envir = baseenv()))
+  } else if (op == ">=") {
+    list(var = as.character(expr[[2]]), op = "gte", val = eval(expr[[3]], envir = baseenv()))
+  } else if (op == "<=") {
+    list(var = as.character(expr[[2]]), op = "lte", val = eval(expr[[3]], envir = baseenv()))
+  } else if (op == "!") {
+    # Negate the inner condition
+    inner <- .expr_to_condition(expr[[2]])
+    if (inner$op == "eq") {
+      inner$op <- "neq"
+    } else if (inner$op == "neq") {
+      inner$op <- "eq"
+    } else {
+      # Wrap in a NOT-like construct using the "not" operator
+      inner <- list(op = "not", condition = inner)
+    }
+    inner
   } else {
     stop("Unsupported operator in show_when: ", op, call. = FALSE)
   }
 }
-
-#' Collect unique filters from all visualizations
-#'
-#' @param visualizations List of visualization specifications
-#' @return List of unique filter formulas with generated names, including source dataset
-
 
 #' Generate global setup chunk for QMD files
 #'

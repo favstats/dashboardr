@@ -15,6 +15,8 @@ add_modal(
 )
 }
 \arguments{
+\item{x}{A content_collection, viz_collection, or page_object to add modal to}
+
 \item{modal_id}{Unique ID for this modal (used in markdown link)}
 
 \item{title}{Modal title (optional)}
@@ -26,15 +28,13 @@ add_modal(
 \item{image_width}{Width of the image (default "100\%"). Can be percentage ("70\%") or pixels ("500px")}
 
 \item{...}{Additional content (data.frames will be converted to tables)}
-
-\item{content_collection}{A content_collection or viz_collection to add modal to}
 }
 \value{
 Updated content_collection with modal added
 }
 \description{
 Adds a modal definition to your content collection. Use markdown links
-with {.modal-link} class to trigger the modal.
+with \{.modal-link\} class to trigger the modal.
 }
 \examples{
 \dontrun{

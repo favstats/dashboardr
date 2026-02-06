@@ -142,9 +142,9 @@ modal_content <- function(modal_id, ..., title = NULL, image = NULL, text = NULL
 #' Add Modal to Content Collection (Pipeable)
 #'
 #' Adds a modal definition to your content collection. Use markdown links
-#' with {.modal-link} class to trigger the modal.
+#' with \{.modal-link\} class to trigger the modal.
 #'
-#' @param content_collection A content_collection or viz_collection to add modal to
+#' @param x A content_collection, viz_collection, or page_object to add modal to
 #' @param modal_id Unique ID for this modal (used in markdown link)
 #' @param title Modal title (optional)
 #' @param modal_content Text content - can be plain text, HTML, or data.frame

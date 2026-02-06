@@ -125,8 +125,30 @@ describe(".parse_show_when()", {
     expect_equal(nrow(parsed$conditions), 2)
   })
 
-  it("errors on unsupported operators", {
-    expect_error(parse(~ x > 5), "Unsupported operator")
+  it("parses comparison operators (>, <, >=, <=)", {
+    json_gt <- as.character(parse(~ score > 50))
+    parsed_gt <- jsonlite::fromJSON(json_gt)
+    expect_equal(parsed_gt$op, "gt")
+    expect_equal(parsed_gt$val, 50)
+
+    json_lt <- as.character(parse(~ year < 2020))
+    parsed_lt <- jsonlite::fromJSON(json_lt)
+    expect_equal(parsed_lt$op, "lt")
+    expect_equal(parsed_lt$val, 2020)
+
+    json_gte <- as.character(parse(~ age >= 18))
+    parsed_gte <- jsonlite::fromJSON(json_gte)
+    expect_equal(parsed_gte$op, "gte")
+    expect_equal(parsed_gte$val, 18)
+
+    json_lte <- as.character(parse(~ score <= 100))
+    parsed_lte <- jsonlite::fromJSON(json_lte)
+    expect_equal(parsed_lte$op, "lte")
+    expect_equal(parsed_lte$val, 100)
+  })
+
+  it("errors on truly unsupported operators", {
+    expect_error(parse(~ x %% 5), "Unsupported operator")
   })
 })
 

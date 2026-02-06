@@ -40,20 +40,20 @@ create_dashboard_old <- function(data,
   # Locate template
   template_path <- system.file("extdata/templates/template.qmd", package = "dashboardr")
   if (template_path == "" || !file.exists(template_path)) {
-    stop("❌ Could not find 'template.qmd' in dashboardr (inst/extdata/templates).")
+    stop("\u274c Could not find 'template.qmd' in dashboardr (inst/extdata/templates).")
   }
 
   # Copy to target .qmd
   target_file <- file.path(output_dir, paste0(dashboard_name, ".qmd"))
   if (!file.copy(template_path, target_file, overwrite = TRUE)) {
-    stop("❌ Failed to copy template to: ", target_file)
+    stop("\u274c Failed to copy template to: ", target_file)
   }
 
   # Render the .qmd
   if (render && requireNamespace("quarto", quietly = TRUE)) {
     owd <- setwd(normalizePath(output_dir)); on.exit(setwd(owd), add = TRUE)
     quarto::quarto_render(basename(target_file), as_job = FALSE)
-    message("✅ Dashboard rendered: ", target_file)
+    message("\u2705 Dashboard rendered: ", target_file)
 
     # Open the resulting HTML if requested
     if (open) {
@@ -61,7 +61,7 @@ create_dashboard_old <- function(data,
       if (file.exists(html_path)) utils::browseURL(normalizePath(html_path))
     }
   } else {
-    message("📄 Page created: ", target_file)
+    message("\U0001f4c4 Page created: ", target_file)
   }
 
   invisible(target_file)
@@ -121,7 +121,7 @@ create_dashboard_old <- function(data,
     proj_dir <- normalizePath(output_dir)
     owd <- setwd(proj_dir); on.exit(setwd(owd), add = TRUE)
     quarto::quarto_render(".", as_job = FALSE)
-    message("✅ Dashboard site rendered at: ", file.path(output_dir, "docs"))
+    message("\u2705 Dashboard site rendered at: ", file.path(output_dir, "docs"))
 
     # Open the site home if requested
     if (open) {
@@ -129,7 +129,7 @@ create_dashboard_old <- function(data,
       if (file.exists(index_html)) utils::browseURL(normalizePath(index_html))
     }
   } else {
-    message("📂 Dashboard site initialized at: ", output_dir)
+    message("\U0001f4c2 Dashboard site initialized at: ", output_dir)
   }
 
   invisible(output_dir)

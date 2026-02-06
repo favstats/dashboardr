@@ -10,6 +10,8 @@
 \item{x}{A content_collection or viz_collection object}
 
 \item{...}{Additional arguments (currently ignored)}
+
+\item{options}{Knitr chunk options (currently ignored)}
 }
 \value{
 A knitr asis_output object containing the rendered HTML

@@ -7,8 +7,7 @@
 
 [![Lifecycle:
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
-[![CRAN
-status](https://www.r-pkg.org/badges/version/dashboardr)](https://CRAN.R-project.org/package=dashboardr)
+[![R-Universe](https://favstats.r-universe.dev/badges/dashboardr)](https://favstats.r-universe.dev/dashboardr)
 [![Codecov test
 coverage](https://codecov.io/gh/favstats/dashboardr/graph/badge.svg)](https://app.codecov.io/gh/favstats/dashboardr)
 <!-- badges: end -->
@@ -24,6 +23,11 @@ simple, composable grammar. Think of it like building with Lego blocks:
 ## Installation
 
 ``` r
+# From R-Universe (recommended — includes pre-built binaries)
+install.packages("dashboardr",
+  repos = c("https://favstats.r-universe.dev", "https://cloud.r-project.org"))
+
+# Or from GitHub
 # install.packages("pak")
 pak::pak("favstats/dashboardr")
 ```

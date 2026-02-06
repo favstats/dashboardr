@@ -74,9 +74,9 @@ publish_dashboard <- function(message = "Initial commit",
   protocol <- match.arg(protocol)
   
   cat("\n")
-  cat("╔══════════════════════════════════════════════════════════════╗\n")
-  cat("║          📤 Publishing Dashboard to GitHub Pages             ║\n")
-  cat("╚══════════════════════════════════════════════════════════════╝\n\n")
+  cat("\u2554\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2557\n")
+  cat("\u2551          \U0001f4e4 Publishing Dashboard to GitHub Pages             \u2551\n")
+  cat("\u255a\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u255d\n\n")
   
  # Run interactive confirmation workflow if ask = TRUE
   if (ask) {
@@ -96,11 +96,11 @@ publish_dashboard <- function(message = "Initial commit",
   }
   
   # Step 1: Initialize git repository and setup .gitignore
-  cat("📝 Step 1/3: Setting up Git repository...\n\n")
+  cat("\U0001f4dd Step 1/3: Setting up Git repository...\n\n")
   .setup_git_repo(message = message, restart = restart)
   
   # Step 2: Create GitHub repository
-  cat("\n🚀 Step 2/3: Creating GitHub repository...\n\n")
+  cat("\n\U0001f680 Step 2/3: Creating GitHub repository...\n\n")
   usethis::use_github(
     organisation = organisation,
     private = private,
@@ -109,22 +109,22 @@ publish_dashboard <- function(message = "Initial commit",
   )
   
   # Step 3: Configure GitHub Pages
-  cat("\n🌐 Step 3/3: Configuring GitHub Pages...\n\n")
+  cat("\n\U0001f310 Step 3/3: Configuring GitHub Pages...\n\n")
   usethis::use_github_pages(
     branch = branch,
     path = path
   )
   
   cat("\n")
-  cat("╔══════════════════════════════════════════════════════════════╗\n")
-  cat("║          🎉 Dashboard Published Successfully!                ║\n")
-  cat("╚══════════════════════════════════════════════════════════════╝\n\n")
-  cat("💡 Next steps:\n")
-  cat("   • Your dashboard URL is shown above\n")
-  cat("   • Wait 2-5 minutes for deployment to complete\n")
-  cat("   • Visit the URL to see your live dashboard\n")
-  cat("   • Share the URL with others!\n\n")
-  cat("📝 To update your dashboard later, use:\n")
+  cat("\u2554\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2557\n")
+  cat("\u2551          \U0001f389 Dashboard Published Successfully!                \u2551\n")
+  cat("\u255a\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u255d\n\n")
+  cat("\U0001f4a1 Next steps:\n")
+  cat("   \u2022 Your dashboard URL is shown above\n")
+  cat("   \u2022 Wait 2-5 minutes for deployment to complete\n")
+  cat("   \u2022 Visit the URL to see your live dashboard\n")
+  cat("   \u2022 Share the URL with others!\n\n")
+  cat("\U0001f4dd To update your dashboard later, use:\n")
   cat("   update_dashboard(message = \"Your update message\")\n\n")
   
   invisible(TRUE)
@@ -164,33 +164,33 @@ publish_dashboard <- function(message = "Initial commit",
 update_dashboard <- function(files = ".", message = "Update dashboard", ask = TRUE) {
   
   cat("\n")
-  cat("╔══════════════════════════════════════════════════════════════╗\n")
-  cat("║          🔄 Updating Dashboard on GitHub                     ║\n")
-  cat("╚══════════════════════════════════════════════════════════════╝\n\n")
+  cat("\u2554\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2557\n")
+  cat("\u2551          \U0001f504 Updating Dashboard on GitHub                     \u2551\n")
+  cat("\u255a\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u255d\n\n")
   
   # Add files
-  cat("📝 Adding changed files...\n")
+  cat("\U0001f4dd Adding changed files...\n")
   added_files <- gert::git_add(files)
   if (nrow(added_files) > 0) {
-    cat("   ✓ Staged", nrow(added_files), "file(s)\n\n")
+    cat("   \u2713 Staged", nrow(added_files), "file(s)\n\n")
   } else {
-    cat("   ℹ No changes detected\n\n")
+    cat("   \u2139 No changes detected\n\n")
   }
   
   # Commit changes
-  cat("💾 Committing changes...\n")
+  cat("\U0001f4be Committing changes...\n")
   gert::git_commit(message)
-  cat("   ✓ Committed with message:", shQuote(message), "\n\n")
+  cat("   \u2713 Committed with message:", shQuote(message), "\n\n")
   
   # Ask for confirmation before pushing
   if (ask) {
-    cat("❓ Ready to push changes to GitHub?\n\n")
+    cat("\u2753 Ready to push changes to GitHub?\n\n")
     
     # Show what will be pushed
     if (nrow(added_files) > 0) {
       cat("   Files to be pushed:\n")
       for (i in seq_len(min(10, nrow(added_files)))) {
-        cat("   •", added_files$file[i], "\n")
+        cat("   \u2022", added_files$file[i], "\n")
       }
       if (nrow(added_files) > 10) {
         cat("   ... and", nrow(added_files) - 10, "more file(s)\n")
@@ -201,7 +201,7 @@ update_dashboard <- function(files = ".", message = "Update dashboard", ask = TR
     response <- readline("   Push to GitHub? (yes/no): ")
     
     if (!tolower(trimws(response)) %in% c("yes", "y")) {
-      cat("\n❌ Push cancelled. Your changes are committed locally but not pushed.\n")
+      cat("\n\u274c Push cancelled. Your changes are committed locally but not pushed.\n")
       cat("   Run update_dashboard() again when ready to push.\n\n")
       return(invisible(FALSE))
     }
@@ -209,18 +209,18 @@ update_dashboard <- function(files = ".", message = "Update dashboard", ask = TR
   }
   
   # Push to remote
-  cat("🚀 Pushing to GitHub...\n")
+  cat("\U0001f680 Pushing to GitHub...\n")
   gert::git_push()
-  cat("   ✓ Successfully pushed to GitHub\n\n")
+  cat("   \u2713 Successfully pushed to GitHub\n\n")
   
   # Get repository info for final message
   repo_info <- tryCatch({
     gert::git_remote_list()
   }, error = function(e) NULL)
   
-  cat("╔══════════════════════════════════════════════════════════════╗\n")
-  cat("║          ✅ Dashboard Updated Successfully!                  ║\n")
-  cat("╚══════════════════════════════════════════════════════════════╝\n\n")
+  cat("\u2554\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2557\n")
+  cat("\u2551          \u2705 Dashboard Updated Successfully!                  \u2551\n")
+  cat("\u255a\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u255d\n\n")
   
   # Extract and display the dashboard URL
   if (!is.null(repo_info) && nrow(repo_info) > 0) {
@@ -234,10 +234,10 @@ update_dashboard <- function(files = ".", message = "Update dashboard", ask = TR
       repo_name <- url_parts[3]
       dashboard_url <- paste0("https://", username, ".github.io/", repo_name, "/")
       
-      cat("🌐 Your dashboard will update at:\n")
+      cat("\U0001f310 Your dashboard will update at:\n")
       cat("   ", dashboard_url, "\n\n")
       
-      cat("⏱️  Changes will be live in 1-2 minutes.\n")
+      cat("\u23f1\ufe0f  Changes will be live in 1-2 minutes.\n")
       cat("   Refresh your browser to see the updates.\n\n")
     }
   }
@@ -644,8 +644,8 @@ update_dashboard <- function(files = ".", message = "Update dashboard", ask = TR
   cat("In the next step, you can review the files that will be published.\n\n")
   
   cat("Typically, you only need:\n")
-  cat("   • docs/  folder (auto-generated HTML, CSS, JS files)\n")
-  cat("   • Optionally: your R scripts (just for reproducibility)\n\n")
+  cat("   \u2022 docs/  folder (auto-generated HTML, CSS, JS files)\n")
+  cat("   \u2022 Optionally: your R scripts (just for reproducibility)\n\n")
   
   cat("By default, data files (.csv, .rds, .xlsx, etc.) are excluded\n")
   cat("via .gitignore. To exclude additional files, use:\n")
@@ -683,7 +683,7 @@ update_dashboard <- function(files = ".", message = "Update dashboard", ask = TR
 .run_interactive_confirmation <- function(private = NULL) {
   
   # ===== STEP 1: Pre-review info and ask to proceed =====
-  cat("\n📋 Step 1/3: File Review\n")
+  cat("\n\U0001f4cb Step 1/3: File Review\n")
   cat(strrep("-", 40), "\n", sep = "")
   
  .display_pre_review_info()
@@ -691,28 +691,28 @@ update_dashboard <- function(files = ".", message = "Update dashboard", ask = TR
   response <- readline("   Ready to review files? (yes/no): ")
   
   if (!tolower(trimws(response)) %in% c("yes", "y")) {
-    cat("\n❌ Cancelled. Run publish_dashboard() when ready.\n\n")
+    cat("\n\u274c Cancelled. Run publish_dashboard() when ready.\n\n")
     return(list(proceed = FALSE, private = private))
   }
   
   # Create review folder and show files
-  cat("\n📂 Preparing file review...\n")
+  cat("\n\U0001f4c2 Preparing file review...\n")
   review_path <- .create_review_folder(".")
   
   # Print file tree
   .print_file_tree(review_path)
   
   # Open folder in browser
-  cat("📂 Opening folder: ", review_path, "\n\n")
+  cat("\U0001f4c2 Opening folder: ", review_path, "\n\n")
   .open_folder_in_browser(review_path)
   
-  cat("⚠️  Please verify these are the files you want to publish.\n")
+  cat("\u26a0\ufe0f  Please verify these are the files you want to publish.\n")
   cat("   Make sure there's nothing you didn't intend to include.\n\n")
   
   response <- readline("   Confirm these files are OK to publish? (yes/no): ")
   
   if (!tolower(trimws(response)) %in% c("yes", "y")) {
-    cat("\n❌ Cancelled. To exclude files, use:\n")
+    cat("\n\u274c Cancelled. To exclude files, use:\n")
     cat("   usethis::use_git_ignore(c(\"file.csv\", \"folder/\"))\n\n")
     .cleanup_review_folder(".")
     return(list(proceed = FALSE, private = private))
@@ -720,7 +720,7 @@ update_dashboard <- function(files = ".", message = "Update dashboard", ask = TR
   
   # ===== STEP 2: Repository Privacy Choice =====
   if (is.null(private)) {
-    cat("\n🔒 Step 2/3: Repository Privacy\n")
+    cat("\n\U0001f512 Step 2/3: Repository Privacy\n")
     cat(strrep("-", 40), "\n\n", sep = "")
     
     cat("PUBLIC:  Anyone can see your code. Free GitHub Pages.\n")
@@ -729,22 +729,22 @@ update_dashboard <- function(files = ".", message = "Update dashboard", ask = TR
     response <- readline("   Create a PRIVATE repository? (yes/no): ")
     
     private <- tolower(trimws(response)) %in% c("yes", "y")
-    cat("   ✓ Repository will be ", if (private) "PRIVATE" else "PUBLIC", "\n", sep = "")
+    cat("   \u2713 Repository will be ", if (private) "PRIVATE" else "PUBLIC", "\n", sep = "")
   }
   
   # ===== STEP 3: Final Confirmation =====
-  cat("\n🚀 Step 3/3: Confirm Publish\n")
+  cat("\n\U0001f680 Step 3/3: Confirm Publish\n")
   cat(strrep("-", 40), "\n\n", sep = "")
   
   cat("This will:\n")
-  cat("   • Create a ", if (private) "private" else "public", " GitHub repository\n", sep = "")
-  cat("   • Push your files to GitHub\n")
-  cat("   • Enable GitHub Pages\n\n")
+  cat("   \u2022 Create a ", if (private) "private" else "public", " GitHub repository\n", sep = "")
+  cat("   \u2022 Push your files to GitHub\n")
+  cat("   \u2022 Enable GitHub Pages\n\n")
   
   response <- readline("   Publish to GitHub? (yes/no): ")
   
   if (!tolower(trimws(response)) %in% c("yes", "y")) {
-    cat("\n❌ Cancelled. Run publish_dashboard() when ready.\n\n")
+    cat("\n\u274c Cancelled. Run publish_dashboard() when ready.\n\n")
     .cleanup_review_folder(".")
     return(list(proceed = FALSE, private = private))
   }
@@ -752,7 +752,7 @@ update_dashboard <- function(files = ".", message = "Update dashboard", ask = TR
   # Clean up review folder before proceeding
   .cleanup_review_folder(".")
   
-  cat("\n✓ Proceeding with publishing...\n\n")
+  cat("\n\u2713 Proceeding with publishing...\n\n")
   
   list(proceed = TRUE, private = private)
 }

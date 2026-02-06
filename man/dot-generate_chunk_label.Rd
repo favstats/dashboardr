@@ -2,7 +2,7 @@
 % Please edit documentation in R/viz_generation.R
 \name{.generate_chunk_label}
 \alias{.generate_chunk_label}
-\title{Generate _quarto.yml configuration file}
+\title{Generate unique R chunk label for a visualization}
 \usage{
 .generate_chunk_label(spec, spec_name = NULL)
 }
@@ -10,33 +10,11 @@
 \item{spec}{Visualization specification object}
 
 \item{spec_name}{Optional name for the specification}
-
-\item{proj}{A dashboard_project object containing all configuration settings}
 }
 \value{
-Character vector of YAML lines for the _quarto.yml file
-
 Character string with sanitized chunk label
 }
 \description{
-Internal function that generates the complete Quarto website configuration
-file based on the dashboard project settings. Handles all Quarto website
-features including navigation, styling, analytics, and deployment options.
-}
-\details{
-This function generates a comprehensive Quarto configuration including:
-\itemize{
-\item Project type and output directory
-\item Website title, favicon, and branding
-\item Navbar with social media links and search
-\item Sidebar with auto-generated navigation
-\item Format settings (theme, CSS, math, code features)
-\item Analytics (Google Analytics, Plausible, GTag)
-\item Deployment settings (GitHub Pages, Netlify)
-\item Iconify filter for icon support
-Generate unique R chunk label for a visualization
-}
-
 Internal function that creates a unique, descriptive R chunk label based on
 the visualization specification. Uses tabgroup, variable names, title, or type
 to create meaningful labels.

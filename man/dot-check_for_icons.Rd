@@ -2,27 +2,18 @@
 % Please edit documentation in R/quarto_yml.R
 \name{.check_for_icons}
 \alias{.check_for_icons}
-\title{Show custom progress message}
+\title{Check if any icons are used in the dashboard}
 \usage{
 .check_for_icons(proj)
 }
 \arguments{
 \item{proj}{A dashboard_project object}
-
-\item{msg}{Message to display}
-
-\item{icon}{Emoji or symbol to prefix}
-
-\item{show_progress}{Whether to show progress
-Check if any icons are used in the dashboard
-
-Internal function to detect if iconify shortcodes are present
-in the dashboard content.}
 }
 \value{
 Logical indicating if icons are present
 }
 \description{
-Show custom progress message
+Internal function to detect if iconify shortcodes are present
+in the dashboard content.
 }
 \keyword{internal}

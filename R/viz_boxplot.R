@@ -36,6 +36,7 @@
 #' @return A `highcharter` boxplot object.
 #'
 #' @examples
+#' \dontrun{
 #' # Basic boxplot
 #' data(gss_panel20)
 #'
@@ -68,6 +69,7 @@
 #'   show_outliers = FALSE
 #' )
 #' plot3
+#' }
 #'
 #' @export
 viz_boxplot <- function(data,
@@ -332,7 +334,7 @@ viz_boxplot <- function(data,
       highcharter::hc_colors(color_palette)
   }
   
-  # ─── TOOLTIP ───────────────────────────────────────────────────────────────
+  # \u2500\u2500\u2500 TOOLTIP \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
   if (!is.null(tooltip)) {
     # Use new unified tooltip system
     tooltip_result <- .process_tooltip_config(

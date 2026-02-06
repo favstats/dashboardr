@@ -1,0 +1,169 @@
+---
+title: "Advanced Charts"
+format: dashboard
+---
+
+```{r, include=FALSE}
+# Initialize dashboardr page configuration (CSS/JS for charts)
+dashboardr:::.page_config()
+```
+
+```{r, echo=FALSE, results='asis'}
+dashboardr::enable_inputs(show_when = TRUE)
+```
+
+```{r, echo=FALSE, results='asis'}
+dashboardr::enable_sidebar()
+```
+
+```{r setup}
+#| echo: false
+#| warning: false
+#| message: false
+#| error: false
+#| results: 'hide'
+
+# Load dashboardr (includes dplyr, highcharter as dependencies)
+library(dashboardr)
+
+# Global chunk options
+knitr::opts_chunk$set(
+  echo = FALSE,
+  warning = FALSE,
+  message = FALSE,
+  error = FALSE,
+  fig.width = 12,
+  fig.height = 8,
+  dpi = 300
+)
+
+# Conditional-visibility helpers (fallback for older package versions)
+if (!exists('show_when_open', mode = 'function')) {
+  show_when_open  <- function(j) cat(paste0('<div class="viz-show-when" data-show-when=\'', j, '\'>\n'))
+  show_when_close <- function()  cat('</div>\n')
+}
+
+```
+
+
+## {.sidebar width="280px"}
+
+### Controls
+
+
+```{r}
+#| echo: false
+#| results: 'asis'
+dashboardr::render_input(
+  input_id = "chart2",
+  label = "Select Chart",
+  type = "radio",
+  filter_var = "chart_type",
+  options = c("Heatmap", "Timeline", "Treemap", "Map"),
+  options_from = NULL,
+  default_selected = "Heatmap",
+  placeholder = "Select...",
+  width = "300px",
+  min = 0,
+  max = 100,
+  step = 1,
+  value = NULL,
+  show_value = TRUE,
+  inline = TRUE,
+  stacked = TRUE,
+  stacked_align = "center",
+  group_align = "left",
+  ncol = NULL,
+  nrow = NULL,
+  toggle_series = NULL,
+  override = FALSE,
+  labels = NULL,
+  size = "md",
+  help = NULL,
+  disabled = FALSE
+)
+```
+
+
+## Column
+
+### Heatmap
+
+```{r heatmap-x-cat-y-cat}
+#| results: 'asis'
+# Heatmap
+show_when_open('{"var":"chart_type","op":"eq","val":"Heatmap"}')
+result <- viz_heatmap(
+  data = as.data.frame(list("time_period" = c("2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time"), "breakdown_type" = c("Overall", "Overall", "Overall", "Gender", "Gender", "Gender", "Age", "Age", "Age", "Overall", "Overall", "Overall", "Gender", "Gender", "Gender", "Age", "Age", "Age", "Overall", "Overall", "Overall", "Gender", "Gender", "Gender", "Age", "Age", "Age", "Overall", "Overall", "Overall", "Gender", "Gender", "Gender", "Age", "Age", "Age", "Overall", "Overall", "Overall", "Gender", "Gender", "Gender", "Age", "Age", "Age", "Overall", "Overall", "Overall", "Gender", "Gender", "Gender", "Age", "Age", "Age", "Overall", "Overall", "Overall", "Gender", "Gender", "Gender", "Age", "Age", "Age", "Overall", "Overall", "Overall", "Gender", "Gender", "Gender", "Age", "Age", "Age", "Overall", "Overall", "Overall", "Gender", "Gender", "Gender", "Age", "Age", "Age", "Overall", "Overall", "Overall", "Gender", "Gender", "Gender", "Age", "Age", "Age", "Overall", "Overall", "Overall", "Gender", "Gender", "Gender", "Age", "Age", "Age", "Overall", "Overall", "Overall", "Gender", "Gender", "Gender", "Age", "Age", "Age", "Overall", "Overall", "Overall", "Gender", "Gender", "Gender", "Age", "Age", "Age", "Overall", "Overall", "Overall", "Gender", "Gender", "Gender", "Age", "Age", "Age", "Overall", "Overall", "Overall", "Gender", "Gender", "Gender", "Age", "Age", "Age", "Overall", "Overall", "Overall", "Gender", "Gender", "Gender", "Age", "Age", "Age", "Overall", "Overall", "Overall", "Gender", "Gender", "Gender", "Age", "Age", "Age", "Overall", "Overall", "Overall", "Gender", "Gender", "Gender", "Age", "Age", "Age", "Overall", "Overall", "Overall", "Gender", "Gender", "Gender", "Age", "Age", "Age", "Overall", "Overall", "Overall", "Gender", "Gender", "Gender", "Age", "Age", "Age"), "x_cat" = c("X1", "X1", "X1", "X1", "X1", "X1", "X1", "X1", "X1", "X2", "X2", "X2", "X2", "X2", "X2", "X2", "X2", "X2", "X3", "X3", "X3", "X3", "X3", "X3", "X3", "X3", "X3", "X4", "X4", "X4", "X4", "X4", "X4", "X4", "X4", "X4", "X5", "X5", "X5", "X5", "X5", "X5", "X5", "X5", "X5", "X1", "X1", "X1", "X1", "X1", "X1", "X1", "X1", "X1", "X2", "X2", "X2", "X2", "X2", "X2", "X2", "X2", "X2", "X3", "X3", "X3", "X3", "X3", "X3", "X3", "X3", "X3", "X4", "X4", "X4", "X4", "X4", "X4", "X4", "X4", "X4", "X5", "X5", "X5", "X5", "X5", "X5", "X5", "X5", "X5", "X1", "X1", "X1", "X1", "X1", "X1", "X1", "X1", "X1", "X2", "X2", "X2", "X2", "X2", "X2", "X2", "X2", "X2", "X3", "X3", "X3", "X3", "X3", "X3", "X3", "X3", "X3", "X4", "X4", "X4", "X4", "X4", "X4", "X4", "X4", "X4", "X5", "X5", "X5", "X5", "X5", "X5", "X5", "X5", "X5", "X1", "X1", "X1", "X1", "X1", "X1", "X1", "X1", "X1", "X2", "X2", "X2", "X2", "X2", "X2", "X2", "X2", "X2", "X3", "X3", "X3", "X3", "X3", "X3", "X3", "X3", "X3", "X4", "X4", "X4", "X4", "X4", "X4", "X4", "X4", "X4", "X5", "X5", "X5", "X5", "X5", "X5", "X5", "X5", "X5"), "y_cat" = c("Y1", "Y1", "Y1", "Y1", "Y1", "Y1", "Y1", "Y1", "Y1", "Y1", "Y1", "Y1", "Y1", "Y1", "Y1", "Y1", "Y1", "Y1", "Y1", "Y1", "Y1", "Y1", "Y1", "Y1", "Y1", "Y1", "Y1", "Y1", "Y1", "Y1", "Y1", "Y1", "Y1", "Y1", "Y1", "Y1", "Y1", "Y1", "Y1", "Y1", "Y1", "Y1", "Y1", "Y1", "Y1", "Y2", "Y2", "Y2", "Y2", "Y2", "Y2", "Y2", "Y2", "Y2", "Y2", "Y2", "Y2", "Y2", "Y2", "Y2", "Y2", "Y2", "Y2", "Y2", "Y2", "Y2", "Y2", "Y2", "Y2", "Y2", "Y2", "Y2", "Y2", "Y2", "Y2", "Y2", "Y2", "Y2", "Y2", "Y2", "Y2", "Y2", "Y2", "Y2", "Y2", "Y2", "Y2", "Y2", "Y2", "Y2", "Y3", "Y3", "Y3", "Y3", "Y3", "Y3", "Y3", "Y3", "Y3", "Y3", "Y3", "Y3", "Y3", "Y3", "Y3", "Y3", "Y3", "Y3", "Y3", "Y3", "Y3", "Y3", "Y3", "Y3", "Y3", "Y3", "Y3", "Y3", "Y3", "Y3", "Y3", "Y3", "Y3", "Y3", "Y3", "Y3", "Y3", "Y3", "Y3", "Y3", "Y3", "Y3", "Y3", "Y3", "Y3", "Y4", "Y4", "Y4", "Y4", "Y4", "Y4", "Y4", "Y4", "Y4", "Y4", "Y4", "Y4", "Y4", "Y4", "Y4", "Y4", "Y4", "Y4", "Y4", "Y4", "Y4", "Y4", "Y4", "Y4", "Y4", "Y4", "Y4", "Y4", "Y4", "Y4", "Y4", "Y4", "Y4", "Y4", "Y4", "Y4", "Y4", "Y4", "Y4", "Y4", "Y4", "Y4", "Y4", "Y4", "Y4"), "heat_value" = c(85, 19, 71, 73, 35, 97, 53, 98, 35, 23, 70, 11, 44, 95, 47, 74, 34, 24, 87, 25, 67, 21, 25, 65, 64, 68, 36, 63, 59, 47, 97, 47, 23, 64, 63, 67, 17, 20, 76, 95, 17, 17, 14, 19, 74, 17, 30, 98, 12, 73, 18, 54, 87, 29, 61, 54, 62, 39, 83, 95, 62, 70, 10, 16, 56, 19, 17, 80, 26, 25, 15, 61, 68, 36, 99, 48, 72, 60, 98, 86, 47, 57, 37, 58, 81, 81, 19, 58, 18, 58, 10, 52, 11, 44, 40, 96, 59, 29, 43, 33, 13, 12, 21, 17, 29, 32, 83, 79, 66, 45, 28, 51, 15, 42, 49, 28, 13, 50, 33, 51, 44, 88, 90, 75, 83, 64, 62, 35, 47, 16, 38, 73, 75, 18, 17, 29, 43, 51, 90, 94, 29, 92, 16, 38, 55, 95, 65, 99, 96, 47, 26, 62, 37, 57, 90, 89, 45, 14, 66, 38, 71, 44, 91, 90, 84, 75, 54, 25, 19, 43, 52, 95, 79, 38, 91, 62, 77, 97, 16, 68))),
+  title = "Heatmap",
+  x_var = "x_cat",
+  y_var = "y_cat",
+  value_var = "heat_value"
+)
+
+result <- dashboardr:::.embed_cross_tab(result)
+
+result
+show_when_close()
+```
+
+### Timeline
+
+```{r timeline-score-group-var}
+#| results: 'asis'
+# Timeline
+show_when_open('{"var":"chart_type","op":"eq","val":"Timeline"}')
+result <- viz_timeline(
+  data = as.data.frame(list("time_period" = c("2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time"), "breakdown_type" = c("Overall", "Overall", "Overall", "Gender", "Gender", "Gender", "Age", "Age", "Age", "Overall", "Overall", "Overall", "Gender", "Gender", "Gender", "Age", "Age", "Age", "Overall", "Overall", "Overall", "Gender", "Gender", "Gender", "Age", "Age", "Age", "Overall", "Overall", "Overall", "Gender", "Gender", "Gender", "Age", "Age", "Age", "Overall", "Overall", "Overall", "Gender", "Gender", "Gender", "Age", "Age", "Age", "Overall", "Overall", "Overall", "Gender", "Gender", "Gender", "Age", "Age", "Age", "Overall", "Overall", "Overall", "Gender", "Gender", "Gender", "Age", "Age", "Age", "Overall", "Overall", "Overall", "Gender", "Gender", "Gender", "Age", "Age", "Age", "Overall", "Overall", "Overall", "Gender", "Gender", "Gender", "Age", "Age", "Age", "Overall", "Overall", "Overall", "Gender", "Gender", "Gender", "Age", "Age", "Age", "Overall", "Overall", "Overall", "Gender", "Gender", "Gender", "Age", "Age", "Age", "Overall", "Overall", "Overall", "Gender", "Gender", "Gender", "Age", "Age", "Age", "Overall", "Overall", "Overall", "Gender", "Gender", "Gender", "Age", "Age", "Age", "Overall", "Overall", "Overall", "Gender", "Gender", "Gender", "Age", "Age", "Age", "Overall", "Overall", "Overall", "Gender", "Gender", "Gender", "Age", "Age", "Age", "Overall", "Overall", "Overall", "Gender", "Gender", "Gender", "Age", "Age", "Age", "Overall", "Overall", "Overall", "Gender", "Gender", "Gender", "Age", "Age", "Age", "Overall", "Overall", "Overall", "Gender", "Gender", "Gender", "Age", "Age", "Age", "Overall", "Overall", "Overall", "Gender", "Gender", "Gender", "Age", "Age", "Age", "Overall", "Overall", "Overall", "Gender", "Gender", "Gender", "Age", "Age", "Age", "Overall", "Overall", "Overall", "Gender", "Gender", "Gender", "Age", "Age", "Age", "Overall", "Overall", "Overall", "Gender", "Gender", "Gender", "Age", "Age", "Age", "Overall", "Overall", "Overall", "Gender", "Gender", "Gender", "Age", "Age", "Age", "Overall", "Overall", "Overall", "Gender", "Gender", "Gender", "Age", "Age", "Age", "Overall", "Overall", "Overall", "Gender", "Gender", "Gender", "Age", "Age", "Age", "Overall", "Overall", "Overall", "Gender", "Gender", "Gender", "Age", "Age", "Age", "Overall", "Overall", "Overall", "Gender", "Gender", "Gender", "Age", "Age", "Age", "Overall", "Overall", "Overall", "Gender", "Gender", "Gender", "Age", "Age", "Age", "Overall", "Overall", "Overall", "Gender", "Gender", "Gender", "Age", "Age", "Age", "Overall", "Overall", "Overall", "Gender", "Gender", "Gender", "Age", "Age", "Age"), "year" = c(2015, 2015, 2015, 2015, 2015, 2015, 2015, 2015, 2015, 2016, 2016, 2016, 2016, 2016, 2016, 2016, 2016, 2016, 2017, 2017, 2017, 2017, 2017, 2017, 2017, 2017, 2017, 2018, 2018, 2018, 2018, 2018, 2018, 2018, 2018, 2018, 2019, 2019, 2019, 2019, 2019, 2019, 2019, 2019, 2019, 2020, 2020, 2020, 2020, 2020, 2020, 2020, 2020, 2020, 2021, 2021, 2021, 2021, 2021, 2021, 2021, 2021, 2021, 2022, 2022, 2022, 2022, 2022, 2022, 2022, 2022, 2022, 2023, 2023, 2023, 2023, 2023, 2023, 2023, 2023, 2023, 2024, 2024, 2024, 2024, 2024, 2024, 2024, 2024, 2024, 2015, 2015, 2015, 2015, 2015, 2015, 2015, 2015, 2015, 2016, 2016, 2016, 2016, 2016, 2016, 2016, 2016, 2016, 2017, 2017, 2017, 2017, 2017, 2017, 2017, 2017, 2017, 2018, 2018, 2018, 2018, 2018, 2018, 2018, 2018, 2018, 2019, 2019, 2019, 2019, 2019, 2019, 2019, 2019, 2019, 2020, 2020, 2020, 2020, 2020, 2020, 2020, 2020, 2020, 2021, 2021, 2021, 2021, 2021, 2021, 2021, 2021, 2021, 2022, 2022, 2022, 2022, 2022, 2022, 2022, 2022, 2022, 2023, 2023, 2023, 2023, 2023, 2023, 2023, 2023, 2023, 2024, 2024, 2024, 2024, 2024, 2024, 2024, 2024, 2024, 2015, 2015, 2015, 2015, 2015, 2015, 2015, 2015, 2015, 2016, 2016, 2016, 2016, 2016, 2016, 2016, 2016, 2016, 2017, 2017, 2017, 2017, 2017, 2017, 2017, 2017, 2017, 2018, 2018, 2018, 2018, 2018, 2018, 2018, 2018, 2018, 2019, 2019, 2019, 2019, 2019, 2019, 2019, 2019, 2019, 2020, 2020, 2020, 2020, 2020, 2020, 2020, 2020, 2020, 2021, 2021, 2021, 2021, 2021, 2021, 2021, 2021, 2021, 2022, 2022, 2022, 2022, 2022, 2022, 2022, 2022, 2022, 2023, 2023, 2023, 2023, 2023, 2023, 2023, 2023, 2023, 2024, 2024, 2024, 2024, 2024, 2024, 2024, 2024, 2024), "group_var" = c("North", "North", "North", "North", "North", "North", "North", "North", "North", "North", "North", "North", "North", "North", "North", "North", "North", "North", "North", "North", "North", "North", "North", "North", "North", "North", "North", "North", "North", "North", "North", "North", "North", "North", "North", "North", "North", "North", "North", "North", "North", "North", "North", "North", "North", "North", "North", "North", "North", "North", "North", "North", "North", "North", "North", "North", "North", "North", "North", "North", "North", "North", "North", "North", "North", "North", "North", "North", "North", "North", "North", "North", "North", "North", "North", "North", "North", "North", "North", "North", "North", "North", "North", "North", "North", "North", "North", "North", "North", "North", "South", "South", "South", "South", "South", "South", "South", "South", "South", "South", "South", "South", "South", "South", "South", "South", "South", "South", "South", "South", "South", "South", "South", "South", "South", "South", "South", "South", "South", "South", "South", "South", "South", "South", "South", "South", "South", "South", "South", "South", "South", "South", "South", "South", "South", "South", "South", "South", "South", "South", "South", "South", "South", "South", "South", "South", "South", "South", "South", "South", "South", "South", "South", "South", "South", "South", "South", "South", "South", "South", "South", "South", "South", "South", "South", "South", "South", "South", "South", "South", "South", "South", "South", "South", "South", "South", "South", "South", "South", "South", "East", "East", "East", "East", "East", "East", "East", "East", "East", "East", "East", "East", "East", "East", "East", "East", "East", "East", "East", "East", "East", "East", "East", "East", "East", "East", "East", "East", "East", "East", "East", "East", "East", "East", "East", "East", "East", "East", "East", "East", "East", "East", "East", "East", "East", "East", "East", "East", "East", "East", "East", "East", "East", "East", "East", "East", "East", "East", "East", "East", "East", "East", "East", "East", "East", "East", "East", "East", "East", "East", "East", "East", "East", "East", "East", "East", "East", "East", "East", "East", "East", "East", "East", "East", "East", "East", "East", "East", "East", "East"), "score" = c(61.5, 46.4, 54.3, 46.8, 80.5, 57.8, 82.3, 39.1, 50.6, 69.5, 53.6, 83.8, 52.2, 34.1, 58.9, 55.2, 58.3, 50.1, 51.8, 50.5, 55.1, 46.2, 73.4, 49.4, 75.4, 42.5, 70.1, 52.8, 61.6, 69.2, 49, 62.8, 59.5, 46.6, 66.9, 32.4, 78.5, 74.4, 57.6, 54.8, 64.2, 54.2, 57.7, 62.8, 58.9, 80.5, 56, 49.5, 46.4, 53.2, 48.3, 71.3, 63, 58.7, 60.3, 49.1, 88.2, 69.7, 69.4, 62, 61.9, 68.1, 65.2, 69.4, 54.7, 75.3, 42.3, 81.9, 59, 62.5, 59.3, 49.9, 54.4, 78.2, 84.9, 47.3, 64.3, 53.5, 61.1, 64.2, 53.8, 63.4, 80, 47, 55.2, 63.6, 64.5, 60.8, 64.2, 58, 62.3, 59.2, 71, 68.5, 59.8, 75.8, 62, 66.9, 62.7, 52.7, 68.8, 37.8, 48.4, 67.5, 74.9, 41.9, 74.2, 44, 52.8, 44, 57.8, 60.6, 64.9, 54.9, 59.8, 63.6, 48.3, 51.6, 76.5, 24.6, 71.5, 72.7, 76.2, 55.2, 70.1, 62.6, 52.3, 66.6, 64.4, 55.3, 54.5, 56.8, 66, 59.4, 43.8, 63.7, 55.6, 69.1, 45.5, 37.1, 54, 52.4, 68.1, 37.6, 47.2, 58.5, 51.2, 57.7, 45.6, 50.1, 49, 39.1, 64.6, 53.5, 53.3, 73.3, 68, 51.7, 70.6, 55.5, 54.8, 62, 61.7, 58.7, 57, 64.8, 71.9, 55.3, 77.4, 50, 84, 69.8, 55.7, 34.5, 55.2, 55.8, 77.3, 64.5, 38.1, 63.3, 48.7, 39.6, 71, 67.2, 55.2, 77.2, 56.3, 39.8, 70.9, 51.9, 61.6, 48.9, 44.3, 65.3, 49.2, 53.5, 68.7, 29.3, 48.8, 78.4, 59.9, 39.8, 59.4, 60.5, 50.7, 51.8, 59.5, 70.1, 49.9, 68.6, 37.6, 83.9, 69.3, 52.5, 58.8, 45.2, 48.8, 63.6, 35.2, 68.1, 70, 61.5, 50.5, 67.6, 57.6, 81.3, 66, 82.3, 52.7, 73.8, 71.6, 67.6, 81.3, 74.1, 73.2, 76.5, 51.4, 68.3, 75.2, 37.5, 75, 47.1, 42.3, 58.8, 39.4, 50.7, 70.2, 61, 75.4, 63.3, 39.5, 46.2, 61.9, 54.9, 70.9, 61.8, 46.7, 53.4, 72.2, 48.7, 42, 66.8, 62.2, 50.4, 59.4, 61.8, 50.8, 64.4, 51.7, 55.9))),
+  title = "Timeline",
+  time_var = "year",
+  y_var = "score",
+  group_var = "group_var",
+  agg = "none",
+  cross_tab_filter_vars = "chart_type"
+)
+
+result <- dashboardr:::.embed_cross_tab(result)
+
+result
+show_when_close()
+```
+
+### Treemap
+
+```{r treemap}
+#| results: 'asis'
+# Treemap
+show_when_open('{"var":"chart_type","op":"eq","val":"Treemap"}')
+result <- viz_treemap(
+  data = as.data.frame(list("time_period" = c("2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time"), "breakdown_type" = c("Overall", "Overall", "Overall", "Gender", "Gender", "Gender", "Age", "Age", "Age", "Overall", "Overall", "Overall", "Gender", "Gender", "Gender", "Age", "Age", "Age", "Overall", "Overall", "Overall", "Gender", "Gender", "Gender", "Age", "Age", "Age", "Overall", "Overall", "Overall", "Gender", "Gender", "Gender", "Age", "Age", "Age"), "region" = c("North America", "North America", "North America", "North America", "North America", "North America", "North America", "North America", "North America", "Europe", "Europe", "Europe", "Europe", "Europe", "Europe", "Europe", "Europe", "Europe", "Asia", "Asia", "Asia", "Asia", "Asia", "Asia", "Asia", "Asia", "Asia", "Africa", "Africa", "Africa", "Africa", "Africa", "Africa", "Africa", "Africa", "Africa"), "spend" = c(38789, 21700, 19993, 29723, 3326, 16456, 20391, 18855, 3184, 42125, 15659, 43473, 13841, 17056, 49963, 44628, 34730, 4279, 33867, 7499, 29388, 27302, 15618, 21721, 1182, 28711, 48288, 18153, 15839, 4137, 10522, 32968, 13954, 20380, 43081, 44385))),
+  title = "Treemap",
+  group_var = "region",
+  value_var = "spend"
+)
+
+result <- dashboardr:::.embed_cross_tab(result)
+
+result
+show_when_close()
+```
+
+### World Map
+
+```{r world-map}
+#| results: 'asis'
+# World Map
+show_when_open('{"var":"chart_type","op":"eq","val":"Map"}')
+result <- viz_map(
+  data = as.data.frame(list("time_period" = c("2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time", "2022", "2024", "Over Time"), "breakdown_type" = c("Overall", "Overall", "Overall", "Gender", "Gender", "Gender", "Age", "Age", "Age", "Overall", "Overall", "Overall", "Gender", "Gender", "Gender", "Age", "Age", "Age", "Overall", "Overall", "Overall", "Gender", "Gender", "Gender", "Age", "Age", "Age", "Overall", "Overall", "Overall", "Gender", "Gender", "Gender", "Age", "Age", "Age", "Overall", "Overall", "Overall", "Gender", "Gender", "Gender", "Age", "Age", "Age", "Overall", "Overall", "Overall", "Gender", "Gender", "Gender", "Age", "Age", "Age", "Overall", "Overall", "Overall", "Gender", "Gender", "Gender", "Age", "Age", "Age", "Overall", "Overall", "Overall", "Gender", "Gender", "Gender", "Age", "Age", "Age", "Overall", "Overall", "Overall", "Gender", "Gender", "Gender", "Age", "Age", "Age", "Overall", "Overall", "Overall", "Gender", "Gender", "Gender", "Age", "Age", "Age"), "iso2c" = c("US", "US", "US", "US", "US", "US", "US", "US", "US", "GB", "GB", "GB", "GB", "GB", "GB", "GB", "GB", "GB", "DE", "DE", "DE", "DE", "DE", "DE", "DE", "DE", "DE", "FR", "FR", "FR", "FR", "FR", "FR", "FR", "FR", "FR", "JP", "JP", "JP", "JP", "JP", "JP", "JP", "JP", "JP", "AU", "AU", "AU", "AU", "AU", "AU", "AU", "AU", "AU", "BR", "BR", "BR", "BR", "BR", "BR", "BR", "BR", "BR", "IN", "IN", "IN", "IN", "IN", "IN", "IN", "IN", "IN", "CA", "CA", "CA", "CA", "CA", "CA", "CA", "CA", "CA", "MX", "MX", "MX", "MX", "MX", "MX", "MX", "MX", "MX"), "map_value" = c(79, 93, 92, 44, 65, 92, 51, 94, 46, 12, 15, 82, 64, 16, 43, 67, 42, 38, 87, 48, 90, 83, 99, 50, 71, 15, 52, 91, 26, 20, 54, 94, 96, 78, 47, 67, 96, 10, 47, 15, 62, 13, 99, 12, 56, 14, 17, 66, 33, 53, 23, 27, 58, 87, 36, 30, 68, 40, 95, 36, 25, 16, 24, 98, 46, 95, 83, 14, 68, 44, 59, 12, 95, 70, 45, 59, 97, 37, 16, 13, 65, 31, 84, 90, 89, 13, 17, 23, 34, 58))),
+  title = "World Map",
+  region_var = "iso2c",
+  value_var = "map_value"
+)
+
+result <- dashboardr:::.embed_cross_tab(result)
+
+result
+show_when_close()
+```
+

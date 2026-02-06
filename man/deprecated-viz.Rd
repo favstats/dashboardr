@@ -35,15 +35,15 @@ create_treemap(...)
 These functions have been renamed to use the \verb{viz_*} prefix for clarity.
 Please use the new names:
 \itemize{
-\item \code{create_histogram()} → \code{viz_histogram()}
-\item \code{create_bar()} → \code{viz_bar()}
-\item \code{create_stackedbar()} → \code{viz_stackedbar()}
-\item \code{create_stackedbars()} → \code{viz_stackedbars()}
-\item \code{create_timeline()} → \code{viz_timeline()}
-\item \code{create_heatmap()} → \code{viz_heatmap()}
-\item \code{create_scatter()} → \code{viz_scatter()}
-\item \code{create_map()} → \code{viz_map()}
-\item \code{create_treemap()} → \code{viz_treemap()}
+\item \code{create_histogram()} -> \code{viz_histogram()}
+\item \code{create_bar()} -> \code{viz_bar()}
+\item \code{create_stackedbar()} -> \code{viz_stackedbar()}
+\item \code{create_stackedbars()} -> \code{viz_stackedbars()}
+\item \code{create_timeline()} -> \code{viz_timeline()}
+\item \code{create_heatmap()} -> \code{viz_heatmap()}
+\item \code{create_scatter()} -> \code{viz_scatter()}
+\item \code{create_map()} -> \code{viz_map()}
+\item \code{create_treemap()} -> \code{viz_treemap()}
 }
 
 The old names will continue to work but are deprecated and will be

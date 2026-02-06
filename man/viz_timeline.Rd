@@ -33,7 +33,10 @@ viz_timeline(
   na_label_group = "(Missing)",
   tooltip = NULL,
   tooltip_prefix = "",
-  tooltip_suffix = ""
+  tooltip_suffix = "",
+  group_order = NULL,
+  cross_tab_filter_vars = NULL,
+  title_map = NULL
 )
 }
 \arguments{
@@ -102,6 +105,14 @@ If \code{NULL} and no \code{group_var}, uses auto-generated label (e.g., "5-7" f
 
 \item{time_bin_labels}{Optional character vector of labels for time bins.}
 
+\item{weight_var}{Optional string. Name of a weight variable for weighted calculations.}
+
+\item{include_na}{Logical. If TRUE, NA values are included as explicit categories. Default FALSE.}
+
+\item{na_label_y}{Character string. Label for NA values in the response variable. Default "(Missing)".}
+
+\item{na_label_group}{Character string. Label for NA values in the group variable. Default "(Missing)".}
+
 \item{tooltip}{A tooltip configuration created with \code{\link{tooltip}()},
 OR a format string with \{placeholders\}. Available placeholders:
 \code{\{x\}}, \code{\{y\}}, \code{\{value\}}, \code{\{series\}}, \code{\{percent\}}.
@@ -110,6 +121,14 @@ See \code{\link{tooltip}} for full customization options.}
 \item{tooltip_prefix}{Optional string prepended to values in tooltip.}
 
 \item{tooltip_suffix}{Optional string appended to values in tooltip.}
+
+\item{group_order}{Optional character vector specifying display order of group levels.}
+
+\item{cross_tab_filter_vars}{Character vector. Variables for cross-tab filtering
+(typically auto-detected from sidebar inputs).}
+
+\item{title_map}{Named list mapping variable names to custom display titles
+for dynamic title updates when filtering by cross-tab variables.}
 }
 \value{
 A highcharter plot object.
@@ -121,100 +140,43 @@ Supports multiple chart types including stacked areas, line charts, and
 diverging bar charts.
 }
 \examples{
+\dontrun{
 # Load GSS data
 data(gss_all)
 
 # Basic timeline - confidence in institutions over time
 plot1 <- viz_timeline(
-           data = gss_all,
-           time_var = "year",
-           y_var = "confinan",
-           title = "Confidence in Financial Institutions Over Time",
-           y_max = 100
-           )
+  data = gss_all,
+  time_var = "year",
+  y_var = "confinan",
+  title = "Confidence in Financial Institutions Over Time",
+  y_max = 100
+)
 plot1
 
 # Line chart by gender
 plot2 <- viz_timeline(
-   data = gss_all,
-   time_var = "year",
-   y_var = "happy",
-   group_var = "sex",
-   chart_type = "line",
-   title = "Happiness Trends by Gender",
-   y_levels = c("very happy", "pretty happy", "not too happy")
+  data = gss_all,
+  time_var = "year",
+  y_var = "happy",
+  group_var = "sex",
+  chart_type = "line",
+  title = "Happiness Trends by Gender",
+  y_levels = c("very happy", "pretty happy", "not too happy")
 )
 plot2
 
 # Show only high responses (5-7 on a 1-7 scale) - COMBINED
 plot3 <- viz_timeline(
-   data = survey_data,
-   time_var = "wave",
-   y_var = "agreement",  # 1-7 scale
-   group_var = "age_group",
-   chart_type = "line",
-   y_filter = 5:7,  # Show combined \% who responded 5-7
-   title = "\% High Agreement (5-7) Over Time"
+  data = survey_data,
+  time_var = "wave",
+  y_var = "agreement",
+  group_var = "age_group",
+  chart_type = "line",
+  y_filter = 5:7,
+  title = "\% High Agreement (5-7) Over Time"
 )
 plot3
-
-# Custom legend label
-plot4 <- viz_timeline(
-   data = survey_data,
-   time_var = "wave",
-   y_var = "agreement",
-   group_var = "age_group",
-   chart_type = "line",
-   y_filter = 5:7,
-   y_filter_label = "High Agreement",  # Custom label instead of "5-7"
-   title = "High Agreement Trends"
-)
-plot4
-
-# Show individual filtered values (not combined)
-plot5 <- viz_timeline(
-   data = survey_data,
-   time_var = "wave",
-   y_var = "agreement",
-   chart_type = "line",
-   y_filter = 5:7,
-   y_filter_combine = FALSE,  # Show separate lines for 5, 6, 7
-   title = "Individual High Responses"
-)
-plot5
-
-# Custom styling with colors and labels
-plot6 <- viz_timeline(
-   data = survey_data,
-   time_var = "wave_time_label",
-   y_var = "agreement",
-   group_var = "age_group",
-   chart_type = "line",
-   y_filter = 4:5,
-   title = "High Agreement Over Time",
-   subtitle = "By Age Group",
-   x_label = "Survey Wave",
-   y_label = "\% High Agreement",
-   y_min = 0,
-   y_max = 100,
-   color_palette = c("#E41A1C", "#377EB8", "#4DAF4A", "#984EA3")
-)
-plot6
-
-# Custom legend labels with y_map_values
-plot7 <- viz_timeline(
-   data = survey_data,
-   time_var = "wave_time_label",
-   y_var = "knowledge_item",
-   chart_type = "line",
-   y_filter = 1,
-   y_map_values = list("1" = "Correct", "0" = "Incorrect"),
-   title = "Knowledge Score Over Time",
-   x_label = "Survey Wave",
-   y_label = "\% Correct",
-   y_min = 0,
-   y_max = 100
-)
-plot7
+}
 
 }

@@ -6,6 +6,11 @@
 \usage{
 \method{print}{page_object}(x, ...)
 }
+\arguments{
+\item{x}{A page_object to print}
+
+\item{...}{Additional arguments (currently ignored)}
+}
 \description{
 Print method for page objects
 }

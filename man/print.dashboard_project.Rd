@@ -2,7 +2,7 @@
 % Please edit documentation in R/dashboard_creation.R
 \name{print.dashboard_project}
 \alias{print.dashboard_project}
-\title{Create iconify icon shortcode}
+\title{Print Dashboard Project}
 \usage{
 \method{print}{dashboard_project}(x, ...)
 }
@@ -10,16 +10,13 @@
 \item{x}{A dashboard_project object created by \code{\link{create_dashboard}}.}
 
 \item{...}{Additional arguments (currently ignored).}
-
-\item{icon_name}{Icon name in format "collection:name" (e.g., "ph:users-three")}
 }
 \value{
-Iconify shortcode string
-
 Invisibly returns the input object \code{x}.
 }
 \description{
-Helper function to generate iconify icon shortcodes for use in pages and visualizations.
+Displays a comprehensive summary of a dashboard project, including metadata,
+features, pages, visualizations, and integrations.
 }
 \details{
 The print method displays:
@@ -37,15 +34,4 @@ The print method displays:
 \item Nested visualization hierarchies
 }
 }
-}
-\examples{
-\dontrun{
-icon("ph:users-three")  # Returns iconify shortcode
-icon("emojione:flag-for-united-states")  # Returns iconify shortcode
-}
-Print Dashboard Project
-
-Displays a comprehensive summary of a dashboard project, including metadata,
-features, pages, visualizations, and integrations.
-
 }

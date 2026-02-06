@@ -17,31 +17,12 @@ navbar_menu(text, pages, icon = NULL, align = c("left", "right"))
 }
 \value{
 List containing navbar menu configuration
-
-List containing navbar menu configuration
 }
 \description{
 Creates a dropdown menu in the navbar without requiring sidebar groups.
 This is a simple nested menu structure.
 }
 \examples{
-\dontrun{
-# Create a simple dropdown menu
-dimensions_menu <- navbar_menu(
-  text = "Dimensions",
-  pages = c("Strategic Information", "Critical Information"),
-  icon = "ph:book"
-)
-
-dashboard <- create_dashboard(
-  navbar_sections = list(dimensions_menu)
-)
-}
-Create a navbar dropdown menu
-
-Creates a dropdown menu in the navbar without requiring sidebar groups.
-This is a simple nested menu structure.
-
 \dontrun{
 # Create a simple dropdown menu (left-aligned by default)
 dimensions_menu <- navbar_menu(
