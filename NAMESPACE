@@ -2,6 +2,8 @@
 
 S3method("+",content_collection)
 S3method("+",viz_collection)
+S3method(add_modal,default)
+S3method(add_modal,page_object)
 S3method(add_viz,default)
 S3method(add_viz,page_object)
 S3method(knitr::knit_print,content_collection)

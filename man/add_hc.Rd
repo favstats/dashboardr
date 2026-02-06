@@ -11,7 +11,7 @@ add_hc(content, hc_object, height = NULL, tabgroup = NULL)
 
 \item{hc_object}{A highcharter object created with highcharter::highchart() or hchart()}
 
-\item{height}{Optional height for the chart (e.g., "400px", "50vh"). Defaults to "400px"}
+\item{height}{Optional height for the chart (e.g., "400px", "50vh"). If NULL (default), no height is set and highcharter handles its own sizing}
 
 \item{tabgroup}{Optional tabgroup for organizing content (character vector for nested tabs)}
 }

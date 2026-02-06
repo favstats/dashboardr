@@ -1155,6 +1155,10 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
     # Create modified page object for this section
     section_page <- page
     section_page$visualizations <- section$items  # Only include this section's visualizations
+    # CRITICAL: Clear viz_embedded_in_content so .generate_default_page_content uses
+    # section_page$visualizations (the paginated subset) instead of content_blocks (full set)
+    section_page$viz_embedded_in_content <- FALSE
+    section_page$content_blocks <- NULL  # Clear content_blocks to avoid duplication
     
     # Generate base content
     content <- .generate_default_page_content(section_page)

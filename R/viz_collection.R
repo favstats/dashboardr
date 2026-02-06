@@ -1692,6 +1692,25 @@ print.viz_collection <- function(x, render = FALSE, check = FALSE, ...) {
 
     if (nchar(title) > 0) {
       cat(indent_str, content_icon, " ", type_label, " ", title, "\n", sep = "")
+    } else if (content_type == "text" && !is.null(v$content)) {
+      # For text blocks without a title, show a short preview of the content
+      text_preview <- v$content
+      if (is.list(text_preview)) text_preview <- paste(unlist(text_preview), collapse = " ")
+      # Strip markdown/HTML and clean up whitespace
+      text_preview <- gsub("<[^>]+>", "", text_preview)  # Remove HTML tags
+      text_preview <- gsub("\\{\\{[^}]+\\}\\}", "", text_preview)  # Remove shortcodes
+      text_preview <- gsub("[#*_`~\\[\\]()]", "", text_preview)  # Remove markdown chars
+      text_preview <- gsub("\\s+", " ", text_preview)  # Collapse whitespace
+      text_preview <- trimws(text_preview)
+      # Truncate to 50 chars
+      if (nchar(text_preview) > 50) {
+        text_preview <- paste0(substr(text_preview, 1, 47), "...")
+      }
+      if (nchar(text_preview) > 0) {
+        cat(indent_str, content_icon, " ", type_label, " ", cli::col_silver(paste0("\"", text_preview, "\"")), "\n", sep = "")
+      } else {
+        cat(indent_str, content_icon, " ", type_label, "\n", sep = "")
+      }
     } else {
       cat(indent_str, content_icon, " ", type_label, "\n", sep = "")
     }

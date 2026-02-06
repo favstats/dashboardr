@@ -472,11 +472,25 @@
   
   # NEW: At root level, if shared_first_level and multiple children with no root items,
   # wrap all children into a single invisible tabgroup
+  # BUT: Only if children are NOT nested (i.e., they don't have their own children)
+  # Nested tabgroups already have structure, so shared_first_level would be redundant
   if (!is_nested_context && isTRUE(shared_first_level)) {
     has_root_viz <- !is.null(tree$visualizations) && length(tree$visualizations) > 0
     num_children <- if (!is.null(tree$children)) length(tree$children) else 0
     
-    if (!has_root_viz && num_children > 1) {
+    # Check if ANY child has nested children - if so, skip shared_first_level
+    any_child_has_nesting <- FALSE
+    if (num_children > 0) {
+      for (child_name in names(tree$children)) {
+        child_node <- tree$children[[child_name]]
+        if (!is.null(child_node$children) && length(child_node$children) > 0) {
+          any_child_has_nesting <- TRUE
+          break
+        }
+      }
+    }
+    
+    if (!has_root_viz && num_children > 1 && !any_child_has_nesting) {
       # Multiple top-level tabgroups with no loose items - create wrapper
       # Process all children into tabgroups, then wrap in single invisible parent
       child_names <- names(tree$children)

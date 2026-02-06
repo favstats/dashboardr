@@ -5,7 +5,7 @@
 \title{Add Modal to Content Collection (Pipeable)}
 \usage{
 add_modal(
-  content_collection,
+  x,
   modal_id,
   title = NULL,
   modal_content = NULL,
@@ -15,8 +15,6 @@ add_modal(
 )
 }
 \arguments{
-\item{content_collection}{A content_collection or viz_collection to add modal to}
-
 \item{modal_id}{Unique ID for this modal (used in markdown link)}
 
 \item{title}{Modal title (optional)}
@@ -28,6 +26,8 @@ add_modal(
 \item{image_width}{Width of the image (default "100\%"). Can be percentage ("70\%") or pixels ("500px")}
 
 \item{...}{Additional content (data.frames will be converted to tables)}
+
+\item{content_collection}{A content_collection or viz_collection to add modal to}
 }
 \value{
 Updated content_collection with modal added
@@ -66,6 +66,15 @@ content <- create_content() \%>\%
     modal_id = "data",
     title = "Raw Data",
     modal_content = head(mtcars, 10)
+  )
+
+# Works with page objects too
+page <- create_page("Results", data = my_data, type = "bar") \%>\%
+  add_text("[View details](#info){.modal-link}") \%>\%
+  add_modal(
+    modal_id = "info",
+    title = "More Info",
+    modal_content = "Additional details..."
   )
 }
 }

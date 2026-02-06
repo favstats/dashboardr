@@ -92,7 +92,8 @@ create_dashboard(
   lazy_load_tabs = NULL,
   lazy_debug = FALSE,
   pagination_separator = "of",
-  pagination_position = "bottom"
+  pagination_position = "bottom",
+  powered_by_dashboardr = TRUE
 )
 }
 \arguments{
@@ -258,6 +259,8 @@ horizontal scrolling issues on mobile.}
 \item{pagination_separator}{Text to show in pagination navigation (e.g., "of" → "1 of 3"), default: "of". Applies to all paginated pages unless overridden at page level.}
 
 \item{pagination_position}{Default position for pagination controls: "bottom" (default, sticky at bottom), "top" (inline with page title), or "both" (top and bottom). This sets the default for all paginated pages. Individual pages can override this by passing position to add_pagination().}
+
+\item{powered_by_dashboardr}{Whether to automatically add "Powered by dashboardr" branding (default: TRUE). When TRUE, adds a badge-style branding element. Can be overridden by explicitly calling add_powered_by_dashboardr() with custom options, or set to FALSE to disable entirely.}
 }
 \value{
 A dashboard_project object

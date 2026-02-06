@@ -380,11 +380,21 @@ add_pages <- function(proj, ...) {
     if (!is.null(ext_content$sidebar)) {
       content$sidebar <- ext_content$sidebar
     }
+    
+    # Propagate needs_modals flag from external content
+    if (isTRUE(ext_content$needs_modals)) {
+      content$needs_modals <- TRUE
+    }
   }
   
   # Also propagate sidebar from page itself if set
   if (!is.null(page$sidebar)) {
     content$sidebar <- page$sidebar
+  }
+  
+  # Propagate needs_modals flag from page_object
+  if (isTRUE(page$needs_modals)) {
+    content$needs_modals <- TRUE
   }
   
   content

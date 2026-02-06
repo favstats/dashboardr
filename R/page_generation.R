@@ -337,6 +337,7 @@
               "value_box_row" = .generate_value_box_row_block(item),
               "input" = .generate_input_block(item, page),
               "input_row" = .generate_input_row_block(item, page),
+              "modal" = .generate_modal_block(item),
               NULL
             )
             if (!is.null(item_content)) {
@@ -377,6 +378,7 @@
         "value_box_row" = .generate_value_box_row_block(block),
         "input" = .generate_input_block(block, page),
         "input_row" = .generate_input_row_block(block, page),
+        "modal" = .generate_modal_block(block),
         NULL  # Unknown type - skip
       )
       
@@ -428,6 +430,7 @@
         "value_box_row" = .generate_value_box_row_block(item),
         "input" = .generate_input_block(item, page),
         "input_row" = .generate_input_row_block(item, page),
+        "modal" = .generate_modal_block(item),
         NULL
       )
       
@@ -903,6 +906,32 @@
   }
   
   c(lines, "", "")
+}
+
+#' Generate modal block markdown
+#'
+#' Internal function to generate markdown for modal content blocks
+#'
+#' @param block Modal content block with modal_id and html_content
+#' @return Character vector of markdown lines
+#' @keywords internal
+.generate_modal_block <- function(block) {
+  modal_id <- block$modal_id
+  html_content <- block$html_content
+  
+  # Escape single quotes in HTML content
+  escaped_html <- gsub("'", "\\\\'", html_content)
+  
+  c(
+    "",
+    "```{r, echo=FALSE, results='asis'}",
+    paste0("dashboardr::modal_content("),
+    paste0("  modal_id = '", modal_id, "',"),
+    paste0("  text = '", escaped_html, "'"),
+    ")",
+    "```",
+    ""
+  )
 }
 
 #' Generate badge block markdown

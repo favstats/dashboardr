@@ -2,19 +2,28 @@
 % Please edit documentation in R/page_creation.R
 \name{add_content}
 \alias{add_content}
-\title{Add content collection to a page}
+\title{Add content collection(s) to a page}
 \usage{
-add_content(page, content)
+add_content(page, ...)
 }
 \arguments{
 \item{page}{A page_object created by create_page()}
 
-\item{content}{A content collection (from create_viz/create_content)}
+\item{...}{One or more content collections (from create_viz/create_content)}
 }
 \value{
 The updated page_object
 }
 \description{
-Add a pre-built content collection (from create_viz/create_content) to a page.
+Add one or more pre-built content collections (from create_viz/create_content) to a page.
 Use this when you have complex content built separately.
+}
+\examples{
+\dontrun{
+# Add a single collection
+page \%>\% add_content(my_viz)
+
+# Add multiple collections at once
+page \%>\% add_content(viz1, viz2, viz3)
+}
 }

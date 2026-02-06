@@ -186,20 +186,80 @@ modal_content <- function(modal_id, ..., title = NULL, image = NULL, text = NULL
 #'     title = "Raw Data",
 #'     modal_content = head(mtcars, 10)
 #'   )
+#' 
+#' # Works with page objects too
+#' page <- create_page("Results", data = my_data, type = "bar") %>%
+#'   add_text("[View details](#info){.modal-link}") %>%
+#'   add_modal(
+#'     modal_id = "info",
+#'     title = "More Info",
+#'     modal_content = "Additional details..."
+#'   )
 #' }
-add_modal <- function(content_collection, modal_id, title = NULL, 
+add_modal <- function(x, modal_id, title = NULL, 
                       modal_content = NULL, image = NULL, image_width = "100%", ...) {
+  UseMethod("add_modal")
+}
+
+#' @export
+add_modal.default <- function(x, modal_id, title = NULL,
+                              modal_content = NULL, image = NULL, image_width = "100%", ...) {
+  # Build HTML content using helper
+  html_content <- .build_modal_html(title, image, image_width, modal_content, ...)
+  
+  # Create md_text with modal content
+  modal_text <- md_text(
+    "```{r, echo=FALSE, results='asis'}",
+    paste0("dashboardr::modal_content("),
+    paste0("  modal_id = '", modal_id, "',"),
+    paste0("  text = '", gsub("'", "\\\\'", html_content), "'"),
+    ")",
+    "```"
+  )
   
   # Convert viz_collection to content_collection if needed
-  if (inherits(content_collection, "viz_collection") && 
-      !inherits(content_collection, "content_collection")) {
-    class(content_collection) <- c("content_collection", "viz_collection")
+  if (inherits(x, "viz_collection") && 
+      !inherits(x, "content_collection")) {
+    class(x) <- c("content_collection", "viz_collection")
   }
   
   # Mark that this collection needs modals enabled
-  content_collection$needs_modals <- TRUE
+  x$needs_modals <- TRUE
   
-  # Build HTML content
+  # Add modal text to the collection
+  add_text(x, modal_text)
+}
+
+#' @export
+add_modal.page_object <- function(x, modal_id, title = NULL,
+                                   modal_content = NULL, image = NULL, image_width = "100%", ...) {
+  page <- x
+  
+  # Build HTML content using helper
+  html_content <- .build_modal_html(title, image, image_width, modal_content, ...)
+  
+  # Create a modal content block
+  modal_block <- structure(
+    list(
+      type = "modal",
+      modal_id = modal_id,
+      html_content = html_content
+    ),
+    class = "content_block"
+  )
+  
+  # Add to page items
+  page$.items <- c(page$.items, list(modal_block))
+  
+  # Mark that this page needs modals enabled
+  page$needs_modals <- TRUE
+  
+  page
+}
+
+# Helper function to build modal HTML content
+.build_modal_html <- function(title = NULL, image = NULL, image_width = "100%", 
+                               modal_content = NULL, ...) {
   html_parts <- c()
   
   # Add title
@@ -237,20 +297,7 @@ add_modal <- function(content_collection, modal_id, title = NULL,
     }
   }
   
-  html_content <- paste(html_parts, collapse = "\n")
-  
-  # Create md_text with modal content
-  modal_text <- md_text(
-    "```{r, echo=FALSE, results='asis'}",
-    paste0("dashboardr::modal_content("),
-    paste0("  modal_id = '", modal_id, "',"),
-    paste0("  text = '", gsub("'", "\\\\'", html_content), "'"),
-    ")",
-    "```"
-  )
-  
-  # Add modal text to the collection
-  add_text(content_collection, modal_text)
+  paste(html_parts, collapse = "\n")
 }
 
 # Helper to convert data.frame to HTML table
