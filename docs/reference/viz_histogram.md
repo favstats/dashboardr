@@ -31,7 +31,8 @@ viz_histogram(
   x_map_values = NULL,
   x_order = NULL,
   weight_var = NULL,
-  data_labels_enabled = TRUE
+  data_labels_enabled = TRUE,
+  label_decimals = NULL
 )
 ```
 
@@ -141,6 +142,12 @@ viz_histogram(
 
   Logical. If TRUE, show value labels on bars. Default TRUE.
 
+- label_decimals:
+
+  Optional integer. Number of decimal places for data labels. When NULL
+  (default), uses smart defaults: 0 for counts, 1 for percent. Set
+  explicitly to override (e.g., `label_decimals = 2`).
+
 ## Value
 
 A `highcharter` histogram (column) plot object.
@@ -195,11 +202,9 @@ This function performs the following steps:
 ## Examples
 
 ``` r
-#We will work with data from the GSS. The GSS dataset (`gssr`) is a dependency of
-#our `dashboardr` package.
-
+if (FALSE) { # \dontrun{
+# We will work with data from the GSS.
 data(gss_panel20)
-#> Warning: data set 'gss_panel20' not found
 
 # Example 1: Basic histogram of age distribution
 plot1 <- viz_histogram(
@@ -212,9 +217,7 @@ plot1 <- viz_histogram(
   bins = 15,
   color_palette = "steelblue"
 )
-#> Error: object 'gss_panel20' not found
 plot1
-#> Error: object 'plot1' not found
 
 # Example 2: Education levels with custom labels (excluding NAs)
 education_map <- list("0" = "Less than High School",
@@ -236,9 +239,7 @@ plot2 <- viz_histogram(
  color_palette = "pink",
  include_na = FALSE  # Exclude missing values
 )
-#> Error: object 'gss_panel20' not found
 plot2
-#> Error: object 'plot2' not found
 
 # Example 3: Including NA values with custom label
 plot3 <- viz_histogram(
@@ -251,9 +252,7 @@ plot3 <- viz_histogram(
   include_na = TRUE,  # Show NAs as explicit category
   na_label = "Not Reported"  # Custom label for NAs
 )
-#> Error: object 'gss_panel20' not found
 plot3
-#> Error: object 'plot3' not found
 
 # Example 4: Age binning with custom breaks
 age_breaks <- c(18, 30, 45, 60, 75, Inf)
@@ -272,9 +271,6 @@ plot5 <- viz_histogram(
   x_tooltip_suffix = " years old",
   color_palette = "seagreen"
 )
-#> Error: object 'gss_panel20' not found
 plot5
-#> Error: object 'plot5' not found
-
-
+} # }
 ```

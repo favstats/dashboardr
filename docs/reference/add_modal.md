@@ -1,7 +1,7 @@
 # Add Modal to Content Collection (Pipeable)
 
 Adds a modal definition to your content collection. Use markdown links
-with .modal-link class to trigger the modal.
+with {.modal-link} class to trigger the modal.
 
 ## Usage
 
@@ -18,6 +18,10 @@ add_modal(
 ```
 
 ## Arguments
+
+- x:
+
+  A content_collection, viz_collection, or page_object to add modal to
 
 - modal_id:
 
@@ -43,10 +47,6 @@ add_modal(
 - ...:
 
   Additional content (data.frames will be converted to tables)
-
-- content_collection:
-
-  A content_collection or viz_collection to add modal to
 
 ## Value
 

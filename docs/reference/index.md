@@ -19,7 +19,7 @@ Functions for creating and managing dashboards
 - [`generate_dashboard()`](https://favstats.github.io/dashboardr/reference/generate_dashboard.md)
   : Generate all dashboard files
 - [`generate_dashboards()`](https://favstats.github.io/dashboardr/reference/generate_dashboards.md)
-  : Process visualizations into organized specs with tab groups
+  : Generate multiple dashboards
 - [`publish_dashboard()`](https://favstats.github.io/dashboardr/reference/publish_dashboard.md)
   : Publish dashboard to GitHub Pages
 - [`update_dashboard()`](https://favstats.github.io/dashboardr/reference/update_dashboard.md)
@@ -51,7 +51,7 @@ Functions for creating visualizations
 - [`create_content()`](https://favstats.github.io/dashboardr/reference/create_content.md)
   : Create a new content/visualization collection (alias for create_viz)
 - [`add_viz()`](https://favstats.github.io/dashboardr/reference/add_viz.md)
-  : Parse tabgroup into normalized hierarchy
+  : Add a visualization to the collection
 - [`add_vizzes()`](https://favstats.github.io/dashboardr/reference/add_vizzes.md)
   : Add Multiple Visualizations at Once
 - [`combine_viz()`](https://favstats.github.io/dashboardr/reference/combine_viz.md)
@@ -62,7 +62,7 @@ Functions for creating visualizations
   : Merge two content/viz collections
 - [`add_pagination()`](https://favstats.github.io/dashboardr/reference/add_pagination.md)
   [`add_pagination.page_object()`](https://favstats.github.io/dashboardr/reference/add_pagination.md)
-  : Create a sidebar group for hybrid navigation
+  : Add pagination break to visualization collection
 - [`set_tabgroup_labels()`](https://favstats.github.io/dashboardr/reference/set_tabgroup_labels.md)
   : Set or update tabgroup display labels
 - [`preview()`](https://favstats.github.io/dashboardr/reference/preview.md)
@@ -98,6 +98,20 @@ Functions for different chart types
   : Create an interactive map visualization
 - [`viz_treemap()`](https://favstats.github.io/dashboardr/reference/viz_treemap.md)
   : Create a treemap visualization
+- [`viz_lollipop()`](https://favstats.github.io/dashboardr/reference/viz_lollipop.md)
+  : Create a Lollipop Chart
+- [`viz_dumbbell()`](https://favstats.github.io/dashboardr/reference/viz_dumbbell.md)
+  : Create a Dumbbell Chart
+- [`viz_funnel()`](https://favstats.github.io/dashboardr/reference/viz_funnel.md)
+  : Create a Funnel Chart
+- [`viz_gauge()`](https://favstats.github.io/dashboardr/reference/viz_gauge.md)
+  : Create a Gauge or Bullet Chart
+- [`viz_pie()`](https://favstats.github.io/dashboardr/reference/viz_pie.md)
+  : Create a Pie or Donut Chart
+- [`viz_sankey()`](https://favstats.github.io/dashboardr/reference/viz_sankey.md)
+  : Create a Sankey Diagram
+- [`viz_waffle()`](https://favstats.github.io/dashboardr/reference/viz_waffle.md)
+  : Create a Waffle Chart
 
 ## Tooltip Customization
 
@@ -225,14 +239,26 @@ Functions for adding interactive inputs to dashboards
   : Start an input row
 - [`add_reset_button()`](https://favstats.github.io/dashboardr/reference/add_reset_button.md)
   : Add a reset button to reset filters
+- [`add_linked_inputs()`](https://favstats.github.io/dashboardr/reference/add_linked_inputs.md)
+  : Add linked parent-child inputs (cascading dropdowns)
 - [`enable_inputs()`](https://favstats.github.io/dashboardr/reference/enable_inputs.md)
   : Enable Input Filter Functionality
+- [`enable_show_when()`](https://favstats.github.io/dashboardr/reference/enable_show_when.md)
+  : Enable show_when (conditional visibility) script only
+- [`enable_chart_export()`](https://favstats.github.io/dashboardr/reference/enable_chart_export.md)
+  : Enable chart export buttons (PNG/SVG/PDF/CSV)
 - [`end_input_row()`](https://favstats.github.io/dashboardr/reference/end_input_row.md)
   : End an input row
 - [`render_input()`](https://favstats.github.io/dashboardr/reference/render_input.md)
   : Render an input widget
 - [`render_input_row()`](https://favstats.github.io/dashboardr/reference/render_input_row.md)
   : Render a row of input widgets
+- [`render_viz_html()`](https://favstats.github.io/dashboardr/reference/render_viz_html.md)
+  : Render a viz result as raw HTML
+- [`show_when_open()`](https://favstats.github.io/dashboardr/reference/show_when_open.md)
+  : Open a conditional-visibility wrapper
+- [`show_when_close()`](https://favstats.github.io/dashboardr/reference/show_when_close.md)
+  : Close a conditional-visibility wrapper
 
 ## Sidebars
 
@@ -289,9 +315,9 @@ Functions for customizing dashboard appearance
 S3 methods for displaying objects
 
 - [`print(`*`<viz_collection>`*`)`](https://favstats.github.io/dashboardr/reference/print.viz_collection.md)
-  : Create a new dashboard project
+  : Print Visualization Collection
 - [`print(`*`<dashboard_project>`*`)`](https://favstats.github.io/dashboardr/reference/print.dashboard_project.md)
-  : Create iconify icon shortcode
+  : Print Dashboard Project
 - [`print(`*`<page_object>`*`)`](https://favstats.github.io/dashboardr/reference/print.page_object.md)
   : Print method for page objects
 - [`print(`*`<dashboardr_widget>`*`)`](https://favstats.github.io/dashboardr/reference/print.dashboardr_widget.md)
@@ -304,8 +330,8 @@ S3 methods for displaying objects
   : Knitr print method for dashboard projects
 - [`show_structure()`](https://favstats.github.io/dashboardr/reference/show_structure.md)
   : Show collection structure (even with data attached)
-- [`` `+`( ``*`<viz_collection>`*`)`](https://favstats.github.io/dashboardr/reference/plus-viz_collection.md)
-  : Combine viz collections using + operator
+- [`` `+`( ``*`<viz_collection>`*`)`](https://favstats.github.io/dashboardr/reference/plus-.viz_collection.md)
+  : Combine Visualization Collections with + Operator
 - [`` `+`( ``*`<content_collection>`*`)`](https://favstats.github.io/dashboardr/reference/plus-.content_collection.md)
   : Combine Content Collections with + Operator
 

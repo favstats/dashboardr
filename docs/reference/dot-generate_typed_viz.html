@@ -69,7 +69,8 @@ function names and serializing parameters."><meta property="og:image" content="h
     <li><hr class="dropdown-divider"></li>
     <li><a class="dropdown-item" href="../live-demos/tutorial/index.html">🎓 Tutorial Dashboard</a></li>
     <li><a class="dropdown-item" href="../live-demos/showcase/index.html">🚀 Showcase Dashboard</a></li>
-    <li><a class="external-link dropdown-item" href="https://www.digiqmonitor.nl/">🌍 DigIQ Monitor</a></li>
+    <li><a class="dropdown-item" href="../live-demos/sidebar-gss/explorer.html">🕹️ Sidebar Dashboard</a></li>
+    <li><a class="external-link dropdown-item" href="https://www.digiqmonitor.nl/">🖥️ DigIQ Monitor</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>🎨 Tabset Themes</h6></li>
     <li><a class="dropdown-item" href="../live-demos/tabsets/pills/index.html">   Pills</a></li>
@@ -120,18 +121,10 @@ function names and serializing parameters.</p>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>Character vector of R code lines for the visualization</p>
-<p>Character vector of R code lines for the visualization</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>This function:</p><ul><li><p>Maps visualization types to function names (e.g., "stackedbar" → "viz_stackedbar")</p></li>
-<li><p>Excludes internal parameters (type, data_path, tabgroup, text, icon, text_position)</p></li>
-<li><p>Serializes all other parameters using .serialize_arg()
-Generate R code for typed visualizations</p></li>
-</ul><p>Internal function that generates R code for specific visualization types
-(stackedbar, heatmap, histogram, timeline, scatter, bar) by mapping type names to
-function names and serializing parameters.</p>
-<p>This function:</p><ul><li><p>Maps visualization types to function names (e.g., "stackedbar" → "viz_stackedbar")</p></li>
+    <p>This function:</p><ul><li><p>Maps visualization types to function names (e.g., "stackedbar" -&gt; "viz_stackedbar")</p></li>
 <li><p>Excludes internal parameters (type, data_path, tabgroup, text, icon, text_position)</p></li>
 <li><p>Serializes all other parameters using .serialize_arg()</p></li>
 <li><p>Formats the function call with proper indentation</p></li>

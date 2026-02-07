@@ -22,6 +22,10 @@ knit_print(x, ..., options = NULL)
 
   Additional arguments (currently ignored)
 
+- options:
+
+  Knitr chunk options (currently ignored)
+
 ## Value
 
 A knitr asis_output object containing the rendered HTML

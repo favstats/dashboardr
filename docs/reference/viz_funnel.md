@@ -1,0 +1,133 @@
+# Create a Funnel Chart
+
+Creates an interactive funnel chart using highcharter. Funnel charts
+show sequential stages in a process, with each stage narrower than the
+previous, representing drop-off or conversion rates.
+
+## Usage
+
+``` r
+viz_funnel(
+  data,
+  x_var,
+  y_var,
+  title = NULL,
+  subtitle = NULL,
+  color_palette = NULL,
+  x_order = NULL,
+  neck_width = "30%",
+  neck_height = "25%",
+  show_conversion = TRUE,
+  data_labels_enabled = TRUE,
+  data_labels_format = "{point.name}: {point.y:,.0f}",
+  show_in_legend = FALSE,
+  reversed = FALSE,
+  weight_var = NULL,
+  tooltip = NULL,
+  tooltip_prefix = "",
+  tooltip_suffix = "",
+  height = 400
+)
+```
+
+## Arguments
+
+- data:
+
+  A data frame containing the data.
+
+- x_var:
+
+  Character string. Name of the categorical variable (stage names).
+
+- y_var:
+
+  Character string. Name of the numeric column with values per stage.
+
+- title:
+
+  Optional main title for the chart.
+
+- subtitle:
+
+  Optional subtitle for the chart.
+
+- color_palette:
+
+  Optional character vector of colors for the stages.
+
+- x_order:
+
+  Optional character vector specifying the order of stages (top to
+  bottom). If NULL, uses the order in the data.
+
+- neck_width:
+
+  Character string. Width of the funnel neck as percentage. Default
+  "30%". Set to "0%" for a pyramid shape.
+
+- neck_height:
+
+  Character string. Height of the neck section as percentage. Default
+  "25%".
+
+- show_conversion:
+
+  Logical. If TRUE (default), show conversion rates between stages in
+  tooltips.
+
+- data_labels_enabled:
+
+  Logical. If TRUE (default), show labels on stages.
+
+- data_labels_format:
+
+  Character string. Format for data labels. Default "{point.name}:
+  {point.y:,.0f}".
+
+- show_in_legend:
+
+  Logical. If TRUE, show a legend. Default FALSE.
+
+- reversed:
+
+  Logical. If TRUE, reverse the funnel (pyramid). Default FALSE.
+
+- weight_var:
+
+  Optional character string. Name of weight variable for aggregation.
+
+- tooltip:
+
+  A tooltip configuration created with
+  [`tooltip()`](https://favstats.github.io/dashboardr/reference/tooltip.md),
+  OR a format string.
+
+- tooltip_prefix:
+
+  Optional string prepended to tooltip values.
+
+- tooltip_suffix:
+
+  Optional string appended to tooltip values.
+
+- height:
+
+  Numeric. Chart height in pixels. Default 400.
+
+## Value
+
+A highcharter plot object.
+
+## Examples
+
+``` r
+if (FALSE) { # \dontrun{
+df <- data.frame(
+  stage = c("Visits", "Signups", "Trial", "Purchase"),
+  count = c(10000, 3000, 800, 200)
+)
+viz_funnel(df, x_var = "stage", y_var = "count",
+           title = "Conversion Funnel")
+} # }
+```

@@ -67,7 +67,8 @@ the piping workflow with add_landingpage() and add_page()."><meta property="og:i
     <li><hr class="dropdown-divider"></li>
     <li><a class="dropdown-item" href="../live-demos/tutorial/index.html">🎓 Tutorial Dashboard</a></li>
     <li><a class="dropdown-item" href="../live-demos/showcase/index.html">🚀 Showcase Dashboard</a></li>
-    <li><a class="external-link dropdown-item" href="https://www.digiqmonitor.nl/">🌍 DigIQ Monitor</a></li>
+    <li><a class="dropdown-item" href="../live-demos/sidebar-gss/explorer.html">🕹️ Sidebar Dashboard</a></li>
+    <li><a class="external-link dropdown-item" href="https://www.digiqmonitor.nl/">🖥️ DigIQ Monitor</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>🎨 Tabset Themes</h6></li>
     <li><a class="dropdown-item" href="../live-demos/tabsets/pills/index.html">   Pills</a></li>
@@ -192,7 +193,8 @@ the piping workflow with add_landingpage() and add_page().</p>
 <span>  lazy_debug <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  pagination_separator <span class="op">=</span> <span class="st">"of"</span>,</span>
 <span>  pagination_position <span class="op">=</span> <span class="st">"bottom"</span>,</span>
-<span>  powered_by_dashboardr <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>  powered_by_dashboardr <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  chart_export <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -252,6 +254,15 @@ the piping workflow with add_landingpage() and add_page().</p>
 <dd><p>Path to custom SCSS file (optional)</p></dd>
 
 
+<dt id="arg-tabset-theme">tabset_theme<a class="anchor" aria-label="anchor" href="#arg-tabset-theme"></a></dt>
+<dd><p>Tabset theme: "minimal" (default), "modern", "pills", "classic",
+"underline", "segmented", or "none"</p></dd>
+
+
+<dt id="arg-tabset-colors">tabset_colors<a class="anchor" aria-label="anchor" href="#arg-tabset-colors"></a></dt>
+<dd><p>Named list of tabset colors (e.g., list(active_bg = "#2563eb"))</p></dd>
+
+
 <dt id="arg-author">author<a class="anchor" aria-label="anchor" href="#arg-author"></a></dt>
 <dd><p>Author name for the site (optional)</p></dd>
 
@@ -278,6 +289,58 @@ the piping workflow with add_landingpage() and add_page().</p>
 
 <dt id="arg-sidebar-background">sidebar_background<a class="anchor" aria-label="anchor" href="#arg-sidebar-background"></a></dt>
 <dd><p>Sidebar background color (optional)</p></dd>
+
+
+<dt id="arg-sidebar-foreground">sidebar_foreground<a class="anchor" aria-label="anchor" href="#arg-sidebar-foreground"></a></dt>
+<dd><p>Sidebar foreground (text) color (optional)</p></dd>
+
+
+<dt id="arg-sidebar-border">sidebar_border<a class="anchor" aria-label="anchor" href="#arg-sidebar-border"></a></dt>
+<dd><p>Whether to show sidebar border (default TRUE)</p></dd>
+
+
+<dt id="arg-sidebar-alignment">sidebar_alignment<a class="anchor" aria-label="anchor" href="#arg-sidebar-alignment"></a></dt>
+<dd><p>Sidebar alignment: "left" (default) or "right"</p></dd>
+
+
+<dt id="arg-sidebar-collapse-level">sidebar_collapse_level<a class="anchor" aria-label="anchor" href="#arg-sidebar-collapse-level"></a></dt>
+<dd><p>Heading level at which sidebar items collapse (default 2)</p></dd>
+
+
+<dt id="arg-sidebar-pinned">sidebar_pinned<a class="anchor" aria-label="anchor" href="#arg-sidebar-pinned"></a></dt>
+<dd><p>Whether sidebar is pinned open (default FALSE)</p></dd>
+
+
+<dt id="arg-sidebar-tools">sidebar_tools<a class="anchor" aria-label="anchor" href="#arg-sidebar-tools"></a></dt>
+<dd><p>Sidebar tools configuration (optional)</p></dd>
+
+
+<dt id="arg-sidebar-contents">sidebar_contents<a class="anchor" aria-label="anchor" href="#arg-sidebar-contents"></a></dt>
+<dd><p>Sidebar contents configuration (optional)</p></dd>
+
+
+<dt id="arg-breadcrumbs">breadcrumbs<a class="anchor" aria-label="anchor" href="#arg-breadcrumbs"></a></dt>
+<dd><p>Whether to show breadcrumbs navigation (default TRUE)</p></dd>
+
+
+<dt id="arg-page-navigation">page_navigation<a class="anchor" aria-label="anchor" href="#arg-page-navigation"></a></dt>
+<dd><p>Whether to show prev/next page navigation (default FALSE)</p></dd>
+
+
+<dt id="arg-back-to-top">back_to_top<a class="anchor" aria-label="anchor" href="#arg-back-to-top"></a></dt>
+<dd><p>Whether to show a back-to-top button (default FALSE)</p></dd>
+
+
+<dt id="arg-reader-mode">reader_mode<a class="anchor" aria-label="anchor" href="#arg-reader-mode"></a></dt>
+<dd><p>Whether to enable reader mode (default FALSE)</p></dd>
+
+
+<dt id="arg-repo-url">repo_url<a class="anchor" aria-label="anchor" href="#arg-repo-url"></a></dt>
+<dd><p>Repository URL for source code link (optional)</p></dd>
+
+
+<dt id="arg-repo-actions">repo_actions<a class="anchor" aria-label="anchor" href="#arg-repo-actions"></a></dt>
+<dd><p>Repository actions configuration (optional)</p></dd>
 
 
 <dt id="arg-navbar-style">navbar_style<a class="anchor" aria-label="anchor" href="#arg-navbar-style"></a></dt>
@@ -407,7 +470,7 @@ Other options: "article" (constrained width), "custom". See Quarto docs for deta
 
 
 <dt id="arg-mobile-toc">mobile_toc<a class="anchor" aria-label="anchor" href="#arg-mobile-toc"></a></dt>
-<dd><p>Logical. If TRUE, adds a collapsible mobile-friendly TOC button (📑 icon)
+<dd><p>Logical. If TRUE, adds a collapsible mobile-friendly TOC button
 that appears in the top-right corner. Useful for mobile/tablet viewing. Default: FALSE.</p></dd>
 
 
@@ -502,7 +565,7 @@ horizontal scrolling issues on mobile.</p></dd>
 
 
 <dt id="arg-pagination-separator">pagination_separator<a class="anchor" aria-label="anchor" href="#arg-pagination-separator"></a></dt>
-<dd><p>Text to show in pagination navigation (e.g., "of" → "1 of 3"), default: "of". Applies to all paginated pages unless overridden at page level.</p></dd>
+<dd><p>Text to show in pagination navigation (e.g., "of" -&gt; "1 of 3"), default: "of". Applies to all paginated pages unless overridden at page level.</p></dd>
 
 
 <dt id="arg-pagination-position">pagination_position<a class="anchor" aria-label="anchor" href="#arg-pagination-position"></a></dt>
@@ -511,6 +574,10 @@ horizontal scrolling issues on mobile.</p></dd>
 
 <dt id="arg-powered-by-dashboardr">powered_by_dashboardr<a class="anchor" aria-label="anchor" href="#arg-powered-by-dashboardr"></a></dt>
 <dd><p>Whether to automatically add "Powered by dashboardr" branding (default: TRUE). When TRUE, adds a badge-style branding element. Can be overridden by explicitly calling add_powered_by_dashboardr() with custom options, or set to FALSE to disable entirely.</p></dd>
+
+
+<dt id="arg-chart-export">chart_export<a class="anchor" aria-label="anchor" href="#arg-chart-export"></a></dt>
+<dd><p>Whether to enable chart export functionality (default FALSE)</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -534,7 +601,7 @@ horizontal scrolling issues on mobile.</p></dd>
 <span class="r-in"><span>  theme <span class="op">=</span> <span class="st">"cosmo"</span>,</span></span>
 <span class="r-in"><span>  author <span class="op">=</span> <span class="st">"Dr. Jane Smith"</span>,</span></span>
 <span class="r-in"><span>  description <span class="op">=</span> <span class="st">"Comprehensive data analysis dashboard"</span>,</span></span>
-<span class="r-in"><span>  page_footer <span class="op">=</span> <span class="st">"© 2024 Company Name"</span>,</span></span>
+<span class="r-in"><span>  page_footer <span class="op">=</span> <span class="st">"(c) 2024 Company Name"</span>,</span></span>
 <span class="r-in"><span>  sidebar <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
 <span class="r-in"><span>  toc <span class="op">=</span> <span class="st">"floating"</span>,</span></span>
 <span class="r-in"><span>  google_analytics <span class="op">=</span> <span class="st">"GA-XXXXXXXXX"</span>,</span></span>
@@ -556,7 +623,7 @@ horizontal scrolling issues on mobile.</p></dd>
 <span class="r-in"><span>  <span class="st">"styled_dashboard"</span>,</span></span>
 <span class="r-in"><span>  <span class="st">"Beautifully Styled Dashboard"</span>,</span></span>
 <span class="r-in"><span>  navbar_bg_color <span class="op">=</span> <span class="st">"#1e40af"</span>,     <span class="co"># Deep blue navbar</span></span></span>
-<span class="r-in"><span>  mainfont <span class="op">=</span> <span class="st">"Fira Sans"</span>,           <span class="co"># Smooth, modern (default choice) ⭐</span></span></span>
+<span class="r-in"><span>  mainfont <span class="op">=</span> <span class="st">"Fira Sans"</span>,           <span class="co"># Smooth, modern (default choice)</span></span></span>
 <span class="r-in"><span>  fontsize <span class="op">=</span> <span class="st">"16px"</span>,</span></span>
 <span class="r-in"><span>  fontcolor <span class="op">=</span> <span class="st">"#1f2937"</span>,            <span class="co"># Dark gray for readability</span></span></span>
 <span class="r-in"><span>  linkcolor <span class="op">=</span> <span class="st">"#2563eb"</span>,            <span class="co"># Vibrant blue links</span></span></span>

@@ -34,6 +34,7 @@ viz_bar(
   tooltip_suffix = "",
   x_tooltip_suffix = "",
   data_labels_enabled = TRUE,
+  label_decimals = NULL,
   complete_groups = TRUE,
   y_var = NULL
 )
@@ -109,6 +110,10 @@ See \code{\link{tooltip}} for full customization options.}
 
 \item{data_labels_enabled}{Logical. If TRUE, show value labels on bars.
 Default TRUE.}
+
+\item{label_decimals}{Optional integer. Number of decimal places for data labels.
+When NULL (default), uses smart defaults: 0 for counts/percent, 1 for means.
+Set explicitly to override (e.g., \code{label_decimals = 2} for two decimal places).}
 
 \item{complete_groups}{Logical. When TRUE (default), ensures all x_var/group_var
 combinations are present in the output, filling missing combinations with 0.

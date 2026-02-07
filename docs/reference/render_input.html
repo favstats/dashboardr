@@ -65,7 +65,8 @@
     <li><hr class="dropdown-divider"></li>
     <li><a class="dropdown-item" href="../live-demos/tutorial/index.html">🎓 Tutorial Dashboard</a></li>
     <li><a class="dropdown-item" href="../live-demos/showcase/index.html">🚀 Showcase Dashboard</a></li>
-    <li><a class="external-link dropdown-item" href="https://www.digiqmonitor.nl/">🌍 DigIQ Monitor</a></li>
+    <li><a class="dropdown-item" href="../live-demos/sidebar-gss/explorer.html">🕹️ Sidebar Dashboard</a></li>
+    <li><a class="external-link dropdown-item" href="https://www.digiqmonitor.nl/">🖥️ DigIQ Monitor</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>🎨 Tabset Themes</h6></li>
     <li><a class="dropdown-item" href="../live-demos/tabsets/pills/index.html">   Pills</a></li>
@@ -129,7 +130,9 @@
 <span>  labels <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  size <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"md"</span>, <span class="st">"sm"</span>, <span class="st">"lg"</span><span class="op">)</span>,</span>
 <span>  help <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  disabled <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  disabled <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  linked_child_id <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  options_by_parent <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -203,6 +206,30 @@ Can also be a named list for grouped options in selects.</p></dd>
 <dd><p>Whether to display options inline (for checkbox/radio)</p></dd>
 
 
+<dt id="arg-stacked">stacked<a class="anchor" aria-label="anchor" href="#arg-stacked"></a></dt>
+<dd><p>Whether to stack options vertically (for checkbox/radio). Default FALSE.</p></dd>
+
+
+<dt id="arg-stacked-align">stacked_align<a class="anchor" aria-label="anchor" href="#arg-stacked-align"></a></dt>
+<dd><p>Alignment when stacked: "center" (default), "left", or "right"</p></dd>
+
+
+<dt id="arg-group-align">group_align<a class="anchor" aria-label="anchor" href="#arg-group-align"></a></dt>
+<dd><p>Alignment for option groups: "left" (default), "center", or "right"</p></dd>
+
+
+<dt id="arg-ncol">ncol<a class="anchor" aria-label="anchor" href="#arg-ncol"></a></dt>
+<dd><p>Number of columns for grid layout of options</p></dd>
+
+
+<dt id="arg-nrow">nrow<a class="anchor" aria-label="anchor" href="#arg-nrow"></a></dt>
+<dd><p>Number of rows for grid layout of options</p></dd>
+
+
+<dt id="arg-columns">columns<a class="anchor" aria-label="anchor" href="#arg-columns"></a></dt>
+<dd><p>Column configuration for grid layout</p></dd>
+
+
 <dt id="arg-toggle-series">toggle_series<a class="anchor" aria-label="anchor" href="#arg-toggle-series"></a></dt>
 <dd><p>For switch type: name of the series to toggle on/off</p></dd>
 
@@ -225,6 +252,14 @@ Can also be a named list for grouped options in selects.</p></dd>
 
 <dt id="arg-disabled">disabled<a class="anchor" aria-label="anchor" href="#arg-disabled"></a></dt>
 <dd><p>Whether the input is disabled</p></dd>
+
+
+<dt id="arg-linked-child-id">linked_child_id<a class="anchor" aria-label="anchor" href="#arg-linked-child-id"></a></dt>
+<dd><p>ID of linked child input for cascading inputs</p></dd>
+
+
+<dt id="arg-options-by-parent">options_by_parent<a class="anchor" aria-label="anchor" href="#arg-options-by-parent"></a></dt>
+<dd><p>Named list mapping parent values to child options</p></dd>
 
 </dl></div>
     <div class="section level2">

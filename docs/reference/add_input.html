@@ -69,7 +69,8 @@ sliders, text search, number inputs, and button groups."><meta property="og:imag
     <li><hr class="dropdown-divider"></li>
     <li><a class="dropdown-item" href="../live-demos/tutorial/index.html">🎓 Tutorial Dashboard</a></li>
     <li><a class="dropdown-item" href="../live-demos/showcase/index.html">🚀 Showcase Dashboard</a></li>
-    <li><a class="external-link dropdown-item" href="https://www.digiqmonitor.nl/">🌍 DigIQ Monitor</a></li>
+    <li><a class="dropdown-item" href="../live-demos/sidebar-gss/explorer.html">🕹️ Sidebar Dashboard</a></li>
+    <li><a class="external-link dropdown-item" href="https://www.digiqmonitor.nl/">🖥️ DigIQ Monitor</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>🎨 Tabset Themes</h6></li>
     <li><a class="dropdown-item" href="../live-demos/tabsets/pills/index.html">   Pills</a></li>
@@ -142,7 +143,9 @@ sliders, text search, number inputs, and button groups.</p>
 <span>  mr <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  mb <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  ml <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  tabgroup <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  tabgroup <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  .linked_parent_id <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  .options_by_parent <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -222,6 +225,30 @@ first option (for radio/button_group).</p></dd>
 <dd><p>Whether to display options inline (for checkbox/radio, default TRUE)</p></dd>
 
 
+<dt id="arg-stacked">stacked<a class="anchor" aria-label="anchor" href="#arg-stacked"></a></dt>
+<dd><p>Whether to stack options vertically (for checkbox/radio). Default FALSE.</p></dd>
+
+
+<dt id="arg-stacked-align">stacked_align<a class="anchor" aria-label="anchor" href="#arg-stacked-align"></a></dt>
+<dd><p>Alignment when stacked: "center" (default), "left", or "right"</p></dd>
+
+
+<dt id="arg-group-align">group_align<a class="anchor" aria-label="anchor" href="#arg-group-align"></a></dt>
+<dd><p>Alignment for option groups: "left" (default), "center", or "right"</p></dd>
+
+
+<dt id="arg-ncol">ncol<a class="anchor" aria-label="anchor" href="#arg-ncol"></a></dt>
+<dd><p>Number of columns for grid layout of options</p></dd>
+
+
+<dt id="arg-nrow">nrow<a class="anchor" aria-label="anchor" href="#arg-nrow"></a></dt>
+<dd><p>Number of rows for grid layout of options</p></dd>
+
+
+<dt id="arg-columns">columns<a class="anchor" aria-label="anchor" href="#arg-columns"></a></dt>
+<dd><p>Column configuration for grid layout</p></dd>
+
+
 <dt id="arg-toggle-series">toggle_series<a class="anchor" aria-label="anchor" href="#arg-toggle-series"></a></dt>
 <dd><p>For switch type: name of the series to toggle visibility on/off</p></dd>
 
@@ -247,8 +274,40 @@ labels are shown at the min/max positions.</p></dd>
 <dd><p>Whether the input is disabled (default FALSE)</p></dd>
 
 
+<dt id="arg-add-all">add_all<a class="anchor" aria-label="anchor" href="#arg-add-all"></a></dt>
+<dd><p>Whether to add an "All" option (default FALSE)</p></dd>
+
+
+<dt id="arg-add-all-label">add_all_label<a class="anchor" aria-label="anchor" href="#arg-add-all-label"></a></dt>
+<dd><p>Label for the "All" option (default "All")</p></dd>
+
+
+<dt id="arg-mt">mt<a class="anchor" aria-label="anchor" href="#arg-mt"></a></dt>
+<dd><p>Margin top (CSS value, e.g., "10px")</p></dd>
+
+
+<dt id="arg-mr">mr<a class="anchor" aria-label="anchor" href="#arg-mr"></a></dt>
+<dd><p>Margin right (CSS value)</p></dd>
+
+
+<dt id="arg-mb">mb<a class="anchor" aria-label="anchor" href="#arg-mb"></a></dt>
+<dd><p>Margin bottom (CSS value)</p></dd>
+
+
+<dt id="arg-ml">ml<a class="anchor" aria-label="anchor" href="#arg-ml"></a></dt>
+<dd><p>Margin left (CSS value)</p></dd>
+
+
 <dt id="arg-tabgroup">tabgroup<a class="anchor" aria-label="anchor" href="#arg-tabgroup"></a></dt>
 <dd><p>Optional tabgroup for organizing content</p></dd>
+
+
+<dt id="arg--linked-parent-id">.linked_parent_id<a class="anchor" aria-label="anchor" href="#arg--linked-parent-id"></a></dt>
+<dd><p>Internal. ID of linked parent input for cascading inputs</p></dd>
+
+
+<dt id="arg--options-by-parent">.options_by_parent<a class="anchor" aria-label="anchor" href="#arg--options-by-parent"></a></dt>
+<dd><p>Internal. Named list mapping parent values to child options</p></dd>
 
 </dl></div>
     <div class="section level2">

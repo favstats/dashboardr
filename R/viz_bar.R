@@ -50,6 +50,9 @@
 #' @param x_tooltip_suffix Optional string appended to x-axis category in tooltips.
 #' @param data_labels_enabled Logical. If TRUE, show value labels on bars.
 #'   Default TRUE.
+#' @param label_decimals Optional integer. Number of decimal places for data labels.
+#'   When NULL (default), uses smart defaults: 0 for counts/percent, 1 for means.
+#'   Set explicitly to override (e.g., `label_decimals = 2` for two decimal places).
 #' @param complete_groups Logical. When TRUE (default), ensures all x_var/group_var
 #'   combinations are present in the output, filling missing combinations with 0.
 #'   This prevents bar misalignment when some groups have no observations for 
@@ -143,6 +146,7 @@ viz_bar <- function(data,
                        tooltip_suffix = "",
                        x_tooltip_suffix = "",
                        data_labels_enabled = TRUE,
+                       label_decimals = NULL,
                        complete_groups = TRUE,
                        y_var = NULL) {
   
@@ -632,12 +636,20 @@ viz_bar <- function(data,
   }
   
   # Enable data labels
-  # Use appropriate decimal places based on bar_type
-  data_label_format <- switch(bar_type,
-    "percent" = "{point.y:.0f}%",
-    "mean" = "{point.y:.1f}",  # One decimal for means
-    "{point.y:.0f}"  # Whole numbers for counts
-  )
+  # Use appropriate decimal places based on bar_type (or explicit label_decimals)
+  if (!is.null(label_decimals)) {
+    dec <- as.integer(label_decimals)
+    data_label_format <- switch(bar_type,
+      "percent" = sprintf("{point.y:.%df}%%", dec),
+      sprintf("{point.y:.%df}", dec)
+    )
+  } else {
+    data_label_format <- switch(bar_type,
+      "percent" = "{point.y:.0f}%",
+      "mean" = "{point.y:.1f}",  # One decimal for means
+      "{point.y:.0f}"  # Whole numbers for counts
+    )
+  }
   
   hc <- hc %>%
     highcharter::hc_plotOptions(

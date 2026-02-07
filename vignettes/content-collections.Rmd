@@ -328,21 +328,6 @@ create_content(data = gss, type = "stackedbar") %>%
   preview()
 ```
 
-**Tip**: Labels and tooltip settings can also be set as collection defaults in `create_content()`, so they apply to all visualizations:
-
-```{r}
-# Set tooltip suffix as a default for all charts
-create_content(
-  data = gss, 
-  type = "bar",
-  bar_type = "percent",
-  tooltip_suffix = "%",
-  y_label = "Percentage"
-) %>%
-  add_viz(x_var = "degree", title = "Education") %>%
-  add_viz(x_var = "race", title = "Race") %>%
-  preview()
-```
 
 ## ➕ Combining Collections
 
@@ -361,9 +346,6 @@ combined <- demographics + attitudes
 print(combined)
 ```
 
-```{r}
-combined %>% preview()
-```
 
 ### combine_viz()
 
@@ -597,7 +579,7 @@ Heatmaps visualize how a numeric value varies across two categorical dimensions,
 | `y_var` | Categorical variable for rows |
 | `value_var` | Numeric variable to aggregate and color by |
 
-**How it works:** The heatmap automatically aggregates `value_var` for each unique combination of `x_var` and `y_var`. **By default, it calculates the mean** - so if you have 50 people with a bachelor's degree who are "very happy", the cell shows their average age.
+**How it works:** The heatmap automatically aggregates `value_var` for each unique combination of `x_var` and `y_var`. **By default, it calculates the mean** - so if you have 50 people with a bachelor's degree who are "very happy", the cell shows their average age. You can change this with `agg_fun` (e.g., `agg_fun = median` for medians).
 
 ```{r}
 create_content(data = gss, type = "heatmap") %>%
@@ -605,7 +587,10 @@ create_content(data = gss, type = "heatmap") %>%
     x_var = "degree",
     y_var = "happy",
     value_var = "age",
-    title = "Average Age by Education & Happiness"
+    title = "Average Age by Education & Happiness",
+    color_palette = c("#FFF5F0", "#67000D"),
+    label_decimals = 0,
+    weight_var = "wtssps"
   ) %>%
   preview()
 ```
@@ -614,55 +599,13 @@ create_content(data = gss, type = "heatmap") %>%
 
 | Parameter | Description | Default |
 |-----------|-------------|---------|
-| `agg_fun` | Aggregation function | `mean` |
+| `agg_fun` | Aggregation function (e.g., `mean`, `median`, `sum`) | `mean` |
+| `label_decimals` | Decimal places for cell labels and tooltips | `1` |
 | `color_palette` | Two colors for gradient (low, high) | `c("#FFFFFF", "#7CB5EC")` |
 | `color_min` / `color_max` | Fixed color scale bounds | Auto from data |
 | `x_order` / `y_order` | Custom category ordering | Auto |
 | `data_labels_enabled` | Show values in cells | `TRUE` |
 | `weight_var` | Column for weighted aggregation | `NULL` |
-
-**Change the aggregation function** with `agg_fun`. Use any R function that takes a vector and returns a single value:
-
-```{r}
-# Median instead of mean
-create_content(data = gss, type = "heatmap") %>%
-  add_viz(
-    x_var = "degree",
-    y_var = "happy",
-    value_var = "age",
-    agg_fun = median,
-    title = "Median Age by Education & Happiness"
-  ) %>%
-  preview()
-```
-
-**Customize the color gradient** with `color_palette` - provide low and high colors:
-
-```{r}
-create_content(data = gss, type = "heatmap") %>%
-  add_viz(
-    x_var = "degree",
-    y_var = "happy",
-    value_var = "age",
-    title = "Custom Colors (Red gradient)",
-    color_palette = c("#FFF5F0", "#67000D")
-  ) %>%
-  preview()
-```
-
-**Use survey weights** for proper weighted means:
-
-```{r}
-create_content(data = gss, type = "heatmap") %>%
-  add_viz(
-    x_var = "degree",
-    y_var = "happy",
-    value_var = "age",
-    weight_var = "wtssps",
-    title = "Weighted Average Age"
-  ) %>%
-  preview()
-```
 
 See the [Heatmap vignette](heatmap_vignette.html) for more options.
 
@@ -788,19 +731,7 @@ create_content(data = map_data, type = "map") %>%
   preview()
 ```
 
-**Custom color palettes** - use any two colors for the gradient:
 
-```{r}
-create_content(data = map_data, type = "map") %>%
-  add_viz(
-    value_var = "gdpPercap",
-    join_var = "iso2c",
-    map_type = "custom/world",
-    title = "GDP per Capita",
-    color_palette = c("#f7fbff", "#08306b")  # Light to dark blue
-  ) %>%
-  preview()
-```
 
 **Available map types:**
 
@@ -1238,7 +1169,7 @@ Beyond visualizations created with `add_viz()`, you can embed tables and custom 
 
 Use `add_gt()` to embed publication-quality tables created with the [gt package](https://gt.rstudio.com/):
                               
-```{r}
+```{r, warning = FALSE}
 # Create a summary table
 summary_data <- gss %>%
   group_by(degree) %>%
@@ -1258,13 +1189,13 @@ gt_example <- create_content() %>%
 print(gt_example)
 ```
 
-```{r}
+```{r, warning = FALSE}
 gt_example %>% preview()
 ```
 
 You can also pass a data frame directly - it will be converted to a gt table automatically:
 
-```{r}
+```{r, warning = FALSE}
 simple_gt <- create_content() %>%
   add_gt(head(summary_data, 3), caption = "Top 3 Education Levels")
 
@@ -1540,10 +1471,10 @@ treemap_preagg %>% preview()
 Visual separators between content sections:
  
 ```{r}
-divider_content <- create_content(data = gss, type = "bar") %>%
-  add_viz(x_var = "degree", title = "Education") %>%
+divider_content <- create_content() %>%
+  add_text("## Section One", "", "Content for the first section.") %>%
   add_divider() %>%
-  add_viz(x_var = "happy", title = "Happiness")
+  add_text("## Section Two", "", "Content for the second section.")
 
 print(divider_content)
 ```

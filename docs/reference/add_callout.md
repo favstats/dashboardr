@@ -18,6 +18,11 @@ add_callout(
 
 ## Arguments
 
+- x:
+
+  A content_collection, viz_collection, sidebar_container, or
+  page_object
+
 - text:
 
   Callout content
@@ -42,10 +47,6 @@ add_callout(
 
   Optional tabgroup for organizing content (character vector for nested
   tabs)
-
-- content:
-
-  A content_collection or viz_collection object
 
 ## Value
 

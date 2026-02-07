@@ -119,9 +119,9 @@ A `highcharter` boxplot object.
 ## Examples
 
 ``` r
+if (FALSE) { # \dontrun{
 # Basic boxplot
 data(gss_panel20)
-#> Warning: data set 'gss_panel20' not found
 
 # Example 1: Simple boxplot of age
 plot1 <- viz_boxplot(
@@ -129,9 +129,7 @@ plot1 <- viz_boxplot(
   y_var = "age",
   title = "Age Distribution"
 )
-#> Error: object 'gss_panel20' not found
 plot1
-#> Error: object 'plot1' not found
 
 # Example 2: Boxplot by education level
 plot2 <- viz_boxplot(
@@ -142,9 +140,7 @@ plot2 <- viz_boxplot(
   x_label = "Highest Degree",
   y_label = "Age (years)"
 )
-#> Error: object 'gss_panel20' not found
 plot2
-#> Error: object 'plot2' not found
 
 # Example 3: Horizontal boxplot without outliers
 plot3 <- viz_boxplot(
@@ -155,7 +151,6 @@ plot3 <- viz_boxplot(
   horizontal = TRUE,
   show_outliers = FALSE
 )
-#> Error: object 'gss_panel20' not found
 plot3
-#> Error: object 'plot3' not found
+} # }
 ```

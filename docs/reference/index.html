@@ -65,7 +65,8 @@
     <li><hr class="dropdown-divider"></li>
     <li><a class="dropdown-item" href="../live-demos/tutorial/index.html">🎓 Tutorial Dashboard</a></li>
     <li><a class="dropdown-item" href="../live-demos/showcase/index.html">🚀 Showcase Dashboard</a></li>
-    <li><a class="external-link dropdown-item" href="https://www.digiqmonitor.nl/">🌍 DigIQ Monitor</a></li>
+    <li><a class="dropdown-item" href="../live-demos/sidebar-gss/explorer.html">🕹️ Sidebar Dashboard</a></li>
+    <li><a class="external-link dropdown-item" href="https://www.digiqmonitor.nl/">🖥️ DigIQ Monitor</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>🎨 Tabset Themes</h6></li>
     <li><a class="dropdown-item" href="../live-demos/tabsets/pills/index.html">   Pills</a></li>
@@ -156,7 +157,7 @@
           <code><a href="generate_dashboards.html">generate_dashboards()</a></code>
 
         </dt>
-        <dd>Process visualizations into organized specs with tab groups</dd>
+        <dd>Generate multiple dashboards</dd>
 
         <dt>
 
@@ -251,7 +252,7 @@
           <code><a href="add_viz.html">add_viz()</a></code>
 
         </dt>
-        <dd>Parse tabgroup into normalized hierarchy</dd>
+        <dd>Add a visualization to the collection</dd>
 
         <dt>
 
@@ -286,7 +287,7 @@
           <code><a href="add_pagination.html">add_pagination()</a></code> <code><a href="add_pagination.html">add_pagination.page_object()</a></code>
 
         </dt>
-        <dd>Create a sidebar group for hybrid navigation</dd>
+        <dd>Add pagination break to visualization collection</dd>
 
         <dt>
 
@@ -401,6 +402,55 @@
 
         </dt>
         <dd>Create a treemap visualization</dd>
+
+        <dt>
+
+          <code><a href="viz_lollipop.html">viz_lollipop()</a></code>
+
+        </dt>
+        <dd>Create a Lollipop Chart</dd>
+
+        <dt>
+
+          <code><a href="viz_dumbbell.html">viz_dumbbell()</a></code>
+
+        </dt>
+        <dd>Create a Dumbbell Chart</dd>
+
+        <dt>
+
+          <code><a href="viz_funnel.html">viz_funnel()</a></code>
+
+        </dt>
+        <dd>Create a Funnel Chart</dd>
+
+        <dt>
+
+          <code><a href="viz_gauge.html">viz_gauge()</a></code>
+
+        </dt>
+        <dd>Create a Gauge or Bullet Chart</dd>
+
+        <dt>
+
+          <code><a href="viz_pie.html">viz_pie()</a></code>
+
+        </dt>
+        <dd>Create a Pie or Donut Chart</dd>
+
+        <dt>
+
+          <code><a href="viz_sankey.html">viz_sankey()</a></code>
+
+        </dt>
+        <dd>Create a Sankey Diagram</dd>
+
+        <dt>
+
+          <code><a href="viz_waffle.html">viz_waffle()</a></code>
+
+        </dt>
+        <dd>Create a Waffle Chart</dd>
       </dl></div><div class="section level2">
       <h2 id="tooltip-customization">Tooltip Customization<a class="anchor" aria-label="anchor" href="#tooltip-customization"></a></h2>
 
@@ -763,10 +813,31 @@
 
         <dt>
 
+          <code><a href="add_linked_inputs.html">add_linked_inputs()</a></code>
+
+        </dt>
+        <dd>Add linked parent-child inputs (cascading dropdowns)</dd>
+
+        <dt>
+
           <code><a href="enable_inputs.html">enable_inputs()</a></code>
 
         </dt>
         <dd>Enable Input Filter Functionality</dd>
+
+        <dt>
+
+          <code><a href="enable_show_when.html">enable_show_when()</a></code>
+
+        </dt>
+        <dd>Enable show_when (conditional visibility) script only</dd>
+
+        <dt>
+
+          <code><a href="enable_chart_export.html">enable_chart_export()</a></code>
+
+        </dt>
+        <dd>Enable chart export buttons (PNG/SVG/PDF/CSV)</dd>
 
         <dt>
 
@@ -788,6 +859,27 @@
 
         </dt>
         <dd>Render a row of input widgets</dd>
+
+        <dt>
+
+          <code><a href="render_viz_html.html">render_viz_html()</a></code>
+
+        </dt>
+        <dd>Render a viz result as raw HTML</dd>
+
+        <dt>
+
+          <code><a href="show_when_open.html">show_when_open()</a></code>
+
+        </dt>
+        <dd>Open a conditional-visibility wrapper</dd>
+
+        <dt>
+
+          <code><a href="show_when_close.html">show_when_close()</a></code>
+
+        </dt>
+        <dd>Close a conditional-visibility wrapper</dd>
       </dl></div><div class="section level2">
       <h2 id="sidebars">Sidebars<a class="anchor" aria-label="anchor" href="#sidebars"></a></h2>
 
@@ -944,14 +1036,14 @@
           <code><a href="print.viz_collection.html">print(<i>&lt;viz_collection&gt;</i>)</a></code>
 
         </dt>
-        <dd>Create a new dashboard project</dd>
+        <dd>Print Visualization Collection</dd>
 
         <dt>
 
           <code><a href="print.dashboard_project.html">print(<i>&lt;dashboard_project&gt;</i>)</a></code>
 
         </dt>
-        <dd>Create iconify icon shortcode</dd>
+        <dd>Print Dashboard Project</dd>
 
         <dt>
 
@@ -997,10 +1089,10 @@
 
         <dt>
 
-          <code><a href="plus-viz_collection.html">`+`(<i>&lt;viz_collection&gt;</i>)</a></code>
+          <code><a href="plus-.viz_collection.html">`+`(<i>&lt;viz_collection&gt;</i>)</a></code>
 
         </dt>
-        <dd>Combine viz collections using + operator</dd>
+        <dd>Combine Visualization Collections with + Operator</dd>
 
         <dt>
 

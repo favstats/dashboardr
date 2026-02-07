@@ -11,6 +11,11 @@ simple, composable grammar. Think of it like building with Lego blocks:
 ## Installation
 
 ``` r
+# From R-Universe (recommended — includes pre-built binaries)
+install.packages("dashboardr",
+  repos = c("https://favstats.r-universe.dev", "https://cloud.r-project.org"))
+
+# Or from GitHub
 # install.packages("pak")
 pak::pak("favstats/dashboardr")
 ```

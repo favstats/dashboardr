@@ -35,7 +35,9 @@ render_input(
   labels = NULL,
   size = c("md", "sm", "lg"),
   help = NULL,
-  disabled = FALSE
+  disabled = FALSE,
+  linked_child_id = NULL,
+  options_by_parent = NULL
 )
 ```
 
@@ -108,6 +110,31 @@ render_input(
 
   Whether to display options inline (for checkbox/radio)
 
+- stacked:
+
+  Whether to stack options vertically (for checkbox/radio). Default
+  FALSE.
+
+- stacked_align:
+
+  Alignment when stacked: "center" (default), "left", or "right"
+
+- group_align:
+
+  Alignment for option groups: "left" (default), "center", or "right"
+
+- ncol:
+
+  Number of columns for grid layout of options
+
+- nrow:
+
+  Number of rows for grid layout of options
+
+- columns:
+
+  Column configuration for grid layout
+
 - toggle_series:
 
   For switch type: name of the series to toggle on/off
@@ -132,6 +159,14 @@ render_input(
 - disabled:
 
   Whether the input is disabled
+
+- linked_child_id:
+
+  ID of linked child input for cascading inputs
+
+- options_by_parent:
+
+  Named list mapping parent values to child options
 
 ## Value
 

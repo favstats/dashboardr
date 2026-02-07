@@ -231,6 +231,13 @@ reference:
   - viz_scatter
   - viz_map
   - viz_treemap
+  - viz_lollipop
+  - viz_dumbbell
+  - viz_funnel
+  - viz_gauge
+  - viz_pie
+  - viz_sankey
+  - viz_waffle
 
 - title: Tooltip Customization
   desc: Functions for customizing chart tooltips
@@ -307,10 +314,16 @@ reference:
   - add_filter
   - add_input_row
   - add_reset_button
+  - add_linked_inputs
   - enable_inputs
+  - enable_show_when
+  - enable_chart_export
   - end_input_row
   - render_input
   - render_input_row
+  - render_viz_html
+  - show_when_open
+  - show_when_close
 
 - title: Sidebars
   desc: Functions for adding page sidebars with filters

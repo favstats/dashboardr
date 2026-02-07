@@ -53,8 +53,8 @@ my_page <- create_page(
 )
 
 print(my_page)
-#> -- Page: Home ---------------------------------------------------
-#> v data: 2997 rows x 7 cols | default: bar 
+#> -- Page: Home ───────────────────────────────────────────────────
+#> ✔ data: 2997 rows x 7 cols | default: bar 
 #> 
 #> No content added yet
 #>   Tip: Use add_viz(), add_text(), or add_content()
@@ -100,13 +100,13 @@ simple_page <- create_page("Analysis", data = gss, type = "bar") %>%
   add_callout("Data from GSS 2022", type = "note")
 
 print(simple_page)
-#> -- Page: Analysis -----------------------------------------------
-#> v data: 2997 rows x 7 cols | default: bar 
+#> -- Page: Analysis ───────────────────────────────────────────────
+#> ✔ data: 2997 rows x 7 cols | default: bar 
 #> 3 items
 #> 
-#> i [Text] "## Education Distribution How education levels ..."
-#> * [Viz] Education Levels (bar) x=degree
-#> ! [Callout]
+#> ℹ [Text] "## Education Distribution How education levels ..."
+#> • [Viz] Education Levels (bar) x=degree
+#> ⚠ [Callout]
 ```
 
 ``` r
@@ -154,17 +154,17 @@ complex_page <- create_page("Full Analysis", data = gss) %>%
   add_content(attitude_charts)
 
 print(complex_page)
-#> -- Page: Full Analysis ------------------------------------------
-#> v data: 2997 rows x 7 cols 
+#> -- Page: Full Analysis ──────────────────────────────────────────
+#> ✔ data: 2997 rows x 7 cols 
 #> 5 items
 #> 
-#> i [Text] "## Overview Key findings from the General Socia..."
-#> > [Tab] Demographics (2 vizs)
-#>   * [Viz] Education (bar) x=degree
-#>   * [Viz] Race (bar) x=race
-#> > [Tab] Attitudes (2 vizs)
-#>   * [Viz] Happiness (bar) x=happy
-#>   * [Viz] Political Views (bar) x=polviews
+#> ℹ [Text] "## Overview Key findings from the General Socia..."
+#> ❯ [Tab] Demographics (2 vizs)
+#>   • [Viz] Education (bar) x=degree
+#>   • [Viz] Race (bar) x=race
+#> ❯ [Tab] Attitudes (2 vizs)
+#>   • [Viz] Happiness (bar) x=happy
+#>   • [Viz] Political Views (bar) x=polviews
 ```
 
 ``` r
@@ -236,12 +236,12 @@ home <- create_page("Home", is_landing_page = TRUE) %>%
   add_callout("Data source: General Social Survey, NORC", type = "note")
 
 print(home)
-#> -- Page: Home ---------------------------------------------------
+#> -- Page: Home ───────────────────────────────────────────────────
 #> landing page 
 #> 2 items
 #> 
-#> i [Text] "# Welcome to the GSS Dashboard Explore insights..."
-#> ! [Callout]
+#> ℹ [Text] "# Welcome to the GSS Dashboard Explore insights..."
+#> ⚠ [Callout]
 ```
 
 ``` r
@@ -277,15 +277,15 @@ analysis <- create_page("Analysis", data = gss, type = "bar") %>%
   add_viz(x_var = "happy", title = "Happiness", tabgroup = "Attitudes")
 
 print(analysis)
-#> -- Page: Analysis -----------------------------------------------
-#> v data: 2997 rows x 7 cols | default: bar 
+#> -- Page: Analysis ───────────────────────────────────────────────
+#> ✔ data: 2997 rows x 7 cols | default: bar 
 #> 3 items
 #> 
-#> > [Tab] Demographics (2 vizs)
-#>   * [Viz] Education (bar) x=degree
-#>   * [Viz] Race (bar) x=race
-#> > [Tab] Attitudes (1 viz)
-#>   * [Viz] Happiness (bar) x=happy
+#> ❯ [Tab] Demographics (2 vizs)
+#>   • [Viz] Education (bar) x=degree
+#>   • [Viz] Race (bar) x=race
+#> ❯ [Tab] Attitudes (1 viz)
+#>   • [Viz] Happiness (bar) x=happy
 ```
 
 ``` r
@@ -329,11 +329,11 @@ about <- create_page("About") %>%
   )
 
 print(about)
-#> -- Page: About --------------------------------------------------
+#> -- Page: About ──────────────────────────────────────────────────
 #> 2 items
 #> 
-#> i [Text] "## About This Dashboard Created using [dashboar..."
-#> = [Accordion] Technical Details
+#> ℹ [Text] "## About This Dashboard Created using [dashboar..."
+#> ☰ [Accordion] Technical Details
 ```
 
 ``` r
@@ -377,12 +377,12 @@ dashboard_page <- create_page("Dashboard") %>%
   add_content(dashboard_content)
 
 print(dashboard_page)
-#> -- Page: Dashboard ----------------------------------------------
+#> -- Page: Dashboard ──────────────────────────────────────────────
 #> 3 items
 #> 
-#> * [value_box_row]
-#> - [Divider]
-#> * [Viz] Education Distribution (bar) x=degree
+#> • [value_box_row]
+#> ─ [Divider]
+#> • [Viz] Education Distribution (bar) x=degree
 ```
 
 ``` r
@@ -417,11 +417,11 @@ page_with_icon <- create_page("Charts", icon = "ph:chart-bar-fill", data = gss, 
   add_viz(x_var = "degree", title = "Education")
 
 print(page_with_icon)
-#> -- Page: Charts -------------------------------------------------
-#> v data: 2997 rows x 7 cols | default: bar 
+#> -- Page: Charts ─────────────────────────────────────────────────
+#> ✔ data: 2997 rows x 7 cols | default: bar 
 #> 1 items
 #> 
-#> * [Viz] Education (bar) x=degree
+#> • [Viz] Education (bar) x=degree
 ```
 
 Popular icons from [Phosphor Icons](https://phosphoricons.com/):
@@ -451,10 +451,10 @@ settings_page <- create_page("Settings", navbar_align = "right") %>%
   add_text("This page appears on the right side of the navbar.")
 
 print(settings_page)
-#> -- Page: Settings -----------------------------------------------
+#> -- Page: Settings ───────────────────────────────────────────────
 #> 1 items
 #> 
-#> i [Text] "This page appears on the right side of the navbar."
+#> ℹ [Text] "This page appears on the right side of the navbar."
 ```
 
 ### Page-Level Defaults
@@ -480,12 +480,12 @@ styled_page <- create_page(
   add_viz(x_var = "happy", title = "Happiness (custom red)", color_palette = c("#E74C3C"))
 
 print(styled_page)
-#> -- Page: Survey Results -----------------------------------------
-#> v data: 2997 rows x 7 cols | default: bar 
+#> -- Page: Survey Results ─────────────────────────────────────────
+#> ✔ data: 2997 rows x 7 cols | default: bar 
 #> 2 items
 #> 
-#> * [Viz] Education (default blue) (bar) x=degree
-#> * [Viz] Happiness (custom red) (bar) x=happy
+#> • [Viz] Education (default blue) (bar) x=degree
+#> • [Viz] Happiness (custom red) (bar) x=happy
 ```
 
 ``` r
@@ -530,11 +530,11 @@ overlay_page <- create_page(
   add_viz(x_var = "degree", title = "Education")
 
 print(overlay_page)
-#> -- Page: With Overlay -------------------------------------------
-#> v data: 2997 rows x 7 cols | default: bar 
+#> -- Page: With Overlay ───────────────────────────────────────────
+#> ✔ data: 2997 rows x 7 cols | default: bar 
 #> 1 items
 #> 
-#> * [Viz] Education (bar) x=degree
+#> • [Viz] Education (bar) x=degree
 ```
 
 #### Overlay Themes
@@ -575,19 +575,19 @@ paginated <- create_page("Long Report", data = gss, type = "bar") %>%
   add_text("Key findings from this analysis...")
 
 print(paginated)
-#> -- Page: Long Report --------------------------------------------
-#> v data: 2997 rows x 7 cols | default: bar 
+#> -- Page: Long Report ────────────────────────────────────────────
+#> ✔ data: 2997 rows x 7 cols | default: bar 
 #> 9 items
 #> 
-#> i [Text] "## Section 1: Demographics"
-#> * [Viz] Education (bar) x=degree
-#> * [Viz] Race (bar) x=race
-#> > [PageBreak]
-#> i [Text] "## Section 2: Attitudes"
-#> * [Viz] Happiness (bar) x=happy
-#> > [PageBreak]
-#> i [Text] "## Section 3: Summary"
-#> i [Text] "Key findings from this analysis..."
+#> ℹ [Text] "## Section 1: Demographics"
+#> • [Viz] Education (bar) x=degree
+#> • [Viz] Race (bar) x=race
+#> → [PageBreak]
+#> ℹ [Text] "## Section 2: Attitudes"
+#> • [Viz] Happiness (bar) x=happy
+#> → [PageBreak]
+#> ℹ [Text] "## Section 3: Summary"
+#> ℹ [Text] "Key findings from this analysis..."
 ```
 
 | Context | Behavior |
@@ -631,11 +631,11 @@ page <- create_page("Analysis", data = gss) %>%
   add_content(charts)
 
 print(page)
-#> -- Page: Analysis -----------------------------------------------
-#> v data: 2997 rows x 7 cols 
+#> -- Page: Analysis ───────────────────────────────────────────────
+#> ✔ data: 2997 rows x 7 cols 
 #> 1 items
 #> 
-#> * [Viz] Education (bar) x=degree
+#> • [Viz] Education (bar) x=degree
 ```
 
 If a content collection has its own data, it takes precedence over page

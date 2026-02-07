@@ -45,7 +45,11 @@
 #'   Example: `c("#FFFFFF", "#7CB5EC")` for white to light blue. Can also be a single color for gradient start.
 #' @param na_color Optional string. Color for NA values in `value_var` cells. Default "transparent".
 #' @param data_labels_enabled Logical. If TRUE, display data labels on each cell. Default TRUE.
-#' @param tooltip_labels_format Optional string. Format for data labels. Default "\{point.value\}".
+#' @param label_decimals Integer. Number of decimal places for data labels and tooltips.
+#'   Default is 1. Set to 0 for whole numbers, 2 for two decimal places, etc.
+#'   Ignored if `tooltip_labels_format` is explicitly provided.
+#' @param tooltip_labels_format Optional string. Format for data labels. Default NULL
+#'   (auto-generated from `label_decimals`). If provided, overrides `label_decimals`.
 #' @param include_na Logical. If TRUE, treats NA values in `x_var` or `y_var`
 #'   as explicit categories using `na_label_x` and `na_label_y`. If FALSE (default),
 #'   rows with NA in `x_var` or `y_var` are excluded from aggregation.
@@ -215,7 +219,8 @@ viz_heatmap <- function(data,
                            color_palette = c("#FFFFFF", "#7CB5EC"), # Default: white to light blue
                            na_color = "transparent",
                            data_labels_enabled = TRUE,
-                           tooltip_labels_format = "{point.value}",
+                           label_decimals = 1,
+                           tooltip_labels_format = NULL,
                            include_na = FALSE,
                            na_label_x = "(Missing)",
                            na_label_y = "(Missing)",
@@ -493,6 +498,14 @@ viz_heatmap <- function(data,
       title = list(text = final_value_label)
     )
 
+  # Resolve data label format: explicit tooltip_labels_format > label_decimals
+
+  data_label_fmt <- if (!is.null(tooltip_labels_format)) {
+    tooltip_labels_format
+  } else {
+    sprintf("{point.value:.%df}", as.integer(label_decimals))
+  }
+
   # Add heatmap series
   hc <- hc %>%
     highcharter::hc_add_series(
@@ -506,7 +519,7 @@ viz_heatmap <- function(data,
       heatmap = list(
         dataLabels = list(
           enabled = data_labels_enabled,
-          format = tooltip_labels_format,
+          format = data_label_fmt,
           color = "#000000", # Label color, e.g., black
           style = list(textOutline = "none")
         ),
@@ -547,7 +560,7 @@ viz_heatmap <- function(data,
         var y_cat = this.series.yAxis.categories[this.point.y];
         var value = this.point.value;
 
-        var value_str = Highcharts.numberFormat(value, 0); // Format value (e.g., 0 decimals)
+        var value_str = Highcharts.numberFormat(value, %d); // Format value
         if (value === null) {
             value_str = 'N/A'; // Display N/A for null values in tooltip
         }
@@ -556,6 +569,7 @@ viz_heatmap <- function(data,
                '<b>' + '%s' + y_cat + '%s</b><br/>' + // Using y_tooltip_prefix here
                '<b>%s: </b>' + '%s' + value_str + '%s';
       }",
+      as.integer(label_decimals), # Corresponds to the %d (numberFormat decimals)
       xpre_tip, # Corresponds to the first %s
       xsuf_tip, # Corresponds to the second %s
       ypre_tip, # Corresponds to the third %s
@@ -567,7 +581,7 @@ viz_heatmap <- function(data,
 
     hc <- hc %>% highcharter::hc_tooltip(
       formatter = highcharter::JS(tooltip_fn),
-      valueDecimals = 0
+      valueDecimals = as.integer(label_decimals)
     )
   }
 

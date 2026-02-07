@@ -85,7 +85,8 @@ provided."><meta property="og:image" content="https://favstats.github.io/dashboa
     <li><hr class="dropdown-divider"></li>
     <li><a class="dropdown-item" href="../live-demos/tutorial/index.html">🎓 Tutorial Dashboard</a></li>
     <li><a class="dropdown-item" href="../live-demos/showcase/index.html">🚀 Showcase Dashboard</a></li>
-    <li><a class="external-link dropdown-item" href="https://www.digiqmonitor.nl/">🌍 DigIQ Monitor</a></li>
+    <li><a class="dropdown-item" href="../live-demos/sidebar-gss/explorer.html">🕹️ Sidebar Dashboard</a></li>
+    <li><a class="external-link dropdown-item" href="https://www.digiqmonitor.nl/">🖥️ DigIQ Monitor</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>🎨 Tabset Themes</h6></li>
     <li><a class="dropdown-item" href="../live-demos/tabsets/pills/index.html">   Pills</a></li>
@@ -164,7 +165,9 @@ provided.</p>
 <span>  horizontal <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  weight_var <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  data_labels_enabled <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  cross_tab_filter_vars <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  label_decimals <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  cross_tab_filter_vars <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  title_map <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -177,8 +180,8 @@ provided.</p>
 
 
 <dt id="arg-x-var">x_var<a class="anchor" aria-label="anchor" href="#arg-x-var"></a></dt>
-<dd><p>String. Name of the column for X-axis categories. Use this
-together with <code>stack_var</code> for crosstab-style charts.</p></dd>
+<dd><p>String. Name of the column for X-axis categories (Mode 1: Grouped/Crosstab).
+Use this together with <code>stack_var</code> for crosstab-style charts.</p></dd>
 
 
 <dt id="arg-y-var">y_var<a class="anchor" aria-label="anchor" href="#arg-y-var"></a></dt>
@@ -192,8 +195,8 @@ Required when using <code>x_var</code>.</p></dd>
 
 
 <dt id="arg-x-vars">x_vars<a class="anchor" aria-label="anchor" href="#arg-x-vars"></a></dt>
-<dd><p>Character vector of column names to compare. Each column becomes
-a bar on the x-axis, and the values within each column become the stacks.
+<dd><p>Character vector of column names to compare (Mode 2: Multi-Variable/Battery).
+Each column becomes a bar on the x-axis, and the values within each column become the stacks.
 Use this for comparing multiple survey questions with the same response scale.</p></dd>
 
 
@@ -318,6 +321,22 @@ If FALSE (default), rows with NA are excluded.</p></dd>
 <dt id="arg-data-labels-enabled">data_labels_enabled<a class="anchor" aria-label="anchor" href="#arg-data-labels-enabled"></a></dt>
 <dd><p>Logical. If TRUE, show value labels on bars. Default TRUE.</p></dd>
 
+
+<dt id="arg-label-decimals">label_decimals<a class="anchor" aria-label="anchor" href="#arg-label-decimals"></a></dt>
+<dd><p>Optional integer. Number of decimal places for data labels.
+When NULL (default), uses smart defaults: 0 for counts, 1 for percent.
+Set explicitly to override (e.g., <code>label_decimals = 2</code>).</p></dd>
+
+
+<dt id="arg-cross-tab-filter-vars">cross_tab_filter_vars<a class="anchor" aria-label="anchor" href="#arg-cross-tab-filter-vars"></a></dt>
+<dd><p>Character vector. Variables for cross-tab filtering
+(typically auto-detected from sidebar inputs).</p></dd>
+
+
+<dt id="arg-title-map">title_map<a class="anchor" aria-label="anchor" href="#arg-title-map"></a></dt>
+<dd><p>Named list mapping variable names to custom display titles
+for dynamic title updates when filtering by cross-tab variables.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
@@ -339,40 +358,17 @@ If FALSE (default), rows with NA are excluded.</p></dd>
 <li><p>Handles missing values explicitly or implicitly</p></li>
 </ul></div>
     <div class="section level2">
-    <h2 id="mode-parameters-grouped-crosstab-">Mode 1 Parameters (Grouped/Crosstab)<a class="anchor" aria-label="anchor" href="#mode-parameters-grouped-crosstab-"></a></h2>
-
-
-
-    </div>
-    <div class="section level2">
-    <h2 id="mode-parameters-multi-variable-battery-">Mode 2 Parameters (Multi-Variable/Battery)<a class="anchor" aria-label="anchor" href="#mode-parameters-multi-variable-battery-"></a></h2>
-
-
-
-    </div>
-    <div class="section level2">
-    <h2 id="common-parameters">Common Parameters<a class="anchor" aria-label="anchor" href="#common-parameters"></a></h2>
-
-
-
-    </div>
-    <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
     <div class="dont-index"><p><code><a href="viz_bar.html">viz_bar</a></code> for simple (non-stacked) bar charts</p></div>
     </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/kjhealy/gssr" class="external-link">gssr</a></span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>package 'gssr' was built under R version 4.4.3</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Package loaded. To attach the GSS data, type data(gss_all) at the console.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> For the panel data and documentation, type e.g. data(gss_panel08_long) and data(gss_panel_doc).</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> For help on a specific GSS variable, type ?varname at the console.</span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
+<span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/kjhealy/gssr" class="external-link">gssr</a></span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">gss_panel20</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># ============================================================</span></span></span>
 <span class="r-in"><span><span class="co"># MODE 1: Grouped/Crosstab - One variable broken down by another</span></span></span>
-<span class="r-in"><span><span class="co"># ============================================================</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Example 1: Education by Gender (counts)</span></span></span>
 <span class="r-in"><span><span class="va">plot1</span> <span class="op">&lt;-</span> <span class="fu">viz_stackedbar</span><span class="op">(</span></span></span>
@@ -394,25 +390,18 @@ If FALSE (default), rows with NA are excluded.</p></dd>
 <span class="r-in"><span>  tooltip_suffix <span class="op">=</span> <span class="st">"%"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># ============================================================</span></span></span>
 <span class="r-in"><span><span class="co"># MODE 2: Multi-Variable/Battery - Compare multiple questions</span></span></span>
-<span class="r-in"><span><span class="co"># ============================================================</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Example 3: Compare multiple attitude questions</span></span></span>
 <span class="r-in"><span><span class="va">plot3</span> <span class="op">&lt;-</span> <span class="fu">viz_stackedbar</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  data <span class="op">=</span> <span class="va">gss_panel20</span>,</span></span>
 <span class="r-in"><span>  x_vars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"trust_1a"</span>, <span class="st">"fair_1a"</span>, <span class="st">"helpful_1a"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  x_var_labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Trust Others"</span>, <span class="st">"Others Are Fair"</span>, <span class="st">"Others Are Helpful"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  x_var_labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Trust Others"</span>, <span class="st">"Others Are Fair"</span>,</span></span>
+<span class="r-in"><span>    <span class="st">"Others Are Helpful"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  title <span class="op">=</span> <span class="st">"Social Trust Battery"</span>,</span></span>
 <span class="r-in"><span>  stacked_type <span class="op">=</span> <span class="st">"percent"</span>,</span></span>
 <span class="r-in"><span>  tooltip_suffix <span class="op">=</span> <span class="st">"%"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>`trust_1a` and `fair_1a` have conflicting value labels.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">i</span> Labels for these values will be taken from `trust_1a`.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #BB0000;">x</span> Values: <span style="color: #0000BB;">1</span> and <span style="color: #0000BB;">2</span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>`trust_1a` and `helpful_1a` have conflicting value labels.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">i</span> Labels for these values will be taken from `trust_1a`.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #BB0000;">x</span> Values: <span style="color: #0000BB;">1</span> and <span style="color: #0000BB;">2</span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Example 4: Single question horizontal (compact display)</span></span></span>
 <span class="r-in"><span><span class="va">plot4</span> <span class="op">&lt;-</span> <span class="fu">viz_stackedbar</span><span class="op">(</span></span></span>
@@ -422,6 +411,7 @@ If FALSE (default), rows with NA are excluded.</p></dd>
 <span class="r-in"><span>  stacked_type <span class="op">=</span> <span class="st">"percent"</span>,</span></span>
 <span class="r-in"><span>  horizontal <span class="op">=</span> <span class="cn">TRUE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

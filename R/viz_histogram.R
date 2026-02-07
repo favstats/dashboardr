@@ -44,6 +44,9 @@
 #'   weights instead of simple counts.
 #' @param data_labels_enabled Logical. If TRUE, show value labels on bars.
 #'   Default TRUE.
+#' @param label_decimals Optional integer. Number of decimal places for data labels.
+#'   When NULL (default), uses smart defaults: 0 for counts, 1 for percent.
+#'   Set explicitly to override (e.g., `label_decimals = 2`).
 #'
 #' @return A `highcharter` histogram (column) plot object.
 #'
@@ -179,7 +182,8 @@ viz_histogram <- function(data,
                             x_map_values = NULL,
                             x_order = NULL,
                             weight_var = NULL,
-                            data_labels_enabled = TRUE) {
+                            data_labels_enabled = TRUE,
+                            label_decimals = NULL) {
   # Convert variable arguments to strings (supports both quoted and unquoted)
   x_var <- .as_var_string(rlang::enquo(x_var))
   y_var <- .as_var_string(rlang::enquo(y_var))
@@ -359,7 +363,16 @@ viz_histogram <- function(data,
   # Define stacking and format based on histogram_type
   # Use whole numbers for count mode (especially important when using weights)
   stacking <- if (histogram_type == "percent") "percent" else NULL
-  fmt <- if (histogram_type == "percent") "{point.percentage:.1f}%" else "{y:.0f}"
+  if (!is.null(label_decimals)) {
+    dec <- as.integer(label_decimals)
+    fmt <- if (histogram_type == "percent") {
+      sprintf("{point.percentage:.%df}%%", dec)
+    } else {
+      sprintf("{y:.%df}", dec)
+    }
+  } else {
+    fmt <- if (histogram_type == "percent") "{point.percentage:.1f}%" else "{y:.0f}"
+  }
 
   # Pass the categories to the x-axis
   hc <- hc %>%

@@ -38,6 +38,7 @@ viz_stackedbar(
   horizontal = FALSE,
   weight_var = NULL,
   data_labels_enabled = TRUE,
+  label_decimals = NULL,
   cross_tab_filter_vars = NULL,
   title_map = NULL
 )
@@ -123,6 +124,10 @@ If FALSE (default), rows with NA are excluded.}
 \item{weight_var}{Optional string. Name of a weight variable for weighted counts.}
 
 \item{data_labels_enabled}{Logical. If TRUE, show value labels on bars. Default TRUE.}
+
+\item{label_decimals}{Optional integer. Number of decimal places for data labels.
+When NULL (default), uses smart defaults: 0 for counts, 1 for percent.
+Set explicitly to override (e.g., \code{label_decimals = 2}).}
 
 \item{cross_tab_filter_vars}{Character vector. Variables for cross-tab filtering
 (typically auto-detected from sidebar inputs).}

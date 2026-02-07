@@ -26,7 +26,8 @@ viz_histogram(
   x_map_values = NULL,
   x_order = NULL,
   weight_var = NULL,
-  data_labels_enabled = TRUE
+  data_labels_enabled = TRUE,
+  label_decimals = NULL
 )
 }
 \arguments{
@@ -87,6 +88,10 @@ weights instead of simple counts.}
 
 \item{data_labels_enabled}{Logical. If TRUE, show value labels on bars.
 Default TRUE.}
+
+\item{label_decimals}{Optional integer. Number of decimal places for data labels.
+When NULL (default), uses smart defaults: 0 for counts, 1 for percent.
+Set explicitly to override (e.g., \code{label_decimals = 2}).}
 }
 \value{
 A \code{highcharter} histogram (column) plot object.

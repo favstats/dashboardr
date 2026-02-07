@@ -1,7 +1,7 @@
-# Print Dashboard Project
+# Show beautiful dashboard summary
 
-Displays a comprehensive summary of a dashboard project, including
-metadata, features, pages, visualizations, and integrations.
+Internal function that displays a comprehensive summary of the generated
+dashboard files and provides helpful guidance to users.
 
 ## Usage
 
@@ -25,46 +25,6 @@ metadata, features, pages, visualizations, and integrations.
 
   Path to the output directory
 
-- x:
-
-  A dashboard_project object created by
-  [`create_dashboard`](https://favstats.github.io/dashboardr/reference/create_dashboard.md).
-
-- ...:
-
-  Additional arguments (currently ignored).
-
 ## Value
 
-Invisibly returns the input object `x`.
-
 Invisible NULL
-
-## Details
-
-The print method displays:
-
-- Project metadata (title, author, description)
-
-- Output directory
-
-- Enabled features (sidebar, search, themes, Shiny, Observable)
-
-- Integrations (GitHub, Twitter, LinkedIn, Analytics)
-
-- Page structure with properties:
-
-  - 🏠 Landing page indicator
-
-  - ⏳ Loading overlay indicator
-
-  - → Right-aligned navbar indicator
-
-  - 💾 Associated datasets
-
-  - Nested visualization hierarchies
-
-Show beautiful dashboard summary
-
-Internal function that displays a comprehensive summary of the generated
-dashboard files and provides helpful guidance to users.

@@ -25,6 +25,7 @@ viz_lollipop(
   dot_size = 8,
   stem_width = 2,
   data_labels_enabled = TRUE,
+  label_decimals = NULL,
   tooltip = NULL,
   tooltip_prefix = "",
   tooltip_suffix = ""
@@ -73,6 +74,10 @@ series (creates multiple dots per category).}
 \item{stem_width}{Numeric. Width of the stem lines in pixels. Default 2.}
 
 \item{data_labels_enabled}{Logical. If TRUE (default), show value labels.}
+
+\item{label_decimals}{Optional integer. Number of decimal places for data labels.
+When NULL (default), uses smart defaults: 0 for counts, 1 for percent.
+Set explicitly to override (e.g., \code{label_decimals = 2}).}
 
 \item{tooltip}{A tooltip configuration created with \code{\link{tooltip}()},
 OR a format string with \{placeholders\}.}

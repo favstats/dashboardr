@@ -70,6 +70,9 @@
 #' @param horizontal Logical. If TRUE, creates horizontal bars. Default FALSE.
 #' @param weight_var Optional string. Name of a weight variable for weighted counts.
 #' @param data_labels_enabled Logical. If TRUE, show value labels on bars. Default TRUE.
+#' @param label_decimals Optional integer. Number of decimal places for data labels.
+#'   When NULL (default), uses smart defaults: 0 for counts, 1 for percent.
+#'   Set explicitly to override (e.g., `label_decimals = 2`).
 #' @param cross_tab_filter_vars Character vector. Variables for cross-tab filtering
 #'   (typically auto-detected from sidebar inputs).
 #' @param title_map Named list mapping variable names to custom display titles
@@ -186,6 +189,7 @@ viz_stackedbar <- function(data,
                            horizontal = FALSE,
                            weight_var = NULL,
                            data_labels_enabled = TRUE,
+                           label_decimals = NULL,
                            # Cross-tab filtering for sidebar inputs (auto-detected)
                            cross_tab_filter_vars = NULL,
                            title_map = NULL) {
@@ -335,7 +339,8 @@ viz_stackedbar <- function(data,
       stack_map_values = stack_map_values,
       horizontal = horizontal,
       weight_var = weight_var,
-      data_labels_enabled = data_labels_enabled
+      data_labels_enabled = data_labels_enabled,
+      label_decimals = label_decimals
     )
 
     # Set the xAxis categories explicitly so JS knows them
@@ -402,6 +407,7 @@ viz_stackedbar <- function(data,
     horizontal = horizontal,
     weight_var = weight_var,
     data_labels_enabled = data_labels_enabled,
+    label_decimals = label_decimals,
     cross_tab_filter_vars = cross_tab_filter_vars,
     title_map = title_map
   )
@@ -441,6 +447,7 @@ viz_stackedbar <- function(data,
                                   horizontal = FALSE,
                                   weight_var = NULL,
                                   data_labels_enabled = TRUE,
+                                  label_decimals = NULL,
                                   cross_tab_filter_vars = NULL,
                                   title_map = NULL) {
 
@@ -654,7 +661,16 @@ viz_stackedbar <- function(data,
   hchart_obj <- highcharter::hc_yAxis(hchart_obj, title = list(text = final_y_label))
 
   # Stacking and data labels
-  data_label_format <- if (stacked_type == "percent") '{point.percentage:.1f}%' else '{point.y:.0f}'
+  if (!is.null(label_decimals)) {
+    dec <- as.integer(label_decimals)
+    data_label_format <- if (stacked_type == "percent") {
+      sprintf("{point.percentage:.%df}%%", dec)
+    } else {
+      sprintf("{point.y:.%df}", dec)
+    }
+  } else {
+    data_label_format <- if (stacked_type == "percent") '{point.percentage:.1f}%' else '{point.y:.0f}'
+  }
   stacking_type_hc <- if (stacked_type == "percent") "percent" else "normal"
 
   series_type <- if (horizontal) "bar" else "column"

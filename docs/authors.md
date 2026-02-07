@@ -12,8 +12,8 @@
 
 ## Citation
 
-Votta F, Pafford A, Paulus M, de Le\<U+00F3\>n E (2026). *dashboardr:
-Build Interactive HTML Dashboards from R*. R package version 0.2.1,
+Votta F, Pafford A, Paulus M, de León E (2026). *dashboardr: Build
+Interactive HTML Dashboards from R*. R package version 0.2.1,
 <https://favstats.github.io/dashboardr/>.
 
     @Manual{,

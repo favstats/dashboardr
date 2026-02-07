@@ -1,0 +1,159 @@
+# Create a Lollipop Chart
+
+Creates an interactive lollipop chart using highcharter. A lollipop
+chart is a bar chart variant that uses a line (stem) and dot instead of
+a full bar, making it easier to read when there are many categories.
+
+## Usage
+
+``` r
+viz_lollipop(
+  data,
+  x_var,
+  y_var = NULL,
+  group_var = NULL,
+  value_var = NULL,
+  title = NULL,
+  subtitle = NULL,
+  x_label = NULL,
+  y_label = NULL,
+  horizontal = TRUE,
+  bar_type = "count",
+  color_palette = NULL,
+  x_order = NULL,
+  group_order = NULL,
+  sort_by_value = FALSE,
+  sort_desc = TRUE,
+  weight_var = NULL,
+  dot_size = 8,
+  stem_width = 2,
+  data_labels_enabled = TRUE,
+  label_decimals = NULL,
+  tooltip = NULL,
+  tooltip_prefix = "",
+  tooltip_suffix = ""
+)
+```
+
+## Arguments
+
+- data:
+
+  A data frame containing the data.
+
+- x_var:
+
+  Character string. Name of the categorical variable for the axis.
+
+- y_var:
+
+  Optional character string. Name of a numeric column with
+  pre-aggregated values. When provided, skips counting and uses these
+  values directly.
+
+- group_var:
+
+  Optional character string. Name of grouping variable for separate
+  series (creates multiple dots per category).
+
+- value_var:
+
+  Optional character string. Name of a numeric variable to aggregate
+  (shows mean per category instead of counts).
+
+- title:
+
+  Optional main title for the chart.
+
+- subtitle:
+
+  Optional subtitle for the chart.
+
+- x_label:
+
+  Optional label for the category axis.
+
+- y_label:
+
+  Optional label for the value axis.
+
+- horizontal:
+
+  Logical. If TRUE (default), creates horizontal lollipops.
+
+- bar_type:
+
+  Character string. "count" (default), "percent", or "mean".
+
+- color_palette:
+
+  Optional character vector of colors.
+
+- x_order:
+
+  Optional character vector specifying the order of categories.
+
+- group_order:
+
+  Optional character vector specifying the order of groups.
+
+- sort_by_value:
+
+  Logical. If TRUE, sort categories by value. Default FALSE.
+
+- sort_desc:
+
+  Logical. Sort direction when sort_by_value = TRUE. Default TRUE.
+
+- weight_var:
+
+  Optional character string. Name of weight variable.
+
+- dot_size:
+
+  Numeric. Size of the dots in pixels. Default 8.
+
+- stem_width:
+
+  Numeric. Width of the stem lines in pixels. Default 2.
+
+- data_labels_enabled:
+
+  Logical. If TRUE (default), show value labels.
+
+- label_decimals:
+
+  Optional integer. Number of decimal places for data labels. When NULL
+  (default), uses smart defaults: 0 for counts, 1 for percent. Set
+  explicitly to override (e.g., `label_decimals = 2`).
+
+- tooltip:
+
+  A tooltip configuration created with
+  [`tooltip()`](https://favstats.github.io/dashboardr/reference/tooltip.md),
+  OR a format string with {placeholders}.
+
+- tooltip_prefix:
+
+  Optional string prepended to tooltip values.
+
+- tooltip_suffix:
+
+  Optional string appended to tooltip values.
+
+## Value
+
+A highcharter plot object.
+
+## Examples
+
+``` r
+if (FALSE) { # \dontrun{
+# Simple lollipop chart
+viz_lollipop(mtcars, x_var = "cyl", title = "Cars by Cylinders")
+
+# Horizontal with pre-aggregated data
+df <- data.frame(country = c("US", "UK", "DE"), score = c(85, 72, 68))
+viz_lollipop(df, x_var = "country", y_var = "score", horizontal = TRUE)
+} # }
+```

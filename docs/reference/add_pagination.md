@@ -1,8 +1,9 @@
-# Create a sidebar group for hybrid navigation
+# Add pagination break to visualization collection
 
-Helper function to create a sidebar group configuration for use with
-hybrid navigation. Each group can have its own styling and contains a
-list of pages.
+Insert a pagination marker that splits the visualization collection into
+separate HTML pages. Each section will be rendered as its own page file
+(e.g., analysis.html, analysis_p2.html, analysis_p3.html) with automatic
+Previous/Next navigation between them.
 
 ## Usage
 
@@ -25,54 +26,38 @@ add_pagination.page_object(viz_collection, position = NULL)
   uses dashboard-level setting from create_dashboard). Per-page override
   of the dashboard default.
 
-- id:
-
-  Unique identifier for the sidebar group
-
-- title:
-
-  Display title for the sidebar group
-
-- pages:
-
-  Character vector of page names to include in this group
-
-- style:
-
-  Sidebar style (docked, floating, etc.) (optional)
-
-- background:
-
-  Background color (optional)
-
-- foreground:
-
-  Foreground color (optional)
-
-- border:
-
-  Show border (optional)
-
-- alignment:
-
-  Alignment (left, right) (optional)
-
-- collapse_level:
-
-  Collapse level for navigation (optional)
-
-- pinned:
-
-  Whether sidebar is pinned (optional)
-
-- tools:
-
-  List of tools to add to sidebar (optional)
-
 ## Value
-
-List containing sidebar group configuration
 
 Updated viz_collection object
 
+## Details
+
+This provides TRUE performance benefits - each page loads independently,
+dramatically reducing initial render time and file size for large
+dashboards.
+
 ## Examples
+
+``` r
+if (FALSE) { # \dontrun{
+# Split 150 charts into 3 pages of 50 each
+vizzes <- create_viz()
+
+# Page 1: Charts 1-50
+for (i in 1:50) vizzes <- vizzes %>% add_viz(type = "bar", x_var = "cyl")
+
+vizzes <- vizzes %>% add_pagination()  # Split here
+
+# Page 2: Charts 51-100
+for (i in 51:100) vizzes <- vizzes %>% add_viz(type = "bar", x_var = "gear")
+
+vizzes <- vizzes %>% add_pagination()  # Split here
+
+# Page 3: Charts 101-150
+for (i in 101:150) vizzes <- vizzes %>% add_viz(type = "bar", x_var = "hp")
+
+# Use in dashboard
+dashboard %>%
+  add_page("Analysis", visualizations = vizzes)
+} # }
+```

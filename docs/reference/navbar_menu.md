@@ -31,6 +31,27 @@ navbar_menu(text, pages, icon = NULL, align = c("left", "right"))
 
 List containing navbar menu configuration
 
-List containing navbar menu configuration
-
 ## Examples
+
+``` r
+if (FALSE) { # \dontrun{
+# Create a simple dropdown menu (left-aligned by default)
+dimensions_menu <- navbar_menu(
+  text = "Dimensions",
+  pages = c("Strategic Information", "Critical Information"),
+  icon = "ph:book"
+)
+
+# Create a right-aligned menu
+more_info_menu <- navbar_menu(
+  text = "More Info",
+  pages = c("About", "Wave 1"),
+  icon = "ph:info",
+  align = "right"
+)
+
+dashboard <- create_dashboard(
+  navbar_sections = list(dimensions_menu, more_info_menu)
+)
+} # }
+```

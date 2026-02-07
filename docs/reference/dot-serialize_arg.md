@@ -28,18 +28,18 @@ Character string containing properly formatted R code
 
 This function handles:
 
-- NULL values → "NULL"
+- NULL values -\> "NULL"
 
-- Character strings → quoted strings with escaped quotes
+- Character strings -\> quoted strings with escaped quotes
 
-- Numeric values → unquoted numbers
+- Numeric values -\> unquoted numbers
 
-- Logical values → "TRUE"/"FALSE"
+- Logical values -\> "TRUE"/"FALSE"
 
-- Named lists → "list(name1 = value1, name2 = value2)"
+- Named lists -\> "list(name1 = value1, name2 = value2)"
 
-- Unnamed lists → "list(value1, value2)"
+- Unnamed lists -\> "list(value1, value2)"
 
-- Special identifiers like "data" → unquoted
+- Special identifiers like "data" -\> unquoted
 
-- Complex objects → deparsed representation
+- Complex objects -\> deparsed representation

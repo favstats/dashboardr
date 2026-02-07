@@ -11,6 +11,11 @@ add_text(x = NULL, text, ..., tabgroup = NULL)
 
 ## Arguments
 
+- x:
+
+  A content_collection, viz_collection, sidebar_container, page_object,
+  or NULL
+
 - text:
 
   Markdown text content (can be multi-line)
@@ -23,10 +28,6 @@ add_text(x = NULL, text, ..., tabgroup = NULL)
 
   Optional tabgroup for organizing content (character vector for nested
   tabs)
-
-- content_collection:
-
-  A content_collection, viz_collection, or NULL
 
 ## Value
 

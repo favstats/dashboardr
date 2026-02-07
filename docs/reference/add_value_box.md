@@ -76,8 +76,8 @@ if (FALSE) { # \dontrun{
 content <- create_content() %>%
   add_value_box(
     title = "Total Revenue",
-    value = "€1,234,567",
-    logo_text = "💰",
+    value = "EUR 1,234,567",
+    logo_text = "$",
     bg_color = "#2E86AB"
   )
   
@@ -85,6 +85,6 @@ content <- create_content() %>%
 content <- create_content() %>%
   add_value_box_row() %>%
     add_value_box(title = "Users", value = "1,234") %>%
-    add_value_box(title = "Revenue", value = "€56K")
+    add_value_box(title = "Revenue", value = "EUR 56K")
 } # }
 ```

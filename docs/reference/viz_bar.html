@@ -71,7 +71,8 @@ when showing means via value_var."><meta property="og:image" content="https://fa
     <li><hr class="dropdown-divider"></li>
     <li><a class="dropdown-item" href="../live-demos/tutorial/index.html">🎓 Tutorial Dashboard</a></li>
     <li><a class="dropdown-item" href="../live-demos/showcase/index.html">🚀 Showcase Dashboard</a></li>
-    <li><a class="external-link dropdown-item" href="https://www.digiqmonitor.nl/">🌍 DigIQ Monitor</a></li>
+    <li><a class="dropdown-item" href="../live-demos/sidebar-gss/explorer.html">🕹️ Sidebar Dashboard</a></li>
+    <li><a class="external-link dropdown-item" href="https://www.digiqmonitor.nl/">🖥️ DigIQ Monitor</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>🎨 Tabset Themes</h6></li>
     <li><a class="dropdown-item" href="../live-demos/tabsets/pills/index.html">   Pills</a></li>
@@ -139,6 +140,7 @@ when showing means via <code>value_var</code>.</p>
 <span>  tooltip_suffix <span class="op">=</span> <span class="st">""</span>,</span>
 <span>  x_tooltip_suffix <span class="op">=</span> <span class="st">""</span>,</span>
 <span>  data_labels_enabled <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  label_decimals <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  complete_groups <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  y_var <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -277,6 +279,12 @@ See <code><a href="tooltip.html">tooltip</a></code> for full customization optio
 Default TRUE.</p></dd>
 
 
+<dt id="arg-label-decimals">label_decimals<a class="anchor" aria-label="anchor" href="#arg-label-decimals"></a></dt>
+<dd><p>Optional integer. Number of decimal places for data labels.
+When NULL (default), uses smart defaults: 0 for counts/percent, 1 for means.
+Set explicitly to override (e.g., <code>label_decimals = 2</code> for two decimal places).</p></dd>
+
+
 <dt id="arg-complete-groups">complete_groups<a class="anchor" aria-label="anchor" href="#arg-complete-groups"></a></dt>
 <dd><p>Logical. When TRUE (default), ensures all x_var/group_var
 combinations are present in the output, filling missing combinations with 0.
@@ -298,14 +306,13 @@ Useful when working with already-aggregated data (e.g., Column 1: Group, Column 
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Simple bar chart showing counts (default)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
+<span class="r-in"><span><span class="co"># Simple bar chart showing counts (default)</span></span></span>
 <span class="r-in"><span><span class="va">plot1</span> <span class="op">&lt;-</span> <span class="fu">viz_bar</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  data <span class="op">=</span> <span class="va">survey_data</span>,</span></span>
 <span class="r-in"><span>  x_var <span class="op">=</span> <span class="st">"category"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'survey_data' not found</span>
 <span class="r-in"><span><span class="va">plot1</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'plot1' not found</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Horizontal bars with percentages</span></span></span>
 <span class="r-in"><span><span class="va">plot2</span> <span class="op">&lt;-</span> <span class="fu">viz_bar</span><span class="op">(</span></span></span>
@@ -314,9 +321,7 @@ Useful when working with already-aggregated data (e.g., Column 1: Group, Column 
 <span class="r-in"><span>  horizontal <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
 <span class="r-in"><span>  bar_type <span class="op">=</span> <span class="st">"percent"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'survey_data' not found</span>
 <span class="r-in"><span><span class="va">plot2</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'plot2' not found</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Grouped bars</span></span></span>
 <span class="r-in"><span><span class="va">plot3</span> <span class="op">&lt;-</span> <span class="fu">viz_bar</span><span class="op">(</span></span></span>
@@ -326,9 +331,8 @@ Useful when working with already-aggregated data (e.g., Column 1: Group, Column 
 <span class="r-in"><span>  color_palette <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"#D2691E"</span>, <span class="st">"#4682B4"</span>, <span class="st">"#228B22"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  group_order <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Low (1-9)"</span>, <span class="st">"Middle (10-19)"</span>, <span class="st">"High (20-29)"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'survey_data' not found</span>
 <span class="r-in"><span><span class="va">plot3</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'plot3' not found</span>
+<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Bar chart with means and error bars (95% CI)</span></span></span>
 <span class="r-in"><span><span class="va">plot4</span> <span class="op">&lt;-</span> <span class="fu">viz_bar</span><span class="op">(</span></span></span>

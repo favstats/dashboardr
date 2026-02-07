@@ -31,6 +31,9 @@
 #' @param dot_size Numeric. Size of the dots in pixels. Default 8.
 #' @param stem_width Numeric. Width of the stem lines in pixels. Default 2.
 #' @param data_labels_enabled Logical. If TRUE (default), show value labels.
+#' @param label_decimals Optional integer. Number of decimal places for data labels.
+#'   When NULL (default), uses smart defaults: 0 for counts, 1 for percent.
+#'   Set explicitly to override (e.g., `label_decimals = 2`).
 #' @param tooltip A tooltip configuration created with \code{\link{tooltip}()},
 #'   OR a format string with \{placeholders\}.
 #' @param tooltip_prefix Optional string prepended to tooltip values.
@@ -68,6 +71,7 @@ viz_lollipop <- function(data,
                          dot_size = 8,
                          stem_width = 2,
                          data_labels_enabled = TRUE,
+                         label_decimals = NULL,
                          tooltip = NULL,
                          tooltip_prefix = "",
                          tooltip_suffix = "") {
@@ -243,6 +247,18 @@ viz_lollipop <- function(data,
     ) %>%
     highcharter::hc_yAxis(title = list(text = final_y_label))
 
+  # Resolve data label format
+  if (!is.null(label_decimals)) {
+    dec <- as.integer(label_decimals)
+    lollipop_label_fmt <- if (bar_type == "percent") {
+      sprintf("{point.y:.%df}%%", dec)
+    } else {
+      sprintf("{point.y:.%df}", dec)
+    }
+  } else {
+    lollipop_label_fmt <- if (bar_type == "percent") "{point.y:.1f}%" else "{point.y:.0f}"
+  }
+
   # Add series - use column type with very narrow pointWidth for stems,
   # and overlay with marker-only series for dots
   if (is.null(group_var)) {
@@ -280,7 +296,7 @@ viz_lollipop <- function(data,
         colorByPoint = TRUE,
         dataLabels = list(
           enabled = data_labels_enabled,
-          format = if (bar_type == "percent") "{point.y:.1f}%" else "{point.y:.0f}"
+          format = lollipop_label_fmt
         )
       )
 
@@ -334,7 +350,7 @@ viz_lollipop <- function(data,
           marker = list(radius = dot_size / 2, symbol = "circle"),
           dataLabels = list(
             enabled = data_labels_enabled,
-            format = if (bar_type == "percent") "{point.y:.1f}%" else "{point.y:.0f}"
+            format = lollipop_label_fmt
           )
         )
     }

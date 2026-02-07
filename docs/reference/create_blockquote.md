@@ -130,7 +130,11 @@ create_blockquote("AlgoSoc question here", preset = algosoc_style)
 
 # Define multiple custom styles and reuse
 survey_style <- list(border_color = "#6f42c1", background_color = "#f8f5ff")
-important_style <- list(border_color = "#e74c3c", background_color = "#ffebee", border_width = "8px")
+important_style <- list(
+  border_color = "#e74c3c",
+  background_color = "#ffebee",
+  border_width = "8px"
+)
 
 create_blockquote("Survey question 1", preset = survey_style)
 #> <blockquote style="font-size: 1em; color: #333; border-left: 5px solid #6f42c1; background-color: #f8f5ff; padding: 10px 20px; margin: 20px 0; line-height: 1.6; position: relative;">
@@ -174,11 +178,20 @@ result <- create_blockquote(
   preset = "question",
   use_class = TRUE
 )
-# Add the CSS to your document header
-cat(result$css)
-#> Error in cat(result$css): argument 1 (type 'list') cannot be handled by 'cat'
-# Use the HTML in your content
-cat(result$html)
+# View the CSS component (an htmltools tag)
+result$css
+#> <style>blockquote.question-text {
+#>   font-size: 1em;
+#>   color: #333;
+#>   border-left: 5px solid #0056b3;
+#>   background-color: #f0f8ff;
+#>   padding: 10px 20px;
+#>   margin: 20px 0;
+#>   line-height: 1.6;
+#>   position: relative;
+#> }</style>
+# View the HTML component
+result$html
 #> <blockquote class="question-text">
 #> Question 1: What is your opinion?
 #> </blockquote>

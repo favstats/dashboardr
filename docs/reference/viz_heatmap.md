@@ -36,7 +36,8 @@ viz_heatmap(
   color_palette = c("#FFFFFF", "#7CB5EC"),
   na_color = "transparent",
   data_labels_enabled = TRUE,
-  tooltip_labels_format = "{point.value}",
+  label_decimals = 1,
+  tooltip_labels_format = NULL,
   include_na = FALSE,
   na_label_x = "(Missing)",
   na_label_y = "(Missing)",
@@ -169,9 +170,16 @@ viz_heatmap(
 
   Logical. If TRUE, display data labels on each cell. Default TRUE.
 
+- label_decimals:
+
+  Integer. Number of decimal places for data labels and tooltips.
+  Default is 1. Set to 0 for whole numbers, 2 for two decimal places,
+  etc. Ignored if `tooltip_labels_format` is explicitly provided.
+
 - tooltip_labels_format:
 
-  Optional string. Format for data labels. Default "point.value".
+  Optional string. Format for data labels. Default NULL (auto-generated
+  from `label_decimals`). If provided, overrides `label_decimals`.
 
 - include_na:
 
@@ -273,11 +281,11 @@ This function performs the following steps:
 ## Examples
 
 ``` r
+if (FALSE) { # \dontrun{
 # Load the dataset
 data(gss_panel20)
-#> Warning: data set 'gss_panel20' not found
 
-# Example 1: Basic heatmap – no mapped values or other customization
+# Example 1: Basic heatmap - no mapped values or other customization
 viz_heatmap(
   data = gss_panel20,
   x_var = "degree_1a",
@@ -288,7 +296,6 @@ viz_heatmap(
   y_label = "Sex",
   value_label = "Mean Age"
 )
-#> Error: object 'gss_panel20' not found
 
 
 # Example 2: Heatmap With Custom Variable Mapping and Colors
@@ -322,7 +329,6 @@ viz_heatmap(
   color_min = 1,
   color_max = 3
 )
-#> Error: object 'gss_panel20' not found
 
 
 # Example 3: Handling missing categories explicitly
@@ -351,7 +357,6 @@ na_label_y = "Degree Missing",
 na_color = "grey",
 title = "Average Income by Region and Education (Including Missing)"
 )
-#> Error: object 'gss_panel20' not found
 
 
 # Example 4: Custom order of education levels and relabeling of sex
@@ -371,7 +376,5 @@ title = "Average Income by Education Level and Sex",
 subtitle = "Custom order and relabeled categories",
 color_palette = c("#ffffe0", "#31a354")
 )
-#> Error: object 'gss_panel20' not found
-
-
+} # }
 ```

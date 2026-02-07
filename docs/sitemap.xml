@@ -47,6 +47,8 @@
 <url><loc>https://favstats.github.io/dashboardr/live-demos/sidebar/index.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/live-demos/sidebar/slider_demo.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/live-demos/sidebar/unemployment.html</loc></url>
+<url><loc>https://favstats.github.io/dashboardr/live-demos/sidebar-gss/explorer.html</loc></url>
+<url><loc>https://favstats.github.io/dashboardr/live-demos/sidebar-gss/index.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/live-demos/tabsets/classic/1_level.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/live-demos/tabsets/classic/2_levels.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/live-demos/tabsets/classic/3_levels.html</loc></url>
@@ -95,6 +97,7 @@
 <url><loc>https://favstats.github.io/dashboardr/reference/add_image.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/add_input.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/add_input_row.html</loc></url>
+<url><loc>https://favstats.github.io/dashboardr/reference/add_linked_inputs.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/add_metric.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/add_modal.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/add_navbar_element.html</loc></url>
@@ -153,6 +156,7 @@
 <url><loc>https://favstats.github.io/dashboardr/reference/dot-convert_haven.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/dot-create_pagination_nav_html.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/dot-embed_cross_tab.html</loc></url>
+<url><loc>https://favstats.github.io/dashboardr/reference/dot-expr_to_condition.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/dot-extract_all_insertion_indices.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/dot-extract_filter_vars.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/dot-generate_DT_block.html</loc></url>
@@ -198,6 +202,7 @@
 <url><loc>https://favstats.github.io/dashboardr/reference/dot-has_pagination_markers.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/dot-install_iconify_extension.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/dot-page_config.html</loc></url>
+<url><loc>https://favstats.github.io/dashboardr/reference/dot-parse_show_when.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/dot-process_template.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/dot-process_tooltip_config.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/dot-process_visualizations.html</loc></url>
@@ -208,12 +213,15 @@
 <url><loc>https://favstats.github.io/dashboardr/reference/dot-progress_step.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/dot-serialize_arg.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/dot-show_dashboard_summary.html</loc></url>
+<url><loc>https://favstats.github.io/dashboardr/reference/dot-specs_contain_show_when.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/dot-split_by_pagination.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/dot-validate_all_viz_specs.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/dot-validate_viz_spec.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/dot-viz_param_registry.html</loc></url>
+<url><loc>https://favstats.github.io/dashboardr/reference/enable_chart_export.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/enable_inputs.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/enable_modals.html</loc></url>
+<url><loc>https://favstats.github.io/dashboardr/reference/enable_show_when.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/enable_sidebar.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/end_input_row.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/end_sidebar.html</loc></url>
@@ -251,10 +259,13 @@
 <url><loc>https://favstats.github.io/dashboardr/reference/render_input_row.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/render_value_box.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/render_value_box_row.html</loc></url>
+<url><loc>https://favstats.github.io/dashboardr/reference/render_viz_html.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/save_widget.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/set_tabgroup_labels.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/set_tabgroup_labels.page_object.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/show_structure.html</loc></url>
+<url><loc>https://favstats.github.io/dashboardr/reference/show_when_close.html</loc></url>
+<url><loc>https://favstats.github.io/dashboardr/reference/show_when_open.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/showcase_dashboard.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/sidebar_group.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/spec_viz.html</loc></url>
@@ -272,13 +283,20 @@
 <url><loc>https://favstats.github.io/dashboardr/reference/viz_bar.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/viz_boxplot.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/viz_density.html</loc></url>
+<url><loc>https://favstats.github.io/dashboardr/reference/viz_dumbbell.html</loc></url>
+<url><loc>https://favstats.github.io/dashboardr/reference/viz_funnel.html</loc></url>
+<url><loc>https://favstats.github.io/dashboardr/reference/viz_gauge.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/viz_heatmap.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/viz_histogram.html</loc></url>
+<url><loc>https://favstats.github.io/dashboardr/reference/viz_lollipop.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/viz_map.html</loc></url>
+<url><loc>https://favstats.github.io/dashboardr/reference/viz_pie.html</loc></url>
+<url><loc>https://favstats.github.io/dashboardr/reference/viz_sankey.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/viz_scatter.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/viz_stackedbar.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/viz_stackedbars.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/viz_timeline.html</loc></url>
 <url><loc>https://favstats.github.io/dashboardr/reference/viz_treemap.html</loc></url>
+<url><loc>https://favstats.github.io/dashboardr/reference/viz_waffle.html</loc></url>
 </urlset>
 

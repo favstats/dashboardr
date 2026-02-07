@@ -43,7 +43,9 @@ add_input(
   mr = NULL,
   mb = NULL,
   ml = NULL,
-  tabgroup = NULL
+  tabgroup = NULL,
+  .linked_parent_id = NULL,
+  .options_by_parent = NULL
 )
 ```
 
@@ -121,6 +123,31 @@ add_input(
 
   Whether to display options inline (for checkbox/radio, default TRUE)
 
+- stacked:
+
+  Whether to stack options vertically (for checkbox/radio). Default
+  FALSE.
+
+- stacked_align:
+
+  Alignment when stacked: "center" (default), "left", or "right"
+
+- group_align:
+
+  Alignment for option groups: "left" (default), "center", or "right"
+
+- ncol:
+
+  Number of columns for grid layout of options
+
+- nrow:
+
+  Number of rows for grid layout of options
+
+- columns:
+
+  Column configuration for grid layout
+
 - toggle_series:
 
   For switch type: name of the series to toggle visibility on/off
@@ -147,9 +174,41 @@ add_input(
 
   Whether the input is disabled (default FALSE)
 
+- add_all:
+
+  Whether to add an "All" option (default FALSE)
+
+- add_all_label:
+
+  Label for the "All" option (default "All")
+
+- mt:
+
+  Margin top (CSS value, e.g., "10px")
+
+- mr:
+
+  Margin right (CSS value)
+
+- mb:
+
+  Margin bottom (CSS value)
+
+- ml:
+
+  Margin left (CSS value)
+
 - tabgroup:
 
   Optional tabgroup for organizing content
+
+- .linked_parent_id:
+
+  Internal. ID of linked parent input for cascading inputs
+
+- .options_by_parent:
+
+  Internal. Named list mapping parent values to child options
 
 ## Value
 

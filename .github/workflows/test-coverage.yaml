@@ -22,16 +22,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # Add 4 GB swap to prevent OOM (covr instrumentation is memory-hungry)
-      - name: Add swap space
-        run: |
-          sudo fallocate -l 4G /swapfile
-          sudo chmod 600 /swapfile
-          sudo mkswap /swapfile
-          sudo swapon /swapfile
-          echo "Swap enabled:"
-          free -h
-
       # Free up disk/memory from pre-installed software we don't need
       - name: Free runner resources
         run: |

@@ -91,7 +91,8 @@
     <li><hr class="dropdown-divider"></li>
     <li><a class="dropdown-item" href="../live-demos/tutorial/index.html">🎓 Tutorial Dashboard</a></li>
     <li><a class="dropdown-item" href="../live-demos/showcase/index.html">🚀 Showcase Dashboard</a></li>
-    <li><a class="external-link dropdown-item" href="https://www.digiqmonitor.nl/">🌍 DigIQ Monitor</a></li>
+    <li><a class="dropdown-item" href="../live-demos/sidebar-gss/explorer.html">🕹️ Sidebar Dashboard</a></li>
+    <li><a class="external-link dropdown-item" href="https://www.digiqmonitor.nl/">🖥️ DigIQ Monitor</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>🎨 Tabset Themes</h6></li>
     <li><a class="dropdown-item" href="../live-demos/tabsets/pills/index.html">   Pills</a></li>
@@ -249,10 +250,10 @@ type:</p>
 <span>          x_label <span class="op">=</span> <span class="st">""</span>, y_label <span class="op">=</span> <span class="st">"Respondents"</span><span class="op">)</span> </span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">demographics</span><span class="op">)</span></span>
-<span><span class="co">#&gt; -- <span style="font-weight: bold;">Content Collection</span> ──────────────────────────────────────────────────────────</span><e2><e2><e2><e2><e2><e2><e2><e2><e2><e2><e2><e2><e2><e2><e2><e2><e2><e2><e2><e2><e2><e2><e2><e2><e2><e2><e2><e2><e2><e2><e2><e2><e2><e2><e2><e2><e2><e2></e2></e2></e2></e2></e2></e2></e2></e2></e2></e2></e2></e2></e2></e2></e2></e2></e2></e2></e2></e2></e2></e2></e2></e2></e2></e2></e2></e2></e2></e2></e2></e2></e2></e2></e2></e2></e2></e2></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">1</span> items | ✔ data: 3139 rows x 7 cols</span>ls</span>
+<span><span class="co">#&gt; -- <span style="font-weight: bold;">Content Collection</span> ──────────────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">1</span> items | ✔ data: 3139 rows x 7 cols</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; • <span style="color: #00BB00;">[Viz]</span> <span style="font-weight: bold;">Education</span> <span style="color: #555555;">(</span><span style="color: #BB00BB;">bar</span><span style="color: #555555;">)</span> <span style="color: #555555;">x=degree</span></span>9m</span></code></pre></div>
+<span><span class="co">#&gt; • <span style="color: #00BB00;">[Viz]</span> <span style="font-weight: bold;">Education</span> <span style="color: #555555;">(</span><span style="color: #BB00BB;">bar</span><span style="color: #555555;">)</span> <span style="color: #555555;">x=degree</span></span></span></code></pre></div>
 <p>Here <code><a href="../reference/create_content.html">create_content()</a></code> sets up a container with the GSS
 data (<code>data = gss</code>) and says “make bar charts by default”
 (<code>type = "bar"</code>). Then <code><a href="../reference/add_viz.html">add_viz()</a></code> adds a bar
@@ -381,15 +382,15 @@ you can <em>also</em> <code>add_text</code> directly to pages:</p>
 <span>  <span class="fu"><a href="../reference/add_content.html">add_content</a></span><span class="op">(</span><span class="va">demographics</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">analysis</span><span class="op">)</span></span>
-<span><span class="co">#&gt; -- <span style="font-weight: bold;">Page:</span> Analysis ───────────────────────────────────────────────</span><e2><e2><e2><e2><e2><e2><e2><e2><e2><e2><e2><e2><e2><e2><e2><e2><e2><e2><e2><e2><e2><e2><e2><e2><e2><e2><e2><e2><e2><e2><e2></e2></e2></e2></e2></e2></e2></e2></e2></e2></e2></e2></e2></e2></e2></e2></e2></e2></e2></e2></e2></e2></e2></e2></e2></e2></e2></e2></e2></e2></e2></e2></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> data: 3139 rows x 7 cols </span>s </span>
+<span><span class="co">#&gt; -- <span style="font-weight: bold;">Page:</span> Analysis ───────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> data: 3139 rows x 7 cols </span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">3</span> items</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ℹ <span style="color: #BBBB00;">[Text]</span> <span style="color: #555555;">"## Demographic Overview Explore how GSS respond..."</span></span>9m</span>
-<span><span class="co">#&gt; ❯ <span style="color: #0000BB;">[Tab]</span> <span style="color: #00BBBB; font-weight: bold;">Demographics</span><span style="color: #555555;"> (1 viz)</span></span>9m</span>
-<span><span class="co">#&gt;   • <span style="color: #00BB00;">[Viz]</span> <span style="font-weight: bold;">Education</span> <span style="color: #555555;">(</span><span style="color: #BB00BB;">bar</span><span style="color: #555555;">)</span> <span style="color: #555555;">x=degree</span></span>9m</span>
-<span><span class="co">#&gt; ❯ <span style="color: #0000BB;">[Tab]</span> <span style="color: #00BBBB; font-weight: bold;">Attitudes</span><span style="color: #555555;"> (1 viz)</span></span>9m</span>
-<span><span class="co">#&gt;   • <span style="color: #00BB00;">[Viz]</span> <span style="font-weight: bold;">Happiness</span> <span style="color: #555555;">(</span><span style="color: #BB00BB;">bar</span><span style="color: #555555;">)</span> <span style="color: #555555;">x=happy</span></span>9m</span></code></pre></div>
+<span><span class="co">#&gt; ℹ <span style="color: #BBBB00;">[Text]</span> <span style="color: #555555;">"## Demographic Overview Explore how GSS respond..."</span></span></span>
+<span><span class="co">#&gt; ❯ <span style="color: #0000BB;">[Tab]</span> <span style="color: #00BBBB; font-weight: bold;">Demographics</span><span style="color: #555555;"> (1 viz)</span></span></span>
+<span><span class="co">#&gt;   • <span style="color: #00BB00;">[Viz]</span> <span style="font-weight: bold;">Education</span> <span style="color: #555555;">(</span><span style="color: #BB00BB;">bar</span><span style="color: #555555;">)</span> <span style="color: #555555;">x=degree</span></span></span>
+<span><span class="co">#&gt; ❯ <span style="color: #0000BB;">[Tab]</span> <span style="color: #00BBBB; font-weight: bold;">Attitudes</span><span style="color: #555555;"> (1 viz)</span></span></span>
+<span><span class="co">#&gt;   • <span style="color: #00BB00;">[Viz]</span> <span style="font-weight: bold;">Happiness</span> <span style="color: #555555;">(</span><span style="color: #BB00BB;">bar</span><span style="color: #555555;">)</span> <span style="color: #555555;">x=happy</span></span></span></code></pre></div>
 <p>The <code><a href="../reference/add_content.html">add_content()</a></code> function connects layers: it takes the
 content collection you built earlier and attaches it to the page. The
 page’s <code>data</code> argument provides the dataset for any

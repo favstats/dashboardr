@@ -91,7 +91,8 @@
     <li><hr class="dropdown-divider"></li>
     <li><a class="dropdown-item" href="../live-demos/tutorial/index.html">🎓 Tutorial Dashboard</a></li>
     <li><a class="dropdown-item" href="../live-demos/showcase/index.html">🚀 Showcase Dashboard</a></li>
-    <li><a class="external-link dropdown-item" href="https://www.digiqmonitor.nl/">🌍 DigIQ Monitor</a></li>
+    <li><a class="dropdown-item" href="../live-demos/sidebar-gss/explorer.html">🕹️ Sidebar Dashboard</a></li>
+    <li><a class="external-link dropdown-item" href="https://www.digiqmonitor.nl/">🖥️ DigIQ Monitor</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>🎨 Tabset Themes</h6></li>
     <li><a class="dropdown-item" href="../live-demos/tabsets/pills/index.html">   Pills</a></li>
@@ -243,13 +244,13 @@ expression after <code>~</code> is evaluated against your data:</p>
 <span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span>x_var <span class="op">=</span> <span class="st">"happy"</span>, title <span class="op">=</span> <span class="st">"Female"</span>, filter <span class="op">=</span> <span class="op">~</span> <span class="va">sex</span> <span class="op">==</span> <span class="st">"female"</span>, tabgroup <span class="op">=</span> <span class="st">"Female"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">filtered</span><span class="op">)</span></span>
-<span><span class="co">#&gt; -- <span style="font-weight: bold;">Content Collection</span> ----------------------------------------------------------</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">2</span> items | v data: 2997 rows x 8 cols</span></span>
+<span><span class="co">#&gt; -- <span style="font-weight: bold;">Content Collection</span> ──────────────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">2</span> items | ✔ data: 2997 rows x 8 cols</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; &gt; <span style="color: #0000BB;">[Tab]</span> <span style="color: #00BBBB; font-weight: bold;">Male</span><span style="color: #555555;"> (1 viz)</span></span></span>
-<span><span class="co">#&gt;   * <span style="color: #00BB00;">[Viz]</span> <span style="font-weight: bold;">Male</span> <span style="color: #555555;">(</span><span style="color: #BB00BB;">bar</span><span style="color: #555555;">)</span> <span style="color: #555555;">x=happy</span><span style="color: #BBBB00;"> +filter</span></span></span>
-<span><span class="co">#&gt; &gt; <span style="color: #0000BB;">[Tab]</span> <span style="color: #00BBBB; font-weight: bold;">Female</span><span style="color: #555555;"> (1 viz)</span></span></span>
-<span><span class="co">#&gt;   * <span style="color: #00BB00;">[Viz]</span> <span style="font-weight: bold;">Female</span> <span style="color: #555555;">(</span><span style="color: #BB00BB;">bar</span><span style="color: #555555;">)</span> <span style="color: #555555;">x=happy</span><span style="color: #BBBB00;"> +filter</span></span></span></code></pre></div>
+<span><span class="co">#&gt; ❯ <span style="color: #0000BB;">[Tab]</span> <span style="color: #00BBBB; font-weight: bold;">Male</span><span style="color: #555555;"> (1 viz)</span></span></span>
+<span><span class="co">#&gt;   • <span style="color: #00BB00;">[Viz]</span> <span style="font-weight: bold;">Male</span> <span style="color: #555555;">(</span><span style="color: #BB00BB;">bar</span><span style="color: #555555;">)</span> <span style="color: #555555;">x=happy</span><span style="color: #BBBB00;"> +filter</span></span></span>
+<span><span class="co">#&gt; ❯ <span style="color: #0000BB;">[Tab]</span> <span style="color: #00BBBB; font-weight: bold;">Female</span><span style="color: #555555;"> (1 viz)</span></span></span>
+<span><span class="co">#&gt;   • <span style="color: #00BB00;">[Viz]</span> <span style="font-weight: bold;">Female</span> <span style="color: #555555;">(</span><span style="color: #BB00BB;">bar</span><span style="color: #555555;">)</span> <span style="color: #555555;">x=happy</span><span style="color: #BBBB00;"> +filter</span></span></span></code></pre></div>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">filtered</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/preview.html">preview</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <div style="border: 2px solid #e1e4e8; border-radius: 8px; padding: 20px; margin: 16px 0; background-color: #fafbfc;">
@@ -338,15 +339,15 @@ showing happiness for a different age range:</p>
 <span>          filter <span class="op">=</span> <span class="op">~</span> <span class="va">age</span> <span class="op">&gt;</span> <span class="fl">55</span>, tabgroup <span class="op">=</span> <span class="st">"Olders"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">complex</span><span class="op">)</span></span>
-<span><span class="co">#&gt; -- <span style="font-weight: bold;">Content Collection</span> ----------------------------------------------------------</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">3</span> items | v data: 2997 rows x 8 cols</span></span>
+<span><span class="co">#&gt; -- <span style="font-weight: bold;">Content Collection</span> ──────────────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">3</span> items | ✔ data: 2997 rows x 8 cols</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; &gt; <span style="color: #0000BB;">[Tab]</span> <span style="color: #00BBBB; font-weight: bold;">Youngsters</span><span style="color: #555555;"> (1 viz)</span></span></span>
-<span><span class="co">#&gt;   * <span style="color: #00BB00;">[Viz]</span> <span style="font-weight: bold;">Young Adults (18-35)</span> <span style="color: #555555;">(</span><span style="color: #BB00BB;">bar</span><span style="color: #555555;">)</span> <span style="color: #555555;">x=happy</span><span style="color: #BBBB00;"> +filter</span></span></span>
-<span><span class="co">#&gt; &gt; <span style="color: #0000BB;">[Tab]</span> <span style="color: #00BBBB; font-weight: bold;">Middlers</span><span style="color: #555555;"> (1 viz)</span></span></span>
-<span><span class="co">#&gt;   * <span style="color: #00BB00;">[Viz]</span> <span style="font-weight: bold;">Middle Age (36-55)</span> <span style="color: #555555;">(</span><span style="color: #BB00BB;">bar</span><span style="color: #555555;">)</span> <span style="color: #555555;">x=happy</span><span style="color: #BBBB00;"> +filter</span></span></span>
-<span><span class="co">#&gt; &gt; <span style="color: #0000BB;">[Tab]</span> <span style="color: #00BBBB; font-weight: bold;">Olders</span><span style="color: #555555;"> (1 viz)</span></span></span>
-<span><span class="co">#&gt;   * <span style="color: #00BB00;">[Viz]</span> <span style="font-weight: bold;">Older Adults (55+)</span> <span style="color: #555555;">(</span><span style="color: #BB00BB;">bar</span><span style="color: #555555;">)</span> <span style="color: #555555;">x=happy</span><span style="color: #BBBB00;"> +filter</span></span></span></code></pre></div>
+<span><span class="co">#&gt; ❯ <span style="color: #0000BB;">[Tab]</span> <span style="color: #00BBBB; font-weight: bold;">Youngsters</span><span style="color: #555555;"> (1 viz)</span></span></span>
+<span><span class="co">#&gt;   • <span style="color: #00BB00;">[Viz]</span> <span style="font-weight: bold;">Young Adults (18-35)</span> <span style="color: #555555;">(</span><span style="color: #BB00BB;">bar</span><span style="color: #555555;">)</span> <span style="color: #555555;">x=happy</span><span style="color: #BBBB00;"> +filter</span></span></span>
+<span><span class="co">#&gt; ❯ <span style="color: #0000BB;">[Tab]</span> <span style="color: #00BBBB; font-weight: bold;">Middlers</span><span style="color: #555555;"> (1 viz)</span></span></span>
+<span><span class="co">#&gt;   • <span style="color: #00BB00;">[Viz]</span> <span style="font-weight: bold;">Middle Age (36-55)</span> <span style="color: #555555;">(</span><span style="color: #BB00BB;">bar</span><span style="color: #555555;">)</span> <span style="color: #555555;">x=happy</span><span style="color: #BBBB00;"> +filter</span></span></span>
+<span><span class="co">#&gt; ❯ <span style="color: #0000BB;">[Tab]</span> <span style="color: #00BBBB; font-weight: bold;">Olders</span><span style="color: #555555;"> (1 viz)</span></span></span>
+<span><span class="co">#&gt;   • <span style="color: #00BB00;">[Viz]</span> <span style="font-weight: bold;">Older Adults (55+)</span> <span style="color: #555555;">(</span><span style="color: #BB00BB;">bar</span><span style="color: #555555;">)</span> <span style="color: #555555;">x=happy</span><span style="color: #BBBB00;"> +filter</span></span></span></code></pre></div>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">complex</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/preview.html">preview</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <div style="border: 2px solid #e1e4e8; border-radius: 8px; padding: 20px; margin: 16px 0; background-color: #fafbfc;">
@@ -541,15 +542,15 @@ category (e.g., “Male”, “Female”)</li>
 <span>          filter <span class="op">=</span> <span class="op">~</span> <span class="va">sex</span> <span class="op">==</span> <span class="st">"female"</span>, title_tabset <span class="op">=</span> <span class="st">"Female"</span>, tabgroup <span class="op">=</span> <span class="st">"education"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">gender_comparison</span><span class="op">)</span></span>
-<span><span class="co">#&gt; -- <span style="font-weight: bold;">Content Collection</span> ----------------------------------------------------------</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">4</span> items | v data: 2997 rows x 8 cols</span></span>
+<span><span class="co">#&gt; -- <span style="font-weight: bold;">Content Collection</span> ──────────────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">4</span> items | ✔ data: 2997 rows x 8 cols</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; &gt; <span style="color: #0000BB;">[Tab]</span> <span style="color: #00BBBB; font-weight: bold;">happiness</span><span style="color: #555555;"> (2 vizs)</span></span></span>
-<span><span class="co">#&gt;   * <span style="color: #00BB00;">[Viz]</span> <span style="font-weight: bold;">Happiness</span> <span style="color: #555555;">(</span><span style="color: #BB00BB;">bar</span><span style="color: #555555;">)</span> <span style="color: #555555;">x=happy</span><span style="color: #BBBB00;"> +filter</span></span></span>
-<span><span class="co">#&gt;   * <span style="color: #00BB00;">[Viz]</span> <span style="font-weight: bold;">Happiness</span> <span style="color: #555555;">(</span><span style="color: #BB00BB;">bar</span><span style="color: #555555;">)</span> <span style="color: #555555;">x=happy</span><span style="color: #BBBB00;"> +filter</span></span></span>
-<span><span class="co">#&gt; &gt; <span style="color: #0000BB;">[Tab]</span> <span style="color: #00BBBB; font-weight: bold;">education</span><span style="color: #555555;"> (2 vizs)</span></span></span>
-<span><span class="co">#&gt;   * <span style="color: #00BB00;">[Viz]</span> <span style="font-weight: bold;">Education</span> <span style="color: #555555;">(</span><span style="color: #BB00BB;">bar</span><span style="color: #555555;">)</span> <span style="color: #555555;">x=degree</span><span style="color: #BBBB00;"> +filter</span></span></span>
-<span><span class="co">#&gt;   * <span style="color: #00BB00;">[Viz]</span> <span style="font-weight: bold;">Education</span> <span style="color: #555555;">(</span><span style="color: #BB00BB;">bar</span><span style="color: #555555;">)</span> <span style="color: #555555;">x=degree</span><span style="color: #BBBB00;"> +filter</span></span></span></code></pre></div>
+<span><span class="co">#&gt; ❯ <span style="color: #0000BB;">[Tab]</span> <span style="color: #00BBBB; font-weight: bold;">happiness</span><span style="color: #555555;"> (2 vizs)</span></span></span>
+<span><span class="co">#&gt;   • <span style="color: #00BB00;">[Viz]</span> <span style="font-weight: bold;">Happiness</span> <span style="color: #555555;">(</span><span style="color: #BB00BB;">bar</span><span style="color: #555555;">)</span> <span style="color: #555555;">x=happy</span><span style="color: #BBBB00;"> +filter</span></span></span>
+<span><span class="co">#&gt;   • <span style="color: #00BB00;">[Viz]</span> <span style="font-weight: bold;">Happiness</span> <span style="color: #555555;">(</span><span style="color: #BB00BB;">bar</span><span style="color: #555555;">)</span> <span style="color: #555555;">x=happy</span><span style="color: #BBBB00;"> +filter</span></span></span>
+<span><span class="co">#&gt; ❯ <span style="color: #0000BB;">[Tab]</span> <span style="color: #00BBBB; font-weight: bold;">education</span><span style="color: #555555;"> (2 vizs)</span></span></span>
+<span><span class="co">#&gt;   • <span style="color: #00BB00;">[Viz]</span> <span style="font-weight: bold;">Education</span> <span style="color: #555555;">(</span><span style="color: #BB00BB;">bar</span><span style="color: #555555;">)</span> <span style="color: #555555;">x=degree</span><span style="color: #BBBB00;"> +filter</span></span></span>
+<span><span class="co">#&gt;   • <span style="color: #00BB00;">[Viz]</span> <span style="font-weight: bold;">Education</span> <span style="color: #555555;">(</span><span style="color: #BB00BB;">bar</span><span style="color: #555555;">)</span> <span style="color: #555555;">x=degree</span><span style="color: #BBBB00;"> +filter</span></span></span></code></pre></div>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">gender_comparison</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/preview.html">preview</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <div style="border: 2px solid #e1e4e8; border-radius: 8px; padding: 20px; margin: 16px 0; background-color: #fafbfc;">
@@ -756,14 +757,14 @@ vary, and single values for parameters that stay the same:</p>
 <span>  <span class="fu"><a href="../reference/add_vizzes.html">add_vizzes</a></span><span class="op">(</span>x_var <span class="op">=</span> <span class="va">vars</span>, title <span class="op">=</span> <span class="va">labels</span>, tabgroup <span class="op">=</span> <span class="st">"survey"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">batch</span><span class="op">)</span></span>
-<span><span class="co">#&gt; -- <span style="font-weight: bold;">Content Collection</span> ----------------------------------------------------------</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">4</span> items | v data: 2997 rows x 8 cols</span></span>
+<span><span class="co">#&gt; -- <span style="font-weight: bold;">Content Collection</span> ──────────────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">4</span> items | ✔ data: 2997 rows x 8 cols</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; &gt; <span style="color: #0000BB;">[Tab]</span> <span style="color: #00BBBB; font-weight: bold;">survey</span><span style="color: #555555;"> (4 vizs)</span></span></span>
-<span><span class="co">#&gt;   * <span style="color: #00BB00;">[Viz]</span> <span style="font-weight: bold;">Education</span> <span style="color: #555555;">(</span><span style="color: #BB00BB;">bar</span><span style="color: #555555;">)</span> <span style="color: #555555;">x=degree</span></span></span>
-<span><span class="co">#&gt;   * <span style="color: #00BB00;">[Viz]</span> <span style="font-weight: bold;">Race</span> <span style="color: #555555;">(</span><span style="color: #BB00BB;">bar</span><span style="color: #555555;">)</span> <span style="color: #555555;">x=race</span></span></span>
-<span><span class="co">#&gt;   * <span style="color: #00BB00;">[Viz]</span> <span style="font-weight: bold;">Happiness</span> <span style="color: #555555;">(</span><span style="color: #BB00BB;">bar</span><span style="color: #555555;">)</span> <span style="color: #555555;">x=happy</span></span></span>
-<span><span class="co">#&gt;   * <span style="color: #00BB00;">[Viz]</span> <span style="font-weight: bold;">Politics</span> <span style="color: #555555;">(</span><span style="color: #BB00BB;">bar</span><span style="color: #555555;">)</span> <span style="color: #555555;">x=polviews</span></span></span></code></pre></div>
+<span><span class="co">#&gt; ❯ <span style="color: #0000BB;">[Tab]</span> <span style="color: #00BBBB; font-weight: bold;">survey</span><span style="color: #555555;"> (4 vizs)</span></span></span>
+<span><span class="co">#&gt;   • <span style="color: #00BB00;">[Viz]</span> <span style="font-weight: bold;">Education</span> <span style="color: #555555;">(</span><span style="color: #BB00BB;">bar</span><span style="color: #555555;">)</span> <span style="color: #555555;">x=degree</span></span></span>
+<span><span class="co">#&gt;   • <span style="color: #00BB00;">[Viz]</span> <span style="font-weight: bold;">Race</span> <span style="color: #555555;">(</span><span style="color: #BB00BB;">bar</span><span style="color: #555555;">)</span> <span style="color: #555555;">x=race</span></span></span>
+<span><span class="co">#&gt;   • <span style="color: #00BB00;">[Viz]</span> <span style="font-weight: bold;">Happiness</span> <span style="color: #555555;">(</span><span style="color: #BB00BB;">bar</span><span style="color: #555555;">)</span> <span style="color: #555555;">x=happy</span></span></span>
+<span><span class="co">#&gt;   • <span style="color: #00BB00;">[Viz]</span> <span style="font-weight: bold;">Politics</span> <span style="color: #555555;">(</span><span style="color: #BB00BB;">bar</span><span style="color: #555555;">)</span> <span style="color: #555555;">x=polviews</span></span></span></code></pre></div>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">batch</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/preview.html">preview</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <div style="border: 2px solid #e1e4e8; border-radius: 8px; padding: 20px; margin: 16px 0; background-color: #fafbfc;">
@@ -1792,13 +1793,13 @@ visualizations in that collection:</p>
 <span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span>x_var <span class="op">=</span> <span class="st">"happy"</span>, title <span class="op">=</span> <span class="st">"Happiness"</span>, tabgroup <span class="op">=</span> <span class="st">"weighted"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">weighted_collection</span><span class="op">)</span></span>
-<span><span class="co">#&gt; -- <span style="font-weight: bold;">Content Collection</span> ----------------------------------------------------------</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">3</span> items | v data: 2997 rows x 8 cols</span></span>
+<span><span class="co">#&gt; -- <span style="font-weight: bold;">Content Collection</span> ──────────────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">3</span> items | ✔ data: 2997 rows x 8 cols</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; &gt; <span style="color: #0000BB;">[Tab]</span> <span style="color: #00BBBB; font-weight: bold;">weighted</span><span style="color: #555555;"> (3 vizs)</span></span></span>
-<span><span class="co">#&gt;   * <span style="color: #00BB00;">[Viz]</span> <span style="font-weight: bold;">Education</span> <span style="color: #555555;">(</span><span style="color: #BB00BB;">bar</span><span style="color: #555555;">)</span> <span style="color: #555555;">x=degree</span></span></span>
-<span><span class="co">#&gt;   * <span style="color: #00BB00;">[Viz]</span> <span style="font-weight: bold;">Race</span> <span style="color: #555555;">(</span><span style="color: #BB00BB;">bar</span><span style="color: #555555;">)</span> <span style="color: #555555;">x=race</span></span></span>
-<span><span class="co">#&gt;   * <span style="color: #00BB00;">[Viz]</span> <span style="font-weight: bold;">Happiness</span> <span style="color: #555555;">(</span><span style="color: #BB00BB;">bar</span><span style="color: #555555;">)</span> <span style="color: #555555;">x=happy</span></span></span></code></pre></div>
+<span><span class="co">#&gt; ❯ <span style="color: #0000BB;">[Tab]</span> <span style="color: #00BBBB; font-weight: bold;">weighted</span><span style="color: #555555;"> (3 vizs)</span></span></span>
+<span><span class="co">#&gt;   • <span style="color: #00BB00;">[Viz]</span> <span style="font-weight: bold;">Education</span> <span style="color: #555555;">(</span><span style="color: #BB00BB;">bar</span><span style="color: #555555;">)</span> <span style="color: #555555;">x=degree</span></span></span>
+<span><span class="co">#&gt;   • <span style="color: #00BB00;">[Viz]</span> <span style="font-weight: bold;">Race</span> <span style="color: #555555;">(</span><span style="color: #BB00BB;">bar</span><span style="color: #555555;">)</span> <span style="color: #555555;">x=race</span></span></span>
+<span><span class="co">#&gt;   • <span style="color: #00BB00;">[Viz]</span> <span style="font-weight: bold;">Happiness</span> <span style="color: #555555;">(</span><span style="color: #BB00BB;">bar</span><span style="color: #555555;">)</span> <span style="color: #555555;">x=happy</span></span></span></code></pre></div>
 <div class="sourceCode" id="cb39"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">weighted_collection</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/preview.html">preview</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <div style="border: 2px solid #e1e4e8; border-radius: 8px; padding: 20px; margin: 16px 0; background-color: #fafbfc;">
@@ -2596,14 +2597,14 @@ buttons.</p>
 <span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span>x_var <span class="op">=</span> <span class="st">"race"</span>, title <span class="op">=</span> <span class="st">"Race"</span>, tabgroup <span class="op">=</span> <span class="st">"B"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">modern_page</span><span class="op">)</span></span>
-<span><span class="co">#&gt; -- <span style="font-weight: bold;">Page:</span> Modern -------------------------------------------------</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">v</span> data: 2997 rows x 8 cols | default: bar </span></span>
+<span><span class="co">#&gt; -- <span style="font-weight: bold;">Page:</span> Modern ─────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> data: 2997 rows x 8 cols | default: bar </span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">2</span> items</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; &gt; <span style="color: #0000BB;">[Tab]</span> <span style="color: #00BBBB; font-weight: bold;">A</span><span style="color: #555555;"> (1 viz)</span></span></span>
-<span><span class="co">#&gt;   * <span style="color: #00BB00;">[Viz]</span> <span style="font-weight: bold;">Education</span> <span style="color: #555555;">(</span><span style="color: #BB00BB;">bar</span><span style="color: #555555;">)</span> <span style="color: #555555;">x=degree</span></span></span>
-<span><span class="co">#&gt; &gt; <span style="color: #0000BB;">[Tab]</span> <span style="color: #00BBBB; font-weight: bold;">B</span><span style="color: #555555;"> (1 viz)</span></span></span>
-<span><span class="co">#&gt;   * <span style="color: #00BB00;">[Viz]</span> <span style="font-weight: bold;">Race</span> <span style="color: #555555;">(</span><span style="color: #BB00BB;">bar</span><span style="color: #555555;">)</span> <span style="color: #555555;">x=race</span></span></span></code></pre></div>
+<span><span class="co">#&gt; ❯ <span style="color: #0000BB;">[Tab]</span> <span style="color: #00BBBB; font-weight: bold;">A</span><span style="color: #555555;"> (1 viz)</span></span></span>
+<span><span class="co">#&gt;   • <span style="color: #00BB00;">[Viz]</span> <span style="font-weight: bold;">Education</span> <span style="color: #555555;">(</span><span style="color: #BB00BB;">bar</span><span style="color: #555555;">)</span> <span style="color: #555555;">x=degree</span></span></span>
+<span><span class="co">#&gt; ❯ <span style="color: #0000BB;">[Tab]</span> <span style="color: #00BBBB; font-weight: bold;">B</span><span style="color: #555555;"> (1 viz)</span></span></span>
+<span><span class="co">#&gt;   • <span style="color: #00BB00;">[Viz]</span> <span style="font-weight: bold;">Race</span> <span style="color: #555555;">(</span><span style="color: #BB00BB;">bar</span><span style="color: #555555;">)</span> <span style="color: #555555;">x=race</span></span></span></code></pre></div>
 <blockquote>
 <p><strong>Note:</strong> Tab themes are fully rendered in the generated
 dashboard. Use <code>generate_dashboard(render = TRUE)</code> to see the
@@ -2675,14 +2676,14 @@ the following color options:</p>
 <span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span>x_var <span class="op">=</span> <span class="st">"happy"</span>, title <span class="op">=</span> <span class="st">"Happiness"</span>, tabgroup <span class="op">=</span> <span class="st">"attitudes"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">blue_tabs</span><span class="op">)</span></span>
-<span><span class="co">#&gt; -- <span style="font-weight: bold;">Page:</span> Blue Theme ---------------------------------------------</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">v</span> data: 2997 rows x 8 cols | default: bar </span></span>
+<span><span class="co">#&gt; -- <span style="font-weight: bold;">Page:</span> Blue Theme ─────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> data: 2997 rows x 8 cols | default: bar </span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">2</span> items</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; &gt; <span style="color: #0000BB;">[Tab]</span> <span style="color: #00BBBB; font-weight: bold;">demo</span><span style="color: #555555;"> (1 viz)</span></span></span>
-<span><span class="co">#&gt;   * <span style="color: #00BB00;">[Viz]</span> <span style="font-weight: bold;">Education</span> <span style="color: #555555;">(</span><span style="color: #BB00BB;">bar</span><span style="color: #555555;">)</span> <span style="color: #555555;">x=degree</span></span></span>
-<span><span class="co">#&gt; &gt; <span style="color: #0000BB;">[Tab]</span> <span style="color: #00BBBB; font-weight: bold;">attitudes</span><span style="color: #555555;"> (1 viz)</span></span></span>
-<span><span class="co">#&gt;   * <span style="color: #00BB00;">[Viz]</span> <span style="font-weight: bold;">Happiness</span> <span style="color: #555555;">(</span><span style="color: #BB00BB;">bar</span><span style="color: #555555;">)</span> <span style="color: #555555;">x=happy</span></span></span></code></pre></div>
+<span><span class="co">#&gt; ❯ <span style="color: #0000BB;">[Tab]</span> <span style="color: #00BBBB; font-weight: bold;">demo</span><span style="color: #555555;"> (1 viz)</span></span></span>
+<span><span class="co">#&gt;   • <span style="color: #00BB00;">[Viz]</span> <span style="font-weight: bold;">Education</span> <span style="color: #555555;">(</span><span style="color: #BB00BB;">bar</span><span style="color: #555555;">)</span> <span style="color: #555555;">x=degree</span></span></span>
+<span><span class="co">#&gt; ❯ <span style="color: #0000BB;">[Tab]</span> <span style="color: #00BBBB; font-weight: bold;">attitudes</span><span style="color: #555555;"> (1 viz)</span></span></span>
+<span><span class="co">#&gt;   • <span style="color: #00BB00;">[Viz]</span> <span style="font-weight: bold;">Happiness</span> <span style="color: #555555;">(</span><span style="color: #BB00BB;">bar</span><span style="color: #555555;">)</span> <span style="color: #555555;">x=happy</span></span></span></code></pre></div>
 <blockquote>
 <p><strong>Note:</strong> Custom tab colors (like
 <code>tabset_colors</code>) are only visible in the generated dashboard,
@@ -2716,16 +2717,16 @@ then derive the other colors from it (lighter versions for
 <span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span>x_var <span class="op">=</span> <span class="st">"happy"</span>, title <span class="op">=</span> <span class="st">"Satisfaction"</span>, tabgroup <span class="op">=</span> <span class="st">"Q3"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">corporate</span><span class="op">)</span></span>
-<span><span class="co">#&gt; -- <span style="font-weight: bold;">Page:</span> Corporate ----------------------------------------------</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">v</span> data: 2997 rows x 8 cols | default: bar </span></span>
+<span><span class="co">#&gt; -- <span style="font-weight: bold;">Page:</span> Corporate ──────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> data: 2997 rows x 8 cols | default: bar </span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">3</span> items</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; &gt; <span style="color: #0000BB;">[Tab]</span> <span style="color: #00BBBB; font-weight: bold;">Q1</span><span style="color: #555555;"> (1 viz)</span></span></span>
-<span><span class="co">#&gt;   * <span style="color: #00BB00;">[Viz]</span> <span style="font-weight: bold;">Education</span> <span style="color: #555555;">(</span><span style="color: #BB00BB;">bar</span><span style="color: #555555;">)</span> <span style="color: #555555;">x=degree</span></span></span>
-<span><span class="co">#&gt; &gt; <span style="color: #0000BB;">[Tab]</span> <span style="color: #00BBBB; font-weight: bold;">Q2</span><span style="color: #555555;"> (1 viz)</span></span></span>
-<span><span class="co">#&gt;   * <span style="color: #00BB00;">[Viz]</span> <span style="font-weight: bold;">Demographics</span> <span style="color: #555555;">(</span><span style="color: #BB00BB;">bar</span><span style="color: #555555;">)</span> <span style="color: #555555;">x=race</span></span></span>
-<span><span class="co">#&gt; &gt; <span style="color: #0000BB;">[Tab]</span> <span style="color: #00BBBB; font-weight: bold;">Q3</span><span style="color: #555555;"> (1 viz)</span></span></span>
-<span><span class="co">#&gt;   * <span style="color: #00BB00;">[Viz]</span> <span style="font-weight: bold;">Satisfaction</span> <span style="color: #555555;">(</span><span style="color: #BB00BB;">bar</span><span style="color: #555555;">)</span> <span style="color: #555555;">x=happy</span></span></span></code></pre></div>
+<span><span class="co">#&gt; ❯ <span style="color: #0000BB;">[Tab]</span> <span style="color: #00BBBB; font-weight: bold;">Q1</span><span style="color: #555555;"> (1 viz)</span></span></span>
+<span><span class="co">#&gt;   • <span style="color: #00BB00;">[Viz]</span> <span style="font-weight: bold;">Education</span> <span style="color: #555555;">(</span><span style="color: #BB00BB;">bar</span><span style="color: #555555;">)</span> <span style="color: #555555;">x=degree</span></span></span>
+<span><span class="co">#&gt; ❯ <span style="color: #0000BB;">[Tab]</span> <span style="color: #00BBBB; font-weight: bold;">Q2</span><span style="color: #555555;"> (1 viz)</span></span></span>
+<span><span class="co">#&gt;   • <span style="color: #00BB00;">[Viz]</span> <span style="font-weight: bold;">Demographics</span> <span style="color: #555555;">(</span><span style="color: #BB00BB;">bar</span><span style="color: #555555;">)</span> <span style="color: #555555;">x=race</span></span></span>
+<span><span class="co">#&gt; ❯ <span style="color: #0000BB;">[Tab]</span> <span style="color: #00BBBB; font-weight: bold;">Q3</span><span style="color: #555555;"> (1 viz)</span></span></span>
+<span><span class="co">#&gt;   • <span style="color: #00BB00;">[Viz]</span> <span style="font-weight: bold;">Satisfaction</span> <span style="color: #555555;">(</span><span style="color: #BB00BB;">bar</span><span style="color: #555555;">)</span> <span style="color: #555555;">x=happy</span></span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="example-dark-theme">Example: Dark Theme<a class="anchor" aria-label="anchor" href="#example-dark-theme"></a>
@@ -2753,14 +2754,14 @@ boundaries:</p>
 <span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span>x_var <span class="op">=</span> <span class="st">"happy"</span>, title <span class="op">=</span> <span class="st">"Results"</span>, tabgroup <span class="op">=</span> <span class="st">"Analysis"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">dark_tabs</span><span class="op">)</span></span>
-<span><span class="co">#&gt; -- <span style="font-weight: bold;">Page:</span> Dark Theme ---------------------------------------------</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">v</span> data: 2997 rows x 8 cols | default: bar </span></span>
+<span><span class="co">#&gt; -- <span style="font-weight: bold;">Page:</span> Dark Theme ─────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> data: 2997 rows x 8 cols | default: bar </span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">2</span> items</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; &gt; <span style="color: #0000BB;">[Tab]</span> <span style="color: #00BBBB; font-weight: bold;">Data</span><span style="color: #555555;"> (1 viz)</span></span></span>
-<span><span class="co">#&gt;   * <span style="color: #00BB00;">[Viz]</span> <span style="font-weight: bold;">Education</span> <span style="color: #555555;">(</span><span style="color: #BB00BB;">bar</span><span style="color: #555555;">)</span> <span style="color: #555555;">x=degree</span></span></span>
-<span><span class="co">#&gt; &gt; <span style="color: #0000BB;">[Tab]</span> <span style="color: #00BBBB; font-weight: bold;">Analysis</span><span style="color: #555555;"> (1 viz)</span></span></span>
-<span><span class="co">#&gt;   * <span style="color: #00BB00;">[Viz]</span> <span style="font-weight: bold;">Results</span> <span style="color: #555555;">(</span><span style="color: #BB00BB;">bar</span><span style="color: #555555;">)</span> <span style="color: #555555;">x=happy</span></span></span></code></pre></div>
+<span><span class="co">#&gt; ❯ <span style="color: #0000BB;">[Tab]</span> <span style="color: #00BBBB; font-weight: bold;">Data</span><span style="color: #555555;"> (1 viz)</span></span></span>
+<span><span class="co">#&gt;   • <span style="color: #00BB00;">[Viz]</span> <span style="font-weight: bold;">Education</span> <span style="color: #555555;">(</span><span style="color: #BB00BB;">bar</span><span style="color: #555555;">)</span> <span style="color: #555555;">x=degree</span></span></span>
+<span><span class="co">#&gt; ❯ <span style="color: #0000BB;">[Tab]</span> <span style="color: #00BBBB; font-weight: bold;">Analysis</span><span style="color: #555555;"> (1 viz)</span></span></span>
+<span><span class="co">#&gt;   • <span style="color: #00BB00;">[Viz]</span> <span style="font-weight: bold;">Results</span> <span style="color: #555555;">(</span><span style="color: #BB00BB;">bar</span><span style="color: #555555;">)</span> <span style="color: #555555;">x=happy</span></span></span></code></pre></div>
 <blockquote>
 <p><strong>Note:</strong> Tab styling (custom colors, themes) is fully
 visible only in the generated dashboard. The <code><a href="../reference/preview.html">preview()</a></code>

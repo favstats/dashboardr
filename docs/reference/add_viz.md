@@ -1,7 +1,9 @@
-# Parse tabgroup into normalized hierarchy
+# Add a visualization to the collection
 
-Internal helper to parse tabgroup parameter from various formats into a
-standardized character vector representing the hierarchy.
+Adds a single visualization specification to an existing collection.
+Visualizations with the same tabgroup value will be organized into tabs
+on the generated page. Supports nested tabsets through hierarchy
+notation.
 
 ## Usage
 
@@ -23,11 +25,16 @@ add_viz(
   height = NULL,
   filter = NULL,
   data = NULL,
-  drop_na_vars = FALSE
+  drop_na_vars = FALSE,
+  show_when = NULL
 )
 ```
 
 ## Arguments
+
+- x:
+
+  A viz_collection or page_object to add visualization to
 
 - type:
 
@@ -73,6 +80,22 @@ add_viz(
 
   Position of text relative to visualization ("above" or "below")
 
+- text_before_tabset:
+
+  Optional markdown text to display before the tabset
+
+- text_after_tabset:
+
+  Optional markdown text to display after the tabset
+
+- text_before_viz:
+
+  Optional markdown text to display before the visualization
+
+- text_after_viz:
+
+  Optional markdown text to display after the visualization
+
 - height:
 
   Optional height in pixels for highcharter visualizations (numeric
@@ -93,19 +116,15 @@ add_viz(
   - String: Name of dataset from named list (e.g., "survey",
     "demographics")
 
-- viz_collection:
+- drop_na_vars:
 
-  A viz_collection object
+  Whether to drop NA values from variables (default FALSE)
+
+- show_when:
+
+  Conditional display expression for sidebar-driven visibility
 
 ## Value
-
-Character vector of hierarchy levels, or NULL Add a visualization to the
-collection
-
-Adds a single visualization specification to an existing collection.
-Visualizations with the same tabgroup value will be organized into tabs
-on the generated page. Supports nested tabsets through hierarchy
-notation.
 
 The updated viz_collection object
 

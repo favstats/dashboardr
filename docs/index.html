@@ -94,7 +94,8 @@
     <li><hr class="dropdown-divider"></li>
     <li><a class="dropdown-item" href="live-demos/tutorial/index.html">🎓 Tutorial Dashboard</a></li>
     <li><a class="dropdown-item" href="live-demos/showcase/index.html">🚀 Showcase Dashboard</a></li>
-    <li><a class="external-link dropdown-item" href="https://www.digiqmonitor.nl/">🌍 DigIQ Monitor</a></li>
+    <li><a class="dropdown-item" href="live-demos/sidebar-gss/explorer.html">🕹️ Sidebar Dashboard</a></li>
+    <li><a class="external-link dropdown-item" href="https://www.digiqmonitor.nl/">🖥️ DigIQ Monitor</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>🎨 Tabset Themes</h6></li>
     <li><a class="dropdown-item" href="live-demos/tabsets/pills/index.html">   Pills</a></li>
@@ -144,7 +145,12 @@
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># install.packages("pak")</span></span>
+<code class="sourceCode R"><span><span class="co"># From R-Universe (recommended — includes pre-built binaries)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"dashboardr"</span>,</span>
+<span>  repos <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"https://favstats.r-universe.dev"</span>, <span class="st">"https://cloud.r-project.org"</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Or from GitHub</span></span>
+<span><span class="co"># install.packages("pak")</span></span>
 <span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pak.html" class="external-link">pak</a></span><span class="op">(</span><span class="st">"favstats/dashboardr"</span><span class="op">)</span></span></code></pre></div>
 <div class="section level3">
 <h3 id="optional-install-gssr-for-tutorials">Optional: Install gssr for tutorials<a class="anchor" aria-label="anchor" href="#optional-install-gssr-for-tutorials"></a>
@@ -476,9 +482,12 @@
 <div class="dev-status">
 <h2 data-toc-skip>Dev status</h2>
 <ul class="list-unstyled">
-<li><a href="https://lifecycle.r-lib.org/articles/stages.html#experimental" class="external-link"><img src="https://img.shields.io/badge/lifecycle-experimental-orange.svg" alt="Lifecycle: experimental"></a></li>
-<li><a href="https://CRAN.R-project.org/package=dashboardr" class="external-link"><img src="https://www.r-pkg.org/badges/version/dashboardr" alt="CRAN status"></a></li>
+<li><a href="https://lifecycle.r-lib.org/articles/stages.html#maturing" class="external-link"><img src="https://img.shields.io/badge/lifecycle-maturing-blue.svg" alt="Lifecycle: maturing"></a></li>
+<li><a href="https://github.com/favstats/dashboardr/actions/workflows/R-CMD-check.yaml" class="external-link"><img src="https://github.com/favstats/dashboardr/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R-CMD-check"></a></li>
 <li><a href="https://app.codecov.io/gh/favstats/dashboardr" class="external-link"><img src="https://codecov.io/gh/favstats/dashboardr/graph/badge.svg" alt="Codecov test coverage"></a></li>
+<li><a href="https://favstats.r-universe.dev/dashboardr" class="external-link"><img src="https://favstats.r-universe.dev/badges/dashboardr" alt="R-Universe"></a></li>
+<li><a href="https://github.com/favstats/dashboardr" class="external-link"><img src="https://img.shields.io/github/stars/favstats/dashboardr?style=social" alt="GitHub stars"></a></li>
+<li><a href="https://opensource.org/licenses/MIT" class="external-link"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT"></a></li>
 </ul>
 </div>
 

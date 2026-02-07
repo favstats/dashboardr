@@ -1,7 +1,7 @@
-# Create iconify icon shortcode
+# Print Dashboard Project
 
-Helper function to generate iconify icon shortcodes for use in pages and
-visualizations.
+Displays a comprehensive summary of a dashboard project, including
+metadata, features, pages, visualizations, and integrations.
 
 ## Usage
 
@@ -21,13 +21,7 @@ print(x, ...)
 
   Additional arguments (currently ignored).
 
-- icon_name:
-
-  Icon name in format "collection:name" (e.g., "ph:users-three")
-
 ## Value
-
-Iconify shortcode string
 
 Invisibly returns the input object `x`.
 
@@ -54,5 +48,3 @@ The print method displays:
   - Associated datasets
 
   - Nested visualization hierarchies
-
-## Examples

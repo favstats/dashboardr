@@ -56,7 +56,9 @@ viz_stackedbar(
   horizontal = FALSE,
   weight_var = NULL,
   data_labels_enabled = TRUE,
-  cross_tab_filter_vars = NULL
+  label_decimals = NULL,
+  cross_tab_filter_vars = NULL,
+  title_map = NULL
 )
 ```
 
@@ -68,8 +70,9 @@ viz_stackedbar(
 
 - x_var:
 
-  String. Name of the column for X-axis categories. Use this together
-  with `stack_var` for crosstab-style charts.
+  String. Name of the column for X-axis categories (Mode 1:
+  Grouped/Crosstab). Use this together with `stack_var` for
+  crosstab-style charts.
 
 - y_var:
 
@@ -83,10 +86,10 @@ viz_stackedbar(
 
 - x_vars:
 
-  Character vector of column names to compare. Each column becomes a bar
-  on the x-axis, and the values within each column become the stacks.
-  Use this for comparing multiple survey questions with the same
-  response scale.
+  Character vector of column names to compare (Mode 2:
+  Multi-Variable/Battery). Each column becomes a bar on the x-axis, and
+  the values within each column become the stacks. Use this for
+  comparing multiple survey questions with the same response scale.
 
 - x_var_labels:
 
@@ -211,6 +214,22 @@ viz_stackedbar(
 
   Logical. If TRUE, show value labels on bars. Default TRUE.
 
+- label_decimals:
+
+  Optional integer. Number of decimal places for data labels. When NULL
+  (default), uses smart defaults: 0 for counts, 1 for percent. Set
+  explicitly to override (e.g., `label_decimals = 2`).
+
+- cross_tab_filter_vars:
+
+  Character vector. Variables for cross-tab filtering (typically
+  auto-detected from sidebar inputs).
+
+- title_map:
+
+  Named list mapping variable names to custom display titles for dynamic
+  title updates when filtering by cross-tab variables.
+
 ## Value
 
 An interactive `highcharter` bar chart plot object.
@@ -248,12 +267,6 @@ Use **Mode 2** (`x_vars`) when you want to:
 
 - Handles missing values explicitly or implicitly
 
-## Mode 1 Parameters (Grouped/Crosstab)
-
-## Mode 2 Parameters (Multi-Variable/Battery)
-
-## Common Parameters
-
 ## See also
 
 [`viz_bar`](https://favstats.github.io/dashboardr/reference/viz_bar.md)
@@ -262,16 +275,11 @@ for simple (non-stacked) bar charts
 ## Examples
 
 ``` r
+if (FALSE) { # \dontrun{
 library(gssr)
-#> Warning: package 'gssr' was built under R version 4.4.3
-#> Package loaded. To attach the GSS data, type data(gss_all) at the console.
-#> For the panel data and documentation, type e.g. data(gss_panel08_long) and data(gss_panel_doc).
-#> For help on a specific GSS variable, type ?varname at the console.
 data(gss_panel20)
 
-# ============================================================
 # MODE 1: Grouped/Crosstab - One variable broken down by another
-# ============================================================
 
 # Example 1: Education by Gender (counts)
 plot1 <- viz_stackedbar(
@@ -293,25 +301,18 @@ plot2 <- viz_stackedbar(
   tooltip_suffix = "%"
 )
 
-# ============================================================
 # MODE 2: Multi-Variable/Battery - Compare multiple questions
-# ============================================================
 
 # Example 3: Compare multiple attitude questions
 plot3 <- viz_stackedbar(
   data = gss_panel20,
   x_vars = c("trust_1a", "fair_1a", "helpful_1a"),
-  x_var_labels = c("Trust Others", "Others Are Fair", "Others Are Helpful"),
+  x_var_labels = c("Trust Others", "Others Are Fair",
+    "Others Are Helpful"),
   title = "Social Trust Battery",
   stacked_type = "percent",
   tooltip_suffix = "%"
 )
-#> Warning: `trust_1a` and `fair_1a` have conflicting value labels.
-#> i Labels for these values will be taken from `trust_1a`.
-#> x Values: 1 and 2
-#> Warning: `trust_1a` and `helpful_1a` have conflicting value labels.
-#> i Labels for these values will be taken from `trust_1a`.
-#> x Values: 1 and 2
 
 # Example 4: Single question horizontal (compact display)
 plot4 <- viz_stackedbar(
@@ -321,4 +322,5 @@ plot4 <- viz_stackedbar(
   stacked_type = "percent",
   horizontal = TRUE
 )
+} # }
 ```

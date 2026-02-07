@@ -1,8 +1,8 @@
-# Process visualizations into organized specs with tab groups
+# Generate multiple dashboards
 
-Unified internal function that handles both viz_collection and plain
-list inputs, organizing visualizations into standalone items and tab
-groups based on their tabgroup parameter.
+Generates a list of dashboard projects in batch, with progress tracking
+and error handling. Useful for generating many related dashboards (e.g.,
+one per country, per topic, etc.) in a single workflow.
 
 ## Usage
 
@@ -61,22 +61,7 @@ generate_dashboards(
   - Click navigation like `click_url_template = "\{iso2c\}/index.html"`
     will work
 
-- viz_input:
-
-  Either a viz_collection object or a plain list of visualization specs
-
-- data_path:
-
-  Path to the data file for this page (will be attached to each viz)
-
-- tabgroup_labels:
-
-  Optional named list/vector of custom display labels for tab groups
-
 ## Value
-
-List of processed visualization specs, with standalone visualizations
-first, followed by tab group objects
 
 Invisibly returns a list of results, one per dashboard, containing:
 
@@ -89,15 +74,6 @@ Invisibly returns a list of results, one per dashboard, containing:
 - `error`: error message if failed (only present on failure)
 
 - `duration`: generation time in seconds
-
-## Details
-
-Build a hierarchy key from a tabgroup vector Generate multiple
-dashboards
-
-Generates a list of dashboard projects in batch, with progress tracking
-and error handling. Useful for generating many related dashboards (e.g.,
-one per country, per topic, etc.) in a single workflow.
 
 ## Examples
 

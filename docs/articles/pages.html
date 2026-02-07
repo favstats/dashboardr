@@ -91,7 +91,8 @@
     <li><hr class="dropdown-divider"></li>
     <li><a class="dropdown-item" href="../live-demos/tutorial/index.html">🎓 Tutorial Dashboard</a></li>
     <li><a class="dropdown-item" href="../live-demos/showcase/index.html">🚀 Showcase Dashboard</a></li>
-    <li><a class="external-link dropdown-item" href="https://www.digiqmonitor.nl/">🌍 DigIQ Monitor</a></li>
+    <li><a class="dropdown-item" href="../live-demos/sidebar-gss/explorer.html">🕹️ Sidebar Dashboard</a></li>
+    <li><a class="external-link dropdown-item" href="https://www.digiqmonitor.nl/">🖥️ DigIQ Monitor</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>🎨 Tabset Themes</h6></li>
     <li><a class="dropdown-item" href="../live-demos/tabsets/pills/index.html">   Pills</a></li>
@@ -181,8 +182,8 @@ page.</p>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">my_page</span><span class="op">)</span></span>
-<span><span class="co">#&gt; -- <span style="font-weight: bold;">Page:</span> Home ---------------------------------------------------</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">v</span> data: 2997 rows x 7 cols | default: bar </span></span>
+<span><span class="co">#&gt; -- <span style="font-weight: bold;">Page:</span> Home ───────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> data: 2997 rows x 7 cols | default: bar </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; <span style="color: #555555;">No content added yet</span></span></span>
 <span><span class="co">#&gt; <span style="color: #555555;">  Tip: Use add_viz(), add_text(), or add_content()</span></span></span></code></pre></div>
@@ -257,13 +258,13 @@ to)</li>
 <span>  <span class="fu"><a href="../reference/add_callout.html">add_callout</a></span><span class="op">(</span><span class="st">"Data from GSS 2022"</span>, type <span class="op">=</span> <span class="st">"note"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">simple_page</span><span class="op">)</span></span>
-<span><span class="co">#&gt; -- <span style="font-weight: bold;">Page:</span> Analysis -----------------------------------------------</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">v</span> data: 2997 rows x 7 cols | default: bar </span></span>
+<span><span class="co">#&gt; -- <span style="font-weight: bold;">Page:</span> Analysis ───────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> data: 2997 rows x 7 cols | default: bar </span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">3</span> items</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; i <span style="color: #BBBB00;">[Text]</span> <span style="color: #555555;">"## Education Distribution How education levels ..."</span></span></span>
-<span><span class="co">#&gt; * <span style="color: #00BB00;">[Viz]</span> <span style="font-weight: bold;">Education Levels</span> <span style="color: #555555;">(</span><span style="color: #BB00BB;">bar</span><span style="color: #555555;">)</span> <span style="color: #555555;">x=degree</span></span></span>
-<span><span class="co">#&gt; ! <span style="color: #BBBB00;">[Callout]</span></span></span></code></pre></div>
+<span><span class="co">#&gt; ℹ <span style="color: #BBBB00;">[Text]</span> <span style="color: #555555;">"## Education Distribution How education levels ..."</span></span></span>
+<span><span class="co">#&gt; • <span style="color: #00BB00;">[Viz]</span> <span style="font-weight: bold;">Education Levels</span> <span style="color: #555555;">(</span><span style="color: #BB00BB;">bar</span><span style="color: #555555;">)</span> <span style="color: #555555;">x=degree</span></span></span>
+<span><span class="co">#&gt; ⚠ <span style="color: #BBBB00;">[Callout]</span></span></span></code></pre></div>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">simple_page</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/preview.html">preview</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <div style="border: 2px solid #e1e4e8; border-radius: 8px; padding: 20px; margin: 16px 0; background-color: #fafbfc;">
@@ -310,17 +311,17 @@ prototyping.</p>
 <span>  <span class="fu"><a href="../reference/add_content.html">add_content</a></span><span class="op">(</span><span class="va">attitude_charts</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">complex_page</span><span class="op">)</span></span>
-<span><span class="co">#&gt; -- <span style="font-weight: bold;">Page:</span> Full Analysis ------------------------------------------</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">v</span> data: 2997 rows x 7 cols </span></span>
+<span><span class="co">#&gt; -- <span style="font-weight: bold;">Page:</span> Full Analysis ──────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> data: 2997 rows x 7 cols </span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">5</span> items</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; i <span style="color: #BBBB00;">[Text]</span> <span style="color: #555555;">"## Overview Key findings from the General Socia..."</span></span></span>
-<span><span class="co">#&gt; &gt; <span style="color: #0000BB;">[Tab]</span> <span style="color: #00BBBB; font-weight: bold;">Demographics</span><span style="color: #555555;"> (2 vizs)</span></span></span>
-<span><span class="co">#&gt;   * <span style="color: #00BB00;">[Viz]</span> <span style="font-weight: bold;">Education</span> <span style="color: #555555;">(</span><span style="color: #BB00BB;">bar</span><span style="color: #555555;">)</span> <span style="color: #555555;">x=degree</span></span></span>
-<span><span class="co">#&gt;   * <span style="color: #00BB00;">[Viz]</span> <span style="font-weight: bold;">Race</span> <span style="color: #555555;">(</span><span style="color: #BB00BB;">bar</span><span style="color: #555555;">)</span> <span style="color: #555555;">x=race</span></span></span>
-<span><span class="co">#&gt; &gt; <span style="color: #0000BB;">[Tab]</span> <span style="color: #00BBBB; font-weight: bold;">Attitudes</span><span style="color: #555555;"> (2 vizs)</span></span></span>
-<span><span class="co">#&gt;   * <span style="color: #00BB00;">[Viz]</span> <span style="font-weight: bold;">Happiness</span> <span style="color: #555555;">(</span><span style="color: #BB00BB;">bar</span><span style="color: #555555;">)</span> <span style="color: #555555;">x=happy</span></span></span>
-<span><span class="co">#&gt;   * <span style="color: #00BB00;">[Viz]</span> <span style="font-weight: bold;">Political Views</span> <span style="color: #555555;">(</span><span style="color: #BB00BB;">bar</span><span style="color: #555555;">)</span> <span style="color: #555555;">x=polviews</span></span></span></code></pre></div>
+<span><span class="co">#&gt; ℹ <span style="color: #BBBB00;">[Text]</span> <span style="color: #555555;">"## Overview Key findings from the General Socia..."</span></span></span>
+<span><span class="co">#&gt; ❯ <span style="color: #0000BB;">[Tab]</span> <span style="color: #00BBBB; font-weight: bold;">Demographics</span><span style="color: #555555;"> (2 vizs)</span></span></span>
+<span><span class="co">#&gt;   • <span style="color: #00BB00;">[Viz]</span> <span style="font-weight: bold;">Education</span> <span style="color: #555555;">(</span><span style="color: #BB00BB;">bar</span><span style="color: #555555;">)</span> <span style="color: #555555;">x=degree</span></span></span>
+<span><span class="co">#&gt;   • <span style="color: #00BB00;">[Viz]</span> <span style="font-weight: bold;">Race</span> <span style="color: #555555;">(</span><span style="color: #BB00BB;">bar</span><span style="color: #555555;">)</span> <span style="color: #555555;">x=race</span></span></span>
+<span><span class="co">#&gt; ❯ <span style="color: #0000BB;">[Tab]</span> <span style="color: #00BBBB; font-weight: bold;">Attitudes</span><span style="color: #555555;"> (2 vizs)</span></span></span>
+<span><span class="co">#&gt;   • <span style="color: #00BB00;">[Viz]</span> <span style="font-weight: bold;">Happiness</span> <span style="color: #555555;">(</span><span style="color: #BB00BB;">bar</span><span style="color: #555555;">)</span> <span style="color: #555555;">x=happy</span></span></span>
+<span><span class="co">#&gt;   • <span style="color: #00BB00;">[Viz]</span> <span style="font-weight: bold;">Political Views</span> <span style="color: #555555;">(</span><span style="color: #BB00BB;">bar</span><span style="color: #555555;">)</span> <span style="color: #555555;">x=polviews</span></span></span></code></pre></div>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">complex_page</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/preview.html">preview</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <div style="border: 2px solid #e1e4e8; border-radius: 8px; padding: 20px; margin: 16px 0; background-color: #fafbfc;">
@@ -457,12 +458,12 @@ welcome screens without sidebars:</p>
 <span>  <span class="fu"><a href="../reference/add_callout.html">add_callout</a></span><span class="op">(</span><span class="st">"Data source: General Social Survey, NORC"</span>, type <span class="op">=</span> <span class="st">"note"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">home</span><span class="op">)</span></span>
-<span><span class="co">#&gt; -- <span style="font-weight: bold;">Page:</span> Home ---------------------------------------------------</span></span>
+<span><span class="co">#&gt; -- <span style="font-weight: bold;">Page:</span> Home ───────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; <span style="color: #00BB00;">landing page</span> </span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">2</span> items</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; i <span style="color: #BBBB00;">[Text]</span> <span style="color: #555555;">"# Welcome to the GSS Dashboard Explore insights..."</span></span></span>
-<span><span class="co">#&gt; ! <span style="color: #BBBB00;">[Callout]</span></span></span></code></pre></div>
+<span><span class="co">#&gt; ℹ <span style="color: #BBBB00;">[Text]</span> <span style="color: #555555;">"# Welcome to the GSS Dashboard Explore insights..."</span></span></span>
+<span><span class="co">#&gt; ⚠ <span style="color: #BBBB00;">[Callout]</span></span></span></code></pre></div>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">home</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/preview.html">preview</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <div style="border: 2px solid #e1e4e8; border-radius: 8px; padding: 20px; margin: 16px 0; background-color: #fafbfc;">
@@ -498,15 +499,15 @@ welcome screens without sidebars:</p>
 <span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span>x_var <span class="op">=</span> <span class="st">"happy"</span>, title <span class="op">=</span> <span class="st">"Happiness"</span>, tabgroup <span class="op">=</span> <span class="st">"Attitudes"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">analysis</span><span class="op">)</span></span>
-<span><span class="co">#&gt; -- <span style="font-weight: bold;">Page:</span> Analysis -----------------------------------------------</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">v</span> data: 2997 rows x 7 cols | default: bar </span></span>
+<span><span class="co">#&gt; -- <span style="font-weight: bold;">Page:</span> Analysis ───────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> data: 2997 rows x 7 cols | default: bar </span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">3</span> items</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; &gt; <span style="color: #0000BB;">[Tab]</span> <span style="color: #00BBBB; font-weight: bold;">Demographics</span><span style="color: #555555;"> (2 vizs)</span></span></span>
-<span><span class="co">#&gt;   * <span style="color: #00BB00;">[Viz]</span> <span style="font-weight: bold;">Education</span> <span style="color: #555555;">(</span><span style="color: #BB00BB;">bar</span><span style="color: #555555;">)</span> <span style="color: #555555;">x=degree</span></span></span>
-<span><span class="co">#&gt;   * <span style="color: #00BB00;">[Viz]</span> <span style="font-weight: bold;">Race</span> <span style="color: #555555;">(</span><span style="color: #BB00BB;">bar</span><span style="color: #555555;">)</span> <span style="color: #555555;">x=race</span></span></span>
-<span><span class="co">#&gt; &gt; <span style="color: #0000BB;">[Tab]</span> <span style="color: #00BBBB; font-weight: bold;">Attitudes</span><span style="color: #555555;"> (1 viz)</span></span></span>
-<span><span class="co">#&gt;   * <span style="color: #00BB00;">[Viz]</span> <span style="font-weight: bold;">Happiness</span> <span style="color: #555555;">(</span><span style="color: #BB00BB;">bar</span><span style="color: #555555;">)</span> <span style="color: #555555;">x=happy</span></span></span></code></pre></div>
+<span><span class="co">#&gt; ❯ <span style="color: #0000BB;">[Tab]</span> <span style="color: #00BBBB; font-weight: bold;">Demographics</span><span style="color: #555555;"> (2 vizs)</span></span></span>
+<span><span class="co">#&gt;   • <span style="color: #00BB00;">[Viz]</span> <span style="font-weight: bold;">Education</span> <span style="color: #555555;">(</span><span style="color: #BB00BB;">bar</span><span style="color: #555555;">)</span> <span style="color: #555555;">x=degree</span></span></span>
+<span><span class="co">#&gt;   • <span style="color: #00BB00;">[Viz]</span> <span style="font-weight: bold;">Race</span> <span style="color: #555555;">(</span><span style="color: #BB00BB;">bar</span><span style="color: #555555;">)</span> <span style="color: #555555;">x=race</span></span></span>
+<span><span class="co">#&gt; ❯ <span style="color: #0000BB;">[Tab]</span> <span style="color: #00BBBB; font-weight: bold;">Attitudes</span><span style="color: #555555;"> (1 viz)</span></span></span>
+<span><span class="co">#&gt;   • <span style="color: #00BB00;">[Viz]</span> <span style="font-weight: bold;">Happiness</span> <span style="color: #555555;">(</span><span style="color: #BB00BB;">bar</span><span style="color: #555555;">)</span> <span style="color: #555555;">x=happy</span></span></span></code></pre></div>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">analysis</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/preview.html">preview</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <div style="border: 2px solid #e1e4e8; border-radius: 8px; padding: 20px; margin: 16px 0; background-color: #fafbfc;">
@@ -605,11 +606,11 @@ text!</p>
 <span>  <span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">about</span><span class="op">)</span></span>
-<span><span class="co">#&gt; -- <span style="font-weight: bold;">Page:</span> About --------------------------------------------------</span></span>
+<span><span class="co">#&gt; -- <span style="font-weight: bold;">Page:</span> About ──────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">2</span> items</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; i <span style="color: #BBBB00;">[Text]</span> <span style="color: #555555;">"## About This Dashboard Created using [dashboar..."</span></span></span>
-<span><span class="co">#&gt; = <span style="color: #BBBB00;">[Accordion]</span> Technical Details</span></span></code></pre></div>
+<span><span class="co">#&gt; ℹ <span style="color: #BBBB00;">[Text]</span> <span style="color: #555555;">"## About This Dashboard Created using [dashboar..."</span></span></span>
+<span><span class="co">#&gt; ☰ <span style="color: #BBBB00;">[Accordion]</span> Technical Details</span></span></code></pre></div>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">about</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/preview.html">preview</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <div style="border: 2px solid #e1e4e8; border-radius: 8px; padding: 20px; margin: 16px 0; background-color: #fafbfc;">
@@ -646,12 +647,12 @@ visualizations!</p>
 <span>  <span class="fu"><a href="../reference/add_content.html">add_content</a></span><span class="op">(</span><span class="va">dashboard_content</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">dashboard_page</span><span class="op">)</span></span>
-<span><span class="co">#&gt; -- <span style="font-weight: bold;">Page:</span> Dashboard ----------------------------------------------</span></span>
+<span><span class="co">#&gt; -- <span style="font-weight: bold;">Page:</span> Dashboard ──────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">3</span> items</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; * <span style="color: #BBBBBB;">[value_box_row]</span></span></span>
-<span><span class="co">#&gt; - <span style="color: #555555;">[Divider]</span></span></span>
-<span><span class="co">#&gt; * <span style="color: #00BB00;">[Viz]</span> <span style="font-weight: bold;">Education Distribution</span> <span style="color: #555555;">(</span><span style="color: #BB00BB;">bar</span><span style="color: #555555;">)</span> <span style="color: #555555;">x=degree</span></span></span></code></pre></div>
+<span><span class="co">#&gt; • <span style="color: #BBBBBB;">[value_box_row]</span></span></span>
+<span><span class="co">#&gt; ─ <span style="color: #555555;">[Divider]</span></span></span>
+<span><span class="co">#&gt; • <span style="color: #00BB00;">[Viz]</span> <span style="font-weight: bold;">Education Distribution</span> <span style="color: #555555;">(</span><span style="color: #BB00BB;">bar</span><span style="color: #555555;">)</span> <span style="color: #555555;">x=degree</span></span></span></code></pre></div>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">dashboard_page</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/preview.html">preview</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <div style="border: 2px solid #e1e4e8; border-radius: 8px; padding: 20px; margin: 16px 0; background-color: #fafbfc;">
@@ -687,11 +688,11 @@ parameter with an icon code from any <a href="https://icon-sets.iconify.design/"
 <span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span>x_var <span class="op">=</span> <span class="st">"degree"</span>, title <span class="op">=</span> <span class="st">"Education"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">page_with_icon</span><span class="op">)</span></span>
-<span><span class="co">#&gt; -- <span style="font-weight: bold;">Page:</span> Charts -------------------------------------------------</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">v</span> data: 2997 rows x 7 cols | default: bar </span></span>
+<span><span class="co">#&gt; -- <span style="font-weight: bold;">Page:</span> Charts ─────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> data: 2997 rows x 7 cols | default: bar </span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">1</span> items</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; * <span style="color: #00BB00;">[Viz]</span> <span style="font-weight: bold;">Education</span> <span style="color: #555555;">(</span><span style="color: #BB00BB;">bar</span><span style="color: #555555;">)</span> <span style="color: #555555;">x=degree</span></span></span></code></pre></div>
+<span><span class="co">#&gt; • <span style="color: #00BB00;">[Viz]</span> <span style="font-weight: bold;">Education</span> <span style="color: #555555;">(</span><span style="color: #BB00BB;">bar</span><span style="color: #555555;">)</span> <span style="color: #555555;">x=degree</span></span></span></code></pre></div>
 <p>Popular icons from <a href="https://phosphoricons.com/" class="external-link">Phosphor
 Icons</a>:</p>
 <table style="width: auto; border-collapse: collapse; margin: 15px 0;" class="table">
@@ -769,10 +770,10 @@ shouldn’t be the main focus:</p>
 <span>  <span class="fu"><a href="../reference/add_text.html">add_text</a></span><span class="op">(</span><span class="st">"This page appears on the right side of the navbar."</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">settings_page</span><span class="op">)</span></span>
-<span><span class="co">#&gt; -- <span style="font-weight: bold;">Page:</span> Settings -----------------------------------------------</span></span>
+<span><span class="co">#&gt; -- <span style="font-weight: bold;">Page:</span> Settings ───────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">1</span> items</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; i <span style="color: #BBBB00;">[Text]</span> <span style="color: #555555;">"This page appears on the right side of the navbar."</span></span></span></code></pre></div>
+<span><span class="co">#&gt; ℹ <span style="color: #BBBB00;">[Text]</span> <span style="color: #555555;">"This page appears on the right side of the navbar."</span></span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="page-level-defaults">Page-Level Defaults<a class="anchor" aria-label="anchor" href="#page-level-defaults"></a>
@@ -794,12 +795,12 @@ override these defaults:</p>
 <span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span>x_var <span class="op">=</span> <span class="st">"happy"</span>, title <span class="op">=</span> <span class="st">"Happiness (custom red)"</span>, color_palette <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"#E74C3C"</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">styled_page</span><span class="op">)</span></span>
-<span><span class="co">#&gt; -- <span style="font-weight: bold;">Page:</span> Survey Results -----------------------------------------</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">v</span> data: 2997 rows x 7 cols | default: bar </span></span>
+<span><span class="co">#&gt; -- <span style="font-weight: bold;">Page:</span> Survey Results ─────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> data: 2997 rows x 7 cols | default: bar </span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">2</span> items</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; * <span style="color: #00BB00;">[Viz]</span> <span style="font-weight: bold;">Education (default blue)</span> <span style="color: #555555;">(</span><span style="color: #BB00BB;">bar</span><span style="color: #555555;">)</span> <span style="color: #555555;">x=degree</span></span></span>
-<span><span class="co">#&gt; * <span style="color: #00BB00;">[Viz]</span> <span style="font-weight: bold;">Happiness (custom red)</span> <span style="color: #555555;">(</span><span style="color: #BB00BB;">bar</span><span style="color: #555555;">)</span> <span style="color: #555555;">x=happy</span></span></span></code></pre></div>
+<span><span class="co">#&gt; • <span style="color: #00BB00;">[Viz]</span> <span style="font-weight: bold;">Education (default blue)</span> <span style="color: #555555;">(</span><span style="color: #BB00BB;">bar</span><span style="color: #555555;">)</span> <span style="color: #555555;">x=degree</span></span></span>
+<span><span class="co">#&gt; • <span style="color: #00BB00;">[Viz]</span> <span style="font-weight: bold;">Happiness (custom red)</span> <span style="color: #555555;">(</span><span style="color: #BB00BB;">bar</span><span style="color: #555555;">)</span> <span style="color: #555555;">x=happy</span></span></span></code></pre></div>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">styled_page</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/preview.html">preview</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <div style="border: 2px solid #e1e4e8; border-radius: 8px; padding: 20px; margin: 16px 0; background-color: #fafbfc;">
@@ -841,11 +842,11 @@ open it in a browser.</p>
 <span>  <span class="fu"><a href="../reference/add_viz.html">add_viz</a></span><span class="op">(</span>x_var <span class="op">=</span> <span class="st">"degree"</span>, title <span class="op">=</span> <span class="st">"Education"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">overlay_page</span><span class="op">)</span></span>
-<span><span class="co">#&gt; -- <span style="font-weight: bold;">Page:</span> With Overlay -------------------------------------------</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">v</span> data: 2997 rows x 7 cols | default: bar </span></span>
+<span><span class="co">#&gt; -- <span style="font-weight: bold;">Page:</span> With Overlay ───────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> data: 2997 rows x 7 cols | default: bar </span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">1</span> items</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; * <span style="color: #00BB00;">[Viz]</span> <span style="font-weight: bold;">Education</span> <span style="color: #555555;">(</span><span style="color: #BB00BB;">bar</span><span style="color: #555555;">)</span> <span style="color: #555555;">x=degree</span></span></span></code></pre></div>
+<span><span class="co">#&gt; • <span style="color: #00BB00;">[Viz]</span> <span style="font-weight: bold;">Education</span> <span style="color: #555555;">(</span><span style="color: #BB00BB;">bar</span><span style="color: #555555;">)</span> <span style="color: #555555;">x=degree</span></span></span></code></pre></div>
 <div class="section level4">
 <h4 id="overlay-themes">Overlay Themes<a class="anchor" aria-label="anchor" href="#overlay-themes"></a>
 </h4>
@@ -929,19 +930,19 @@ navbar page, splitting content into scrollable sections.</p>
 <span>  <span class="fu"><a href="../reference/add_text.html">add_text</a></span><span class="op">(</span><span class="st">"Key findings from this analysis..."</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">paginated</span><span class="op">)</span></span>
-<span><span class="co">#&gt; -- <span style="font-weight: bold;">Page:</span> Long Report --------------------------------------------</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">v</span> data: 2997 rows x 7 cols | default: bar </span></span>
+<span><span class="co">#&gt; -- <span style="font-weight: bold;">Page:</span> Long Report ────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> data: 2997 rows x 7 cols | default: bar </span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">9</span> items</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; i <span style="color: #BBBB00;">[Text]</span> <span style="color: #555555;">"## Section 1: Demographics"</span></span></span>
-<span><span class="co">#&gt; * <span style="color: #00BB00;">[Viz]</span> <span style="font-weight: bold;">Education</span> <span style="color: #555555;">(</span><span style="color: #BB00BB;">bar</span><span style="color: #555555;">)</span> <span style="color: #555555;">x=degree</span></span></span>
-<span><span class="co">#&gt; * <span style="color: #00BB00;">[Viz]</span> <span style="font-weight: bold;">Race</span> <span style="color: #555555;">(</span><span style="color: #BB00BB;">bar</span><span style="color: #555555;">)</span> <span style="color: #555555;">x=race</span></span></span>
-<span><span class="co">#&gt; &gt; <span style="color: #BB0000;">[PageBreak]</span></span></span>
-<span><span class="co">#&gt; i <span style="color: #BBBB00;">[Text]</span> <span style="color: #555555;">"## Section 2: Attitudes"</span></span></span>
-<span><span class="co">#&gt; * <span style="color: #00BB00;">[Viz]</span> <span style="font-weight: bold;">Happiness</span> <span style="color: #555555;">(</span><span style="color: #BB00BB;">bar</span><span style="color: #555555;">)</span> <span style="color: #555555;">x=happy</span></span></span>
-<span><span class="co">#&gt; &gt; <span style="color: #BB0000;">[PageBreak]</span></span></span>
-<span><span class="co">#&gt; i <span style="color: #BBBB00;">[Text]</span> <span style="color: #555555;">"## Section 3: Summary"</span></span></span>
-<span><span class="co">#&gt; i <span style="color: #BBBB00;">[Text]</span> <span style="color: #555555;">"Key findings from this analysis..."</span></span></span></code></pre></div>
+<span><span class="co">#&gt; ℹ <span style="color: #BBBB00;">[Text]</span> <span style="color: #555555;">"## Section 1: Demographics"</span></span></span>
+<span><span class="co">#&gt; • <span style="color: #00BB00;">[Viz]</span> <span style="font-weight: bold;">Education</span> <span style="color: #555555;">(</span><span style="color: #BB00BB;">bar</span><span style="color: #555555;">)</span> <span style="color: #555555;">x=degree</span></span></span>
+<span><span class="co">#&gt; • <span style="color: #00BB00;">[Viz]</span> <span style="font-weight: bold;">Race</span> <span style="color: #555555;">(</span><span style="color: #BB00BB;">bar</span><span style="color: #555555;">)</span> <span style="color: #555555;">x=race</span></span></span>
+<span><span class="co">#&gt; → <span style="color: #BB0000;">[PageBreak]</span></span></span>
+<span><span class="co">#&gt; ℹ <span style="color: #BBBB00;">[Text]</span> <span style="color: #555555;">"## Section 2: Attitudes"</span></span></span>
+<span><span class="co">#&gt; • <span style="color: #00BB00;">[Viz]</span> <span style="font-weight: bold;">Happiness</span> <span style="color: #555555;">(</span><span style="color: #BB00BB;">bar</span><span style="color: #555555;">)</span> <span style="color: #555555;">x=happy</span></span></span>
+<span><span class="co">#&gt; → <span style="color: #BB0000;">[PageBreak]</span></span></span>
+<span><span class="co">#&gt; ℹ <span style="color: #BBBB00;">[Text]</span> <span style="color: #555555;">"## Section 3: Summary"</span></span></span>
+<span><span class="co">#&gt; ℹ <span style="color: #BBBB00;">[Text]</span> <span style="color: #555555;">"Key findings from this analysis..."</span></span></span></code></pre></div>
 <table class="table">
 <thead><tr class="header">
 <th>Context</th>
@@ -993,11 +994,11 @@ it:</p>
 <span>  <span class="fu"><a href="../reference/add_content.html">add_content</a></span><span class="op">(</span><span class="va">charts</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">page</span><span class="op">)</span></span>
-<span><span class="co">#&gt; -- <span style="font-weight: bold;">Page:</span> Analysis -----------------------------------------------</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">v</span> data: 2997 rows x 7 cols </span></span>
+<span><span class="co">#&gt; -- <span style="font-weight: bold;">Page:</span> Analysis ───────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> data: 2997 rows x 7 cols </span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">1</span> items</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; * <span style="color: #00BB00;">[Viz]</span> <span style="font-weight: bold;">Education</span> <span style="color: #555555;">(</span><span style="color: #BB00BB;">bar</span><span style="color: #555555;">)</span> <span style="color: #555555;">x=degree</span></span></span></code></pre></div>
+<span><span class="co">#&gt; • <span style="color: #00BB00;">[Viz]</span> <span style="font-weight: bold;">Education</span> <span style="color: #555555;">(</span><span style="color: #BB00BB;">bar</span><span style="color: #555555;">)</span> <span style="color: #555555;">x=degree</span></span></span></code></pre></div>
 <p>If a content collection has its own data, it takes precedence over
 page data.</p>
 </div>

@@ -69,7 +69,8 @@ estimation, and customization options."><meta property="og:image" content="https
     <li><hr class="dropdown-divider"></li>
     <li><a class="dropdown-item" href="../live-demos/tutorial/index.html">🎓 Tutorial Dashboard</a></li>
     <li><a class="dropdown-item" href="../live-demos/showcase/index.html">🚀 Showcase Dashboard</a></li>
-    <li><a class="external-link dropdown-item" href="https://www.digiqmonitor.nl/">🌍 DigIQ Monitor</a></li>
+    <li><a class="dropdown-item" href="../live-demos/sidebar-gss/explorer.html">🕹️ Sidebar Dashboard</a></li>
+    <li><a class="external-link dropdown-item" href="https://www.digiqmonitor.nl/">🖥️ DigIQ Monitor</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>🎨 Tabset Themes</h6></li>
     <li><a class="dropdown-item" href="../live-demos/tabsets/pills/index.html">   Pills</a></li>
@@ -214,9 +215,9 @@ See <code><a href="tooltip.html">tooltip</a></code> for full customization optio
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Basic density plot</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
+<span class="r-in"><span><span class="co"># Basic density plot</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">gss_panel20</span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>data set 'gss_panel20' not found</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Example 1: Simple density of age</span></span></span>
 <span class="r-in"><span><span class="va">plot1</span> <span class="op">&lt;-</span> <span class="fu">viz_density</span><span class="op">(</span></span></span>
@@ -225,9 +226,7 @@ See <code><a href="tooltip.html">tooltip</a></code> for full customization optio
 <span class="r-in"><span>  title <span class="op">=</span> <span class="st">"Age Distribution"</span>,</span></span>
 <span class="r-in"><span>  x_label <span class="op">=</span> <span class="st">"Age (years)"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'gss_panel20' not found</span>
 <span class="r-in"><span><span class="va">plot1</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'plot1' not found</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Example 2: Grouped densities by sex</span></span></span>
 <span class="r-in"><span><span class="va">plot2</span> <span class="op">&lt;-</span> <span class="fu">viz_density</span><span class="op">(</span></span></span>
@@ -238,9 +237,7 @@ See <code><a href="tooltip.html">tooltip</a></code> for full customization optio
 <span class="r-in"><span>  x_label <span class="op">=</span> <span class="st">"Age (years)"</span>,</span></span>
 <span class="r-in"><span>  color_palette <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"#3498DB"</span>, <span class="st">"#E74C3C"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'gss_panel20' not found</span>
 <span class="r-in"><span><span class="va">plot2</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'plot2' not found</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Example 3: Customized density with rug marks</span></span></span>
 <span class="r-in"><span><span class="va">plot3</span> <span class="op">&lt;-</span> <span class="fu">viz_density</span><span class="op">(</span></span></span>
@@ -251,9 +248,8 @@ See <code><a href="tooltip.html">tooltip</a></code> for full customization optio
 <span class="r-in"><span>  show_rug <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
 <span class="r-in"><span>  bandwidth <span class="op">=</span> <span class="fl">3</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'gss_panel20' not found</span>
 <span class="r-in"><span><span class="va">plot3</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'plot3' not found</span>
+<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

@@ -28,7 +28,7 @@ knitr::opts_chunk$set(
 
 ### Advanced Demos
 
-- **GSS Explorer (Sidebar)** - Full sidebar dashboard with cross-tab filtering, conditional visibility, dynamic titles, and consistent colors. [Code](../dev/demo_sidebar_dashboard.R) | [View Demo](../live-demos/sidebar-gss/index.html) | [Documentation](advanced-features.html#cross-tab-filtering-dynamic-titles)
+- **GSS Explorer (Sidebar)** - Full sidebar dashboard with cross-tab filtering, conditional visibility, dynamic titles, and consistent colors. [Code](../pkgdown/build-sidebar-gss-demo.R) | [View Demo](../live-demos/sidebar-gss/index.html) | [Documentation](advanced-features.html#cross-tab-filtering-dynamic-titles)
 
 ### Real-World Dashboards
 

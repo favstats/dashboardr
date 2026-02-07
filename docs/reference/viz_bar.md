@@ -38,6 +38,7 @@ viz_bar(
   tooltip_suffix = "",
   x_tooltip_suffix = "",
   data_labels_enabled = TRUE,
+  label_decimals = NULL,
   complete_groups = TRUE,
   y_var = NULL
 )
@@ -184,6 +185,13 @@ viz_bar(
 
   Logical. If TRUE, show value labels on bars. Default TRUE.
 
+- label_decimals:
+
+  Optional integer. Number of decimal places for data labels. When NULL
+  (default), uses smart defaults: 0 for counts/percent, 1 for means. Set
+  explicitly to override (e.g., `label_decimals = 2` for two decimal
+  places).
+
 - complete_groups:
 
   Logical. When TRUE (default), ensures all x_var/group_var combinations
@@ -206,14 +214,13 @@ A highcharter plot object.
 ## Examples
 
 ``` r
+if (FALSE) { # \dontrun{
 # Simple bar chart showing counts (default)
 plot1 <- viz_bar(
   data = survey_data,
   x_var = "category"
 )
-#> Error: object 'survey_data' not found
 plot1
-#> Error: object 'plot1' not found
 
 # Horizontal bars with percentages
 plot2 <- viz_bar(
@@ -222,9 +229,7 @@ plot2 <- viz_bar(
   horizontal = TRUE,
   bar_type = "percent"
 )
-#> Error: object 'survey_data' not found
 plot2
-#> Error: object 'plot2' not found
 
 # Grouped bars
 plot3 <- viz_bar(
@@ -234,9 +239,8 @@ plot3 <- viz_bar(
   color_palette = c("#D2691E", "#4682B4", "#228B22"),
   group_order = c("Low (1-9)", "Middle (10-19)", "High (20-29)")
 )
-#> Error: object 'survey_data' not found
 plot3
-#> Error: object 'plot3' not found
+} # }
 
 # Bar chart with means and error bars (95% CI)
 plot4 <- viz_bar(

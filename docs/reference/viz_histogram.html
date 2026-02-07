@@ -73,7 +73,8 @@ display. It can also handle SPSS (.sav) columns automatically."><meta property="
     <li><hr class="dropdown-divider"></li>
     <li><a class="dropdown-item" href="../live-demos/tutorial/index.html">🎓 Tutorial Dashboard</a></li>
     <li><a class="dropdown-item" href="../live-demos/showcase/index.html">🚀 Showcase Dashboard</a></li>
-    <li><a class="external-link dropdown-item" href="https://www.digiqmonitor.nl/">🌍 DigIQ Monitor</a></li>
+    <li><a class="dropdown-item" href="../live-demos/sidebar-gss/explorer.html">🕹️ Sidebar Dashboard</a></li>
+    <li><a class="external-link dropdown-item" href="https://www.digiqmonitor.nl/">🖥️ DigIQ Monitor</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>🎨 Tabset Themes</h6></li>
     <li><a class="dropdown-item" href="../live-demos/tabsets/pills/index.html">   Pills</a></li>
@@ -134,7 +135,8 @@ display. It can also handle SPSS (.sav) columns automatically.</p>
 <span>  x_map_values <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  x_order <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  weight_var <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  data_labels_enabled <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>  data_labels_enabled <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  label_decimals <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -243,6 +245,12 @@ weights instead of simple counts.</p></dd>
 <dd><p>Logical. If TRUE, show value labels on bars.
 Default TRUE.</p></dd>
 
+
+<dt id="arg-label-decimals">label_decimals<a class="anchor" aria-label="anchor" href="#arg-label-decimals"></a></dt>
+<dd><p>Optional integer. Number of decimal places for data labels.
+When NULL (default), uses smart defaults: 0 for counts, 1 for percent.
+Set explicitly to override (e.g., <code>label_decimals = 2</code>).</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
@@ -280,12 +288,9 @@ vs. the factor levels.</p></li>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co">#We will work with data from the GSS. The GSS dataset (`gssr`) is a dependency of</span></span></span>
-<span class="r-in"><span><span class="co">#our `dashboardr` package.</span></span></span>
-<span class="r-in"><span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
+<span class="r-in"><span><span class="co"># We will work with data from the GSS.</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">gss_panel20</span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>data set 'gss_panel20' not found</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Example 1: Basic histogram of age distribution</span></span></span>
 <span class="r-in"><span><span class="va">plot1</span> <span class="op">&lt;-</span> <span class="fu">viz_histogram</span><span class="op">(</span></span></span>
@@ -298,9 +303,7 @@ vs. the factor levels.</p></li>
 <span class="r-in"><span>  bins <span class="op">=</span> <span class="fl">15</span>,</span></span>
 <span class="r-in"><span>  color_palette <span class="op">=</span> <span class="st">"steelblue"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'gss_panel20' not found</span>
 <span class="r-in"><span><span class="va">plot1</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'plot1' not found</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Example 2: Education levels with custom labels (excluding NAs)</span></span></span>
 <span class="r-in"><span><span class="va">education_map</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"0"</span> <span class="op">=</span> <span class="st">"Less than High School"</span>,</span></span>
@@ -322,9 +325,7 @@ vs. the factor levels.</p></li>
 <span class="r-in"><span> color_palette <span class="op">=</span> <span class="st">"pink"</span>,</span></span>
 <span class="r-in"><span> include_na <span class="op">=</span> <span class="cn">FALSE</span>  <span class="co"># Exclude missing values</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'gss_panel20' not found</span>
 <span class="r-in"><span><span class="va">plot2</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'plot2' not found</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Example 3: Including NA values with custom label</span></span></span>
 <span class="r-in"><span><span class="va">plot3</span> <span class="op">&lt;-</span> <span class="fu">viz_histogram</span><span class="op">(</span></span></span>
@@ -337,9 +338,7 @@ vs. the factor levels.</p></li>
 <span class="r-in"><span>  include_na <span class="op">=</span> <span class="cn">TRUE</span>,  <span class="co"># Show NAs as explicit category</span></span></span>
 <span class="r-in"><span>  na_label <span class="op">=</span> <span class="st">"Not Reported"</span>  <span class="co"># Custom label for NAs</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'gss_panel20' not found</span>
 <span class="r-in"><span><span class="va">plot3</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'plot3' not found</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Example 4: Age binning with custom breaks</span></span></span>
 <span class="r-in"><span><span class="va">age_breaks</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">18</span>, <span class="fl">30</span>, <span class="fl">45</span>, <span class="fl">60</span>, <span class="fl">75</span>, <span class="cn">Inf</span><span class="op">)</span></span></span>
@@ -358,11 +357,8 @@ vs. the factor levels.</p></li>
 <span class="r-in"><span>  x_tooltip_suffix <span class="op">=</span> <span class="st">" years old"</span>,</span></span>
 <span class="r-in"><span>  color_palette <span class="op">=</span> <span class="st">"seagreen"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'gss_panel20' not found</span>
 <span class="r-in"><span><span class="va">plot5</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'plot5' not found</span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

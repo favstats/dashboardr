@@ -75,7 +75,8 @@ as explicit categories."><meta property="og:image" content="https://favstats.git
     <li><hr class="dropdown-divider"></li>
     <li><a class="dropdown-item" href="../live-demos/tutorial/index.html">🎓 Tutorial Dashboard</a></li>
     <li><a class="dropdown-item" href="../live-demos/showcase/index.html">🚀 Showcase Dashboard</a></li>
-    <li><a class="external-link dropdown-item" href="https://www.digiqmonitor.nl/">🌍 DigIQ Monitor</a></li>
+    <li><a class="dropdown-item" href="../live-demos/sidebar-gss/explorer.html">🕹️ Sidebar Dashboard</a></li>
+    <li><a class="external-link dropdown-item" href="https://www.digiqmonitor.nl/">🖥️ DigIQ Monitor</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>🎨 Tabset Themes</h6></li>
     <li><a class="dropdown-item" href="../live-demos/tabsets/pills/index.html">   Pills</a></li>
@@ -141,7 +142,8 @@ as explicit categories.</p>
 <span>  color_palette <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"#FFFFFF"</span>, <span class="st">"#7CB5EC"</span><span class="op">)</span>,</span>
 <span>  na_color <span class="op">=</span> <span class="st">"transparent"</span>,</span>
 <span>  data_labels_enabled <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  tooltip_labels_format <span class="op">=</span> <span class="st">"{point.value}"</span>,</span>
+<span>  label_decimals <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  tooltip_labels_format <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  include_na <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  na_label_x <span class="op">=</span> <span class="st">"(Missing)"</span>,</span>
 <span>  na_label_y <span class="op">=</span> <span class="st">"(Missing)"</span>,</span>
@@ -268,8 +270,15 @@ Example: <code>c("#FFFFFF", "#7CB5EC")</code> for white to light blue. Can also 
 <dd><p>Logical. If TRUE, display data labels on each cell. Default TRUE.</p></dd>
 
 
+<dt id="arg-label-decimals">label_decimals<a class="anchor" aria-label="anchor" href="#arg-label-decimals"></a></dt>
+<dd><p>Integer. Number of decimal places for data labels and tooltips.
+Default is 1. Set to 0 for whole numbers, 2 for two decimal places, etc.
+Ignored if <code>tooltip_labels_format</code> is explicitly provided.</p></dd>
+
+
 <dt id="arg-tooltip-labels-format">tooltip_labels_format<a class="anchor" aria-label="anchor" href="#arg-tooltip-labels-format"></a></dt>
-<dd><p>Optional string. Format for data labels. Default "point.value".</p></dd>
+<dd><p>Optional string. Format for data labels. Default NULL
+(auto-generated from <code>label_decimals</code>). If provided, overrides <code>label_decimals</code>.</p></dd>
 
 
 <dt id="arg-include-na">include_na<a class="anchor" aria-label="anchor" href="#arg-include-na"></a></dt>
@@ -336,12 +345,11 @@ filling missing <code>value_var</code> with <code>NA_real_</code> (which will ap
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
 <span class="r-in"><span><span class="co"># Load the dataset</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">gss_panel20</span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>data set 'gss_panel20' not found</span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Example 1: Basic heatmap – no mapped values or other customization</span></span></span>
+<span class="r-in"><span><span class="co"># Example 1: Basic heatmap - no mapped values or other customization</span></span></span>
 <span class="r-in"><span><span class="fu">viz_heatmap</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  data <span class="op">=</span> <span class="va">gss_panel20</span>,</span></span>
 <span class="r-in"><span>  x_var <span class="op">=</span> <span class="st">"degree_1a"</span>,</span></span>
@@ -352,7 +360,6 @@ filling missing <code>value_var</code> with <code>NA_real_</code> (which will ap
 <span class="r-in"><span>  y_label <span class="op">=</span> <span class="st">"Sex"</span>,</span></span>
 <span class="r-in"><span>  value_label <span class="op">=</span> <span class="st">"Mean Age"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'gss_panel20' not found</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Example 2: Heatmap With Custom Variable Mapping and Colors</span></span></span>
@@ -386,7 +393,6 @@ filling missing <code>value_var</code> with <code>NA_real_</code> (which will ap
 <span class="r-in"><span>  color_min <span class="op">=</span> <span class="fl">1</span>,</span></span>
 <span class="r-in"><span>  color_max <span class="op">=</span> <span class="fl">3</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'gss_panel20' not found</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Example 3: Handling missing categories explicitly</span></span></span>
@@ -415,7 +421,6 @@ filling missing <code>value_var</code> with <code>NA_real_</code> (which will ap
 <span class="r-in"><span>na_color <span class="op">=</span> <span class="st">"grey"</span>,</span></span>
 <span class="r-in"><span>title <span class="op">=</span> <span class="st">"Average Income by Region and Education (Including Missing)"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'gss_panel20' not found</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Example 4: Custom order of education levels and relabeling of sex</span></span></span>
@@ -435,9 +440,7 @@ filling missing <code>value_var</code> with <code>NA_real_</code> (which will ap
 <span class="r-in"><span>subtitle <span class="op">=</span> <span class="st">"Custom order and relabeled categories"</span>,</span></span>
 <span class="r-in"><span>color_palette <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"#ffffe0"</span>, <span class="st">"#31a354"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'gss_panel20' not found</span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

@@ -1,0 +1,37 @@
+# About
+
+# About
+
+## About This Demo
+
+This dashboard demonstrates all interactive input types in dashboardr.
+
+### Input Types
+
+| Type              | Best For                   | Selection |
+|-------------------|----------------------------|-----------|
+| `select_multiple` | Many categories (10+)      | Multiple  |
+| `select_single`   | Many categories, pick one  | Single    |
+| `checkbox`        | Few categories (3-6)       | Multiple  |
+| `radio`           | Mutually exclusive choices | Single    |
+| `slider`          | Numeric ranges             | Range     |
+| `switch`          | Toggle series on/off       | Boolean   |
+
+### Key Concept: filter_var
+
+The `filter_var` parameter must match the grouping variable in your
+visualization:
+
+``` r
+# Visualization groups by country
+add_viz(type = "timeline", group_var = "country", ...)
+
+# Input filters by country - must match!
+add_input(filter_var = "country", ...)
+```
+
+### Learn More
+
+- [dashboardr Documentation](https://favstats.github.io/dashboardr/)
+- [Advanced Features
+  Guide](https://favstats.github.io/dashboardr/articles/advanced-features.html)

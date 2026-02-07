@@ -116,9 +116,9 @@ A `highcharter` density plot object.
 ## Examples
 
 ``` r
+if (FALSE) { # \dontrun{
 # Basic density plot
 data(gss_panel20)
-#> Warning: data set 'gss_panel20' not found
 
 # Example 1: Simple density of age
 plot1 <- viz_density(
@@ -127,9 +127,7 @@ plot1 <- viz_density(
   title = "Age Distribution",
   x_label = "Age (years)"
 )
-#> Error: object 'gss_panel20' not found
 plot1
-#> Error: object 'plot1' not found
 
 # Example 2: Grouped densities by sex
 plot2 <- viz_density(
@@ -140,9 +138,7 @@ plot2 <- viz_density(
   x_label = "Age (years)",
   color_palette = c("#3498DB", "#E74C3C")
 )
-#> Error: object 'gss_panel20' not found
 plot2
-#> Error: object 'plot2' not found
 
 # Example 3: Customized density with rug marks
 plot3 <- viz_density(
@@ -153,7 +149,6 @@ plot3 <- viz_density(
   show_rug = TRUE,
   bandwidth = 3
 )
-#> Error: object 'gss_panel20' not found
 plot3
-#> Error: object 'plot3' not found
+} # }
 ```

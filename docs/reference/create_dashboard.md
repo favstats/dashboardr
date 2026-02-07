@@ -95,7 +95,8 @@ create_dashboard(
   lazy_debug = FALSE,
   pagination_separator = "of",
   pagination_position = "bottom",
-  powered_by_dashboardr = TRUE
+  powered_by_dashboardr = TRUE,
+  chart_export = FALSE
 )
 ```
 
@@ -153,6 +154,15 @@ create_dashboard(
 
   Path to custom SCSS file (optional)
 
+- tabset_theme:
+
+  Tabset theme: "minimal" (default), "modern", "pills", "classic",
+  "underline", "segmented", or "none"
+
+- tabset_colors:
+
+  Named list of tabset colors (e.g., list(active_bg = "#2563eb"))
+
 - author:
 
   Author name for the site (optional)
@@ -180,6 +190,58 @@ create_dashboard(
 - sidebar_background:
 
   Sidebar background color (optional)
+
+- sidebar_foreground:
+
+  Sidebar foreground (text) color (optional)
+
+- sidebar_border:
+
+  Whether to show sidebar border (default TRUE)
+
+- sidebar_alignment:
+
+  Sidebar alignment: "left" (default) or "right"
+
+- sidebar_collapse_level:
+
+  Heading level at which sidebar items collapse (default 2)
+
+- sidebar_pinned:
+
+  Whether sidebar is pinned open (default FALSE)
+
+- sidebar_tools:
+
+  Sidebar tools configuration (optional)
+
+- sidebar_contents:
+
+  Sidebar contents configuration (optional)
+
+- breadcrumbs:
+
+  Whether to show breadcrumbs navigation (default TRUE)
+
+- page_navigation:
+
+  Whether to show prev/next page navigation (default FALSE)
+
+- back_to_top:
+
+  Whether to show a back-to-top button (default FALSE)
+
+- reader_mode:
+
+  Whether to enable reader mode (default FALSE)
+
+- repo_url:
+
+  Repository URL for source code link (optional)
+
+- repo_actions:
+
+  Repository actions configuration (optional)
 
 - navbar_style:
 
@@ -316,9 +378,9 @@ create_dashboard(
 
 - mobile_toc:
 
-  Logical. If TRUE, adds a collapsible mobile-friendly TOC button (📑
-  icon) that appears in the top-right corner. Useful for mobile/tablet
-  viewing. Default: FALSE.
+  Logical. If TRUE, adds a collapsible mobile-friendly TOC button that
+  appears in the top-right corner. Useful for mobile/tablet viewing.
+  Default: FALSE.
 
 - viewport_width:
 
@@ -422,7 +484,7 @@ create_dashboard(
 
 - pagination_separator:
 
-  Text to show in pagination navigation (e.g., "of" → "1 of 3"),
+  Text to show in pagination navigation (e.g., "of" -\> "1 of 3"),
   default: "of". Applies to all paginated pages unless overridden at
   page level.
 
@@ -439,6 +501,10 @@ create_dashboard(
   (default: TRUE). When TRUE, adds a badge-style branding element. Can
   be overridden by explicitly calling add_powered_by_dashboardr() with
   custom options, or set to FALSE to disable entirely.
+
+- chart_export:
+
+  Whether to enable chart export functionality (default FALSE)
 
 ## Value
 
@@ -461,7 +527,7 @@ dashboard <- create_dashboard(
   theme = "cosmo",
   author = "Dr. Jane Smith",
   description = "Comprehensive data analysis dashboard",
-  page_footer = "© 2024 Company Name",
+  page_footer = "(c) 2024 Company Name",
   sidebar = TRUE,
   toc = "floating",
   google_analytics = "GA-XXXXXXXXX",
@@ -483,7 +549,7 @@ dashboard <- create_dashboard(
   "styled_dashboard",
   "Beautifully Styled Dashboard",
   navbar_bg_color = "#1e40af",     # Deep blue navbar
-  mainfont = "Fira Sans",           # Smooth, modern (default choice) ⭐
+  mainfont = "Fira Sans",           # Smooth, modern (default choice)
   fontsize = "16px",
   fontcolor = "#1f2937",            # Dark gray for readability
   linkcolor = "#2563eb",            # Vibrant blue links
