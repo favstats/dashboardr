@@ -60,7 +60,7 @@ jobs:
           extra-packages: any::covr, any::xml2
           needs: coverage
           install-quarto: false
-          lockfile-create-lib: '.libPaths()'
+          lockfile-create-lib: '.libPaths()[1]'
         env:
           _R_CHECK_FORCE_SUGGESTS_: false
           R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
