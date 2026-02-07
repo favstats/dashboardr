@@ -22,6 +22,7 @@ dashboard_template
 ^\.Rproj\.user$
 ^\.claude$
 ^\.cursor$
+^\.covrignore$
 ^LICENSE\.md$
 ^site_dashboard$
 ^single_dashboard$

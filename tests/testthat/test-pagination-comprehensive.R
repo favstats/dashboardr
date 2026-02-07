@@ -5,8 +5,8 @@
 # separate pages, especially when combined with combine_viz() and tabgroups.
 
 # Skip entire file under covr CI to prevent OOM (exit code 143)
-if (identical(Sys.getenv("DASHBOARDR_COVR_CI"), "true")) {
-  test_that("skipped under covr CI", { skip("Memory-intensive tests skipped under covr CI") })
+if (identical(Sys.getenv("DASHBOARDR_COVR_CI"), "true") || !identical(Sys.getenv("NOT_CRAN"), "true")) {
+  test_that("skipped on CRAN/covr CI", { skip("Memory-intensive tests skipped on CRAN and covr CI") })
 } else {
 
 # =============================================================================
