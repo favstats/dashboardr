@@ -573,7 +573,7 @@
   # Embed cross-tab data BEFORE the height div wrapper (attributes live on the highchart)
   has_cross_tab <- !is.null(spec$cross_tab_filter_vars) && length(spec$cross_tab_filter_vars) > 0
   if (has_cross_tab) {
-    call_str <- c(call_str, "", "result <- dashboardr:::.embed_cross_tab(result)")
+    call_str <- c(call_str, "", "result <- dashboardr::.embed_cross_tab(result)")
   }
 
   # Wrap in explicit height container AFTER cross-tab embed

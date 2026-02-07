@@ -4309,7 +4309,7 @@ knit_print.content_collection <- function(x, ..., options = NULL) {
       } else NULL
 
       if (inherits(viz_result, "htmlwidget")) {
-        widget_html <- htmlwidgets:::toHTML(viz_result, standalone = FALSE, knitrOptions = options)
+        widget_html <- htmltools::as.tags(viz_result)
         return(htmltools::tagList(title_html, widget_html, htmltools::tags$div(style = "margin-bottom: 15px;")))
       } else {
         # Wrapped in a tag (e.g., div with height) \u2014 convert as-is
@@ -4525,7 +4525,7 @@ knit_print.content_collection <- function(x, ..., options = NULL) {
     result <- .render_reactable_block_direct(item)
     if (!is.null(result)) {
       if (inherits(result, "htmlwidget")) {
-        widget_html <- htmlwidgets:::toHTML(result, standalone = FALSE, knitrOptions = options)
+        widget_html <- htmltools::as.tags(result)
         return(htmltools::tags$div(style = "margin: 15px 0;", widget_html))
       }
       return(htmltools::tags$div(style = "margin: 15px 0;", result))
@@ -4536,7 +4536,7 @@ knit_print.content_collection <- function(x, ..., options = NULL) {
     result <- .render_dt_block_direct(item)
     if (!is.null(result)) {
       if (inherits(result, "htmlwidget")) {
-        widget_html <- htmlwidgets:::toHTML(result, standalone = FALSE, knitrOptions = options)
+        widget_html <- htmltools::as.tags(result)
         return(htmltools::tags$div(style = "margin: 15px 0;", widget_html))
       }
       return(htmltools::tags$div(style = "margin: 15px 0;", result))
@@ -4554,7 +4554,7 @@ knit_print.content_collection <- function(x, ..., options = NULL) {
     result <- .render_hc_block_direct(item)
     if (!is.null(result)) {
       if (inherits(result, "htmlwidget")) {
-        widget_html <- htmlwidgets:::toHTML(result, standalone = FALSE, knitrOptions = options)
+        widget_html <- htmltools::as.tags(result)
         return(htmltools::tags$div(style = "margin: 15px 0;", widget_html))
       }
       return(htmltools::tags$div(style = "margin: 15px 0;", result))
@@ -4973,7 +4973,7 @@ knit_print.content_collection <- function(x, ..., options = NULL) {
       }, error = function(e) NULL)
 
       if (!is.null(viz_result) && inherits(viz_result, "htmlwidget")) {
-        widget_html <- htmlwidgets:::toHTML(viz_result, standalone = FALSE, knitrOptions = options)
+        widget_html <- htmltools::as.tags(viz_result)
         title_html <- if (!is.null(item$title)) {
           htmltools::tags$div(class = "preview-h4", style = "font-size: 1em; font-weight: bold; margin: 10px 0;", item$title)
         } else NULL

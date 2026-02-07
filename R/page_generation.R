@@ -59,7 +59,7 @@
     "",
     "```{r, include=FALSE}",
     "# Initialize dashboardr page configuration (CSS/JS for charts)",
-    "dashboardr:::.page_config()",
+    "dashboardr::.page_config()",
     "```",
     ""
   )
@@ -1523,7 +1523,7 @@
         
         # Apply haven conversion before filtering using dashboardr's internal function
         lines <- c(lines,
-          paste0(filter_info$name, " <- dashboardr:::.convert_haven(", source_dataset, ") %>% dplyr::filter(", filter_expr, ")")
+          paste0(filter_info$name, " <- dashboardr::.convert_haven(", source_dataset, ") %>% dplyr::filter(", filter_expr, ")")
         )
       }
       

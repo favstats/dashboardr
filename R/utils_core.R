@@ -589,6 +589,7 @@ density = list(
 #' @param df A data frame
 #' @return The data frame with haven_labelled columns converted to factors
 #' @keywords internal
+#' @export
 .convert_haven <- function(df) {
   if (requireNamespace("haven", quietly = TRUE)) {
     for (col in names(df)) {
@@ -607,6 +608,7 @@ density = list(
 #' 
 #' @return Invisible NULL (outputs HTML via knitr)
 #' @keywords internal
+#' @export
 .page_config <- function() {
   css <- "
 <style>
@@ -659,6 +661,7 @@ section {
 #' @param result A visualization result (highchart object)
 #' @return The result wrapped with cross-tab JavaScript if applicable
 #' @keywords internal
+#' @export
 .embed_cross_tab <- function(result) {
   cross_tab_data <- attr(result, "cross_tab_data")
   cross_tab_config <- attr(result, "cross_tab_config")

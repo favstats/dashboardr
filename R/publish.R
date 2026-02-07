@@ -260,13 +260,13 @@ update_dashboard <- function(files = ".", message = "Update dashboard", ask = TR
 #' @noRd
 .setup_git_repo <- function(message = "Initial commit", restart = FALSE) {
 
-  needs_init <- !usethis:::uses_git()
+  needs_init <- !tryCatch({ gert::git_find("."); TRUE }, error = function(e) FALSE)
 
   if (needs_init) {
-    usethis:::ui_bullets(c(v = "Initialising Git repo."))
-    usethis:::git_init()
+    cli::cli_alert_success("Initialising Git repo.")
+    gert::git_init(".")
 
-    if (usethis:::is_positron()) {
+    if (nzchar(Sys.getenv("POSITRON"))) {
       Sys.sleep(1)
     }
   }
@@ -284,13 +284,28 @@ update_dashboard <- function(files = ".", message = "Update dashboard", ask = TR
   usethis::use_git_ignore(git_ignore_lines)
 
   # Commit if there are uncommitted changes
-  if (usethis:::git_uncommitted(untracked = TRUE)) {
-    usethis:::git_ask_commit(message, untracked = TRUE)
+  if (nrow(gert::git_status()) > 0) {
+    if (interactive()) {
+      changed <- gert::git_status()
+      cli::cli_alert_info("There are {nrow(changed)} uncommitted file(s).")
+      answer <- utils::menu(c("Yes", "No"), title = "Do you want to commit them?")
+      if (identical(answer, 1L)) {
+        gert::git_add(".")
+        gert::git_commit(message)
+        cli::cli_alert_success("Committed with message: {.val {message}}")
+      }
+    } else {
+      gert::git_add(".")
+      gert::git_commit(message)
+    }
   }
 
   # Only restart if explicitly requested and not in Positron
-  if (needs_init && restart && !usethis:::is_positron()) {
-    usethis:::restart_rstudio("A restart of RStudio is required to activate the Git pane.")
+  if (needs_init && restart && !nzchar(Sys.getenv("POSITRON"))) {
+    if (requireNamespace("rstudioapi", quietly = TRUE) && rstudioapi::isAvailable()) {
+      message("A restart of RStudio is required to activate the Git pane.")
+      rstudioapi::restartSession()
+    }
   }
 
   invisible(TRUE)

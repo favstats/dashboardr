@@ -248,7 +248,7 @@ show_when_close <- function() {
 render_viz_html <- function(result) {
   if (inherits(result, "htmlwidget")) {
     # For bare htmlwidgets, use toHTML which includes dependencies
-    widget_html <- htmlwidgets:::toHTML(result, standalone = FALSE)
+    widget_html <- htmltools::as.tags(result)
     cat(as.character(widget_html))
   } else if (inherits(result, c("shiny.tag", "shiny.tag.list"))) {
     # For tagLists (e.g. from .embed_cross_tab wrapping script + widget),
