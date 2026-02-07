@@ -44,7 +44,6 @@ Suggests:
   DT,
   gapminder,
   gt,
-  gssr,
   haven,
   httr,
   knitr,
@@ -57,4 +56,3 @@ Suggests:
   yaml
 VignetteBuilder: knitr
 Config/testthat/edition: 3
-Additional_repositories: https://kjhealy.r-universe.dev
