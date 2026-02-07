@@ -26,7 +26,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">dashboardr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -95,6 +95,34 @@
 
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.3.0" id="dashboardr-030">dashboardr 0.3.0<a class="anchor" aria-label="anchor" href="#dashboardr-030"></a></h2>
+<div class="section level3">
+<h3 id="new-features-0-3-0">New Features<a class="anchor" aria-label="anchor" href="#new-features-0-3-0"></a></h3>
+<div class="section level4">
+<h4 id="community-gallery-0-3-0">Community Gallery<a class="anchor" aria-label="anchor" href="#community-gallery-0-3-0"></a></h4>
+<ul><li>Added a Community Gallery showcasing dashboardr dashboards, hosted as a Vue.js SPA at <code>gallery/index.html</code>.</li>
+<li>Users can submit their own dashboards via a GitHub issue template.</li>
+<li>Gallery is prominently featured in the pkgdown site navbar, README, getting-started vignette, and demos vignette.</li>
+</ul></div>
+<div class="section level4">
+<h4 id="about-pages-for-demo-dashboards-0-3-0">About Pages for Demo Dashboards<a class="anchor" aria-label="anchor" href="#about-pages-for-demo-dashboards-0-3-0"></a></h4>
+<ul><li>All demo dashboards (inputs, sidebar, sidebar-gss, overlay, and all 6 tabset themes) now include an About page with a description of demonstrated features, example usage code, and a direct link to the source code on GitHub.</li>
+</ul></div>
+</div>
+<div class="section level3">
+<h3 id="bug-fixes-0-3-0">Bug Fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-3-0"></a></h3>
+<div class="section level4">
+<h4 id="input-filtering-0-3-0">Input Filtering<a class="anchor" aria-label="anchor" href="#input-filtering-0-3-0"></a></h4>
+<ul><li>
+<strong>Select inputs</strong>: Fixed <code>filterVars</code> JSON serialization — single-element character vectors (e.g., <code>c("country")</code>) were serialized as a string instead of an array, causing the JavaScript to iterate over individual characters instead of matching filter values.</li>
+<li>
+<strong>Slider inputs</strong>: Slider filters were collected but never passed to <code>rebuildFromCrossTab()</code>, so labeled sliders had no effect on cross-tab charts. Sliders now correctly filter data by label position.</li>
+<li>
+<strong>Switch inputs</strong>: Switch-toggled series (e.g., “Global Average” with <code>override = TRUE</code>) were invisible because cross-tab data filtering excluded them. Override series data is now preserved during filtering, and switch visibility is applied after cross-tab rebuild.</li>
+</ul><hr></div>
+</div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.2.1" id="dashboardr-021">dashboardr 0.2.1<a class="anchor" aria-label="anchor" href="#dashboardr-021"></a></h2>
 <div class="section level3">

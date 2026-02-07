@@ -1,5 +1,42 @@
 # Changelog
 
+## dashboardr 0.3.0
+
+### New Features
+
+#### Community Gallery
+
+- Added a Community Gallery showcasing dashboardr dashboards, hosted as
+  a Vue.js SPA at `gallery/index.html`.
+- Users can submit their own dashboards via a GitHub issue template.
+- Gallery is prominently featured in the pkgdown site navbar, README,
+  getting-started vignette, and demos vignette.
+
+#### About Pages for Demo Dashboards
+
+- All demo dashboards (inputs, sidebar, sidebar-gss, overlay, and all 6
+  tabset themes) now include an About page with a description of
+  demonstrated features, example usage code, and a direct link to the
+  source code on GitHub.
+
+### Bug Fixes
+
+#### Input Filtering
+
+- **Select inputs**: Fixed `filterVars` JSON serialization —
+  single-element character vectors (e.g., `c("country")`) were
+  serialized as a string instead of an array, causing the JavaScript to
+  iterate over individual characters instead of matching filter values.
+- **Slider inputs**: Slider filters were collected but never passed to
+  `rebuildFromCrossTab()`, so labeled sliders had no effect on cross-tab
+  charts. Sliders now correctly filter data by label position.
+- **Switch inputs**: Switch-toggled series (e.g., “Global Average” with
+  `override = TRUE`) were invisible because cross-tab data filtering
+  excluded them. Override series data is now preserved during filtering,
+  and switch visibility is applied after cross-tab rebuild.
+
+------------------------------------------------------------------------
+
 ## dashboardr 0.2.1
 
 ### New Features

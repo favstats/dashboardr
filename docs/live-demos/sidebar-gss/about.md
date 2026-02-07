@@ -1,0 +1,46 @@
+# About
+
+# About
+
+## About This Demo
+
+This dashboard explores data from the [General Social Survey
+(GSS)](https://gss.norc.org/), one of the longest-running surveys in the
+United States.
+
+Use the sidebar filters on the Explorer page to slice the data by time
+period and demographic breakdowns. The dashboard automatically updates
+charts based on your filter selections.
+
+### Features Demonstrated
+
+- **Sidebar layout** with radio button filters
+- **Stacked bar charts** with percentage and count modes
+- **Timeline charts** for tracking trends over time
+- **Conditional visibility** (`show_when`) to display different chart
+  types based on filter state
+- **Dynamic titles** that update based on selected filters
+
+### Usage
+
+``` r
+create_page("Explorer", layout = "sidebar") %>%
+  begin_sidebar() %>%
+    add_input(type = "radio", filter_var = "time_period", ...) %>%
+    add_input(type = "radio", filter_var = "breakdown_type", ...) %>%
+  end_sidebar() %>%
+  add_viz(type = "stackedbar", show_when = ~ time_period != "Over Time") %>%
+  add_viz(type = "timeline", show_when = ~ time_period == "Over Time")
+```
+
+### Source Code
+
+The full R code that generates this dashboard is available on GitHub:
+
+- [View Source
+  Code](https://github.com/favstats/dashboardr/blob/main/pkgdown/build-sidebar-gss-demo.R)
+
+### Learn More
+
+- [dashboardr Documentation](https://favstats.github.io/dashboardr/)
+- [Community Gallery](https://favstats.github.io/dashboardr/gallery/)
