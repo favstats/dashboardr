@@ -5,7 +5,14 @@ Add iframe
 ## Usage
 
 ``` r
-add_iframe(content, src, height = "500px", width = "100%", tabgroup = NULL)
+add_iframe(
+  content,
+  src,
+  height = "500px",
+  width = "100%",
+  style = NULL,
+  tabgroup = NULL
+)
 ```
 
 ## Arguments
@@ -25,6 +32,12 @@ add_iframe(content, src, height = "500px", width = "100%", tabgroup = NULL)
 - width:
 
   iframe width (default: "100%")
+
+- style:
+
+  Optional inline CSS style string applied to the iframe element (e.g.,
+  `"border: none; border-radius: 8px;"`). Useful for removing borders,
+  adding shadows, or any custom styling.
 
 - tabgroup:
 

@@ -16,6 +16,9 @@ website:
         text: "{{< iconify ph stack >}} 2 Levels"
       - href: 3_levels.qmd
         text: "{{< iconify ph tree-structure >}} 3 Levels"
+    right:
+      - href: about.qmd
+        text: "{{< iconify ph info >}} About"
     search: true
   bread-crumbs: true
   page-navigation: false

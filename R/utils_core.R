@@ -675,6 +675,11 @@ section {
       }
     }
     cross_tab_json <- jsonlite::toJSON(cross_tab_data, dataframe = "rows")
+    # Ensure filterVars is always serialized as an array, even with one element
+    # (auto_unbox would turn c("country") into "country" instead of ["country"])
+    if (!is.null(cross_tab_config$filterVars)) {
+      cross_tab_config$filterVars <- as.list(cross_tab_config$filterVars)
+    }
     config_json <- jsonlite::toJSON(cross_tab_config, auto_unbox = TRUE)
     script_tag <- htmltools::tags$script(
       htmltools::HTML(paste0(

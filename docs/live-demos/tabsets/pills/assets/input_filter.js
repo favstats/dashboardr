@@ -104,9 +104,6 @@
             }
           });
           choicesInstances[inputId] = choices;
-          // #region agent log
-          try{fetch('http://127.0.0.1:7242/ingest/cbfd47d0-c39e-4a3e-892f-ab3041f60f5c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'input_filter.js:choicesInit',message:'Choices.js instance created',data:{inputId:inputId,hasAddEventListener:typeof choices.addEventListener==='function',hasPassedElement:!!choices.passedElement,passedElementType:choices.passedElement?typeof choices.passedElement.element:'none'},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H5'})}).catch(function(){});}catch(e){}
-          // #endregion
           // Choices.js may not fire native 'change' on the select; listen on the instance if available
           if (typeof choices.addEventListener === 'function') {
             choices.addEventListener('change', () => {
@@ -133,9 +130,6 @@
       defaultValues[inputId] = { selected: selected.slice() };
 
       input.addEventListener('change', () => {
-        // #region agent log
-        try{fetch('http://127.0.0.1:7242/ingest/cbfd47d0-c39e-4a3e-892f-ab3041f60f5c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'input_filter.js:selectChangeHandler',message:'select native change fired',data:{inputId:inputId,filterVar:filterVar,newSelected:getSelectedValues(input)},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H5'})}).catch(function(){});}catch(e){}
-        // #endregion
         const selected = getSelectedValues(input);
         inputState[inputId].selected = selected;
         applyAllFilters();
@@ -220,9 +214,6 @@
       const radios = group.querySelectorAll('input[type="radio"]');
       radios.forEach(radio => {
         radio.addEventListener('change', () => {
-          // #region agent log
-          try{fetch('http://127.0.0.1:7242/ingest/cbfd47d0-c39e-4a3e-892f-ab3041f60f5c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'input_filter.js:radioChangeHandler',message:'radio change fired',data:{inputId:inputId,filterVar:filterVar,newSelected:getRadioValue(group)},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H1'})}).catch(function(){});}catch(e){}
-          // #endregion
           inputState[inputId].selected = getRadioValue(group);
           applyAllFilters();
         });
@@ -580,10 +571,6 @@
       return setTimeout(applyAllFilters, 200);
     }
 
-    // #region agent log
-    try{fetch('http://127.0.0.1:7242/ingest/cbfd47d0-c39e-4a3e-892f-ab3041f60f5c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'input_filter.js:applyAllFilters:entry',message:'applyAllFilters called',data:{chartCount:charts.length,inputStateKeys:Object.keys(inputState),inputStateSummary:Object.fromEntries(Object.entries(inputState).map(function(e){return[e[0],{filterVar:e[1].filterVar,selected:e[1].selected,inputType:e[1].inputType}]}))},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H1'})}).catch(function(){});}catch(e){}
-    // #endregion
-
     // Collect all active filters with their metadata
     const filters = {};
     const sliderFilters = {};
@@ -619,23 +606,51 @@
       }
     });
 
-    // #region agent log
-    try{fetch('http://127.0.0.1:7242/ingest/cbfd47d0-c39e-4a3e-892f-ab3041f60f5c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'input_filter.js:applyAllFilters:filters',message:'filters collected',data:{filters:filters,sliderFilters:sliderFilters,switchFilters:switchFilters,textFilters:textFilters,numberFilters:numberFilters,periodFilters:periodFilters,hasCrossTab:!!window.dashboardrCrossTab,crossTabKeys:window.dashboardrCrossTab?Object.keys(window.dashboardrCrossTab):[]},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H2-H3'})}).catch(function(){});}catch(e){}
-    // #endregion
-
     charts.forEach(chart => {
       if (!chart || !chart.series) return;
       
       // Check if this chart has cross-tab data for client-side filtering
       const chartId = chart.options && chart.options.chart && chart.options.chart.id;
-      // #region agent log
-      try{fetch('http://127.0.0.1:7242/ingest/cbfd47d0-c39e-4a3e-892f-ab3041f60f5c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'input_filter.js:applyAllFilters:chartLookup',message:'chart cross-tab lookup',data:{chartId:chartId,hasCrossTabGlobal:!!window.dashboardrCrossTab,crossTabKeys:window.dashboardrCrossTab?Object.keys(window.dashboardrCrossTab):[],matchFound:!!(chartId&&window.dashboardrCrossTab&&window.dashboardrCrossTab[chartId])},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H2'})}).catch(function(){});}catch(e){}
-      // #endregion
       if (chartId && window.dashboardrCrossTab && window.dashboardrCrossTab[chartId]) {
         const crossTabInfo = window.dashboardrCrossTab[chartId];
-        const result = rebuildFromCrossTab(chart, crossTabInfo, filters);
+        // Collect switch overrides: series that should always be included in data
+        // regardless of filter selections (when switch is ON and override is true)
+        const switchOverrides = {};
+        Object.keys(inputState).forEach(id => {
+          const state = inputState[id];
+          if (state.inputType === 'switch' && state.toggleSeries && state.filterVar) {
+            if (!switchOverrides[state.filterVar]) {
+              switchOverrides[state.filterVar] = [];
+            }
+            switchOverrides[state.filterVar].push({
+              seriesName: state.toggleSeries,
+              visible: !!state.value,
+              override: !!state.override
+            });
+          }
+        });
+        
+        const result = rebuildFromCrossTab(chart, crossTabInfo, filters, sliderFilters, switchOverrides);
         if (result) {
-          // Chart was rebuilt from cross-tab, skip normal filtering
+          // Chart was rebuilt from cross-tab data.
+          // Apply switch toggle series visibility on top of the rebuilt chart.
+          Object.keys(inputState).forEach(id => {
+            const state = inputState[id];
+            if (state.inputType === 'switch' && state.toggleSeries) {
+              chart.series.forEach(series => {
+                if (series.name === state.toggleSeries) {
+                  if (!state.value) {
+                    series.setVisible(false, false);
+                    series.update({ showInLegend: false }, false);
+                  } else {
+                    series.setVisible(true, false);
+                    series.update({ showInLegend: true }, false);
+                  }
+                }
+              });
+            }
+          });
+          chart.redraw();
           return;
         }
       }
@@ -1110,9 +1125,11 @@
    * @param {Highcharts.Chart} chart - The chart to update
    * @param {Object} crossTabInfo - Object with data array and config
    * @param {Object} filters - Current filter selections (filterVar -> selected values)
+   * @param {Object} sliderFilters - Current slider filter states (filterVar -> {value, min, max, step, labels})
+   * @param {Object} switchOverrides - Switch-controlled series per filterVar ({filterVar -> [{seriesName, visible, override}]})
    * @returns {boolean} True if chart was rebuilt, false if cross-tab doesn't apply
    */
-  function rebuildFromCrossTab(chart, crossTabInfo, filters) {
+  function rebuildFromCrossTab(chart, crossTabInfo, filters, sliderFilters, switchOverrides) {
     if (!crossTabInfo || !crossTabInfo.data || !crossTabInfo.config) {
       return false;
     }
@@ -1127,6 +1144,20 @@
     const allLabels = ['all', 'alle', 'tous', 'todo', 'tutti', 'すべて', '全部'];
     
     for (const filterVar of filterVars) {
+      // Collect switch-overridden series names for this filterVar
+      // These series should always be included in the data when their switch is ON
+      const overrideSeriesNames = new Set();
+      if (switchOverrides && switchOverrides[filterVar]) {
+        switchOverrides[filterVar].forEach(sw => {
+          if (sw.visible && sw.override) {
+            overrideSeriesNames.add(sw.seriesName);
+          }
+        });
+      }
+      // Determine which column holds the series/group name for override matching
+      const groupCol = config.groupVar || config.stackVar;
+      
+      // First check regular filters (select, checkbox, radio)
       const selectedValues = filters[filterVar];
       if (selectedValues && selectedValues.length > 0) {
         const hasAllOption = selectedValues.some(v => 
@@ -1138,8 +1169,37 @@
         
         filteredData = filteredData.filter(row => {
           const rowValue = String(row[filterVar]);
-          return selectedValues.includes(rowValue);
+          // Include if value is selected OR if it's an override series that's toggled on
+          if (selectedValues.includes(rowValue)) return true;
+          if (overrideSeriesNames.size > 0 && groupCol) {
+            const groupValue = String(row[groupCol]);
+            if (overrideSeriesNames.has(groupValue)) return true;
+          }
+          return false;
         });
+        continue;
+      }
+      
+      // Then check slider filters
+      const sliderInfo = sliderFilters && sliderFilters[filterVar];
+      if (sliderInfo) {
+        const sliderValue = sliderInfo.value;
+        if (sliderInfo.labels && sliderInfo.labels.length > 0) {
+          // Slider with labels: include values from the selected position onwards
+          // sliderValue is 1-based index into labels array
+          const selectedIndex = Math.round(sliderValue) - 1;
+          const allowedLabels = sliderInfo.labels.slice(selectedIndex);
+          filteredData = filteredData.filter(row => {
+            const rowValue = String(row[filterVar]);
+            return allowedLabels.includes(rowValue);
+          });
+        } else {
+          // Numeric slider: filter rows where value >= slider value
+          filteredData = filteredData.filter(row => {
+            const rowValue = Number(row[filterVar]);
+            return !isNaN(rowValue) && rowValue >= sliderValue;
+          });
+        }
       }
     }
     

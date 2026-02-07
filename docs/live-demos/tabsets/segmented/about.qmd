@@ -1,0 +1,50 @@
+---
+title: "{{< iconify ph info >}} About"
+format: html
+---
+
+```{r, include=FALSE}
+# Initialize dashboardr page configuration (CSS/JS for charts)
+dashboardr::.page_config()
+```
+
+## About This Demo: segmented Theme
+
+This dashboard demonstrates the **segmented** tabset theme in dashboardr.
+Each page shows a different nesting level — from flat tabs to three levels of hierarchy.
+
+### Available Tabset Themes
+
+| Theme | Description |
+|-------|-------------|
+| `pills` | Pill-shaped tab buttons |
+| `modern` | Clean modern design |
+| `minimal` | Subtle, minimal styling |
+| `classic` | Traditional tab appearance |
+| `underline` | Underline indicator |
+| `segmented` | Segmented control look |
+
+### Usage
+
+```r
+create_dashboard(
+  tabset_theme = "segmented"
+) %>%
+  add_page(
+    "My Page",
+    data = my_data
+  ) %>%
+    add_viz(tabgroup = "parent/child", ...)
+```
+
+### Source Code
+
+The full R code that generates all tabset theme dashboards is available on GitHub:
+
+- [View Source Code](https://github.com/favstats/dashboardr/blob/main/pkgdown/build-tabsets-demo.R)
+
+### Learn More
+
+- [dashboardr Documentation](https://favstats.github.io/dashboardr/)
+- [Community Gallery](https://favstats.github.io/dashboardr/gallery/)
+

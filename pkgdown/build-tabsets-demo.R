@@ -436,6 +436,52 @@ create_tabset_demo <- function(theme_name) {
         "```"
       )
     ) %>%
+    add_page(
+      name = "About",
+      icon = "ph:info",
+      navbar_align = "right",
+      text = md_text(
+        paste0("## About This Demo: ", theme_name, " Theme"),
+        "",
+        paste0("This dashboard demonstrates the **", tolower(theme_name), "** tabset theme in dashboardr."),
+        "Each page shows a different nesting level — from flat tabs to three levels of hierarchy.",
+        "",
+        "### Available Tabset Themes",
+        "",
+        "| Theme | Description |",
+        "|-------|-------------|",
+        "| `pills` | Pill-shaped tab buttons |",
+        "| `modern` | Clean modern design |",
+        "| `minimal` | Subtle, minimal styling |",
+        "| `classic` | Traditional tab appearance |",
+        "| `underline` | Underline indicator |",
+        "| `segmented` | Segmented control look |",
+        "",
+        "### Usage",
+        "",
+        "```r",
+        "create_dashboard(",
+        paste0("  tabset_theme = \"", tolower(theme_name), "\""),
+        ") %>%",
+        "  add_page(",
+        "    \"My Page\",",
+        "    data = my_data",
+        "  ) %>%",
+        "    add_viz(tabgroup = \"parent/child\", ...)",
+        "```",
+        "",
+        "### Source Code",
+        "",
+        "The full R code that generates all tabset theme dashboards is available on GitHub:",
+        "",
+        "- [View Source Code](https://github.com/favstats/dashboardr/blob/main/pkgdown/build-tabsets-demo.R)",
+        "",
+        "### Learn More",
+        "",
+        "- [dashboardr Documentation](https://favstats.github.io/dashboardr/)",
+        "- [Community Gallery](https://favstats.github.io/dashboardr/gallery/)"
+      )
+    ) %>%
     add_powered_by_dashboardr(size = "small", style = "minimal")
   
   # Generate

@@ -1,5 +1,14 @@
 # Live Demos
 
+## Community Gallery
+
+Browse dashboards built with dashboardr by the community: **[View the
+Gallery →](https://favstats.github.io/dashboardr/gallery/)**
+
+Built something with dashboardr? **[Submit your
+dashboard](https://github.com/favstats/dashboardr/issues/new?labels=gallery-submission&title=%5BGallery%5D+My+Dashboard)**
+to the gallery and share it with the community!
+
 ## Overview
 
 `dashboardr` includes several live demo dashboards that showcase its
@@ -30,7 +39,7 @@ the exact R code used.
 - **GSS Explorer (Sidebar)** - Full sidebar dashboard with cross-tab
   filtering, conditional visibility, dynamic titles, and consistent
   colors.
-  [Code](https://favstats.github.io/dashboardr/dev/demo_sidebar_dashboard.R)
+  [Code](https://favstats.github.io/dashboardr/pkgdown/build-sidebar-gss-demo.R)
   \| [View
   Demo](https://favstats.github.io/dashboardr/live-demos/sidebar-gss/index.md)
   \|
@@ -38,11 +47,10 @@ the exact R code used.
 
 ### Real-World Dashboards
 
-- **DigIQ Monitor** - The first public full-fledged dashboard built with
-  dashboardr! A comprehensive digital competence monitor for Dutch
-  citizens (ages 10-100), featuring 11 dimension pages, multilingual
-  support (Dutch/English), paginated visualizations, and interactive
-  modals. [View Live →](https://www.digiqmonitor.nl/)
+- **DigIQ Monitor** - A comprehensive digital competence monitor for
+  Dutch citizens (ages 10-100), featuring 11 dimension pages,
+  multilingual support (Dutch/English), paginated visualizations, and
+  interactive modals. [View Live →](https://www.digiqmonitor.nl/)
 
 ### Tabset Theme Demos
 
@@ -215,4 +223,10 @@ After exploring the demos:
 3.  Check out
     [`vignette("getting-started")`](https://favstats.github.io/dashboardr/articles/getting-started.md)
     for detailed guides
-4.  Use the demos as templates for your own projects
+4.  Browse the [Community
+    Gallery](https://favstats.github.io/dashboardr/gallery/) for
+    inspiration
+5.  Use the demos as templates for your own projects
+6.  [Submit your
+    dashboard](https://github.com/favstats/dashboardr/issues/new?labels=gallery-submission&title=%5BGallery%5D+My+Dashboard)
+    to the gallery!

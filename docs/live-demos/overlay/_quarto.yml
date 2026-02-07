@@ -16,6 +16,9 @@ website:
         text: "{{< iconify ph moon-fill >}} Dark Theme"
       - href: accent_theme.qmd
         text: "{{< iconify ph paint-brush-fill >}} Accent Theme"
+    right:
+      - href: about.qmd
+        text: "{{< iconify ph info >}} About"
     search: true
   bread-crumbs: true
   page-navigation: false

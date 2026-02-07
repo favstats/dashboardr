@@ -16,6 +16,7 @@ add_page(
   text = NULL,
   icon = NULL,
   is_landing_page = FALSE,
+  show_in_nav = TRUE,
   tabset_theme = NULL,
   tabset_colors = NULL,
   navbar_align = c("left", "right"),
@@ -55,6 +56,9 @@ list of file paths for multiple datasets}
 \item{icon}{Optional iconify icon shortcode (e.g., "ph:users-three")}
 
 \item{is_landing_page}{Whether this should be the landing page (default: FALSE)}
+
+\item{show_in_nav}{Whether to show this page in the navbar (default: TRUE).
+Set to FALSE for pageless dashboards (created with \code{create_page("")}).}
 
 \item{tabset_theme}{Optional tabset theme for this page (overrides dashboard-level theme)}
 

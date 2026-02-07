@@ -137,8 +137,13 @@ test_that("create_page accepts all parameters", {
 
 test_that("create_page requires a name", {
   expect_error(create_page(), "'name' is required")
-  expect_error(create_page(""), "'name' is required")
   expect_error(create_page(NULL), "'name' is required")
+})
+
+test_that("create_page allows empty name for pageless dashboards", {
+  page <- create_page("")
+  expect_equal(page$name, ".pageless")
+  expect_false(page$show_in_nav)
 })
 
 test_that("add_content adds content to a page", {

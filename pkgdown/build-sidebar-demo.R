@@ -264,7 +264,14 @@ page5 <- create_page("About", icon = "ph:info") %>%
   add_text("3. **Combined**: Right sidebar with radio buttons + checkboxes") %>%
   add_text("4. **Slider Demo**: Left sidebar with year slider + checkboxes") %>%
   add_divider() %>%
-  add_text("*Data is simulated for demonstration purposes.*")
+  add_text("*Data is simulated for demonstration purposes.*") %>%
+  add_text("### Source Code") %>%
+  add_text("The full R code that generates this dashboard is available on GitHub:") %>%
+  add_text("- [View Source Code](https://github.com/favstats/dashboardr/blob/main/pkgdown/build-sidebar-demo.R)") %>%
+  add_divider() %>%
+  add_text("### Learn More") %>%
+  add_text("- [dashboardr Documentation](https://favstats.github.io/dashboardr/)") %>%
+  add_text("- [Community Gallery](https://favstats.github.io/dashboardr/gallery/)")
 
 # =============================================================================
 # Create and generate the dashboard

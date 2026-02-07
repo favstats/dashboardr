@@ -550,6 +550,20 @@
   scrollbar-color: rgba(0, 0, 0, 0.15) transparent;
 }
 
+/* -----------------------------------------------------------------------------
+   Main Content Area: Chart Card Min Height
+   The --chart-min-height variable is read by show_when.js to override bslib's
+   inline grid-template-rows via JavaScript (CSS !important can't beat them).
+----------------------------------------------------------------------------- */
+:root {
+  --chart-min-height: 500px;
+}
+
+/* Let the main content area scroll when charts need more space */
+.bslib-sidebar-layout > .main {
+  overflow-y: auto !important;
+}
+
 /* =============================================================================
    MOBILE RESPONSIVENESS
 ============================================================================= */

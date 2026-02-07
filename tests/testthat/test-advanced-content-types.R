@@ -218,8 +218,8 @@ test_that("iframe renders correctly in QMD", {
   # Check iframe tag is present
   expect_true(grepl("<iframe", qmd_content, fixed = TRUE))
   expect_true(grepl("https://example.com", qmd_content, fixed = TRUE))
-  expect_true(grepl("height='400px'", qmd_content, fixed = TRUE))
-  expect_true(grepl("width='100%'", qmd_content, fixed = TRUE))
+  expect_true(grepl("height: 400px", qmd_content, fixed = TRUE))
+  expect_true(grepl("width: 100%", qmd_content, fixed = TRUE))
 })
 
 test_that("video (YouTube) renders correctly in QMD", {

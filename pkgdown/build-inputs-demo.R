@@ -488,16 +488,25 @@ dashboard <- create_dashboard(
       "add_input(filter_var = \"country\", ...)",
       "```",
       "",
+      "### Source Code",
+      "",
+      "The full R code that generates this dashboard is available on GitHub:",
+      "",
+      "- [View Source Code](https://github.com/favstats/dashboardr/blob/main/pkgdown/build-inputs-demo.R)",
+      "",
       "### Learn More",
       "",
       "- [dashboardr Documentation](https://favstats.github.io/dashboardr/)",
-      "- [Advanced Features Guide](https://favstats.github.io/dashboardr/articles/advanced-features.html)"
+      "- [Advanced Features Guide](https://favstats.github.io/dashboardr/articles/advanced-features.html)",
+      "- [Community Gallery](https://favstats.github.io/dashboardr/gallery/)"
     )
   ) %>%
   add_powered_by_dashboardr(size = "large", style = "default")
 
 # Print summary
 print(dashboard)
+
+# generate_dashboard(dashboard, render = TRUE, open = "browser")
 
 # Generate
 result <- tryCatch(
@@ -519,7 +528,7 @@ for (loc in html_locations) {
   if (file.exists(loc)) {
     cat("   ✅ Inputs demo HTML found at:", loc, "\n")
     html_found <- TRUE
-    
+
     if (grepl("/docs/index.html$", loc)) {
       docs_dir <- dirname(loc)
       files_to_move <- list.files(docs_dir, full.names = TRUE)

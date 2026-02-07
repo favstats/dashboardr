@@ -392,6 +392,12 @@ The container functions (`create_*`) start the chain, then `add_*` functions bui
 - **Page**: `create_page() %>% add_content() %>% add_viz()`
 - **Dashboard**: `create_dashboard() %>% add_pages() %>% generate_dashboard()`
 
+## 🖼️ Community Gallery
+
+Browse dashboards built with dashboardr by the community in the [**Community Gallery**](https://favstats.github.io/dashboardr/gallery/).
+
+Built something with dashboardr? [**Submit your dashboard**](https://github.com/favstats/dashboardr/issues/new?labels=gallery-submission&title=%5BGallery%5D+My+Dashboard) to share it with others!
+
 ## 📚 Learn More
 
 | Topic | Vignette |
@@ -400,3 +406,4 @@ The container functions (`create_*`) start the chain, then `add_*` functions bui
 | Page options, icons, performance settings | `vignette("pages")` |
 | Themes, navigation, navbar customization | `vignette("dashboards")` |
 | Icons, debugging, advanced tips | `vignette("advanced-features")` |
+| Live demos & gallery | `vignette("demos")` |

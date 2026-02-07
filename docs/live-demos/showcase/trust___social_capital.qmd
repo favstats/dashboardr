@@ -5,7 +5,7 @@ format: dashboard
 
 ```{r, include=FALSE}
 # Initialize dashboardr page configuration (CSS/JS for charts)
-dashboardr:::.page_config()
+dashboardr::.page_config()
 ```
 
 Use the filters to explore regional patterns in social trust.
@@ -147,7 +147,7 @@ if (inherits(result, 'highchart')) {
   result <- highcharter::hc_size(result, height = 550)
 }
 
-result <- dashboardr:::.embed_cross_tab(result)
+result <- dashboardr::.embed_cross_tab(result)
 
 # Force container height with explicit wrapper
 result <- htmltools::div(

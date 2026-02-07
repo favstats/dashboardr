@@ -5,7 +5,7 @@ format: html
 
 ```{r, include=FALSE}
 # Initialize dashboardr page configuration (CSS/JS for charts)
-dashboardr:::.page_config()
+dashboardr::.page_config()
 ```
 
 ## {{< iconify ph rocket >}} Explore the Full Showcase

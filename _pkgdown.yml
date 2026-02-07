@@ -48,7 +48,7 @@ template:
 
 navbar:
   structure:
-    left: [intro, reference, articles, demos_menu, news]
+    left: [intro, reference, articles, demos_menu, gallery, news]
     right: [search, github]
   components:
     articles:
@@ -126,9 +126,9 @@ navbar:
         href: live-demos/sidebar/index.html
       - text: "🎭 Loading Overlays"
         href: live-demos/overlay/index.html
-      - text: -------
-      - text: "🖼️ Community Gallery"
-        href: live-demos/gallery/index.html
+    gallery:
+      text: "🖼️ Gallery"
+      href: gallery/index.html
 
 articles:
 - title: Getting Started

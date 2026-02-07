@@ -487,6 +487,15 @@ functions build it up. This works at every layer:
 - **Dashboard**:
   `create_dashboard() %>% add_pages() %>% generate_dashboard()`
 
+## 🖼️ Community Gallery
+
+Browse dashboards built with dashboardr by the community in the
+[**Community Gallery**](https://favstats.github.io/dashboardr/gallery/).
+
+Built something with dashboardr? [**Submit your
+dashboard**](https://github.com/favstats/dashboardr/issues/new?labels=gallery-submission&title=%5BGallery%5D+My+Dashboard)
+to share it with others!
+
 ## 📚 Learn More
 
 | Topic | Vignette |
@@ -495,3 +504,4 @@ functions build it up. This works at every layer:
 | Page options, icons, performance settings | [`vignette("pages")`](https://favstats.github.io/dashboardr/articles/pages.md) |
 | Themes, navigation, navbar customization | [`vignette("dashboards")`](https://favstats.github.io/dashboardr/articles/dashboards.md) |
 | Icons, debugging, advanced tips | [`vignette("advanced-features")`](https://favstats.github.io/dashboardr/articles/advanced-features.md) |
+| Live demos & gallery | [`vignette("demos")`](https://favstats.github.io/dashboardr/articles/demos.md) |

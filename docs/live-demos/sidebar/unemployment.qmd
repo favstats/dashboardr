@@ -5,7 +5,7 @@ format: dashboard
 
 ```{r, include=FALSE}
 # Initialize dashboardr page configuration (CSS/JS for charts)
-dashboardr:::.page_config()
+dashboardr::.page_config()
 ```
 
 ```{r, echo=FALSE, results='asis'}
@@ -38,7 +38,7 @@ knitr::opts_chunk$set(
 )
 
 # Load data
-data <- readRDS('dataset_small_35obs.rds')
+data <- readRDS('dataset_small_35obs_2.rds')
 
 # Data summary
 cat('Dataset loaded:', nrow(data), 'rows,', ncol(data), 'columns\n')
@@ -115,29 +115,11 @@ result <- viz_timeline(
   agg = "none",
   chart_type = "line",
   y_label = "Unemployment Rate (%)",
-  x_label = "Year"
+  x_label = "Year",
+  cross_tab_filter_vars = "country"
 )
 
-# Extract cross-tab data BEFORE wrapping (wrapping strips attributes)
-cross_tab_data <- attr(result, 'cross_tab_data')
-cross_tab_config <- attr(result, 'cross_tab_config')
-cross_tab_id <- attr(result, 'cross_tab_id')
-
-# Embed cross-tab data for client-side filtering
-if (!is.null(cross_tab_data)) {
-  cross_tab_json <- jsonlite::toJSON(cross_tab_data, dataframe = 'rows')
-  config_json <- jsonlite::toJSON(cross_tab_config, auto_unbox = TRUE)
-  script_tag <- htmltools::tags$script(
-    htmltools::HTML(paste0(
-      'window.dashboardrCrossTab = window.dashboardrCrossTab || {};',
-      'window.dashboardrCrossTab["', cross_tab_id, '"] = {',
-      'data: ', cross_tab_json, ',',
-      'config: ', config_json,
-      '};'
-    ))
-  )
-  result <- htmltools::tagList(script_tag, result)
-}
+result <- dashboardr::.embed_cross_tab(result)
 
 result
 ```

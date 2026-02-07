@@ -73,8 +73,9 @@
   }
 
   # Add logo if provided (at navbar level, before left/right sections)
+  # Use basename since the logo file is copied to the output directory
   if (!is.null(proj$logo)) {
-    yaml_lines <- c(yaml_lines, paste0("    logo: ", proj$logo))
+    yaml_lines <- c(yaml_lines, paste0("    logo: ", basename(proj$logo)))
   }
 
   # Separate pages by navbar alignment
@@ -116,24 +117,40 @@
   yaml_lines <- c(yaml_lines, "    left:")
 
   # Add landing page link if there's a landing page (only if not using navbar sections)
+  # Skip if show_in_nav is FALSE (pageless dashboard, created with name = "")
+  landing_show_in_nav <- if (!is.null(landing_page_name)) {
+    proj$pages[[landing_page_name]]$show_in_nav %||% TRUE
+  } else {
+    TRUE
+  }
   if (!is.null(landing_page_name) && (is.null(proj$navbar_sections) || length(proj$navbar_sections) == 0)) {
-    landing_page <- proj$pages[[landing_page_name]]
-    
-    # Build text with icon if provided (same pattern as other pages)
-    landing_text <- paste0("\"", landing_page_name, "\"")
-    if (!is.null(landing_page$icon)) {
-      icon_shortcode <- if (grepl("{{< iconify", landing_page$icon, fixed = TRUE)) {
-        landing_page$icon
-      } else {
-        icon(landing_page$icon)
+    if (landing_show_in_nav) {
+      landing_page <- proj$pages[[landing_page_name]]
+      
+      # Build text with icon if provided (same pattern as other pages)
+      landing_text <- paste0("\"", landing_page_name, "\"")
+      if (!is.null(landing_page$icon)) {
+        icon_shortcode <- if (grepl("{{< iconify", landing_page$icon, fixed = TRUE)) {
+          landing_page$icon
+        } else {
+          icon(landing_page$icon)
+        }
+        landing_text <- paste0("\"", icon_shortcode, " ", landing_page_name, "\"")
       }
-      landing_text <- paste0("\"", icon_shortcode, " ", landing_page_name, "\"")
+      
+      yaml_lines <- c(yaml_lines,
+        "      - href: index.qmd",
+        paste0("        text: ", landing_text)
+      )
+    } else {
+      # Pageless dashboard: emit a minimal hidden entry so Quarto's left: isn't empty
+      # Use a single space (not empty string) to prevent Quarto from
+      # extracting page content as the nav text
+      yaml_lines <- c(yaml_lines,
+        "      - href: index.qmd",
+        "        text: \" \""
+      )
     }
-    
-    yaml_lines <- c(yaml_lines,
-      "      - href: index.qmd",
-      paste0("        text: ", landing_text)
-    )
   }
 
   # Add navigation links - support both regular pages and navbar sections
@@ -503,9 +520,11 @@
     }
   }
 
-  # Add search if enabled
-  if (proj$search) {
+  # Add search setting
+  if (isTRUE(proj$search)) {
     yaml_lines <- c(yaml_lines, "    search: true")
+  } else {
+    yaml_lines <- c(yaml_lines, "    search: false")
   }
 
   # Sidebar configuration - supports both simple and hybrid navigation
@@ -978,16 +997,16 @@
     yaml_lines <- c(yaml_lines, paste0("    backgroundcolor: \"", proj$backgroundcolor, "\""))
   }
   if (!is.null(proj$margin_left)) {
-    yaml_lines <- c(yaml_lines, paste0("    margin-left: ", proj$margin_left))
+    yaml_lines <- c(yaml_lines, paste0("    margin-left: \"", proj$margin_left, "\""))
   }
   if (!is.null(proj$margin_right)) {
-    yaml_lines <- c(yaml_lines, paste0("    margin-right: ", proj$margin_right))
+    yaml_lines <- c(yaml_lines, paste0("    margin-right: \"", proj$margin_right, "\""))
   }
   if (!is.null(proj$margin_top)) {
-    yaml_lines <- c(yaml_lines, paste0("    margin-top: ", proj$margin_top))
+    yaml_lines <- c(yaml_lines, paste0("    margin-top: \"", proj$margin_top, "\""))
   }
   if (!is.null(proj$margin_bottom)) {
-    yaml_lines <- c(yaml_lines, paste0("    margin-bottom: ", proj$margin_bottom))
+    yaml_lines <- c(yaml_lines, paste0("    margin-bottom: \"", proj$margin_bottom, "\""))
   }
 
   # Add table of contents (simplified)

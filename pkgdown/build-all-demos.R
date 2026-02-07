@@ -201,20 +201,17 @@ tryCatch({
 })
 
 # -----------------------------------------------------------------------------
-# 7. Community Gallery
+# 7. Community Gallery (static copy, no Quarto needed)
 # -----------------------------------------------------------------------------
 cat("\n🖼️  [7/7] Building Community Gallery...\n")
 tryCatch({
   source(file.path(pkg_root, "pkgdown", "build-gallery-demo.R"), local = TRUE)
 
-  gallery_dir <- file.path(pkg_root, "docs", "live-demos", "gallery")
   gallery_spa <- file.path(pkg_root, "docs", "gallery", "index.html")
-  if (check_html(gallery_dir) && file.exists(gallery_spa)) {
+  if (file.exists(gallery_spa)) {
     results$gallery <- "✅ Success"
-  } else if (file.exists(gallery_spa)) {
-    results$gallery <- "⚠️  SPA copied, wrapper needs Quarto"
   } else {
-    results$gallery <- "⚠️  Incomplete"
+    results$gallery <- "⚠️  index.html not found"
   }
 }, error = function(e) {
   results$gallery <<- paste("❌", e$message)
@@ -257,6 +254,4 @@ for (theme in c("pills", "modern", "minimal", "classic", "underline", "segmented
 cat("   https://favstats.github.io/dashboardr/live-demos/inputs/index.html\n")
 cat("   https://favstats.github.io/dashboardr/live-demos/overlay/index.html\n")
 cat("   https://favstats.github.io/dashboardr/live-demos/sidebar-gss/index.html\n")
-cat("   Gallery:\n")
-cat("     https://favstats.github.io/dashboardr/gallery/index.html\n")
-cat("     https://favstats.github.io/dashboardr/live-demos/gallery/index.html\n")
+cat("   https://favstats.github.io/dashboardr/gallery/index.html\n")

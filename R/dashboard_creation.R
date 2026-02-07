@@ -453,6 +453,8 @@ create_dashboard <- function(output_dir = "site",
 #' @param text Optional markdown text content for the page
 #' @param icon Optional iconify icon shortcode (e.g., "ph:users-three")
 #' @param is_landing_page Whether this should be the landing page (default: FALSE)
+#' @param show_in_nav Whether to show this page in the navbar (default: TRUE).
+#'   Set to FALSE for pageless dashboards (created with `create_page("")`).
 #' @param tabset_theme Optional tabset theme for this page (overrides dashboard-level theme)
 #' @param tabset_colors Optional tabset colors for this page (overrides dashboard-level colors)
 #' @param navbar_align Position of page in navbar: "left" (default) or "right"
@@ -497,6 +499,7 @@ add_dashboard_page <- function(proj, name, data = NULL, data_path = NULL,
                                template = NULL, params = list(),
                                visualizations = NULL, content = NULL, text = NULL, icon = NULL,
                                is_landing_page = FALSE,
+                               show_in_nav = TRUE,
                                tabset_theme = NULL, tabset_colors = NULL,
                                navbar_align = c("left", "right"),
                                overlay = FALSE,
@@ -1020,6 +1023,7 @@ add_dashboard_page <- function(proj, name, data = NULL, data_path = NULL,
     text = text,
     icon = icon,
     is_landing_page = is_landing_page,
+    show_in_nav = show_in_nav,
     tabset_theme = tabset_theme,
     tabset_colors = tabset_colors,
     navbar_align = navbar_align,

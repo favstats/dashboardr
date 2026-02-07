@@ -124,6 +124,50 @@ if (dir.exists(output_dir)) {
 }
 dir.create(output_dir, recursive = TRUE, showWarnings = FALSE)
 
+about_page <- create_page(
+  "About",
+  icon = "ph:info",
+  navbar_align = "right"
+) %>%
+  add_text(
+    "## About This Demo",
+    "",
+    "This dashboard demonstrates the four loading overlay themes available in dashboardr.",
+    "Each page shows a different theme — reload the page to see the overlay animation again.",
+    "",
+    "### Overlay Themes",
+    "",
+    "| Theme | Description |",
+    "|-------|-------------|",
+    "| `glass` | Semi-transparent frosted effect |",
+    "| `light` | Clean white background |",
+    "| `dark` | Dark background, ideal for dark themes |",
+    "| `accent` | Uses your dashboard's accent color |",
+    "",
+    "### Usage",
+    "",
+    "```r",
+    "create_page(",
+    "  \"My Page\",",
+    "  overlay = TRUE,",
+    "  overlay_theme = \"glass\",",
+    "  overlay_text = \"Loading...\",",
+    "  overlay_duration = 2000",
+    ")",
+    "```",
+    "",
+    "### Source Code",
+    "",
+    "The full R code that generates this dashboard is available on GitHub:",
+    "",
+    "- [View Source Code](https://github.com/favstats/dashboardr/blob/main/pkgdown/build-overlay-demo.R)",
+    "",
+    "### Learn More",
+    "",
+    "- [dashboardr Documentation](https://favstats.github.io/dashboardr/)",
+    "- [Community Gallery](https://favstats.github.io/dashboardr/gallery/)"
+  )
+
 dashboard <- create_dashboard(
   title = "Loading Overlay Demo",
   output_dir = output_dir,
@@ -131,7 +175,7 @@ dashboard <- create_dashboard(
   tabset_theme = "modern",
   allow_inside_pkg = TRUE  # Required for pkgdown demos
 ) %>%
-  add_pages(glass_page, light_page, dark_page, accent_page)
+  add_pages(glass_page, light_page, dark_page, accent_page, about_page)
 
 # Generate
 result <- tryCatch(

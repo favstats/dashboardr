@@ -1,17 +1,13 @@
-# Build Gallery Demo Dashboard
+# Build Gallery for pkgdown Site
 # Run from package root: source("pkgdown/build-gallery-demo.R")
 #
-# This script:
-#   1. Copies gallery/ → docs/gallery/ (so GitHub Pages serves the Vue SPA)
-#   2. Builds a dashboardr wrapper dashboard at docs/live-demos/gallery/
-#      with a full-viewport iframe embedding the Vue app
+# This script copies gallery/ → docs/gallery/ so GitHub Pages
+# serves the Vue SPA directly (no dashboardr wrapper needed).
 
-library(dashboardr)
-
-cat("🖼️  Building Gallery Demo Dashboard...\n\n")
+cat("🖼️  Building Community Gallery...\n\n")
 
 # ============================================================
-# Find package root and set output directories
+# Find package root
 # ============================================================
 find_pkg_root <- function() {
   dir <- getwd()
@@ -30,17 +26,15 @@ find_pkg_root <- function() {
 }
 
 pkg_root <- find_pkg_root()
-gallery_src    <- file.path(pkg_root, "gallery")
-gallery_dest   <- file.path(pkg_root, "docs", "gallery")
-demo_dir       <- file.path(pkg_root, "docs", "live-demos", "gallery")
+gallery_src  <- file.path(pkg_root, "gallery")
+gallery_dest <- file.path(pkg_root, "docs", "gallery")
 
-cat("   Package root:", pkg_root, "\n")
-cat("   Gallery src :", gallery_src, "\n")
-cat("   Gallery dest:", gallery_dest, "\n")
-cat("   Demo dir    :", demo_dir, "\n\n")
+cat("   Package root :", pkg_root, "\n")
+cat("   Gallery src  :", gallery_src, "\n")
+cat("   Gallery dest :", gallery_dest, "\n\n")
 
 # ============================================================
-# Step 1: Copy gallery/ → docs/gallery/
+# Copy gallery/ → docs/gallery/
 # ============================================================
 cat("   📂 Copying gallery/ → docs/gallery/ ...\n")
 
@@ -49,85 +43,23 @@ if (dir.exists(gallery_dest)) {
 }
 dir.create(gallery_dest, recursive = TRUE, showWarnings = FALSE)
 
+# Copy all files and subdirectories (e.g. screenshots/)
 gallery_files <- list.files(gallery_src, full.names = TRUE)
 file.copy(gallery_files, gallery_dest, overwrite = TRUE, recursive = TRUE)
 
-cat("   ✅ Copied", length(gallery_files), "file(s) to docs/gallery/\n\n")
+cat("   ✅ Copied", length(gallery_files), "item(s) to docs/gallery/\n")
 
-# ============================================================
-# Step 2: Build dashboardr wrapper dashboard with iframe
-# ============================================================
-cat("   📊 Building dashboardr wrapper with iframe ...\n")
-
-if (dir.exists(demo_dir)) {
-  unlink(demo_dir, recursive = TRUE)
-}
-dir.create(demo_dir, recursive = TRUE, showWarnings = FALSE)
-
-# Create a single-page dashboard with a truly full-viewport iframe
-gallery_page <- create_page(
-  "Gallery",
-  icon = "ph:images-fill"
-) %>%
-  add_iframe(
-    src = "../../gallery/index.html",
-    height = "100vh",
-    width = "100vw",
-    style = "border: none; position: fixed; top: 0; left: 0; z-index: 9999;"
-  )
-
-dashboard <- create_dashboard(
-  title = "Community Gallery",
-  output_dir = demo_dir,
-  theme = "flatly",
-  page_layout = "custom",
-  margin_left = "0",
-  margin_right = "0",
-  margin_top = "0",
-  margin_bottom = "0",
-  allow_inside_pkg = TRUE
-) %>%
-  add_pages(gallery_page)
-
-# Generate
-result <- tryCatch(
-  generate_dashboard(dashboard, render = TRUE, open = FALSE),
-  error = function(e) {
-    cat("   ⚠️  generate_dashboard error:", e$message, "\n")
-    NULL
-  }
-)
-
-# Check for HTML and move if in docs/ subdirectory
-html_locations <- c(
-  file.path(demo_dir, "index.html"),
-  file.path(demo_dir, "docs", "index.html")
-)
-
-html_found <- FALSE
-for (loc in html_locations) {
-  if (file.exists(loc)) {
-    cat("   ✅ Gallery demo HTML found at:", loc, "\n")
-    html_found <- TRUE
-
-    if (grepl("/docs/index.html$", loc)) {
-      docs_dir <- dirname(loc)
-      files_to_move <- list.files(docs_dir, full.names = TRUE)
-      for (f in files_to_move) {
-        file.copy(f, demo_dir, recursive = TRUE, overwrite = TRUE)
-      }
-      unlink(docs_dir, recursive = TRUE)
-      cat("   📁 Moved HTML files to root of output_dir\n")
-    }
-    break
-  }
+# Verify
+if (file.exists(file.path(gallery_dest, "index.html"))) {
+  cat("   ✅ Gallery index.html present\n")
+} else {
+  cat("   ⚠️  index.html not found in gallery destination\n")
 }
 
-if (!html_found) {
-  cat("   ⚠️  QMD files created but HTML not rendered\n")
-  cat("   📁 To render manually: cd", demo_dir, "&& quarto render .\n")
+if (file.exists(file.path(gallery_dest, "dashboards.json"))) {
+  dashboards <- jsonlite::fromJSON(file.path(gallery_dest, "dashboards.json"))
+  cat("   ✅", nrow(dashboards), "dashboards in gallery\n")
 }
 
-cat("\n   🔗 Live URLs (after deploying to GitHub Pages):\n")
-cat("   Vue SPA:  https://favstats.github.io/dashboardr/gallery/index.html\n")
-cat("   Wrapper:  https://favstats.github.io/dashboardr/live-demos/gallery/index.html\n")
+cat("\n   🔗 Live URL (after deploying to GitHub Pages):\n")
+cat("   https://favstats.github.io/dashboardr/gallery/\n")

@@ -150,22 +150,30 @@ create_content(data = my_data, type = "bar") %>%
 | Advanced features | `vignette("advanced-features")` |
 | Publishing | `vignette("publishing_dashboards")` |
 
+## Community Gallery
+
+Browse dashboards built with dashboardr by the community:
+
+**[View the Gallery →](https://favstats.github.io/dashboardr/gallery/)**
+
+Built something with dashboardr? **[Submit your dashboard](https://github.com/favstats/dashboardr/issues/new?labels=gallery-submission&title=%5BGallery%5D+My+Dashboard)** to the gallery and share it with the community!
+
 ## Live Demos
 
 See dashboardr in action:
 
-1. [**Tutorial Dashboard**](https://favstats.github.io/dashboardr/live-demos/tutorial/docs/index.html) - Beginner-friendly demo
-2. [**Showcase Dashboard**](https://favstats.github.io/dashboardr/live-demos/showcase/docs/index.html) - Advanced features
-
-Both use real data from the General Social Survey (GSS).
-
-### Real-World Dashboard
-
-- [**DigIQ Monitor**](https://www.digiqmonitor.nl/) - The first public dashboard built with dashboardr! Digital competence insights for Dutch citizens, featuring 11 dimensions, multilingual support, and paginated visualizations.
+| Demo | Description |
+|------|-------------|
+| [**Showcase Dashboard**](https://favstats.github.io/dashboardr/live-demos/showcase/) | Advanced features: value boxes, multi-page layouts, themed charts |
+| [**Tutorial Dashboard**](https://favstats.github.io/dashboardr/live-demos/tutorial/) | Beginner-friendly introduction to core features |
+| [**GSS Explorer**](https://favstats.github.io/dashboardr/live-demos/sidebar-gss/explorer.html) | Sidebar dashboard with cascading filters |
+| [**DigIQ Monitor**](https://www.digiqmonitor.nl/) | Real-world production dashboard for Dutch digital competence |
 
 ## Contributing
 
 Contributions welcome! Please submit a Pull Request.
+
+**Share your dashboard** — Add it to the [Community Gallery](https://favstats.github.io/dashboardr/gallery/) by [opening a Gallery submission](https://github.com/favstats/dashboardr/issues/new?labels=gallery-submission&title=%5BGallery%5D+My+Dashboard).
 
 ## License
 

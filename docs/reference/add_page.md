@@ -19,6 +19,7 @@ add_page(
   text = NULL,
   icon = NULL,
   is_landing_page = FALSE,
+  show_in_nav = TRUE,
   tabset_theme = NULL,
   tabset_colors = NULL,
   navbar_align = c("left", "right"),
@@ -83,6 +84,11 @@ add_page(
 - is_landing_page:
 
   Whether this should be the landing page (default: FALSE)
+
+- show_in_nav:
+
+  Whether to show this page in the navbar (default: TRUE). Set to FALSE
+  for pageless dashboards (created with `create_page("")`).
 
 - tabset_theme:
 

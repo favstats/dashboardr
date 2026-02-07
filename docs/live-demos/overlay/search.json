@@ -96,5 +96,19 @@
     "title": " Accent Theme",
     "section": "Happiness Levels",
     "text": "Happiness Levels"
+  },
+  {
+    "objectID": "about.html",
+    "href": "about.html",
+    "title": " About",
+    "section": "",
+    "text": "This dashboard demonstrates the four loading overlay themes available in dashboardr.\nEach page shows a different theme — reload the page to see the overlay animation again.\n\n\nTheme | Description |\n|——-|————-|\nglass | Semi-transparent frosted effect |\nlight | Clean white background |\ndark | Dark background, ideal for dark themes |\naccent | Uses your dashboard’s accent color |\n\n\n\n\ncreate_page(\n\n  \"My Page\",\n\n  overlay = TRUE,\n\n  overlay_theme = \"glass\",\n\n  overlay_text = \"Loading...\",\n\n  overlay_duration = 2000\n\n)\n\n\n\nThe full R code that generates this dashboard is available on GitHub:\n\nView Source Code\n\n\n\n\n\ndashboardr Documentation\nCommunity Gallery"
+  },
+  {
+    "objectID": "about.html#about-this-demo",
+    "href": "about.html#about-this-demo",
+    "title": " About",
+    "section": "",
+    "text": "This dashboard demonstrates the four loading overlay themes available in dashboardr.\nEach page shows a different theme — reload the page to see the overlay animation again.\n\n\nTheme | Description |\n|——-|————-|\nglass | Semi-transparent frosted effect |\nlight | Clean white background |\ndark | Dark background, ideal for dark themes |\naccent | Uses your dashboard’s accent color |\n\n\n\n\ncreate_page(\n\n  \"My Page\",\n\n  overlay = TRUE,\n\n  overlay_theme = \"glass\",\n\n  overlay_text = \"Loading...\",\n\n  overlay_duration = 2000\n\n)\n\n\n\nThe full R code that generates this dashboard is available on GitHub:\n\nView Source Code\n\n\n\n\n\ndashboardr Documentation\nCommunity Gallery"
   }
 ]

@@ -101,8 +101,17 @@ create_page <- function(name,
   time_var <- .as_var_string(rlang::enquo(time_var))
   weight_var <- .as_var_string(rlang::enquo(weight_var))
 
-  if (missing(name) || is.null(name) || !is.character(name) || nchar(name) == 0) {
-    stop("'name' is required and must be a non-empty string", call. = FALSE)
+
+  if (missing(name) || is.null(name) || !is.character(name)) {
+    stop("'name' is required and must be a character string", call. = FALSE)
+  }
+
+  # Allow empty name for pageless dashboards - use internal placeholder
+  # since R can't reliably use "" as a list key
+  show_in_nav <- TRUE
+  if (nchar(name) == 0) {
+    name <- ".pageless"
+    show_in_nav <- FALSE
   }
 
   navbar_align <- match.arg(navbar_align)
@@ -143,6 +152,7 @@ create_page <- function(name,
       data_path = data_path,
       icon = icon,
       is_landing_page = is_landing_page,
+      show_in_nav = show_in_nav,
       navbar_align = navbar_align,
       tabset_theme = tabset_theme,
       tabset_colors = tabset_colors,
@@ -425,6 +435,7 @@ add_pages <- function(proj, ...) {
     text = text_content,
     icon = page$icon,
     is_landing_page = page$is_landing_page,
+    show_in_nav = page$show_in_nav %||% TRUE,
     navbar_align = page$navbar_align,
     tabset_theme = page$tabset_theme,
     tabset_colors = page$tabset_colors,

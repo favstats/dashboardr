@@ -1,9 +1,29 @@
 [
   {
+    "id": "digiq-monitor",
+    "title": "DigIQ Monitor",
+    "description": "Digital competence monitoring dashboard for Dutch citizens (ages 10-100), featuring 11 dimensions, multilingual support (Dutch/English), and paginated visualizations.",
+    "image_url": "screenshots/digiq-monitor.png",
+    "dashboard_url": "https://www.digiqmonitor.nl/",
+    "author": "Fabio Votta & Ernesto de León",
+    "tags": ["survey", "education", "multilingual", "academia"],
+    "date_added": "2025-02-01"
+  },
+  {
+    "id": "sidebar-gss",
+    "title": "GSS Data Explorer",
+    "description": "Interactive sidebar dashboard with cascading radio filters exploring General Social Survey data across demographics.",
+    "image_url": "screenshots/gss-explorer.png",
+    "dashboard_url": "https://favstats.github.io/dashboardr/live-demos/sidebar-gss/explorer.html",
+    "author": "dashboardr team",
+    "tags": ["sidebar", "filters", "survey", "demo"],
+    "date_added": "2025-01-15"
+  },
+  {
     "id": "tutorial-dashboard",
     "title": "Tutorial Dashboard",
-    "description": "Built-in tutorial demonstrating core dashboardr features: bar charts, timelines, heatmaps, stacked bars, and interactive sidebar filters.",
-    "image_url": "https://favstats.github.io/dashboardr/live-demos/tutorial/tutorial_screenshot.png",
+    "description": "Includes full code to learn from. Built-in tutorial demonstrating core dashboardr features: bar charts, timelines, and stacked bars.",
+    "image_url": "screenshots/tutorial.png",
     "dashboard_url": "https://favstats.github.io/dashboardr/live-demos/tutorial/",
     "author": "dashboardr team",
     "tags": ["tutorial", "demo", "getting-started"],
@@ -13,30 +33,100 @@
     "id": "showcase-dashboard",
     "title": "Showcase Dashboard",
     "description": "Feature showcase highlighting value boxes, multi-page layouts, themed charts, and advanced content blocks.",
-    "image_url": "https://favstats.github.io/dashboardr/live-demos/showcase/showcase_screenshot.png",
+    "image_url": "screenshots/showcase.png",
     "dashboard_url": "https://favstats.github.io/dashboardr/live-demos/showcase/",
     "author": "dashboardr team",
     "tags": ["demo", "showcase", "advanced"],
     "date_added": "2025-01-01"
   },
   {
-    "id": "sidebar-gss",
-    "title": "GSS Data Explorer",
-    "description": "Interactive sidebar dashboard with cascading radio filters exploring General Social Survey data across demographics.",
-    "image_url": "https://favstats.github.io/dashboardr/live-demos/sidebar-gss/sidebar_screenshot.png",
-    "dashboard_url": "https://favstats.github.io/dashboardr/live-demos/sidebar-gss/explorer.html",
+    "id": "inputs-demo",
+    "title": "Interactive Inputs",
+    "description": "Gallery of interactive input types: select dropdowns, sliders, switches, and checkboxes with live chart filtering.",
+    "image_url": "screenshots/inputs.png",
+    "dashboard_url": "https://favstats.github.io/dashboardr/live-demos/inputs/",
     "author": "dashboardr team",
-    "tags": ["sidebar", "filters", "survey", "demo"],
-    "date_added": "2025-01-15"
+    "tags": ["inputs", "filters", "demo", "advanced"],
+    "date_added": "2025-01-01"
   },
   {
-    "id": "digiq-monitor",
-    "title": "DigIQ Monitor",
-    "description": "Digital information quality monitoring dashboard tracking Dutch news media metrics in real-time.",
-    "image_url": "https://www.digiqmonitor.nl/digiq_screenshot.png",
-    "dashboard_url": "https://www.digiqmonitor.nl/",
-    "author": "Fabio Votta",
-    "tags": ["media", "monitoring", "Netherlands", "production"],
-    "date_added": "2025-02-01"
+    "id": "sidebar-demo",
+    "title": "Sidebar Filters",
+    "description": "Page sidebars with checkbox, dropdown, and slider filters for interactive data exploration.",
+    "image_url": "screenshots/sidebar.png",
+    "dashboard_url": "https://favstats.github.io/dashboardr/live-demos/sidebar/",
+    "author": "dashboardr team",
+    "tags": ["sidebar", "filters", "demo"],
+    "date_added": "2025-01-01"
+  },
+  {
+    "id": "overlay-demo",
+    "title": "Loading Overlays",
+    "description": "Animated loading overlays with four themes: light, dark, glass, and accent. Smooth transitions while charts render.",
+    "image_url": "screenshots/overlay.png",
+    "dashboard_url": "https://favstats.github.io/dashboardr/live-demos/overlay/",
+    "author": "dashboardr team",
+    "tags": ["themes", "demo", "advanced"],
+    "date_added": "2025-01-01"
+  },
+  {
+    "id": "tabset-pills",
+    "title": "Tabset: Pills",
+    "description": "Rounded pill-shaped tab styling with 1, 2, and 3-level nested tab support.",
+    "image_url": "screenshots/tabset-pills.png",
+    "dashboard_url": "https://favstats.github.io/dashboardr/live-demos/tabsets/pills/1_level.html",
+    "author": "dashboardr team",
+    "tags": ["tabs", "themes", "demo"],
+    "date_added": "2025-01-01"
+  },
+  {
+    "id": "tabset-modern",
+    "title": "Tabset: Modern",
+    "description": "Clean contemporary tab styling with subtle backgrounds and smooth transitions.",
+    "image_url": "screenshots/tabset-modern.png",
+    "dashboard_url": "https://favstats.github.io/dashboardr/live-demos/tabsets/modern/1_level.html",
+    "author": "dashboardr team",
+    "tags": ["tabs", "themes", "demo"],
+    "date_added": "2025-01-01"
+  },
+  {
+    "id": "tabset-minimal",
+    "title": "Tabset: Minimal",
+    "description": "Subtle, understated tab styling with a thin underline indicator for a clean look.",
+    "image_url": "screenshots/tabset-minimal.png",
+    "dashboard_url": "https://favstats.github.io/dashboardr/live-demos/tabsets/minimal/1_level.html",
+    "author": "dashboardr team",
+    "tags": ["tabs", "themes", "demo"],
+    "date_added": "2025-01-01"
+  },
+  {
+    "id": "tabset-classic",
+    "title": "Tabset: Classic",
+    "description": "Traditional bordered tab appearance resembling classic browser-style tabs.",
+    "image_url": "screenshots/tabset-classic.png",
+    "dashboard_url": "https://favstats.github.io/dashboardr/live-demos/tabsets/classic/1_level.html",
+    "author": "dashboardr team",
+    "tags": ["tabs", "themes", "demo"],
+    "date_added": "2025-01-01"
+  },
+  {
+    "id": "tabset-underline",
+    "title": "Tabset: Underline",
+    "description": "Bold underline indicator with uppercase labels for a strong, modern look.",
+    "image_url": "screenshots/tabset-underline.png",
+    "dashboard_url": "https://favstats.github.io/dashboardr/live-demos/tabsets/underline/1_level.html",
+    "author": "dashboardr team",
+    "tags": ["tabs", "themes", "demo"],
+    "date_added": "2025-01-01"
+  },
+  {
+    "id": "tabset-segmented",
+    "title": "Tabset: Segmented",
+    "description": "iOS-style segmented control tabs with a contained, grouped appearance.",
+    "image_url": "screenshots/tabset-segmented.png",
+    "dashboard_url": "https://favstats.github.io/dashboardr/live-demos/tabsets/segmented/1_level.html",
+    "author": "dashboardr team",
+    "tags": ["tabs", "themes", "demo"],
+    "date_added": "2025-01-01"
   }
 ]

@@ -27,14 +27,16 @@
 
 .generate_default_page_content <- function(page) {
   # Build title with icon if provided
-  title_content <- page$name
-  if (!is.null(page$icon)) {
+  # For pageless dashboards (name = ".pageless"), use empty title
+  display_name <- if (isFALSE(page$show_in_nav)) "" else page$name
+  title_content <- display_name
+  if (!is.null(page$icon) && nzchar(display_name)) {
     icon_shortcode <- if (grepl("{{< iconify", page$icon, fixed = TRUE)) {
       page$icon
     } else {
       icon(page$icon)
     }
-    title_content <- paste0(icon_shortcode, " ", page$name)
+    title_content <- paste0(icon_shortcode, " ", display_name)
   }
 
   # Check if page has a sidebar - if so, use dashboard format
@@ -677,15 +679,23 @@
 .generate_iframe_block <- function(block) {
   height <- block$height %||% "500px"
   width <- block$width %||% "100%"
-  style <- block$style
+  extra_style <- block$style
+
+  # Build style string with width/height (supports all CSS units like vw, vh, calc())
+  style_parts <- c(
+    paste0("width: ", width, ";"),
+    paste0("height: ", height, ";")
+  )
+  if (!is.null(extra_style) && nzchar(extra_style)) {
+    style_parts <- c(style_parts, extra_style)
+  }
+  style_str <- paste(style_parts, collapse = " ")
 
   iframe_tag <- paste0(
     "<iframe src='", block$url, "'",
-    " width='", width, "'",
-    " height='", height, "'",
     " frameborder='0'",
     " allowfullscreen",
-    if (!is.null(style) && nzchar(style)) paste0(" style='", style, "'") else "",
+    " style='", style_str, "'",
     "></iframe>"
   )
   

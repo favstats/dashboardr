@@ -104,6 +104,14 @@
             }
           });
           choicesInstances[inputId] = choices;
+          // Choices.js may not fire native 'change' on the select; listen on the instance if available
+          if (typeof choices.addEventListener === 'function') {
+            choices.addEventListener('change', () => {
+              const selected = getSelectedValues(input);
+              inputState[inputId].selected = selected;
+              applyAllFilters();
+            });
+          }
         } catch (e) {
           console.error(`Failed to initialize Choices.js for ${inputId}:`, e);
         }
@@ -899,6 +907,86 @@
       
       chart.redraw();
     });
+
+    // Update any charts that have dynamic title templates
+    updateDynamicTitles();
+  }
+
+  /**
+   * Replace {var} placeholders in chart titles with current input values.
+   * Looks up values by both input_id (name) and filter_var so users can
+   * reference either in their title template.
+   */
+  function updateDynamicTitles() {
+    if (typeof Highcharts === 'undefined' || !window.dashboardrCrossTab) return;
+
+    // Build a combined lookup: input_id → value  AND  filter_var → value
+    var lookup = {};
+
+    // From select elements
+    document.querySelectorAll('select').forEach(function(el) {
+      var id = el.id;
+      var fv = el.getAttribute('data-filter-var');
+      var val = el.value;
+      if (id && val) lookup[id] = val;
+      if (fv && val) lookup[fv] = val;
+    });
+
+    // From checked radio buttons
+    document.querySelectorAll('input[type="radio"]:checked').forEach(function(el) {
+      var id = el.name || el.id;
+      var val = el.value;
+      if (id && val) lookup[id] = val;
+      // Also resolve filter_var from the parent radio group container
+      var group = el.closest('[data-filter-var]');
+      if (group) {
+        var fv = group.getAttribute('data-filter-var');
+        if (fv && val) lookup[fv] = val;
+      }
+    });
+
+    // Iterate over all cross-tab configs looking for titleTemplate
+    var chartIds = Object.keys(window.dashboardrCrossTab);
+    for (var i = 0; i < chartIds.length; i++) {
+      var info = window.dashboardrCrossTab[chartIds[i]];
+      if (!info.config || !info.config.titleTemplate) continue;
+
+      // Build an extended lookup that includes titleLookups (derived values)
+      var extLookup = Object.assign({}, lookup);
+      if (info.config.titleLookups) {
+        var tl = info.config.titleLookups;
+        Object.keys(tl).forEach(function(placeholderName) {
+          var mapping = tl[placeholderName];
+          if (!mapping || !mapping.values) return;
+          // Auto-detect: check every current input value against the mapping keys
+          var resolved = null;
+          Object.keys(lookup).forEach(function(inputId) {
+            var inputVal = lookup[inputId];
+            if (inputVal && mapping.values[inputVal] !== undefined) {
+              resolved = mapping.values[inputVal];
+            }
+          });
+          if (resolved !== null) {
+            extLookup[placeholderName] = resolved;
+          }
+        });
+      }
+
+      var title = info.config.titleTemplate.replace(/\{(\w+)\}/g, function(match, varName) {
+        return extLookup[varName] !== undefined ? extLookup[varName] : match;
+      });
+
+      // Find the Highcharts chart by its chart.id option (set via hc_chart(id = ...))
+      for (var j = 0; j < Highcharts.charts.length; j++) {
+        var c = Highcharts.charts[j];
+        if (!c) continue;
+        var cid = c.options && c.options.chart && c.options.chart.id;
+        if (cid === chartIds[i]) {
+          c.setTitle({ text: title });
+          break;
+        }
+      }
+    }
   }
 
   function reapplyFilters() {
@@ -1010,21 +1098,9 @@
     }
     
     const { data, config } = crossTabInfo;
-    const { xVar, stackVar, filterVars, stackedType, stackOrder, xOrder } = config;
+    const { filterVars } = config;
     
-    // Check if any of our filter_vars have active filters
-    let hasActiveFilter = false;
-    for (const fv of filterVars) {
-      if (filters[fv] && filters[fv].length > 0) {
-        hasActiveFilter = true;
-        break;
-      }
-    }
-    
-    // If no active filters, we can skip (let original chart show)
-    // But we still need to show full data, so always rebuild
-    
-    // Step 1: Filter the cross-tab data based on filter selections
+    // ---- Shared Step 1: Filter the cross-tab data based on filter selections ----
     let filteredData = data.slice();
     
     // Common "All" labels that mean "don't filter" (case-insensitive)
@@ -1033,7 +1109,6 @@
     for (const filterVar of filterVars) {
       const selectedValues = filters[filterVar];
       if (selectedValues && selectedValues.length > 0) {
-        // Check if any selected value is an "All" option - if so, skip this filter
         const hasAllOption = selectedValues.some(v => 
           allLabels.includes(String(v).toLowerCase())
         );
@@ -1048,7 +1123,22 @@
       }
     }
     
-    // Step 2: Sum by x_var and stack_var (drop filter dimensions)
+    // ---- Branch by chart type ----
+    if (config.chartType === 'timeline') {
+      return _rebuildTimelineSeries(chart, filteredData, config);
+    }
+    
+    // Default: stacked bar chart rebuild
+    return _rebuildStackedBarSeries(chart, filteredData, config);
+  }
+
+  /**
+   * Rebuild a stacked-bar chart's series from filtered cross-tab data.
+   */
+  function _rebuildStackedBarSeries(chart, filteredData, config) {
+    const { xVar, stackVar, stackedType, stackOrder, xOrder } = config;
+    
+    // Sum by x_var and stack_var (drop filter dimensions)
     const summed = {};
     filteredData.forEach(row => {
       const xVal = String(row[xVar]);
@@ -1061,7 +1151,7 @@
       summed[key].n += row.n;
     });
     
-    // Step 3: Organize by x_var for percentage calculation
+    // Organize by x_var for percentage calculation
     const byX = {};
     Object.values(summed).forEach(item => {
       if (!byX[item.xVal]) {
@@ -1070,25 +1160,35 @@
       byX[item.xVal][item.stackVal] = item.n;
     });
     
-    // Step 4: Calculate totals per x for percentage mode
+    // Calculate totals per x for percentage mode
     const xTotals = {};
     Object.keys(byX).forEach(xVal => {
       xTotals[xVal] = Object.values(byX[xVal]).reduce((sum, n) => sum + n, 0);
     });
     
-    // Step 5: Build series data for each stack value
     const isPercent = stackedType === 'percent';
-    const orderedX = xOrder && xOrder.length > 0 ? xOrder : Object.keys(byX);
-    const orderedStack = stackOrder && stackOrder.length > 0 ? stackOrder : 
-      [...new Set(Object.values(summed).map(s => s.stackVal))];
+    
+    // Determine which x values actually exist in the filtered data
+    const activeXValues = new Set(Object.keys(byX));
+    const orderedX = xOrder && xOrder.length > 0
+      ? xOrder.filter(xv => activeXValues.has(xv))
+      : Object.keys(byX);
+    
+    // Determine which stack values actually exist
+    const activeStackValues = new Set(Object.values(summed).map(s => s.stackVal));
+    const orderedStack = stackOrder && stackOrder.length > 0
+      ? stackOrder.filter(sv => activeStackValues.has(sv))
+      : [...activeStackValues];
     
     // Update chart categories (x-axis)
     if (chart.xAxis && chart.xAxis[0]) {
       chart.xAxis[0].setCategories(orderedX, false);
     }
     
-    // Update each series
-    orderedStack.forEach((stackVal, seriesIdx) => {
+    const activeSeriesNames = new Set(orderedStack);
+    
+    // Update active series with data
+    orderedStack.forEach((stackVal) => {
       const seriesData = orderedX.map(xVal => {
         const count = (byX[xVal] && byX[xVal][stackVal]) ? byX[xVal][stackVal] : 0;
         if (isPercent && xTotals[xVal] > 0) {
@@ -1097,20 +1197,143 @@
         return count;
       });
       
-      // Find the series by name or index
       let series = chart.series.find(s => s.name === stackVal);
-      if (!series && seriesIdx < chart.series.length) {
-        series = chart.series[seriesIdx];
-      }
-      
       if (series) {
+        var updateOpts = { showInLegend: true };
+        if (config.colorMap && config.colorMap[stackVal]) {
+          updateOpts.color = config.colorMap[stackVal];
+        }
         series.setData(seriesData, false);
+        series.setVisible(true, false);
+        series.update(updateOpts, false);
       }
     });
     
-    // Redraw the chart
-    chart.redraw();
+    // Hide series that are NOT in the filtered data
+    chart.series.forEach(series => {
+      if (!activeSeriesNames.has(series.name)) {
+        series.setData(orderedX.map(() => 0), false);
+        series.setVisible(false, false);
+        series.update({ showInLegend: false }, false);
+      }
+    });
     
+    chart.redraw();
+    return true;
+  }
+
+  /**
+   * Rebuild a timeline (line) chart's series from filtered cross-tab data.
+   */
+  function _rebuildTimelineSeries(chart, filteredData, config) {
+    const { timeVar, groupVar, yVar } = config;
+    
+    if (filteredData.length === 0) {
+      // No data after filtering — hide all series
+      chart.series.forEach(function(s) {
+        s.setData([], false);
+        s.setVisible(false, false);
+        s.update({ showInLegend: false }, false);
+      });
+      chart.redraw();
+      return true;
+    }
+    
+    // Aggregate: average value per time + group
+    const agg = {};
+    filteredData.forEach(function(row) {
+      const tVal = String(row[timeVar]);
+      var gVal = groupVar ? String(row[groupVar]) : '__all__';
+      var key = tVal + '|||' + gVal;
+      
+      if (!agg[key]) {
+        agg[key] = { time: tVal, group: gVal, sum: 0, count: 0 };
+      }
+      agg[key].sum += (row.value !== undefined ? row.value : 0);
+      agg[key].count += 1;
+    });
+    
+    // Build per-group series data
+    var byGroup = {};
+    Object.values(agg).forEach(function(item) {
+      if (!byGroup[item.group]) byGroup[item.group] = [];
+      byGroup[item.group].push({
+        time: item.time,
+        value: item.count > 0 ? item.sum / item.count : 0
+      });
+    });
+    
+    // Detect if time axis is numeric (years) or categorical (strings)
+    var sampleTime = Object.values(agg)[0].time;
+    var isNumericTime = !isNaN(Number(sampleTime));
+    
+    // Get sorted unique time values
+    var allTimes = [...new Set(Object.values(agg).map(function(a) { return a.time; }))];
+    if (isNumericTime) {
+      allTimes.sort(function(a, b) { return Number(a) - Number(b); });
+    } else {
+      allTimes.sort();
+    }
+    
+    var activeGroups = new Set(Object.keys(byGroup));
+    
+    // Respect group_order from config if provided
+    var orderedGroups;
+    if (config.groupOrder && config.groupOrder.length > 0) {
+      orderedGroups = config.groupOrder.filter(function(g) { return activeGroups.has(g); });
+    } else {
+      orderedGroups = [...activeGroups];
+    }
+    
+    // Update x-axis categories if categorical
+    if (!isNumericTime && chart.xAxis && chart.xAxis[0]) {
+      chart.xAxis[0].setCategories(allTimes, false);
+    }
+    
+    // Update each group's series
+    orderedGroups.forEach(function(groupName) {
+      var dataPoints = byGroup[groupName];
+      // Build a time -> value lookup
+      var lookup = {};
+      dataPoints.forEach(function(pt) { lookup[pt.time] = pt.value; });
+      
+      var seriesName = (groupName === '__all__') ? (yVar || 'Value') : groupName;
+      var series = chart.series.find(function(s) { return s.name === seriesName; });
+      
+      if (series) {
+        var newData;
+        if (isNumericTime) {
+          // Numeric time: data = [[x, y], ...]
+          newData = allTimes.map(function(t) {
+            return [Number(t), lookup[t] !== undefined ? lookup[t] : null];
+          });
+        } else {
+          // Categorical: data = [y1, y2, ...]  matching categories order
+          newData = allTimes.map(function(t) {
+            return lookup[t] !== undefined ? lookup[t] : null;
+          });
+        }
+        var updateOpts = { showInLegend: true };
+        if (config.colorMap && config.colorMap[groupName]) {
+          updateOpts.color = config.colorMap[groupName];
+        }
+        series.setData(newData, false);
+        series.setVisible(true, false);
+        series.update(updateOpts, false);
+      }
+    });
+    
+    // Hide series that are NOT in the filtered data
+    chart.series.forEach(function(series) {
+      var seriesGroup = series.name;
+      if (!activeGroups.has(seriesGroup)) {
+        series.setData([], false);
+        series.setVisible(false, false);
+        series.update({ showInLegend: false }, false);
+      }
+    });
+    
+    chart.redraw();
     return true;
   }
 

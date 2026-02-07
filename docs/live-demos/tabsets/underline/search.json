@@ -70,6 +70,20 @@
     "text": "Analysis\n\nTrends\n\n\n\nRegionalEducational"
   },
   {
+    "objectID": "about.html",
+    "href": "about.html",
+    "title": " About",
+    "section": "",
+    "text": "This dashboard demonstrates the underline tabset theme in dashboardr. Each page shows a different nesting level — from flat tabs to three levels of hierarchy.\n\n\n\n\n\nTheme\nDescription\n\n\n\n\npills\nPill-shaped tab buttons\n\n\nmodern\nClean modern design\n\n\nminimal\nSubtle, minimal styling\n\n\nclassic\nTraditional tab appearance\n\n\nunderline\nUnderline indicator\n\n\nsegmented\nSegmented control look\n\n\n\n\n\n\ncreate_dashboard(\n  tabset_theme = \"underline\"\n) %&gt;%\n  add_page(\n    \"My Page\",\n    data = my_data\n  ) %&gt;%\n    add_viz(tabgroup = \"parent/child\", ...)\n\n\n\nThe full R code that generates all tabset theme dashboards is available on GitHub:\n\nView Source Code\n\n\n\n\n\ndashboardr Documentation\nCommunity Gallery"
+  },
+  {
+    "objectID": "about.html#about-this-demo-underline-theme",
+    "href": "about.html#about-this-demo-underline-theme",
+    "title": " About",
+    "section": "",
+    "text": "This dashboard demonstrates the underline tabset theme in dashboardr. Each page shows a different nesting level — from flat tabs to three levels of hierarchy.\n\n\n\n\n\nTheme\nDescription\n\n\n\n\npills\nPill-shaped tab buttons\n\n\nmodern\nClean modern design\n\n\nminimal\nSubtle, minimal styling\n\n\nclassic\nTraditional tab appearance\n\n\nunderline\nUnderline indicator\n\n\nsegmented\nSegmented control look\n\n\n\n\n\n\ncreate_dashboard(\n  tabset_theme = \"underline\"\n) %&gt;%\n  add_page(\n    \"My Page\",\n    data = my_data\n  ) %&gt;%\n    add_viz(tabgroup = \"parent/child\", ...)\n\n\n\nThe full R code that generates all tabset theme dashboards is available on GitHub:\n\nView Source Code\n\n\n\n\n\ndashboardr Documentation\nCommunity Gallery"
+  },
+  {
     "objectID": "index.html",
     "href": "index.html",
     "title": " Home",

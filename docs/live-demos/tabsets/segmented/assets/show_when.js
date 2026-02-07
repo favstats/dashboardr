@@ -12,13 +12,46 @@
   styleEl.textContent = '.dashboardr-sw-hidden { display: none !important; height: 0 !important; min-height: 0 !important; overflow: hidden !important; margin: 0 !important; padding: 0 !important; }';
   document.head.appendChild(styleEl);
 
+  // Override bslib's grid row sizing in sidebar layouts so charts aren't squished.
+  // CSS !important can't override bslib's inline styles, so we do it via JS.
+  function fixChartMinHeight() {
+    var minH = getComputedStyle(document.documentElement)
+                .getPropertyValue('--chart-min-height').trim() || '400px';
+    document.querySelectorAll('.sidebar-content .bslib-grid[style*="grid-template-rows"]')
+      .forEach(function(grid) {
+        grid.style.setProperty('grid-template-rows', 'none', 'important');
+        grid.style.setProperty('grid-auto-rows', 'minmax(' + minH + ', max-content)', 'important');
+      });
+  }
+
   function collectInputValues() {
     var values = {};
-    var els = document.querySelectorAll('select, input[type="radio"]:checked');
-    els.forEach(function(el) {
+
+    // Collect from <select> elements
+    document.querySelectorAll('select').forEach(function(el) {
       var id = el.getAttribute('data-input-id') || el.name || el.id;
       if (id) values[id] = el.value;
+      // Also map by data-filter-var if present on the element or parent
+      var fv = el.getAttribute('data-filter-var');
+      if (!fv) {
+        var group = el.closest('[data-filter-var]');
+        if (group) fv = group.getAttribute('data-filter-var');
+      }
+      if (fv && el.value) values[fv] = el.value;
     });
+
+    // Collect from checked radio buttons
+    document.querySelectorAll('input[type="radio"]:checked').forEach(function(el) {
+      var id = el.getAttribute('data-input-id') || el.name || el.id;
+      if (id) values[id] = el.value;
+      // Also resolve filter_var from the parent radio group container
+      var group = el.closest('[data-filter-var]');
+      if (group) {
+        var fv = group.getAttribute('data-filter-var');
+        if (fv && el.value) values[fv] = el.value;
+      }
+    });
+
     return values;
   }
 
@@ -29,11 +62,21 @@
     if (cond.op === 'or') {
       return cond.conditions.some(function(c) { return evaluateCondition(c, inputs); });
     }
+    if (cond.op === 'not') {
+      return !evaluateCondition(cond.condition, inputs);
+    }
     var val = inputs[cond.var];
+    // Try numeric comparison for gt/lt/gte/lte operators
+    var numVal = parseFloat(val);
+    var numCond = parseFloat(cond.val);
     switch (cond.op) {
       case 'eq': return val === cond.val;
       case 'neq': return val !== cond.val;
       case 'in': return Array.isArray(cond.val) && cond.val.indexOf(val) !== -1;
+      case 'gt': return !isNaN(numVal) && !isNaN(numCond) && numVal > numCond;
+      case 'lt': return !isNaN(numVal) && !isNaN(numCond) && numVal < numCond;
+      case 'gte': return !isNaN(numVal) && !isNaN(numCond) && numVal >= numCond;
+      case 'lte': return !isNaN(numVal) && !isNaN(numCond) && numVal <= numCond;
       default: return true;
     }
   }
@@ -45,7 +88,7 @@
    */
   function updateParentContainers() {
     // Collect all cards that contain at least one show-when element
-    var cards = new Map(); // card DOM node → { total, hidden }
+    var cards = new Map(); // card DOM node -> { total, hidden }
     document.querySelectorAll('[data-show-when]').forEach(function(el) {
       var card = el.closest('.card, .bslib-card');
       if (!card) return;
@@ -94,6 +137,26 @@
     });
   }
 
+  /**
+   * Force Highcharts charts inside newly-visible containers to recalculate
+   * their dimensions. Charts rendered inside display:none containers
+   * initialize with zero width/height and must be reflowed.
+   */
+  function reflowVisibleCharts() {
+    if (typeof Highcharts !== 'undefined' && Highcharts.charts) {
+      Highcharts.charts.forEach(function(chart) {
+        if (!chart || !chart.renderTo) return;
+        // Only reflow charts whose container is currently visible
+        var container = chart.renderTo;
+        if (container.offsetWidth > 0 || container.offsetHeight > 0) {
+          try {
+            chart.reflow();
+          } catch(e) { /* ignore reflow errors on destroyed charts */ }
+        }
+      });
+    }
+  }
+
   function evaluateAllShowWhen() {
     var inputs = collectInputValues();
     var elements = document.querySelectorAll('[data-show-when]');
@@ -114,16 +177,29 @@
 
     // Second pass: hide parent cards whose show-when children are all hidden
     updateParentContainers();
+
+    // Third pass: reflow Highcharts charts that just became visible
+    // Use requestAnimationFrame to ensure DOM has updated layout first
+    requestAnimationFrame(function() {
+      reflowVisibleCharts();
+    });
   }
 
   document.addEventListener('change', evaluateAllShowWhen);
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', evaluateAllShowWhen);
+    document.addEventListener('DOMContentLoaded', function() {
+      evaluateAllShowWhen();
+      fixChartMinHeight();
+    });
   } else {
     evaluateAllShowWhen();
+    fixChartMinHeight();
   }
-  // Re-run after short delay for async-rendered charts
-  setTimeout(evaluateAllShowWhen, 500);
-  setTimeout(evaluateAllShowWhen, 2000);
-  window.addEventListener('load', evaluateAllShowWhen);
+  // Re-run after short delay for async-rendered charts and bslib init
+  setTimeout(function() { evaluateAllShowWhen(); fixChartMinHeight(); }, 500);
+  setTimeout(function() { evaluateAllShowWhen(); fixChartMinHeight(); }, 2000);
+  window.addEventListener('load', function() {
+    evaluateAllShowWhen();
+    fixChartMinHeight();
+  });
 })();
