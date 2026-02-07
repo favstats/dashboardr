@@ -41,17 +41,21 @@ jobs:
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          extra-packages: any::rcmdcheck
+          extra-packages: |
+            any::rcmdcheck
+            any::gssr
           needs: check
           install-quarto: false
+          pak-version: devel
         env:
           _R_CHECK_FORCE_SUGGESTS_: false
           R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
+          ADDITIONAL_REPOSITORIES: https://kjhealy.r-universe.dev
 
       - uses: r-lib/actions/check-r-package@v2
         with:
           upload-snapshots: true
           error-on: '"error"'
-          args: 'c("--no-manual", "--as-cran", "--no-vignettes")'
+          args: 'c("--no-manual", "--as-cran")'
         env:
           _R_CHECK_FORCE_SUGGESTS_: false
