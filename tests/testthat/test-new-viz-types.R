@@ -5,6 +5,11 @@
 
 library(testthat)
 
+# Skip entire file under covr CI to prevent OOM (exit code 143)
+if (identical(Sys.getenv("DASHBOARDR_COVR_CI"), "true")) {
+  test_that("skipped under covr CI", { skip("Memory-intensive tests skipped under covr CI") })
+} else {
+
 # =============================================================================
 # SECTION 1: viz_pie
 # =============================================================================
@@ -607,3 +612,5 @@ describe("NSE conversion for new var params", {
     expect_equal(spec$high_var, "score_2024")
   })
 })
+
+} # end covr CI skip

@@ -14,6 +14,11 @@
 library(testthat)
 library(dashboardr)
 
+# Skip entire file under covr CI to prevent OOM (exit code 143)
+if (identical(Sys.getenv("DASHBOARDR_COVR_CI"), "true")) {
+  test_that("skipped under covr CI", { skip("Memory-intensive tests skipped under covr CI") })
+} else {
+
 # =============================================================================
 # SECTION 1: color_palette — Named Vector Support
 # =============================================================================
@@ -382,3 +387,5 @@ describe("sidebar demo dashboard generation", {
     expect_true(length(qmd_files) > 0)
   })
 })
+
+} # end covr CI skip

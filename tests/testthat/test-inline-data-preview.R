@@ -2,6 +2,11 @@
 # Tests for inline data and preview() function
 # =============================================================================
 
+# Skip entire file under covr CI to prevent OOM (exit code 143)
+if (identical(Sys.getenv("DASHBOARDR_COVR_CI"), "true")) {
+  test_that("skipped under covr CI", { skip("Memory-intensive tests skipped under covr CI") })
+} else {
+
 # -----------------------------------------------------------------------------
 # Tests for data parameter in create_viz() / create_content()
 # -----------------------------------------------------------------------------
@@ -337,7 +342,13 @@ test_that("preview accepts path parameter as directory", {
   
   expect_true(file.exists(result_path))
   expect_match(result_path, "preview\\.html$")
-  expect_equal(dirname(normalizePath(result_path)), normalizePath(temp_dir))
+  # Use normalizePath on both sides; on Windows dirname() returns "/" but
+
+  # normalizePath() returns "\\", so normalise the dirname result too.
+  expect_equal(
+    normalizePath(dirname(normalizePath(result_path)), winslash = "/"),
+    normalizePath(temp_dir, winslash = "/")
+  )
 })
 
 # -----------------------------------------------------------------------------
@@ -360,8 +371,10 @@ test_that("preview warns when using tabgroups with quarto = FALSE in interactive
 test_that("preview does not warn without tabgroups", {
   viz <- create_viz(data = mtcars) %>%
     add_viz(type = "histogram", x_var = "mpg")
-  
+
   expect_no_warning({
     preview(viz, open = FALSE, quarto = FALSE)
   })
 })
+
+} # end covr CI skip

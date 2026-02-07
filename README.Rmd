@@ -17,9 +17,12 @@ knitr::opts_chunk$set(
 # dashboardr <img src="man/figures/logo.svg" align="right" height="139" alt="" />
 
 <!-- badges: start -->
-[![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
-[![R-Universe](https://favstats.r-universe.dev/badges/dashboardr)](https://favstats.r-universe.dev/dashboardr)
+[![Lifecycle: maturing](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://lifecycle.r-lib.org/articles/stages.html#maturing)
+[![R-CMD-check](https://github.com/favstats/dashboardr/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/favstats/dashboardr/actions/workflows/R-CMD-check.yaml)
 [![Codecov test coverage](https://codecov.io/gh/favstats/dashboardr/graph/badge.svg)](https://app.codecov.io/gh/favstats/dashboardr)
+[![R-Universe](https://favstats.r-universe.dev/badges/dashboardr)](https://favstats.r-universe.dev/dashboardr)
+[![GitHub stars](https://img.shields.io/github/stars/favstats/dashboardr?style=social)](https://github.com/favstats/dashboardr)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 <!-- badges: end -->
 
 **dashboardr** lets you build interactive HTML dashboards from R using a simple, composable grammar. Think of it like building with Lego blocks:

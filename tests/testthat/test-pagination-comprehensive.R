@@ -4,6 +4,11 @@
 # These tests verify that add_pagination() correctly splits content into
 # separate pages, especially when combined with combine_viz() and tabgroups.
 
+# Skip entire file under covr CI to prevent OOM (exit code 143)
+if (identical(Sys.getenv("DASHBOARDR_COVR_CI"), "true")) {
+  test_that("skipped under covr CI", { skip("Memory-intensive tests skipped under covr CI") })
+} else {
+
 # =============================================================================
 # Basic add_pagination() Structure Tests
 # =============================================================================
@@ -512,3 +517,5 @@ test_that("each paginated QMD file has unique content (regression test)", {
     }
   }
 })
+
+} # end covr CI skip

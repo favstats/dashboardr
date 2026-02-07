@@ -6,10 +6,15 @@
 <!-- badges: start -->
 
 [![Lifecycle:
-experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
-[![R-Universe](https://favstats.r-universe.dev/badges/dashboardr)](https://favstats.r-universe.dev/dashboardr)
+maturing](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://lifecycle.r-lib.org/articles/stages.html#maturing)
+[![R-CMD-check](https://github.com/favstats/dashboardr/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/favstats/dashboardr/actions/workflows/R-CMD-check.yaml)
 [![Codecov test
 coverage](https://codecov.io/gh/favstats/dashboardr/graph/badge.svg)](https://app.codecov.io/gh/favstats/dashboardr)
+[![R-Universe](https://favstats.r-universe.dev/badges/dashboardr)](https://favstats.r-universe.dev/dashboardr)
+[![GitHub
+stars](https://img.shields.io/github/stars/favstats/dashboardr?style=social)](https://github.com/favstats/dashboardr)
+[![License:
+MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 <!-- badges: end -->
 
 **dashboardr** lets you build interactive HTML dashboards from R using a
@@ -156,10 +161,10 @@ Both use real data from the General Social Survey (GSS).
 
 ### Real-World Dashboard
 
--   [**DigIQ Monitor**](https://www.digiqmonitor.nl/) - The first public
-    dashboard built with dashboardr! Digital competence insights for Dutch
-    citizens, featuring 11 dimensions, multilingual support, and paginated
-    visualizations.
+- [**DigIQ Monitor**](https://www.digiqmonitor.nl/) - The first public
+  dashboard built with dashboardr! Digital competence insights for Dutch
+  citizens, featuring 11 dimensions, multilingual support, and paginated
+  visualizations.
 
 ## Contributing
 

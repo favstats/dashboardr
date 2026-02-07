@@ -37,6 +37,11 @@ expect_html_contains <- function(html_path, patterns, info_prefix = "") {
   invisible(html)
 }
 
+# Skip entire file under covr CI to prevent OOM (exit code 143)
+if (identical(Sys.getenv("DASHBOARDR_COVR_CI"), "true")) {
+  test_that("skipped under covr CI", { skip("Memory-intensive tests skipped under covr CI") })
+} else {
+
 # -----------------------------------------------------------------------------
 # 1. Object Type Tests - dashboard_project
 # -----------------------------------------------------------------------------
@@ -593,11 +598,13 @@ test_that("preview renders reactable tables if available", {
 
 test_that("preview renders DT tables if available", {
   skip_if_not_installed("DT")
-  
+
   content <- create_content() %>%
     add_DT(head(mtcars, 5))
-  
+
   html_path <- preview(content, open = FALSE, quarto = FALSE)
-  
+
   expect_true(file.exists(html_path))
 })
+
+} # end covr CI skip

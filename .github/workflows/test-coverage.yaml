@@ -13,8 +13,12 @@ permissions: read-all
 jobs:
   test-coverage:
     runs-on: ubuntu-latest
+    timeout-minutes: 60
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+      # Signal to testthat that we're running under covr on CI
+      # Tests can check this to skip memory-intensive suites
+      DASHBOARDR_COVR_CI: true
 
     steps:
       - uses: actions/checkout@v4
@@ -30,6 +34,7 @@ jobs:
 
       - name: Test coverage
         run: |
+          options(covr.gcov = FALSE)  # disable gcov for speed
           cov <- covr::package_coverage(
             quiet = FALSE,
             clean = FALSE,

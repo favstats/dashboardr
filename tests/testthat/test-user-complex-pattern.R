@@ -13,8 +13,13 @@
 library(dashboardr)
 library(dplyr)
 
+# Skip entire file under covr CI to prevent OOM (exit code 143)
+if (identical(Sys.getenv("DASHBOARDR_COVR_CI"), "true")) {
+  test_that("skipped under covr CI", { skip("Memory-intensive tests skipped under covr CI") })
+} else {
+
 test_that("USER PATTERN: Complex production use case with all features", {
-  
+
   # Simulate user's exact data structure
   digicom_data <- mtcars %>%
     mutate(
@@ -368,8 +373,10 @@ test_that("USER PATTERN: Lazy loading works without pagination", {
               label = "Should have lazy loading CSS")
   expect_true(any(grepl("rootMargin.*400px", content)), 
               label = "Should use custom margin")
-  expect_true(any(grepl('console\\.log\\(.*Chart loaded', content)), 
+  expect_true(any(grepl('console\\.log\\(.*Chart loaded', content)),
               label = "Should have debug logging")
-  
+
 })
+
+} # end covr CI skip
 
