@@ -58,5 +58,3 @@ Suggests:
 VignetteBuilder: knitr
 Config/testthat/edition: 3
 Additional_repositories: https://kjhealy.r-universe.dev
-Remotes: 
-    kjhealy/gssr

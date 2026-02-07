@@ -1,0 +1,25 @@
+# Files excluded from covr instrumentation to prevent OOM on CI
+# These are large files where coverage tracking adds significant memory overhead
+# The core logic is still covered via the remaining instrumented files
+
+# Tutorial/demo dashboards (not core package logic)
+R/tutorial_dashboard.R
+R/ascor_dashboard.R
+
+# Publishing helpers (interactive workflows, not unit-testable)
+R/publish.R
+
+# Quarto YAML generation (large, mostly string templating)
+R/quarto_yml.R
+
+# Theme definitions (static config, minimal logic)
+R/themes.R
+
+# Tooltip helpers (Highcharts formatting strings)
+R/tooltip_helpers.R
+
+# Progress display (console output helpers)
+R/progress_display.R
+
+# Deprecated functions
+R/deprecated.R
