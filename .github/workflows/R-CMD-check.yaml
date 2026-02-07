@@ -41,16 +41,23 @@ jobs:
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          extra-packages: |
-            any::rcmdcheck
-            any::gssr
+          extra-packages: any::rcmdcheck
           needs: check
           install-quarto: false
           pak-version: devel
         env:
           _R_CHECK_FORCE_SUGGESTS_: false
           R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
-          ADDITIONAL_REPOSITORIES: https://kjhealy.r-universe.dev
+
+      - name: Install gssr from r-universe
+        run: |
+          options(repos = c(
+            kjhealy = "https://kjhealy.r-universe.dev",
+            CRAN = "https://cloud.r-project.org"
+          ))
+          install.packages("gssr")
+          if (!requireNamespace("gssr", quietly = TRUE)) stop("gssr installation failed!")
+        shell: Rscript {0}
 
       - uses: r-lib/actions/check-r-package@v2
         with:
