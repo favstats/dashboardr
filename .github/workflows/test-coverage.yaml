@@ -34,26 +34,36 @@ jobs:
       - uses: r-lib/actions/setup-r@v2
         with:
           use-public-rspm: true
+          extra-repositories: https://kjhealy.r-universe.dev
+
+      - name: Pre-install gssr from r-universe
+        run: |
+          # Ensure r-universe is in repos (belt-and-suspenders with extra-repositories)
+          r <- getOption("repos")
+          r["kjhealy"] <- "https://kjhealy.r-universe.dev"
+          options(repos = r)
+          cat("Configured repos:\n")
+          print(getOption("repos"))
+
+          # Pre-install gssr so pak finds it locally and skips repo resolution
+          tryCatch(
+            install.packages("gssr"),
+            error = function(e) message("Note: gssr pre-install failed: ", e$message)
+          )
+          cat("gssr available:", requireNamespace("gssr", quietly = TRUE), "\n")
+          cat("Library paths:\n")
+          cat(paste(" ", .libPaths(), collapse = "\n"), "\n")
+        shell: Rscript {0}
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
           extra-packages: any::covr, any::xml2
           needs: coverage
           install-quarto: false
-          pak-version: devel
+          lockfile-create-lib: '.libPaths()'
         env:
           _R_CHECK_FORCE_SUGGESTS_: false
           R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
-
-      - name: Install gssr from r-universe
-        run: |
-          options(repos = c(
-            kjhealy = "https://kjhealy.r-universe.dev",
-            CRAN = "https://cloud.r-project.org"
-          ))
-          install.packages("gssr")
-          if (!requireNamespace("gssr", quietly = TRUE)) stop("gssr installation failed!")
-        shell: Rscript {0}
 
       - name: Test coverage
         run: |

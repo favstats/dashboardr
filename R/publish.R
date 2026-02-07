@@ -95,6 +95,9 @@ publish_dashboard <- function(message = "Initial commit",
     private <- FALSE
   }
   
+  # ===== PHASE: Publishing =====
+  cat("\u2500\u2500 Publishing ", strrep("\u2500", 29), "\n\n", sep = "")
+  
   # Step 1: Initialize git repository and setup .gitignore
   cat("\U0001f4dd Step 1/3: Setting up Git repository...\n\n")
   .setup_git_repo(message = message, restart = restart)
@@ -697,8 +700,11 @@ update_dashboard <- function(files = ".", message = "Update dashboard", ask = TR
 #' @noRd
 .run_interactive_confirmation <- function(private = NULL) {
   
+  # ===== PHASE: Preparation =====
+  cat("\n\u2500\u2500 Preparation ", strrep("\u2500", 28), "\n\n", sep = "")
+  
   # ===== STEP 1: Pre-review info and ask to proceed =====
-  cat("\n\U0001f4cb Step 1/3: File Review\n")
+  cat("\U0001f4cb Step 1/3: File Review\n")
   cat(strrep("-", 40), "\n", sep = "")
   
  .display_pre_review_info()
