@@ -1,0 +1,64 @@
+name: Gallery Submission
+description: Submit your dashboard to the dashboardr Community Gallery
+title: "[Gallery] "
+labels: ["gallery-submission"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for sharing your dashboardr creation! Please fill out the details below.
+        A maintainer will review your submission and add it to the gallery.
+
+  - type: input
+    id: dashboard_title
+    attributes:
+      label: Dashboard Title
+      description: A short, descriptive title for your dashboard
+      placeholder: "My Awesome Dashboard"
+    validations:
+      required: true
+
+  - type: input
+    id: author
+    attributes:
+      label: Author Name
+      description: Your name or team name
+      placeholder: "Jane Doe"
+    validations:
+      required: true
+
+  - type: input
+    id: dashboard_url
+    attributes:
+      label: Dashboard URL
+      description: Live URL where the dashboard can be viewed
+      placeholder: "https://example.com/my-dashboard/"
+    validations:
+      required: true
+
+  - type: input
+    id: screenshot_url
+    attributes:
+      label: Screenshot URL
+      description: URL to a screenshot image (16:9 ratio recommended). This will be the card thumbnail in the gallery.
+      placeholder: "https://example.com/screenshot.png"
+    validations:
+      required: false
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: Brief description of what the dashboard shows and what dashboardr features it uses
+      placeholder: "An interactive dashboard exploring ... using bar charts, heatmaps, and sidebar filters."
+    validations:
+      required: true
+
+  - type: input
+    id: tags
+    attributes:
+      label: Tags
+      description: Comma-separated tags to help users find your dashboard
+      placeholder: "survey, education, health, interactive"
+    validations:
+      required: false

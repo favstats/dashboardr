@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>dashboardr Gallery</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #f8f9fb;
+      color: #1a1a2e;
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    /* ── Header ──────────────────────────────── */
+    .gallery-header {
+      background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+      color: white;
+      padding: 2.5rem 2rem 2rem;
+      text-align: center;
+      position: relative;
+    }
+    .gallery-header h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 0.3rem;
+      letter-spacing: -0.5px;
+    }
+    .gallery-header h1 span { opacity: 0.7; font-weight: 400; }
+    .gallery-header p {
+      opacity: 0.85;
+      font-size: 1.05rem;
+      margin-bottom: 1.5rem;
+    }
+    .submit-btn {
+      position: absolute;
+      top: 1.5rem;
+      right: 2rem;
+      background: rgba(255,255,255,0.15);
+      color: white;
+      border: 1.5px solid rgba(255,255,255,0.4);
+      padding: 0.5rem 1.2rem;
+      border-radius: 8px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: inherit;
+    }
+    .submit-btn:hover {
+      background: rgba(255,255,255,0.25);
+      border-color: rgba(255,255,255,0.7);
+      transform: translateY(-1px);
+    }
+
+    /* ── Search ──────────────────────────────── */
+    .search-wrap {
+      max-width: 520px;
+      margin: 0 auto;
+      position: relative;
+    }
+    .search-wrap svg {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      opacity: 0.4;
+    }
+    .search-input {
+      width: 100%;
+      padding: 0.75rem 1rem 0.75rem 2.8rem;
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-family: inherit;
+      outline: none;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.12);
+    }
+    .search-input::placeholder { color: #999; }
+
+    /* ── Tags ────────────────────────────────── */
+    .tags-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.45rem;
+      justify-content: center;
+      padding: 1rem 2rem 0.5rem;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    .tag-chip {
+      padding: 0.3rem 0.85rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      cursor: pointer;
+      border: 1.5px solid #dee2e6;
+      background: white;
+      color: #495057;
+      transition: all 0.15s;
+      user-select: none;
+    }
+    .tag-chip:hover { border-color: #0d6efd; color: #0d6efd; }
+    .tag-chip.active {
+      background: #0d6efd;
+      color: white;
+      border-color: #0d6efd;
+    }
+
+    /* ── Card Grid ───────────────────────────── */
+    .cards-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 1.2rem 2rem 3rem;
+    }
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1.5rem;
+    }
+    .card {
+      background: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
+      transition: transform 0.2s, box-shadow 0.2s;
+      display: flex;
+      flex-direction: column;
+    }
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.06);
+    }
+    .card-img {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      object-fit: cover;
+      background: #e9ecef;
+      display: block;
+    }
+    .card-img-placeholder {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      background: linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #adb5bd;
+      font-size: 2.5rem;
+    }
+    .card-body {
+      padding: 1.2rem 1.3rem;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    .card-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 0.15rem;
+      color: #1a1a2e;
+    }
+    .card-author {
+      font-size: 0.82rem;
+      color: #6c757d;
+      margin-bottom: 0.6rem;
+    }
+    .card-desc {
+      font-size: 0.9rem;
+      color: #495057;
+      flex: 1;
+      margin-bottom: 0.8rem;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .card-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+      margin-bottom: 1rem;
+    }
+    .card-tag {
+      font-size: 0.72rem;
+      padding: 0.15rem 0.55rem;
+      background: #f0f4ff;
+      color: #0d6efd;
+      border-radius: 4px;
+      font-weight: 500;
+    }
+    .card-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.55rem 1.2rem;
+      background: #0d6efd;
+      color: white;
+      text-decoration: none;
+      border-radius: 8px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      transition: background 0.15s;
+      align-self: flex-start;
+    }
+    .card-link:hover { background: #0a58ca; }
+    .card-link svg { flex-shrink: 0; }
+
+    /* ── Empty State ─────────────────────────── */
+    .empty-state {
+      text-align: center;
+      padding: 4rem 2rem;
+      color: #6c757d;
+    }
+    .empty-state svg { margin-bottom: 1rem; opacity: 0.4; }
+    .empty-state p { font-size: 1.1rem; }
+
+    /* ── Count ───────────────────────────────── */
+    .results-count {
+      text-align: center;
+      color: #6c757d;
+      font-size: 0.85rem;
+      padding: 0.5rem 0 0;
+    }
+
+    /* ── Modal ───────────────────────────────── */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 1rem;
+    }
+    .modal {
+      background: white;
+      border-radius: 16px;
+      padding: 2rem;
+      width: 100%;
+      max-width: 500px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+    }
+    .modal h2 {
+      font-size: 1.4rem;
+      margin-bottom: 0.3rem;
+    }
+    .modal .subtitle {
+      color: #6c757d;
+      font-size: 0.88rem;
+      margin-bottom: 1.5rem;
+    }
+    .modal label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 0.3rem;
+      color: #495057;
+    }
+    .modal input, .modal textarea {
+      width: 100%;
+      padding: 0.6rem 0.8rem;
+      border: 1.5px solid #dee2e6;
+      border-radius: 8px;
+      font-size: 0.92rem;
+      font-family: inherit;
+      margin-bottom: 1rem;
+      transition: border-color 0.15s;
+    }
+    .modal input:focus, .modal textarea:focus {
+      outline: none;
+      border-color: #0d6efd;
+    }
+    .modal textarea { resize: vertical; min-height: 80px; }
+    .modal-actions {
+      display: flex;
+      gap: 0.8rem;
+      margin-top: 0.5rem;
+    }
+    .btn-primary {
+      flex: 1;
+      padding: 0.7rem;
+      background: #0d6efd;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      transition: background 0.15s;
+    }
+    .btn-primary:hover { background: #0a58ca; }
+    .btn-secondary {
+      padding: 0.7rem 1.2rem;
+      background: #f8f9fa;
+      color: #495057;
+      border: 1.5px solid #dee2e6;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: 500;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.15s;
+    }
+    .btn-secondary:hover { background: #e9ecef; }
+    .gh-note {
+      font-size: 0.78rem;
+      color: #6c757d;
+      text-align: center;
+      margin-top: 1rem;
+      line-height: 1.5;
+    }
+
+    /* ── Responsive ──────────────────────────── */
+    @media (max-width: 640px) {
+      .gallery-header { padding: 2rem 1rem 1.5rem; }
+      .gallery-header h1 { font-size: 1.5rem; }
+      .submit-btn { position: static; margin-top: 1rem; }
+      .cards-container { padding: 1rem; }
+      .cards-grid { grid-template-columns: 1fr; }
+      .tags-bar { padding: 0.8rem 1rem; }
+    }
+  </style>
+</head>
+<body>
+<div id="app">
+
+  <!-- Header -->
+  <header class="gallery-header">
+    <h1>dashboardr <span>Gallery</span></h1>
+    <p>Dashboards built with dashboardr by the community</p>
+    <button class="submit-btn" @click="showModal = true">
+      + Submit Your Dashboard
+    </button>
+    <div class="search-wrap">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input class="search-input" v-model="query" placeholder="Search dashboards..." />
+    </div>
+  </header>
+
+  <!-- Tags -->
+  <div class="tags-bar" v-if="allTags.length">
+    <span class="tag-chip" v-for="tag in allTags" :key="tag"
+          :class="{ active: activeTags.has(tag) }"
+          @click="toggleTag(tag)">
+      {{ tag }}
+    </span>
+  </div>
+
+  <!-- Results count -->
+  <div class="results-count" v-if="filtered.length !== dashboards.length">
+    Showing {{ filtered.length }} of {{ dashboards.length }} dashboards
+  </div>
+
+  <!-- Cards -->
+  <div class="cards-container">
+    <div class="cards-grid" v-if="filtered.length">
+      <div class="card" v-for="d in filtered" :key="d.id">
+        <img v-if="d.image_url" :src="d.image_url" :alt="d.title" class="card-img"
+             @error="$event.target.style.display='none'; $event.target.nextElementSibling.style.display='flex'" />
+        <div class="card-img-placeholder" :style="d.image_url ? 'display:none' : ''">&#9632;</div>
+        <div class="card-body">
+          <div class="card-title">{{ d.title }}</div>
+          <div class="card-author">by {{ d.author }}</div>
+          <div class="card-desc">{{ d.description }}</div>
+          <div class="card-tags" v-if="d.tags && d.tags.length">
+            <span class="card-tag" v-for="t in d.tags" :key="t">{{ t }}</span>
+          </div>
+          <a :href="d.dashboard_url" target="_blank" rel="noopener" class="card-link">
+            View Dashboard
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M7 17L17 7"/><path d="M7 7h10v10"/></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Empty state -->
+    <div class="empty-state" v-else>
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <p>No dashboards match your search.</p>
+    </div>
+  </div>
+
+  <!-- Submit Modal -->
+  <div class="modal-overlay" v-if="showModal" @click.self="showModal = false">
+    <div class="modal">
+      <h2>Submit Your Dashboard</h2>
+      <p class="subtitle">Share your dashboardr creation with the community</p>
+
+      <label>Dashboard Title *</label>
+      <input v-model="form.title" placeholder="My Awesome Dashboard" />
+
+      <label>Your Name / Team *</label>
+      <input v-model="form.author" placeholder="Your Name / Team" />
+
+      <label>Dashboard URL *</label>
+      <input v-model="form.dashboard_url" placeholder="https://example.com/my-dashboard/" />
+
+      <label>Screenshot URL</label>
+      <input v-model="form.image_url" placeholder="https://... (optional, shows as card thumbnail)" />
+
+      <label>Description *</label>
+      <textarea v-model="form.description" placeholder="A brief description of your dashboard..."></textarea>
+
+      <label>Tags</label>
+      <input v-model="form.tags_str" placeholder="e.g. survey, education, health (comma-separated)" />
+
+      <div class="modal-actions">
+        <button class="btn-secondary" @click="showModal = false">Cancel</button>
+        <button class="btn-primary" @click="submit" :disabled="!canSubmit">
+          Open on GitHub
+        </button>
+      </div>
+      <p class="gh-note">
+        This opens a pre-filled GitHub Issue. You'll need to be logged in to GitHub.<br>
+        A maintainer will review and add your dashboard to the gallery.
+      </p>
+    </div>
+  </div>
+</div>
+
+<script>
+const { createApp, ref, computed, onMounted, reactive } = Vue
+
+createApp({
+  setup() {
+    const dashboards = ref([])
+    const query = ref('')
+    const activeTags = reactive(new Set())
+    const showModal = ref(false)
+    const form = reactive({
+      title: '', author: '', dashboard_url: '',
+      image_url: '', description: '', tags_str: ''
+    })
+
+    onMounted(async () => {
+      try {
+        const resp = await fetch('./dashboards.json')
+        if (resp.ok) dashboards.value = await resp.json()
+      } catch {
+        try {
+          const resp = await fetch('https://favstats.github.io/dashboardr/gallery/dashboards.json')
+          if (resp.ok) dashboards.value = await resp.json()
+        } catch { /* fail silently */ }
+      }
+    })
+
+    const allTags = computed(() => {
+      const s = new Set()
+      dashboards.value.forEach(d => (d.tags || []).forEach(t => s.add(t)))
+      return [...s].sort()
+    })
+
+    const filtered = computed(() => {
+      const q = query.value.toLowerCase().trim()
+      return dashboards.value.filter(d => {
+        const text = (d.title + ' ' + d.description + ' ' + d.author).toLowerCase()
+        const matchQ = !q || text.includes(q)
+        const matchT = !activeTags.size || (d.tags || []).some(t => activeTags.has(t))
+        return matchQ && matchT
+      })
+    })
+
+    function toggleTag(tag) {
+      activeTags.has(tag) ? activeTags.delete(tag) : activeTags.add(tag)
+    }
+
+    const canSubmit = computed(() =>
+      form.title.trim() && form.author.trim() &&
+      form.dashboard_url.trim() && form.description.trim()
+    )
+
+    function submit() {
+      if (!canSubmit.value) return
+      const tags = form.tags_str.split(',').map(t => t.trim()).filter(Boolean)
+      const entry = {
+        id: form.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/-+$/, ''),
+        title: form.title.trim(),
+        description: form.description.trim(),
+        image_url: form.image_url.trim(),
+        dashboard_url: form.dashboard_url.trim(),
+        author: form.author.trim(),
+        tags,
+        date_added: new Date().toISOString().split('T')[0]
+      }
+      const issueTitle = encodeURIComponent('[Gallery] ' + entry.title)
+      const body = [
+        '## Gallery Submission', '',
+        '| Field | Value |',
+        '|-------|-------|',
+        '| **Title** | ' + entry.title + ' |',
+        '| **Author** | ' + entry.author + ' |',
+        '| **URL** | ' + entry.dashboard_url + ' |',
+        '| **Screenshot** | ' + (entry.image_url || 'N/A') + ' |',
+        '| **Tags** | ' + (tags.join(', ') || 'none') + ' |', '',
+        '**Description:** ' + entry.description, '',
+        '<details><summary>JSON (for maintainer)</summary>', '',
+        '```json',
+        JSON.stringify(entry, null, 2),
+        '```', '</details>'
+      ].join('\n')
+      const url = 'https://github.com/favstats/dashboardr/issues/new?title=' +
+        issueTitle + '&body=' + encodeURIComponent(body) + '&labels=gallery-submission'
+      window.open(url, '_blank')
+      showModal.value = false
+    }
+
+    return { dashboards, query, activeTags, allTags, filtered,
+             showModal, form, toggleTag, canSubmit, submit }
+  }
+}).mount('#app')
+</script>
+</body>
+</html>

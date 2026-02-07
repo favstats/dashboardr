@@ -79,7 +79,7 @@ check_html <- function(dir) {
 # -----------------------------------------------------------------------------
 # 1. Tutorial Dashboard
 # -----------------------------------------------------------------------------
-cat("\n📊 [1/6] Building Tutorial Dashboard...\n")
+cat("\n📊 [1/7] Building Tutorial Dashboard...\n")
 tryCatch({
   tutorial_dir <- file.path(pkg_root, "docs", "live-demos", "tutorial")
   if (dir.exists(tutorial_dir)) unlink(tutorial_dir, recursive = TRUE)
@@ -102,7 +102,7 @@ tryCatch({
 # -----------------------------------------------------------------------------
 # 2. Showcase Dashboard
 # -----------------------------------------------------------------------------
-cat("\n📊 [2/6] Building Showcase Dashboard...\n")
+cat("\n📊 [2/7] Building Showcase Dashboard...\n")
 tryCatch({
   showcase_dir <- file.path(pkg_root, "docs", "live-demos", "showcase")
   if (dir.exists(showcase_dir)) unlink(showcase_dir, recursive = TRUE)
@@ -125,7 +125,7 @@ tryCatch({
 # -----------------------------------------------------------------------------
 # 3. Tabset Theme Dashboards (6 themes)
 # -----------------------------------------------------------------------------
-cat("\n📊 [3/6] Building Tabset Theme Dashboards (6 themes)...\n")
+cat("\n📊 [3/7] Building Tabset Theme Dashboards (6 themes)...\n")
 tryCatch({
   source(file.path(pkg_root, "pkgdown", "build-tabsets-demo.R"), local = TRUE)
 
@@ -149,7 +149,7 @@ tryCatch({
 # -----------------------------------------------------------------------------
 # 4. Inputs Dashboard
 # -----------------------------------------------------------------------------
-cat("\n📊 [4/6] Building Inputs Dashboard...\n")
+cat("\n📊 [4/7] Building Inputs Dashboard...\n")
 tryCatch({
   source(file.path(pkg_root, "pkgdown", "build-inputs-demo.R"), local = TRUE)
 
@@ -167,7 +167,7 @@ tryCatch({
 # -----------------------------------------------------------------------------
 # 5. Overlay Dashboard
 # -----------------------------------------------------------------------------
-cat("\n📊 [5/6] Building Overlay Dashboard...\n")
+cat("\n📊 [5/7] Building Overlay Dashboard...\n")
 tryCatch({
   source(file.path(pkg_root, "pkgdown", "build-overlay-demo.R"), local = TRUE)
 
@@ -185,7 +185,7 @@ tryCatch({
 # -----------------------------------------------------------------------------
 # 6. Sidebar GSS Explorer Demo
 # -----------------------------------------------------------------------------
-cat("\n📊 [6/6] Building Sidebar GSS Explorer Demo...\n")
+cat("\n📊 [6/7] Building Sidebar GSS Explorer Demo...\n")
 tryCatch({
   source(file.path(pkg_root, "pkgdown", "build-sidebar-gss-demo.R"), local = TRUE)
 
@@ -197,6 +197,27 @@ tryCatch({
   }
 }, error = function(e) {
   results$sidebar_gss <<- paste("❌", e$message)
+  cat("   ❌ Error:", e$message, "\n")
+})
+
+# -----------------------------------------------------------------------------
+# 7. Community Gallery
+# -----------------------------------------------------------------------------
+cat("\n🖼️  [7/7] Building Community Gallery...\n")
+tryCatch({
+  source(file.path(pkg_root, "pkgdown", "build-gallery-demo.R"), local = TRUE)
+
+  gallery_dir <- file.path(pkg_root, "docs", "live-demos", "gallery")
+  gallery_spa <- file.path(pkg_root, "docs", "gallery", "index.html")
+  if (check_html(gallery_dir) && file.exists(gallery_spa)) {
+    results$gallery <- "✅ Success"
+  } else if (file.exists(gallery_spa)) {
+    results$gallery <- "⚠️  SPA copied, wrapper needs Quarto"
+  } else {
+    results$gallery <- "⚠️  Incomplete"
+  }
+}, error = function(e) {
+  results$gallery <<- paste("❌", e$message)
   cat("   ❌ Error:", e$message, "\n")
 })
 
@@ -215,6 +236,7 @@ cat(sprintf("Tabset Themes       %s\n", results$tabsets %||% "Not run"))
 cat(sprintf("Inputs              %s\n", results$inputs %||% "Not run"))
 cat(sprintf("Overlay             %s\n", results$overlay %||% "Not run"))
 cat(sprintf("Sidebar GSS         %s\n", results$sidebar_gss %||% "Not run"))
+cat(sprintf("Gallery             %s\n", results$gallery %||% "Not run"))
 
 cat("\n📁 Output location:", file.path(pkg_root, "docs", "live-demos"), "\n")
 
@@ -235,3 +257,6 @@ for (theme in c("pills", "modern", "minimal", "classic", "underline", "segmented
 cat("   https://favstats.github.io/dashboardr/live-demos/inputs/index.html\n")
 cat("   https://favstats.github.io/dashboardr/live-demos/overlay/index.html\n")
 cat("   https://favstats.github.io/dashboardr/live-demos/sidebar-gss/index.html\n")
+cat("   Gallery:\n")
+cat("     https://favstats.github.io/dashboardr/gallery/index.html\n")
+cat("     https://favstats.github.io/dashboardr/live-demos/gallery/index.html\n")
