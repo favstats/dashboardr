@@ -677,13 +677,15 @@
 .generate_iframe_block <- function(block) {
   height <- block$height %||% "500px"
   width <- block$width %||% "100%"
-  
+  style <- block$style
+
   iframe_tag <- paste0(
     "<iframe src='", block$url, "'",
     " width='", width, "'",
     " height='", height, "'",
     " frameborder='0'",
     " allowfullscreen",
+    if (!is.null(style) && nzchar(style)) paste0(" style='", style, "'") else "",
     "></iframe>"
   )
   

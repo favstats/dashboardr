@@ -747,15 +747,19 @@ add_video <- function(content, src, caption = NULL, width = NULL, height = NULL,
 #' @param src iframe source URL
 #' @param height iframe height (default: "500px")
 #' @param width iframe width (default: "100%")
+#' @param style Optional inline CSS style string applied to the iframe element
+#'   (e.g., `"border: none; border-radius: 8px;"`). Useful for removing borders,
+#'   adding shadows, or any custom styling.
 #' @param tabgroup Optional tabgroup for organizing content (character vector for nested tabs)
 #' @return Updated content_collection
 #' @export
-add_iframe <- function(content, src, height = "500px", width = "100%", tabgroup = NULL) {
+add_iframe <- function(content, src, height = "500px", width = "100%", style = NULL, tabgroup = NULL) {
   iframe_block <- structure(list(
     type = "iframe",
     url = src,
     height = height,
     width = width,
+    style = style,
     tabgroup = .parse_tabgroup(tabgroup)
   ), class = "content_block")
   

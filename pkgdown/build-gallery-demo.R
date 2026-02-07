@@ -64,21 +64,27 @@ if (dir.exists(demo_dir)) {
 }
 dir.create(demo_dir, recursive = TRUE, showWarnings = FALSE)
 
-# Create a single-page dashboard with a full-viewport iframe
+# Create a single-page dashboard with a truly full-viewport iframe
 gallery_page <- create_page(
   "Gallery",
   icon = "ph:images-fill"
 ) %>%
   add_iframe(
     src = "../../gallery/index.html",
-    height = "calc(100vh - 80px)",
-    style = "border: none; width: 100%;"
+    height = "100vh",
+    width = "100vw",
+    style = "border: none; position: fixed; top: 0; left: 0; z-index: 9999;"
   )
 
 dashboard <- create_dashboard(
   title = "Community Gallery",
   output_dir = demo_dir,
   theme = "flatly",
+  page_layout = "custom",
+  margin_left = "0",
+  margin_right = "0",
+  margin_top = "0",
+  margin_bottom = "0",
   allow_inside_pkg = TRUE
 ) %>%
   add_pages(gallery_page)

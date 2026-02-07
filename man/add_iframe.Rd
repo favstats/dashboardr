@@ -4,7 +4,14 @@
 \alias{add_iframe}
 \title{Add iframe}
 \usage{
-add_iframe(content, src, height = "500px", width = "100\%", tabgroup = NULL)
+add_iframe(
+  content,
+  src,
+  height = "500px",
+  width = "100\%",
+  style = NULL,
+  tabgroup = NULL
+)
 }
 \arguments{
 \item{content}{A content_collection object}
@@ -14,6 +21,10 @@ add_iframe(content, src, height = "500px", width = "100\%", tabgroup = NULL)
 \item{height}{iframe height (default: "500px")}
 
 \item{width}{iframe width (default: "100\%")}
+
+\item{style}{Optional inline CSS style string applied to the iframe element
+(e.g., \code{"border: none; border-radius: 8px;"}). Useful for removing borders,
+adding shadows, or any custom styling.}
 
 \item{tabgroup}{Optional tabgroup for organizing content (character vector for nested tabs)}
 }
