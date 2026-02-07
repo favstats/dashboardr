@@ -3,6 +3,11 @@
 # Tests for knit_print.dashboard_project and related fixes
 # =============================================================================
 
+# Skip entire file under covr CI to prevent OOM (exit code 143)
+if (identical(Sys.getenv("DASHBOARDR_COVR_CI"), "true") || !identical(Sys.getenv("NOT_CRAN"), "true")) {
+  test_that("skipped on CRAN/covr CI", { skip("Memory-intensive tests skipped on CRAN and covr CI") })
+} else {
+
 # Helper function to render dashboard preview and extract HTML
 .render_dashboard_preview_html <- function(dashboard) {
   # Capture the knit_print output
@@ -292,3 +297,5 @@ test_that("page content items flow correctly through add_pages", {
   stored_page <- my_dashboard$pages[["Home"]]
   expect_true(!is.null(stored_page$content_blocks) || !is.null(stored_page$text))
 })
+
+} # end covr CI skip

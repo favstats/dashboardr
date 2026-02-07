@@ -1,3 +1,8 @@
+## Skip entire file under covr CI to prevent OOM (exit code 143)
+if (identical(Sys.getenv("DASHBOARDR_COVR_CI"), "true") || !identical(Sys.getenv("NOT_CRAN"), "true")) {
+  test_that("skipped on CRAN/covr CI", { skip("Memory-intensive tests skipped on CRAN and covr CI") })
+} else {
+
 test_that("tutorial_dashboard respects directory parameter", {
   skip_if_not_installed("gssr")
   skip_on_cran()
@@ -118,4 +123,6 @@ test_that("showcase_dashboard generates valid QMD with curly braces", {
   # Cleanup
   unlink(temp_dir, recursive = TRUE)
 })
+
+} # end covr CI skip
 

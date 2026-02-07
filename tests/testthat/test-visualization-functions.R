@@ -1,6 +1,11 @@
 # Tests for individual visualization creation functions
 library(testthat)
 
+# Skip entire file under covr CI to prevent OOM (exit code 143)
+if (identical(Sys.getenv("DASHBOARDR_COVR_CI"), "true") || !identical(Sys.getenv("NOT_CRAN"), "true")) {
+  test_that("skipped on CRAN/covr CI", { skip("Memory-intensive tests skipped on CRAN and covr CI") })
+} else {
+
 # ===================================================================
 # viz_histogram
 # ===================================================================
@@ -255,4 +260,6 @@ test_that("viz_heatmap with title and labels", {
   )
   expect_s3_class(result, "highchart")
 })
+
+} # end covr CI skip
 

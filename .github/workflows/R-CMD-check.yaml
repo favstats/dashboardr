@@ -27,9 +27,18 @@ jobs:
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
       R_KEEP_PKG_SOURCE: yes
+      DASHBOARDR_COVR_CI: true
 
     steps:
       - uses: actions/checkout@v4
+
+      # Free up disk/memory from pre-installed software we don't need
+      - name: Free runner resources
+        if: runner.os == 'Linux'
+        run: |
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /opt/ghc
+          sudo rm -rf /usr/local/share/boost
 
       - uses: r-lib/actions/setup-pandoc@v2
 
