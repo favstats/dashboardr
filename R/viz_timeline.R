@@ -304,22 +304,22 @@ viz_timeline <- function(data,
     if (is.null(group_var)) {
       agg_data <- plot_data %>%
         group_by(!!sym(time_var_plot)) %>%
-        summarize(value = mean(!!sym(y_var), na.rm = TRUE), .groups = "drop")
+        summarise(value = mean(!!sym(y_var), na.rm = TRUE), .groups = "drop")
     } else {
       agg_data <- plot_data %>%
         group_by(!!sym(time_var_plot), !!sym(group_var)) %>%
-        summarize(value = mean(!!sym(y_var), na.rm = TRUE), .groups = "drop")
+        summarise(value = mean(!!sym(y_var), na.rm = TRUE), .groups = "drop")
     }
   } else if (agg == "sum") {
     # Calculate sum per time period (and group if specified)
     if (is.null(group_var)) {
       agg_data <- plot_data %>%
         group_by(!!sym(time_var_plot)) %>%
-        summarize(value = sum(!!sym(y_var), na.rm = TRUE), .groups = "drop")
+        summarise(value = sum(!!sym(y_var), na.rm = TRUE), .groups = "drop")
     } else {
       agg_data <- plot_data %>%
         group_by(!!sym(time_var_plot), !!sym(group_var)) %>%
-        summarize(value = sum(!!sym(y_var), na.rm = TRUE), .groups = "drop")
+        summarise(value = sum(!!sym(y_var), na.rm = TRUE), .groups = "drop")
     }
   } else {
     # agg == "percentage" - original behavior: count and calculate percentages
