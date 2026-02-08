@@ -4,7 +4,7 @@
 \alias{add_gt}
 \title{Add gt table}
 \usage{
-add_gt(content, gt_object, caption = NULL, tabgroup = NULL)
+add_gt(content, gt_object, caption = NULL, tabgroup = NULL, show_when = NULL)
 }
 \arguments{
 \item{content}{A content_collection object}
@@ -14,6 +14,8 @@ add_gt(content, gt_object, caption = NULL, tabgroup = NULL)
 \item{caption}{Optional caption}
 
 \item{tabgroup}{Optional tabgroup for organizing content (character vector for nested tabs)}
+
+\item{show_when}{One-sided formula controlling conditional display based on input values.}
 }
 \value{
 Updated content_collection

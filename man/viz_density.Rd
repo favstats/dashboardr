@@ -21,7 +21,8 @@ viz_density(
   include_na = FALSE,
   na_label = "(Missing)",
   tooltip = NULL,
-  tooltip_suffix = ""
+  tooltip_suffix = "",
+  backend = "highcharter"
 )
 }
 \arguments{
@@ -66,6 +67,8 @@ OR a format string with \{placeholders\}. Available placeholders:
 See \code{\link{tooltip}} for full customization options.}
 
 \item{tooltip_suffix}{Optional string appended to density values in tooltip (simple customization).}
+
+\item{backend}{Rendering backend: "highcharter" (default), "plotly", "echarts4r", or "ggiraph".}
 }
 \value{
 A \code{highcharter} density plot object.

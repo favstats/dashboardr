@@ -32,6 +32,7 @@
 #'   See \code{\link{tooltip}} for full customization options.
 #' @param tooltip_suffix Optional string appended to density values in tooltip (simple customization).
 #'
+#' @param backend Rendering backend: "highcharter" (default), "plotly", "echarts4r", or "ggiraph".
 #' @return A `highcharter` density plot object.
 #'
 #' @examples
@@ -88,7 +89,8 @@ viz_density <- function(data,
                         include_na = FALSE,
                         na_label = "(Missing)",
                         tooltip = NULL,
-                        tooltip_suffix = "") {
+                        tooltip_suffix = "",
+                        backend = "highcharter") {
   
   # Convert variable arguments to strings (supports both quoted and unquoted)
   x_var <- .as_var_string(rlang::enquo(x_var))
@@ -228,7 +230,48 @@ viz_density <- function(data,
   # Set default labels
   if (is.null(x_label)) x_label <- x_var
   if (is.null(y_label)) y_label <- "Density"
-  
+
+  # Build config for backend dispatch
+  config <- list(
+    title = title, subtitle = subtitle,
+    x_label = x_label, y_label = y_label,
+    color_palette = color_palette,
+    fill_opacity = fill_opacity,
+    show_rug = show_rug,
+    group_var = group_var,
+    x_var = x_var,
+    tooltip = tooltip, tooltip_suffix = tooltip_suffix,
+    raw_df = df
+  )
+
+  # Dispatch to backend renderer
+  backend <- .normalize_backend(backend)
+  backend <- match.arg(backend, c("highcharter", "plotly", "echarts4r", "ggiraph"))
+  .assert_backend_supported("density", backend)
+  render_fn <- switch(backend,
+    highcharter = .viz_density_highcharter,
+    plotly      = .viz_density_plotly,
+    echarts4r   = .viz_density_echarts,
+    ggiraph     = .viz_density_ggiraph
+  )
+  result <- render_fn(density_data, config)
+  result <- .register_chart_widget(result, backend = backend)
+  return(result)
+}
+
+# --- Highcharter backend (original implementation) ---
+#' @keywords internal
+.viz_density_highcharter <- function(density_data, config) {
+  # Unpack config
+  title <- config$title; subtitle <- config$subtitle
+  x_label <- config$x_label; y_label <- config$y_label
+  color_palette <- config$color_palette
+  fill_opacity <- config$fill_opacity
+  show_rug <- config$show_rug
+  group_var <- config$group_var; x_var <- config$x_var
+  tooltip <- config$tooltip; tooltip_suffix <- config$tooltip_suffix
+  df <- config$raw_df
+
   # Create the highcharter plot
   hc <- highcharter::highchart() |>
     highcharter::hc_chart(type = "areaspline") |>
@@ -344,6 +387,170 @@ viz_density <- function(data,
   
   hc <- hc |>
     highcharter::hc_legend(enabled = !is.null(group_var))
-  
+
   hc
+}
+
+# --- Plotly backend ---
+#' @keywords internal
+.viz_density_plotly <- function(density_data, config) {
+  rlang::check_installed("plotly", reason = "to use backend = 'plotly'")
+
+  title <- config$title
+  x_label <- config$x_label; y_label <- config$y_label
+  color_palette <- config$color_palette
+  fill_opacity <- config$fill_opacity
+  group_var <- config$group_var
+
+  groups <- unique(density_data$group)
+
+  p <- plotly::plot_ly()
+
+  for (i in seq_along(groups)) {
+    g <- groups[i]
+    grp_data <- density_data[density_data$group == g, ]
+
+    fill_color <- if (!is.null(color_palette) && i <= length(color_palette)) {
+      # Convert hex to rgba for fill
+      col <- grDevices::col2rgb(color_palette[i])
+      sprintf("rgba(%d,%d,%d,%.2f)", col[1], col[2], col[3], fill_opacity)
+    } else {
+      NULL
+    }
+
+    line_color <- if (!is.null(color_palette) && i <= length(color_palette)) {
+      color_palette[i]
+    } else {
+      NULL
+    }
+
+    trace_args <- list(
+      p = p,
+      x = grp_data$x,
+      y = grp_data$y,
+      type = "scatter",
+      mode = "lines",
+      name = as.character(g),
+      fill = "tozeroy"
+    )
+
+    if (!is.null(fill_color)) trace_args$fillcolor <- fill_color
+    if (!is.null(line_color)) trace_args$line <- list(color = line_color)
+
+    p <- do.call(plotly::add_trace, trace_args)
+  }
+
+  layout_args <- list(
+    p = p,
+    xaxis = list(title = x_label),
+    yaxis = list(title = y_label)
+  )
+  if (!is.null(title)) layout_args$title <- title
+  layout_args$showlegend <- !is.null(group_var)
+
+  p <- do.call(plotly::layout, layout_args)
+
+  p
+}
+
+# --- echarts4r backend ---
+#' @keywords internal
+.viz_density_echarts <- function(density_data, config) {
+  rlang::check_installed("echarts4r", reason = "to use backend = 'echarts4r'")
+
+  title <- config$title; subtitle <- config$subtitle
+  x_label <- config$x_label; y_label <- config$y_label
+  color_palette <- config$color_palette
+  fill_opacity <- config$fill_opacity
+  group_var <- config$group_var
+
+  groups <- unique(density_data$group)
+
+  e <- density_data |>
+    dplyr::group_by(.data$group) |>
+    echarts4r::e_charts(x) |>
+    echarts4r::e_area(y, smooth = TRUE)
+
+  if (!is.null(title) || !is.null(subtitle)) {
+    e <- e |> echarts4r::e_title(text = title %||% "", subtext = subtitle %||% "")
+  }
+
+  e <- e |>
+    echarts4r::e_x_axis(name = x_label) |>
+    echarts4r::e_y_axis(name = y_label) |>
+    echarts4r::e_tooltip(trigger = "axis") |>
+    echarts4r::e_legend(show = !is.null(group_var))
+
+  if (!is.null(color_palette)) {
+    e <- e |> echarts4r::e_color(color_palette)
+  }
+
+  e
+}
+
+# --- ggiraph backend ---
+#' @keywords internal
+.viz_density_ggiraph <- function(density_data, config) {
+  rlang::check_installed("ggiraph", reason = "to use backend = 'ggiraph'")
+  rlang::check_installed("ggplot2", reason = "to use backend = 'ggiraph'")
+
+  title <- config$title; subtitle <- config$subtitle
+  x_label <- config$x_label; y_label <- config$y_label
+  color_palette <- config$color_palette
+  fill_opacity <- config$fill_opacity
+  group_var <- config$group_var
+
+  # Build tooltip
+  density_data$.tooltip <- paste0(
+    density_data$group, "<br>",
+    x_label, ": ", round(density_data$x, 2), "<br>",
+    y_label, ": ", round(density_data$y, 4)
+  )
+
+  if (!is.null(group_var)) {
+    p <- ggplot2::ggplot(density_data, ggplot2::aes(
+      x = .data$x, y = .data$y, fill = .data$group, colour = .data$group,
+      group = .data$group
+    )) +
+      ggiraph::geom_ribbon_interactive(
+        ggplot2::aes(ymin = 0, ymax = .data$y,
+                     tooltip = .data$.tooltip, data_id = .data$group),
+        alpha = fill_opacity
+      ) +
+      ggiraph::geom_line_interactive(
+        ggplot2::aes(tooltip = .data$.tooltip, data_id = .data$group),
+        linewidth = 0.8
+      )
+  } else {
+    p <- ggplot2::ggplot(density_data, ggplot2::aes(
+      x = .data$x, y = .data$y
+    )) +
+      ggiraph::geom_ribbon_interactive(
+        ggplot2::aes(ymin = 0, ymax = .data$y, tooltip = .data$.tooltip),
+        alpha = fill_opacity,
+        fill = if (!is.null(color_palette)) color_palette[1] else "steelblue"
+      ) +
+      ggiraph::geom_line_interactive(
+        ggplot2::aes(tooltip = .data$.tooltip),
+        colour = if (!is.null(color_palette)) color_palette[1] else "steelblue",
+        linewidth = 0.8
+      )
+  }
+
+  p <- p +
+    ggplot2::labs(title = title, subtitle = subtitle,
+                  x = x_label, y = y_label) +
+    ggplot2::theme_minimal()
+
+  if (!is.null(color_palette) && !is.null(group_var)) {
+    p <- p +
+      ggplot2::scale_fill_manual(values = color_palette) +
+      ggplot2::scale_color_manual(values = color_palette)
+  }
+
+  if (is.null(group_var)) {
+    p <- p + ggplot2::theme(legend.position = "none")
+  }
+
+  ggiraph::girafe(ggobj = p)
 }

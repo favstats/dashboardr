@@ -125,4 +125,3 @@ test_that("showcase_dashboard generates valid QMD with curly braces", {
 })
 
 } # end covr CI skip
-

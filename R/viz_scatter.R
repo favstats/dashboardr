@@ -32,6 +32,7 @@
 #' @param jitter Logical. Whether to add jittering to reduce overplotting. Defaults to `FALSE`.
 #' @param jitter_amount Numeric. Amount of jittering if `jitter = TRUE`. Defaults to 0.2.
 #'
+#' @param backend Rendering backend: "highcharter" (default), "plotly", "echarts4r", or "ggiraph".
 #' @return A highcharter plot object.
 #'
 #' @examples
@@ -87,7 +88,8 @@ viz_scatter <- function(data,
                            tooltip = NULL,
                            tooltip_format = NULL,
                            jitter = FALSE,
-                           jitter_amount = 0.2) {
+                           jitter_amount = 0.2,
+                           backend = "highcharter") {
   
   # Convert variable arguments to strings (supports both quoted and unquoted)
   x_var <- .as_var_string(rlang::enquo(x_var))
@@ -203,13 +205,71 @@ viz_scatter <- function(data,
   final_x_label <- x_label %||% x_var
   final_y_label <- y_label %||% y_var
   
+  # Build config for backend dispatch
+  config <- list(
+    x_var = x_var,
+    y_var = y_var,
+    x_var_numeric = x_var_numeric,
+    y_var_plot = y_var_plot,
+    color_var = color_var,
+    size_var = size_var,
+    title = title,
+    subtitle = subtitle,
+    final_x_label = final_x_label,
+    final_y_label = final_y_label,
+    color_palette = color_palette,
+    point_size = point_size,
+    show_trend = show_trend,
+    trend_method = trend_method,
+    alpha = alpha,
+    tooltip = tooltip,
+    tooltip_format = tooltip_format
+  )
+
+  # Dispatch to backend renderer
+  backend <- .normalize_backend(backend)
+  backend <- match.arg(backend, c("highcharter", "plotly", "echarts4r", "ggiraph"))
+  .assert_backend_supported("scatter", backend)
+  render_fn <- switch(backend,
+    highcharter = .viz_scatter_highcharter,
+    plotly      = .viz_scatter_plotly,
+    echarts4r   = .viz_scatter_echarts,
+    ggiraph     = .viz_scatter_ggiraph
+  )
+  result <- render_fn(plot_data, config)
+  result <- .register_chart_widget(result, backend = backend)
+  return(result)
+}
+
+# --- Highcharter backend (original implementation) ---
+#' @keywords internal
+.viz_scatter_highcharter <- function(plot_data, config) {
+  # Unpack config
+  x_var <- config$x_var
+  y_var <- config$y_var
+  x_var_numeric <- config$x_var_numeric
+  y_var_plot <- config$y_var_plot
+  color_var <- config$color_var
+  size_var <- config$size_var
+  title <- config$title
+  subtitle <- config$subtitle
+  final_x_label <- config$final_x_label
+  final_y_label <- config$final_y_label
+  color_palette <- config$color_palette
+  point_size <- config$point_size
+  show_trend <- config$show_trend
+  trend_method <- config$trend_method
+  alpha <- config$alpha
+  tooltip <- config$tooltip
+  tooltip_format <- config$tooltip_format
+
   # Create base chart
   hc <- highcharter::highchart() %>%
     highcharter::hc_chart(type = "scatter", zoomType = "xy")
-  
+
   if (!is.null(title)) hc <- hc %>% highcharter::hc_title(text = title)
   if (!is.null(subtitle)) hc <- hc %>% highcharter::hc_subtitle(text = subtitle)
-  
+
   # Set up axes
   hc <- hc %>%
     highcharter::hc_xAxis(
@@ -220,7 +280,7 @@ viz_scatter <- function(data,
       title = list(text = final_y_label),
       gridLineWidth = 1
     )
-  
+
   # Prepare tooltip format (for legacy tooltip_format parameter)
   if (is.null(tooltip) && is.null(tooltip_format)) {
     tooltip_format <- paste0(
@@ -229,7 +289,7 @@ viz_scatter <- function(data,
       if (!is.null(color_var)) paste0("<br/><b>", color_var, ":</b> {series.name}") else ""
     )
   }
-  
+
   # Add series
   if (is.null(color_var)) {
     # Single series - all points same color
@@ -239,12 +299,12 @@ viz_scatter <- function(data,
         y = !!rlang::sym(y_var_plot)
       ) %>%
       dplyr::select(x, y)
-    
+
     if (!is.null(size_var)) {
       series_data <- series_data %>%
         dplyr::mutate(z = plot_data[[size_var]])
     }
-    
+
     hc <- hc %>%
       highcharter::hc_add_series(
         name = final_y_label,
@@ -254,19 +314,19 @@ viz_scatter <- function(data,
           fillOpacity = alpha
         )
       )
-    
+
     # Apply color if specified
     if (!is.null(color_palette) && length(color_palette) >= 1) {
       hc <- hc %>% highcharter::hc_colors(color_palette[1])
     }
-    
+
   } else {
     # Multiple series - one per color group
     color_levels <- unique(plot_data[[color_var]])
-    
+
     for (i in seq_along(color_levels)) {
       color_level <- color_levels[i]
-      
+
       series_data <- plot_data %>%
         dplyr::filter(!!rlang::sym(color_var) == color_level) %>%
         dplyr::mutate(
@@ -274,14 +334,14 @@ viz_scatter <- function(data,
           y = !!rlang::sym(y_var_plot)
         ) %>%
         dplyr::select(x, y)
-      
+
       if (!is.null(size_var)) {
         series_data <- series_data %>%
-          dplyr::mutate(z = plot_data %>% 
-                          dplyr::filter(!!rlang::sym(color_var) == color_level) %>% 
+          dplyr::mutate(z = plot_data %>%
+                          dplyr::filter(!!rlang::sym(color_var) == color_level) %>%
                           dplyr::pull(!!rlang::sym(size_var)))
       }
-      
+
       hc <- hc %>%
         highcharter::hc_add_series(
           name = as.character(color_level),
@@ -292,13 +352,13 @@ viz_scatter <- function(data,
           )
         )
     }
-    
+
     # Apply color palette if specified
     if (!is.null(color_palette)) {
       hc <- hc %>% highcharter::hc_colors(color_palette)
     }
   }
-  
+
   # Add trend line if requested
   if (show_trend) {
     if (trend_method == "lm") {
@@ -307,28 +367,28 @@ viz_scatter <- function(data,
         stats::as.formula(paste(y_var_plot, "~", x_var_numeric)),
         data = plot_data
       )
-      
+
       # Generate prediction line
       x_range <- range(plot_data[[x_var_numeric]], na.rm = TRUE)
       x_pred <- seq(x_range[1], x_range[2], length.out = 100)
       y_pred <- stats::predict(lm_model, newdata = data.frame(setNames(list(x_pred), x_var_numeric)))
-      
+
       trend_data <- data.frame(x = x_pred, y = y_pred)
-      
+
     } else if (trend_method == "loess") {
       # Loess smoothing
       loess_model <- stats::loess(
         stats::as.formula(paste(y_var_plot, "~", x_var_numeric)),
         data = plot_data
       )
-      
+
       x_range <- range(plot_data[[x_var_numeric]], na.rm = TRUE)
       x_pred <- seq(x_range[1], x_range[2], length.out = 100)
       y_pred <- stats::predict(loess_model, newdata = data.frame(setNames(list(x_pred), x_var_numeric)))
-      
+
       trend_data <- data.frame(x = x_pred, y = y_pred)
     }
-    
+
     hc <- hc %>%
       highcharter::hc_add_series(
         name = "Trend",
@@ -341,7 +401,7 @@ viz_scatter <- function(data,
         showInLegend = TRUE
       )
   }
-  
+
   # Configure tooltip
   if (!is.null(tooltip)) {
     # Use new unified tooltip system
@@ -366,13 +426,112 @@ viz_scatter <- function(data,
         pointFormat = tooltip_format
       )
   }
-  
+
   # Enable legend if color grouping is used
   hc <- hc %>%
     highcharter::hc_legend(
       enabled = !is.null(color_var) || show_trend
     )
-  
+
   return(hc)
+}
+
+# --- Plotly backend ---
+#' @keywords internal
+.viz_scatter_plotly <- function(plot_data, config) {
+  rlang::check_installed("plotly", reason = "to use the plotly backend")
+  x_var_numeric <- config$x_var_numeric
+  y_var_plot <- config$y_var_plot
+  color_var <- config$color_var
+  size_var <- config$size_var
+  title <- config$title
+  final_x_label <- config$final_x_label
+  final_y_label <- config$final_y_label
+  color_palette <- config$color_palette
+  alpha <- config$alpha
+
+  if (!is.null(color_var)) {
+    p <- plotly::plot_ly(plot_data,
+      x = ~get(x_var_numeric), y = ~get(y_var_plot),
+      color = ~get(color_var),
+      colors = color_palette,
+      type = "scatter", mode = "markers",
+      marker = list(opacity = alpha,
+                    size = if (!is.null(size_var)) ~get(size_var) else config$point_size)
+    )
+  } else {
+    p <- plotly::plot_ly(plot_data,
+      x = ~get(x_var_numeric), y = ~get(y_var_plot),
+      type = "scatter", mode = "markers",
+      marker = list(opacity = alpha,
+                    size = if (!is.null(size_var)) ~get(size_var) else config$point_size,
+                    color = if (!is.null(color_palette)) color_palette[1] else NULL)
+    )
+  }
+  p <- p %>% plotly::layout(
+    title = title,
+    xaxis = list(title = final_x_label),
+    yaxis = list(title = final_y_label)
+  )
+  p
+}
+
+# --- echarts4r backend ---
+#' @keywords internal
+.viz_scatter_echarts <- function(plot_data, config) {
+  rlang::check_installed("echarts4r", reason = "to use the echarts4r backend")
+  x_var_numeric <- config$x_var_numeric
+  y_var_plot <- config$y_var_plot
+  color_var <- config$color_var
+  title <- config$title
+  final_x_label <- config$final_x_label
+  final_y_label <- config$final_y_label
+
+  if (!is.null(color_var)) {
+    ec <- plot_data |>
+      dplyr::group_by(!!rlang::sym(color_var)) |>
+      echarts4r::e_charts_(x_var_numeric) |>
+      echarts4r::e_scatter_(y_var_plot)
+  } else {
+    ec <- plot_data |>
+      echarts4r::e_charts_(x_var_numeric) |>
+      echarts4r::e_scatter_(y_var_plot)
+  }
+  ec <- ec |>
+    echarts4r::e_title(text = title) |>
+    echarts4r::e_x_axis(name = final_x_label) |>
+    echarts4r::e_y_axis(name = final_y_label) |>
+    echarts4r::e_tooltip(trigger = "item")
+  ec
+}
+
+# --- ggiraph backend ---
+#' @keywords internal
+.viz_scatter_ggiraph <- function(plot_data, config) {
+  rlang::check_installed("ggiraph", reason = "to use the ggiraph backend")
+  rlang::check_installed("ggplot2", reason = "to use the ggiraph backend")
+  x_var_numeric <- config$x_var_numeric
+  y_var_plot <- config$y_var_plot
+  color_var <- config$color_var
+  title <- config$title
+  final_x_label <- config$final_x_label
+  final_y_label <- config$final_y_label
+  alpha <- config$alpha
+
+  p <- ggplot2::ggplot(plot_data, ggplot2::aes(
+    x = .data[[x_var_numeric]], y = .data[[y_var_plot]],
+    tooltip = paste0(final_x_label, ": ", .data[[x_var_numeric]], "\n",
+                     final_y_label, ": ", .data[[y_var_plot]])
+  ))
+  if (!is.null(color_var)) {
+    p <- p + ggiraph::geom_point_interactive(
+      ggplot2::aes(color = .data[[color_var]]), alpha = alpha
+    )
+  } else {
+    p <- p + ggiraph::geom_point_interactive(alpha = alpha)
+  }
+  p <- p +
+    ggplot2::labs(title = title, x = final_x_label, y = final_y_label)
+  ggiraph::girafe(ggobj = p)
 }
 

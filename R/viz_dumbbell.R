@@ -35,6 +35,7 @@
 #' @param tooltip_prefix Optional string prepended to tooltip values.
 #' @param tooltip_suffix Optional string appended to tooltip values.
 #'
+#' @param backend Rendering backend: "highcharter" (default), "plotly", "echarts4r", or "ggiraph".
 #' @return A highcharter plot object.
 #'
 #' @examples
@@ -73,7 +74,8 @@ viz_dumbbell <- function(data,
                          color_palette = NULL,
                          tooltip = NULL,
                          tooltip_prefix = "",
-                         tooltip_suffix = "") {
+                         tooltip_suffix = "",
+                         backend = "highcharter") {
 
   # Convert variable arguments to strings
   x_var <- .as_var_string(rlang::enquo(x_var))
@@ -150,6 +152,52 @@ viz_dumbbell <- function(data,
   # Set labels
   final_x_label <- x_label %||% x_var
   final_y_label <- y_label %||% ""
+
+  # Build config for backend dispatch
+  config <- list(
+    title = title, subtitle = subtitle,
+    x_label = final_x_label, y_label = final_y_label,
+    horizontal = horizontal,
+    low_label = low_label, high_label = high_label,
+    low_color = low_color, high_color = high_color,
+    connector_color = connector_color, connector_width = connector_width,
+    dot_size = dot_size,
+    data_labels_enabled = data_labels_enabled,
+    tooltip = tooltip, tooltip_prefix = tooltip_prefix,
+    tooltip_suffix = tooltip_suffix,
+    categories = categories
+  )
+
+  # Dispatch to backend renderer
+  backend <- .normalize_backend(backend)
+  backend <- match.arg(backend, c("highcharter", "plotly", "echarts4r", "ggiraph"))
+  .assert_backend_supported("dumbbell", backend)
+  render_fn <- switch(backend,
+    highcharter = .viz_dumbbell_highcharter,
+    plotly      = .viz_dumbbell_plotly,
+    echarts4r   = .viz_dumbbell_echarts,
+    ggiraph     = .viz_dumbbell_ggiraph
+  )
+  result <- render_fn(plot_data, config)
+  result <- .register_chart_widget(result, backend = backend)
+  return(result)
+}
+
+# --- Highcharter backend (original implementation) ---
+#' @keywords internal
+.viz_dumbbell_highcharter <- function(plot_data, config) {
+  # Unpack config
+  title <- config$title; subtitle <- config$subtitle
+  final_x_label <- config$x_label; final_y_label <- config$y_label
+  horizontal <- config$horizontal
+  low_label <- config$low_label; high_label <- config$high_label
+  low_color <- config$low_color; high_color <- config$high_color
+  connector_color <- config$connector_color; connector_width <- config$connector_width
+  dot_size <- config$dot_size
+  data_labels_enabled <- config$data_labels_enabled
+  tooltip <- config$tooltip; tooltip_prefix <- config$tooltip_prefix
+  tooltip_suffix <- config$tooltip_suffix
+  categories <- config$categories
 
   # Build dumbbell using Highcharts dumbbell type
   # Highcharts has a native dumbbell chart type (requires highcharts-more)
@@ -230,4 +278,177 @@ viz_dumbbell <- function(data,
   }
 
   return(hc)
+}
+
+# --- Plotly backend ---
+#' @keywords internal
+.viz_dumbbell_plotly <- function(plot_data, config) {
+  rlang::check_installed("plotly", reason = "to use backend = 'plotly'")
+
+  title <- config$title
+  final_x_label <- config$x_label; final_y_label <- config$y_label
+  horizontal <- config$horizontal
+  low_label <- config$low_label; high_label <- config$high_label
+  low_color <- config$low_color; high_color <- config$high_color
+  connector_color <- config$connector_color; connector_width <- config$connector_width
+  dot_size <- config$dot_size
+  categories <- config$categories
+
+  p <- plotly::plot_ly()
+
+  if (horizontal) {
+    # Connector lines
+    for (i in seq_len(nrow(plot_data))) {
+      p <- p |> plotly::add_segments(
+        x = plot_data$low[i], xend = plot_data$high[i],
+        y = categories[i], yend = categories[i],
+        line = list(color = connector_color, width = connector_width),
+        showlegend = FALSE
+      )
+    }
+    # Low dots
+    p <- p |> plotly::add_markers(
+      x = plot_data$low, y = categories,
+      name = low_label,
+      marker = list(color = low_color, size = dot_size)
+    )
+    # High dots
+    p <- p |> plotly::add_markers(
+      x = plot_data$high, y = categories,
+      name = high_label,
+      marker = list(color = high_color, size = dot_size)
+    )
+  } else {
+    # Connector lines
+    for (i in seq_len(nrow(plot_data))) {
+      p <- p |> plotly::add_segments(
+        x = categories[i], xend = categories[i],
+        y = plot_data$low[i], yend = plot_data$high[i],
+        line = list(color = connector_color, width = connector_width),
+        showlegend = FALSE
+      )
+    }
+    # Low dots
+    p <- p |> plotly::add_markers(
+      x = categories, y = plot_data$low,
+      name = low_label,
+      marker = list(color = low_color, size = dot_size)
+    )
+    # High dots
+    p <- p |> plotly::add_markers(
+      x = categories, y = plot_data$high,
+      name = high_label,
+      marker = list(color = high_color, size = dot_size)
+    )
+  }
+
+  layout_args <- list(p = p)
+  if (!is.null(title)) layout_args$title <- title
+  if (horizontal) {
+    layout_args$xaxis <- list(title = final_y_label)
+    layout_args$yaxis <- list(title = final_x_label, categoryorder = "trace")
+  } else {
+    layout_args$xaxis <- list(title = final_x_label)
+    layout_args$yaxis <- list(title = final_y_label)
+  }
+  p <- do.call(plotly::layout, layout_args)
+
+  p
+}
+
+# --- echarts4r backend ---
+#' @keywords internal
+.viz_dumbbell_echarts <- function(plot_data, config) {
+  rlang::check_installed("echarts4r", reason = "to use backend = 'echarts4r'")
+
+  title <- config$title; subtitle <- config$subtitle
+  final_x_label <- config$x_label; final_y_label <- config$y_label
+  horizontal <- config$horizontal
+  low_label <- config$low_label; high_label <- config$high_label
+  low_color <- config$low_color; high_color <- config$high_color
+  dot_size <- config$dot_size
+  categories <- config$categories
+
+  # echarts4r: use custom series with scatter for low/high dots and a line for connector
+  # We build a data frame with low and high columns
+  chart_df <- data.frame(
+    category = categories,
+    low = plot_data$low,
+    high = plot_data$high,
+    stringsAsFactors = FALSE
+  )
+
+  e <- chart_df |>
+    echarts4r::e_charts(category) |>
+    echarts4r::e_scatter(low, name = low_label, symbol_size = dot_size,
+                          itemStyle = list(color = low_color)) |>
+    echarts4r::e_scatter(high, name = high_label, symbol_size = dot_size,
+                          itemStyle = list(color = high_color))
+
+  if (horizontal) {
+    e <- e |> echarts4r::e_flip_coords()
+  }
+
+  if (!is.null(title) || !is.null(subtitle)) {
+    e <- e |> echarts4r::e_title(text = title %||% "", subtext = subtitle %||% "")
+  }
+
+  e <- e |>
+    echarts4r::e_x_axis(name = final_x_label) |>
+    echarts4r::e_y_axis(name = final_y_label) |>
+    echarts4r::e_tooltip(trigger = "axis")
+
+  e
+}
+
+# --- ggiraph backend ---
+#' @keywords internal
+.viz_dumbbell_ggiraph <- function(plot_data, config) {
+  rlang::check_installed("ggiraph", reason = "to use backend = 'ggiraph'")
+  rlang::check_installed("ggplot2", reason = "to use backend = 'ggiraph'")
+
+  title <- config$title; subtitle <- config$subtitle
+  final_x_label <- config$x_label; final_y_label <- config$y_label
+  horizontal <- config$horizontal
+  low_label <- config$low_label; high_label <- config$high_label
+  low_color <- config$low_color; high_color <- config$high_color
+  connector_color <- config$connector_color; connector_width <- config$connector_width
+  dot_size <- config$dot_size
+  categories <- config$categories
+
+  plot_data$category <- factor(plot_data$category, levels = rev(categories))
+
+  # Build tooltip
+  plot_data$.tooltip <- paste0(
+    plot_data$category,
+    "\n", low_label, ": ", round(plot_data$low, 1),
+    "\n", high_label, ": ", round(plot_data$high, 1),
+    "\nDifference: ", round(plot_data$gap, 1)
+  )
+
+  p <- ggplot2::ggplot(plot_data) +
+    ggplot2::geom_segment(
+      ggplot2::aes(x = .data$category, xend = .data$category,
+                    y = .data$low, yend = .data$high),
+      color = connector_color, linewidth = connector_width * 0.3
+    ) +
+    ggiraph::geom_point_interactive(
+      ggplot2::aes(x = .data$category, y = .data$low,
+                    tooltip = .data$.tooltip, data_id = .data$category),
+      color = low_color, size = dot_size * 0.5
+    ) +
+    ggiraph::geom_point_interactive(
+      ggplot2::aes(x = .data$category, y = .data$high,
+                    tooltip = .data$.tooltip, data_id = .data$category),
+      color = high_color, size = dot_size * 0.5
+    ) +
+    ggplot2::labs(title = title, subtitle = subtitle,
+                  x = final_x_label, y = final_y_label) +
+    ggplot2::theme_minimal()
+
+  if (horizontal) {
+    p <- p + ggplot2::coord_flip()
+  }
+
+  ggiraph::girafe(ggobj = p)
 }

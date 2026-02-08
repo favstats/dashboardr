@@ -20,7 +20,8 @@ viz_sankey(
   tooltip = NULL,
   tooltip_prefix = "",
   tooltip_suffix = "",
-  height = 400
+  height = 400,
+  backend = "highcharter"
 )
 }
 \arguments{
@@ -56,6 +57,8 @@ OR a format string.}
 \item{tooltip_suffix}{Optional string appended to tooltip values.}
 
 \item{height}{Numeric. Chart height in pixels. Default 400.}
+
+\item{backend}{Rendering backend: "highcharter" (default), "plotly", "echarts4r", or "ggiraph".}
 }
 \value{
 A highcharter plot object.

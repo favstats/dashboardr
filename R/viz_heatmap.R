@@ -65,6 +65,7 @@
 #'   Use this when your data is already aggregated (one row per x/y combination).
 #'   Default is FALSE.
 #'
+#' @param backend Rendering backend: "highcharter" (default), "plotly", "echarts4r", or "ggiraph".
 #' @return A `highcharter` heatmap object.
 #'
 #' @examples
@@ -228,7 +229,8 @@ viz_heatmap <- function(data,
                            y_map_values = NULL,
                            agg_fun = mean,
                            weight_var = NULL,
-                           pre_aggregated = FALSE
+                           pre_aggregated = FALSE,
+                           backend = "highcharter"
 ) {
 
   # Convert variable arguments to strings (supports both quoted and unquoted)
@@ -454,16 +456,63 @@ viz_heatmap <- function(data,
   final_x_levels <- levels(df_plot_complete$.x_plot)
   final_y_levels <- levels(df_plot_complete$.y_plot)
 
+  # Axis labels
+  final_x_label <- x_label %||% x_var
+  final_y_label <- y_label %||% y_var
+  final_value_label <- value_label %||% value_var
+
+  # Build config for backend dispatch
+  config <- list(
+    title = title, subtitle = subtitle,
+    x_label = final_x_label, y_label = final_y_label,
+    value_label = final_value_label,
+    color_palette = color_palette, color_min = color_min, color_max = color_max,
+    na_color = na_color, data_labels_enabled = data_labels_enabled,
+    label_decimals = label_decimals, tooltip_labels_format = tooltip_labels_format,
+    tooltip = tooltip, tooltip_prefix = tooltip_prefix, tooltip_suffix = tooltip_suffix,
+    x_tooltip_suffix = x_tooltip_suffix, y_tooltip_suffix = y_tooltip_suffix,
+    x_tooltip_prefix = x_tooltip_prefix, y_tooltip_prefix = y_tooltip_prefix,
+    final_x_levels = final_x_levels, final_y_levels = final_y_levels
+  )
+
+  # Dispatch to backend renderer
+  backend <- .normalize_backend(backend)
+  backend <- match.arg(backend, c("highcharter", "plotly", "echarts4r", "ggiraph"))
+  .assert_backend_supported("heatmap", backend)
+  render_fn <- switch(backend,
+    highcharter = .viz_heatmap_highcharter,
+    plotly      = .viz_heatmap_plotly,
+    echarts4r   = .viz_heatmap_echarts,
+    ggiraph     = .viz_heatmap_ggiraph
+  )
+  result <- render_fn(df_plot_complete, config)
+  result <- .register_chart_widget(result, backend = backend)
+  return(result)
+}
+
+# --- Highcharter backend (original implementation) ---
+#' @keywords internal
+.viz_heatmap_highcharter <- function(df_plot_complete, config) {
+  # Unpack config
+  title <- config$title; subtitle <- config$subtitle
+  final_x_label <- config$x_label; final_y_label <- config$y_label
+  final_value_label <- config$value_label
+  color_palette <- config$color_palette; color_min <- config$color_min
+  color_max <- config$color_max; na_color <- config$na_color
+  data_labels_enabled <- config$data_labels_enabled
+  label_decimals <- config$label_decimals
+  tooltip_labels_format <- config$tooltip_labels_format
+  tooltip <- config$tooltip; tooltip_prefix <- config$tooltip_prefix
+  tooltip_suffix <- config$tooltip_suffix
+  x_tooltip_suffix <- config$x_tooltip_suffix; y_tooltip_suffix <- config$y_tooltip_suffix
+  x_tooltip_prefix <- config$x_tooltip_prefix; y_tooltip_prefix <- config$y_tooltip_prefix
+  final_x_levels <- config$final_x_levels; final_y_levels <- config$final_y_levels
+
   # Chart construction
   hc <- highcharter::highchart() %>%
     highcharter::hc_chart(type = "heatmap") %>%
     highcharter::hc_title(text = title) %>%
     highcharter::hc_subtitle(text = subtitle)
-
-  # Axis labels
-  final_x_label <- x_label %||% x_var
-  final_y_label <- y_label %||% y_var
-  final_value_label <- value_label %||% value_var
 
   hc <- hc %>%
     highcharter::hc_xAxis(
@@ -586,4 +635,151 @@ viz_heatmap <- function(data,
   }
 
   return(hc)
+}
+
+# --- Plotly backend ---
+#' @keywords internal
+.viz_heatmap_plotly <- function(df_plot_complete, config) {
+  rlang::check_installed("plotly", reason = "to use backend = 'plotly'")
+
+  title <- config$title
+  final_x_label <- config$x_label; final_y_label <- config$y_label
+  final_value_label <- config$value_label
+  color_palette <- config$color_palette
+  color_min <- config$color_min; color_max <- config$color_max
+  final_x_levels <- config$final_x_levels; final_y_levels <- config$final_y_levels
+  label_decimals <- config$label_decimals
+
+  # Pivot to matrix form for plotly heatmap
+  mat <- df_plot_complete |>
+    dplyr::select(.x_plot, .y_plot, .value_plot) |>
+    tidyr::pivot_wider(names_from = .x_plot, values_from = .value_plot) |>
+    dplyr::arrange(match(.y_plot, final_y_levels))
+
+  y_labels <- as.character(mat$.y_plot)
+  mat$.y_plot <- NULL
+  z_matrix <- as.matrix(mat[, final_x_levels, drop = FALSE])
+
+  # Build colorscale from color_palette
+  colorscale <- NULL
+  if (!is.null(color_palette) && length(color_palette) >= 2) {
+    n <- length(color_palette)
+    colorscale <- lapply(seq_along(color_palette), function(i) {
+      list((i - 1) / (n - 1), color_palette[i])
+    })
+  }
+
+  p <- plotly::plot_ly(
+    x = final_x_levels,
+    y = y_labels,
+    z = z_matrix,
+    type = "heatmap",
+    colorscale = colorscale,
+    zmin = color_min,
+    zmax = color_max,
+    colorbar = list(title = final_value_label),
+    hovertemplate = paste0(
+      final_x_label, ": %{x}<br>",
+      final_y_label, ": %{y}<br>",
+      final_value_label, ": %{z:.", label_decimals, "f}<extra></extra>"
+    )
+  )
+
+  layout_args <- list(
+    p = p,
+    xaxis = list(title = final_x_label),
+    yaxis = list(title = final_y_label)
+  )
+  if (!is.null(title)) layout_args$title <- title
+
+  p <- do.call(plotly::layout, layout_args)
+
+  p
+}
+
+# --- echarts4r backend ---
+#' @keywords internal
+.viz_heatmap_echarts <- function(df_plot_complete, config) {
+  rlang::check_installed("echarts4r", reason = "to use backend = 'echarts4r'")
+
+  title <- config$title; subtitle <- config$subtitle
+  final_x_label <- config$x_label; final_y_label <- config$y_label
+  final_value_label <- config$value_label
+  color_palette <- config$color_palette
+  color_min <- config$color_min; color_max <- config$color_max
+
+  # echarts4r heatmap needs character x/y
+  plot_df <- df_plot_complete |>
+    dplyr::mutate(
+      .x_plot = as.character(.x_plot),
+      .y_plot = as.character(.y_plot)
+    )
+
+  e <- plot_df |>
+    echarts4r::e_charts(.x_plot) |>
+    echarts4r::e_heatmap(.y_plot, .value_plot) |>
+    echarts4r::e_visual_map(
+      .value_plot,
+      inRange = list(color = color_palette),
+      min = color_min %||% min(df_plot_complete$.value_plot, na.rm = TRUE),
+      max = color_max %||% max(df_plot_complete$.value_plot, na.rm = TRUE)
+    )
+
+  if (!is.null(title) || !is.null(subtitle)) {
+    e <- e |> echarts4r::e_title(text = title %||% "", subtext = subtitle %||% "")
+  }
+
+  e <- e |>
+    echarts4r::e_x_axis(name = final_x_label) |>
+    echarts4r::e_y_axis(name = final_y_label) |>
+    echarts4r::e_tooltip(trigger = "item")
+
+  e
+}
+
+# --- ggiraph backend ---
+#' @keywords internal
+.viz_heatmap_ggiraph <- function(df_plot_complete, config) {
+  rlang::check_installed("ggiraph", reason = "to use backend = 'ggiraph'")
+  rlang::check_installed("ggplot2", reason = "to use backend = 'ggiraph'")
+
+  title <- config$title; subtitle <- config$subtitle
+  final_x_label <- config$x_label; final_y_label <- config$y_label
+  final_value_label <- config$value_label
+  color_palette <- config$color_palette
+  color_min <- config$color_min; color_max <- config$color_max
+  label_decimals <- config$label_decimals
+
+  # Build tooltip text
+  df_plot_complete$.tooltip <- paste0(
+    final_x_label, ": ", df_plot_complete$.x_plot, "<br>",
+    final_y_label, ": ", df_plot_complete$.y_plot, "<br>",
+    final_value_label, ": ", round(df_plot_complete$.value_plot, label_decimals)
+  )
+
+  p <- ggplot2::ggplot(df_plot_complete, ggplot2::aes(
+    x = .data$.x_plot, y = .data$.y_plot, fill = .data$.value_plot
+  )) +
+    ggiraph::geom_tile_interactive(
+      ggplot2::aes(tooltip = .data$.tooltip, data_id = paste(.data$.x_plot, .data$.y_plot)),
+      color = "white"
+    ) +
+    ggplot2::labs(
+      title = title, subtitle = subtitle,
+      x = final_x_label, y = final_y_label, fill = final_value_label
+    ) +
+    ggplot2::theme_minimal()
+
+  # Apply color gradient
+  if (length(color_palette) == 2) {
+    fill_args <- list(low = color_palette[1], high = color_palette[2])
+    if (!is.null(color_min) && !is.null(color_max)) fill_args$limits <- c(color_min, color_max)
+    p <- p + do.call(ggplot2::scale_fill_gradient, fill_args)
+  } else if (length(color_palette) >= 3) {
+    fill_args <- list(colours = color_palette)
+    if (!is.null(color_min) && !is.null(color_max)) fill_args$limits <- c(color_min, color_max)
+    p <- p + do.call(ggplot2::scale_fill_gradientn, fill_args)
+  }
+
+  ggiraph::girafe(ggobj = p)
 }

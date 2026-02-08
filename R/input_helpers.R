@@ -100,6 +100,9 @@ enable_inputs <- function(linked = FALSE, show_when = FALSE) {
       src = paste0("assets/filter_hook.js?v=", version)
     ),
     htmltools::tags$script(
+      src = paste0("assets/chart_adapters.js?v=", version)
+    ),
+    htmltools::tags$script(
       src = paste0("assets/input_filter.js?v=", version)
     )
   )

@@ -4,7 +4,7 @@
 \alias{add_text}
 \title{Add text to content collection (pipeable)}
 \usage{
-add_text(x = NULL, text, ..., tabgroup = NULL)
+add_text(x = NULL, text, ..., tabgroup = NULL, show_when = NULL)
 }
 \arguments{
 \item{x}{A content_collection, viz_collection, sidebar_container, page_object, or NULL}
@@ -14,6 +14,8 @@ add_text(x = NULL, text, ..., tabgroup = NULL)
 \item{...}{Additional text lines (will be combined with newlines)}
 
 \item{tabgroup}{Optional tabgroup for organizing content (character vector for nested tabs)}
+
+\item{show_when}{One-sided formula controlling conditional display based on input values.}
 }
 \value{
 Updated content_collection object

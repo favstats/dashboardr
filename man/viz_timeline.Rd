@@ -36,7 +36,8 @@ viz_timeline(
   tooltip_suffix = "",
   group_order = NULL,
   cross_tab_filter_vars = NULL,
-  title_map = NULL
+  title_map = NULL,
+  backend = "highcharter"
 )
 }
 \arguments{
@@ -129,6 +130,8 @@ See \code{\link{tooltip}} for full customization options.}
 
 \item{title_map}{Named list mapping variable names to custom display titles
 for dynamic title updates when filtering by cross-tab variables.}
+
+\item{backend}{Rendering backend: "highcharter" (default), "plotly", "echarts4r", or "ggiraph".}
 }
 \value{
 A highcharter plot object.

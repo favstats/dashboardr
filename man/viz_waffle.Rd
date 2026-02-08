@@ -22,7 +22,8 @@ viz_waffle(
   tooltip = NULL,
   tooltip_prefix = "",
   tooltip_suffix = "",
-  height = 400
+  height = 400,
+  backend = "highcharter"
 )
 }
 \arguments{
@@ -64,6 +65,8 @@ Each square represents \code{total_value / total} of the data.}
 \item{tooltip_suffix}{Optional string appended to tooltip values.}
 
 \item{height}{Numeric. Chart height in pixels. Default 400.}
+
+\item{backend}{Rendering backend: "highcharter" (default), "plotly", "echarts4r", or "ggiraph".}
 }
 \value{
 A highcharter plot object.

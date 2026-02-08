@@ -39,6 +39,7 @@
 #' @param tooltip_prefix Optional string prepended to tooltip values.
 #' @param tooltip_suffix Optional string appended to tooltip values.
 #'
+#' @param backend Rendering backend: "highcharter" (default), "plotly", "echarts4r", or "ggiraph".
 #' @return A highcharter plot object.
 #'
 #' @examples
@@ -74,7 +75,8 @@ viz_lollipop <- function(data,
                          label_decimals = NULL,
                          tooltip = NULL,
                          tooltip_prefix = "",
-                         tooltip_suffix = "") {
+                         tooltip_suffix = "",
+                         backend = "highcharter") {
 
   # Convert variable arguments to strings
   x_var <- .as_var_string(rlang::enquo(x_var))
@@ -228,6 +230,53 @@ viz_lollipop <- function(data,
   } else {
     as.character(unique(agg_data[[x_var]]))
   }
+
+  # Build config for backend dispatch
+  config <- list(
+    title = title, subtitle = subtitle,
+    x_label = final_x_label, y_label = final_y_label,
+    horizontal = horizontal, bar_type = bar_type,
+    color_palette = color_palette, group_var = group_var,
+    group_order = group_order, x_var = x_var,
+    x_categories = x_categories,
+    dot_size = dot_size, stem_width = stem_width,
+    data_labels_enabled = data_labels_enabled,
+    label_decimals = label_decimals,
+    tooltip = tooltip, tooltip_prefix = tooltip_prefix,
+    tooltip_suffix = tooltip_suffix,
+    value_var = value_var
+  )
+
+  # Dispatch to backend renderer
+  backend <- .normalize_backend(backend)
+  backend <- match.arg(backend, c("highcharter", "plotly", "echarts4r", "ggiraph"))
+  .assert_backend_supported("lollipop", backend)
+  render_fn <- switch(backend,
+    highcharter = .viz_lollipop_highcharter,
+    plotly      = .viz_lollipop_plotly,
+    echarts4r   = .viz_lollipop_echarts,
+    ggiraph     = .viz_lollipop_ggiraph
+  )
+  result <- render_fn(agg_data, config)
+  result <- .register_chart_widget(result, backend = backend)
+  return(result)
+}
+
+# --- Highcharter backend (original implementation) ---
+#' @keywords internal
+.viz_lollipop_highcharter <- function(agg_data, config) {
+  # Unpack config
+  title <- config$title; subtitle <- config$subtitle
+  final_x_label <- config$x_label; final_y_label <- config$y_label
+  horizontal <- config$horizontal; bar_type <- config$bar_type
+  color_palette <- config$color_palette; group_var <- config$group_var
+  group_order <- config$group_order; x_var <- config$x_var
+  x_categories <- config$x_categories
+  dot_size <- config$dot_size; stem_width <- config$stem_width
+  data_labels_enabled <- config$data_labels_enabled
+  label_decimals <- config$label_decimals
+  tooltip <- config$tooltip; tooltip_prefix <- config$tooltip_prefix
+  tooltip_suffix <- config$tooltip_suffix
 
   # Create chart - lollipop is a line chart with markers and lineWidth=0 stems
   # We use a combination approach: scatter for dots + column with very thin width for stems
@@ -390,4 +439,235 @@ viz_lollipop <- function(data,
   }
 
   return(hc)
+}
+
+# --- Plotly backend ---
+#' @keywords internal
+.viz_lollipop_plotly <- function(agg_data, config) {
+  rlang::check_installed("plotly", reason = "to use backend = 'plotly'")
+
+  x_var <- config$x_var
+  group_var <- config$group_var
+  group_order <- config$group_order
+  horizontal <- config$horizontal
+  bar_type <- config$bar_type
+  color_palette <- config$color_palette
+  title <- config$title
+  final_x_label <- config$x_label
+  final_y_label <- config$y_label
+  dot_size <- config$dot_size
+  stem_width <- config$stem_width
+
+  if (is.null(group_var)) {
+    cats <- as.character(agg_data[[x_var]])
+    vals <- agg_data$value
+
+    if (horizontal) {
+      p <- plotly::plot_ly() |>
+        plotly::add_segments(
+          x = rep(0, length(vals)), xend = vals,
+          y = cats, yend = cats,
+          line = list(width = stem_width, color = "#999"),
+          showlegend = FALSE
+        ) |>
+        plotly::add_markers(
+          x = vals, y = cats,
+          marker = list(size = dot_size),
+          name = final_y_label
+        )
+    } else {
+      p <- plotly::plot_ly() |>
+        plotly::add_segments(
+          x = cats, xend = cats,
+          y = rep(0, length(vals)), yend = vals,
+          line = list(width = stem_width, color = "#999"),
+          showlegend = FALSE
+        ) |>
+        plotly::add_markers(
+          x = cats, y = vals,
+          marker = list(size = dot_size),
+          name = final_y_label
+        )
+    }
+
+    if (!is.null(color_palette)) {
+      p <- plotly::layout(p, colorway = color_palette)
+    }
+  } else {
+    group_levels <- if (!is.null(group_order)) group_order else unique(agg_data[[group_var]])
+    p <- plotly::plot_ly()
+
+    for (grp in group_levels) {
+      grp_data <- agg_data[agg_data[[group_var]] == grp, ]
+      cats <- as.character(grp_data[[x_var]])
+      vals <- grp_data$value
+
+      if (horizontal) {
+        p <- p |>
+          plotly::add_segments(
+            x = rep(0, length(vals)), xend = vals,
+            y = cats, yend = cats,
+            line = list(width = stem_width),
+            showlegend = FALSE
+          ) |>
+          plotly::add_markers(
+            x = vals, y = cats,
+            marker = list(size = dot_size),
+            name = as.character(grp)
+          )
+      } else {
+        p <- p |>
+          plotly::add_segments(
+            x = cats, xend = cats,
+            y = rep(0, length(vals)), yend = vals,
+            line = list(width = stem_width),
+            showlegend = FALSE
+          ) |>
+          plotly::add_markers(
+            x = cats, y = vals,
+            marker = list(size = dot_size),
+            name = as.character(grp)
+          )
+      }
+    }
+
+    if (!is.null(color_palette)) {
+      p <- plotly::layout(p, colorway = color_palette)
+    }
+  }
+
+  layout_args <- list(p = p)
+  if (!is.null(title)) layout_args$title <- title
+  if (horizontal) {
+    layout_args$xaxis <- list(title = final_y_label)
+    layout_args$yaxis <- list(title = final_x_label, categoryorder = "trace")
+  } else {
+    layout_args$xaxis <- list(title = final_x_label)
+    layout_args$yaxis <- list(title = final_y_label)
+  }
+  p <- do.call(plotly::layout, layout_args)
+
+  p
+}
+
+# --- echarts4r backend ---
+#' @keywords internal
+.viz_lollipop_echarts <- function(agg_data, config) {
+  rlang::check_installed("echarts4r", reason = "to use backend = 'echarts4r'")
+
+  x_var <- config$x_var
+  group_var <- config$group_var
+  horizontal <- config$horizontal
+  color_palette <- config$color_palette
+  title <- config$title
+  subtitle <- config$subtitle
+  final_x_label <- config$x_label
+  final_y_label <- config$y_label
+  dot_size <- config$dot_size
+
+  # Ensure x variable is character for echart categories
+  agg_data[[x_var]] <- as.character(agg_data[[x_var]])
+
+  if (is.null(group_var)) {
+    # Use scatter type for lollipop dots with custom rendering
+    e <- agg_data |>
+      echarts4r::e_charts_(x_var) |>
+      echarts4r::e_bar_("value", name = final_y_label, barWidth = 2) |>
+      echarts4r::e_scatter_("value", name = final_y_label,
+                             symbol_size = dot_size, legend = FALSE)
+  } else {
+    agg_data[[group_var]] <- as.character(agg_data[[group_var]])
+    e <- agg_data |>
+      dplyr::group_by(.data[[group_var]]) |>
+      echarts4r::e_charts_(x_var) |>
+      echarts4r::e_bar_("value", barWidth = 2) |>
+      echarts4r::e_scatter_("value", symbol_size = dot_size, legend = FALSE)
+  }
+
+  if (horizontal) {
+    e <- e |> echarts4r::e_flip_coords()
+  }
+
+  if (!is.null(title) || !is.null(subtitle)) {
+    e <- e |> echarts4r::e_title(text = title %||% "", subtext = subtitle %||% "")
+  }
+
+  e <- e |>
+    echarts4r::e_x_axis(name = final_x_label) |>
+    echarts4r::e_y_axis(name = final_y_label) |>
+    echarts4r::e_tooltip(trigger = "axis")
+
+  if (!is.null(color_palette)) {
+    e <- e |> echarts4r::e_color(color_palette)
+  }
+
+  e
+}
+
+# --- ggiraph backend ---
+#' @keywords internal
+.viz_lollipop_ggiraph <- function(agg_data, config) {
+  rlang::check_installed("ggiraph", reason = "to use backend = 'ggiraph'")
+  rlang::check_installed("ggplot2", reason = "to use backend = 'ggiraph'")
+
+  x_var <- config$x_var
+  group_var <- config$group_var
+  horizontal <- config$horizontal
+  color_palette <- config$color_palette
+  title <- config$title
+  subtitle <- config$subtitle
+  final_x_label <- config$x_label
+  final_y_label <- config$y_label
+  dot_size <- config$dot_size
+  stem_width <- config$stem_width
+
+  # Build tooltip text
+  agg_data$.tooltip <- paste0(
+    agg_data[[x_var]],
+    if (!is.null(group_var)) paste0(" (", agg_data[[group_var]], ")") else "",
+    ": ", round(agg_data$value, 2)
+  )
+
+  if (is.null(group_var)) {
+    p <- ggplot2::ggplot(agg_data, ggplot2::aes(
+      x = .data[[x_var]], y = .data$value
+    )) +
+      ggplot2::geom_segment(
+        ggplot2::aes(x = .data[[x_var]], xend = .data[[x_var]], y = 0, yend = .data$value),
+        linewidth = stem_width * 0.3, color = "#999999"
+      ) +
+      ggiraph::geom_point_interactive(
+        ggplot2::aes(tooltip = .data$.tooltip, data_id = .data[[x_var]]),
+        size = dot_size * 0.5
+      )
+  } else {
+    p <- ggplot2::ggplot(agg_data, ggplot2::aes(
+      x = .data[[x_var]], y = .data$value, color = .data[[group_var]]
+    )) +
+      ggplot2::geom_segment(
+        ggplot2::aes(x = .data[[x_var]], xend = .data[[x_var]], y = 0, yend = .data$value),
+        linewidth = stem_width * 0.3,
+        position = ggplot2::position_dodge(0.5)
+      ) +
+      ggiraph::geom_point_interactive(
+        ggplot2::aes(tooltip = .data$.tooltip, data_id = .data[[x_var]]),
+        size = dot_size * 0.5,
+        position = ggplot2::position_dodge(0.5)
+      )
+  }
+
+  if (!is.null(color_palette)) {
+    p <- p + ggplot2::scale_color_manual(values = color_palette)
+  }
+
+  p <- p +
+    ggplot2::labs(title = title, subtitle = subtitle,
+                  x = final_x_label, y = final_y_label) +
+    ggplot2::theme_minimal()
+
+  if (horizontal) {
+    p <- p + ggplot2::coord_flip()
+  }
+
+  ggiraph::girafe(ggobj = p)
 }

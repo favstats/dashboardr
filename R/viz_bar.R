@@ -62,6 +62,7 @@
 #'   counts or values. When provided, skips aggregation and uses these values directly.
 #'   Useful when working with already-aggregated data (e.g., Column 1: Group, Column 2: Count).
 #'
+#' @param backend Rendering backend: "highcharter" (default), "plotly", "echarts4r", or "ggiraph".
 #' @return A highcharter plot object.
 #'
 #' @examples
@@ -148,7 +149,8 @@ viz_bar <- function(data,
                        data_labels_enabled = TRUE,
                        label_decimals = NULL,
                        complete_groups = TRUE,
-                       y_var = NULL) {
+                       y_var = NULL,
+                       backend = "highcharter") {
   
   # Convert variable arguments to strings (supports both quoted and unquoted)
   x_var <- .as_var_string(rlang::enquo(x_var))
@@ -469,7 +471,53 @@ viz_bar <- function(data,
     "mean" = paste0("Mean ", value_var),
     "Count"
   )
-  
+
+  # Build config for backend dispatch
+  config <- list(
+    title = title, subtitle = subtitle,
+    x_label = final_x_label, y_label = final_y_label,
+    horizontal = horizontal, bar_type = bar_type,
+    color_palette = color_palette, group_var = group_var,
+    group_order = group_order, x_var_plot = x_var_plot,
+    error_bars = error_bars, ci_level = ci_level,
+    error_bar_color = error_bar_color, error_bar_width = error_bar_width,
+    tooltip = tooltip, tooltip_prefix = tooltip_prefix,
+    tooltip_suffix = tooltip_suffix, x_tooltip_suffix = x_tooltip_suffix,
+    data_labels_enabled = data_labels_enabled, label_decimals = label_decimals,
+    value_var = value_var, weight_var = weight_var
+  )
+
+  # Dispatch to backend renderer
+  backend <- .normalize_backend(backend)
+  backend <- match.arg(backend, c("highcharter", "plotly", "echarts4r", "ggiraph"))
+  .assert_backend_supported("bar", backend)
+  render_fn <- switch(backend,
+    highcharter = .viz_bar_highcharter,
+    plotly      = .viz_bar_plotly,
+    echarts4r   = .viz_bar_echarts,
+    ggiraph     = .viz_bar_ggiraph
+  )
+  result <- render_fn(agg_data, config)
+  result <- .register_chart_widget(result, backend = backend)
+  return(result)
+}
+
+# --- Highcharter backend (original implementation) ---
+#' @keywords internal
+.viz_bar_highcharter <- function(agg_data, config) {
+  # Unpack config
+  title <- config$title; subtitle <- config$subtitle
+  final_x_label <- config$x_label; final_y_label <- config$y_label
+  horizontal <- config$horizontal; bar_type <- config$bar_type
+  color_palette <- config$color_palette; group_var <- config$group_var
+  group_order <- config$group_order; x_var_plot <- config$x_var_plot
+  error_bars <- config$error_bars; ci_level <- config$ci_level
+  error_bar_color <- config$error_bar_color; error_bar_width <- config$error_bar_width
+  tooltip <- config$tooltip; tooltip_prefix <- config$tooltip_prefix
+  tooltip_suffix <- config$tooltip_suffix; x_tooltip_suffix <- config$x_tooltip_suffix
+  data_labels_enabled <- config$data_labels_enabled; label_decimals <- config$label_decimals
+  value_var <- config$value_var; weight_var <- config$weight_var
+
   # Create base chart
   hc <- highcharter::highchart()
   
@@ -782,5 +830,226 @@ viz_bar <- function(data,
   }
   
   return(hc)
+}
+
+# --- Plotly backend ---
+#' @keywords internal
+.viz_bar_plotly <- function(agg_data, config) {
+  rlang::check_installed("plotly", reason = "to use backend = 'plotly'")
+
+  x_var_plot <- config$x_var_plot
+  group_var <- config$group_var
+  horizontal <- config$horizontal
+  bar_type <- config$bar_type
+  color_palette <- config$color_palette
+  group_order <- config$group_order
+  title <- config$title
+  final_x_label <- config$x_label
+  final_y_label <- config$y_label
+  data_labels_enabled <- config$data_labels_enabled
+  label_decimals <- config$label_decimals
+  error_bars <- config$error_bars
+
+  has_error_bars <- error_bars != "none" && "low" %in% names(agg_data) && "high" %in% names(agg_data)
+
+  if (is.null(group_var)) {
+    # Simple bars
+    x_vals <- agg_data[[x_var_plot]]
+    y_vals <- agg_data$value
+
+    if (horizontal) {
+      p <- plotly::plot_ly(x = y_vals, y = x_vals, type = "bar", orientation = "h")
+    } else {
+      p <- plotly::plot_ly(x = x_vals, y = y_vals, type = "bar")
+    }
+
+    if (!is.null(color_palette)) {
+      p <- plotly::layout(p, colorway = color_palette)
+    }
+
+    if (has_error_bars) {
+      error_amount <- agg_data$high - agg_data$value
+      if (horizontal) {
+        p <- plotly::plot_ly(x = y_vals, y = x_vals, type = "bar", orientation = "h",
+                             error_x = list(type = "data", array = error_amount, visible = TRUE))
+      } else {
+        p <- plotly::plot_ly(x = x_vals, y = y_vals, type = "bar",
+                             error_y = list(type = "data", array = error_amount, visible = TRUE))
+      }
+    }
+  } else {
+    # Grouped bars
+    group_levels <- if (!is.null(group_order)) group_order else unique(agg_data[[group_var]])
+
+    p <- plotly::plot_ly()
+    for (i in seq_along(group_levels)) {
+      grp <- group_levels[i]
+      grp_data <- agg_data[agg_data[[group_var]] == grp, ]
+      x_vals <- grp_data[[x_var_plot]]
+      y_vals <- grp_data$value
+
+      trace_args <- list(
+        p = p, x = if (horizontal) y_vals else x_vals,
+        y = if (horizontal) x_vals else y_vals,
+        type = "bar", name = as.character(grp)
+      )
+      if (horizontal) trace_args$orientation <- "h"
+
+      if (has_error_bars) {
+        err_amount <- grp_data$high - grp_data$value
+        if (horizontal) {
+          trace_args$error_x <- list(type = "data", array = err_amount, visible = TRUE)
+        } else {
+          trace_args$error_y <- list(type = "data", array = err_amount, visible = TRUE)
+        }
+      }
+
+      p <- do.call(plotly::add_trace, trace_args)
+    }
+    p <- plotly::layout(p, barmode = "group")
+
+    if (!is.null(color_palette)) {
+      p <- plotly::layout(p, colorway = color_palette)
+    }
+  }
+
+  # Labels and title
+  layout_args <- list(p = p)
+  if (!is.null(title)) layout_args$title <- title
+  if (horizontal) {
+    layout_args$xaxis <- list(title = final_y_label)
+    layout_args$yaxis <- list(title = final_x_label)
+  } else {
+    layout_args$xaxis <- list(title = final_x_label)
+    layout_args$yaxis <- list(title = final_y_label)
+  }
+  p <- do.call(plotly::layout, layout_args)
+
+  p
+}
+
+# --- echarts4r backend ---
+#' @keywords internal
+.viz_bar_echarts <- function(agg_data, config) {
+  rlang::check_installed("echarts4r", reason = "to use backend = 'echarts4r'")
+
+  x_var_plot <- config$x_var_plot
+  group_var <- config$group_var
+  horizontal <- config$horizontal
+  bar_type <- config$bar_type
+  color_palette <- config$color_palette
+  title <- config$title
+  subtitle <- config$subtitle
+  final_x_label <- config$x_label
+  final_y_label <- config$y_label
+  error_bars <- config$error_bars
+
+  has_error_bars <- error_bars != "none" && "low" %in% names(agg_data) && "high" %in% names(agg_data)
+
+  # Ensure x variable is character for echart categories
+  agg_data[[x_var_plot]] <- as.character(agg_data[[x_var_plot]])
+
+  if (is.null(group_var)) {
+    e <- agg_data |>
+      echarts4r::e_charts_(x_var_plot) |>
+      echarts4r::e_bar_("value", name = final_y_label)
+
+    if (has_error_bars) {
+      e <- e |> echarts4r::e_error_bar_("low", "high")
+    }
+  } else {
+    agg_data[[group_var]] <- as.character(agg_data[[group_var]])
+    e <- agg_data |>
+      dplyr::group_by(.data[[group_var]]) |>
+      echarts4r::e_charts_(x_var_plot) |>
+      echarts4r::e_bar_("value")
+  }
+
+  if (horizontal) {
+    e <- e |> echarts4r::e_flip_coords()
+  }
+
+  if (!is.null(title) || !is.null(subtitle)) {
+    e <- e |> echarts4r::e_title(text = title %||% "", subtext = subtitle %||% "")
+  }
+
+  e <- e |>
+    echarts4r::e_x_axis(name = final_x_label) |>
+    echarts4r::e_y_axis(name = final_y_label) |>
+    echarts4r::e_tooltip(trigger = "axis")
+
+  if (!is.null(color_palette)) {
+    e <- e |> echarts4r::e_color(color_palette)
+  }
+
+  e
+}
+
+# --- ggiraph backend ---
+#' @keywords internal
+.viz_bar_ggiraph <- function(agg_data, config) {
+  rlang::check_installed("ggiraph", reason = "to use backend = 'ggiraph'")
+  rlang::check_installed("ggplot2", reason = "to use backend = 'ggiraph'")
+
+  x_var_plot <- config$x_var_plot
+  group_var <- config$group_var
+  horizontal <- config$horizontal
+  bar_type <- config$bar_type
+  color_palette <- config$color_palette
+  title <- config$title
+  subtitle <- config$subtitle
+  final_x_label <- config$x_label
+  final_y_label <- config$y_label
+  error_bars <- config$error_bars
+
+  has_error_bars <- error_bars != "none" && "low" %in% names(agg_data) && "high" %in% names(agg_data)
+
+  # Build tooltip text
+  agg_data$.tooltip <- paste0(
+    agg_data[[x_var_plot]],
+    if (!is.null(group_var)) paste0(" (", agg_data[[group_var]], ")") else "",
+    ": ", round(agg_data$value, 2)
+  )
+
+  if (is.null(group_var)) {
+    p <- ggplot2::ggplot(agg_data, ggplot2::aes(
+      x = .data[[x_var_plot]], y = .data$value
+    )) +
+      ggiraph::geom_bar_interactive(
+        ggplot2::aes(tooltip = .data$.tooltip, data_id = .data[[x_var_plot]]),
+        stat = "identity"
+      )
+  } else {
+    p <- ggplot2::ggplot(agg_data, ggplot2::aes(
+      x = .data[[x_var_plot]], y = .data$value, fill = .data[[group_var]]
+    )) +
+      ggiraph::geom_bar_interactive(
+        ggplot2::aes(tooltip = .data$.tooltip, data_id = .data[[x_var_plot]]),
+        stat = "identity", position = "dodge"
+      )
+  }
+
+  if (has_error_bars) {
+    p <- p + ggplot2::geom_errorbar(
+      ggplot2::aes(ymin = .data$low, ymax = .data$high),
+      width = 0.2,
+      position = if (!is.null(group_var)) ggplot2::position_dodge(0.9) else "identity"
+    )
+  }
+
+  if (!is.null(color_palette)) {
+    p <- p + ggplot2::scale_fill_manual(values = color_palette)
+  }
+
+  p <- p +
+    ggplot2::labs(title = title, subtitle = subtitle,
+                  x = final_x_label, y = final_y_label) +
+    ggplot2::theme_minimal()
+
+  if (horizontal) {
+    p <- p + ggplot2::coord_flip()
+  }
+
+  ggiraph::girafe(ggobj = p)
 }
 

@@ -78,6 +78,7 @@
 #' @param title_map Named list mapping variable names to custom display titles
 #'   for dynamic title updates when filtering by cross-tab variables.
 #'
+#' @param backend Rendering backend: "highcharter" (default), "plotly", "echarts4r", or "ggiraph".
 #' @return An interactive `highcharter` bar chart plot object.
 #'
 #' @examples
@@ -192,7 +193,8 @@ viz_stackedbar <- function(data,
                            label_decimals = NULL,
                            # Cross-tab filtering for sidebar inputs (auto-detected)
                            cross_tab_filter_vars = NULL,
-                           title_map = NULL) {
+                           title_map = NULL,
+                           backend = "highcharter") {
 
   # Convert variable arguments to strings (supports both quoted and unquoted)
   x_var <- .as_var_string(rlang::enquo(x_var))
@@ -340,7 +342,8 @@ viz_stackedbar <- function(data,
       horizontal = horizontal,
       weight_var = weight_var,
       data_labels_enabled = data_labels_enabled,
-      label_decimals = label_decimals
+      label_decimals = label_decimals,
+      backend = backend
     )
 
     # Set the xAxis categories explicitly so JS knows them
@@ -409,7 +412,8 @@ viz_stackedbar <- function(data,
     data_labels_enabled = data_labels_enabled,
     label_decimals = label_decimals,
     cross_tab_filter_vars = cross_tab_filter_vars,
-    title_map = title_map
+    title_map = title_map,
+    backend = backend
   )
 }
 
@@ -449,7 +453,8 @@ viz_stackedbar <- function(data,
                                   data_labels_enabled = TRUE,
                                   label_decimals = NULL,
                                   cross_tab_filter_vars = NULL,
-                                  title_map = NULL) {
+                                  title_map = NULL,
+                                  backend = "highcharter") {
 
   # Validation for core function (x_var and stack_var are already strings)
   if (!x_var %in% names(data)) {
@@ -622,6 +627,79 @@ viz_stackedbar <- function(data,
       dplyr::summarise(n = sum(!!rlang::sym(y_var), na.rm = TRUE), .groups = "drop")
   }
 
+  # Build config for backend dispatch
+  config <- list(
+    title = title, subtitle = subtitle,
+    x_label = x_label, y_label = y_label, stack_label = stack_label,
+    stacked_type = stacked_type, horizontal = horizontal,
+    color_palette = color_palette, stack_order = stack_order,
+    x_order = x_order, data_labels_enabled = data_labels_enabled,
+    label_decimals = label_decimals,
+    tooltip = tooltip, tooltip_prefix = tooltip_prefix,
+    tooltip_suffix = tooltip_suffix, x_tooltip_suffix = x_tooltip_suffix,
+    cross_tab_filter_vars = cross_tab_filter_vars, title_map = title_map,
+    x_var = x_var, stack_var = stack_var, y_var = y_var, data = data
+  )
+
+  # Prepare cross-tab data for client-side filtering (all backends)
+  cross_tab_attrs <- NULL
+  if (!is.null(cross_tab_filter_vars) && length(cross_tab_filter_vars) > 0) {
+    valid_filter_vars <- cross_tab_filter_vars[cross_tab_filter_vars %in% names(data)]
+    if (length(valid_filter_vars) > 0) {
+      group_vars <- c(x_var, stack_var, valid_filter_vars)
+      if (!is.null(y_var) && y_var %in% names(data) && is.numeric(data[[y_var]])) {
+        cross_tab <- data %>%
+          dplyr::group_by(dplyr::across(dplyr::all_of(group_vars))) %>%
+          dplyr::summarise(n = sum(.data[[y_var]], na.rm = TRUE), .groups = "drop")
+      } else {
+        cross_tab <- data %>%
+          dplyr::count(dplyr::across(dplyr::all_of(group_vars)), name = "n")
+      }
+      chart_id <- paste0("crosstab_", substr(digest::digest(paste(x_var, stack_var, collapse = "_")), 1, 8))
+      chart_config <- list(
+        chartId = chart_id,
+        xVar = x_var,
+        stackVar = stack_var,
+        filterVars = valid_filter_vars,
+        stackedType = stacked_type,
+        stackOrder = if (!is.null(stack_order)) stack_order else unique(as.character(cross_tab[[stack_var]])),
+        xOrder = if (!is.null(x_order)) x_order else unique(as.character(cross_tab[[x_var]])),
+        colorMap = if (!is.null(color_palette) && !is.null(names(color_palette))) as.list(color_palette) else NULL
+      )
+      if (!is.null(title) && grepl("\\{\\w+\\}", title)) {
+        chart_config$titleTemplate <- title
+      }
+      if (!is.null(title_map) && is.list(title_map)) {
+        tl_js <- lapply(names(title_map), function(nm) {
+          list(values = as.list(title_map[[nm]]))
+        })
+        names(tl_js) <- names(title_map)
+        chart_config$titleLookups <- tl_js
+      }
+      cross_tab_attrs <- list(data = cross_tab, config = chart_config, id = chart_id)
+    }
+  }
+
+  # Dispatch to backend renderer
+  backend <- .normalize_backend(backend)
+  backend <- match.arg(backend, c("highcharter", "plotly", "echarts4r", "ggiraph"))
+  .assert_backend_supported("stackedbar", backend)
+  if (backend != "highcharter") {
+    render_fn <- switch(backend,
+      plotly    = .viz_stackedbar_plotly,
+      echarts4r = .viz_stackedbar_echarts,
+      ggiraph   = .viz_stackedbar_ggiraph
+    )
+    result <- render_fn(plot_data, config)
+    if (!is.null(cross_tab_attrs)) {
+      attr(result, "cross_tab_data") <- cross_tab_attrs$data
+      attr(result, "cross_tab_config") <- cross_tab_attrs$config
+      attr(result, "cross_tab_id") <- cross_tab_attrs$id
+    }
+    result <- .register_chart_widget(result, backend = backend)
+    return(result)
+  }
+
   # HIGHCHARTER
   chart_type <- if (horizontal) "bar" else "column"
 
@@ -751,62 +829,146 @@ viz_stackedbar <- function(data,
     }
   }
   
-  # Generate cross-tab for client-side filtering if filter_vars are provided
-  if (!is.null(cross_tab_filter_vars) && length(cross_tab_filter_vars) > 0) {
-    # Filter to valid columns that exist in data
-    valid_filter_vars <- cross_tab_filter_vars[cross_tab_filter_vars %in% names(data)]
-    
-    if (length(valid_filter_vars) > 0) {
-      # Compute cross-tab including filter variables
-      # Use sum(y_var) when data already has a count/value column; fall back to counting rows
-      group_vars <- c(x_var, stack_var, valid_filter_vars)
-      if (!is.null(y_var) && y_var %in% names(data) && is.numeric(data[[y_var]])) {
-        cross_tab <- data %>%
-          dplyr::group_by(dplyr::across(dplyr::all_of(group_vars))) %>%
-          dplyr::summarise(n = sum(.data[[y_var]], na.rm = TRUE), .groups = "drop")
-      } else {
-        cross_tab <- data %>%
-          dplyr::count(dplyr::across(dplyr::all_of(group_vars)), name = "n")
-      }
-      
-      # Generate unique chart ID
-      chart_id <- paste0("crosstab_", substr(digest::digest(paste(x_var, stack_var, collapse = "_")), 1, 8))
-      
-      # Chart config for JS
-      chart_config <- list(
-        chartId = chart_id,
-        xVar = x_var,
-        stackVar = stack_var,
-        filterVars = valid_filter_vars,
-        stackedType = stacked_type,
-        stackOrder = if (!is.null(stack_order)) stack_order else unique(as.character(cross_tab[[stack_var]])),
-        xOrder = if (!is.null(x_order)) x_order else unique(as.character(cross_tab[[x_var]])),
-        colorMap = if (!is.null(color_palette) && !is.null(names(color_palette))) as.list(color_palette) else NULL
-      )
+  # Attach cross-tab attributes if available
+  if (!is.null(cross_tab_attrs)) {
+    attr(hchart_obj, "cross_tab_data") <- cross_tab_attrs$data
+    attr(hchart_obj, "cross_tab_config") <- cross_tab_attrs$config
+    attr(hchart_obj, "cross_tab_id") <- cross_tab_attrs$id
+    hchart_obj <- highcharter::hc_chart(hchart_obj, id = cross_tab_attrs$id)
+  }
 
-      # Dynamic title: if title contains {var} placeholders, store the template
-      if (!is.null(title) && grepl("\\{\\w+\\}", title)) {
-        chart_config$titleTemplate <- title
-      }
+  hchart_obj <- .register_chart_widget(hchart_obj, backend = "highcharter")
+  return(hchart_obj)
+}
 
-      # Title map: derived placeholders from named vectors
-      if (!is.null(title_map) && is.list(title_map)) {
-        tl_js <- lapply(names(title_map), function(nm) {
-          list(values = as.list(title_map[[nm]]))
-        })
-        names(tl_js) <- names(title_map)
-        chart_config$titleLookups <- tl_js
-      }
-      
-      # Store cross-tab and config as attributes on the chart
-      attr(hchart_obj, "cross_tab_data") <- cross_tab
-      attr(hchart_obj, "cross_tab_config") <- chart_config
-      attr(hchart_obj, "cross_tab_id") <- chart_id
-      
-      # Add the chart ID to the Highcharts options so JS can find it
-      hchart_obj <- highcharter::hc_chart(hchart_obj, id = chart_id)
+# --- Plotly backend for stacked bar ---
+#' @keywords internal
+.viz_stackedbar_plotly <- function(plot_data, config) {
+  rlang::check_installed("plotly", reason = "to use backend = 'plotly'")
+
+  horizontal <- config$horizontal
+  stacked_type <- config$stacked_type
+  color_palette <- config$color_palette
+  title <- config$title
+  x_label <- config$x_label
+  y_label <- config$y_label
+
+  x_levels <- levels(plot_data$.x_var_col)
+  stack_levels <- levels(plot_data$.stack_var_col)
+
+  barnorm <- if (stacked_type == "percent") "percent" else NULL
+
+  p <- plotly::plot_ly()
+  for (stk in stack_levels) {
+    stk_data <- plot_data[plot_data$.stack_var_col == stk, ]
+    if (horizontal) {
+      p <- plotly::add_trace(p, y = stk_data$.x_var_col, x = stk_data$n,
+                             type = "bar", orientation = "h", name = as.character(stk))
+    } else {
+      p <- plotly::add_trace(p, x = stk_data$.x_var_col, y = stk_data$n,
+                             type = "bar", name = as.character(stk))
     }
   }
 
-  return(hchart_obj)
+  layout_args <- list(p = p, barmode = "stack", title = title)
+  if (!is.null(barnorm)) layout_args$barnorm <- barnorm
+  if (horizontal) {
+    layout_args$yaxis <- list(title = x_label %||% "")
+    layout_args$xaxis <- list(title = y_label %||% "")
+  } else {
+    layout_args$xaxis <- list(title = x_label %||% "")
+    layout_args$yaxis <- list(title = y_label %||% "")
+  }
+  p <- do.call(plotly::layout, layout_args)
+
+  if (!is.null(color_palette)) {
+    p <- plotly::layout(p, colorway = color_palette)
+  }
+
+  p
+}
+
+# --- echarts4r backend for stacked bar ---
+#' @keywords internal
+.viz_stackedbar_echarts <- function(plot_data, config) {
+  rlang::check_installed("echarts4r", reason = "to use backend = 'echarts4r'")
+
+  horizontal <- config$horizontal
+  stacked_type <- config$stacked_type
+  color_palette <- config$color_palette
+  title <- config$title
+  subtitle <- config$subtitle
+  x_label <- config$x_label
+  y_label <- config$y_label
+
+  plot_data$.x_var_col <- as.character(plot_data$.x_var_col)
+  plot_data$.stack_var_col <- as.character(plot_data$.stack_var_col)
+
+  e <- plot_data |>
+    dplyr::group_by(.data$.stack_var_col) |>
+    echarts4r::e_charts_(.x_var_col = ".x_var_col") |>
+    echarts4r::e_bar_("n", stack = "total")
+
+  if (horizontal) {
+    e <- e |> echarts4r::e_flip_coords()
+  }
+
+  if (!is.null(title) || !is.null(subtitle)) {
+    e <- e |> echarts4r::e_title(text = title %||% "", subtext = subtitle %||% "")
+  }
+
+  e <- e |>
+    echarts4r::e_x_axis(name = x_label %||% "") |>
+    echarts4r::e_y_axis(name = y_label %||% "") |>
+    echarts4r::e_tooltip(trigger = "axis")
+
+  if (!is.null(color_palette)) {
+    e <- e |> echarts4r::e_color(color_palette)
+  }
+
+  e
+}
+
+# --- ggiraph backend for stacked bar ---
+#' @keywords internal
+.viz_stackedbar_ggiraph <- function(plot_data, config) {
+  rlang::check_installed("ggiraph", reason = "to use backend = 'ggiraph'")
+  rlang::check_installed("ggplot2", reason = "to use backend = 'ggiraph'")
+
+  horizontal <- config$horizontal
+  stacked_type <- config$stacked_type
+  color_palette <- config$color_palette
+  title <- config$title
+  subtitle <- config$subtitle
+  x_label <- config$x_label
+  y_label <- config$y_label
+
+  plot_data$.tooltip <- paste0(
+    plot_data$.x_var_col, " - ", plot_data$.stack_var_col, ": ", round(plot_data$n, 1)
+  )
+
+  position_fn <- if (stacked_type == "percent") "fill" else "stack"
+
+  p <- ggplot2::ggplot(plot_data, ggplot2::aes(
+    x = .data$.x_var_col, y = .data$n, fill = .data$.stack_var_col
+  )) +
+    ggiraph::geom_bar_interactive(
+      ggplot2::aes(tooltip = .data$.tooltip, data_id = .data$.x_var_col),
+      stat = "identity", position = position_fn
+    )
+
+  if (!is.null(color_palette)) {
+    p <- p + ggplot2::scale_fill_manual(values = color_palette)
+  }
+
+  p <- p +
+    ggplot2::labs(title = title, subtitle = subtitle,
+                  x = x_label, y = y_label, fill = config$stack_label) +
+    ggplot2::theme_minimal()
+
+  if (horizontal) {
+    p <- p + ggplot2::coord_flip()
+  }
+
+  ggiraph::girafe(ggobj = p)
 }

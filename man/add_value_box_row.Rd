@@ -4,12 +4,14 @@
 \alias{add_value_box_row}
 \title{Start a value box row}
 \usage{
-add_value_box_row(content, tabgroup = NULL)
+add_value_box_row(content, tabgroup = NULL, show_when = NULL)
 }
 \arguments{
 \item{content}{Content collection object}
 
 \item{tabgroup}{Optional tabgroup for organizing content (character vector for nested tabs)}
+
+\item{show_when}{One-sided formula controlling conditional display based on input values.}
 }
 \description{
 Creates a container for value boxes that will be displayed in a horizontal row.

@@ -4,7 +4,7 @@
 \alias{add_divider}
 \title{Add horizontal divider}
 \usage{
-add_divider(content, style = "default", tabgroup = NULL)
+add_divider(content, style = "default", tabgroup = NULL, show_when = NULL)
 }
 \arguments{
 \item{content}{A content_collection, viz_collection, or page_object}
@@ -12,6 +12,8 @@ add_divider(content, style = "default", tabgroup = NULL)
 \item{style}{Divider style ("default", "thick", "dashed", "dotted")}
 
 \item{tabgroup}{Optional tabgroup for organizing content (character vector for nested tabs)}
+
+\item{show_when}{One-sided formula controlling conditional display based on input values.}
 }
 \value{
 Updated object (same type as input)

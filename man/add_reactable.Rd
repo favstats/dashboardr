@@ -4,7 +4,13 @@
 \alias{add_reactable}
 \title{Add reactable table}
 \usage{
-add_reactable(content, reactable_object, tabgroup = NULL)
+add_reactable(
+  content,
+  reactable_object,
+  tabgroup = NULL,
+  filter_vars = NULL,
+  show_when = NULL
+)
 }
 \arguments{
 \item{content}{A content_collection object}
@@ -12,6 +18,10 @@ add_reactable(content, reactable_object, tabgroup = NULL)
 \item{reactable_object}{A reactable object (from reactable::reactable()) OR a data frame (will be auto-converted)}
 
 \item{tabgroup}{Optional tabgroup for organizing content (character vector for nested tabs)}
+
+\item{filter_vars}{Optional character vector of input filter variables to apply to this block.}
+
+\item{show_when}{One-sided formula controlling conditional display based on input values.}
 }
 \value{
 Updated content_collection

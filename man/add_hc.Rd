@@ -4,7 +4,14 @@
 \alias{add_hc}
 \title{Add a custom highcharter chart}
 \usage{
-add_hc(content, hc_object, height = NULL, tabgroup = NULL)
+add_hc(
+  content,
+  hc_object,
+  height = NULL,
+  tabgroup = NULL,
+  filter_vars = NULL,
+  show_when = NULL
+)
 }
 \arguments{
 \item{content}{A content_collection, page_object, or dashboard object}
@@ -14,6 +21,10 @@ add_hc(content, hc_object, height = NULL, tabgroup = NULL)
 \item{height}{Optional height for the chart (e.g., "400px", "50vh"). If NULL (default), no height is set and highcharter handles its own sizing}
 
 \item{tabgroup}{Optional tabgroup for organizing content (character vector for nested tabs)}
+
+\item{filter_vars}{Optional character vector of input filter variables to apply to this block.}
+
+\item{show_when}{One-sided formula controlling conditional display based on input values.}
 }
 \value{
 Updated content object

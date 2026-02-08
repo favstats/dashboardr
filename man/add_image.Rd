@@ -14,7 +14,8 @@ add_image(
   align = c("center", "left", "right"),
   link = NULL,
   class = NULL,
-  tabgroup = NULL
+  tabgroup = NULL,
+  show_when = NULL
 )
 }
 \arguments{

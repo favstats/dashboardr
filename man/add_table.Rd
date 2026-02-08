@@ -4,7 +4,14 @@
 \alias{add_table}
 \title{Add generic table (data frame)}
 \usage{
-add_table(content, table_object, caption = NULL, tabgroup = NULL)
+add_table(
+  content,
+  table_object,
+  caption = NULL,
+  tabgroup = NULL,
+  filter_vars = NULL,
+  show_when = NULL
+)
 }
 \arguments{
 \item{content}{A content_collection object}
@@ -14,6 +21,10 @@ add_table(content, table_object, caption = NULL, tabgroup = NULL)
 \item{caption}{Optional caption}
 
 \item{tabgroup}{Optional tabgroup for organizing content (character vector for nested tabs)}
+
+\item{filter_vars}{Optional character vector of input filter variables to apply to this block.}
+
+\item{show_when}{One-sided formula controlling conditional display based on input values.}
 }
 \value{
 Updated content_collection

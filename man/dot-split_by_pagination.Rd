@@ -8,6 +8,8 @@
 }
 \arguments{
 \item{viz_specs}{List of visualization specifications}
+
+\item{backend}{Rendering backend: "highcharter" (default), "plotly", "echarts4r", or "ggiraph".}
 }
 \value{
 List of sections, where each section is a list of viz specs

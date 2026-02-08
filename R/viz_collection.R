@@ -20,6 +20,7 @@
 #' @param ... Default parameters to apply to all subsequent add_viz() calls.
 #'   Any parameter specified in add_viz() will override the default.
 #'   Useful for setting common parameters like type, color_palette, stacked_type, etc.
+#' @param backend Rendering backend: "highcharter" (default), "plotly", "echarts4r", or "ggiraph".
 #' @return A viz_collection object
 #' @export
 #' @examples

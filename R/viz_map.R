@@ -23,8 +23,8 @@
 #'   Use \code{\{var\}} syntax for variable substitution, e.g.,
 #'   "\{iso2c\}_dashboard/index.html"
 #' @param click_var Variable to use in click URL (defaults to join_var)
-#' @param tooltip A tooltip configuration created with \code{\link{tooltip}()}, 
-#'   OR a format string with \{placeholders\}. Available placeholders: 
+#' @param tooltip A tooltip configuration created with \code{\link{tooltip}()},
+#'   OR a format string with \{placeholders\}. Available placeholders:
 #'   \code{\{name\}}, \code{\{value\}}.
 #'   See \code{\link{tooltip}} for full customization options.
 #' @param tooltip_vars Character vector of variables to show in tooltip (legacy).
@@ -34,6 +34,7 @@
 #' @param border_color Border color between regions (default: "#FFFFFF")
 #' @param border_width Border width (default: 0.5
 #' @param credits Show Highcharts credits (default: FALSE)
+#' @param backend Rendering backend: "highcharter" (default), "plotly", "echarts4r", or "ggiraph".
 #' @param ... Additional arguments passed to highcharter::hcmap()
 #'
 #' @return A highchart object
@@ -91,6 +92,7 @@ viz_map <- function(
     border_color = "#FFFFFF",
     border_width = 0.5,
     credits = FALSE,
+    backend = "highcharter",
     ...
 ) {
   # Convert variable arguments to strings (supports both quoted and unquoted)
@@ -98,7 +100,7 @@ viz_map <- function(
   join_var <- .as_var_string(rlang::enquo(join_var))
   click_var <- .as_var_string(rlang::enquo(click_var))
   tooltip_vars <- .as_var_strings(rlang::enquo(tooltip_vars))
-  
+
   # Validate required parameters
 
   if (is.null(value_var)) {
@@ -152,8 +154,72 @@ viz_map <- function(
     }
   }
 
+  # Build config for backend dispatch
+  config <- list(
+    map_type = map_type,
+    value_var = value_var,
+    join_var = join_var,
+    map_join_key = map_join_key,
+    legend_title = legend_title,
+    title = title,
+    subtitle = subtitle,
+    color_stops = color_stops,
+    color_palette = color_palette,
+    na_color = na_color,
+    click_url_template = click_url_template,
+    click_var = click_var,
+    tooltip = tooltip,
+    tooltip_vars = tooltip_vars,
+    tooltip_format = tooltip_format,
+    height = height,
+    border_color = border_color,
+    border_width = border_width,
+    credits = credits,
+    dots = list(...)
+  )
+
+  # Dispatch to backend renderer
+  backend <- .normalize_backend(backend)
+  backend <- match.arg(backend, c("highcharter", "plotly", "echarts4r", "ggiraph"))
+  .assert_backend_supported("map", backend)
+  render_fn <- switch(backend,
+    highcharter = .viz_map_highcharter,
+    plotly      = .viz_map_plotly,
+    echarts4r   = .viz_map_echarts,
+    ggiraph     = .viz_map_ggiraph
+  )
+  result <- render_fn(data, config)
+  result <- .register_chart_widget(result, backend = backend)
+  return(result)
+}
+
+# --- Highcharter backend (original implementation) ---
+#' @keywords internal
+.viz_map_highcharter <- function(data, config) {
+  # Unpack config
+  map_type <- config$map_type
+  value_var <- config$value_var
+  join_var <- config$join_var
+  map_join_key <- config$map_join_key
+  legend_title <- config$legend_title
+  title <- config$title
+  subtitle <- config$subtitle
+  color_stops <- config$color_stops
+  color_palette <- config$color_palette
+  na_color <- config$na_color
+  click_url_template <- config$click_url_template
+  click_var <- config$click_var
+  tooltip <- config$tooltip
+  tooltip_vars <- config$tooltip_vars
+  tooltip_format <- config$tooltip_format
+  height <- config$height
+  border_color <- config$border_color
+  border_width <- config$border_width
+  credits <- config$credits
+  dots <- config$dots
+
   # Build the base map
-  hc <- highcharter::hcmap(
+  hc <- do.call(highcharter::hcmap, c(list(
     map = map_type,
     data = data,
     value = value_var,
@@ -161,12 +227,10 @@ viz_map <- function(
     name = legend_title,
     borderColor = border_color,
     borderWidth = border_width,
-    nullColor = na_color,
-    ...
-  )
+    nullColor = na_color
+  ), dots))
 
   # Add title
-
   if (!is.null(title)) {
     hc <- hc %>% highcharter::hc_title(text = title)
   }
@@ -182,18 +246,18 @@ viz_map <- function(
     stop_min <- min(color_stops, na.rm = TRUE)
     stop_max <- max(color_stops, na.rm = TRUE)
     stop_range <- stop_max - stop_min
-    
+
     # Normalize stop positions to 0-1
     if (stop_range > 0) {
       normalized_positions <- (color_stops - stop_min) / stop_range
     } else {
       normalized_positions <- seq(0, 1, length.out = length(color_stops))
     }
-    
+
     # Interpolate colors for each stop position
     n_stops <- length(color_stops)
     n_colors <- length(color_palette)
-    
+
     # Generate colors at the stop positions
     if (n_colors >= n_stops) {
       # Use evenly-spaced colors from palette
@@ -204,12 +268,12 @@ viz_map <- function(
       color_fn <- grDevices::colorRampPalette(color_palette)
       stop_colors <- color_fn(n_stops)
     }
-    
+
     # Create stops as list of [position, color] pairs
     custom_stops <- lapply(seq_len(n_stops), function(i) {
       list(normalized_positions[i], stop_colors[i])
     })
-    
+
     hc <- hc %>% highcharter::hc_colorAxis(
       stops = custom_stops,
       min = stop_min,
@@ -231,7 +295,6 @@ viz_map <- function(
     }
 
     # Build JavaScript click handler
-    # Need to handle both point properties and options
     click_js <- sprintf(
       "function() {
         var clickVal = this['%s'] || this.options['%s'] || this.properties['%s'];
@@ -253,7 +316,7 @@ viz_map <- function(
     )
   }
 
-  # \u2500\u2500\u2500 TOOLTIP \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+  # --- TOOLTIP ---
   # Priority: tooltip_format > tooltip_vars > tooltip > default
   if (!is.null(tooltip_format)) {
     # Legacy: Custom format string (Highcharts syntax) - highest priority for backwards compat
@@ -298,4 +361,110 @@ viz_map <- function(
   )
 
   hc
+}
+
+# --- Plotly backend ---
+#' @keywords internal
+.viz_map_plotly <- function(data, config) {
+  rlang::check_installed("plotly", reason = "for plotly map backend")
+
+  value_var <- config$value_var
+  join_var <- config$join_var
+  title <- config$title
+  color_palette <- config$color_palette
+  height <- config$height
+
+  # Determine location mode from join key
+  location_mode <- if (mean(nchar(as.character(data[[join_var]])), na.rm = TRUE) > 2.5) {
+    "ISO-3"
+  } else {
+    "ISO-3"
+  }
+
+  p <- plotly::plot_ly(
+    data = data,
+    type = "choropleth",
+    locations = stats::as.formula(paste0("~`", join_var, "`")),
+    z = stats::as.formula(paste0("~`", value_var, "`")),
+    locationmode = location_mode,
+    colorscale = list(c(0, color_palette[1]), c(1, color_palette[length(color_palette)])),
+    marker = list(line = list(color = config$border_color, width = config$border_width))
+  )
+
+  if (!is.null(title)) {
+    p <- p %>% plotly::layout(title = title, height = height)
+  } else {
+    p <- p %>% plotly::layout(height = height)
+  }
+
+  p
+}
+
+# --- echarts4r backend ---
+#' @keywords internal
+.viz_map_echarts <- function(data, config) {
+  rlang::check_installed("echarts4r", reason = "for echarts4r map backend")
+
+  value_var <- config$value_var
+  join_var <- config$join_var
+  title <- config$title
+  color_palette <- config$color_palette
+
+  chart <- data %>%
+    echarts4r::e_charts_(join_var) %>%
+    echarts4r::e_map_(value_var) %>%
+    echarts4r::e_visual_map_(value_var,
+      inRange = list(color = color_palette)
+    )
+
+  if (!is.null(title)) {
+    chart <- chart %>% echarts4r::e_title(title)
+  }
+
+  chart
+}
+
+# --- ggiraph backend ---
+#' @keywords internal
+.viz_map_ggiraph <- function(data, config) {
+  rlang::check_installed("ggiraph", reason = "for ggiraph map backend")
+  rlang::check_installed("sf", reason = "for ggiraph map backend")
+  rlang::check_installed("rnaturalearth", reason = "for ggiraph map backend")
+
+  value_var <- config$value_var
+  join_var <- config$join_var
+  title <- config$title
+  color_palette <- config$color_palette
+  height <- config$height
+
+  # Get world map data
+  world <- rnaturalearth::ne_countries(scale = "medium", returnclass = "sf")
+
+  # Determine join column in world data
+  world_join <- if (mean(nchar(as.character(data[[join_var]])), na.rm = TRUE) > 2.5) {
+    "iso_a3"
+  } else {
+    "iso_a2"
+  }
+
+  # Merge data
+  world_merged <- merge(world, data, by.x = world_join, by.y = join_var, all.x = TRUE)
+
+  p <- ggplot2::ggplot(world_merged) +
+    ggiraph::geom_sf_interactive(
+      ggplot2::aes(
+        fill = .data[[value_var]],
+        tooltip = paste0(.data[["name"]], ": ", .data[[value_var]]),
+        data_id = .data[[world_join]]
+      )
+    ) +
+    ggplot2::scale_fill_gradient(
+      low = color_palette[1],
+      high = color_palette[length(color_palette)],
+      na.value = config$na_color
+    ) +
+    ggplot2::theme_minimal() +
+    ggplot2::labs(title = title, fill = config$legend_title)
+
+  ggiraph::girafe(ggobj = p, height_svg = height / 96)
 }

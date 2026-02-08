@@ -35,6 +35,7 @@
 #' @param center_text Optional character string. Text to display in the center of a donut chart.
 #'   Only visible when inner_size > "0%".
 #'
+#' @param backend Rendering backend: "highcharter" (default), "plotly", "echarts4r", or "ggiraph".
 #' @return A highcharter plot object.
 #'
 #' @examples
@@ -68,7 +69,8 @@ viz_pie <- function(data,
                     tooltip = NULL,
                     tooltip_prefix = "",
                     tooltip_suffix = "",
-                    center_text = NULL) {
+                    center_text = NULL,
+                    backend = "highcharter") {
 
   # Convert variable arguments to strings (supports both quoted and unquoted)
   x_var <- .as_var_string(rlang::enquo(x_var))
@@ -160,6 +162,45 @@ viz_pie <- function(data,
       dplyr::arrange(dplyr::desc(value))
   }
 
+  # Build config for backend dispatch
+  config <- list(
+    x_var = x_var, title = title, subtitle = subtitle,
+    inner_size = inner_size, color_palette = color_palette,
+    data_labels_enabled = data_labels_enabled,
+    data_labels_format = data_labels_format,
+    show_in_legend = show_in_legend,
+    tooltip = tooltip, tooltip_prefix = tooltip_prefix,
+    tooltip_suffix = tooltip_suffix,
+    center_text = center_text
+  )
+
+  # Dispatch to backend renderer
+  backend <- .normalize_backend(backend)
+  backend <- match.arg(backend, c("highcharter", "plotly", "echarts4r", "ggiraph"))
+  .assert_backend_supported("pie", backend)
+  render_fn <- switch(backend,
+    highcharter = .viz_pie_highcharter,
+    plotly      = .viz_pie_plotly,
+    echarts4r   = .viz_pie_echarts,
+    ggiraph     = .viz_pie_ggiraph
+  )
+  result <- render_fn(agg_data, config)
+  result <- .register_chart_widget(result, backend = backend)
+  return(result)
+}
+
+# --- Highcharter backend (original implementation) ---
+#' @keywords internal
+.viz_pie_highcharter <- function(agg_data, config) {
+  # Unpack config
+  x_var <- config$x_var; title <- config$title; subtitle <- config$subtitle
+  inner_size <- config$inner_size; color_palette <- config$color_palette
+  data_labels_enabled <- config$data_labels_enabled
+  data_labels_format <- config$data_labels_format
+  show_in_legend <- config$show_in_legend
+  tooltip <- config$tooltip; tooltip_prefix <- config$tooltip_prefix
+  tooltip_suffix <- config$tooltip_suffix; center_text <- config$center_text
+
   # Build data points for Highcharts
   hc_data <- lapply(seq_len(nrow(agg_data)), function(i) {
     list(name = agg_data$name[i], y = agg_data$value[i])
@@ -240,4 +281,111 @@ viz_pie <- function(data,
     )
 
   return(hc)
+}
+
+# --- Plotly backend ---
+#' @keywords internal
+.viz_pie_plotly <- function(agg_data, config) {
+  rlang::check_installed("plotly", reason = "to use backend = 'plotly'")
+
+  title <- config$title
+  color_palette <- config$color_palette
+  inner_size <- config$inner_size
+  data_labels_enabled <- config$data_labels_enabled
+
+  # Determine hole size from inner_size string (e.g. "50%" -> 0.5)
+  hole <- as.numeric(gsub("%", "", inner_size)) / 100
+
+  p <- plotly::plot_ly(
+    labels = agg_data$name,
+    values = agg_data$value,
+    type = "pie",
+    hole = hole,
+    textinfo = if (data_labels_enabled) "label+percent" else "none"
+  )
+
+  if (!is.null(color_palette)) {
+    p <- plotly::layout(p, colorway = color_palette)
+  }
+
+  layout_args <- list(p = p)
+  if (!is.null(title)) layout_args$title <- title
+
+  p <- do.call(plotly::layout, layout_args)
+
+  p
+}
+
+# --- echarts4r backend ---
+#' @keywords internal
+.viz_pie_echarts <- function(agg_data, config) {
+  rlang::check_installed("echarts4r", reason = "to use backend = 'echarts4r'")
+
+  title <- config$title
+  subtitle <- config$subtitle
+  color_palette <- config$color_palette
+  inner_size <- config$inner_size
+
+  # Convert inner_size percentage string to radius spec
+  inner_pct <- as.numeric(gsub("%", "", inner_size))
+  radius <- if (inner_pct > 0) {
+    c(paste0(inner_pct, "%"), "75%")
+  } else {
+    c("0%", "75%")
+  }
+
+  e <- agg_data |>
+    echarts4r::e_charts(name) |>
+    echarts4r::e_pie(value, radius = radius)
+
+  if (!is.null(title) || !is.null(subtitle)) {
+    e <- e |> echarts4r::e_title(text = title %||% "", subtext = subtitle %||% "")
+  }
+
+  e <- e |> echarts4r::e_tooltip(trigger = "item")
+
+  if (!is.null(color_palette)) {
+    e <- e |> echarts4r::e_color(color_palette)
+  }
+
+  e
+}
+
+# --- ggiraph backend ---
+#' @keywords internal
+.viz_pie_ggiraph <- function(agg_data, config) {
+  rlang::check_installed("ggiraph", reason = "to use backend = 'ggiraph'")
+  rlang::check_installed("ggplot2", reason = "to use backend = 'ggiraph'")
+
+  title <- config$title
+  subtitle <- config$subtitle
+  color_palette <- config$color_palette
+  inner_size <- config$inner_size
+
+  # Compute percentage for tooltips
+  agg_data$pct <- round(agg_data$value / sum(agg_data$value) * 100, 1)
+  agg_data$.tooltip <- paste0(agg_data$name, ": ", agg_data$value,
+                               " (", agg_data$pct, "%)")
+
+  # Determine ymin for donut hole
+  inner_pct <- as.numeric(gsub("%", "", inner_size))
+  xlim_min <- if (inner_pct > 0) inner_pct / 100 * 4 else 0
+
+  p <- ggplot2::ggplot(agg_data, ggplot2::aes(
+    x = 2, y = .data$value, fill = .data$name
+  )) +
+    ggiraph::geom_bar_interactive(
+      ggplot2::aes(tooltip = .data$.tooltip, data_id = .data$name),
+      stat = "identity", width = 1
+    ) +
+    ggplot2::coord_polar(theta = "y") +
+    ggplot2::xlim(c(xlim_min, 2.5)) +
+    ggplot2::labs(title = title, subtitle = subtitle, fill = NULL) +
+    ggplot2::theme_void()
+
+  if (!is.null(color_palette)) {
+    p <- p + ggplot2::scale_fill_manual(values = color_palette)
+  }
+
+  ggiraph::girafe(ggobj = p)
 }

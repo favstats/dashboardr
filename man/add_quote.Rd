@@ -4,7 +4,14 @@
 \alias{add_quote}
 \title{Add a blockquote}
 \usage{
-add_quote(content, quote, attribution = NULL, cite = NULL, tabgroup = NULL)
+add_quote(
+  content,
+  quote,
+  attribution = NULL,
+  cite = NULL,
+  tabgroup = NULL,
+  show_when = NULL
+)
 }
 \arguments{
 \item{content}{Content collection object}
@@ -16,6 +23,8 @@ add_quote(content, quote, attribution = NULL, cite = NULL, tabgroup = NULL)
 \item{cite}{Optional citation URL}
 
 \item{tabgroup}{Optional tabgroup for organizing content (character vector for nested tabs)}
+
+\item{show_when}{One-sided formula controlling conditional display based on input values.}
 }
 \description{
 Add a blockquote

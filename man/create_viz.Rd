@@ -21,6 +21,8 @@ is rendered as a separate section (stacked vertically).}
 \item{...}{Default parameters to apply to all subsequent add_viz() calls.
 Any parameter specified in add_viz() will override the default.
 Useful for setting common parameters like type, color_palette, stacked_type, etc.}
+
+\item{backend}{Rendering backend: "highcharter" (default), "plotly", "echarts4r", or "ggiraph".}
 }
 \value{
 A viz_collection object

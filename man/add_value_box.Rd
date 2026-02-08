@@ -13,7 +13,8 @@ add_value_box(
   bg_color = "#2c3e50",
   description = NULL,
   description_title = "About this source",
-  tabgroup = NULL
+  tabgroup = NULL,
+  show_when = NULL
 )
 }
 \arguments{
@@ -34,6 +35,8 @@ add_value_box(
 \item{description_title}{Title for collapsible section, default "About this source"}
 
 \item{tabgroup}{Optional tabgroup for organizing content (character vector for nested tabs)}
+
+\item{show_when}{One-sided formula controlling conditional display based on input values.}
 }
 \description{
 Creates a modern value box with optional logo, custom background color,

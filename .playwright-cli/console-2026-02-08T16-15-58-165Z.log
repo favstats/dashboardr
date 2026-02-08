@@ -1,0 +1,4 @@
+[   36450ms] ReferenceError: jQuery is not defined
+    at http://localhost:8010/site_libs/quarto-dashboard/datatables.min.js:30:344
+    at http://localhost:8010/site_libs/quarto-dashboard/datatables.min.js:30:368
+[   36556ms] [ERROR] Failed to load resource: the server responded with a status of 404 (File not found) @ http://localhost:8010/favicon.ico:0

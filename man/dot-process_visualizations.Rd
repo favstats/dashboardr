@@ -18,7 +18,8 @@ specifications. It:
   data_path,
   tabgroup_labels = NULL,
   shared_first_level = TRUE,
-  filter_vars = NULL
+  filter_vars = NULL,
+  context_label = NULL
 )
 }
 \arguments{

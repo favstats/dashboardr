@@ -4,7 +4,7 @@
 \alias{add_text.page_object}
 \title{Add text to a page}
 \usage{
-add_text.page_object(page, text, ..., tabgroup = NULL)
+add_text.page_object(page, text, ..., tabgroup = NULL, show_when = NULL)
 }
 \arguments{
 \item{page}{A page_object created by create_page()}
@@ -14,6 +14,8 @@ add_text.page_object(page, text, ..., tabgroup = NULL)
 \item{...}{Additional text lines}
 
 \item{tabgroup}{Optional tabgroup for the text}
+
+\item{show_when}{One-sided formula controlling conditional display based on input values.}
 }
 \value{
 The updated page_object

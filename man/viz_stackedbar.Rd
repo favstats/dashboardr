@@ -40,7 +40,8 @@ viz_stackedbar(
   data_labels_enabled = TRUE,
   label_decimals = NULL,
   cross_tab_filter_vars = NULL,
-  title_map = NULL
+  title_map = NULL,
+  backend = "highcharter"
 )
 }
 \arguments{
@@ -134,6 +135,8 @@ Set explicitly to override (e.g., \code{label_decimals = 2}).}
 
 \item{title_map}{Named list mapping variable names to custom display titles
 for dynamic title updates when filtering by cross-tab variables.}
+
+\item{backend}{Rendering backend: "highcharter" (default), "plotly", "echarts4r", or "ggiraph".}
 }
 \value{
 An interactive \code{highcharter} bar chart plot object.

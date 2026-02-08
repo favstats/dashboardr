@@ -4,7 +4,7 @@
 \alias{add_spacer}
 \title{Add vertical spacer}
 \usage{
-add_spacer(content, height = "2rem", tabgroup = NULL)
+add_spacer(content, height = "2rem", tabgroup = NULL, show_when = NULL)
 }
 \arguments{
 \item{content}{A content_collection, viz_collection, or page_object}
@@ -12,6 +12,8 @@ add_spacer(content, height = "2rem", tabgroup = NULL)
 \item{height}{Height (CSS unit, e.g. "2rem", "50px")}
 
 \item{tabgroup}{Optional tabgroup for organizing content (character vector for nested tabs)}
+
+\item{show_when}{One-sided formula controlling conditional display based on input values.}
 }
 \value{
 Updated object (same type as input)

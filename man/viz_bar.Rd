@@ -36,7 +36,8 @@ viz_bar(
   data_labels_enabled = TRUE,
   label_decimals = NULL,
   complete_groups = TRUE,
-  y_var = NULL
+  y_var = NULL,
+  backend = "highcharter"
 )
 }
 \arguments{
@@ -124,6 +125,8 @@ Only applies when \code{group_var} is specified.}
 \item{y_var}{Optional character string. Name of a column containing pre-aggregated
 counts or values. When provided, skips aggregation and uses these values directly.
 Useful when working with already-aggregated data (e.g., Column 1: Group, Column 2: Count).}
+
+\item{backend}{Rendering backend: "highcharter" (default), "plotly", "echarts4r", or "ggiraph".}
 }
 \value{
 A highcharter plot object.

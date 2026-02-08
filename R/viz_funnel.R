@@ -34,6 +34,7 @@
 #' @param tooltip_suffix Optional string appended to tooltip values.
 #' @param height Numeric. Chart height in pixels. Default 400.
 #'
+#' @param backend Rendering backend: "highcharter" (default), "plotly", "echarts4r", or "ggiraph".
 #' @return A highcharter plot object.
 #'
 #' @examples
@@ -64,7 +65,8 @@ viz_funnel <- function(data,
                        tooltip = NULL,
                        tooltip_prefix = "",
                        tooltip_suffix = "",
-                       height = 400) {
+                       height = 400,
+                       backend = "highcharter") {
 
   # Convert variable arguments to strings
   x_var <- .as_var_string(rlang::enquo(x_var))
@@ -121,6 +123,54 @@ viz_funnel <- function(data,
   hc_data <- lapply(seq_along(stages), function(i) {
     list(name = stages[i], y = values[i])
   })
+
+  # Build config for backend dispatch
+  config <- list(
+    title = title, subtitle = subtitle,
+    x_var = x_var, color_palette = color_palette,
+    neck_width = neck_width, neck_height = neck_height,
+    show_conversion = show_conversion,
+    data_labels_enabled = data_labels_enabled,
+    data_labels_format = data_labels_format,
+    show_in_legend = show_in_legend,
+    reversed = reversed,
+    tooltip = tooltip, tooltip_prefix = tooltip_prefix,
+    tooltip_suffix = tooltip_suffix,
+    height = height,
+    stages = stages, values = values, hc_data = hc_data
+  )
+
+  # Dispatch to backend renderer
+  backend <- .normalize_backend(backend)
+  backend <- match.arg(backend, c("highcharter", "plotly", "echarts4r", "ggiraph"))
+  .assert_backend_supported("funnel", backend)
+  render_fn <- switch(backend,
+    highcharter = .viz_funnel_highcharter,
+    plotly      = .viz_funnel_plotly,
+    echarts4r   = .viz_funnel_echarts,
+    ggiraph     = .viz_funnel_ggiraph
+  )
+  result <- render_fn(plot_data, config)
+  result <- .register_chart_widget(result, backend = backend)
+  return(result)
+}
+
+# --- Highcharter backend (original implementation) ---
+#' @keywords internal
+.viz_funnel_highcharter <- function(plot_data, config) {
+  # Unpack config
+  title <- config$title; subtitle <- config$subtitle
+  x_var <- config$x_var; color_palette <- config$color_palette
+  neck_width <- config$neck_width; neck_height <- config$neck_height
+  show_conversion <- config$show_conversion
+  data_labels_enabled <- config$data_labels_enabled
+  data_labels_format <- config$data_labels_format
+  show_in_legend <- config$show_in_legend
+  reversed <- config$reversed
+  tooltip <- config$tooltip; tooltip_prefix <- config$tooltip_prefix
+  tooltip_suffix <- config$tooltip_suffix
+  height <- config$height
+  hc_data <- config$hc_data
 
   # Create funnel chart
   chart_type <- if (reversed) "pyramid" else "funnel"
@@ -201,4 +251,135 @@ viz_funnel <- function(data,
   hc <- hc %>% highcharter::hc_credits(enabled = FALSE)
 
   return(hc)
+}
+
+# --- Plotly backend ---
+#' @keywords internal
+.viz_funnel_plotly <- function(plot_data, config) {
+  rlang::check_installed("plotly", reason = "to use backend = 'plotly'")
+
+  stages <- config$stages
+  values <- config$values
+  title <- config$title
+  color_palette <- config$color_palette
+  tooltip_prefix <- config$tooltip_prefix
+  tooltip_suffix <- config$tooltip_suffix
+  show_conversion <- config$show_conversion
+
+  pre <- if (is.null(tooltip_prefix) || tooltip_prefix == "") "" else tooltip_prefix
+  suf <- if (is.null(tooltip_suffix) || tooltip_suffix == "") "" else tooltip_suffix
+
+  # Build hover text
+  hover_text <- vapply(seq_along(stages), function(i) {
+    base <- paste0("<b>", stages[i], "</b><br/>", pre,
+                   formatC(values[i], format = "f", big.mark = ",", digits = 0), suf)
+    if (show_conversion && i > 1) {
+      conv <- round(values[i] / values[i - 1] * 100, 1)
+      base <- paste0(base, "<br/><span style='color:#666;font-size:0.9em'>Conversion: ",
+                      conv, "%</span>")
+    }
+    base
+  }, character(1))
+
+  p <- plotly::plot_ly(
+    type = "funnel",
+    y = stages,
+    x = values,
+    textinfo = "value+percent initial",
+    hovertext = hover_text,
+    hoverinfo = "text"
+  )
+
+  if (!is.null(color_palette)) {
+    p <- plotly::layout(p, colorway = color_palette)
+  }
+
+  layout_args <- list(p = p)
+  if (!is.null(title)) layout_args$title <- title
+  layout_args$yaxis <- list(categoryorder = "array", categoryarray = rev(stages))
+  p <- do.call(plotly::layout, layout_args)
+
+  p
+}
+
+# --- echarts4r backend ---
+#' @keywords internal
+.viz_funnel_echarts <- function(plot_data, config) {
+  rlang::check_installed("echarts4r", reason = "to use backend = 'echarts4r'")
+
+  stages <- config$stages
+  values <- config$values
+  title <- config$title
+  subtitle <- config$subtitle
+  color_palette <- config$color_palette
+  show_conversion <- config$show_conversion
+
+  # echarts4r funnel expects a data frame with name and value columns
+  funnel_df <- data.frame(name = stages, value = values, stringsAsFactors = FALSE)
+
+  e <- funnel_df |>
+    echarts4r::e_charts() |>
+    echarts4r::e_funnel(value, name)
+
+  if (!is.null(title) || !is.null(subtitle)) {
+    e <- e |> echarts4r::e_title(text = title %||% "", subtext = subtitle %||% "")
+  }
+
+  e <- e |> echarts4r::e_tooltip(trigger = "item")
+
+  if (!is.null(color_palette)) {
+    e <- e |> echarts4r::e_color(color_palette)
+  }
+
+  e
+}
+
+# --- ggiraph backend ---
+#' @keywords internal
+.viz_funnel_ggiraph <- function(plot_data, config) {
+  rlang::check_installed("ggiraph", reason = "to use backend = 'ggiraph'")
+  rlang::check_installed("ggplot2", reason = "to use backend = 'ggiraph'")
+
+  stages <- config$stages
+  values <- config$values
+  title <- config$title
+  subtitle <- config$subtitle
+  color_palette <- config$color_palette
+  show_conversion <- config$show_conversion
+
+  # Build data frame for plotting - simulate funnel with horizontal bar chart sorted by value
+
+  funnel_df <- data.frame(
+    stage = factor(stages, levels = rev(stages)),
+    value = values,
+    stringsAsFactors = FALSE
+  )
+
+  # Build tooltip text
+  funnel_df$.tooltip <- vapply(seq_along(stages), function(i) {
+    base <- paste0(stages[i], ": ", formatC(values[i], format = "f", big.mark = ",", digits = 0))
+    if (show_conversion && i > 1) {
+      conv <- round(values[i] / values[i - 1] * 100, 1)
+      base <- paste0(base, "\nConversion: ", conv, "%")
+    }
+    base
+  }, character(1))
+
+  p <- ggplot2::ggplot(funnel_df, ggplot2::aes(
+    x = .data$stage, y = .data$value
+  )) +
+    ggiraph::geom_bar_interactive(
+      ggplot2::aes(tooltip = .data$.tooltip, data_id = .data$stage, fill = .data$stage),
+      stat = "identity", width = 0.7
+    ) +
+    ggplot2::coord_flip() +
+    ggplot2::labs(title = title, subtitle = subtitle, x = NULL, y = NULL) +
+    ggplot2::theme_minimal() +
+    ggplot2::theme(legend.position = "none")
+
+  if (!is.null(color_palette)) {
+    p <- p + ggplot2::scale_fill_manual(values = color_palette)
+  }
+
+  ggiraph::girafe(ggobj = p)
 }

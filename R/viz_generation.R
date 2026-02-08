@@ -8,6 +8,7 @@
 #' into sections based on pagination_break markers.
 #'
 #' @param viz_specs List of visualization specifications
+#' @param backend Rendering backend: "highcharter" (default), "plotly", "echarts4r", or "ggiraph".
 #' @return List of sections, where each section is a list of viz specs
 #' @keywords internal
 .split_by_pagination <- function(viz_specs) {
@@ -47,42 +48,123 @@
   sections
 }
 
-.generate_viz_from_specs <- function(viz_specs, lazy_load_charts = FALSE, lazy_load_tabs = FALSE, heading_level = 2) {
+.generate_viz_from_specs <- function(viz_specs, lazy_load_charts = FALSE, lazy_load_tabs = FALSE, heading_level = 2, dashboard_layout = FALSE) {
   lines <- character(0)
 
-  for (i in seq_along(viz_specs)) {
-    spec <- viz_specs[[i]]
-    
-    # Skip pagination markers - they're handled at page generation level
-    if (isTRUE(!is.null(spec$pagination_break) && isTRUE(spec$pagination_break))) {
-      next
-    }
-    
-    spec_name <- if (isTRUE(!is.null(names(viz_specs)[i]) && names(viz_specs)[i] != "")) {
-      names(viz_specs)[i]
-    } else {
-      paste0("viz_", i)
-    }
+  if (dashboard_layout) {
+    # In Quarto dashboard format (with sidebar), we need to organize viz specs
+    # into ### Row containers so they don't all become tiny individual cards.
+    # Strategy:
+    #   - Tabgroup specs → emit as-is (they manage their own structure)
+    #   - Content blocks → emit as-is (between rows)
+    #   - Standalone viz specs → group into ### Row containers, 2 per row
+    # Within ### Row, individual viz titles use heading_level (typically 4).
 
-    # Check if this is a content block (not a viz)
-    is_content_block <- isTRUE(!is.null(spec$type) && spec$type %in% c(
-      "text", "image", "video", "callout", "divider", "code", "spacer",
-      "gt", "reactable", "table", "DT", "iframe", "accordion", "card",
-      "html", "quote", "badge", "metric", "value_box", "value_box_row"
-    ))
-    
-    if (is_content_block) {
-      # Generate content block using page_generation helpers
-      block_content <- .generate_content_block_inline(spec)
-      if (!is.null(block_content)) {
-        lines <- c(lines, block_content)
+    # First pass: classify each spec
+    spec_types <- vapply(seq_along(viz_specs), function(i) {
+      spec <- viz_specs[[i]]
+      if (isTRUE(!is.null(spec$pagination_break) && isTRUE(spec$pagination_break))) return("pagination")
+      if (isTRUE(!is.null(spec$type) && spec$type %in% c(
+        "text", "image", "video", "callout", "divider", "code", "spacer",
+        "gt", "reactable", "table", "DT", "iframe", "accordion", "card",
+        "html", "quote", "badge", "metric", "value_box", "value_box_row"
+      ))) return("content")
+      if (isTRUE(!is.null(spec$type) && spec$type == "tabgroup")) return("tabgroup")
+      "viz"
+    }, character(1))
+
+    # Second pass: emit grouped output
+    i <- 1
+    while (i <= length(viz_specs)) {
+      if (spec_types[i] == "pagination") {
+        i <- i + 1
+        next
       }
-    } else if (isTRUE(is.null(spec$type) || !isTRUE(spec$type == "tabgroup"))) {
-      # For top-level single charts, apply lazy loading if enabled
-      lines <- c(lines, .generate_single_viz(spec_name, spec, lazy_load = lazy_load_charts, heading_level = heading_level))
-    } else {
-      # Tabgroup
-      lines <- c(lines, .generate_tabgroup_viz(spec, lazy_load_tabs = lazy_load_tabs))
+
+      if (spec_types[i] == "content") {
+        block_content <- .generate_content_block_inline(viz_specs[[i]])
+        if (!is.null(block_content)) {
+          lines <- c(lines, block_content)
+        }
+        i <- i + 1
+        next
+      }
+
+      if (spec_types[i] == "tabgroup") {
+        # Tabgroups manage their own structure - emit row wrapper around them
+        lines <- c(lines, "", "### Row", "")
+        lines <- c(lines, .generate_tabgroup_viz(viz_specs[[i]], lazy_load_tabs = lazy_load_tabs, dashboard_layout = TRUE))
+        i <- i + 1
+        next
+      }
+
+      # Standalone viz: collect consecutive standalone vizzes and group into rows of 2
+      viz_group <- list()
+      viz_group_indices <- integer(0)
+      j <- i
+      while (j <= length(viz_specs) && spec_types[j] == "viz") {
+        viz_group <- c(viz_group, list(viz_specs[[j]]))
+        viz_group_indices <- c(viz_group_indices, j)
+        j <- j + 1
+      }
+
+      # Emit rows of up to 2 vizzes each
+      row_size <- 2
+      for (k in seq(1, length(viz_group), by = row_size)) {
+        end_k <- min(k + row_size - 1, length(viz_group))
+        lines <- c(lines, "", "### Row", "")
+
+        for (m in k:end_k) {
+          idx <- viz_group_indices[m]
+          spec_name <- if (isTRUE(!is.null(names(viz_specs)[idx]) && names(viz_specs)[idx] != "")) {
+            names(viz_specs)[idx]
+          } else {
+            paste0("viz_", idx)
+          }
+          lines <- c(lines, .generate_single_viz(spec_name, viz_group[[m]],
+                                                    lazy_load = lazy_load_charts,
+                                                    heading_level = heading_level))
+        }
+      }
+
+      i <- j
+    }
+  } else {
+    # Original non-dashboard layout: flat sequence of specs
+    for (i in seq_along(viz_specs)) {
+      spec <- viz_specs[[i]]
+
+      # Skip pagination markers - they're handled at page generation level
+      if (isTRUE(!is.null(spec$pagination_break) && isTRUE(spec$pagination_break))) {
+        next
+      }
+
+      spec_name <- if (isTRUE(!is.null(names(viz_specs)[i]) && names(viz_specs)[i] != "")) {
+        names(viz_specs)[i]
+      } else {
+        paste0("viz_", i)
+      }
+
+      # Check if this is a content block (not a viz)
+      is_content_block <- isTRUE(!is.null(spec$type) && spec$type %in% c(
+        "text", "image", "video", "callout", "divider", "code", "spacer",
+        "gt", "reactable", "table", "DT", "iframe", "accordion", "card",
+        "html", "quote", "badge", "metric", "value_box", "value_box_row"
+      ))
+
+      if (is_content_block) {
+        # Generate content block using page_generation helpers
+        block_content <- .generate_content_block_inline(spec)
+        if (!is.null(block_content)) {
+          lines <- c(lines, block_content)
+        }
+      } else if (isTRUE(is.null(spec$type) || !isTRUE(spec$type == "tabgroup"))) {
+        # For top-level single charts, apply lazy loading if enabled
+        lines <- c(lines, .generate_single_viz(spec_name, spec, lazy_load = lazy_load_charts, heading_level = heading_level))
+      } else {
+        # Tabgroup
+        lines <- c(lines, .generate_tabgroup_viz(spec, lazy_load_tabs = lazy_load_tabs))
+      }
     }
   }
 
@@ -302,8 +384,10 @@
   args <- list()
 
   # Check if data is an inline data frame (stored as serialized string)
-  # This happens when add_viz(data = my_dataframe) is called with an actual data frame
-  if (!is.null(spec$data_serialized) && nchar(spec$data_serialized) > 0) {
+  # Prefer named/page dataset references when available, and only inline
+  # as a final fallback.
+  if (!is.null(spec$data_serialized) && nchar(spec$data_serialized) > 0 &&
+      (is.null(spec$data) || !is.character(spec$data) || !nzchar(spec$data))) {
     # Wrap in as.data.frame() since viz functions expect data frames, not lists
     args[["data"]] <- paste0("as.data.frame(", spec$data_serialized, ")")
   } else if (!is.null(spec$data) && (is.data.frame(spec$data) || (is.list(spec$data) && !is.null(names(spec$data))))) {
@@ -416,9 +500,9 @@
   # Parameters to exclude: internal params and legacy parameter names
   exclude_params <- c(
     # Internal parameters
-    "type", "viz_type", "data_path", "tabgroup", "text", "icon", "text_position", 
-    "text_before_tabset", "text_after_tabset", "text_before_viz", "text_after_viz", 
-    "height", "filter", "data", "has_data", "multi_dataset", "title_tabset", 
+    "type", "viz_type", "data_path", "tabgroup", "text", "icon", "text_position",
+    "text_before_tabset", "text_after_tabset", "text_before_viz", "text_after_viz",
+    "height", "filter", "data", "has_data", "multi_dataset", "title_tabset",
     "nested_children", "drop_na_vars", "data_is_dataframe", "data_serialized", "alter_data",
     "show_when",  # Used only for wrapper div (data-show-when), not passed to viz_*()
     "export",     # Handled at generation level: enables hc_exporting() on the chart
@@ -430,7 +514,16 @@
     "questions", "question_labels",  # Use x_vars, x_var_labels
     "response_var", "response_filter", "response_filter_label", "response_filter_combine"  # Use y_var, y_filter, etc.
   )
-  
+
+  # Exclude weight_var for viz types that don't support it
+  # (weight_var may be inherited from page/collection defaults)
+  weight_var_supported_types <- c("bar", "boxplot", "density", "funnel", "pyramid",
+    "heatmap", "histogram", "lollipop", "pie", "donut", "stackedbar", "stackedbars",
+    "timeline", "waffle")
+  if (!spec$viz_type %in% weight_var_supported_types) {
+    exclude_params <- c(exclude_params, "weight_var")
+  }
+
   for (param in names(spec)) {
     if (!param %in% exclude_params) {
       args[[param]] <- .serialize_arg(spec[[param]])
@@ -445,22 +538,31 @@
   }
 
   # Format function call with proper indentation
+  viz_label <- spec$title %||% spec$viz_type %||% viz_function
+  escaped_viz_label <- gsub("'", "\\\\'", as.character(viz_label))
+  escaped_viz_type <- gsub("'", "\\\\'", as.character(spec$viz_type %||% "unknown"))
+  call_str <- c("result <- tryCatch({")
   if (length(args) == 0) {
-    call_str <- paste0("result <- ", viz_function, "()")
+    call_str <- c(call_str, paste0("  ", viz_function, "()"))
   } else {
-    arg_lines <- character(0)
-    arg_lines <- c(arg_lines, paste0("result <- ", viz_function, "("))
-
+    call_str <- c(call_str, paste0("  ", viz_function, "("))
     for (i in seq_along(args)) {
       arg_name <- names(args)[i]
       arg_value <- args[[i]]
       comma <- if (i < length(args)) "," else ""
-      arg_lines <- c(arg_lines, paste0("  ", arg_name, " = ", arg_value, comma))
+      call_str <- c(call_str, paste0("    ", arg_name, " = ", arg_value, comma))
     }
-
-    arg_lines <- c(arg_lines, ")")
-    call_str <- arg_lines
+    call_str <- c(call_str, "  )")
   }
+  call_str <- c(
+    call_str,
+    "}, error = function(e) {",
+    paste0(
+      "  stop(\"Visualization failed ('", escaped_viz_label, "', type '", escaped_viz_type,
+      "'): \", conditionMessage(e), call. = FALSE)"
+    ),
+    "})"
+  )
 
   # Set chart height BEFORE cross-tab embed (hc_size must run on the highchart object)
   if (!is.null(spec$height)) {
@@ -573,7 +675,7 @@
   # Embed cross-tab data BEFORE the height div wrapper (attributes live on the highchart)
   has_cross_tab <- !is.null(spec$cross_tab_filter_vars) && length(spec$cross_tab_filter_vars) > 0
   if (has_cross_tab) {
-    call_str <- c(call_str, "", "result <- dashboardr::.embed_cross_tab(result)")
+    call_str <- c(call_str, "", "result <- dashboardr:::.embed_cross_tab(result)")
   }
 
   # Wrap in explicit height container AFTER cross-tab embed
@@ -777,14 +879,18 @@
 }
 
 
-.generate_tabgroup_viz <- function(tabgroup_spec, lazy_load_tabs = FALSE) {
+.generate_tabgroup_viz <- function(tabgroup_spec, lazy_load_tabs = FALSE, dashboard_layout = FALSE) {
   lines <- character(0)
 
   # Add section header if a label is provided
-  if (isTRUE(!is.null(tabgroup_spec$label) && nzchar(tabgroup_spec$label))) {
-    lines <- c(lines, paste0("## ", tabgroup_spec$label), "")
-  } else if (isTRUE(!is.null(tabgroup_spec$name) && nzchar(tabgroup_spec$name))) {
-    lines <- c(lines, paste0("## ", tabgroup_spec$name), "")
+  # In dashboard layout, the tabgroup is already wrapped in ### Row,
+  # so we skip the section header (or it would break out of the container)
+  if (!dashboard_layout) {
+    if (isTRUE(!is.null(tabgroup_spec$label) && nzchar(tabgroup_spec$label))) {
+      lines <- c(lines, paste0("## ", tabgroup_spec$label), "")
+    } else if (isTRUE(!is.null(tabgroup_spec$name) && nzchar(tabgroup_spec$name))) {
+      lines <- c(lines, paste0("## ", tabgroup_spec$name), "")
+    }
   }
 
   # Check if any viz in this tabgroup has text_before_tabset
@@ -1356,5 +1462,3 @@
   
   label
 }
-
-

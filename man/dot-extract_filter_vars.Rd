@@ -8,6 +8,8 @@
 }
 \arguments{
 \item{content}{A content_collection or list with sidebar/items}
+
+\item{filter_vars}{Optional character vector of input filter variables to apply to this block.}
 }
 \value{
 Character vector of unique filter_var values

@@ -4,7 +4,7 @@
 \alias{add_html}
 \title{Add raw HTML content}
 \usage{
-add_html(content, html, tabgroup = NULL)
+add_html(content, html, tabgroup = NULL, show_when = NULL)
 }
 \arguments{
 \item{content}{Content collection object}
@@ -12,6 +12,8 @@ add_html(content, html, tabgroup = NULL)
 \item{html}{Raw HTML string}
 
 \item{tabgroup}{Optional tabgroup for organizing content (character vector for nested tabs)}
+
+\item{show_when}{One-sided formula controlling conditional display based on input values.}
 }
 \description{
 Add raw HTML content

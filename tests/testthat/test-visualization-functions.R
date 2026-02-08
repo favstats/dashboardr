@@ -261,5 +261,160 @@ test_that("viz_heatmap with title and labels", {
   expect_s3_class(result, "highchart")
 })
 
-} # end covr CI skip
+# ===================================================================
+# Multi-backend support tests
+# ===================================================================
 
+# --- viz_bar backends ---
+test_that("viz_bar works with plotly backend", {
+  skip_if_not_installed("plotly")
+  data <- data.frame(
+    category = c("A", "B", "C", "A", "B", "C"),
+    value = c(10, 20, 30, 15, 25, 35)
+  )
+  result <- viz_bar(data = data, x_var = "category", backend = "plotly")
+  expect_s3_class(result, "plotly")
+})
+
+test_that("viz_bar works with echarts4r backend", {
+  skip_if_not_installed("echarts4r")
+  data <- data.frame(
+    category = c("A", "B", "C", "A", "B", "C"),
+    value = c(10, 20, 30, 15, 25, 35)
+  )
+  result <- viz_bar(data = data, x_var = "category", backend = "echarts4r")
+  expect_s3_class(result, "echarts4r")
+})
+
+test_that("viz_bar works with ggiraph backend", {
+  skip_if_not_installed("ggiraph")
+  skip_if_not_installed("ggplot2")
+  data <- data.frame(
+    category = c("A", "B", "C", "A", "B", "C"),
+    value = c(10, 20, 30, 15, 25, 35)
+  )
+  result <- viz_bar(data = data, x_var = "category", backend = "ggiraph")
+  expect_s3_class(result, "girafe")
+})
+
+test_that("viz_bar default backend unchanged (highcharter)", {
+  data <- data.frame(
+    category = c("A", "B", "C", "A", "B", "C"),
+    value = c(10, 20, 30, 15, 25, 35)
+  )
+  result <- viz_bar(data = data, x_var = "category")
+  expect_s3_class(result, "highchart")
+})
+
+# --- viz_histogram backends ---
+test_that("viz_histogram works with plotly backend", {
+  skip_if_not_installed("plotly")
+  data <- data.frame(value = sample(c("A", "B", "C"), 100, replace = TRUE))
+  result <- viz_histogram(data = data, x_var = "value", backend = "plotly")
+  expect_s3_class(result, "plotly")
+})
+
+test_that("viz_histogram works with echarts4r backend", {
+  skip_if_not_installed("echarts4r")
+  data <- data.frame(value = sample(c("A", "B", "C"), 100, replace = TRUE))
+  result <- viz_histogram(data = data, x_var = "value", backend = "echarts4r")
+  expect_s3_class(result, "echarts4r")
+})
+
+test_that("viz_histogram works with ggiraph backend", {
+  skip_if_not_installed("ggiraph")
+  skip_if_not_installed("ggplot2")
+  data <- data.frame(value = sample(c("A", "B", "C"), 100, replace = TRUE))
+  result <- viz_histogram(data = data, x_var = "value", backend = "ggiraph")
+  expect_s3_class(result, "girafe")
+})
+
+# --- viz_timeline backends ---
+test_that("viz_timeline works with plotly backend", {
+  skip_if_not_installed("plotly")
+  data <- data.frame(
+    year = rep(2020:2023, each = 10),
+    value = rnorm(40)
+  )
+  result <- viz_timeline(data = data, time_var = "year", y_var = "value", backend = "plotly")
+  expect_s3_class(result, "plotly")
+})
+
+test_that("viz_timeline works with echarts4r backend", {
+  skip_if_not_installed("echarts4r")
+  data <- data.frame(
+    year = rep(2020:2023, each = 10),
+    value = rnorm(40)
+  )
+  result <- viz_timeline(data = data, time_var = "year", y_var = "value", backend = "echarts4r")
+  expect_s3_class(result, "echarts4r")
+})
+
+# --- viz_heatmap backends ---
+test_that("viz_heatmap works with plotly backend", {
+  skip_if_not_installed("plotly")
+  data <- expand.grid(x = c("A", "B", "C"), y = c("X", "Y", "Z"))
+  data$value <- rnorm(9)
+  result <- viz_heatmap(data = data, x_var = "x", y_var = "y", value_var = "value", backend = "plotly")
+  expect_s3_class(result, "plotly")
+})
+
+# --- backend parameter validation ---
+test_that("viz_bar rejects invalid backend", {
+  data <- data.frame(category = c("A", "B"), value = c(10, 20))
+  expect_error(
+    viz_bar(data = data, x_var = "category", backend = "invalid_backend"),
+    "arg"
+  )
+})
+
+test_that("viz_histogram rejects invalid backend", {
+  data <- data.frame(value = c("A", "B", "C"))
+  expect_error(
+    viz_histogram(data = data, x_var = "value", backend = "nonexistent"),
+    "arg"
+  )
+})
+
+# --- create_dashboard backend parameter ---
+test_that("create_dashboard accepts backend parameter", {
+  temp_dir <- tempfile("backend_test")
+  suppressMessages({
+    proj <- create_dashboard(
+      title = "Test",
+      output_dir = temp_dir,
+      backend = "plotly"
+    )
+  })
+  expect_equal(proj$backend, "plotly")
+  unlink(temp_dir, recursive = TRUE)
+})
+
+test_that("create_dashboard defaults to highcharter backend", {
+  temp_dir <- tempfile("backend_default_test")
+  suppressMessages({
+    proj <- create_dashboard(
+      title = "Test",
+      output_dir = temp_dir
+    )
+  })
+  expect_equal(proj$backend, "highcharter")
+  unlink(temp_dir, recursive = TRUE)
+})
+
+test_that("create_dashboard rejects invalid backend", {
+  temp_dir <- tempfile("backend_invalid_test")
+  expect_error(
+    suppressMessages({
+      create_dashboard(
+        title = "Test",
+        output_dir = temp_dir,
+        backend = "d3js"
+      )
+    }),
+    "arg"
+  )
+  unlink(temp_dir, recursive = TRUE)
+})
+
+} # end covr CI skip

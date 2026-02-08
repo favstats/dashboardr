@@ -23,6 +23,7 @@ viz_treemap(
   tooltip_format = NULL,
   credits = FALSE,
   pre_aggregated = FALSE,
+  backend = "highcharter",
   ...
 )
 }
@@ -68,6 +69,8 @@ For the simpler dashboardr placeholder syntax, use \code{tooltip} instead.}
 \item{pre_aggregated}{Logical. If TRUE, skips summing and uses \code{value_var} directly.
 Use this when your data is already aggregated (one row per leaf node).
 Default is FALSE.}
+
+\item{backend}{Rendering backend: "highcharter" (default), "plotly", "echarts4r", or "ggiraph".}
 
 \item{...}{Additional parameters passed to highcharter}
 }

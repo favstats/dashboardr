@@ -39,7 +39,8 @@ viz_heatmap(
   y_map_values = NULL,
   agg_fun = mean,
   weight_var = NULL,
-  pre_aggregated = FALSE
+  pre_aggregated = FALSE,
+  backend = "highcharter"
 )
 }
 \arguments{
@@ -132,6 +133,8 @@ When provided, the function uses \code{weighted.mean()} instead of the \code{agg
 \item{pre_aggregated}{Logical. If TRUE, skips aggregation and uses \code{value_var} directly.
 Use this when your data is already aggregated (one row per x/y combination).
 Default is FALSE.}
+
+\item{backend}{Rendering backend: "highcharter" (default), "plotly", "echarts4r", or "ggiraph".}
 }
 \value{
 A \code{highcharter} heatmap object.

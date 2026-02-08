@@ -14,7 +14,8 @@
 #' @param filter_vars Character vector of filter_var values from add_input() calls (optional)
 #' @keywords internal
 .process_visualizations <- function(viz_input, data_path, tabgroup_labels = NULL,
-                                     shared_first_level = TRUE, filter_vars = NULL) {
+                                     shared_first_level = TRUE, filter_vars = NULL,
+                                     context_label = NULL) {
   # Handle different input types
   if (is_content(viz_input)) {
     if (is.null(viz_input) || length(viz_input$items) == 0) {
@@ -28,7 +29,19 @@
     }
     # Auto-detect filter_vars from content if not provided
     if (is.null(filter_vars)) {
-      filter_vars <- .extract_filter_vars(viz_input)
+      filter_vars <- tryCatch(
+        .extract_filter_vars(viz_input),
+        error = function(e) {
+          if (is.null(context_label)) {
+            stop("Failed to extract filter variables: ", conditionMessage(e), call. = FALSE)
+          }
+          stop(
+            "Failed to extract filter variables in ", context_label, ": ",
+            conditionMessage(e),
+            call. = FALSE
+          )
+        }
+      )
     }
   } else if (is.list(viz_input)) {
     if (length(viz_input) == 0) {
@@ -367,6 +380,7 @@
 
 #' Extract all insertion indices from a viz item (including nested items)
 #' @param item A viz item, which could be a tabgroup with nested visualizations
+#' @param backend Rendering backend: "highcharter" (default), "plotly", "echarts4r", or "ggiraph".
 #' @return Vector of all insertion indices found in this item and its children
 #' @keywords internal
 .extract_all_insertion_indices <- function(item) {

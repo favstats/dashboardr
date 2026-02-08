@@ -9,7 +9,8 @@ add_callout.page_object(
   text,
   type = "note",
   title = NULL,
-  tabgroup = NULL
+  tabgroup = NULL,
+  show_when = NULL
 )
 }
 \arguments{
@@ -22,6 +23,8 @@ add_callout.page_object(
 \item{title}{Optional callout title}
 
 \item{tabgroup}{Optional tabgroup}
+
+\item{show_when}{One-sided formula controlling conditional display based on input values.}
 }
 \value{
 The updated page_object

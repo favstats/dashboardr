@@ -4,7 +4,15 @@
 \alias{add_DT}
 \title{Add DT datatable}
 \usage{
-add_DT(content, table_data, options = NULL, tabgroup = NULL, ...)
+add_DT(
+  content,
+  table_data,
+  options = NULL,
+  tabgroup = NULL,
+  filter_vars = NULL,
+  show_when = NULL,
+  ...
+)
 }
 \arguments{
 \item{content}{A content_collection object}
@@ -14,6 +22,10 @@ add_DT(content, table_data, options = NULL, tabgroup = NULL, ...)
 \item{options}{List of DT options (only used if passing a data frame)}
 
 \item{tabgroup}{Optional tabgroup for organizing content (character vector for nested tabs)}
+
+\item{filter_vars}{Optional character vector of input filter variables to apply to this block.}
+
+\item{show_when}{One-sided formula controlling conditional display based on input values.}
 
 \item{...}{Additional arguments passed to DT::datatable() (only used if passing a data frame)}
 }

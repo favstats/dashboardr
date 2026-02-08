@@ -26,6 +26,7 @@
 #' @param tooltip_suffix Optional string appended to tooltip values.
 #' @param height Numeric. Chart height in pixels. Default 400.
 #'
+#' @param backend Rendering backend: "highcharter" (default), "plotly", "echarts4r", or "ggiraph".
 #' @return A highcharter plot object.
 #'
 #' @examples
@@ -54,7 +55,8 @@ viz_sankey <- function(data,
                        tooltip = NULL,
                        tooltip_prefix = "",
                        tooltip_suffix = "",
-                       height = 400) {
+                       height = 400,
+                       backend = "highcharter") {
 
   # Convert variable arguments to strings
   from_var <- .as_var_string(rlang::enquo(from_var))
@@ -103,12 +105,12 @@ viz_sankey <- function(data,
     }
   }
 
-  # Build Sankey data format: list of [from, to, weight]
+  # Build Sankey data format: list of named [from, to, weight]
   sankey_data <- lapply(seq_len(nrow(plot_data)), function(i) {
     list(
-      as.character(plot_data[[from_var]][i]),
-      as.character(plot_data[[to_var]][i]),
-      plot_data[[value_var]][i]
+      from = as.character(plot_data[[from_var]][i]),
+      to = as.character(plot_data[[to_var]][i]),
+      weight = plot_data[[value_var]][i]
     )
   })
 
@@ -127,6 +129,45 @@ viz_sankey <- function(data,
     }
     node
   })
+
+  # Build config for backend dispatch
+  config <- list(
+    title = title, subtitle = subtitle,
+    color_palette = color_palette, node_width = node_width,
+    node_padding = node_padding, link_opacity = link_opacity,
+    data_labels_enabled = data_labels_enabled, curvature = curvature,
+    tooltip = tooltip, tooltip_prefix = tooltip_prefix,
+    tooltip_suffix = tooltip_suffix, height = height,
+    from_var = from_var, to_var = to_var, value_var = value_var,
+    sankey_data = sankey_data, all_nodes = all_nodes, nodes = nodes
+  )
+
+  # Dispatch to backend renderer
+  backend <- .normalize_backend(backend)
+  backend <- match.arg(backend, c("highcharter", "plotly", "echarts4r", "ggiraph"))
+  .assert_backend_supported("sankey", backend)
+  render_fn <- switch(backend,
+    highcharter = .viz_sankey_highcharter,
+    plotly      = .viz_sankey_plotly,
+    echarts4r   = .viz_sankey_echarts,
+    ggiraph     = .viz_sankey_ggiraph
+  )
+  result <- render_fn(plot_data, config)
+  result <- .register_chart_widget(result, backend = backend)
+  return(result)
+}
+
+# --- Highcharter backend (original implementation) ---
+#' @keywords internal
+.viz_sankey_highcharter <- function(plot_data, config) {
+  # Unpack config
+  title <- config$title; subtitle <- config$subtitle
+  color_palette <- config$color_palette; node_width <- config$node_width
+  node_padding <- config$node_padding; link_opacity <- config$link_opacity
+  data_labels_enabled <- config$data_labels_enabled; curvature <- config$curvature
+  tooltip <- config$tooltip; tooltip_prefix <- config$tooltip_prefix
+  tooltip_suffix <- config$tooltip_suffix; height <- config$height
+  sankey_data <- config$sankey_data; nodes <- config$nodes
 
   # Create Sankey chart
   hc <- highcharter::highchart() %>%
@@ -180,4 +221,172 @@ viz_sankey <- function(data,
   hc <- hc %>% highcharter::hc_credits(enabled = FALSE)
 
   return(hc)
+}
+
+# --- Plotly backend ---
+#' @keywords internal
+.viz_sankey_plotly <- function(plot_data, config) {
+  rlang::check_installed("plotly", reason = "to use backend = 'plotly'")
+
+  title <- config$title
+  color_palette <- config$color_palette
+  height <- config$height
+  from_var <- config$from_var
+  to_var <- config$to_var
+  value_var <- config$value_var
+  all_nodes <- config$all_nodes
+  link_opacity <- config$link_opacity
+
+  # Map node names to integer indices (0-based)
+  from_indices <- match(as.character(plot_data[[from_var]]), all_nodes) - 1L
+  to_indices <- match(as.character(plot_data[[to_var]]), all_nodes) - 1L
+  values <- plot_data[[value_var]]
+
+  # Node colors
+  n_nodes <- length(all_nodes)
+  if (!is.null(color_palette)) {
+    node_colors <- rep_len(color_palette, n_nodes)
+  } else {
+    node_colors <- rep_len(
+      c("#4E79A7", "#F28E2B", "#E15759", "#76B7B2", "#59A14F",
+        "#EDC948", "#B07AA1", "#FF9DA7", "#9C755F", "#BAB0AC"),
+      n_nodes
+    )
+  }
+
+  # Link colors (lighter versions of source node colors)
+  link_colors <- paste0("rgba(",
+    paste(
+      grDevices::col2rgb(node_colors[from_indices + 1L])[1, ],
+      grDevices::col2rgb(node_colors[from_indices + 1L])[2, ],
+      grDevices::col2rgb(node_colors[from_indices + 1L])[3, ],
+      link_opacity,
+      sep = ","
+    ),
+  ")")
+
+  p <- plotly::plot_ly(
+    type = "sankey",
+    orientation = "h",
+    node = list(
+      label = all_nodes,
+      color = node_colors,
+      pad = 10,
+      thickness = 20
+    ),
+    link = list(
+      source = from_indices,
+      target = to_indices,
+      value = values,
+      color = link_colors
+    )
+  )
+
+  if (!is.null(title)) {
+    p <- plotly::layout(p, title = title)
+  }
+
+  if (!is.null(height)) {
+    p <- plotly::layout(p, height = height)
+  }
+
+  p
+}
+
+# --- echarts4r backend ---
+#' @keywords internal
+.viz_sankey_echarts <- function(plot_data, config) {
+  rlang::check_installed("echarts4r", reason = "to use backend = 'echarts4r'")
+
+  title <- config$title; subtitle <- config$subtitle
+  color_palette <- config$color_palette
+  height <- config$height
+  from_var <- config$from_var
+  to_var <- config$to_var
+  value_var <- config$value_var
+  all_nodes <- config$all_nodes
+
+  # Build nodes as list of lists for e_list
+  nodes_list <- lapply(all_nodes, function(nm) list(name = nm))
+
+  # Build links as list of lists for e_list
+  links_list <- lapply(seq_len(nrow(plot_data)), function(i) {
+    list(
+      source = as.character(plot_data[[from_var]][i]),
+      target = as.character(plot_data[[to_var]][i]),
+      value = plot_data[[value_var]][i]
+    )
+  })
+
+  opts <- list(
+    series = list(list(
+      type = "sankey",
+      data = nodes_list,
+      links = links_list,
+      layoutIterations = 32,
+      emphasis = list(focus = "adjacency")
+    )),
+    tooltip = list(trigger = "item")
+  )
+
+  if (!is.null(title) || !is.null(subtitle)) {
+    opts$title <- list(text = title %||% "", subtext = subtitle %||% "")
+  }
+
+  if (!is.null(color_palette)) {
+    opts$color <- as.list(color_palette)
+  }
+
+  echarts4r::e_charts() |> echarts4r::e_list(opts)
+}
+
+# --- ggiraph backend ---
+#' @keywords internal
+.viz_sankey_ggiraph <- function(plot_data, config) {
+  rlang::check_installed("ggiraph", reason = "to use backend = 'ggiraph'")
+  rlang::check_installed("ggplot2", reason = "to use backend = 'ggiraph'")
+  rlang::check_installed("ggalluvial", reason = "to use backend = 'ggiraph' for sankey diagrams")
+
+  title <- config$title; subtitle <- config$subtitle
+  color_palette <- config$color_palette
+  from_var <- config$from_var
+  to_var <- config$to_var
+  value_var <- config$value_var
+
+  # Build alluvial-style data
+  alluvial_data <- data.frame(
+    from = as.character(plot_data[[from_var]]),
+    to = as.character(plot_data[[to_var]]),
+    value = plot_data[[value_var]],
+    stringsAsFactors = FALSE
+  )
+
+  alluvial_data$.tooltip <- paste0(
+    alluvial_data$from, " \u2192 ", alluvial_data$to,
+    ": ", round(alluvial_data$value, 2)
+  )
+
+  p <- ggplot2::ggplot(alluvial_data,
+    ggplot2::aes(y = .data$value, axis1 = .data$from, axis2 = .data$to)
+  ) +
+    ggalluvial::geom_alluvium(
+      ggplot2::aes(fill = .data$from),
+      width = 1/12
+    ) +
+    ggalluvial::geom_stratum(width = 1/12, fill = "grey80", color = "grey50") +
+    ggplot2::geom_text(
+      stat = ggalluvial::StatStratum,
+      ggplot2::aes(label = ggplot2::after_stat(.data$stratum)),
+      size = 3
+    ) +
+    ggplot2::labs(title = title, subtitle = subtitle) +
+    ggplot2::theme_minimal() +
+    ggplot2::theme(axis.text.x = ggplot2::element_blank(),
+                   axis.ticks.x = ggplot2::element_blank())
+
+  if (!is.null(color_palette)) {
+    p <- p + ggplot2::scale_fill_manual(values = color_palette)
+  }
+
+  ggiraph::girafe(ggobj = p)
 }

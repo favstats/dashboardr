@@ -68,6 +68,7 @@
 #' @param title_map Named list mapping variable names to custom display titles
 #'   for dynamic title updates when filtering by cross-tab variables.
 #'
+#' @param backend Rendering backend: "highcharter" (default), "plotly", "echarts4r", or "ggiraph".
 #' @return A highcharter plot object.
 #'
 #' @examples
@@ -145,7 +146,8 @@ viz_timeline <- function(data,
                             group_order = NULL,
                             # Cross-tab filtering for sidebar inputs (auto-detected)
                             cross_tab_filter_vars = NULL,
-                            title_map = NULL) {
+                            title_map = NULL,
+                            backend = "highcharter") {
 
   # Convert variable arguments to strings (supports both quoted and unquoted)
   time_var <- .as_var_string(rlang::enquo(time_var))
@@ -453,6 +455,124 @@ viz_timeline <- function(data,
         )
     }
   }
+
+  # Build config for backend dispatch
+  config <- list(
+    title = title, subtitle = subtitle,
+    x_axis_title = x_axis_title, y_axis_title = y_axis_title,
+    y_max = y_max, y_min = y_min,
+    color_palette = color_palette, chart_type = chart_type,
+    y_levels = y_levels, group_var = group_var,
+    group_order = group_order,
+    is_time_categorical = is_time_categorical,
+    time_categories = if (is_time_categorical) time_categories else NULL,
+    time_var_plot = time_var_plot, y_var = y_var,
+    value_col = value_col, agg = agg,
+    tooltip = tooltip, tooltip_prefix = tooltip_prefix,
+    tooltip_suffix = tooltip_suffix,
+    cross_tab_filter_vars = cross_tab_filter_vars,
+    title_map = title_map,
+    filter_label = filter_label, filter_applied = filter_applied,
+    plot_data = plot_data, data = data,
+    weight_var = weight_var,
+    time_var = time_var,
+    x_label = x_label, y_label = y_label,
+    y_filter_label = y_filter_label
+  )
+
+  # Prepare cross-tab data for client-side filtering (all backends)
+  cross_tab_attrs <- NULL
+  if (!is.null(cross_tab_filter_vars) && length(cross_tab_filter_vars) > 0) {
+    valid_filter_vars <- cross_tab_filter_vars[cross_tab_filter_vars %in% names(data)]
+    if (length(valid_filter_vars) > 0) {
+      group_vars <- c(time_var, y_var, valid_filter_vars)
+      if (!is.null(group_var)) group_vars <- c(group_vars, group_var)
+      if (!is.null(weight_var) && weight_var %in% names(data) && is.numeric(data[[weight_var]])) {
+        cross_tab <- data %>%
+          dplyr::group_by(dplyr::across(dplyr::all_of(group_vars))) %>%
+          dplyr::summarise(
+            value = weighted.mean(.data[[y_var]], w = .data[[weight_var]], na.rm = TRUE),
+            .groups = "drop"
+          )
+      } else {
+        cross_tab <- data %>%
+          dplyr::group_by(dplyr::across(dplyr::all_of(group_vars))) %>%
+          dplyr::summarise(value = mean(.data[[y_var]], na.rm = TRUE), .groups = "drop")
+      }
+      chart_id <- paste0("crosstab_", substr(digest::digest(
+        paste(time_var, y_var, group_var %||% "", collapse = "_")
+      ), 1, 8))
+      chart_config <- list(
+        chartId = chart_id,
+        chartType = "timeline",
+        timeVar = time_var,
+        yVar = y_var,
+        groupVar = group_var,
+        filterVars = valid_filter_vars,
+        groupOrder = if (!is.null(group_order)) group_order else unique(as.character(cross_tab[[group_var %||% "group"]])),
+        colorMap = if (!is.null(color_palette) && !is.null(names(color_palette))) as.list(color_palette) else NULL
+      )
+      if (!is.null(title) && grepl("\\{\\w+\\}", title)) {
+        chart_config$titleTemplate <- title
+      }
+      if (!is.null(title_map) && is.list(title_map)) {
+        tl_js <- lapply(names(title_map), function(nm) {
+          list(values = as.list(title_map[[nm]]))
+        })
+        names(tl_js) <- names(title_map)
+        chart_config$titleLookups <- tl_js
+      }
+      cross_tab_attrs <- list(data = cross_tab, config = chart_config, id = chart_id)
+    }
+  }
+
+  # Dispatch to backend renderer
+  backend <- .normalize_backend(backend)
+  backend <- match.arg(backend, c("highcharter", "plotly", "echarts4r", "ggiraph"))
+  .assert_backend_supported("timeline", backend)
+  render_fn <- switch(backend,
+    highcharter = .viz_timeline_highcharter,
+    plotly      = .viz_timeline_plotly,
+    echarts4r   = .viz_timeline_echarts,
+    ggiraph     = .viz_timeline_ggiraph
+  )
+  result <- render_fn(agg_data, config)
+  if (!is.null(cross_tab_attrs)) {
+    attr(result, "cross_tab_data") <- cross_tab_attrs$data
+    attr(result, "cross_tab_config") <- cross_tab_attrs$config
+    attr(result, "cross_tab_id") <- cross_tab_attrs$id
+    if (identical(backend, "highcharter")) {
+      result <- highcharter::hc_chart(result, id = cross_tab_attrs$id)
+    }
+  }
+  result <- .register_chart_widget(result, backend = backend)
+  return(result)
+}
+
+# --- Highcharter backend (original implementation) ---
+#' @keywords internal
+.viz_timeline_highcharter <- function(agg_data, config) {
+  # Unpack config
+  title <- config$title; subtitle <- config$subtitle
+  x_axis_title <- config$x_axis_title; y_axis_title <- config$y_axis_title
+  y_max <- config$y_max; y_min <- config$y_min
+  color_palette <- config$color_palette; chart_type <- config$chart_type
+  y_levels <- config$y_levels; group_var <- config$group_var
+  group_order <- config$group_order
+  is_time_categorical <- config$is_time_categorical
+  time_categories <- config$time_categories
+  time_var_plot <- config$time_var_plot; y_var <- config$y_var
+  value_col <- config$value_col; agg <- config$agg
+  tooltip <- config$tooltip; tooltip_prefix <- config$tooltip_prefix
+  tooltip_suffix <- config$tooltip_suffix
+  cross_tab_filter_vars <- config$cross_tab_filter_vars
+  title_map <- config$title_map
+  filter_label <- config$filter_label; filter_applied <- config$filter_applied
+  plot_data <- config$plot_data; data <- config$data
+  weight_var <- config$weight_var
+  time_var <- config$time_var
+  x_label <- config$x_label; y_label <- config$y_label
+  y_filter_label <- config$y_filter_label
 
   # Create base chart
   hc <- highchart() %>%
@@ -802,55 +922,193 @@ viz_timeline <- function(data,
       )
   }
 
-  # Generate cross-tab for client-side filtering if filter_vars are provided
-  if (!is.null(cross_tab_filter_vars) && length(cross_tab_filter_vars) > 0) {
-    valid_filter_vars <- cross_tab_filter_vars[cross_tab_filter_vars %in% names(data)]
+  return(hc)
+}
 
-    if (length(valid_filter_vars) > 0) {
-      # Build cross-tab: group by time + group + filter vars, keep y_var
-      ct_group_vars <- c(time_var, valid_filter_vars)
-      if (!is.null(group_var)) ct_group_vars <- c(ct_group_vars, group_var)
+# --- Plotly backend ---
+#' @keywords internal
+.viz_timeline_plotly <- function(agg_data, config) {
+  rlang::check_installed("plotly", reason = "to use backend = 'plotly'")
 
-      cross_tab <- data %>%
-        dplyr::group_by(dplyr::across(dplyr::all_of(ct_group_vars))) %>%
-        dplyr::summarise(value = mean(!!rlang::sym(y_var), na.rm = TRUE), .groups = "drop")
+  time_var_plot <- config$time_var_plot
+  y_var <- config$y_var
+  group_var <- config$group_var
+  value_col <- config$value_col
+  chart_type <- config$chart_type
+  color_palette <- config$color_palette
+  title <- config$title
+  x_axis_title <- config$x_axis_title
+  y_axis_title <- config$y_axis_title
+  y_max <- config$y_max
+  y_min <- config$y_min
+  group_order <- config$group_order
 
-      chart_id <- paste0("crosstab_", substr(digest::digest(
-        paste(time_var, group_var %||% "", collapse = "_")), 1, 8))
+  mode <- switch(chart_type,
+    "line" = "lines+markers",
+    "spline" = "lines+markers",
+    "area" = "lines",
+    "column" = NULL,
+    "lines+markers"
+  )
+  is_bar <- chart_type %in% c("column", "bar")
 
-      chart_config <- list(
-        chartId    = chart_id,
-        chartType  = "timeline",
-        timeVar    = time_var,
-        yVar       = y_var,
-        groupVar   = group_var,
-        filterVars = valid_filter_vars,
-        groupOrder = if (!is.null(group_order)) as.list(group_order) else NULL,
-        colorMap = if (!is.null(.color_named)) as.list(.color_named) else NULL
-      )
-
-      # Dynamic title: if title contains {var} placeholders, store the template
-      if (!is.null(title) && grepl("\\{\\w+\\}", title)) {
-        chart_config$titleTemplate <- title
+  if (is.null(group_var)) {
+    # Single series
+    if (is_bar) {
+      p <- plotly::plot_ly(agg_data, x = ~get(time_var_plot), y = ~get(value_col),
+                           type = "bar", name = y_var)
+    } else {
+      p <- plotly::plot_ly(agg_data, x = ~get(time_var_plot), y = ~get(value_col),
+                           type = "scatter", mode = mode, name = y_var,
+                           fill = if (chart_type == "area") "tozeroy" else "none")
+    }
+  } else {
+    # Grouped series
+    group_levels <- if (!is.null(group_order)) group_order else unique(agg_data[[group_var]])
+    p <- plotly::plot_ly()
+    for (grp in group_levels) {
+      grp_data <- agg_data[agg_data[[group_var]] == grp, ]
+      if (is_bar) {
+        p <- plotly::add_trace(p, x = grp_data[[time_var_plot]], y = grp_data[[value_col]],
+                               type = "bar", name = as.character(grp))
+      } else {
+        p <- plotly::add_trace(p, x = grp_data[[time_var_plot]], y = grp_data[[value_col]],
+                               type = "scatter", mode = mode, name = as.character(grp),
+                               fill = if (chart_type == "area") "tozeroy" else "none")
       }
-
-      # Title map: derived placeholders from named vectors
-      # e.g. title_map = list(key_response = c("Marijuana" = "Legal", ...))
-      if (!is.null(title_map) && is.list(title_map)) {
-        tl_js <- lapply(names(title_map), function(nm) {
-          list(values = as.list(title_map[[nm]]))
-        })
-        names(tl_js) <- names(title_map)
-        chart_config$titleLookups <- tl_js
-      }
-
-      attr(hc, "cross_tab_data")   <- cross_tab
-      attr(hc, "cross_tab_config") <- chart_config
-      attr(hc, "cross_tab_id")     <- chart_id
-
-      hc <- highcharter::hc_chart(hc, id = chart_id)
     }
   }
 
-  return(hc)
+  layout_args <- list(p = p, title = title)
+  layout_args$xaxis <- list(title = x_axis_title)
+  y_axis_cfg <- list(title = y_axis_title)
+  if (!is.null(y_max)) y_axis_cfg$range <- c(y_min %||% 0, y_max)
+  layout_args$yaxis <- y_axis_cfg
+  p <- do.call(plotly::layout, layout_args)
+
+  if (!is.null(color_palette)) {
+    p <- plotly::layout(p, colorway = color_palette)
+  }
+
+  p
+}
+
+# --- echarts4r backend ---
+#' @keywords internal
+.viz_timeline_echarts <- function(agg_data, config) {
+  rlang::check_installed("echarts4r", reason = "to use backend = 'echarts4r'")
+
+  time_var_plot <- config$time_var_plot
+  group_var <- config$group_var
+  value_col <- config$value_col
+  chart_type <- config$chart_type
+  color_palette <- config$color_palette
+  title <- config$title
+  subtitle <- config$subtitle
+  x_axis_title <- config$x_axis_title
+  y_axis_title <- config$y_axis_title
+  y_max <- config$y_max
+  y_min <- config$y_min
+
+  agg_data[[time_var_plot]] <- as.character(agg_data[[time_var_plot]])
+
+  if (is.null(group_var)) {
+    e <- agg_data |>
+      echarts4r::e_charts_(time_var_plot)
+  } else {
+    agg_data[[group_var]] <- as.character(agg_data[[group_var]])
+    e <- agg_data |>
+      dplyr::group_by(.data[[group_var]]) |>
+      echarts4r::e_charts_(time_var_plot)
+  }
+
+  e <- switch(chart_type,
+    "line" =, "spline" = e |> echarts4r::e_line_(value_col, smooth = chart_type == "spline"),
+    "area" = e |> echarts4r::e_area_(value_col),
+    "column" =, "bar" = e |> echarts4r::e_bar_(value_col),
+    e |> echarts4r::e_line_(value_col)
+  )
+
+  if (!is.null(title) || !is.null(subtitle)) {
+    e <- e |> echarts4r::e_title(text = title %||% "", subtext = subtitle %||% "")
+  }
+
+  e <- e |>
+    echarts4r::e_x_axis(name = x_axis_title) |>
+    echarts4r::e_y_axis(name = y_axis_title, max = y_max, min = y_min) |>
+    echarts4r::e_tooltip(trigger = "axis")
+
+  if (!is.null(color_palette)) {
+    e <- e |> echarts4r::e_color(color_palette)
+  }
+
+  e
+}
+
+# --- ggiraph backend ---
+#' @keywords internal
+.viz_timeline_ggiraph <- function(agg_data, config) {
+  rlang::check_installed("ggiraph", reason = "to use backend = 'ggiraph'")
+  rlang::check_installed("ggplot2", reason = "to use backend = 'ggiraph'")
+
+  time_var_plot <- config$time_var_plot
+  group_var <- config$group_var
+  value_col <- config$value_col
+  chart_type <- config$chart_type
+  color_palette <- config$color_palette
+  title <- config$title
+  subtitle <- config$subtitle
+  x_axis_title <- config$x_axis_title
+  y_axis_title <- config$y_axis_title
+  y_max <- config$y_max
+  y_min <- config$y_min
+
+  # Build tooltip
+  agg_data$.tooltip <- paste0(
+    agg_data[[time_var_plot]],
+    if (!is.null(group_var)) paste0(" (", agg_data[[group_var]], ")") else "",
+    ": ", round(agg_data[[value_col]], 2)
+  )
+
+  aes_base <- if (is.null(group_var)) {
+    ggplot2::aes(x = .data[[time_var_plot]], y = .data[[value_col]])
+  } else {
+    ggplot2::aes(x = .data[[time_var_plot]], y = .data[[value_col]],
+                 color = .data[[group_var]], group = .data[[group_var]])
+  }
+
+  p <- ggplot2::ggplot(agg_data, aes_base)
+
+  if (chart_type %in% c("column", "bar")) {
+    fill_aes <- if (!is.null(group_var)) {
+      ggplot2::aes(fill = .data[[group_var]], tooltip = .data$.tooltip, data_id = .data[[time_var_plot]])
+    } else {
+      ggplot2::aes(tooltip = .data$.tooltip, data_id = .data[[time_var_plot]])
+    }
+    p <- p + ggiraph::geom_bar_interactive(fill_aes, stat = "identity",
+                                            position = if (!is.null(group_var)) "dodge" else "identity")
+  } else if (chart_type == "area") {
+    p <- p +
+      ggplot2::geom_area(alpha = 0.3) +
+      ggiraph::geom_point_interactive(ggplot2::aes(tooltip = .data$.tooltip, data_id = .data[[time_var_plot]]))
+  } else {
+    p <- p +
+      ggplot2::geom_line() +
+      ggiraph::geom_point_interactive(ggplot2::aes(tooltip = .data$.tooltip, data_id = .data[[time_var_plot]]))
+  }
+
+  if (!is.null(color_palette)) {
+    p <- p + ggplot2::scale_color_manual(values = color_palette)
+  }
+
+  p <- p +
+    ggplot2::labs(title = title, subtitle = subtitle,
+                  x = x_axis_title, y = y_axis_title) +
+    ggplot2::theme_minimal()
+
+  if (!is.null(y_max) || !is.null(y_min)) {
+    p <- p + ggplot2::coord_cartesian(ylim = c(y_min, y_max))
+  }
+
+  ggiraph::girafe(ggobj = p)
 }

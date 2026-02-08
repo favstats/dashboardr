@@ -39,7 +39,7 @@
     title_content <- paste0(icon_shortcode, " ", display_name)
   }
 
-  # Check if page has a sidebar - if so, use dashboard format
+  # Check if page has a sidebar
   has_page_sidebar <- !is.null(page$sidebar)
   if (!has_page_sidebar && !is.null(page$content_blocks)) {
     for (block in page$content_blocks) {
@@ -49,8 +49,9 @@
       }
     }
   }
-  
+
   # Use dashboard format when sidebar is present, otherwise html
+  # (Sidebar pages need dashboard format for proper layout with ## Column markers)
   page_format <- if (has_page_sidebar) "dashboard" else "html"
 
   content <- c(
@@ -231,18 +232,32 @@
   }
   # Also check content_blocks for filter_vars
   if (!is.null(page$content_blocks)) {
-    for (block in page$content_blocks) {
+    page_name <- page$name %||% page$title %||% "<unnamed page>"
+    for (i in seq_along(page$content_blocks)) {
+      block <- page$content_blocks[[i]]
       if (is_content(block)) {
-        block_filter_vars <- .extract_filter_vars(block)
+        block_filter_vars <- tryCatch(
+          .extract_filter_vars(block),
+          error = function(e) {
+            stop(
+              "Failed to extract filter variables on page '", page_name,
+              "' from content block #", i, ": ", conditionMessage(e),
+              call. = FALSE
+            )
+          }
+        )
         page_filter_vars <- c(page_filter_vars, block_filter_vars)
       }
     }
   }
   page_filter_vars <- unique(page_filter_vars)
 
-  # In dashboard format (with sidebar), viz titles should use ### instead of ##
-  # to stay within the Column
-  viz_heading_level <- if (has_sidebar) 3 else 2
+  # In dashboard format (with sidebar), we use ### Row containers and
+  # viz titles use #### to stay within the Row/Column hierarchy:
+  #   ## Column (main content)  →  ### Row  →  #### Card Title
+  # Without sidebar (html format), viz titles use ## as before.
+  viz_heading_level <- if (has_sidebar) 4 else 2
+  use_dashboard_layout <- has_sidebar
   
   # For left sidebar: output sidebar first, then ## Column marker
   if (has_sidebar && sidebar_position == "left") {
@@ -325,15 +340,34 @@
             
             # First process through viz_processing to handle tabgroup hierarchy
             # Pass page_filter_vars for cross-tab filtering support
+            page_name <- page$name %||% page$title %||% "<unnamed page>"
             processed_specs <- .process_visualizations(viz_coll, page$data_path, 
-                                                        filter_vars = page_filter_vars)
+                                                        filter_vars = page_filter_vars,
+                                                        context_label = paste0("page '", page_name, "'"))
             
+            # Inject page-level backend into processed specs
+            page_backend <- page$backend %||% "highcharter"
+            if (page_backend != "highcharter" && !is.null(processed_specs)) {
+              processed_specs <- lapply(processed_specs, function(spec) {
+                if (is.null(spec$backend)) spec$backend <- page_backend
+                # Also inject into nested_children if present
+                if (!is.null(spec$nested_children)) {
+                  spec$nested_children <- lapply(spec$nested_children, function(child) {
+                    if (is.null(child$backend)) child$backend <- page_backend
+                    child
+                  })
+                }
+                spec
+              })
+            }
+
             # Then generate the markdown
             if (!is.null(processed_specs) && length(processed_specs) > 0) {
-              viz_content <- .generate_viz_from_specs(processed_specs, 
-                                                        page$lazy_load_charts %||% FALSE, 
+              viz_content <- .generate_viz_from_specs(processed_specs,
+                                                        page$lazy_load_charts %||% FALSE,
                                                         page$lazy_load_tabs %||% FALSE,
-                                                        heading_level = viz_heading_level)
+                                                        heading_level = viz_heading_level,
+                                                        dashboard_layout = use_dashboard_layout)
               content <- c(content, viz_content)
             }
             i <- j
@@ -354,6 +388,7 @@
               "reactable" = .generate_reactable_block(item),
               "DT" = .generate_DT_block(item),
               "hc" = .generate_hc_block(item),
+              "widget" = .generate_widget_block(item),
               "spacer" = .generate_spacer_block(item),
               "html" = .generate_html_block(item),
               "quote" = .generate_quote_block(item),
@@ -366,6 +401,7 @@
               "modal" = .generate_modal_block(item),
               NULL
             )
+            item_content <- .wrap_show_when_block(item_content, item$show_when)
             if (!is.null(item_content)) {
               content <- c(content, item_content)
             }
@@ -395,6 +431,7 @@
         "reactable" = .generate_reactable_block(block),
         "DT" = .generate_DT_block(block),
         "hc" = .generate_hc_block(block),
+        "widget" = .generate_widget_block(block),
         "spacer" = .generate_spacer_block(block),
         "html" = .generate_html_block(block),
         "quote" = .generate_quote_block(block),
@@ -408,6 +445,7 @@
         NULL  # Unknown type - skip
       )
       
+      block_content <- .wrap_show_when_block(block_content, block$show_when)
       if (!is.null(block_content)) {
         content <- c(content, block_content)
       }
@@ -460,6 +498,7 @@
         NULL
       )
       
+      item_content <- .wrap_show_when_block(item_content, item$show_when)
       if (!is.null(item_content)) {
         content <- c(content, item_content)
       }
@@ -482,8 +521,19 @@
         spec
       })
     }
-    
-    viz_content <- .generate_viz_from_specs(viz_specs, lazy_load_charts, lazy_load_tabs, heading_level = viz_heading_level)
+
+    # Inject page-level backend into viz specs that don't override it
+    page_backend <- page$backend %||% "highcharter"
+    if (page_backend != "highcharter") {
+      viz_specs <- lapply(viz_specs, function(spec) {
+        if (is.null(spec$backend)) {
+          spec$backend <- page_backend
+        }
+        spec
+      })
+    }
+
+    viz_content <- .generate_viz_from_specs(viz_specs, lazy_load_charts, lazy_load_tabs, heading_level = viz_heading_level, dashboard_layout = use_dashboard_layout)
     content <- c(content, viz_content)
   } else if (isTRUE(is.null(page$text) || !nzchar(page$text))) {
     # Check if there's any content from various sources
@@ -750,6 +800,27 @@
   # Render the loaded table object directly
   table_var <- if (!is.null(block$table_var)) block$table_var else "data"
   
+  # Filterable table (client-side)
+  if (!is.null(block$filter_vars)) {
+    lines <- c(
+      "",
+      "```{r}",
+      "#| echo: false",
+      "#| results: 'asis'",
+      paste0(
+        "dashboardr:::.render_filterable_table(",
+        table_var, ", ",
+        "table_id = '", table_var, "', ",
+        "caption = ", .serialize_arg(block$caption), ", ",
+        "filter_vars = ", .serialize_arg(block$filter_vars),
+        ")"
+      ),
+      "```",
+      ""
+    )
+    return(lines)
+  }
+  
   lines <- c(
     "",
     "```{r}",
@@ -815,6 +886,26 @@
 .generate_reactable_block <- function(block) {
   # Render the loaded reactable object directly - ALL styling preserved!
   table_var <- if (!is.null(block$table_var)) block$table_var else "data"
+  if (!is.null(block$filter_vars)) {
+    lines <- c(
+      "",
+      "```{r}",
+      "#| echo: false",
+      "",
+      paste0(
+        table_var, " <- dashboardr:::.register_reactable_widget(",
+        table_var, ", ",
+        "table_id = '", table_var, "', ",
+        "filter_vars = ", .serialize_arg(block$filter_vars), ", ",
+        "data = ", .serialize_arg(block$reactable_data),
+        ")"
+      ),
+      table_var,
+      "```",
+      ""
+    )
+    return(lines)
+  }
   
   lines <- c(
     "",
@@ -850,6 +941,12 @@
       "#| echo: false",
       height_line,
       "",
+      paste0(
+        hc_var, " <- dashboardr:::.register_chart_widget(",
+        hc_var, ", backend = \"highcharter\", ",
+        "filter_vars = ", .serialize_arg(block$filter_vars),
+        ")"
+      ),
       hc_var,
       "```",
       ""
@@ -861,12 +958,75 @@
       "```{r}",
       "#| echo: false",
       "",
+      paste0(
+        hc_var, " <- dashboardr:::.register_chart_widget(",
+        hc_var, ", backend = \"highcharter\", ",
+        "filter_vars = ", .serialize_arg(block$filter_vars),
+        ")"
+      ),
       hc_var,
       "```",
       ""
     )
   }
   
+  lines
+}
+
+#' Generate widget block markdown
+#'
+#' Internal function to generate markdown for generic htmlwidget content blocks
+#' (plotly, leaflet, echarts4r, ggiraph, etc.)
+#'
+#' @param block Widget content block
+#' @return Character vector of markdown lines
+#' @keywords internal
+.generate_widget_block <- function(block) {
+  widget_var <- if (!is.null(block$widget_var)) block$widget_var else "widget_obj"
+
+  title_lines <- character(0)
+  if (!is.null(block$title) && nzchar(block$title)) {
+    title_lines <- c("", paste0("### ", block$title), "")
+  }
+
+  if (!is.null(block$height) && nzchar(block$height)) {
+    height_line <- paste0("#| fig-height: ", gsub("px", "", block$height))
+    lines <- c(
+      title_lines,
+      "",
+      "```{r}",
+      "#| echo: false",
+      height_line,
+      "",
+      paste0(
+        widget_var, " <- dashboardr:::.register_chart_widget(",
+        widget_var, ", backend = dashboardr:::.detect_widget_backend(", widget_var, "), ",
+        "filter_vars = ", .serialize_arg(block$filter_vars),
+        ")"
+      ),
+      widget_var,
+      "```",
+      ""
+    )
+  } else {
+    lines <- c(
+      title_lines,
+      "",
+      "```{r}",
+      "#| echo: false",
+      "",
+      paste0(
+        widget_var, " <- dashboardr:::.register_chart_widget(",
+        widget_var, ", backend = dashboardr:::.detect_widget_backend(", widget_var, "), ",
+        "filter_vars = ", .serialize_arg(block$filter_vars),
+        ")"
+      ),
+      widget_var,
+      "```",
+      ""
+    )
+  }
+
   lines
 }
 
@@ -880,6 +1040,26 @@
 .generate_DT_block <- function(block) {
   # Render the loaded DT object directly - ALL styling preserved!
   table_var <- if (!is.null(block$table_var)) block$table_var else "data"
+  if (!is.null(block$filter_vars)) {
+    lines <- c(
+      "",
+      "```{r}",
+      "#| echo: false",
+      "",
+      paste0(
+        table_var, " <- dashboardr:::.register_dt_widget(",
+        table_var, ", ",
+        "table_id = '", table_var, "', ",
+        "filter_vars = ", .serialize_arg(block$filter_vars), ", ",
+        "data = ", .serialize_arg(block$table_raw),
+        ")"
+      ),
+      table_var,
+      "```",
+      ""
+    )
+    return(lines)
+  }
   
   lines <- c(
     "",
@@ -1364,6 +1544,7 @@
     )
     
     if (!is.null(block_content)) {
+      block_content <- .wrap_show_when_block(block_content, block$show_when)
       lines <- c(lines, block_content)
     }
   }
@@ -1383,6 +1564,31 @@
   expr <- rlang::f_rhs(formula)
   condition <- .expr_to_condition(expr)
   jsonlite::toJSON(condition, auto_unbox = TRUE)
+}
+
+#' Wrap block markdown with show_when helpers
+#'
+#' @param lines Character vector of markdown lines
+#' @param show_when Optional show_when formula
+#' @keywords internal
+.wrap_show_when_block <- function(lines, show_when) {
+  if (is.null(lines) || is.null(show_when)) return(lines)
+  show_when_json <- .parse_show_when(show_when)
+  c(
+    "",
+    "```{r}",
+    "#| echo: false",
+    "#| results: 'asis'",
+    paste0("show_when_open('", show_when_json, "')"),
+    "```",
+    lines,
+    "```{r}",
+    "#| echo: false",
+    "#| results: 'asis'",
+    "show_when_close()",
+    "```",
+    ""
+  )
 }
 
 #' Convert R expression to condition list for show_when (eq, neq, in, and, or)
@@ -1590,6 +1796,20 @@
       }
       lines <- c(lines, "")
     }
+
+    # Load widget objects (plotly, leaflet, etc.) from content blocks
+    widget_blocks <- collect_blocks(page$content_blocks, function(b) {
+      isTRUE(b$type == "widget") && !is.null(b$widget_file)
+    })
+    if (length(widget_blocks) > 0) {
+      lines <- c(lines, "# Load widget objects (plotly, leaflet, etc.)", "")
+      for (block in widget_blocks) {
+        if (isTRUE(!is.null(block$widget_var) && !is.null(block$widget_file))) {
+          lines <- c(lines, paste0(block$widget_var, " <- readRDS('", block$widget_file, "')"))
+        }
+      }
+      lines <- c(lines, "")
+    }
   }
 
   lines <- c(lines, "```", "")
@@ -1660,5 +1880,3 @@
 # ===================================================================
 # Code Generation for Visualizations
 # ===================================================================
-
-

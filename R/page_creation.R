@@ -195,10 +195,12 @@ create_page <- function(name,
 #' @param text First line of text
 #' @param ... Additional text lines
 #' @param tabgroup Optional tabgroup for the text
+#' @param show_when One-sided formula controlling conditional display based on input values.
 #'
 #' @return The updated page_object
 #' @export
-add_text.page_object <- function(page, text, ..., tabgroup = NULL) {
+add_text.page_object <- function(page, text, ..., tabgroup = NULL, show_when = NULL) {
+  .validate_show_when(show_when)
   if (!inherits(page, "page_object")) {
     stop("First argument must be a page_object created by create_page()", call. = FALSE)
   }
@@ -210,7 +212,8 @@ add_text.page_object <- function(page, text, ..., tabgroup = NULL) {
     list(
       type = "text",
       content = paste(all_text, collapse = "\n\n"),  # Use 'content' for consistency with add_text()
-      tabgroup = tabgroup
+      tabgroup = tabgroup,
+      show_when = show_when
     ),
     class = "content_block"
   )
@@ -229,10 +232,12 @@ add_text.page_object <- function(page, text, ..., tabgroup = NULL) {
 #' @param type Callout type: "note", "tip", "warning", "important", "caution"
 #' @param title Optional callout title
 #' @param tabgroup Optional tabgroup
+#' @param show_when One-sided formula controlling conditional display based on input values.
 #'
 #' @return The updated page_object
 #' @export
-add_callout.page_object <- function(page, text, type = "note", title = NULL, tabgroup = NULL) {
+add_callout.page_object <- function(page, text, type = "note", title = NULL, tabgroup = NULL, show_when = NULL) {
+  .validate_show_when(show_when)
   if (!inherits(page, "page_object")) {
     stop("First argument must be a page_object created by create_page()", call. = FALSE)
   }
@@ -243,7 +248,8 @@ add_callout.page_object <- function(page, text, type = "note", title = NULL, tab
       callout_type = type,
       text = text,
       title = title,
-      tabgroup = tabgroup
+      tabgroup = tabgroup,
+      show_when = show_when
     ),
     class = "content_block"
   )

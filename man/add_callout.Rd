@@ -11,7 +11,8 @@ add_callout(
   title = NULL,
   icon = NULL,
   collapse = FALSE,
-  tabgroup = NULL
+  tabgroup = NULL,
+  show_when = NULL
 )
 }
 \arguments{
@@ -28,6 +29,8 @@ add_callout(
 \item{collapse}{Whether callout is collapsible}
 
 \item{tabgroup}{Optional tabgroup for organizing content (character vector for nested tabs)}
+
+\item{show_when}{One-sided formula controlling conditional display based on input values.}
 }
 \value{
 Updated content_collection

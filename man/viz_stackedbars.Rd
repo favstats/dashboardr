@@ -105,6 +105,8 @@ If FALSE (default), rows with NA are excluded.}
 \item{weight_var}{Optional string. Name of a weight variable for weighted counts.}
 
 \item{data_labels_enabled}{Logical. If TRUE, show value labels on bars. Default TRUE.}
+
+\item{backend}{Rendering backend: "highcharter" (default), "plotly", "echarts4r", or "ggiraph".}
 }
 \value{
 A \code{highcharter} stacked bar chart object.

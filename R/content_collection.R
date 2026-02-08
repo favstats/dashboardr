@@ -50,7 +50,33 @@
 #'   add_viz(type = "histogram", x_var = "age")
 #' }
 create_content <- function(data = NULL, tabgroup_labels = NULL, shared_first_level = TRUE, ...) {
-  create_viz(data = data, tabgroup_labels = tabgroup_labels, shared_first_level = shared_first_level, ...)
+  create_viz(
+    data = data,
+    tabgroup_labels = tabgroup_labels,
+    shared_first_level = shared_first_level,
+    ...
+  )
+}
+
+# -----------------------------------------------------------------
+# Internal helpers
+# -----------------------------------------------------------------
+.validate_show_when <- function(show_when) {
+  if (is.null(show_when)) return(invisible(NULL))
+  if (!inherits(show_when, "formula")) {
+    stop("show_when must be a formula (e.g., ~ time_period == \"Over Time\") or NULL", call. = FALSE)
+  }
+  if (length(show_when) != 2) {
+    stop("show_when formula must have the form ~ condition (one-sided formula)", call. = FALSE)
+  }
+  invisible(NULL)
+}
+
+.normalize_filter_vars <- function(filter_vars) {
+  if (is.null(filter_vars)) return(NULL)
+  if (is.character(filter_vars)) return(filter_vars)
+  if (is.factor(filter_vars)) return(as.character(filter_vars))
+  stop("filter_vars must be a character vector or NULL", call. = FALSE)
 }
 
 
@@ -63,6 +89,7 @@ create_content <- function(data = NULL, tabgroup_labels = NULL, shared_first_lev
 #' @param text Markdown text content (can be multi-line)
 #' @param tabgroup Optional tabgroup for organizing content (character vector for nested tabs)
 #' @param ... Additional text lines (will be combined with newlines)
+#' @param show_when One-sided formula controlling conditional display based on input values.
 #' @return Updated content_collection object
 #' @export
 #' @examples
@@ -83,10 +110,10 @@ create_content <- function(data = NULL, tabgroup_labels = NULL, shared_first_lev
 #'   add_viz(type = "histogram", x_var = "age") %>%
 #'   add_text("Analysis complete")
 #' }
-add_text <- function(x = NULL, text, ..., tabgroup = NULL) {
+add_text <- function(x = NULL, text, ..., tabgroup = NULL, show_when = NULL) {
   # Dispatch to page_object method if appropriate
   if (inherits(x, "page_object")) {
-    return(add_text.page_object(x, text, ..., tabgroup = tabgroup))
+    return(add_text.page_object(x, text, ..., tabgroup = tabgroup, show_when = show_when))
   }
   
   # Handle sidebar_container - add text block to sidebar
@@ -100,7 +127,7 @@ add_text <- function(x = NULL, text, ..., tabgroup = NULL) {
     }
     final_content <- paste(all_text, collapse = "\n")
     
-    text_block <- structure(list(type = "text", content = final_content), class = "content_block")
+    text_block <- structure(list(type = "text", content = final_content, show_when = show_when), class = "content_block")
     x$blocks <- c(x$blocks, list(text_block))
     return(x)
   }
@@ -164,7 +191,8 @@ add_text <- function(x = NULL, text, ..., tabgroup = NULL) {
     list(
       type = "text",
       content = final_content,
-      tabgroup = parsed_tabgroup
+      tabgroup = parsed_tabgroup,
+      show_when = show_when
     ),
     class = "content_block"
   )
@@ -220,13 +248,15 @@ add_text <- function(x = NULL, text, ..., tabgroup = NULL) {
 #' }
 add_image <- function(content_collection = NULL, src, alt = NULL, caption = NULL, 
                       width = NULL, height = NULL, align = c("center", "left", "right"), 
-                      link = NULL, class = NULL, tabgroup = NULL) {
+                      link = NULL, class = NULL, tabgroup = NULL, show_when = NULL) {
+  .validate_show_when(show_when)
   # Handle sidebar_container
   if (inherits(content_collection, "sidebar_container")) {
     align <- match.arg(align)
     image_block <- structure(list(
       type = "image", src = src, alt = alt %||% "", caption = caption,
-      width = width, height = height, align = align, link = link, class = class
+      width = width, height = height, align = align, link = link, class = class,
+      show_when = show_when
     ), class = "content_block")
     content_collection$blocks <- c(content_collection$blocks, list(image_block))
     return(content_collection)
@@ -292,7 +322,8 @@ add_image <- function(content_collection = NULL, src, alt = NULL, caption = NULL
       align = align,
       link = link,
       class = class,
-      tabgroup = .parse_tabgroup(tabgroup)
+      tabgroup = .parse_tabgroup(tabgroup),
+      show_when = show_when
     ),
     class = "content_block"
   )
@@ -318,13 +349,15 @@ add_image <- function(content_collection = NULL, src, alt = NULL, caption = NULL
 #' @param icon Optional icon
 #' @param collapse Whether callout is collapsible
 #' @param tabgroup Optional tabgroup for organizing content (character vector for nested tabs)
+#' @param show_when One-sided formula controlling conditional display based on input values.
 #' @return Updated content_collection
 #' @export
 add_callout <- function(x, text, type = c("note", "tip", "warning", "caution", "important"),
-                        title = NULL, icon = NULL, collapse = FALSE, tabgroup = NULL) {
+                        title = NULL, icon = NULL, collapse = FALSE, tabgroup = NULL, show_when = NULL) {
+  .validate_show_when(show_when)
   # Dispatch to page_object method if appropriate
   if (inherits(x, "page_object")) {
-    return(add_callout.page_object(x, text, type = type, title = title, tabgroup = tabgroup))
+    return(add_callout.page_object(x, text, type = type, title = title, tabgroup = tabgroup, show_when = show_when))
   }
   
   # Handle sidebar_container
@@ -332,7 +365,8 @@ add_callout <- function(x, text, type = c("note", "tip", "warning", "caution", "
     type <- match.arg(type)
     callout_block <- structure(list(
       type = "callout", callout_type = type, content = text,
-      title = title, icon = icon, collapse = collapse
+      title = title, icon = icon, collapse = collapse,
+      show_when = show_when
     ), class = "content_block")
     x$blocks <- c(x$blocks, list(callout_block))
     return(x)
@@ -352,7 +386,8 @@ add_callout <- function(x, text, type = c("note", "tip", "warning", "caution", "
     title = title,
     icon = icon,
     collapse = collapse,
-    tabgroup = .parse_tabgroup(tabgroup)
+    tabgroup = .parse_tabgroup(tabgroup),
+    show_when = show_when
   ), class = "content_block")
   
   insertion_idx <- length(content$items) + 1
@@ -365,13 +400,15 @@ add_callout <- function(x, text, type = c("note", "tip", "warning", "caution", "
 #' @param content A content_collection, viz_collection, or page_object
 #' @param style Divider style ("default", "thick", "dashed", "dotted")
 #' @param tabgroup Optional tabgroup for organizing content (character vector for nested tabs)
+#' @param show_when One-sided formula controlling conditional display based on input values.
 #' @return Updated object (same type as input)
 #' @export
-add_divider <- function(content, style = "default", tabgroup = NULL) {
+add_divider <- function(content, style = "default", tabgroup = NULL, show_when = NULL) {
   divider_block <- structure(list(
     type = "divider",
     style = style,
-    tabgroup = .parse_tabgroup(tabgroup)
+    tabgroup = .parse_tabgroup(tabgroup),
+    show_when = show_when
   ), class = "content_block")
   
   # Handle page_object
@@ -403,16 +440,18 @@ add_divider <- function(content, style = "default", tabgroup = NULL) {
 #' @param caption Optional caption
 #' @param filename Optional filename to display
 #' @param tabgroup Optional tabgroup for organizing content (character vector for nested tabs)
+#' @param show_when One-sided formula controlling conditional display based on input values.
 #' @return Updated object (same type as input)
 #' @export
-add_code <- function(content, code, language = "r", caption = NULL, filename = NULL, tabgroup = NULL) {
+add_code <- function(content, code, language = "r", caption = NULL, filename = NULL, tabgroup = NULL, show_when = NULL) {
   code_block <- structure(list(
     type = "code",
     code = code,
     language = language,
     caption = caption,
     filename = filename,
-    tabgroup = .parse_tabgroup(tabgroup)
+    tabgroup = .parse_tabgroup(tabgroup),
+    show_when = show_when
   ), class = "content_block")
   
   # Handle page_object
@@ -435,13 +474,15 @@ add_code <- function(content, code, language = "r", caption = NULL, filename = N
 #' @param content A content_collection, viz_collection, or page_object
 #' @param height Height (CSS unit, e.g. "2rem", "50px")
 #' @param tabgroup Optional tabgroup for organizing content (character vector for nested tabs)
+#' @param show_when One-sided formula controlling conditional display based on input values.
 #' @return Updated object (same type as input)
 #' @export
-add_spacer <- function(content, height = "2rem", tabgroup = NULL) {
+add_spacer <- function(content, height = "2rem", tabgroup = NULL, show_when = NULL) {
   spacer_block <- structure(list(
     type = "spacer",
     height = height,
-    tabgroup = .parse_tabgroup(tabgroup)
+    tabgroup = .parse_tabgroup(tabgroup),
+    show_when = show_when
   ), class = "content_block")
   
   # Handle page_object
@@ -471,6 +512,7 @@ add_spacer <- function(content, height = "2rem", tabgroup = NULL) {
 #' @param gt_object A gt table object (from gt::gt()) OR a data frame (will be auto-converted)
 #' @param caption Optional caption
 #' @param tabgroup Optional tabgroup for organizing content (character vector for nested tabs)
+#' @param show_when One-sided formula controlling conditional display based on input values.
 #' @return Updated content_collection
 #' @export
 #' @examples
@@ -487,14 +529,15 @@ add_spacer <- function(content, height = "2rem", tabgroup = NULL) {
 #' content <- create_content() %>%
 #'   add_gt(mtcars, caption = "Motor Trend Cars")
 #' }
-add_gt <- function(content, gt_object, caption = NULL, tabgroup = NULL) {
+add_gt <- function(content, gt_object, caption = NULL, tabgroup = NULL, show_when = NULL) {
   # Accept both gt tables and data frames
   gt_block <- structure(list(
     type = "gt",
     gt_object = gt_object,
     caption = caption,
     is_dataframe = is.data.frame(gt_object),
-    tabgroup = .parse_tabgroup(tabgroup)
+    tabgroup = .parse_tabgroup(tabgroup),
+    show_when = show_when
   ), class = "content_block")
   
   if (inherits(content, "page_object")) {
@@ -516,6 +559,8 @@ add_gt <- function(content, gt_object, caption = NULL, tabgroup = NULL) {
 #' @param content A content_collection object
 #' @param reactable_object A reactable object (from reactable::reactable()) OR a data frame (will be auto-converted)
 #' @param tabgroup Optional tabgroup for organizing content (character vector for nested tabs)
+#' @param filter_vars Optional character vector of input filter variables to apply to this block.
+#' @param show_when One-sided formula controlling conditional display based on input values.
 #' @return Updated content_collection
 #' @export
 #' @examples
@@ -535,12 +580,26 @@ add_gt <- function(content, gt_object, caption = NULL, tabgroup = NULL) {
 #' content <- create_content() %>%
 #'   add_reactable(mtcars)
 #' }
-add_reactable <- function(content, reactable_object, tabgroup = NULL) {
+add_reactable <- function(content, reactable_object, tabgroup = NULL, filter_vars = NULL, show_when = NULL) {
+  filter_vars <- .normalize_filter_vars(filter_vars)
+  is_dataframe <- is.data.frame(reactable_object)
+  if (!is.null(filter_vars) && !is_dataframe) {
+    stop("filter_vars requires reactable_object to be a data frame", call. = FALSE)
+  }
+  if (is_dataframe) {
+    rlang::check_installed("reactable", reason = "to use add_reactable")
+    reactable_obj <- reactable::reactable(reactable_object)
+  } else {
+    reactable_obj <- reactable_object
+  }
   reactable_block <- structure(list(
     type = "reactable",
-    reactable_object = reactable_object,
-    is_dataframe = is.data.frame(reactable_object),
-    tabgroup = .parse_tabgroup(tabgroup)
+    reactable_object = reactable_obj,
+    reactable_data = if (is_dataframe) reactable_object else NULL,
+    is_dataframe = is_dataframe,
+    filter_vars = filter_vars,
+    tabgroup = .parse_tabgroup(tabgroup),
+    show_when = show_when
   ), class = "content_block")
   
   if (inherits(content, "page_object")) {
@@ -568,6 +627,8 @@ add_reactable <- function(content, reactable_object, tabgroup = NULL) {
 #' @param hc_object A highcharter object created with highcharter::highchart() or hchart()
 #' @param height Optional height for the chart (e.g., "400px", "50vh"). If NULL (default), no height is set and highcharter handles its own sizing
 #' @param tabgroup Optional tabgroup for organizing content (character vector for nested tabs)
+#' @param filter_vars Optional character vector of input filter variables to apply to this block.
+#' @param show_when One-sided formula controlling conditional display based on input values.
 #' @return Updated content object
 #' @export
 #' @examples
@@ -585,7 +646,8 @@ add_reactable <- function(content, reactable_object, tabgroup = NULL) {
 #'   add_hc(my_chart) %>%
 #'   add_hc(another_chart, height = "500px", tabgroup = "My Charts")
 #' }
-add_hc <- function(content, hc_object, height = NULL, tabgroup = NULL) {
+add_hc <- function(content, hc_object, height = NULL, tabgroup = NULL, filter_vars = NULL, show_when = NULL) {
+  filter_vars <- .normalize_filter_vars(filter_vars)
   # Validate it's a highcharter object
   if (!inherits(hc_object, "highchart")) {
     stop("hc_object must be a highcharter object (created with highchart() or hchart())", call. = FALSE)
@@ -595,7 +657,9 @@ add_hc <- function(content, hc_object, height = NULL, tabgroup = NULL) {
     type = "hc",
     hc_object = hc_object,
     height = height,
-    tabgroup = .parse_tabgroup(tabgroup)
+    filter_vars = filter_vars,
+    tabgroup = .parse_tabgroup(tabgroup),
+    show_when = show_when
   ), class = "content_block")
   
   # Handle dashboard_project - add to last page's content_blocks
@@ -629,19 +693,135 @@ add_hc <- function(content, hc_object, height = NULL, tabgroup = NULL) {
   content
 }
 
+#' Add a generic htmlwidget to the dashboard
+#'
+#' Embed any htmlwidget object (plotly, leaflet, echarts4r, DT, etc.)
+#' directly into a dashboard page. The widget will be rendered as-is.
+#'
+#' @param content A content_collection, page_object, or dashboard_project
+#' @param widget An htmlwidget object
+#' @param title Optional title displayed above the widget
+#' @param height Optional CSS height (e.g., "400px", "50vh")
+#' @param tabgroup Optional tabgroup for organizing content
+#' @param filter_vars Optional character vector of input filter variables to apply to this block.
+#' @param show_when One-sided formula controlling conditional display based on input values.
+#' @return Updated content object
+#' @export
+add_widget <- function(content, widget, title = NULL, height = NULL, tabgroup = NULL, filter_vars = NULL, show_when = NULL) {
+  filter_vars <- .normalize_filter_vars(filter_vars)
+  if (!inherits(widget, "htmlwidget")) {
+    stop("widget must be an htmlwidget object", call. = FALSE)
+  }
+  widget_class <- class(widget)[1]
+  if (!is.null(filter_vars) && !widget_class %in% c("plotly", "echarts4r", "highchart", "girafe")) {
+    stop("filter_vars is only supported for plotly, echarts4r, highcharter, or ggiraph widgets", call. = FALSE)
+  }
+  if (!is.null(filter_vars) && widget_class == "girafe") {
+    stop("filter_vars is not supported for ggiraph widgets (girafe)", call. = FALSE)
+  }
+
+  widget_block <- structure(list(
+    type = "widget",
+    widget_object = widget,
+    widget_class = widget_class,
+    title = title,
+    height = height,
+    filter_vars = filter_vars,
+    tabgroup = .parse_tabgroup(tabgroup),
+    show_when = show_when
+  ), class = "content_block")
+
+  if (inherits(content, "dashboard_project")) {
+    if (length(content$pages) == 0) {
+      stop("Dashboard has no pages. Add a page first with add_page().", call. = FALSE)
+    }
+    last_page_name <- names(content$pages)[length(content$pages)]
+    if (is.null(content$pages[[last_page_name]]$content_blocks)) {
+      content$pages[[last_page_name]]$content_blocks <- list()
+    }
+    content$pages[[last_page_name]]$content_blocks <- c(
+      content$pages[[last_page_name]]$content_blocks,
+      list(widget_block)
+    )
+    return(content)
+  }
+
+  if (inherits(content, "page_object")) {
+    content$.items <- c(content$.items, list(widget_block))
+    return(content)
+  }
+
+  if (!is_content(content)) {
+    stop("First argument must be a content collection, page_object, or dashboard_project", call. = FALSE)
+  }
+
+  insertion_idx <- length(content$items) + 1
+  widget_block$.insertion_index <- insertion_idx
+  content$items <- c(content$items, list(widget_block))
+  content
+}
+
+#' Add a plotly chart to the dashboard
+#'
+#' Convenience wrapper around \code{\link{add_widget}} for plotly objects.
+#'
+#' @param content A content_collection, page_object, or dashboard_project
+#' @param plot A plotly object (created with \code{plotly::plot_ly()} or \code{plotly::ggplotly()})
+#' @param title Optional title displayed above the chart
+#' @param height Optional CSS height
+#' @param tabgroup Optional tabgroup for organizing content
+#' @param filter_vars Optional character vector of input filter variables to apply to this block.
+#' @param show_when One-sided formula controlling conditional display based on input values.
+#' @return Updated content object
+#' @export
+add_plotly <- function(content, plot, title = NULL, height = NULL, tabgroup = NULL, filter_vars = NULL, show_when = NULL) {
+  if (!inherits(plot, "plotly")) {
+    stop("plot must be a plotly object (created with plot_ly() or ggplotly())", call. = FALSE)
+  }
+  add_widget(content, plot, title = title, height = height, tabgroup = tabgroup, filter_vars = filter_vars, show_when = show_when)
+}
+
+#' Add a leaflet map to the dashboard
+#'
+#' Convenience wrapper around \code{\link{add_widget}} for leaflet objects.
+#'
+#' @param content A content_collection, page_object, or dashboard_project
+#' @param map A leaflet object (created with \code{leaflet::leaflet()})
+#' @param title Optional title displayed above the map
+#' @param height Optional CSS height
+#' @param tabgroup Optional tabgroup for organizing content
+#' @param filter_vars Optional character vector of input filter variables to apply to this block.
+#' @param show_when One-sided formula controlling conditional display based on input values.
+#' @return Updated content object
+#' @export
+add_leaflet <- function(content, map, title = NULL, height = NULL, tabgroup = NULL, filter_vars = NULL, show_when = NULL) {
+  if (!inherits(map, "leaflet")) {
+    stop("map must be a leaflet object (created with leaflet())", call. = FALSE)
+  }
+  add_widget(content, map, title = title, height = height, tabgroup = tabgroup, filter_vars = filter_vars, show_when = show_when)
+}
+
 #' Add generic table (data frame)
 #' @param content A content_collection object
 #' @param table_object A data frame or tibble
 #' @param caption Optional caption
 #' @param tabgroup Optional tabgroup for organizing content (character vector for nested tabs)
+#' @param filter_vars Optional character vector of input filter variables to apply to this block.
+#' @param show_when One-sided formula controlling conditional display based on input values.
 #' @return Updated content_collection
 #' @export
-add_table <- function(content, table_object, caption = NULL, tabgroup = NULL) {
+add_table <- function(content, table_object, caption = NULL, tabgroup = NULL, filter_vars = NULL, show_when = NULL) {
+  filter_vars <- .normalize_filter_vars(filter_vars)
+  if (!is.null(filter_vars) && !is.data.frame(table_object)) {
+    stop("filter_vars requires table_object to be a data frame", call. = FALSE)
+  }
   table_block <- structure(list(
     type = "table",
     table_object = table_object,
     caption = caption,
-    tabgroup = .parse_tabgroup(tabgroup)
+    filter_vars = filter_vars,
+    tabgroup = .parse_tabgroup(tabgroup),
+    show_when = show_when
   ), class = "content_block")
   
   if (inherits(content, "page_object")) {
@@ -665,6 +845,8 @@ add_table <- function(content, table_object, caption = NULL, tabgroup = NULL) {
 #' @param options List of DT options (only used if passing a data frame)
 #' @param tabgroup Optional tabgroup for organizing content (character vector for nested tabs)
 #' @param ... Additional arguments passed to DT::datatable() (only used if passing a data frame)
+#' @param filter_vars Optional character vector of input filter variables to apply to this block.
+#' @param show_when One-sided formula controlling conditional display based on input values.
 #' @return Updated content_collection
 #' @export
 #' @examples
@@ -684,13 +866,27 @@ add_table <- function(content, table_object, caption = NULL, tabgroup = NULL) {
 #' content <- create_content() %>%
 #'   add_DT(mtcars, options = list(pageLength = 5, scrollX = TRUE))
 #' }
-add_DT <- function(content, table_data, options = NULL, tabgroup = NULL, ...) {
+add_DT <- function(content, table_data, options = NULL, tabgroup = NULL, filter_vars = NULL, show_when = NULL, ...) {
+  filter_vars <- .normalize_filter_vars(filter_vars)
+  is_dataframe <- is.data.frame(table_data) || is.matrix(table_data)
+  if (!is.null(filter_vars) && !is_dataframe) {
+    stop("filter_vars requires table_data to be a data frame or matrix", call. = FALSE)
+  }
+  if (is_dataframe) {
+    rlang::check_installed("DT", reason = "to use add_DT")
+    dt_obj <- DT::datatable(table_data, options = options %||% list(), ..., rownames = FALSE)
+  } else {
+    dt_obj <- table_data
+  }
   dt_block <- structure(list(
     type = "DT",
-    table_data = table_data,
+    table_data = dt_obj,
+    table_raw = if (is_dataframe) as.data.frame(table_data) else NULL,
     options = options,
     extra_args = list(...),
-    tabgroup = .parse_tabgroup(tabgroup)
+    filter_vars = filter_vars,
+    tabgroup = .parse_tabgroup(tabgroup),
+    show_when = show_when
   ), class = "content_block")
   
   if (inherits(content, "page_object")) {
@@ -715,16 +911,18 @@ add_DT <- function(content, table_data, options = NULL, tabgroup = NULL, ...) {
 #' @param width Optional width
 #' @param height Optional height
 #' @param tabgroup Optional tabgroup for organizing content (character vector for nested tabs)
+#' @param show_when One-sided formula controlling conditional display based on input values.
 #' @return Updated content_collection
 #' @export
-add_video <- function(content, src, caption = NULL, width = NULL, height = NULL, tabgroup = NULL) {
+add_video <- function(content, src, caption = NULL, width = NULL, height = NULL, tabgroup = NULL, show_when = NULL) {
   video_block <- structure(list(
     type = "video",
     url = src,
     caption = caption,
     width = width,
     height = height,
-    tabgroup = .parse_tabgroup(tabgroup)
+    tabgroup = .parse_tabgroup(tabgroup),
+    show_when = show_when
   ), class = "content_block")
   
   if (inherits(content, "page_object")) {
@@ -751,16 +949,18 @@ add_video <- function(content, src, caption = NULL, width = NULL, height = NULL,
 #'   (e.g., `"border: none; border-radius: 8px;"`). Useful for removing borders,
 #'   adding shadows, or any custom styling.
 #' @param tabgroup Optional tabgroup for organizing content (character vector for nested tabs)
+#' @param show_when One-sided formula controlling conditional display based on input values.
 #' @return Updated content_collection
 #' @export
-add_iframe <- function(content, src, height = "500px", width = "100%", style = NULL, tabgroup = NULL) {
+add_iframe <- function(content, src, height = "500px", width = "100%", style = NULL, tabgroup = NULL, show_when = NULL) {
   iframe_block <- structure(list(
     type = "iframe",
     url = src,
     height = height,
     width = width,
     style = style,
-    tabgroup = .parse_tabgroup(tabgroup)
+    tabgroup = .parse_tabgroup(tabgroup),
+    show_when = show_when
   ), class = "content_block")
   
   if (inherits(content, "page_object")) {
@@ -784,15 +984,17 @@ add_iframe <- function(content, src, height = "500px", width = "100%", style = N
 #' @param text Section content
 #' @param open Whether section starts open (default: FALSE)
 #' @param tabgroup Optional tabgroup for organizing content (character vector for nested tabs)
+#' @param show_when One-sided formula controlling conditional display based on input values.
 #' @return Updated content_collection
 #' @export
-add_accordion <- function(content, title, text, open = FALSE, tabgroup = NULL) {
+add_accordion <- function(content, title, text, open = FALSE, tabgroup = NULL, show_when = NULL) {
   accordion_block <- structure(list(
     type = "accordion",
     title = title,
     text = text,
     open = open,
-    tabgroup = .parse_tabgroup(tabgroup)
+    tabgroup = .parse_tabgroup(tabgroup),
+    show_when = show_when
   ), class = "content_block")
   
   if (inherits(content, "page_object")) {
@@ -822,15 +1024,17 @@ add_accordion <- function(content, title, text, open = FALSE, tabgroup = NULL) {
 #' @param text Card content
 #' @param footer Optional card footer
 #' @param tabgroup Optional tabgroup for organizing content (character vector for nested tabs)
+#' @param show_when One-sided formula controlling conditional display based on input values.
 #' @return Updated content_collection
 #' @export
-add_card <- function(content, text, title = NULL, footer = NULL, tabgroup = NULL) {
+add_card <- function(content, text, title = NULL, footer = NULL, tabgroup = NULL, show_when = NULL) {
   card_block <- structure(list(
     type = "card",
     title = title,
     text = text,
     footer = footer,
-    tabgroup = .parse_tabgroup(tabgroup)
+    tabgroup = .parse_tabgroup(tabgroup),
+    show_when = show_when
   ), class = "content_block")
   
   if (inherits(content, "page_object")) {
@@ -859,12 +1063,14 @@ add_card <- function(content, text, title = NULL, footer = NULL, tabgroup = NULL
 #' @param content Content collection object
 #' @param html Raw HTML string
 #' @param tabgroup Optional tabgroup for organizing content (character vector for nested tabs)
+#' @param show_when One-sided formula controlling conditional display based on input values.
 #' @export
-add_html <- function(content, html, tabgroup = NULL) {
+add_html <- function(content, html, tabgroup = NULL, show_when = NULL) {
   html_block <- structure(list(
     type = "html",
     html = html,
-    tabgroup = .parse_tabgroup(tabgroup)
+    tabgroup = .parse_tabgroup(tabgroup),
+    show_when = show_when
   ), class = "content_block")
   
   if (inherits(content, "page_object")) {
@@ -895,14 +1101,16 @@ add_html <- function(content, html, tabgroup = NULL) {
 #' @param attribution Optional attribution/source
 #' @param cite Optional citation URL
 #' @param tabgroup Optional tabgroup for organizing content (character vector for nested tabs)
+#' @param show_when One-sided formula controlling conditional display based on input values.
 #' @export
-add_quote <- function(content, quote, attribution = NULL, cite = NULL, tabgroup = NULL) {
+add_quote <- function(content, quote, attribution = NULL, cite = NULL, tabgroup = NULL, show_when = NULL) {
   quote_block <- structure(list(
     type = "quote",
     quote = quote,
     attribution = attribution,
     cite = cite,
-    tabgroup = .parse_tabgroup(tabgroup)
+    tabgroup = .parse_tabgroup(tabgroup),
+    show_when = show_when
   ), class = "content_block")
   
   if (inherits(content, "page_object")) {
@@ -926,13 +1134,15 @@ add_quote <- function(content, quote, attribution = NULL, cite = NULL, tabgroup 
 #' @param text Badge text
 #' @param color Badge color (success, warning, danger, info, primary, secondary)
 #' @param tabgroup Optional tabgroup for organizing content (character vector for nested tabs)
+#' @param show_when One-sided formula controlling conditional display based on input values.
 #' @export
-add_badge <- function(content, text, color = "primary", tabgroup = NULL) {
+add_badge <- function(content, text, color = "primary", tabgroup = NULL, show_when = NULL) {
   badge_block <- structure(list(
     type = "badge",
     text = text,
     color = color,
-    tabgroup = .parse_tabgroup(tabgroup)
+    tabgroup = .parse_tabgroup(tabgroup),
+    show_when = show_when
   ), class = "content_block")
   
   if (inherits(content, "page_object")) {
@@ -965,8 +1175,9 @@ add_badge <- function(content, text, color = "primary", tabgroup = NULL) {
 #' @param color Optional color theme
 #' @param subtitle Optional subtitle text
 #' @param tabgroup Optional tabgroup for organizing content (character vector for nested tabs)
+#' @param show_when One-sided formula controlling conditional display based on input values.
 #' @export
-add_metric <- function(content, value, title, icon = NULL, color = NULL, subtitle = NULL, tabgroup = NULL) {
+add_metric <- function(content, value, title, icon = NULL, color = NULL, subtitle = NULL, tabgroup = NULL, show_when = NULL) {
   metric_block <- structure(list(
     type = "metric",
     value = value,
@@ -974,7 +1185,8 @@ add_metric <- function(content, value, title, icon = NULL, color = NULL, subtitl
     icon = icon,
     color = color,
     subtitle = subtitle,
-    tabgroup = .parse_tabgroup(tabgroup)
+    tabgroup = .parse_tabgroup(tabgroup),
+    show_when = show_when
   ), class = "content_block")
   
   if (inherits(content, "page_object")) {
@@ -1017,6 +1229,7 @@ add_metric <- function(content, value, title, icon = NULL, color = NULL, subtitl
 #' @param description Optional collapsible description text (markdown supported)
 #' @param description_title Title for collapsible section, default "About this source"
 #' @param tabgroup Optional tabgroup for organizing content (character vector for nested tabs)
+#' @param show_when One-sided formula controlling conditional display based on input values.
 #' @export
 #' @examples
 #' \dontrun{
@@ -1037,7 +1250,8 @@ add_metric <- function(content, value, title, icon = NULL, color = NULL, subtitl
 #' }
 add_value_box <- function(content, title, value, logo_url = NULL, logo_text = NULL, 
                           bg_color = "#2c3e50", description = NULL, 
-                          description_title = "About this source", tabgroup = NULL) {
+                          description_title = "About this source", tabgroup = NULL, show_when = NULL) {
+  .validate_show_when(show_when)
   
   # Create the box specification
   box_spec <- list(
@@ -1052,6 +1266,9 @@ add_value_box <- function(content, title, value, logo_url = NULL, logo_text = NU
   
   # Check if we're adding to a row container
   if (inherits(content, "value_box_row_container")) {
+    if (!is.null(show_when)) {
+      stop("show_when is not supported for value_box items inside a value_box_row. Apply show_when to the row instead.", call. = FALSE)
+    }
     # Add to the row's boxes
     content$boxes <- c(content$boxes, list(box_spec))
     return(content)
@@ -1062,7 +1279,7 @@ add_value_box <- function(content, title, value, logo_url = NULL, logo_text = NU
     stop("First argument must be a content_collection object or value_box_row_container", call. = FALSE)
   }
   
-  value_box_block <- structure(c(list(type = "value_box", tabgroup = tabgroup), box_spec), class = "content_block")
+  value_box_block <- structure(c(list(type = "value_box", tabgroup = tabgroup, show_when = show_when), box_spec), class = "content_block")
   
   insertion_idx <- length(content$items) + 1
   value_box_block$.insertion_index <- insertion_idx
@@ -1077,6 +1294,7 @@ add_value_box <- function(content, title, value, logo_url = NULL, logo_text = NU
 #'
 #' @param content Content collection object
 #' @param tabgroup Optional tabgroup for organizing content (character vector for nested tabs)
+#' @param show_when One-sided formula controlling conditional display based on input values.
 #' @export
 #' @examples
 #' \dontrun{
@@ -1087,7 +1305,7 @@ add_value_box <- function(content, title, value, logo_url = NULL, logo_text = NU
 #'     add_value_box(title = "Growth", value = "+23%", bg_color = "#A23B72") %>%
 #'   end_value_box_row()
 #' }
-add_value_box_row <- function(content, tabgroup = NULL) {
+add_value_box_row <- function(content, tabgroup = NULL, show_when = NULL) {
   # Handle page_object - store reference for end_value_box_row to use
   if (inherits(content, "page_object")) {
     row_container <- structure(list(
@@ -1095,7 +1313,8 @@ add_value_box_row <- function(content, tabgroup = NULL) {
       boxes = list(),
       parent_page = content,
       parent_content = NULL,
-      tabgroup = .parse_tabgroup(tabgroup)
+      tabgroup = .parse_tabgroup(tabgroup),
+      show_when = show_when
     ), class = c("value_box_row_container", "content_block"))
     return(row_container)
   }
@@ -1110,7 +1329,8 @@ add_value_box_row <- function(content, tabgroup = NULL) {
     boxes = list(),
     parent_content = content,
     parent_page = NULL,
-    tabgroup = .parse_tabgroup(tabgroup)
+    tabgroup = .parse_tabgroup(tabgroup),
+    show_when = show_when
   ), class = c("value_box_row_container", "content_block"))
   
   row_container
@@ -1141,7 +1361,8 @@ end_value_box_row <- function(row_container) {
   value_box_row_block <- structure(list(
     type = "value_box_row",
     boxes = row_container$boxes,
-    tabgroup = row_container$tabgroup
+    tabgroup = row_container$tabgroup,
+    show_when = row_container$show_when
   ), class = "content_block")
   
   # Handle page_object parent
@@ -1606,6 +1827,7 @@ add_input <- function(content,
                       max = 100,
                       step = 1,
                       value = NULL,
+                      default_value = NULL,
                       show_value = TRUE,
                       inline = TRUE,
                       stacked = FALSE,
@@ -1645,6 +1867,15 @@ add_input <- function(content,
   }
   if (missing(filter_var) || is.null(filter_var)) {
     stop("filter_var is required for add_input() - this should match the group_var in your visualization", call. = FALSE)
+  }
+
+  # Backward-compatible alias for slider-like inputs
+  if (!is.null(default_value)) {
+    if (!is.null(value)) {
+      warning("Both 'value' and deprecated 'default_value' were provided. Using 'value'.", call. = FALSE)
+    } else {
+      value <- default_value
+    }
   }
   
   # Get parent data for auto-deriving options
@@ -2067,7 +2298,6 @@ end_input_row <- function(row_container) {
 #' @return Merged content_collection
 #' @export
 merge_collections <- function(c1, c2) {
-  # Ensure both are content collections
   if (!is_content(c1) && !is_content_block(c1)) {
     stop("Left operand must be a content_collection, viz_collection, or content_block", call. = FALSE)
   }
@@ -2133,16 +2363,28 @@ merge_collections <- function(c1, c2) {
 #' Used to enable automatic cross-tab filtering.
 #' 
 #' @param content A content_collection or list with sidebar/items
+#' @param filter_vars Optional character vector of input filter variables to apply to this block.
 #' @return Character vector of unique filter_var values
 #' @keywords internal
 .extract_filter_vars <- function(content) {
+  normalize_filter_var <- function(x) {
+    if (is.null(x)) return(character(0))
+    if (is.character(x)) return(x[nzchar(x)])
+    if (is.symbol(x)) return(as.character(x))
+    if (is.language(x)) {
+      out <- tryCatch(as.character(x), error = function(e) character(0))
+      return(out[nzchar(out)])
+    }
+    character(0)
+  }
+
   filter_vars <- character(0)
   
   # Check sidebar blocks
   if (!is.null(content$sidebar) && !is.null(content$sidebar$blocks)) {
     for (block in content$sidebar$blocks) {
       if (!is.null(block$type) && block$type == "input" && !is.null(block$filter_var)) {
-        filter_vars <- c(filter_vars, block$filter_var)
+        filter_vars <- c(filter_vars, normalize_filter_var(block$filter_var))
       }
     }
   }
@@ -2151,13 +2393,29 @@ merge_collections <- function(c1, c2) {
   if (!is.null(content$items)) {
     for (item in content$items) {
       if (!is.null(item$type) && item$type == "input" && !is.null(item$filter_var)) {
-        filter_vars <- c(filter_vars, item$filter_var)
+        filter_vars <- c(filter_vars, normalize_filter_var(item$filter_var))
       }
       # Check input_row blocks
       if (!is.null(item$type) && item$type == "input_row" && !is.null(item$inputs)) {
         for (inp in item$inputs) {
           if (!is.null(inp$filter_var)) {
-            filter_vars <- c(filter_vars, inp$filter_var)
+            filter_vars <- c(filter_vars, normalize_filter_var(inp$filter_var))
+          }
+        }
+      }
+    }
+  }
+  
+  # page_object-style inline items (defensive)
+  if (!is.null(content$.items)) {
+    for (item in content$.items) {
+      if (!is.null(item$type) && item$type == "input" && !is.null(item$filter_var)) {
+        filter_vars <- c(filter_vars, normalize_filter_var(item$filter_var))
+      }
+      if (!is.null(item$type) && item$type == "input_row" && !is.null(item$inputs)) {
+        for (inp in item$inputs) {
+          if (!is.null(inp$filter_var)) {
+            filter_vars <- c(filter_vars, normalize_filter_var(inp$filter_var))
           }
         }
       }

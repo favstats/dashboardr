@@ -196,6 +196,7 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
     pagination_css <- system.file("assets", "pagination.css", package = "dashboardr")
     input_filter_css <- system.file("assets", "input_filter.css", package = "dashboardr")
     input_filter_js <- system.file("assets", "input_filter.js", package = "dashboardr")
+    chart_adapters_js <- system.file("assets", "chart_adapters.js", package = "dashboardr")
     filter_hook_js <- system.file("assets", "filter_hook.js", package = "dashboardr")
     linked_inputs_js <- system.file("assets", "linked_inputs.js", package = "dashboardr")
     show_when_js <- system.file("assets", "show_when.js", package = "dashboardr")
@@ -218,6 +219,9 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
     }
     if (file.exists(input_filter_js)) {
       file.copy(input_filter_js, file.path(assets_dir, "input_filter.js"), overwrite = TRUE)
+    }
+    if (file.exists(chart_adapters_js)) {
+      file.copy(chart_adapters_js, file.path(assets_dir, "chart_adapters.js"), overwrite = TRUE)
     }
     if (file.exists(filter_hook_js)) {
       file.copy(filter_hook_js, file.path(assets_dir, "filter_hook.js"), overwrite = TRUE)
@@ -352,6 +356,15 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
       # Mark as regenerated
       build_info$regenerated <- c(build_info$regenerated, page_name)
 
+      # Hard error: ggiraph does not support interactive filtering
+      if (isTRUE(page$needs_inputs) && .page_has_ggiraph(page, proj$backend)) {
+        stop(
+          "ggiraph backend does not support interactive inputs/filters. ",
+          "Remove inputs from this page or use a different backend.",
+          call. = FALSE
+        )
+      }
+
       # Save table objects (entire styled objects for direct rendering)
       # This handles both direct content_block items and items nested inside content collections
       if (!is.null(page$content_blocks)) {
@@ -396,6 +409,16 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
             saveRDS(block$hc_object, hc_filepath)
             result$hc_file <- hc_filename
             result$hc_var <- paste0("hc_obj_", global_hc_counter)
+          }
+
+          # Handle generic widget objects (plotly, leaflet, echarts4r, etc.)
+          if (isTRUE(block$type == "widget") && !is.null(block$widget_object)) {
+            global_hc_counter <<- global_hc_counter + 1
+            widget_filename <- paste0("widget_obj_", global_hc_counter, ".rds")
+            widget_filepath <- file.path(output_dir, widget_filename)
+            saveRDS(block$widget_object, widget_filepath)
+            result$widget_file <- widget_filename
+            result$widget_var <- paste0("widget_obj_", global_hc_counter)
           }
           
           result
@@ -491,6 +514,12 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
           }
         }
       }
+      }, error = function(e) {
+        stop(
+          "Failed while generating page '", page_name, "': ",
+          conditionMessage(e),
+          call. = FALSE
+        )
       })
     }
 
@@ -666,7 +695,15 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
       } else {
         .progress_section("\U0001f3a8 Rendering Dashboard", show_progress)
         render_start <- Sys.time()
-        render_success <- .render_dashboard(output_dir, open, quiet, show_progress, proj$publish_dir, build_info$qmd_files)
+        render_success <- .render_dashboard(
+          output_dir,
+          open,
+          quiet,
+          show_progress,
+          proj$publish_dir,
+          build_info$qmd_files,
+          proj = proj
+        )
         render_elapsed <- as.numeric(difftime(Sys.time(), render_start, units = "secs"))
         
         if (render_success) {
@@ -722,7 +759,7 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
 }
 
 
-.render_dashboard <- function(output_dir, open = FALSE, quiet = FALSE, show_progress = TRUE, publish_dir = NULL, qmd_files = NULL) {
+.render_dashboard <- function(output_dir, open = FALSE, quiet = FALSE, show_progress = TRUE, publish_dir = NULL, qmd_files = NULL, proj = NULL) {
   if (!requireNamespace("quarto", quietly = TRUE)) {
     if (!quiet) {
       message("quarto package not available. Skipping render.")
@@ -780,13 +817,44 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
         message("Rendering ", length(qmd_files), " .qmd file(s)...")
       }
       
+      # Helper to map qmd filename -> page object name for better errors
+      map_qmd_to_page <- function(qmd_file) {
+        if (is.null(proj) || is.null(proj$pages)) return(NA_character_)
+        q <- basename(qmd_file)
+        if (identical(q, "index.qmd")) {
+          return(proj$landing_page %||% NA_character_)
+        }
+        stem <- sub("\\.qmd$", "", q)
+        stem <- sub("_p[0-9]+$", "", stem)
+        for (nm in names(proj$pages)) {
+          nm_stem <- tolower(gsub("[^a-zA-Z0-9]", "_", nm))
+          if (identical(stem, nm_stem)) return(nm)
+        }
+        NA_character_
+      }
+
       # Render each file individually to avoid rendering files from other dashboards
       for (qmd_file in qmd_files) {
-        if (quiet) {
-          invisible(capture.output(quarto::quarto_render(qmd_file, as_job = FALSE), type = "message"))
-        } else {
-          quarto::quarto_render(qmd_file, as_job = FALSE)
-        }
+        page_hint <- map_qmd_to_page(qmd_file)
+        tryCatch({
+          if (quiet) {
+            invisible(capture.output(quarto::quarto_render(qmd_file, as_job = FALSE), type = "message"))
+          } else {
+            quarto::quarto_render(qmd_file, as_job = FALSE)
+          }
+        }, error = function(e_file) {
+          page_msg <- if (!is.na(page_hint)) {
+            paste0("page object '", page_hint, "'")
+          } else {
+            "an unknown page object"
+          }
+          stop(
+            "Quarto render failed for ", page_msg,
+            " (source QMD: ", qmd_file, "): ",
+            conditionMessage(e_file),
+            call. = FALSE
+          )
+        })
       }
     } else {
       # Fallback: render entire project (original behavior)
@@ -841,7 +909,10 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
     }
     return(TRUE)
   }, error = function(e) {
-    warning("Failed to render dashboard: ", e$message)
+    warning(
+      "Failed to render dashboard. See Quarto output above for the first error.",
+      call. = FALSE
+    )
 
     # Check if it's an iconify extension error
     # if (grepl("iconify", e$message, ignore.case = TRUE)) {

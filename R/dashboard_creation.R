@@ -116,6 +116,7 @@
 #' @param pagination_position Default position for pagination controls: "bottom" (default, sticky at bottom), "top" (inline with page title), or "both" (top and bottom). This sets the default for all paginated pages. Individual pages can override this by passing position to add_pagination().
 #' @param powered_by_dashboardr Whether to automatically add "Powered by dashboardr" branding (default: TRUE). When TRUE, adds a badge-style branding element. Can be overridden by explicitly calling add_powered_by_dashboardr() with custom options, or set to FALSE to disable entirely.
 #' @param chart_export Whether to enable chart export functionality (default FALSE)
+#' @param backend Rendering backend: "highcharter" (default), "plotly", "echarts4r", or "ggiraph".
 #' @return A dashboard_project object
 #' @export
 #' @examples
@@ -279,7 +280,8 @@ create_dashboard <- function(output_dir = "site",
                             pagination_separator = "of",
                             pagination_position = "bottom",
                             powered_by_dashboardr = TRUE,
-                            chart_export = FALSE) {
+                            chart_export = FALSE,
+                            backend = "highcharter") {
 
   output_dir <- .resolve_output_dir(output_dir, allow_inside_pkg)
 
@@ -287,6 +289,11 @@ create_dashboard <- function(output_dir = "site",
   if (is.null(lazy_load_tabs)) {
     lazy_load_tabs <- lazy_load_charts
   }
+
+  # Validate backend
+  backend <- .normalize_backend(backend)
+  valid_backends <- c("highcharter", "plotly", "echarts4r", "ggiraph")
+  backend <- match.arg(backend, valid_backends)
 
   # Validate tabset_theme
   valid_themes <- c("modern", "minimal", "pills", "classic", "underline", "segmented", "none")
@@ -413,6 +420,7 @@ create_dashboard <- function(output_dir = "site",
     pagination_position = pagination_position,
     powered_by_dashboardr = powered_by_dashboardr,
     chart_export = chart_export,
+    backend = backend,
     pages = list(),
     data_files = NULL
   ), class = "dashboard_project")
@@ -429,6 +437,21 @@ create_dashboard <- function(output_dir = "site",
     if (!is.null(s$show_when)) return(TRUE)
     if (!is.null(s$nested_children) && length(s$nested_children) > 0) {
       if (.specs_contain_show_when(s$nested_children)) return(TRUE)
+    }
+  }
+  FALSE
+}
+
+#' Recursively check if any content block has show_when set
+#' @param blocks List of content blocks (may contain nested content collections)
+#' @return Logical
+#' @keywords internal
+.blocks_contain_show_when <- function(blocks) {
+  if (is.null(blocks) || length(blocks) == 0) return(FALSE)
+  for (b in blocks) {
+    if (inherits(b, "content_block") && !is.null(b$show_when)) return(TRUE)
+    if (is_content(b) && !is.null(b$items) && length(b$items) > 0) {
+      if (.blocks_contain_show_when(b$items)) return(TRUE)
     }
   }
   FALSE
@@ -888,6 +911,127 @@ add_dashboard_page <- function(proj, name, data = NULL, data_path = NULL,
     data_path <- basename(data_path)
   }
 
+  # Intern inline viz-level data frames into page/global dataset files so
+  # generated QMD uses shared dataset objects instead of huge inline literals.
+  if (!is.null(visualizations) && is_content(visualizations) &&
+      !is.null(visualizations$items) && length(visualizations$items) > 0) {
+    existing_data <- proj$data_files %||% list()
+
+    get_hash_for_path <- function(path) {
+      if (is.null(path)) return(NULL)
+      existing_data[[path]] %||% existing_data[[basename(path)]]
+    }
+
+    queue_dataset <- function(df) {
+      data_hash <- digest::digest(df)
+
+      existing_path <- NULL
+      for (p in names(existing_data)) {
+        if (identical(existing_data[[p]], data_hash)) {
+          existing_path <- p
+          break
+        }
+      }
+
+      if (is.null(existing_path)) {
+        base <- "dataset"
+        if (nrow(df) < 1000) {
+          base <- paste0(base, "_small")
+        } else if (nrow(df) > 5000) {
+          base <- paste0(base, "_large")
+        }
+        base <- paste0(base, "_", nrow(df), "obs")
+        candidate <- paste0(base, ".rds")
+        counter <- 2
+        while (candidate %in% names(existing_data)) {
+          candidate <- paste0(base, "_", counter, ".rds")
+          counter <- counter + 1
+        }
+        existing_path <- candidate
+        existing_data[[existing_path]] <- data_hash
+        if (is.null(proj$data_files)) proj$data_files <<- list()
+        proj$data_files[[existing_path]] <<- data_hash
+        if (is.null(proj$pending_data)) proj$pending_data <<- list()
+        proj$pending_data[[existing_path]] <<- df
+      }
+
+      list(path = basename(existing_path), hash = data_hash)
+    }
+
+    # Build a hash -> dataset reference map for this page.
+    hash_to_ref <- list()
+    if (!is.null(data_path) && !is.list(data_path)) {
+      page_hash <- get_hash_for_path(data_path)
+      if (!is.null(page_hash)) {
+        hash_to_ref[[page_hash]] <- "data"
+      }
+    } else if (is.list(data_path) && length(data_path) > 0) {
+      for (nm in names(data_path)) {
+        h <- get_hash_for_path(data_path[[nm]])
+        if (!is.null(h)) {
+          hash_to_ref[[h]] <- nm
+        }
+      }
+    }
+
+    next_dataset_ref <- function(existing_names) {
+      if (!("dataset" %in% existing_names)) return("dataset")
+      idx <- 2L
+      repeat {
+        candidate <- paste0("dataset_", idx)
+        if (!(candidate %in% existing_names)) return(candidate)
+        idx <- idx + 1L
+      }
+    }
+
+    for (i in seq_along(visualizations$items)) {
+      item <- visualizations$items[[i]]
+      if (is.null(item) || !is.list(item) || !identical(item$type, "viz")) next
+      if (is.null(item$data_serialized) || !nzchar(item$data_serialized)) next
+
+      viz_label <- item$title %||% item$viz_type %||% paste0("viz #", i)
+      viz_df <- tryCatch(
+        as.data.frame(eval(parse(text = item$data_serialized), envir = baseenv())),
+        error = function(e) {
+          stop(
+            "Failed to deserialize inline viz data in page '", name,
+            "' (", viz_label, "): ", conditionMessage(e),
+            call. = FALSE
+          )
+        }
+      )
+
+      viz_hash <- digest::digest(viz_df)
+      dataset_ref <- hash_to_ref[[viz_hash]] %||% NULL
+
+      # Not found yet: queue/reuse a file and add one page-level reference.
+      if (is.null(dataset_ref)) {
+        queued <- queue_dataset(viz_df)
+
+        if (is.null(data_path)) {
+          # First dataset on the page: keep single-dataset mode.
+          data_path <- queued$path
+          is_multi_dataset <- FALSE
+          dataset_ref <- "data"
+        } else if (!is.list(data_path)) {
+          # Page already has a different single dataset -> switch to multi dataset.
+          data_path <- list(data = basename(data_path))
+          is_multi_dataset <- TRUE
+          dataset_ref <- next_dataset_ref(names(data_path))
+          data_path[[dataset_ref]] <- queued$path
+        } else {
+          dataset_ref <- next_dataset_ref(names(data_path))
+          data_path[[dataset_ref]] <- queued$path
+        }
+        hash_to_ref[[viz_hash]] <- dataset_ref
+      }
+
+      visualizations$items[[i]]$data <- dataset_ref
+      visualizations$items[[i]]$data_serialized <- NULL
+      visualizations$items[[i]]$data_is_dataframe <- FALSE
+    }
+  }
+
   # Process visualization specifications
   viz_specs <- NULL
   viz_embedded_in_content <- FALSE
@@ -900,7 +1044,11 @@ add_dashboard_page <- function(proj, name, data = NULL, data_path = NULL,
     }
     
     if (is_content(visualizations)) {
-      viz_specs <- .process_visualizations(visualizations, data_path)
+      viz_specs <- .process_visualizations(
+        visualizations,
+        data_path,
+        context_label = paste0("page '", name, "'")
+      )
     }
   }
 
@@ -997,10 +1145,21 @@ add_dashboard_page <- function(proj, name, data = NULL, data_path = NULL,
     needs_linked_inputs <- TRUE
   }
 
-  # Check if any visualization uses show_when (conditional visibility)
+  # Check if any visualization or content block uses show_when (conditional visibility)
   needs_show_when <- FALSE
   if (!is.null(viz_specs) && length(viz_specs) > 0) {
     needs_show_when <- .specs_contain_show_when(viz_specs)
+  }
+  if (!needs_show_when) {
+    if (!is.null(content_blocks) && length(content_blocks) > 0) {
+      needs_show_when <- .blocks_contain_show_when(content_blocks)
+    }
+  }
+  if (!needs_show_when && !is.null(content) && is_content(content)) {
+    needs_show_when <- .blocks_contain_show_when(content$items)
+  }
+  if (!needs_show_when && !is.null(combined_input) && is_content(combined_input)) {
+    needs_show_when <- .blocks_contain_show_when(combined_input$items)
   }
 
   # Create page record
@@ -1037,6 +1196,7 @@ add_dashboard_page <- function(proj, name, data = NULL, data_path = NULL,
     lazy_debug = lazy_debug %||% proj$lazy_debug,
     pagination_separator = pagination_separator %||% proj$pagination_separator %||% "of",
     chart_export = proj$chart_export %||% FALSE,
+    backend = proj$backend %||% "highcharter",
     tabgroup_labels = page_tabgroup_labels
   )
 

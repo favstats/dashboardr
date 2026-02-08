@@ -370,3 +370,4 @@ generate_dashboard(dashboard, render = T)
 # generate_dashboard(dashboard, render = !isTRUE(getOption("dashboardr.no_render", FALSE)))
 message("Dashboard generated in: ", output_dir)
 
+

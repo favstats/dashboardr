@@ -24,6 +24,7 @@ viz_map(
   border_color = "#FFFFFF",
   border_width = 0.5,
   credits = FALSE,
+  backend = "highcharter",
   ...
 )
 }
@@ -72,6 +73,8 @@ For the simpler dashboardr placeholder syntax, use \code{tooltip} instead.}
 \item{border_width}{Border width (default: 0.5}
 
 \item{credits}{Show Highcharts credits (default: FALSE)}
+
+\item{backend}{Rendering backend: "highcharter" (default), "plotly", "echarts4r", or "ggiraph".}
 
 \item{...}{Additional arguments passed to highcharter::hcmap()}
 }

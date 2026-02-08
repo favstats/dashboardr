@@ -387,6 +387,85 @@ density = list(
   )
 )
 
+#' Registry of supported backends per visualization type
+#'
+#' Used to enforce hard errors when a backend does not support a viz type.
+#' @keywords internal
+.backend_capabilities <- list(
+  bar = c("highcharter", "plotly", "echarts4r", "ggiraph"),
+  scatter = c("highcharter", "plotly", "echarts4r", "ggiraph"),
+  histogram = c("highcharter", "plotly", "echarts4r", "ggiraph"),
+  density = c("highcharter", "plotly", "echarts4r", "ggiraph"),
+  treemap = c("highcharter", "plotly", "echarts4r"),
+  boxplot = c("highcharter", "plotly", "echarts4r", "ggiraph"),
+  stackedbars = c("highcharter", "plotly", "echarts4r", "ggiraph"),
+  stackedbar = c("highcharter", "plotly", "echarts4r", "ggiraph"),
+  map = c("highcharter", "plotly", "echarts4r", "ggiraph"),
+  heatmap = c("highcharter", "plotly", "echarts4r", "ggiraph"),
+  timeline = c("highcharter", "plotly", "echarts4r", "ggiraph"),
+  pie = c("highcharter", "plotly", "echarts4r", "ggiraph"),
+  donut = c("highcharter", "plotly", "echarts4r", "ggiraph"),
+  lollipop = c("highcharter", "plotly", "echarts4r", "ggiraph"),
+  dumbbell = c("highcharter", "plotly", "echarts4r", "ggiraph"),
+  gauge = c("highcharter", "plotly", "echarts4r"),
+  funnel = c("highcharter", "plotly", "echarts4r", "ggiraph"),
+  pyramid = c("highcharter", "plotly", "echarts4r", "ggiraph"),
+  sankey = c("highcharter", "plotly", "echarts4r", "ggiraph"),
+  waffle = c("highcharter", "plotly", "ggiraph")
+)
+
+#' Assert backend support for a viz type
+#'
+#' @param viz_type Character. Viz type name (e.g., "bar")
+#' @param backend Character. Backend name
+#' @keywords internal
+.assert_backend_supported <- function(viz_type, backend) {
+  if (is.null(viz_type) || is.null(backend)) {
+    return(invisible(NULL))
+  }
+  supported <- .backend_capabilities[[viz_type]]
+  if (is.null(supported)) {
+    return(invisible(NULL))
+  }
+  if (!backend %in% supported) {
+    stop(
+      "Backend '", backend, "' is not supported for viz type '", viz_type, "'.",
+      " Supported backends: ", paste(supported, collapse = ", "),
+      call. = FALSE
+    )
+  }
+  invisible(NULL)
+}
+
+#' Normalize backend aliases
+#'
+#' Accepts legacy/backend aliases and returns canonical backend names.
+#'
+#' @param backend Character backend value.
+#' @param warn_alias Logical. If TRUE, emits a warning when an alias is used.
+#' @keywords internal
+.normalize_backend <- function(backend, warn_alias = TRUE) {
+  if (is.null(backend)) {
+    return(backend)
+  }
+  backend_chr <- as.character(backend)
+  if (length(backend_chr) == 0 || is.na(backend_chr[1])) {
+    return(backend_chr)
+  }
+  b <- tolower(backend_chr[1])
+  if (identical(b, "echarts")) {
+    if (isTRUE(warn_alias)) {
+      warning(
+        "backend = 'echarts' is deprecated; using 'echarts4r' instead.",
+        call. = FALSE
+      )
+    }
+    return("echarts4r")
+  }
+  backend_chr[1] <- b
+  backend_chr
+}
+
 #' Validate a single visualization specification
 #'
 #' Internal function that validates a visualization spec against its requirements.
@@ -694,4 +773,166 @@ section {
   }
   
   result
+}
+
+#' Generate a unique chart id for dashboardr widgets
+#' @keywords internal
+.generate_chart_id <- function(prefix = "dr_chart") {
+  paste0(prefix, "_", substr(digest::digest(paste(Sys.time(), runif(1))), 1, 10))
+}
+
+#' Detect widget backend from class
+#' @keywords internal
+.detect_widget_backend <- function(widget) {
+  cls <- class(widget)
+  if (any(cls == "highchart")) return("highcharter")
+  if (any(cls == "plotly")) return("plotly")
+  if (any(cls == "echarts4r")) return("echarts4r")
+  if (any(cls == "girafe")) return("ggiraph")
+  NULL
+}
+
+#' Register a chart widget with the dashboardr JS registry
+#' @keywords internal
+.register_chart_widget <- function(widget, backend, chart_id = NULL, filter_vars = NULL) {
+  if (!inherits(widget, "htmlwidget")) return(widget)
+  if (is.null(backend)) return(widget)
+  if (is.null(chart_id)) {
+    chart_id <- attr(widget, "cross_tab_id") %||% attr(widget, "dashboardr_chart_id")
+  }
+  if (is.null(chart_id)) {
+    chart_id <- .generate_chart_id()
+  }
+  attr(widget, "dashboardr_chart_id") <- chart_id
+  filter_json <- if (is.null(filter_vars)) "null" else jsonlite::toJSON(filter_vars, auto_unbox = TRUE)
+  js <- paste0(
+    "function(el, x) {",
+    "  if (window.dashboardrRegisterChart) {",
+    "    window.dashboardrRegisterChart({",
+    "      id: '", chart_id, "',",
+    "      backend: '", backend, "',",
+    "      el: el,",
+    "      x: x,",
+    "      filterVars: ", filter_json,
+    "    });",
+    "  }",
+    "}"
+  )
+  htmlwidgets::onRender(widget, js)
+}
+
+#' Register a DT widget for filtering
+#' @keywords internal
+.register_dt_widget <- function(widget, table_id, filter_vars = NULL, data = NULL) {
+  if (!inherits(widget, "htmlwidget")) return(widget)
+  if (!is.null(data)) {
+    widget$x$dashboardr_data <- data
+  }
+  widget$x$dashboardr_filter_vars <- filter_vars
+  widget$x$dashboardr_table_id <- table_id
+  filter_json <- if (is.null(filter_vars)) "null" else jsonlite::toJSON(filter_vars, auto_unbox = TRUE)
+  js <- paste0(
+    "function(el, x) {",
+    "  if (window.dashboardrRegisterDT) {",
+    "    window.dashboardrRegisterDT({",
+    "      id: x.dashboardr_table_id || '", table_id, "',",
+    "      el: el,",
+    "      data: x.dashboardr_data || null,",
+    "      filterVars: ", filter_json,
+    "    });",
+    "  }",
+    "}"
+  )
+  htmlwidgets::onRender(widget, js)
+}
+
+#' Register a reactable widget for filtering
+#' @keywords internal
+.register_reactable_widget <- function(widget, table_id, filter_vars = NULL, data = NULL) {
+  if (!inherits(widget, "htmlwidget")) return(widget)
+  if (!is.null(data)) {
+    widget$x$dashboardr_data <- data
+  }
+  widget$x$dashboardr_filter_vars <- filter_vars
+  widget$x$dashboardr_table_id <- table_id
+  filter_json <- if (is.null(filter_vars)) "null" else jsonlite::toJSON(filter_vars, auto_unbox = TRUE)
+  js <- paste0(
+    "function(el, x) {",
+    "  if (window.dashboardrRegisterReactable) {",
+    "    window.dashboardrRegisterReactable({",
+    "      id: x.dashboardr_table_id || '", table_id, "',",
+    "      el: el,",
+    "      data: x.dashboardr_data || null,",
+    "      filterVars: ", filter_json,
+    "    });",
+    "  }",
+    "}"
+  )
+  htmlwidgets::onRender(widget, js)
+}
+
+#' Detect ggiraph usage in a page (viz specs or widgets)
+#' @keywords internal
+.page_has_ggiraph <- function(page, proj_backend = NULL) {
+  if (is.null(page)) return(FALSE)
+  page_backend <- page$backend %||% proj_backend %||% "highcharter"
+  spec_has <- function(specs) {
+    if (is.null(specs) || length(specs) == 0) return(FALSE)
+    for (s in specs) {
+      if (!is.list(s)) next
+      b <- s$backend %||% page_backend
+      if (identical(b, "ggiraph")) return(TRUE)
+      if (!is.null(s$nested_children) && spec_has(s$nested_children)) return(TRUE)
+    }
+    FALSE
+  }
+  block_has <- function(blocks) {
+    if (is.null(blocks) || length(blocks) == 0) return(FALSE)
+    for (b in blocks) {
+      if (inherits(b, "content_block")) {
+        if (!is.null(b$widget_class) && b$widget_class == "girafe") return(TRUE)
+      }
+      if (is_content(b) && !is.null(b$items)) {
+        if (block_has(b$items)) return(TRUE)
+      }
+    }
+    FALSE
+  }
+  if (spec_has(page$visualizations)) return(TRUE)
+  if (block_has(page$content_blocks)) return(TRUE)
+  if (block_has(page$.items)) return(TRUE)
+  FALSE
+}
+
+#' Render a filterable static table with embedded data
+#' @keywords internal
+.render_filterable_table <- function(data, table_id, caption = NULL, filter_vars = NULL) {
+  if (!is.data.frame(data)) {
+    stop("Filterable table requires a data frame", call. = FALSE)
+  }
+  cols <- names(data)
+  header <- htmltools::tags$tr(lapply(cols, htmltools::tags$th))
+  body_rows <- lapply(seq_len(nrow(data)), function(i) {
+    htmltools::tags$tr(lapply(cols, function(col) htmltools::tags$td(as.character(data[[col]][i]))))
+  })
+  caption_tag <- if (!is.null(caption) && nzchar(caption)) htmltools::tags$caption(caption) else NULL
+  table_tag <- htmltools::tags$table(
+    class = "table table-sm dashboardr-filter-table",
+    `data-dashboardr-table-id` = table_id,
+    `data-dashboardr-filter-vars` = if (!is.null(filter_vars)) jsonlite::toJSON(filter_vars, auto_unbox = TRUE) else NULL,
+    caption_tag,
+    htmltools::tags$thead(header),
+    htmltools::tags$tbody(body_rows)
+  )
+  data_json <- jsonlite::toJSON(data, dataframe = "rows")
+  filter_json <- if (is.null(filter_vars)) "null" else jsonlite::toJSON(filter_vars, auto_unbox = TRUE)
+  script <- htmltools::tags$script(htmltools::HTML(paste0(
+    "window.dashboardrRegisterTable && window.dashboardrRegisterTable({",
+    "id: '", table_id, "',",
+    "data: ", data_json, ",",
+    "columns: ", jsonlite::toJSON(cols, auto_unbox = TRUE), ",",
+    "filterVars: ", filter_json,
+    "});"
+  )))
+  htmltools::tagList(table_tag, script)
 }

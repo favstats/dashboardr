@@ -24,7 +24,8 @@ viz_scatter(
   tooltip = NULL,
   tooltip_format = NULL,
   jitter = FALSE,
-  jitter_amount = 0.2
+  jitter_amount = 0.2,
+  backend = "highcharter"
 )
 }
 \arguments{
@@ -72,6 +73,8 @@ syntax, use the \code{tooltip} parameter instead.}
 \item{jitter}{Logical. Whether to add jittering to reduce overplotting. Defaults to \code{FALSE}.}
 
 \item{jitter_amount}{Numeric. Amount of jittering if \code{jitter = TRUE}. Defaults to 0.2.}
+
+\item{backend}{Rendering backend: "highcharter" (default), "plotly", "echarts4r", or "ggiraph".}
 }
 \value{
 A highcharter plot object.

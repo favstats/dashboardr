@@ -28,7 +28,8 @@ viz_lollipop(
   label_decimals = NULL,
   tooltip = NULL,
   tooltip_prefix = "",
-  tooltip_suffix = ""
+  tooltip_suffix = "",
+  backend = "highcharter"
 )
 }
 \arguments{
@@ -85,6 +86,8 @@ OR a format string with \{placeholders\}.}
 \item{tooltip_prefix}{Optional string prepended to tooltip values.}
 
 \item{tooltip_suffix}{Optional string appended to tooltip values.}
+
+\item{backend}{Rendering backend: "highcharter" (default), "plotly", "echarts4r", or "ggiraph".}
 }
 \value{
 A highcharter plot object.

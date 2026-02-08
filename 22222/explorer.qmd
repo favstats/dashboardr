@@ -1,0 +1,301 @@
+---
+title: "Explorer"
+format: dashboard
+---
+
+```{r, include=FALSE}
+# Initialize dashboardr page configuration (CSS/JS for charts)
+dashboardr::.page_config()
+```
+
+```{r, echo=FALSE, results='asis'}
+dashboardr::enable_inputs(linked = TRUE, show_when = TRUE)
+```
+
+```{r, echo=FALSE, results='asis'}
+dashboardr::enable_sidebar()
+```
+
+```{r setup}
+#| echo: false
+#| warning: false
+#| message: false
+#| error: false
+#| results: 'hide'
+
+# Load dashboardr (includes dplyr, highcharter as dependencies)
+library(dashboardr)
+
+# Global chunk options
+knitr::opts_chunk$set(
+  echo = FALSE,
+  warning = FALSE,
+  message = FALSE,
+  error = FALSE,
+  fig.width = 12,
+  fig.height = 8,
+  dpi = 300
+)
+
+# Conditional-visibility helpers (fallback for older package versions)
+if (!exists('show_when_open', mode = 'function')) {
+  show_when_open  <- function(j) cat(paste0('<div class="viz-show-when" data-show-when=\'', j, '\'>\n'))
+  show_when_close <- function()  cat('</div>\n')
+}
+
+# Load data
+data <- readRDS('dataset_large_7763obs.rds')
+
+# Data summary
+cat('Dataset loaded:', nrow(data), 'rows,', ncol(data), 'columns\n')
+
+```
+
+
+## {.sidebar width="300px"}
+
+### Controls
+
+
+```{r}
+#| echo: false
+#| results: 'asis'
+dashboardr::render_input(
+  input_id = "dimension",
+  label = "Topic",
+  type = "select_single",
+  filter_var = "dimension",
+  options = c("Social Issues", "Spending Priorities", "Institutional Trust", "Social Trust"),
+  options_from = NULL,
+  default_selected = "Social Issues",
+  placeholder = "Select...",
+  width = "300px",
+  min = 0,
+  max = 100,
+  step = 1,
+  value = NULL,
+  show_value = TRUE,
+  inline = TRUE,
+  stacked = FALSE,
+  stacked_align = "center",
+  group_align = "left",
+  ncol = NULL,
+  nrow = NULL,
+  toggle_series = NULL,
+  override = FALSE,
+  labels = NULL,
+  size = "md",
+  help = NULL,
+  disabled = FALSE
+  , linked_child_id = "question"
+  , options_by_parent = list("Social Issues" = c("Marijuana Legalization", "Death Penalty", "Gun Control"), "Spending Priorities" = c("Environment", "Healthcare", "Race"), "Institutional Trust" = c("Congress", "Supreme Court", "Press", "Banks & Finance"), "Social Trust" = c("General Trust", "Fairness", "Helpfulness"))
+)
+```
+
+
+```{r}
+#| echo: false
+#| results: 'asis'
+dashboardr::render_input(
+  input_id = "question",
+  label = "<br>Question",
+  type = "select_single",
+  filter_var = "question",
+  options = c("Marijuana Legalization", "Death Penalty", "Gun Control"),
+  options_from = NULL,
+  default_selected = "Marijuana Legalization",
+  placeholder = "Select...",
+  width = "300px",
+  min = 0,
+  max = 100,
+  step = 1,
+  value = NULL,
+  show_value = TRUE,
+  inline = TRUE,
+  stacked = FALSE,
+  stacked_align = "center",
+  group_align = "left",
+  ncol = NULL,
+  nrow = NULL,
+  toggle_series = NULL,
+  override = FALSE,
+  labels = NULL,
+  size = "md",
+  help = NULL,
+  disabled = FALSE
+)
+```
+
+
+---
+
+
+```{r}
+#| echo: false
+#| results: 'asis'
+dashboardr::render_input(
+  input_id = "time_period",
+  label = "Time period",
+  type = "radio",
+  filter_var = "time_period",
+  options = c("2022", "2024", "Over Time"),
+  options_from = NULL,
+  default_selected = "2022",
+  placeholder = "Select...",
+  width = "300px",
+  min = 0,
+  max = 100,
+  step = 1,
+  value = NULL,
+  show_value = TRUE,
+  inline = TRUE,
+  stacked = TRUE,
+  stacked_align = "center",
+  group_align = "center",
+  ncol = NULL,
+  nrow = NULL,
+  toggle_series = NULL,
+  override = FALSE,
+  labels = NULL,
+  size = "md",
+  help = NULL,
+  disabled = FALSE
+)
+```
+
+
+```{r}
+#| echo: false
+#| results: 'asis'
+dashboardr::render_input(
+  input_id = "breakdown",
+  label = "Compare by",
+  type = "radio",
+  filter_var = "breakdown_type",
+  options = c("Overall", "Sex", "Race", "Age", "Education", "Political Views"),
+  options_from = NULL,
+  default_selected = "Overall",
+  placeholder = "Select...",
+  width = "300px",
+  min = 0,
+  max = 100,
+  step = 1,
+  value = NULL,
+  show_value = TRUE,
+  inline = TRUE,
+  stacked = TRUE,
+  stacked_align = "center",
+  group_align = "center",
+  ncol = NULL,
+  nrow = NULL,
+  toggle_series = NULL,
+  override = FALSE,
+  labels = NULL,
+  size = "md",
+  help = NULL,
+  disabled = FALSE
+)
+```
+
+
+## Column
+
+
+
+#### {dimension}: {question} by {breakdown}
+
+```{r stackedbar-question-response}
+#| results: 'asis'
+# {dimension}: {question} by {breakdown}
+show_when_open('{"op":"and","conditions":[{"var":"time_period","op":"in","val":["2022","2024"]},{"var":"breakdown","op":"eq","val":"Overall"}]}')
+result <- tryCatch({
+  viz_stackedbar(
+    data = data,
+    title = "{dimension}: {question} by {breakdown}",
+    x_var = "question",
+    stack_var = "response",
+    y_var = "n",
+    stacked_type = "percent",
+    horizontal = TRUE,
+    stack_order = c("Legal", "Not Legal", "Favor", "Oppose", "Too Little", "About Right", "Too Much", "A Great Deal", "Only Some", "Hardly Any", "Can Trust", "Can't Be Too Careful", "Fair", "Take Advantage", "Helpful", "Look Out for Self", "Depends"),
+    stack_label = "Response",
+    backend = "plotly",
+    cross_tab_filter_vars = c("dimension", "question", "time_period", "breakdown_type")
+  )
+}, error = function(e) {
+  stop("Visualization failed ('{dimension}: {question} by {breakdown}', type 'stackedbar'): ", conditionMessage(e), call. = FALSE)
+})
+
+result <- dashboardr:::.embed_cross_tab(result)
+
+result
+show_when_close()
+```
+
+#### {dimension}: {question} by {breakdown} ({time_period})
+
+```{r stackedbar-response-breakdown-value}
+#| results: 'asis'
+# {dimension}: {question} by {breakdown} ({time_period})
+show_when_open('{"op":"and","conditions":[{"var":"time_period","op":"in","val":["2022","2024"]},{"var":"breakdown","op":"neq","val":"Overall"}]}')
+result <- tryCatch({
+  viz_stackedbar(
+    data = data,
+    title = "{dimension}: {question} by {breakdown} ({time_period})",
+    x_var = "response",
+    stack_var = "breakdown_value",
+    y_var = "n",
+    stacked_type = "percent",
+    horizontal = TRUE,
+    stack_order = c("All", "Male", "Female", "Other", "Black", "White", "60+", "45-59", "30-44", "18-29", "Bachelors+", "Some College", "HS or Less", "Conservative", "Moderate", "Liberal"),
+    x_order = c("Legal", "Not Legal", "Favor", "Oppose", "Too Little", "About Right", "Too Much", "A Great Deal", "Only Some", "Hardly Any", "Can Trust", "Can't Be Too Careful", "Fair", "Take Advantage", "Helpful", "Look Out for Self", "Depends"),
+    stack_label = "Group",
+    color_palette = c("All" = "#4E79A7", "Male" = "#F28E2B", "Female" = "#E15759", "Other" = "#76B7B2", "Black" = "#59A14F", "White" = "#EDC948", "60+" = "#B07AA1", "45-59" = "#FF9DA7", "30-44" = "#9C755F", "18-29" = "#BAB0AC", "Bachelors+" = "#4E79A7", "Some College" = "#F28E2B", "HS or Less" = "#E15759", "Conservative" = "#E15759", "Moderate" = "#76B7B2", "Liberal" = "#4E79A7"),
+    backend = "plotly",
+    cross_tab_filter_vars = c("dimension", "question", "time_period", "breakdown_type")
+  )
+}, error = function(e) {
+  stop("Visualization failed ('{dimension}: {question} by {breakdown} ({time_period})', type 'stackedbar'): ", conditionMessage(e), call. = FALSE)
+})
+
+result <- dashboardr:::.embed_cross_tab(result)
+
+result
+show_when_close()
+```
+
+
+### Row
+
+#### {dimension} - {question}: % responding '{key_response}' by {breakdown}
+
+```{r timeline-score-breakdown-value}
+#| results: 'asis'
+# {dimension} - {question}: % responding '{key_response}' by {breakdown}
+show_when_open('{"var":"time_period","op":"eq","val":"Over Time"}')
+result <- tryCatch({
+  viz_timeline(
+    data = data,
+    title = "{dimension} - {question}: % responding '{key_response}' by {breakdown}",
+    time_var = "year",
+    y_var = "score",
+    group_var = "breakdown_value",
+    agg = "none",
+    group_order = c("Liberal", "Moderate", "Conservative", "HS or Less", "Some College", "Bachelors+", "18-29", "30-44", "45-59", "60+", "White", "Black", "Other", "Female", "Male", "All"),
+    color_palette = c("All" = "#4E79A7", "Male" = "#F28E2B", "Female" = "#E15759", "Other" = "#76B7B2", "Black" = "#59A14F", "White" = "#EDC948", "60+" = "#B07AA1", "45-59" = "#FF9DA7", "30-44" = "#9C755F", "18-29" = "#BAB0AC", "Bachelors+" = "#4E79A7", "Some College" = "#F28E2B", "HS or Less" = "#E15759", "Conservative" = "#E15759", "Moderate" = "#76B7B2", "Liberal" = "#4E79A7"),
+    x_label = "Year",
+    y_label = "% Key Response",
+    title_map = list("key_response" = c("Marijuana Legalization" = "Legal", "Death Penalty" = "Favor", "Gun Control" = "Favor", "Environment" = "Too Little", "Healthcare" = "Too Little", "Race" = "Too Little", "Congress" = "A Great Deal", "Supreme Court" = "A Great Deal", "Press" = "A Great Deal", "Banks & Finance" = "A Great Deal", "General Trust" = "Can Trust", "Fairness" = "Fair", "Helpfulness" = "Helpful")),
+    backend = "plotly",
+    cross_tab_filter_vars = c("dimension", "question", "time_period", "breakdown_type")
+  )
+}, error = function(e) {
+  stop("Visualization failed ('{dimension} - {question}: % responding \'{key_response}\' by {breakdown}', type 'timeline'): ", conditionMessage(e), call. = FALSE)
+})
+
+result <- dashboardr:::.embed_cross_tab(result)
+
+result
+show_when_close()
+```
+

@@ -94,7 +94,8 @@ create_dashboard(
   pagination_separator = "of",
   pagination_position = "bottom",
   powered_by_dashboardr = TRUE,
-  chart_export = FALSE
+  chart_export = FALSE,
+  backend = "highcharter"
 )
 }
 \arguments{
@@ -295,6 +296,8 @@ horizontal scrolling issues on mobile.}
 \item{powered_by_dashboardr}{Whether to automatically add "Powered by dashboardr" branding (default: TRUE). When TRUE, adds a badge-style branding element. Can be overridden by explicitly calling add_powered_by_dashboardr() with custom options, or set to FALSE to disable entirely.}
 
 \item{chart_export}{Whether to enable chart export functionality (default FALSE)}
+
+\item{backend}{Rendering backend: "highcharter" (default), "plotly", "echarts4r", or "ggiraph".}
 }
 \value{
 A dashboard_project object

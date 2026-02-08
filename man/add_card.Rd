@@ -4,7 +4,14 @@
 \alias{add_card}
 \title{Add card}
 \usage{
-add_card(content, text, title = NULL, footer = NULL, tabgroup = NULL)
+add_card(
+  content,
+  text,
+  title = NULL,
+  footer = NULL,
+  tabgroup = NULL,
+  show_when = NULL
+)
 }
 \arguments{
 \item{content}{A content_collection or viz_collection object}
@@ -16,6 +23,8 @@ add_card(content, text, title = NULL, footer = NULL, tabgroup = NULL)
 \item{footer}{Optional card footer}
 
 \item{tabgroup}{Optional tabgroup for organizing content (character vector for nested tabs)}
+
+\item{show_when}{One-sided formula controlling conditional display based on input values.}
 }
 \value{
 Updated content_collection

@@ -1,0 +1,141 @@
+---
+title: "Chart Backends"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Chart Backends}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  eval = FALSE
+)
+```
+
+## Overview
+
+dashboardr supports multiple chart rendering backends. Every `viz_*()` function
+accepts a `backend` parameter that controls which JavaScript charting library is
+used for rendering. The default is `"highcharter"`, which preserves full backward
+compatibility with existing dashboards.
+
+Supported backends:
+
+| Backend | Package | Description |
+|---------|---------|-------------|
+| `"highcharter"` | highcharter | Default. Rich interactivity, cross-tab filtering support |
+| `"plotly"` | plotly | Plotly.js charts with zoom, pan, and hover |
+| `"echarts4r"` | echarts4r | Apache ECharts with animations and themes |
+| `"ggiraph"` | ggiraph + ggplot2 | Interactive ggplot2 with tooltips and hover effects |
+
+## Installation
+
+Only highcharter is a required dependency. Alternative backends are optional
+(listed in `Suggests`). Install what you need:
+```{r install}
+# For plotly backend
+install.packages("plotly")
+
+# For echarts4r backend
+install.packages("echarts4r")
+
+# For ggiraph backend
+install.packages(c("ggiraph", "ggplot2"))
+```
+
+## Per-Chart Backend Selection
+
+Set the backend on individual charts:
+
+```{r per-chart}
+library(dashboardr)
+
+data <- data.frame(
+  category = rep(c("A", "B", "C", "D"), each = 25),
+  value = rnorm(100)
+)
+
+# Default (highcharter)
+viz_bar(data, x_var = "category")
+
+# Plotly
+viz_bar(data, x_var = "category", backend = "plotly")
+
+# ECharts
+viz_bar(data, x_var = "category", backend = "echarts4r")
+
+# ggiraph
+viz_bar(data, x_var = "category", backend = "ggiraph")
+```
+
+## Dashboard-Wide Backend
+
+Set the backend once for the entire dashboard using `create_dashboard()`:
+
+```{r dashboard-wide}
+proj <- create_dashboard(
+  title = "Plotly Dashboard",
+  directory = tempdir(),
+  backend = "plotly"
+)
+
+# All charts added via add_viz() will use plotly by default
+proj <- proj |>
+  add_dashboard_page(page_title = "Overview") |>
+  add_viz(type = "bar", x_var = "category") |>
+  add_viz(type = "histogram", x_var = "value")
+```
+
+Individual charts can still override the dashboard-wide setting:
+
+```{r override}
+# This chart uses highcharter even though the dashboard default is plotly
+proj <- proj |>
+  add_viz(type = "timeline", time_var = "year", y_var = "value",
+          backend = "highcharter")
+```
+
+## Embedding Arbitrary Widgets
+
+For charts that don't fit the `viz_*()` pattern, you can embed any htmlwidget
+directly using `add_widget()`, `add_plotly()`, or `add_leaflet()`:
+
+```{r widgets}
+library(plotly)
+library(leaflet)
+
+# Create widgets outside dashboardr
+scatter <- plot_ly(mtcars, x = ~wt, y = ~mpg, type = "scatter", mode = "markers")
+map <- leaflet() |> addTiles() |> setView(lng = -73.97, lat = 40.78, zoom = 12)
+
+# Embed in a content collection
+collection <- content_collection() +
+  add_plotly(scatter, title = "Weight vs MPG") +
+  add_leaflet(map, title = "NYC Map")
+```
+
+## Backend Limitations
+
+- **Cross-tab filtering**: Client-side cross-tab filtering (sidebar inputs
+  dynamically updating charts) only works with the `"highcharter"` backend.
+  Other backends render static charts that do not respond to sidebar inputs.
+- **Feature parity**: Each backend supports the core chart features (titles,
+  colors, labels, tooltips), but advanced highcharter-specific options (like
+  `hc_exporting`, custom JS formatters) are ignored by alternative backends.
+- **Chart types**: Some chart types have approximate equivalents in certain
+  backends. For example, `viz_waffle()` with echarts4r renders as a rose/pie
+  chart since echarts4r lacks a native waffle grid.
+
+## Supported Functions
+
+All 17 visualization functions support the `backend` parameter:
+
+- `viz_bar()`, `viz_histogram()`, `viz_timeline()`, `viz_stackedbar()`
+- `viz_scatter()`, `viz_pie()`, `viz_heatmap()`
+- `viz_boxplot()`, `viz_density()`
+- `viz_map()`, `viz_treemap()`, `viz_sankey()`
+- `viz_waffle()`, `viz_gauge()`, `viz_funnel()`
+- `viz_lollipop()`, `viz_dumbbell()`

@@ -10,7 +10,8 @@ add_iframe(
   height = "500px",
   width = "100\%",
   style = NULL,
-  tabgroup = NULL
+  tabgroup = NULL,
+  show_when = NULL
 )
 }
 \arguments{
@@ -27,6 +28,8 @@ add_iframe(
 adding shadows, or any custom styling.}
 
 \item{tabgroup}{Optional tabgroup for organizing content (character vector for nested tabs)}
+
+\item{show_when}{One-sided formula controlling conditional display based on input values.}
 }
 \value{
 Updated content_collection

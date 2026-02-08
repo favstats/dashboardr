@@ -48,6 +48,7 @@
 #'   When NULL (default), uses smart defaults: 0 for counts, 1 for percent.
 #'   Set explicitly to override (e.g., `label_decimals = 2`).
 #'
+#' @param backend Rendering backend: "highcharter" (default), "plotly", "echarts4r", or "ggiraph".
 #' @return A `highcharter` histogram (column) plot object.
 #'
 #' @examples
@@ -183,7 +184,8 @@ viz_histogram <- function(data,
                             x_order = NULL,
                             weight_var = NULL,
                             data_labels_enabled = TRUE,
-                            label_decimals = NULL) {
+                            label_decimals = NULL,
+                            backend = "highcharter") {
   # Convert variable arguments to strings (supports both quoted and unquoted)
   x_var <- .as_var_string(rlang::enquo(x_var))
   y_var <- .as_var_string(rlang::enquo(y_var))
@@ -349,19 +351,12 @@ viz_histogram <- function(data,
   # Extract data for direct series addition
   series_data <- setNames(df$n, as.character(df$.x_factor))
 
-  # HIGHCHARTER
-  hc <- highcharter::highchart()
-  # Titles
-  if (!is.null(title)) hc <- hc %>% highcharter::hc_title(text = title)
-  if (!is.null(subtitle)) hc <- hc %>% highcharter::hc_subtitle(text = subtitle)
-
-  # \u2500\u2500\u2500 Axis labels & categories \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+  # Axis labels
   final_x <- x_label %||% x_var
   default_y <- if (histogram_type == "percent") "Percentage" else "Count"
   final_y <- y_label %||% default_y
 
-  # Define stacking and format based on histogram_type
-  # Use whole numbers for count mode (especially important when using weights)
+  # Stacking and label format
   stacking <- if (histogram_type == "percent") "percent" else NULL
   if (!is.null(label_decimals)) {
     dec <- as.integer(label_decimals)
@@ -374,24 +369,63 @@ viz_histogram <- function(data,
     fmt <- if (histogram_type == "percent") "{point.percentage:.1f}%" else "{y:.0f}"
   }
 
-  # Pass the categories to the x-axis
+  # Build config for backend dispatch
+  config <- list(
+    title = title, subtitle = subtitle,
+    x_label = final_x, y_label = final_y,
+    histogram_type = histogram_type, stacking = stacking, fmt = fmt,
+    color_palette = color_palette,
+    data_labels_enabled = data_labels_enabled, label_decimals = label_decimals,
+    tooltip = tooltip, tooltip_prefix = tooltip_prefix,
+    tooltip_suffix = tooltip_suffix, x_tooltip_suffix = x_tooltip_suffix,
+    series_data = series_data
+  )
+
+  backend <- .normalize_backend(backend)
+  backend <- match.arg(backend, c("highcharter", "plotly", "echarts4r", "ggiraph"))
+  .assert_backend_supported("histogram", backend)
+  render_fn <- switch(backend,
+    highcharter = .viz_histogram_highcharter,
+    plotly      = .viz_histogram_plotly,
+    echarts4r   = .viz_histogram_echarts,
+    ggiraph     = .viz_histogram_ggiraph
+  )
+  result <- render_fn(df, config)
+  result <- .register_chart_widget(result, backend = backend)
+  return(result)
+}
+
+# ── Highcharter backend ──────────────────────────────────────────────
+.viz_histogram_highcharter <- function(df, config) {
+  title <- config$title; subtitle <- config$subtitle
+  final_x <- config$x_label; final_y <- config$y_label
+  histogram_type <- config$histogram_type; stacking <- config$stacking; fmt <- config$fmt
+  color_palette <- config$color_palette
+  data_labels_enabled <- config$data_labels_enabled
+  tooltip <- config$tooltip; tooltip_prefix <- config$tooltip_prefix
+
+  tooltip_suffix <- config$tooltip_suffix; x_tooltip_suffix <- config$x_tooltip_suffix
+  series_data <- config$series_data
+
+  hc <- highcharter::highchart()
+  if (!is.null(title)) hc <- hc %>% highcharter::hc_title(text = title)
+  if (!is.null(subtitle)) hc <- hc %>% highcharter::hc_subtitle(text = subtitle)
+
   hc <- hc %>%
     highcharter::hc_xAxis(
-      categories = levels(df$.x_factor), # Still use the factor levels for categories
+      categories = levels(df$.x_factor),
       title = list(text = final_x)
     ) %>%
     highcharter::hc_yAxis(
       title = list(text = final_y)
     )
 
-  # Manually add the series data as a column type
   hc <- hc %>%
     highcharter::hc_add_series(
-      name = "Count", # Or whatever makes sense for the series legend
-      data = as.numeric(series_data), # Convert to numeric vector
+      name = "Count",
+      data = as.numeric(series_data),
       type = "column"
     ) %>%
-    # Apply plot options globally for column charts
     highcharter::hc_plotOptions(
       column = list(
         stacking = stacking,
@@ -403,15 +437,13 @@ viz_histogram <- function(data,
         pointPadding = 0,
         groupPadding = 0,
         borderWidth = 0,
-        pointWidth = 50, # Explicitly set bar width
-        pointPlacement = "on", # Ensures bars are centered on category ticks
+        pointWidth = 50,
+        pointPlacement = "on",
         maxPointWidth = 80
       )
     )
 
-  # \u2500\u2500\u2500 TOOLTIP \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
   if (!is.null(tooltip)) {
-    # Use new unified tooltip system when custom tooltip is provided
     tooltip_result <- .process_tooltip_config(
       tooltip = tooltip,
       tooltip_prefix = tooltip_prefix,
@@ -426,7 +458,6 @@ viz_histogram <- function(data,
     )
     hc <- .apply_tooltip_to_hc(hc, tooltip_result)
   } else {
-    # Use original working tooltip code
     pre <- if (tooltip_prefix == "") "" else tooltip_prefix
     suf <- if (tooltip_suffix == "") "" else tooltip_suffix
     xsuf <- if (x_tooltip_suffix == "") "" else x_tooltip_suffix
@@ -441,12 +472,118 @@ viz_histogram <- function(data,
       if (histogram_type == "percent") "this.percentage.toFixed(1) + '%'" else "this.y",
       xsuf, pre, suf
     )
-    
     hc <- hc %>% highcharter::hc_tooltip(formatter = highcharter::JS(tooltip_fn))
   }
 
-  # Color palette (applied to the series)
   if (!is.null(color_palette)) hc <- hc %>% highcharter::hc_colors(color_palette)
-
   return(hc)
+}
+
+# ── Plotly backend ───────────────────────────────────────────────────
+.viz_histogram_plotly <- function(df, config) {
+  rlang::check_installed("plotly", reason = "to use the plotly backend for viz_histogram()")
+
+  categories <- levels(df$.x_factor)
+  values <- as.numeric(config$series_data)
+
+  if (config$histogram_type == "percent") {
+    total <- sum(values, na.rm = TRUE)
+    values <- if (total > 0) values / total * 100 else values
+    y_title <- config$y_label
+  } else {
+    y_title <- config$y_label
+  }
+
+  colors <- if (!is.null(config$color_palette)) config$color_palette[1] else NULL
+
+  p <- plotly::plot_ly(
+    x = categories, y = values, type = "bar",
+    marker = list(color = colors),
+    text = if (config$data_labels_enabled) round(values, config$label_decimals %||% 0L) else NULL,
+    textposition = "outside"
+  ) |>
+    plotly::layout(
+      title = config$title,
+      xaxis = list(title = config$x_label, categoryorder = "array", categoryarray = categories),
+      yaxis = list(title = y_title),
+      bargap = 0
+    )
+
+  p
+}
+
+# ── echarts4r backend ────────────────────────────────────────────────
+.viz_histogram_echarts <- function(df, config) {
+  rlang::check_installed("echarts4r", reason = "to use the echarts4r backend for viz_histogram()")
+
+  plot_df <- data.frame(
+    category = levels(df$.x_factor),
+    value = as.numeric(config$series_data),
+    stringsAsFactors = FALSE
+  )
+  plot_df$category <- factor(plot_df$category, levels = levels(df$.x_factor))
+
+  if (config$histogram_type == "percent") {
+    total <- sum(plot_df$value, na.rm = TRUE)
+    if (total > 0) plot_df$value <- plot_df$value / total * 100
+  }
+
+  p <- plot_df |>
+    echarts4r::e_charts(category) |>
+    echarts4r::e_bar(value, name = "Count") |>
+    echarts4r::e_x_axis(name = config$x_label) |>
+    echarts4r::e_y_axis(name = config$y_label) |>
+    echarts4r::e_tooltip(trigger = "axis")
+
+  if (!is.null(config$title)) {
+    p <- p |> echarts4r::e_title(text = config$title, subtext = config$subtitle)
+  }
+  if (!is.null(config$color_palette)) {
+    p <- p |> echarts4r::e_color(config$color_palette)
+  }
+  if (config$data_labels_enabled) {
+    p <- p |> echarts4r::e_labels(show = TRUE, position = "top")
+  }
+  p
+}
+
+# ── ggiraph backend ─────────────────────────────────────────────────
+.viz_histogram_ggiraph <- function(df, config) {
+  rlang::check_installed("ggiraph", reason = "to use the ggiraph backend for viz_histogram()")
+  rlang::check_installed("ggplot2", reason = "to use the ggiraph backend for viz_histogram()")
+
+  plot_df <- data.frame(
+    category = factor(levels(df$.x_factor), levels = levels(df$.x_factor)),
+    value = as.numeric(config$series_data),
+    stringsAsFactors = FALSE
+  )
+
+  if (config$histogram_type == "percent") {
+    total <- sum(plot_df$value, na.rm = TRUE)
+    if (total > 0) plot_df$value <- plot_df$value / total * 100
+  }
+
+  plot_df$tooltip_text <- paste0(plot_df$category, ": ", round(plot_df$value, 1))
+
+  fill_color <- if (!is.null(config$color_palette)) config$color_palette[1] else "steelblue"
+
+  p <- ggplot2::ggplot(plot_df, ggplot2::aes(x = category, y = value)) +
+    ggiraph::geom_col_interactive(
+      ggplot2::aes(tooltip = tooltip_text, data_id = category),
+      fill = fill_color, width = 0.9
+    ) +
+    ggplot2::labs(
+      title = config$title, subtitle = config$subtitle,
+      x = config$x_label, y = config$y_label
+    ) +
+    ggplot2::theme_minimal()
+
+  if (config$data_labels_enabled) {
+    p <- p + ggplot2::geom_text(
+      ggplot2::aes(label = round(value, config$label_decimals %||% 0L)),
+      vjust = -0.5, size = 3
+    )
+  }
+
+  ggiraph::girafe(ggobj = p)
 }

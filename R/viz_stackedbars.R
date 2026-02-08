@@ -16,6 +16,7 @@
 #'   response categories (e.g. `c("Strongly Disagree", ..., "Strongly Agree")`).
 #' @param show_var_tooltip Logical. If `TRUE`, shows custom tooltip with variable labels.
 #'
+#' @param backend Rendering backend: "highcharter" (default), "plotly", "echarts4r", or "ggiraph".
 #' @return A `highcharter` stacked bar chart object.
 #'
 #' @examples

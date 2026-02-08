@@ -20,6 +20,7 @@ add_input(
   max = 100,
   step = 1,
   value = NULL,
+  default_value = NULL,
   show_value = TRUE,
   inline = TRUE,
   stacked = FALSE,

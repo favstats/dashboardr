@@ -22,7 +22,8 @@ viz_gauge(
   background_color = "#e6e6e6",
   target = NULL,
   target_color = "#333333",
-  height = 300
+  height = 300,
+  backend = "highcharter"
 )
 }
 \arguments{
@@ -70,6 +71,8 @@ Default "#e6e6e6".}
 \item{target_color}{Character string. Color of the target marker. Default "#333333".}
 
 \item{height}{Numeric. Chart height in pixels. Default 300.}
+
+\item{backend}{Rendering backend: "highcharter" (default), "plotly", "echarts4r", or "ggiraph".}
 }
 \value{
 A highcharter plot object.

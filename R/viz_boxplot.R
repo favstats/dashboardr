@@ -33,6 +33,7 @@
 #' @param tooltip_prefix Optional string prepended to values in tooltip.
 #' @param tooltip_suffix Optional string appended to values in tooltip.
 #'
+#' @param backend Rendering backend: "highcharter" (default), "plotly", "echarts4r", or "ggiraph".
 #' @return A `highcharter` boxplot object.
 #'
 #' @examples
@@ -89,7 +90,8 @@ viz_boxplot <- function(data,
                         na_label = "(Missing)",
                         tooltip = NULL,
                         tooltip_prefix = "",
-                        tooltip_suffix = "") {
+                        tooltip_suffix = "",
+                        backend = "highcharter") {
   
   # Convert variable arguments to strings (supports both quoted and unquoted)
   y_var <- .as_var_string(rlang::enquo(y_var))
@@ -271,7 +273,48 @@ viz_boxplot <- function(data,
   # Set default labels
   if (is.null(x_label)) x_label <- if (!is.null(x_var)) x_var else ""
   if (is.null(y_label)) y_label <- y_var
-  
+
+  # Build config for backend dispatch
+  config <- list(
+    title = title, subtitle = subtitle,
+    x_label = x_label, y_label = y_label,
+    color_palette = color_palette,
+    show_outliers = show_outliers,
+    horizontal = horizontal,
+    x_var = x_var,
+    categories = categories,
+    tooltip = tooltip, tooltip_prefix = tooltip_prefix,
+    tooltip_suffix = tooltip_suffix
+  )
+
+  # Dispatch to backend renderer
+  backend <- .normalize_backend(backend)
+  backend <- match.arg(backend, c("highcharter", "plotly", "echarts4r", "ggiraph"))
+  .assert_backend_supported("boxplot", backend)
+  render_fn <- switch(backend,
+    highcharter = .viz_boxplot_highcharter,
+    plotly      = .viz_boxplot_plotly,
+    echarts4r   = .viz_boxplot_echarts,
+    ggiraph     = .viz_boxplot_ggiraph
+  )
+  result <- render_fn(boxplot_data, config)
+  result <- .register_chart_widget(result, backend = backend)
+  return(result)
+}
+
+# --- Highcharter backend (original implementation) ---
+#' @keywords internal
+.viz_boxplot_highcharter <- function(boxplot_data, config) {
+  # Unpack config
+  title <- config$title; subtitle <- config$subtitle
+  x_label <- config$x_label; y_label <- config$y_label
+  color_palette <- config$color_palette
+  show_outliers <- config$show_outliers
+  horizontal <- config$horizontal
+  x_var <- config$x_var; categories <- config$categories
+  tooltip <- config$tooltip; tooltip_prefix <- config$tooltip_prefix
+  tooltip_suffix <- config$tooltip_suffix
+
   # Prepare series data for highcharter boxplot format
   # Highcharter expects: [low, q1, median, q3, high]
   series_data <- lapply(boxplot_data, function(bp) {
@@ -369,6 +412,201 @@ viz_boxplot <- function(data,
   
   hc <- hc |>
     highcharter::hc_legend(enabled = FALSE)
-  
+
   hc
+}
+
+# --- Plotly backend ---
+#' @keywords internal
+.viz_boxplot_plotly <- function(boxplot_data, config) {
+  rlang::check_installed("plotly", reason = "to use backend = 'plotly'")
+
+  title <- config$title
+  x_label <- config$x_label; y_label <- config$y_label
+  color_palette <- config$color_palette
+  horizontal <- config$horizontal
+  x_var <- config$x_var; categories <- config$categories
+
+  p <- plotly::plot_ly()
+
+  for (i in seq_along(boxplot_data)) {
+    bp <- boxplot_data[[i]]
+    stats <- bp$stats
+
+    # Plotly box trace expects lowerfence, q1, median, q3, upperfence
+    trace_args <- list(
+      p = p,
+      type = "box",
+      name = as.character(bp$category),
+      lowerfence = list(stats$low),
+      q1 = list(stats$q1),
+      median = list(stats$median),
+      q3 = list(stats$q3),
+      upperfence = list(stats$high)
+    )
+
+    if (horizontal) trace_args$orientation <- "h"
+
+    if (!is.null(color_palette) && i <= length(color_palette)) {
+      trace_args$marker <- list(color = color_palette[i])
+      trace_args$line <- list(color = color_palette[i])
+    }
+
+    p <- do.call(plotly::add_trace, trace_args)
+  }
+
+  layout_args <- list(p = p, showlegend = FALSE)
+  if (!is.null(title)) layout_args$title <- title
+  if (horizontal) {
+    layout_args$xaxis <- list(title = y_label)
+    layout_args$yaxis <- list(title = x_label)
+  } else {
+    layout_args$xaxis <- list(title = x_label)
+    layout_args$yaxis <- list(title = y_label)
+  }
+
+  p <- do.call(plotly::layout, layout_args)
+
+  p
+}
+
+# --- echarts4r backend ---
+#' @keywords internal
+.viz_boxplot_echarts <- function(boxplot_data, config) {
+  rlang::check_installed("echarts4r", reason = "to use backend = 'echarts4r'")
+
+  title <- config$title; subtitle <- config$subtitle
+  x_label <- config$x_label; y_label <- config$y_label
+  color_palette <- config$color_palette
+  horizontal <- config$horizontal
+  categories <- config$categories
+  show_outliers <- config$show_outliers
+
+  # echarts4r's e_boxplot() computes stats internally from raw values,
+  # but we already have pre-computed stats. Build a data frame with a
+  # raw-values column per category so e_boxplot can recompute them.
+  # Alternatively, construct the chart via e_list for pre-computed data.
+
+  # Build pre-computed boxplot data as list of [low, q1, median, q3, high]
+  box_series_data <- lapply(boxplot_data, function(bp) {
+    as.list(c(bp$stats$low, bp$stats$q1, bp$stats$median, bp$stats$q3, bp$stats$high))
+  })
+
+  cat_names <- vapply(boxplot_data, function(bp) as.character(bp$category), character(1))
+
+  # Build chart using e_list for full control
+  opts <- list(
+    xAxis = list(
+      type = "category",
+      data = as.list(cat_names),
+      name = x_label
+    ),
+    yAxis = list(
+      type = "value",
+      name = y_label
+    ),
+    series = list(
+      list(
+        name = y_label %||% "Value",
+        type = "boxplot",
+        data = box_series_data
+      )
+    ),
+    tooltip = list(trigger = "item")
+  )
+
+  if (!is.null(title) || !is.null(subtitle)) {
+    opts$title <- list(text = title %||% "", subtext = subtitle %||% "")
+  }
+
+  if (!is.null(color_palette)) {
+    opts$color <- as.list(color_palette)
+  }
+
+  if (horizontal) {
+    # Swap axes for horizontal boxplot
+    tmp <- opts$xAxis
+    opts$xAxis <- opts$yAxis
+    opts$yAxis <- tmp
+  }
+
+  echarts4r::e_charts() |>
+    echarts4r::e_list(opts)
+}
+
+# --- ggiraph backend ---
+#' @keywords internal
+.viz_boxplot_ggiraph <- function(boxplot_data, config) {
+  rlang::check_installed("ggiraph", reason = "to use backend = 'ggiraph'")
+  rlang::check_installed("ggplot2", reason = "to use backend = 'ggiraph'")
+
+  title <- config$title; subtitle <- config$subtitle
+  x_label <- config$x_label; y_label <- config$y_label
+  color_palette <- config$color_palette
+  horizontal <- config$horizontal
+  show_outliers <- config$show_outliers
+
+  # Build summary data frame
+  box_df <- data.frame(
+    category = vapply(boxplot_data, function(bp) as.character(bp$category), character(1)),
+    low = vapply(boxplot_data, function(bp) bp$stats$low, numeric(1)),
+    q1 = vapply(boxplot_data, function(bp) bp$stats$q1, numeric(1)),
+    median = vapply(boxplot_data, function(bp) bp$stats$median, numeric(1)),
+    q3 = vapply(boxplot_data, function(bp) bp$stats$q3, numeric(1)),
+    high = vapply(boxplot_data, function(bp) bp$stats$high, numeric(1)),
+    stringsAsFactors = FALSE
+  )
+
+  box_df$.tooltip <- paste0(
+    box_df$category, "<br>",
+    "Max: ", round(box_df$high, 2), "<br>",
+    "Q3: ", round(box_df$q3, 2), "<br>",
+    "Median: ", round(box_df$median, 2), "<br>",
+    "Q1: ", round(box_df$q1, 2), "<br>",
+    "Min: ", round(box_df$low, 2)
+  )
+
+  p <- ggplot2::ggplot(box_df, ggplot2::aes(x = .data$category)) +
+    ggiraph::geom_boxplot_interactive(
+      ggplot2::aes(
+        lower = .data$q1, upper = .data$q3, middle = .data$median,
+        ymin = .data$low, ymax = .data$high,
+        tooltip = .data$.tooltip, data_id = .data$category
+      ),
+      stat = "identity"
+    ) +
+    ggplot2::labs(title = title, subtitle = subtitle,
+                  x = x_label, y = y_label) +
+    ggplot2::theme_minimal()
+
+  if (!is.null(color_palette)) {
+    p <- p + ggplot2::scale_fill_manual(values = color_palette)
+  }
+
+  if (horizontal) {
+    p <- p + ggplot2::coord_flip()
+  }
+
+  # Add outlier points
+  if (show_outliers) {
+    outlier_rows <- lapply(boxplot_data, function(bp) {
+      if (length(bp$stats$outliers) > 0) {
+        data.frame(
+          category = as.character(bp$category),
+          y = bp$stats$outliers,
+          stringsAsFactors = FALSE
+        )
+      }
+    })
+    outlier_df <- do.call(rbind, outlier_rows)
+    if (!is.null(outlier_df) && nrow(outlier_df) > 0) {
+      p <- p + ggplot2::geom_point(
+        data = outlier_df,
+        ggplot2::aes(x = .data$category, y = .data$y),
+        shape = 1, size = 2
+      )
+    }
+  }
+
+  ggiraph::girafe(ggobj = p)
 }

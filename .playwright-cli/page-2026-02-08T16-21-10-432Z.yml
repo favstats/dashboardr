@@ -1,0 +1,72 @@
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - navigation [ref=e3]:
+      - generic [ref=e4]:
+        - link "dashboardr Feature Showcase" [ref=e6] [cursor=pointer]:
+          - /url: http://localhost:8010/
+        - generic "Search" [ref=e7]:
+          - combobox [ref=e8]:
+            - button [ref=e9] [cursor=pointer]:
+              - img [ref=e11]
+        - list [ref=e14]:
+          - listitem [ref=e15]:
+            - link "Backends & show_when" [ref=e16] [cursor=pointer]:
+              - /url: http://localhost:8010/backends___show_when.html
+          - listitem [ref=e17]:
+            - link "Filterable Content" [ref=e18] [cursor=pointer]:
+              - /url: http://localhost:8010/filterable_content.html
+          - listitem [ref=e19]:
+            - link "More Charts" [ref=e20] [cursor=pointer]:
+              - /url: http://localhost:8010/more_charts.html
+          - listitem [ref=e21]:
+            - link "Dataset Reuse" [ref=e22] [cursor=pointer]:
+              - /url: http://localhost:8010/dataset_reuse.html
+    - banner [ref=e23]:
+      - navigation [ref=e24]:
+        - link "Backends & show_when" [ref=e29] [cursor=pointer]:
+          - /url: http://localhost:8010/backends___show_when.html#
+  - generic [ref=e31]:
+    - complementary [ref=e36]:
+      - generic [ref=e38]:
+        - generic [ref=e39]: Interactive Filters
+        - generic [ref=e40]:
+          - generic [ref=e41]: Region
+          - generic [ref=e42]:
+            - generic [ref=e43] [cursor=pointer]:
+              - checkbox "Midwest" [checked]
+              - text: Midwest
+            - generic [ref=e45] [cursor=pointer]:
+              - checkbox "Northeast" [checked]
+              - text: Northeast
+            - generic [ref=e47] [cursor=pointer]:
+              - checkbox "South" [checked]
+              - text: South
+            - generic [ref=e49] [cursor=pointer]:
+              - checkbox "West" [checked]
+              - text: West
+        - generic [ref=e51]:
+          - generic [ref=e52]: Gender
+          - generic [ref=e53]:
+            - generic [ref=e54] [cursor=pointer]:
+              - checkbox "Female" [checked]
+              - text: Female
+            - generic [ref=e56] [cursor=pointer]:
+              - checkbox "Male" [checked]
+              - text: Male
+        - generic [ref=e58]:
+          - generic [ref=e59]:
+            - generic [ref=e60]: Year
+            - generic [ref=e61]: "2018"
+          - generic [ref=e62]:
+            - slider "Year" [ref=e63] [cursor=pointer]: "2018"
+            - generic [ref=e64]:
+              - generic [ref=e65]: "2018"
+              - generic [ref=e66]: "2025"
+    - button "Toggle sidebar" [expanded] [ref=e67] [cursor=pointer]:
+      - img [ref=e68]: 
+  - contentinfo [ref=e70]:
+    - paragraph [ref=e75]:
+      - link "dashboardr logo Powered by dashboardr" [ref=e76] [cursor=pointer]:
+        - /url: https://favstats.github.io/dashboardr/
+        - img "dashboardr logo" [ref=e77]
+        - generic [ref=e78]: Powered by dashboardr

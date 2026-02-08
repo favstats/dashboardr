@@ -22,7 +22,8 @@ viz_boxplot(
   na_label = "(Missing)",
   tooltip = NULL,
   tooltip_prefix = "",
-  tooltip_suffix = ""
+  tooltip_suffix = "",
+  backend = "highcharter"
 )
 }
 \arguments{
@@ -69,6 +70,8 @@ See \code{\link{tooltip}} for full customization options.}
 \item{tooltip_prefix}{Optional string prepended to values in tooltip.}
 
 \item{tooltip_suffix}{Optional string appended to values in tooltip.}
+
+\item{backend}{Rendering backend: "highcharter" (default), "plotly", "echarts4r", or "ggiraph".}
 }
 \value{
 A \code{highcharter} boxplot object.
