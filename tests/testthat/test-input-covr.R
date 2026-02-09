@@ -287,3 +287,41 @@ test_that("add_linked_inputs error: missing child fields", {
     "id, label, and options_by_parent"
   )
 })
+
+test_that("add_linked_inputs normalizes options_by_parent values to character vectors", {
+  cc <- create_content() |>
+    add_sidebar() |>
+    add_linked_inputs(
+      parent = list(id = "dim", label = "Dimension", options = c("A", "B")),
+      child = list(
+        id = "q",
+        label = "Question",
+        options_by_parent = list(
+          "A" = "alpha",
+          "B" = c("beta", "gamma")
+        )
+      )
+    ) |>
+    end_sidebar()
+
+  child_block <- cc$sidebar$blocks[[2]]
+  expect_true(is.character(child_block$.options_by_parent$A))
+  expect_identical(child_block$.options_by_parent$A, c("alpha"))
+  expect_identical(child_block$.options_by_parent$B, c("beta", "gamma"))
+})
+
+test_that("add_linked_inputs errors when options_by_parent misses a parent option", {
+  cc <- create_content() |> add_sidebar()
+  expect_error(
+    add_linked_inputs(
+      cc,
+      parent = list(id = "dim", label = "Dimension", options = c("A", "B")),
+      child = list(
+        id = "q",
+        label = "Question",
+        options_by_parent = list("A" = c("alpha"))
+      )
+    ),
+    "must contain a key for parent value: B"
+  )
+})

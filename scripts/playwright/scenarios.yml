@@ -1,0 +1,126 @@
+version: 1
+
+defaults:
+  forbidden_console_patterns:
+    - "Uncaught"
+    - "Unhandled promise rejection"
+    - "Cannot read properties of undefined"
+
+scenarios:
+  - id: docs-inputs-filter
+    modes: [smoke, full]
+    source_type: docs
+    backend: highcharter
+    url_path: /live-demos/inputs/index.html
+    expect_chart_backend: [highcharter]
+    interaction_plan: [filter]
+    expect_filter_effect: true
+    required_selectors:
+      - ".dashboardr-input[data-filter-var='country']"
+      - ".highcharts-container"
+    forbidden_console_patterns: []
+
+  - id: docs-sidebar-showwhen-linked
+    modes: [smoke, full]
+    source_type: docs
+    backend: highcharter
+    url_path: /live-demos/sidebar-gss/explorer.html
+    expect_chart_backend: [highcharter]
+    interaction_plan: [linked_inputs, sidebar_toggle, show_when_toggle, filter]
+    expect_filter_effect: true
+    required_selectors:
+      - "[data-linked-child-id]"
+      - "[data-show-when]"
+      - ".collapse-toggle"
+      - ".highcharts-container"
+    forbidden_console_patterns: []
+
+  - id: docs-tabset-modern
+    modes: [smoke, full]
+    source_type: docs
+    backend: highcharter
+    url_path: /live-demos/tabsets/modern/1_level.html
+    expect_chart_backend: [highcharter]
+    interaction_plan: [tab_click]
+    expect_filter_effect: false
+    required_selectors:
+      - ".panel-tabset .nav-link"
+      - ".highcharts-container"
+    forbidden_console_patterns: []
+
+  - id: docs-showcase-overview
+    modes: [full]
+    source_type: docs
+    backend: highcharter
+    url_path: /live-demos/showcase/index.html
+    expect_chart_backend: [highcharter]
+    interaction_plan: [tab_click]
+    expect_filter_effect: false
+    required_selectors:
+      - ".highcharts-container"
+    forbidden_console_patterns: []
+
+  - id: docs-tabset-minimal
+    modes: [full]
+    source_type: docs
+    backend: highcharter
+    url_path: /live-demos/tabsets/minimal/2_levels.html
+    expect_chart_backend: [highcharter]
+    interaction_plan: [tab_click]
+    expect_filter_effect: false
+    required_selectors:
+      - ".panel-tabset .nav-link"
+      - ".highcharts-container"
+    forbidden_console_patterns: []
+
+  - id: docs-tabset-classic
+    modes: [full]
+    source_type: docs
+    backend: highcharter
+    url_path: /live-demos/tabsets/classic/2_levels.html
+    expect_chart_backend: [highcharter]
+    interaction_plan: [tab_click]
+    expect_filter_effect: false
+    required_selectors:
+      - ".panel-tabset .nav-link"
+      - ".highcharts-container"
+    forbidden_console_patterns: []
+
+  - id: docs-tabset-pills
+    modes: [full]
+    source_type: docs
+    backend: highcharter
+    url_path: /live-demos/tabsets/pills/2_levels.html
+    expect_chart_backend: [highcharter]
+    interaction_plan: [tab_click]
+    expect_filter_effect: false
+    required_selectors:
+      - ".panel-tabset .nav-link"
+      - ".highcharts-container"
+    forbidden_console_patterns: []
+
+  - id: docs-tabset-segmented
+    modes: [full]
+    source_type: docs
+    backend: highcharter
+    url_path: /live-demos/tabsets/segmented/2_levels.html
+    expect_chart_backend: [highcharter]
+    interaction_plan: [tab_click]
+    expect_filter_effect: false
+    required_selectors:
+      - ".panel-tabset .nav-link"
+      - ".highcharts-container"
+    forbidden_console_patterns: []
+
+  - id: docs-tabset-underline
+    modes: [full]
+    source_type: docs
+    backend: highcharter
+    url_path: /live-demos/tabsets/underline/2_levels.html
+    expect_chart_backend: [highcharter]
+    interaction_plan: [tab_click]
+    expect_filter_effect: false
+    required_selectors:
+      - ".panel-tabset .nav-link"
+      - ".highcharts-container"
+    forbidden_console_patterns: []

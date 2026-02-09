@@ -1,0 +1,230 @@
+---
+title: "S7_Stacked_Compound_ShowWhen"
+format: dashboard
+---
+
+```{r, include=FALSE}
+# Initialize dashboardr page configuration (CSS/JS for charts)
+dashboardr::.page_config()
+```
+
+```{r, echo=FALSE, results='asis'}
+dashboardr::enable_inputs(show_when = TRUE)
+```
+
+```{r, echo=FALSE, results='asis'}
+# Enable chart export buttons (download as PNG/SVG/PDF/CSV)
+dashboardr::enable_chart_export()
+```
+
+```{r, echo=FALSE, results='asis'}
+dashboardr::enable_sidebar()
+```
+
+```{r setup}
+#| echo: false
+#| warning: false
+#| message: false
+#| error: false
+#| results: 'hide'
+
+# Load dashboardr (includes dplyr, highcharter as dependencies)
+library(dashboardr)
+
+# Global chunk options
+knitr::opts_chunk$set(
+  echo = FALSE,
+  warning = FALSE,
+  message = FALSE,
+  error = FALSE,
+  fig.width = 12,
+  fig.height = 8,
+  dpi = 300
+)
+
+# Conditional-visibility helpers (fallback for older package versions)
+if (!exists('show_when_open', mode = 'function')) {
+  show_when_open  <- function(j) cat(paste0('<div class="viz-show-when" data-show-when=\'', j, '\'>\n'))
+  show_when_close <- function()  cat('</div>\n')
+}
+
+# Load data
+data <- readRDS('dataset_small_336obs.rds')
+
+# Data summary
+cat('Dataset loaded:', nrow(data), 'rows,', ncol(data), 'columns\n')
+
+```
+
+
+## {.sidebar width="285px"}
+
+### Plotly - S7
+
+
+```{r}
+#| echo: false
+#| results: 'asis'
+dashboardr::render_input(
+  input_id = "s7_region",
+  label = "Region",
+  type = "radio",
+  filter_var = "region",
+  options = c("Midwest", "Northeast", "South", "West"),
+  options_from = NULL,
+  default_selected = "Midwest",
+  placeholder = "Select...",
+  width = "300px",
+  min = 0,
+  max = 100,
+  step = 1,
+  value = NULL,
+  show_value = TRUE,
+  inline = TRUE,
+  stacked = FALSE,
+  stacked_align = "center",
+  group_align = "left",
+  ncol = NULL,
+  nrow = NULL,
+  toggle_series = NULL,
+  override = FALSE,
+  labels = NULL,
+  size = "md",
+  help = NULL,
+  disabled = FALSE
+)
+```
+
+
+```{r}
+#| echo: false
+#| results: 'asis'
+dashboardr::render_input(
+  input_id = "s7_happiness",
+  label = "Happiness",
+  type = "checkbox",
+  filter_var = "happiness",
+  options = c("Very Happy", "Pretty Happy", "Not Too Happy"),
+  options_from = NULL,
+  default_selected = c("Very Happy", "Pretty Happy", "Not Too Happy"),
+  placeholder = "Select...",
+  width = "300px",
+  min = 0,
+  max = 100,
+  step = 1,
+  value = NULL,
+  show_value = TRUE,
+  inline = TRUE,
+  stacked = FALSE,
+  stacked_align = "center",
+  group_align = "left",
+  ncol = NULL,
+  nrow = NULL,
+  toggle_series = NULL,
+  override = FALSE,
+  labels = NULL,
+  size = "md",
+  help = NULL,
+  disabled = FALSE
+)
+```
+
+
+## Column
+
+
+<div id='pw-single-graph-s7'></div>
+
+
+### S7: Stacked bar + compound show_when
+
+
+```{r}
+#| echo: false
+#| results: 'asis'
+show_when_open('{"var":"region","op":"eq","val":"Midwest"}')
+```
+
+::: {.callout-note}
+## Midwest selected
+You are viewing the Midwest region.
+:::
+
+```{r}
+#| echo: false
+#| results: 'asis'
+show_when_close()
+```
+
+
+```{r}
+#| echo: false
+#| results: 'asis'
+show_when_open('{"var":"region","op":"neq","val":"Midwest"}')
+```
+
+::: {.callout-tip}
+## Non-Midwest selected
+You are viewing a non-Midwest region.
+:::
+
+```{r}
+#| echo: false
+#| results: 'asis'
+show_when_close()
+```
+
+
+```{r}
+#| echo: false
+#| results: 'asis'
+show_when_open('{"var":"region","op":"eq","val":"Midwest"}')
+```
+
+<div id='s7_dynamic_midwest' class='pw-dynamic-text'>Region: Midwest</div>
+
+```{r}
+#| echo: false
+#| results: 'asis'
+show_when_close()
+```
+
+
+```{r}
+#| echo: false
+#| results: 'asis'
+show_when_open('{"var":"region","op":"neq","val":"Midwest"}')
+```
+
+<div id='s7_dynamic_other' class='pw-dynamic-text'>Region: other</div>
+
+```{r}
+#| echo: false
+#| results: 'asis'
+show_when_close()
+```
+
+
+### Row
+
+#### Education by happiness level
+
+```{r stackedbar-education-happiness}
+# Education by happiness level
+result <- viz_stackedbar(
+  data = data,
+  title = "Education by happiness level",
+  color_palette = c("#2E86AB", "#F18F01", "#C73E1D"),
+  weight_var = NULL,
+  x_var = "education",
+  stack_var = "happiness",
+  stacked_type = "percent",
+  backend = "plotly",
+  cross_tab_filter_vars = c("region", "happiness")
+)
+
+result <- dashboardr:::.embed_cross_tab(result)
+
+result
+```
+

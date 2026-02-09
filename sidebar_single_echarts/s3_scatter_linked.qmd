@@ -1,0 +1,192 @@
+---
+title: "S3_Scatter_Linked"
+format: dashboard
+---
+
+```{r, include=FALSE}
+# Initialize dashboardr page configuration (CSS/JS for charts)
+dashboardr::.page_config()
+```
+
+```{r, echo=FALSE, results='asis'}
+dashboardr::enable_inputs(linked = TRUE)
+```
+
+```{r, echo=FALSE, results='asis'}
+# Enable chart export buttons (download as PNG/SVG/PDF/CSV)
+dashboardr::enable_chart_export()
+```
+
+```{r, echo=FALSE, results='asis'}
+dashboardr::enable_sidebar()
+```
+
+```{r setup}
+#| echo: false
+#| warning: false
+#| message: false
+#| error: false
+#| results: 'hide'
+
+# Load dashboardr (includes dplyr, highcharter as dependencies)
+library(dashboardr)
+
+# Global chunk options
+knitr::opts_chunk$set(
+  echo = FALSE,
+  warning = FALSE,
+  message = FALSE,
+  error = FALSE,
+  fig.width = 12,
+  fig.height = 8,
+  dpi = 300
+)
+
+# Load data
+data <- readRDS('dataset_small_800obs.rds')
+
+# Data summary
+cat('Dataset loaded:', nrow(data), 'rows,', ncol(data), 'columns\n')
+
+```
+
+
+## {.sidebar width="285px"}
+
+### ECharts - S3
+
+
+```{r}
+#| echo: false
+#| results: 'asis'
+dashboardr::render_input(
+  input_id = "s3_dimension",
+  label = "Dimension",
+  type = "select_single",
+  filter_var = "s3_dimension",
+  options = c("Economy", "Wellbeing", "Trust"),
+  options_from = NULL,
+  default_selected = "Economy",
+  placeholder = "Select...",
+  width = "300px",
+  min = 0,
+  max = 100,
+  step = 1,
+  value = NULL,
+  show_value = TRUE,
+  inline = TRUE,
+  stacked = FALSE,
+  stacked_align = "center",
+  group_align = "left",
+  ncol = NULL,
+  nrow = NULL,
+  toggle_series = NULL,
+  override = FALSE,
+  labels = NULL,
+  size = "md",
+  help = NULL,
+  disabled = FALSE
+  , linked_child_id = "s3_question"
+  , options_by_parent = list("Economy" = c("Income", "Job Security", "Inflation"), "Wellbeing" = c("Life Satisfaction", "Stress", "Community"), "Trust" = c("Media Trust", "Gov Trust", "Business Trust"))
+)
+```
+
+
+```{r}
+#| echo: false
+#| results: 'asis'
+dashboardr::render_input(
+  input_id = "s3_question",
+  label = "Question",
+  type = "select_single",
+  filter_var = "s3_question",
+  options = c("Income", "Job Security", "Inflation"),
+  options_from = NULL,
+  default_selected = "Income",
+  placeholder = "Select...",
+  width = "300px",
+  min = 0,
+  max = 100,
+  step = 1,
+  value = NULL,
+  show_value = TRUE,
+  inline = TRUE,
+  stacked = FALSE,
+  stacked_align = "center",
+  group_align = "left",
+  ncol = NULL,
+  nrow = NULL,
+  toggle_series = NULL,
+  override = FALSE,
+  labels = NULL,
+  size = "md",
+  help = NULL,
+  disabled = FALSE
+)
+```
+
+
+```{r}
+#| echo: false
+#| results: 'asis'
+dashboardr::render_input(
+  input_id = "s3_region",
+  label = "Region",
+  type = "select_single",
+  filter_var = "region",
+  options = c("Midwest", "Northeast", "South", "West"),
+  options_from = NULL,
+  default_selected = "Midwest",
+  placeholder = "Select...",
+  width = "300px",
+  min = 0,
+  max = 100,
+  step = 1,
+  value = NULL,
+  show_value = TRUE,
+  inline = TRUE,
+  stacked = FALSE,
+  stacked_align = "center",
+  group_align = "left",
+  ncol = NULL,
+  nrow = NULL,
+  toggle_series = NULL,
+  override = FALSE,
+  labels = NULL,
+  size = "md",
+  help = NULL,
+  disabled = FALSE
+)
+```
+
+
+## Column
+
+
+<div id='pw-single-graph-s3'></div>
+
+
+### S3: Scatter + linked inputs
+
+
+### Row
+
+#### Score vs Age by region
+
+```{r score-vs-age-by-region}
+# Score vs Age by region
+result <- viz_scatter(
+  data = data,
+  title = "Score vs Age by region",
+  color_palette = c("#4E79A7", "#59A14F", "#F28E2B", "#E15759"),
+  x_var = "age",
+  y_var = "score",
+  color_var = "region",
+  backend = "echarts4r"
+)
+
+result <- dashboardr:::.embed_cross_tab(result)
+
+result
+```
+

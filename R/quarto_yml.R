@@ -128,15 +128,7 @@
       landing_page <- proj$pages[[landing_page_name]]
       
       # Build text with icon if provided (same pattern as other pages)
-      landing_text <- paste0("\"", landing_page_name, "\"")
-      if (!is.null(landing_page$icon)) {
-        icon_shortcode <- if (grepl("{{< iconify", landing_page$icon, fixed = TRUE)) {
-          landing_page$icon
-        } else {
-          icon(landing_page$icon)
-        }
-        landing_text <- paste0("\"", icon_shortcode, " ", landing_page_name, "\"")
-      }
+      landing_text <- .quarto_nav_text(landing_page_name, landing_page$icon)
       
       yaml_lines <- c(yaml_lines,
         "      - href: index.qmd",
@@ -195,15 +187,7 @@
         pages_in_sections <- c(pages_in_sections, section$menu_pages)
         
         # This is a dropdown menu
-        text_content <- paste0("\"", section$text, "\"")
-        if (!is.null(section$icon)) {
-          icon_shortcode <- if (grepl("{{< iconify", section$icon, fixed = TRUE)) {
-            section$icon
-          } else {
-            icon(section$icon)
-          }
-          text_content <- paste0("\"", icon_shortcode, " ", section$text, "\"")
-        }
+        text_content <- .quarto_nav_text(section$text, section$icon)
         yaml_lines <- c(yaml_lines,
           paste0("      - text: ", text_content),
           "        menu:"
@@ -219,15 +203,7 @@
             page_qmd <- paste0(filename, ".qmd")
             
             # Get page text with icon if available
-            page_text_content <- paste0("\"", page_name, "\"")
-            if (!is.null(page$icon)) {
-              page_icon <- if (grepl("{{< iconify", page$icon, fixed = TRUE)) {
-                page$icon
-              } else {
-                icon(page$icon)
-              }
-              page_text_content <- paste0("\"", page_icon, " ", page_name, "\"")
-            }
+            page_text_content <- .quarto_nav_text(page_name, page$icon)
             
             yaml_lines <- c(yaml_lines,
               paste0("          - href: ", page_qmd),
@@ -237,15 +213,7 @@
         }
       } else if (!is.null(section$href)) {
         # This is a regular link
-        text_content <- paste0("\"", section$text, "\"")
-        if (!is.null(section$icon)) {
-          icon_shortcode <- if (grepl("{{< iconify", section$icon, fixed = TRUE)) {
-            section$icon
-          } else {
-            icon(section$icon)
-          }
-          text_content <- paste0("\"", icon_shortcode, " ", section$text, "\"")
-        }
+        text_content <- .quarto_nav_text(section$text, section$icon)
         yaml_lines <- c(yaml_lines,
           paste0("      - href: ", section$href),
           paste0("        text: ", text_content)
@@ -262,15 +230,7 @@
         filename <- tolower(gsub("[^a-zA-Z0-9]", "_", page_name))
         
         # Build text with icon if provided
-        text_content <- paste0("\"", page_name, "\"")
-        if (!is.null(page$icon)) {
-          icon_shortcode <- if (grepl("{{< iconify", page$icon, fixed = TRUE)) {
-            page$icon
-          } else {
-            icon(page$icon)
-          }
-          text_content <- paste0("\"", icon_shortcode, " ", page_name, "\"")
-        }
+        text_content <- .quarto_nav_text(page_name, page$icon)
         
         yaml_lines <- c(yaml_lines,
                         paste0("      - href: ", filename, ".qmd"),
@@ -287,16 +247,7 @@
       filename <- tolower(gsub("[^a-zA-Z0-9]", "_", page_name))
 
       # Build text with icon if provided
-      text_content <- paste0("\"", page_name, "\"")
-      if (!is.null(page$icon)) {
-        # Convert icon shortcode to proper format
-        icon_shortcode <- if (grepl("{{< iconify", page$icon, fixed = TRUE)) {
-          page$icon
-        } else {
-          icon(page$icon)
-        }
-        text_content <- paste0("\"", icon_shortcode, " ", page_name, "\"")
-      }
+      text_content <- .quarto_nav_text(page_name, page$icon)
 
       yaml_lines <- c(yaml_lines,
                       paste0("      - href: ", filename, ".qmd"),
@@ -348,33 +299,9 @@
   # Add left section for custom navbar elements if any
   if (length(custom_navbar_left) > 0) {
     for (elem in custom_navbar_left) {
-      # Build text with icon if provided
-      if (!is.null(elem$text) && !is.null(elem$icon)) {
-        # Both text and icon
-        icon_shortcode <- if (grepl("{{< iconify", elem$icon, fixed = TRUE)) {
-          elem$icon
-        } else {
-          icon(elem$icon)
-        }
+      if (!is.null(elem$text) || !is.null(elem$icon)) {
         yaml_lines <- c(yaml_lines,
-          paste0("      - text: \"", icon_shortcode, " ", elem$text, "\""),
-          paste0("        href: ", elem$href)
-        )
-      } else if (!is.null(elem$text)) {
-        # Text only
-        yaml_lines <- c(yaml_lines,
-          paste0("      - text: \"", elem$text, "\""),
-          paste0("        href: ", elem$href)
-        )
-      } else if (!is.null(elem$icon)) {
-        # Icon only - use empty text with icon
-        icon_shortcode <- if (grepl("{{< iconify", elem$icon, fixed = TRUE)) {
-          elem$icon
-        } else {
-          icon(elem$icon)
-        }
-        yaml_lines <- c(yaml_lines,
-          paste0("      - text: \"", icon_shortcode, "\""),
+          paste0("      - text: ", .quarto_nav_text(elem$text %||% "", elem$icon)),
           paste0("        href: ", elem$href)
         )
       }
@@ -391,15 +318,7 @@
       for (section in right_sections) {
         if (!is.null(section$menu_pages)) {
           # This is a dropdown menu
-          text_content <- paste0("\"", section$text, "\"")
-          if (!is.null(section$icon)) {
-            icon_shortcode <- if (grepl("{{< iconify", section$icon, fixed = TRUE)) {
-              section$icon
-            } else {
-              icon(section$icon)
-            }
-            text_content <- paste0("\"", icon_shortcode, " ", section$text, "\"")
-          }
+          text_content <- .quarto_nav_text(section$text, section$icon)
           yaml_lines <- c(yaml_lines,
             paste0("      - text: ", text_content),
             "        menu:"
@@ -415,15 +334,7 @@
               page_qmd <- paste0(filename, ".qmd")
               
               # Get page text with icon if available
-              page_text_content <- paste0("\"", page_name, "\"")
-              if (!is.null(page$icon)) {
-                page_icon <- if (grepl("{{< iconify", page$icon, fixed = TRUE)) {
-                  page$icon
-                } else {
-                  icon(page$icon)
-                }
-                page_text_content <- paste0("\"", page_icon, " ", page_name, "\"")
-              }
+              page_text_content <- .quarto_nav_text(page_name, page$icon)
               
               yaml_lines <- c(yaml_lines,
                 paste0("          - href: ", page_qmd),
@@ -433,15 +344,7 @@
           }
         } else if (!is.null(section$href)) {
           # This is a regular right-aligned link
-          text_content <- paste0("\"", section$text, "\"")
-          if (!is.null(section$icon)) {
-            icon_shortcode <- if (grepl("{{< iconify", section$icon, fixed = TRUE)) {
-              section$icon
-            } else {
-              icon(section$icon)
-            }
-            text_content <- paste0("\"", icon_shortcode, " ", section$text, "\"")
-          }
+          text_content <- .quarto_nav_text(section$text, section$icon)
           yaml_lines <- c(yaml_lines,
             paste0("      - href: ", section$href),
             paste0("        text: ", text_content)
@@ -459,16 +362,7 @@
         filename <- tolower(gsub("[^a-zA-Z0-9]", "_", page_name))
 
         # Build text with icon if provided
-        text_content <- paste0("\"", page_name, "\"")
-        if (!is.null(page$icon)) {
-          # Convert icon shortcode to proper format
-          icon_shortcode <- if (grepl("{{< iconify", page$icon, fixed = TRUE)) {
-            page$icon
-          } else {
-            icon(page$icon)
-          }
-          text_content <- paste0("\"", icon_shortcode, " ", page_name, "\"")
-        }
+        text_content <- .quarto_nav_text(page_name, page$icon)
 
         yaml_lines <- c(yaml_lines,
                         paste0("      - href: ", filename, ".qmd"),
@@ -479,33 +373,9 @@
     
     # Then, add custom navbar elements (right-aligned)
     for (elem in custom_navbar_right) {
-      # Build text with icon if provided
-      if (!is.null(elem$text) && !is.null(elem$icon)) {
-        # Both text and icon
-        icon_shortcode <- if (grepl("{{< iconify", elem$icon, fixed = TRUE)) {
-          elem$icon
-        } else {
-          icon(elem$icon)
-        }
+      if (!is.null(elem$text) || !is.null(elem$icon)) {
         yaml_lines <- c(yaml_lines,
-          paste0("      - text: \"", icon_shortcode, " ", elem$text, "\""),
-          paste0("        href: ", elem$href)
-        )
-      } else if (!is.null(elem$text)) {
-        # Text only
-        yaml_lines <- c(yaml_lines,
-          paste0("      - text: \"", elem$text, "\""),
-          paste0("        href: ", elem$href)
-        )
-      } else if (!is.null(elem$icon)) {
-        # Icon only - use empty text with icon
-        icon_shortcode <- if (grepl("{{< iconify", elem$icon, fixed = TRUE)) {
-          elem$icon
-        } else {
-          icon(elem$icon)
-        }
-        yaml_lines <- c(yaml_lines,
-          paste0("      - text: \"", icon_shortcode, "\""),
+          paste0("      - text: ", .quarto_nav_text(elem$text %||% "", elem$icon)),
           paste0("        href: ", elem$href)
         )
       }
@@ -636,15 +506,7 @@
             filename <- tolower(gsub("[^a-zA-Z0-9]", "_", matching_page))
 
             # Build text with icon if provided
-            text_content <- paste0("\"", matching_page, "\"")
-            if (!is.null(proj$pages[[matching_page]]$icon)) {
-              icon_shortcode <- if (grepl("{{< iconify", proj$pages[[matching_page]]$icon, fixed = TRUE)) {
-                proj$pages[[matching_page]]$icon
-              } else {
-                icon(proj$pages[[matching_page]]$icon)
-              }
-              text_content <- paste0("\"", icon_shortcode, " ", matching_page, "\"")
-            }
+            text_content <- .quarto_nav_text(matching_page, proj$pages[[matching_page]]$icon)
 
             yaml_lines <- c(yaml_lines,
               paste0("        - text: ", text_content),
@@ -755,15 +617,7 @@
           landing_page <- proj$pages[[landing_page_name]]
           
           # Build text with icon if provided
-          landing_text <- paste0("\"", landing_page_name, "\"")
-          if (!is.null(landing_page$icon)) {
-            icon_shortcode <- if (grepl("{{< iconify", landing_page$icon, fixed = TRUE)) {
-              landing_page$icon
-            } else {
-              icon(landing_page$icon)
-            }
-            landing_text <- paste0("\"", icon_shortcode, " ", landing_page_name, "\"")
-          }
+          landing_text <- .quarto_nav_text(landing_page_name, landing_page$icon)
           
           yaml_lines <- c(yaml_lines, paste0("      - text: ", landing_text))
           yaml_lines <- c(yaml_lines, "        href: index.qmd")
@@ -779,15 +633,7 @@
           filename <- tolower(gsub("[^a-zA-Z0-9]", "_", page_name))
 
           # Build text with icon if provided
-          text_content <- paste0("\"", page_name, "\"")
-          if (!is.null(proj$pages[[page_name]]$icon)) {
-            icon_shortcode <- if (grepl("{{< iconify", proj$pages[[page_name]]$icon, fixed = TRUE)) {
-              proj$pages[[page_name]]$icon
-            } else {
-              icon(proj$pages[[page_name]]$icon)
-            }
-            text_content <- paste0("\"", icon_shortcode, " ", page_name, "\"")
-          }
+          text_content <- .quarto_nav_text(page_name, proj$pages[[page_name]]$icon)
 
           yaml_lines <- c(yaml_lines,
             paste0("      - text: ", text_content),
@@ -1851,5 +1697,3 @@
     return(FALSE)
   })
 }
-
-

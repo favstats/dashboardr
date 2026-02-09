@@ -103,6 +103,36 @@ test_that(".generate_viz_from_specs with lazy loading", {
   expect_true(is.character(result))
 })
 
+test_that(".generate_viz_from_specs does not wrap viz calls by default", {
+  .generate_viz_from_specs <- dashboardr:::.generate_viz_from_specs
+  specs <- list(
+    list(type = "viz", viz_type = "bar", x_var = "cyl", data_path = "data.rds")
+  )
+  result <- .generate_viz_from_specs(specs)
+  expect_false(any(grepl("result <- tryCatch\\(\\{", result)))
+})
+
+test_that(".generate_viz_from_specs wraps viz calls when contextual_viz_errors is TRUE", {
+  .generate_viz_from_specs <- dashboardr:::.generate_viz_from_specs
+  specs <- list(
+    list(type = "viz", viz_type = "bar", x_var = "cyl", data_path = "data.rds")
+  )
+  result <- .generate_viz_from_specs(specs, contextual_viz_errors = TRUE)
+  expect_true(any(grepl("result <- tryCatch\\(\\{", result)))
+  expect_true(any(grepl("Visualization failed \\('", result)))
+})
+
+test_that(".generate_viz_from_specs dashboard layout defaults to one chart per row", {
+  .generate_viz_from_specs <- dashboardr:::.generate_viz_from_specs
+  specs <- list(
+    list(type = "viz", viz_type = "bar", x_var = "cyl", data_path = "data.rds", title = "A"),
+    list(type = "viz", viz_type = "pie", x_var = "gear", data_path = "data.rds", title = "B")
+  )
+  result <- .generate_viz_from_specs(specs, dashboard_layout = TRUE, heading_level = 4)
+  row_markers <- sum(grepl("^### Row$", result))
+  expect_equal(row_markers, 2)
+})
+
 # --- viz_processing: .process_visualizations ---
 
 test_that(".process_visualizations with viz_collection", {

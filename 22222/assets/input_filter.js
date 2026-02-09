@@ -558,8 +558,10 @@
           : null;
         if (!chart || !chart.series) return;
         chart.series.forEach(series => {
+          if (!series || typeof series !== 'object') return;
           if (!originalSeriesData.has(series)) {
-            const data = series.options.data ? JSON.parse(JSON.stringify(series.options.data)) : [];
+            const seriesOptions = series.options || {};
+            const data = seriesOptions.data ? JSON.parse(JSON.stringify(seriesOptions.data)) : [];
             originalSeriesData.set(series, { data: data, name: series.name });
           }
         });
@@ -666,12 +668,19 @@
         (chart.xAxis && chart.xAxis[0] && chart.xAxis[0].categories ? chart.xAxis[0].categories : null);
       
       // Also check for numeric x-axis (no categories, but has point.x values)
-      const hasNumericXAxis = !originalCategories && chart.series.length > 0 && 
-        chart.series[0].data && chart.series[0].data.length > 0 &&
-        chart.series[0].data[0] && typeof chart.series[0].data[0].x === 'number';
+      const firstNumericSeries = (chart.series || []).find(s =>
+        s &&
+        Array.isArray(s.data) &&
+        s.data.length > 0 &&
+        s.data[0] &&
+        typeof s.data[0].x === 'number'
+      );
+      const hasNumericXAxis = !originalCategories && !!firstNumericSeries;
       
       // Determine which filters apply to series names vs categories
-      const seriesNames = chart.series.map(s => s.name);
+      const seriesNames = (chart.series || [])
+        .filter(s => s && typeof s === 'object')
+        .map(s => s.name);
       
       // Convert categories to strings for comparison (they might be numbers)
       const categoryStrings = originalCategories ? originalCategories.map(c => String(c)) : [];
@@ -722,6 +731,9 @@
         
         // Apply slider filters to determine visible categories
         Object.keys(sliderFilters).forEach(filterVar => {
+          if (entry && entry.x && String(filterVar) !== String(entry.x)) {
+            return;
+          }
           const sliderInfo = sliderFilters[filterVar];
           
           // If slider has labels, use label-based filtering
@@ -776,7 +788,8 @@
               'Column': 'column'
             };
             const hcType = typeMap[chartType] || 'line';
-            chart.series.forEach(series => {
+            (chart.series || []).forEach(series => {
+              if (!series || typeof series !== 'object') return;
               series.update({ type: hcType }, false);
             });
           }
@@ -802,7 +815,8 @@
           const timeValues = originalCategories || 
             (timeVar ? [...new Set(allData.map(d => d[timeVar]))].sort() : []);
           
-          chart.series.forEach(series => {
+          (chart.series || []).forEach(series => {
+            if (!series || typeof series !== 'object') return;
             const countryName = series.name;
             const countryData = allData.filter(d => 
               d.country === countryName && d.metric === selectedMetric
@@ -853,7 +867,8 @@
         }
       });
       
-      chart.series.forEach(series => {
+      (chart.series || []).forEach(series => {
+        if (!series || typeof series !== 'object') return;
         const seriesName = series.name;
         const original = originalSeriesData.get(series);
         
@@ -922,6 +937,9 @@
           // Handle charts with numeric x-axis (no categories)
           let filteredData = JSON.parse(JSON.stringify(original.data));
           Object.keys(sliderFilters).forEach(filterVar => {
+            if (entry && entry.x && String(filterVar) !== String(entry.x)) {
+              return;
+            }
             const sliderInfo = sliderFilters[filterVar];
             filteredData = filteredData.filter(point => {
               if (point === null) return false;
@@ -963,7 +981,7 @@
     updateDynamicTitles();
   }
 
-  function computeVisibleCategories(allCategories, filters, sliderFilters, periodFilters) {
+  function computeVisibleCategories(allCategories, filters, sliderFilters, periodFilters, xVarName) {
     if (!allCategories || allCategories.length === 0) return null;
     let visible = allCategories.slice();
     const categoryStrings = visible.map(c => String(c));
@@ -1003,6 +1021,9 @@
 
     // Slider filters
     Object.keys(sliderFilters).forEach(filterVar => {
+      if (xVarName && String(filterVar) !== String(xVarName)) {
+        return;
+      }
       const sliderInfo = sliderFilters[filterVar];
       if (sliderInfo.labels && sliderInfo.labels.length > 0) {
         const labelIdx = Math.round((sliderInfo.value - sliderInfo.min) / (sliderInfo.step || 1));
@@ -1064,13 +1085,30 @@
 
     const seriesNames = data.map(t => t.name).filter(n => n !== undefined && n !== null);
     let allCategories = null;
-    for (let i = 0; i < data.length; i++) {
-      if (data[i].x && data[i].x.length) {
-        allCategories = data[i].x.slice();
-        break;
+    const allCategoryValues = [];
+    data.forEach(trace => {
+      if (trace && Array.isArray(trace.x) && trace.x.length) {
+        trace.x.forEach(v => allCategoryValues.push(v));
       }
+    });
+    if (allCategoryValues.length) {
+      const seen = new Set();
+      allCategories = [];
+      allCategoryValues.forEach(v => {
+        const key = String(v);
+        if (!seen.has(key)) {
+          seen.add(key);
+          allCategories.push(v);
+        }
+      });
     }
-    const visibleCategories = computeVisibleCategories(allCategories, filters, sliderFilters, periodFilters);
+    const visibleCategories = computeVisibleCategories(
+      allCategories,
+      filters,
+      sliderFilters,
+      periodFilters,
+      entry && entry.x ? entry.x : null
+    );
     const visibleSet = visibleCategories ? new Set(visibleCategories.map(c => String(c))) : null;
 
     // Switch-controlled series
@@ -1126,10 +1164,17 @@
     const option = chartRegistry && chartRegistry.deepClone ? chartRegistry.deepClone(original) : JSON.parse(JSON.stringify(original));
     const xAxis = option.xAxis && option.xAxis.length ? option.xAxis[0] : null;
     const allCategories = xAxis && xAxis.data ? xAxis.data.slice() : null;
-    const visibleCategories = computeVisibleCategories(allCategories, filters, sliderFilters, periodFilters);
+    const visibleCategories = computeVisibleCategories(
+      allCategories,
+      filters,
+      sliderFilters,
+      periodFilters,
+      entry && entry.x ? entry.x : null
+    );
     const visibleSet = visibleCategories ? new Set(visibleCategories.map(c => String(c))) : null;
 
-    const seriesNames = (option.series || []).map(s => s.name).filter(n => n !== undefined && n !== null);
+    const optionSeries = (option.series || []).filter(s => s && typeof s === 'object');
+    const seriesNames = optionSeries.map(s => s.name).filter(n => n !== undefined && n !== null);
     const switchHiddenSeries = new Set();
     const switchShownSeries = new Set();
     Object.keys(inputState).forEach(id => {
@@ -1140,7 +1185,7 @@
       }
     });
 
-    option.series = (option.series || []).map(series => {
+    option.series = optionSeries.map(series => {
       const s = series;
       const name = s.name || '';
       let show = shouldShowSeries(name, filters, textFilters, seriesNames);
@@ -1535,7 +1580,8 @@
       if (ok && switchOverrides) {
         Object.keys(switchOverrides).forEach(filterVar => {
           switchOverrides[filterVar].forEach(sw => {
-            chart.series.forEach(series => {
+            (chart.series || []).forEach(series => {
+              if (!series || typeof series !== 'object') return;
               if (series.name === sw.seriesName) {
                 if (!sw.visible) {
                   series.setVisible(false, false);
@@ -1758,12 +1804,14 @@
     const option = chartRegistry && chartRegistry.deepClone ? chartRegistry.deepClone(original) : JSON.parse(JSON.stringify(original));
     if (option.xAxis && option.xAxis.length) option.xAxis[0].data = orderedX;
 
-    const series = (option.series || []).map(s => s.name);
+    const baseSeries = (option.series || []).filter(s => s && typeof s === 'object');
+    const originalSeries = (original.series || []).filter(s => s && typeof s === 'object');
+    const series = baseSeries.map(s => s.name);
     const seriesOrder = series.length ? series : orderedStack;
     const allSeries = Array.from(new Set([...seriesOrder, ...orderedStack]));
 
     option.series = allSeries.map(name => {
-      const orig = (original.series || []).find(s => s.name === name) || {};
+      const orig = originalSeries.find(s => s && s.name === name) || {};
       const s = chartRegistry && chartRegistry.deepClone ? chartRegistry.deepClone(orig) : JSON.parse(JSON.stringify(orig));
       s.name = name;
       s.type = s.type || 'bar';
@@ -1830,7 +1878,7 @@
     if (option.xAxis && option.xAxis.length) option.xAxis[0].data = timeValues;
 
     option.series = groupValues.map(group => {
-      const orig = (original.series || []).find(s => s.name === String(group)) || {};
+      const orig = (original.series || []).find(s => s && s.name === String(group)) || {};
       const s = chartRegistry && chartRegistry.deepClone ? chartRegistry.deepClone(orig) : JSON.parse(JSON.stringify(orig));
       s.name = String(group);
       const rows = groupVar ? filteredData.filter(r => String(r[groupVar]) === String(group)) : filteredData;
@@ -1914,7 +1962,7 @@
         return count;
       });
       
-      let series = chart.series.find(s => s.name === stackVal);
+      let series = (chart.series || []).find(s => s && s.name === stackVal);
       if (series) {
         var updateOpts = { showInLegend: true };
         if (config.colorMap && config.colorMap[stackVal]) {
@@ -1927,7 +1975,8 @@
     });
     
     // Hide series that are NOT in the filtered data
-    chart.series.forEach(series => {
+    (chart.series || []).forEach(series => {
+      if (!series || typeof series !== 'object') return;
       if (!activeSeriesNames.has(series.name)) {
         series.setData(orderedX.map(() => 0), false);
         series.setVisible(false, false);
@@ -2015,7 +2064,7 @@
       dataPoints.forEach(function(pt) { lookup[pt.time] = pt.value; });
       
       var seriesName = (groupName === '__all__') ? (yVar || 'Value') : groupName;
-      var series = chart.series.find(function(s) { return s.name === seriesName; });
+      var series = (chart.series || []).find(function(s) { return s && s.name === seriesName; });
       
       if (series) {
         var newData;
@@ -2041,7 +2090,8 @@
     });
     
     // Hide series that are NOT in the filtered data
-    chart.series.forEach(function(series) {
+    (chart.series || []).forEach(function(series) {
+      if (!series || typeof series !== 'object') return;
       var seriesGroup = series.name;
       if (!activeGroups.has(seriesGroup)) {
         series.setData([], false);

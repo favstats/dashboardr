@@ -1,0 +1,44 @@
+[
+  {
+    "objectID": "about.html",
+    "href": "about.html",
+    "title": " About",
+    "section": "",
+    "text": "This dashboard visualizes publication trends across 120+ countries from the 1970s to 2020s.\n\n\n\n\n\n\n\n\n\nMetric\nDescription\n\n\n\n\nPublications\nCountry’s share of global publications\n\n\nFemale Authorship\nPercentage of publications with female authors\n\n\nWEIRD Studies\nStudies conducted in Western, Educated, Industrialized, Rich, Democratic countries\n\n\nQualitative\nPublications using qualitative research methods\n\n\nQuantitative\nPublications using quantitative research methods\n\n\n\n\n\n\n\nSelect Countries — Use the grouped dropdown to choose countries by region\nSelect Metric — Choose which publication metric to display\nFilter Decades — Use the slider to filter the starting decade\nGlobal Average — Toggle the switch to show/hide the global benchmark\n\n\n\n\n\nData is simulated for demonstration purposes\nReal data would come from bibliometric databases like Web of Science or Scopus\nWEIRD = Western, Educated, Industrialized, Rich, Democratic (Henrich et al., 2010)\n\n\n\n\nThis dashboard showcases the improved dashboardr input system:\n\nGrouped select options — Countries organized by region\nSlider with custom labels — Decade labels instead of numbers\nToggle series switch — Show/hide specific series with override\nHelp text — Contextual guidance for each input\nMetric switching — Dynamic data updates based on selection"
+  },
+  {
+    "objectID": "about.html#available-metrics",
+    "href": "about.html#available-metrics",
+    "title": " About",
+    "section": "",
+    "text": "Metric\nDescription\n\n\n\n\nPublications\nCountry’s share of global publications\n\n\nFemale Authorship\nPercentage of publications with female authors\n\n\nWEIRD Studies\nStudies conducted in Western, Educated, Industrialized, Rich, Democratic countries\n\n\nQualitative\nPublications using qualitative research methods\n\n\nQuantitative\nPublications using quantitative research methods"
+  },
+  {
+    "objectID": "about.html#how-to-use",
+    "href": "about.html#how-to-use",
+    "title": " About",
+    "section": "",
+    "text": "Select Countries — Use the grouped dropdown to choose countries by region\nSelect Metric — Choose which publication metric to display\nFilter Decades — Use the slider to filter the starting decade\nGlobal Average — Toggle the switch to show/hide the global benchmark"
+  },
+  {
+    "objectID": "about.html#data-notes",
+    "href": "about.html#data-notes",
+    "title": " About",
+    "section": "",
+    "text": "Data is simulated for demonstration purposes\nReal data would come from bibliometric databases like Web of Science or Scopus\nWEIRD = Western, Educated, Industrialized, Rich, Democratic (Henrich et al., 2010)"
+  },
+  {
+    "objectID": "about.html#features-demonstrated",
+    "href": "about.html#features-demonstrated",
+    "title": " About",
+    "section": "",
+    "text": "This dashboard showcases the improved dashboardr input system:\n\nGrouped select options — Countries organized by region\nSlider with custom labels — Decade labels instead of numbers\nToggle series switch — Show/hide specific series with override\nHelp text — Contextual guidance for each input\nMetric switching — Dynamic data updates based on selection"
+  },
+  {
+    "objectID": "index.html#publication-trends-by-country",
+    "href": "index.html#publication-trends-by-country",
+    "title": " Trends",
+    "section": "Publication Trends by Country",
+    "text": "Publication Trends by Country\n\n\n\n\n\n\n\n\n\n  🌍 Select Countries\n  \n    \n      Algeria\n      Botswana\n      Cameroon\n      Ethiopia\n      Ghana\n      Kenya\n      Morocco\n      Nigeria\n      Senegal\n      South Africa\n      Tanzania\n      Tunisia\n      Uganda\n      Zambia\n      Zimbabwe\n    \n    \n      Bangladesh\n      Cambodia\n      China\n      Hong Kong\n      India\n      Indonesia\n      Japan\n      Malaysia\n      Mongolia\n      Myanmar\n      Nepal\n      Pakistan\n      Philippines\n      Singapore\n      South Korea\n      Sri Lanka\n      Taiwan\n      Thailand\n      Vietnam\n    \n    \n      Kazakhstan\n      Uzbekistan\n    \n    \n      Armenia\n      Azerbaijan\n      Belarus\n      Bulgaria\n      Croatia\n      Czech Republic\n      Estonia\n      Georgia\n      Hungary\n      Latvia\n      Lithuania\n      Moldova\n      Poland\n      Romania\n      Russia\n      Serbia\n      Slovakia\n      Slovenia\n      Ukraine\n    \n    \n      Argentina\n      Bolivia\n      Brazil\n      Chile\n      Colombia\n      Costa Rica\n      Cuba\n      Dominican Republic\n      Ecuador\n      Guatemala\n      Mexico\n      Panama\n      Paraguay\n      Peru\n      Puerto Rico\n      Uruguay\n      Venezuela\n    \n    \n      Egypt\n      Iran\n      Israel\n      Jordan\n      Kuwait\n      Lebanon\n      Qatar\n      Saudi Arabia\n      Turkey\n      United Arab Emirates\n    \n    \n      Canada\n      United States\n    \n    \n      Denmark\n      Finland\n      Iceland\n      Norway\n      Sweden\n    \n    \n      Australia\n      New Zealand\n    \n    \n      Cyprus\n      Greece\n      Malta\n    \n    \n      Austria\n      Belgium\n      France\n      Germany\n      Ireland\n      Italy\n      Luxembourg\n      Netherlands\n      Portugal\n      Spain\n      Switzerland\n      United Kingdom\n    \n  \n  Countries are grouped by region. Select multiple to compare.\n\n\n\n  \n    Show Global Average\n    \n      \n      \n    \n  \n  Toggle the global average trendline.\n\n\n\n\n\n  \n    📅 Starting Decade\n    1970s\n  \n  \n    \n    \n      1970s\n      2020s\n    \n  \n  Filter to show data from this decade onwards.\n\n\n\n  📈 Select Metric\n  \n    Publications\n    Female Authorship\n    WEIRD Studies\n    Qualitative\n    Quantitative\n  \n  Choose which publication metric to visualize."
+  }
+]

@@ -7,10 +7,33 @@
 (function() {
   'use strict';
 
-  // Inject a hiding class that uses !important to override bslib's grid styles
+  // Inject hiding helpers that use !important to override bslib's grid styles.
+  // Includes an explicit rule for Quarto/bslib "hidden" filler nodes that can
+  // otherwise reserve full grid rows.
   var styleEl = document.createElement('style');
-  styleEl.textContent = '.dashboardr-sw-hidden { display: none !important; height: 0 !important; min-height: 0 !important; overflow: hidden !important; margin: 0 !important; padding: 0 !important; }';
+  styleEl.textContent = ''
+    + '.dashboardr-sw-hidden { display: none !important; height: 0 !important; min-height: 0 !important; overflow: hidden !important; margin: 0 !important; padding: 0 !important; }'
+    + '.bslib-grid > .hidden.html-fill-item.html-fill-container:empty { display: none !important; height: 0 !important; min-height: 0 !important; overflow: hidden !important; margin: 0 !important; padding: 0 !important; }';
   document.head.appendChild(styleEl);
+
+  function hasVizContent(grid) {
+    if (!grid) return false;
+    if (grid.querySelector('[data-show-when]')) return true;
+    return !!grid.querySelector(
+      '.html-widget, .js-plotly-plot, .echarts4r, .echarts, .highcharts-container, [id^="htmlwidget-"]'
+    );
+  }
+
+  function collapseGridFillers() {
+    document
+      .querySelectorAll('.bslib-grid > .hidden.html-fill-item.html-fill-container')
+      .forEach(function(el) {
+        var isEmpty = el.children.length === 0 && String(el.textContent || '').trim() === '';
+        if (isEmpty) {
+          el.classList.add('dashboardr-sw-hidden');
+        }
+      });
+  }
 
   // Override bslib's grid row sizing in sidebar layouts so charts aren't squished.
   // CSS !important can't override bslib's inline styles, so we do it via JS.
@@ -19,6 +42,9 @@
                 .getPropertyValue('--chart-min-height').trim() || '400px';
     document.querySelectorAll('.sidebar-content .bslib-grid[style*="grid-template-rows"]')
       .forEach(function(grid) {
+        // Skip non-visualization grids (e.g., marker-only rows), which can
+        // otherwise become large empty blocks when min-height is forced.
+        if (!hasVizContent(grid)) return;
         grid.style.setProperty('grid-template-rows', 'none', 'important');
         grid.style.setProperty('grid-auto-rows', 'minmax(' + minH + ', max-content)', 'important');
       });
@@ -124,7 +150,13 @@
       if (children.length === 0) return;
       var allChildrenHidden = true;
       for (var i = 0; i < children.length; i++) {
-        if (!children[i].classList.contains('dashboardr-sw-hidden')) {
+        var child = children[i];
+        var hiddenByClass = child.classList.contains('dashboardr-sw-hidden');
+        var hiddenAttr = child.hasAttribute('hidden');
+        var hiddenFiller = child.classList.contains('hidden') &&
+          child.children.length === 0 &&
+          String(child.textContent || '').trim() === '';
+        if (!(hiddenByClass || hiddenAttr || hiddenFiller)) {
           allChildrenHidden = false;
           break;
         }
@@ -155,6 +187,26 @@
         }
       });
     }
+    if (typeof echarts !== 'undefined' && typeof echarts.getInstanceByDom === 'function') {
+      document.querySelectorAll('.echarts4r, .echarts, [id^="htmlwidget-"]').forEach(function(el) {
+        var inst = echarts.getInstanceByDom(el);
+        if (!inst) return;
+        if (el.offsetWidth > 0 || el.offsetHeight > 0) {
+          try {
+            inst.resize();
+          } catch (e) { /* ignore resize errors */ }
+        }
+      });
+    }
+    if (typeof Plotly !== 'undefined' && Plotly.Plots && typeof Plotly.Plots.resize === 'function') {
+      document.querySelectorAll('.js-plotly-plot').forEach(function(el) {
+        if (el.offsetWidth > 0 || el.offsetHeight > 0) {
+          try {
+            Plotly.Plots.resize(el);
+          } catch (e) { /* ignore resize errors */ }
+        }
+      });
+    }
   }
 
   function evaluateAllShowWhen() {
@@ -175,10 +227,13 @@
       }
     });
 
+    // First collapse filler nodes that should never consume layout space.
+    collapseGridFillers();
+
     // Second pass: hide parent cards whose show-when children are all hidden
     updateParentContainers();
 
-    // Third pass: reflow Highcharts charts that just became visible
+    // Third pass: resize charts that just became visible
     // Use requestAnimationFrame to ensure DOM has updated layout first
     requestAnimationFrame(function() {
       reflowVisibleCharts();

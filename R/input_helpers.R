@@ -855,7 +855,8 @@ render_input <- function(input_id,
 
   # Wrap in div with data attributes for linked (cascading) child when applicable
   if (!is.null(linked_child_id) && !is.null(options_by_parent)) {
-    opts_json <- jsonlite::toJSON(options_by_parent, auto_unbox = TRUE)
+    # Keep child options as arrays consistently (even length-1) for frontend parsing
+    opts_json <- jsonlite::toJSON(options_by_parent, auto_unbox = FALSE)
     html <- paste0(
       '<div data-linked-child-id="', htmltools::htmlEscape(linked_child_id), '" ',
       'data-options-by-parent=\'', opts_json, '\'>',
@@ -986,18 +987,39 @@ render_input_row <- function(inputs, style = "boxed", align = "center") {
 #' @param size Size variant: "sm", "md", or "lg"
 #' @return HTML output
 #' @export
-add_reset_button <- function(targets = NULL, label = "Reset Filters", size = "md") {
-  targets_attr <- if (!is.null(targets)) {
-    paste0('data-targets="', paste(targets, collapse = ","), '" ')
+add_reset_button <- function(sidebar_container, targets = NULL, label = "Reset Filters", size = "md") {
+  if (!inherits(sidebar_container, "sidebar_container")) {
+    stop("add_reset_button() must be called on a sidebar_container (created by add_sidebar())", call. = FALSE)
+  }
+  
+  reset_button_block <- structure(
+    list(
+      type = "reset_button",
+      label = label,
+      size = size,
+      targets = targets
+    ),
+    class = "content_block"
+  )
+  
+  sidebar_container$blocks <- c(sidebar_container$blocks, list(reset_button_block))
+  sidebar_container
+}
+
+#' Render a reset button
+#' @keywords internal
+render_reset_button <- function(spec) {
+  targets_attr <- if (!is.null(spec$targets)) {
+    paste0('data-targets="', paste(spec$targets, collapse = ","), '" ')
   } else {
     'data-targets="all" '
   }
   
   html <- paste0(
-    '<button type="button" class="dashboardr-reset-button size-', size, '" ',
+    '<button type="button" class="dashboardr-reset-button size-', spec$size, '" ',
     targets_attr,
     'onclick="dashboardrInputs.resetFilters(this)">', 
-    htmltools::htmlEscape(label), 
+    htmltools::htmlEscape(spec$label), 
     '</button>'
   )
   

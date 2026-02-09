@@ -274,12 +274,12 @@ viz_bar <- function(data,
   if (include_na) {
     plot_data <- plot_data %>%
       dplyr::mutate(
-        !!rlang::sym(x_var_plot) := forcats::fct_explicit_na(!!rlang::sym(x_var_plot), na_level = na_label)
+        !!rlang::sym(x_var_plot) := forcats::fct_na_value_to_level(!!rlang::sym(x_var_plot), level = na_label)
       )
     if (!is.null(group_var)) {
       plot_data <- plot_data %>%
         dplyr::mutate(
-          !!rlang::sym(group_var) := forcats::fct_explicit_na(!!rlang::sym(group_var), na_level = na_label)
+          !!rlang::sym(group_var) := forcats::fct_na_value_to_level(!!rlang::sym(group_var), level = na_label)
         )
     }
   }
@@ -1052,4 +1052,3 @@ viz_bar <- function(data,
 
   ggiraph::girafe(ggobj = p)
 }
-

@@ -90,6 +90,39 @@ key_response_map <- setNames(key_resp[question_var], names(question_var))
 # Two most recent GSS waves for the bar chart view
 wave_years <- c(2022, 2024)
 
+resolve_sidebar_backend <- function() {
+  raw <- tolower(trimws(Sys.getenv("DASHBOARDR_SIDEBAR_BACKEND", unset = "echarts4r")))
+  if (identical(raw, "echarts")) raw <- "echarts4r"
+  valid <- c("highcharter", "plotly", "echarts4r", "ggiraph")
+  if (!raw %in% valid) {
+    stop(
+      "Invalid DASHBOARDR_SIDEBAR_BACKEND: ", raw, ". ",
+      "Use one of: ", paste(valid, collapse = ", "),
+      call. = FALSE
+    )
+  }
+  raw
+}
+
+resolve_sidebar_output_dir <- function(backend) {
+  raw <- trimws(Sys.getenv("DASHBOARDR_SIDEBAR_OUTPUT_DIR", unset = ""))
+  if (nzchar(raw)) return(raw)
+  paste0("sidebar_gss_demo_", backend)
+}
+
+resolve_sidebar_render <- function() {
+  raw <- tolower(trimws(Sys.getenv("DASHBOARDR_SIDEBAR_RENDER", unset = "true")))
+  !raw %in% c("false", "0", "no", "n")
+}
+
+resolve_sidebar_open <- function() {
+  raw <- tolower(trimws(Sys.getenv("DASHBOARDR_DEMO_OPEN", unset = "false")))
+  if (raw %in% c("false", "0", "no", "none")) {
+    return(FALSE)
+  }
+  "browser"
+}
+
 # ---- Recode helpers ---------------------------------------------------------
 
 recode_age <- function(age) {
@@ -277,7 +310,15 @@ group_colors <- c(
 
 # ---- Dashboard --------------------------------------------------------------
 
-if (!exists("output_dir")) output_dir <- "sidebar_gss_demo"
+backend <- resolve_sidebar_backend()
+# backend <- "highcharter"
+output_dir <- resolve_sidebar_output_dir(backend)
+render_dashboard <- resolve_sidebar_render()
+open_dashboard <- resolve_sidebar_open()
+
+if (dir.exists(output_dir)) {
+  unlink(output_dir, recursive = TRUE, force = TRUE)
+}
 dir.create(output_dir, showWarnings = FALSE, recursive = TRUE)
 
 explorer_content <- create_content(data = page_data) %>%
@@ -301,7 +342,7 @@ explorer_content <- create_content(data = page_data) %>%
       type             = "radio",
       filter_var       = "time_period",
       options          = c(as.character(wave_years), "Over Time"),
-      default_selected = as.character(wave_years[1]),
+      default_selected = "Over Time",
       stacked          = TRUE,
       stacked_align    = "center",
       group_align      = "center"
@@ -319,12 +360,14 @@ explorer_content <- create_content(data = page_data) %>%
       group_align      = "center"
     ) %>%
   end_sidebar() %>%
+  add_html(sprintf("<div id=\"pw-sidebar-marker-%s\" data-pw-backend=\"%s\"></div>", backend, backend)) %>%
   # Overall view: single bar per question showing response distribution
   add_viz(
     type         = "stackedbar",
     x_var        = "question",
     stack_var    = "response",
     y_var        = "n",
+    filter       = ~ time_period %in% c("2022", "2024"),
     title        = "{dimension}: {question} by {breakdown}",
     stacked_type = "percent",
     horizontal   = TRUE,
@@ -338,6 +381,7 @@ explorer_content <- create_content(data = page_data) %>%
     x_var        = "response",
     stack_var    = "breakdown_value",
     y_var        = "n",
+    filter       = ~ time_period %in% c("2022", "2024"),
     title        = "{dimension}: {question} by {breakdown} ({time_period})",
     stacked_type = "percent",
     horizontal   = TRUE,
@@ -353,6 +397,7 @@ explorer_content <- create_content(data = page_data) %>%
     y_var         = "score",
     group_var     = "breakdown_value",
     agg           = "none",
+    filter        = ~ time_period == "Over Time",
     group_order   = rev(all_groups),
     color_palette = group_colors,
     title       = "{dimension} - {question}: % responding '{key_response}' by {breakdown}",
@@ -362,12 +407,20 @@ explorer_content <- create_content(data = page_data) %>%
     title_map  = list(key_response = key_response_map)
   )
 
-dashboard <- create_dashboard("11111", "GSS Explorer", theme = "litera") %>%
+dashboard <- create_dashboard(
+  output_dir = output_dir,
+  title = "GSS Explorer",
+  theme = "litera",
+  backend = backend,
+  allow_inside_pkg = TRUE
+) %>%
   add_page("Explorer", data = page_data, content = explorer_content)
 
-generate_dashboard(dashboard, render = T)
+generate_dashboard(
+  dashboard,
+  render = render_dashboard,
+  open = open_dashboard
+)
 
 # generate_dashboard(dashboard, render = !isTRUE(getOption("dashboardr.no_render", FALSE)))
-message("Dashboard generated in: ", output_dir)
-
-
+message("Dashboard generated in: ", output_dir, " (backend: ", backend, ")")

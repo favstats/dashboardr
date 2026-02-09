@@ -1,0 +1,220 @@
+version: 1
+
+content_types:
+  text:
+    supports_tabgroup: true
+    supports_show_when: true
+    supports_filter_vars: false
+    supports_sidebar: true
+    supports_manual_layout_row: true
+    supports_input_dependency: false
+  image:
+    supports_tabgroup: true
+    supports_show_when: true
+    supports_filter_vars: false
+    supports_sidebar: true
+    supports_manual_layout_row: true
+    supports_input_dependency: false
+  video:
+    supports_tabgroup: true
+    supports_show_when: true
+    supports_filter_vars: false
+    supports_sidebar: true
+    supports_manual_layout_row: true
+    supports_input_dependency: false
+  callout:
+    supports_tabgroup: true
+    supports_show_when: true
+    supports_filter_vars: false
+    supports_sidebar: true
+    supports_manual_layout_row: true
+    supports_input_dependency: false
+  divider:
+    supports_tabgroup: true
+    supports_show_when: true
+    supports_filter_vars: false
+    supports_sidebar: true
+    supports_manual_layout_row: true
+    supports_input_dependency: false
+  code:
+    supports_tabgroup: true
+    supports_show_when: true
+    supports_filter_vars: false
+    supports_sidebar: true
+    supports_manual_layout_row: true
+    supports_input_dependency: false
+  spacer:
+    supports_tabgroup: true
+    supports_show_when: true
+    supports_filter_vars: false
+    supports_sidebar: true
+    supports_manual_layout_row: true
+    supports_input_dependency: false
+  gt:
+    supports_tabgroup: true
+    supports_show_when: true
+    supports_filter_vars: false
+    supports_sidebar: true
+    supports_manual_layout_row: true
+    supports_input_dependency: false
+  reactable:
+    supports_tabgroup: true
+    supports_show_when: true
+    supports_filter_vars: true
+    supports_sidebar: true
+    supports_manual_layout_row: true
+    supports_input_dependency: true
+  table:
+    supports_tabgroup: true
+    supports_show_when: true
+    supports_filter_vars: true
+    supports_sidebar: true
+    supports_manual_layout_row: true
+    supports_input_dependency: true
+  DT:
+    supports_tabgroup: true
+    supports_show_when: true
+    supports_filter_vars: true
+    supports_sidebar: true
+    supports_manual_layout_row: true
+    supports_input_dependency: true
+  iframe:
+    supports_tabgroup: true
+    supports_show_when: true
+    supports_filter_vars: false
+    supports_sidebar: true
+    supports_manual_layout_row: true
+    supports_input_dependency: false
+  accordion:
+    supports_tabgroup: true
+    supports_show_when: true
+    supports_filter_vars: false
+    supports_sidebar: true
+    supports_manual_layout_row: true
+    supports_input_dependency: false
+  card:
+    supports_tabgroup: true
+    supports_show_when: true
+    supports_filter_vars: false
+    supports_sidebar: true
+    supports_manual_layout_row: true
+    supports_input_dependency: false
+  html:
+    supports_tabgroup: true
+    supports_show_when: true
+    supports_filter_vars: false
+    supports_sidebar: true
+    supports_manual_layout_row: true
+    supports_input_dependency: false
+  quote:
+    supports_tabgroup: true
+    supports_show_when: true
+    supports_filter_vars: false
+    supports_sidebar: true
+    supports_manual_layout_row: true
+    supports_input_dependency: false
+  badge:
+    supports_tabgroup: true
+    supports_show_when: true
+    supports_filter_vars: false
+    supports_sidebar: true
+    supports_manual_layout_row: true
+    supports_input_dependency: false
+  metric:
+    supports_tabgroup: true
+    supports_show_when: true
+    supports_filter_vars: false
+    supports_sidebar: true
+    supports_manual_layout_row: true
+    supports_input_dependency: false
+  value_box:
+    supports_tabgroup: true
+    supports_show_when: true
+    supports_filter_vars: false
+    supports_sidebar: true
+    supports_manual_layout_row: true
+    supports_input_dependency: false
+  value_box_row:
+    supports_tabgroup: true
+    supports_show_when: true
+    supports_filter_vars: false
+    supports_sidebar: true
+    supports_manual_layout_row: true
+    supports_input_dependency: false
+  hc:
+    supports_tabgroup: true
+    supports_show_when: true
+    supports_filter_vars: true
+    supports_sidebar: true
+    supports_manual_layout_row: true
+    supports_input_dependency: true
+  widget:
+    supports_tabgroup: true
+    supports_show_when: true
+    supports_filter_vars: true
+    supports_sidebar: true
+    supports_manual_layout_row: true
+    supports_input_dependency: true
+  layout_column:
+    supports_tabgroup: true
+    supports_show_when: true
+    supports_filter_vars: false
+    supports_sidebar: true
+    supports_manual_layout_row: false
+    supports_input_dependency: false
+  layout_row:
+    supports_tabgroup: true
+    supports_show_when: true
+    supports_filter_vars: false
+    supports_sidebar: true
+    supports_manual_layout_row: false
+    supports_input_dependency: false
+  input:
+    supports_tabgroup: true
+    supports_show_when: false
+    supports_filter_vars: false
+    supports_sidebar: true
+    supports_manual_layout_row: true
+    supports_input_dependency: false
+  input_row:
+    supports_tabgroup: true
+    supports_show_when: false
+    supports_filter_vars: false
+    supports_sidebar: true
+    supports_manual_layout_row: true
+    supports_input_dependency: false
+  modal:
+    supports_tabgroup: false
+    supports_show_when: false
+    supports_filter_vars: false
+    supports_sidebar: false
+    supports_manual_layout_row: false
+    supports_input_dependency: false
+
+backends:
+  - highcharter
+  - plotly
+  - echarts4r
+  - ggiraph
+
+unsupported_combinations:
+  - id: manual_layout_row_tabgroup_child
+    expectation:
+      class: error
+      message: "Manual layout rows do not support tabgroup"
+  - id: manual_layout_row_pagination_child
+    expectation:
+      class: error
+      message: "Manual layout rows do not support pagination markers"
+  - id: widget_filter_vars_girafe
+    expectation:
+      class: error
+      message: "filter_vars is not supported for ggiraph widgets"
+  - id: widget_filter_vars_unsupported_widget
+    expectation:
+      class: error
+      message: "filter_vars is only supported"
+  - id: leaflet_filter_vars_unsupported
+    expectation:
+      class: error
+      message: "filter_vars is only supported"

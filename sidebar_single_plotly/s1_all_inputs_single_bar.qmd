@@ -1,0 +1,328 @@
+---
+title: "S1_All_Inputs_Single_Bar"
+format: dashboard
+---
+
+```{r, include=FALSE}
+# Initialize dashboardr page configuration (CSS/JS for charts)
+dashboardr::.page_config()
+```
+
+```{r, echo=FALSE, results='asis'}
+dashboardr::enable_inputs(show_when = TRUE)
+```
+
+```{r, echo=FALSE, results='asis'}
+# Enable chart export buttons (download as PNG/SVG/PDF/CSV)
+dashboardr::enable_chart_export()
+```
+
+```{r, echo=FALSE, results='asis'}
+dashboardr::enable_sidebar()
+```
+
+```{r setup}
+#| echo: false
+#| warning: false
+#| message: false
+#| error: false
+#| results: 'hide'
+
+# Load dashboardr (includes dplyr, highcharter as dependencies)
+library(dashboardr)
+
+# Global chunk options
+knitr::opts_chunk$set(
+  echo = FALSE,
+  warning = FALSE,
+  message = FALSE,
+  error = FALSE,
+  fig.width = 12,
+  fig.height = 8,
+  dpi = 300
+)
+
+# Conditional-visibility helpers (fallback for older package versions)
+if (!exists('show_when_open', mode = 'function')) {
+  show_when_open  <- function(j) cat(paste0('<div class="viz-show-when" data-show-when=\'', j, '\'>\n'))
+  show_when_close <- function()  cat('</div>\n')
+}
+
+# Load data
+data <- readRDS('dataset_large_27216obs.rds')
+
+# Data summary
+cat('Dataset loaded:', nrow(data), 'rows,', ncol(data), 'columns\n')
+
+```
+
+
+## {.sidebar width="300px"}
+
+### Plotly - S1
+
+
+```{r}
+#| echo: false
+#| results: 'asis'
+dashboardr::render_input(
+  input_id = "s1_region_select",
+  label = "Region (select multiple)",
+  type = "select_multiple",
+  filter_var = "region",
+  options = c("Midwest", "Northeast", "South", "West"),
+  options_from = NULL,
+  default_selected = c("Midwest", "Northeast", "South", "West"),
+  placeholder = "Select...",
+  width = "300px",
+  min = 0,
+  max = 100,
+  step = 1,
+  value = NULL,
+  show_value = TRUE,
+  inline = TRUE,
+  stacked = FALSE,
+  stacked_align = "center",
+  group_align = "left",
+  ncol = NULL,
+  nrow = NULL,
+  toggle_series = NULL,
+  override = FALSE,
+  labels = NULL,
+  size = "md",
+  help = NULL,
+  disabled = FALSE
+)
+```
+
+
+```{r}
+#| echo: false
+#| results: 'asis'
+dashboardr::render_input(
+  input_id = "s1_education_select",
+  label = "Education (select single)",
+  type = "select_single",
+  filter_var = "education",
+  options = c("High School", "Some College", "Bachelor's", "Graduate"),
+  options_from = NULL,
+  default_selected = "High School",
+  placeholder = "Select...",
+  width = "300px",
+  min = 0,
+  max = 100,
+  step = 1,
+  value = NULL,
+  show_value = TRUE,
+  inline = TRUE,
+  stacked = FALSE,
+  stacked_align = "center",
+  group_align = "left",
+  ncol = NULL,
+  nrow = NULL,
+  toggle_series = NULL,
+  override = FALSE,
+  labels = NULL,
+  size = "md",
+  help = NULL,
+  disabled = FALSE
+)
+```
+
+
+```{r}
+#| echo: false
+#| results: 'asis'
+dashboardr::render_input(
+  input_id = "s1_happiness_checkbox",
+  label = "Happiness (checkbox)",
+  type = "checkbox",
+  filter_var = "happiness",
+  options = c("Very Happy", "Pretty Happy", "Not Too Happy"),
+  options_from = NULL,
+  default_selected = c("Very Happy", "Pretty Happy", "Not Too Happy"),
+  placeholder = "Select...",
+  width = "300px",
+  min = 0,
+  max = 100,
+  step = 1,
+  value = NULL,
+  show_value = TRUE,
+  inline = TRUE,
+  stacked = FALSE,
+  stacked_align = "center",
+  group_align = "left",
+  ncol = NULL,
+  nrow = NULL,
+  toggle_series = NULL,
+  override = FALSE,
+  labels = NULL,
+  size = "md",
+  help = NULL,
+  disabled = FALSE
+)
+```
+
+
+```{r}
+#| echo: false
+#| results: 'asis'
+dashboardr::render_input(
+  input_id = "s1_channel_radio",
+  label = "Channel (radio)",
+  type = "radio",
+  filter_var = "channel",
+  options = c("Web", "Phone", "In Person"),
+  options_from = NULL,
+  default_selected = "Web",
+  placeholder = "Select...",
+  width = "300px",
+  min = 0,
+  max = 100,
+  step = 1,
+  value = NULL,
+  show_value = TRUE,
+  inline = TRUE,
+  stacked = FALSE,
+  stacked_align = "center",
+  group_align = "left",
+  ncol = NULL,
+  nrow = NULL,
+  toggle_series = NULL,
+  override = FALSE,
+  labels = NULL,
+  size = "md",
+  help = NULL,
+  disabled = FALSE
+)
+```
+
+
+```{r}
+#| echo: false
+#| results: 'asis'
+dashboardr::render_input(
+  input_id = "s1_segment_button_group",
+  label = "Segment (button group)",
+  type = "button_group",
+  filter_var = "segment",
+  options = c("Consumer", "Business", "Public"),
+  options_from = NULL,
+  default_selected = "Consumer",
+  placeholder = "Select...",
+  width = "300px",
+  min = 0,
+  max = 100,
+  step = 1,
+  value = NULL,
+  show_value = TRUE,
+  inline = TRUE,
+  stacked = FALSE,
+  stacked_align = "center",
+  group_align = "left",
+  ncol = NULL,
+  nrow = NULL,
+  toggle_series = NULL,
+  override = FALSE,
+  labels = NULL,
+  size = "md",
+  help = NULL,
+  disabled = FALSE
+)
+```
+
+
+```{r}
+#| echo: false
+#| results: 'asis'
+dashboardr::render_input(
+  input_id = "s1_year_slider",
+  label = "Year (slider)",
+  type = "slider",
+  filter_var = "year",
+  options = NULL,
+  options_from = NULL,
+  default_selected = NULL,
+  placeholder = "Select...",
+  width = "300px",
+  min = 2019,
+  max = 2025,
+  step = 1,
+  value = 2019,
+  show_value = TRUE,
+  inline = TRUE,
+  stacked = FALSE,
+  stacked_align = "center",
+  group_align = "left",
+  ncol = NULL,
+  nrow = NULL,
+  toggle_series = NULL,
+  override = FALSE,
+  labels = c("2019", "2020", "2021", "2022", "2023", "2024", "2025"),
+  size = "md",
+  help = NULL,
+  disabled = FALSE
+)
+```
+
+
+## Column
+
+
+<div id='pw-single-graph-s1'></div>
+
+
+### S1: All-input sidebar + single bar
+
+
+```{r}
+#| echo: false
+#| results: 'asis'
+show_when_open('{"var":"year","op":"lte","val":2021}')
+```
+
+<div id='s1_dynamic_low' class='pw-dynamic-text'>Slider: early years (2019-2021)</div>
+
+```{r}
+#| echo: false
+#| results: 'asis'
+show_when_close()
+```
+
+
+```{r}
+#| echo: false
+#| results: 'asis'
+show_when_open('{"var":"year","op":"gte","val":2022}')
+```
+
+<div id='s1_dynamic_high' class='pw-dynamic-text'>Slider: recent years (2022+)</div>
+
+```{r}
+#| echo: false
+#| results: 'asis'
+show_when_close()
+```
+
+
+### Row
+
+#### Responses by region and education
+
+```{r bar-region-education}
+# Responses by region and education
+result <- viz_bar(
+  data = data,
+  title = "Responses by region and education",
+  color_palette = c("#4E79A7", "#59A14F", "#F28E2B", "#E15759"),
+  weight_var = NULL,
+  x_var = "region",
+  group_var = "education",
+  backend = "plotly"
+)
+
+result <- dashboardr:::.embed_cross_tab(result)
+
+result
+```
+

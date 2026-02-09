@@ -4,7 +4,7 @@
 \alias{.normalize_backend}
 \title{Normalize backend aliases}
 \usage{
-.normalize_backend(backend, warn_alias = TRUE)
+.normalize_backend(backend, warn_alias = FALSE)
 }
 \arguments{
 \item{backend}{Character backend value.}

@@ -1,0 +1,44 @@
+project:
+  type: website
+  output-dir: docs
+  resources:
+    - assets/
+
+website:
+  title: "Global Publication Trends"
+  navbar:
+    left:
+      - href: index.qmd
+        text: "{{< iconify ph chart-line-up >}} Trends"
+      - href: about.qmd
+        text: "{{< iconify ph info >}} About"
+    search: true
+  bread-crumbs: true
+  page-navigation: false
+  back-to-top-navigation: false
+  reader-mode: false
+  page-footer:
+    right: |
+      <span style="display: inline-flex; align-items: center; gap: 0.35rem; font-size: 1rem; opacity: 0.8; color: inherit;">Powered by <a href="https://favstats.github.io/dashboardr/" style="display: inline-flex; align-items: center; gap: 0.25rem; color: inherit; text-decoration: none; font-weight: 500; transition: opacity 0.2s ease;" target="_blank" rel="noopener" onmouseover="this.style.opacity='1';" onmouseout="this.style.opacity='0.8';"><img src="https://raw.githubusercontent.com/favstats/dashboardr/refs/heads/main/man/figures/logo.svg" alt="dashboardr logo" style="width: 24px; height: 24px; object-fit: contain;" />dashboardr</a></span>
+
+format:
+  html:
+    prefer-html: true
+    theme:
+      - default
+      - _tabset_modern.scss
+      - _theme_custom.scss
+
+    css:
+      - assets/modal.css
+      - assets/pagination.css
+    mainfont: "Inter"
+    fontsize: 15px
+    monofont: "Fira Code"
+    page-layout: full
+    include-in-header:
+      text: |
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+        <script src="assets/tab-scroll-fix.js"></script>

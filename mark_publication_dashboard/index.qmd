@@ -1,0 +1,220 @@
+---
+title: "{{< iconify ph chart-line-up >}} Trends"
+format: html
+---
+
+```{r, include=FALSE}
+# Initialize dashboardr page configuration (CSS/JS for charts)
+dashboardr::.page_config()
+```
+
+```{r, echo=FALSE, results='asis'}
+dashboardr::enable_inputs()
+```
+
+```{r setup}
+#| echo: false
+#| warning: false
+#| message: false
+#| error: false
+#| results: 'hide'
+
+# Load dashboardr (includes dplyr, highcharter as dependencies)
+library(dashboardr)
+
+# Global chunk options
+knitr::opts_chunk$set(
+  echo = FALSE,
+  warning = FALSE,
+  message = FALSE,
+  error = FALSE,
+  fig.width = 12,
+  fig.height = 8,
+  dpi = 300
+)
+
+# Load data
+data <- readRDS('dataset_3210obs.rds')
+
+# Data summary
+cat('Dataset loaded:', nrow(data), 'rows,', ncol(data), 'columns\n')
+
+```
+
+```{r, echo=FALSE, results='asis'}
+# Embed full data for metric switching
+cat("<script>window.dashboardrTimeVar = 'decade';")
+cat('window.dashboardrMetricData = ')
+cat(jsonlite::toJSON(data, dataframe = 'rows'))
+cat(';</script>')
+```
+
+## Publication Trends by Country
+
+```{r timeline-value-country}
+# Publication Trends by Country
+result <- viz_timeline(
+  data = data,
+  title = "Publication Trends by Country",
+  time_var = "decade",
+  y_var = "value",
+  group_var = "country",
+  chart_type = "line",
+  subtitle = "Select a metric and countries to compare trends over time",
+  x_label = "Decade",
+  y_label = "Percentage (%)",
+  cross_tab_filter_vars = c("country", "decade", "metric")
+)
+
+result <- dashboardr:::.embed_cross_tab(result)
+
+result
+```
+
+
+```{r}
+#| echo: false
+#| results: 'asis'
+dashboardr::render_input_row(list(
+  list(
+    input_id = "country_filter",
+    label = "🌍 Select Countries",
+    type = "select_multiple",
+    filter_var = "country",
+    options = list("Africa" = c("Algeria", "Botswana", "Cameroon", "Ethiopia", "Ghana", "Kenya", "Morocco", "Nigeria", "Senegal", "South Africa", "Tanzania", "Tunisia", "Uganda", "Zambia", "Zimbabwe"), "Asia Pacific" = c("Bangladesh", "Cambodia", "China", "Hong Kong", "India", "Indonesia", "Japan", "Malaysia", "Mongolia", "Myanmar", "Nepal", "Pakistan", "Philippines", "Singapore", "South Korea", "Sri Lanka", "Taiwan", "Thailand", "Vietnam"), "Central Asia" = c("Kazakhstan", "Uzbekistan"), "Eastern Europe" = c("Armenia", "Azerbaijan", "Belarus", "Bulgaria", "Croatia", "Czech Republic", "Estonia", "Georgia", "Hungary", "Latvia", "Lithuania", "Moldova", "Poland", "Romania", "Russia", "Serbia", "Slovakia", "Slovenia", "Ukraine"), "Latin America" = c("Argentina", "Bolivia", "Brazil", "Chile", "Colombia", "Costa Rica", "Cuba", "Dominican Republic", "Ecuador", "Guatemala", "Mexico", "Panama", "Paraguay", "Peru", "Puerto Rico", "Uruguay", "Venezuela"), "Middle East" = c("Egypt", "Iran", "Israel", "Jordan", "Kuwait", "Lebanon", "Qatar", "Saudi Arabia", "Turkey", "United Arab Emirates"), "North America" = c("Canada", "United States"), "Northern Europe" = c("Denmark", "Finland", "Iceland", "Norway", "Sweden"), "Oceania" = c("Australia", "New Zealand"), "Southern Europe" = c("Cyprus", "Greece", "Malta"), "Western Europe" = c("Austria", "Belgium", "France", "Germany", "Ireland", "Italy", "Luxembourg", "Netherlands", "Portugal", "Spain", "Switzerland", "United Kingdom")),
+    options_from = NULL,
+    default_selected = c("United States", "United Kingdom", "Germany", "China", "Brazil"),
+    placeholder = "Choose countries to compare...",
+    width = "600px",
+    min = 0,
+    max = 100,
+    step = 1,
+    value = NULL,
+    show_value = TRUE,
+    inline = TRUE,
+    stacked = FALSE,
+    stacked_align = "center",
+    group_align = "left",
+    ncol = NULL,
+    nrow = NULL,
+    toggle_series = NULL,
+    override = FALSE,
+    labels = NULL,
+    size = "md",
+    help = "Countries are grouped by region. Select multiple to compare.",
+    disabled = FALSE,
+    mt = NULL,
+    mr = "10px",
+    mb = NULL,
+    ml = NULL
+  ),
+  list(
+    input_id = "show_average",
+    label = "Show Global Average",
+    type = "switch",
+    filter_var = "country",
+    options = NULL,
+    options_from = NULL,
+    default_selected = NULL,
+    placeholder = "Select...",
+    width = "300px",
+    min = 0,
+    max = 100,
+    step = 1,
+    value = TRUE,
+    show_value = TRUE,
+    inline = TRUE,
+    stacked = FALSE,
+    stacked_align = "center",
+    group_align = "left",
+    ncol = NULL,
+    nrow = NULL,
+    toggle_series = "Global Average",
+    override = TRUE,
+    labels = NULL,
+    size = "md",
+    help = "Toggle the global average trendline.",
+    disabled = FALSE,
+    mt = NULL,
+    mr = NULL,
+    mb = NULL,
+    ml = NULL
+  )
+), style = "inline", align = "center")
+```
+
+
+```{r}
+#| echo: false
+#| results: 'asis'
+dashboardr::render_input_row(list(
+  list(
+    input_id = "decade_slider",
+    label = "📅 Starting Decade",
+    type = "slider",
+    filter_var = "decade",
+    options = NULL,
+    options_from = NULL,
+    default_selected = NULL,
+    placeholder = "Select...",
+    width = "600px",
+    min = 1,
+    max = 6,
+    step = 1,
+    value = 1,
+    show_value = TRUE,
+    inline = TRUE,
+    stacked = FALSE,
+    stacked_align = "center",
+    group_align = "left",
+    ncol = NULL,
+    nrow = NULL,
+    toggle_series = NULL,
+    override = FALSE,
+    labels = c("1970s", "1980s", "1990s", "2000s", "2010s", "2020s"),
+    size = "md",
+    help = "Filter to show data from this decade onwards.",
+    disabled = FALSE,
+    mt = NULL,
+    mr = "10px",
+    mb = NULL,
+    ml = NULL
+  ),
+  list(
+    input_id = "metric_select",
+    label = "📈 Select Metric",
+    type = "select_single",
+    filter_var = "metric",
+    options = c("Publications", "Female Authorship", "WEIRD Studies", "Qualitative", "Quantitative"),
+    options_from = NULL,
+    default_selected = "Publications",
+    placeholder = "Select...",
+    width = "250px",
+    min = 0,
+    max = 100,
+    step = 1,
+    value = NULL,
+    show_value = TRUE,
+    inline = TRUE,
+    stacked = FALSE,
+    stacked_align = "center",
+    group_align = "left",
+    ncol = NULL,
+    nrow = NULL,
+    toggle_series = NULL,
+    override = FALSE,
+    labels = NULL,
+    size = "md",
+    help = "Choose which publication metric to visualize.",
+    disabled = FALSE,
+    mt = NULL,
+    mr = NULL,
+    mb = NULL,
+    ml = NULL
+  )
+), style = "inline", align = "center")
+```
+
+
+<div style='height: 0.5rem;'></div>
+

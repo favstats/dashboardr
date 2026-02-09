@@ -58,28 +58,6 @@ create_content <- function(data = NULL, tabgroup_labels = NULL, shared_first_lev
   )
 }
 
-# -----------------------------------------------------------------
-# Internal helpers
-# -----------------------------------------------------------------
-.validate_show_when <- function(show_when) {
-  if (is.null(show_when)) return(invisible(NULL))
-  if (!inherits(show_when, "formula")) {
-    stop("show_when must be a formula (e.g., ~ time_period == \"Over Time\") or NULL", call. = FALSE)
-  }
-  if (length(show_when) != 2) {
-    stop("show_when formula must have the form ~ condition (one-sided formula)", call. = FALSE)
-  }
-  invisible(NULL)
-}
-
-.normalize_filter_vars <- function(filter_vars) {
-  if (is.null(filter_vars)) return(NULL)
-  if (is.character(filter_vars)) return(filter_vars)
-  if (is.factor(filter_vars)) return(as.character(filter_vars))
-  stop("filter_vars must be a character vector or NULL", call. = FALSE)
-}
-
-
 #' Add text to content collection (pipeable)
 #'
 #' Adds a text block to a content collection. Can be used standalone or in a pipe.
@@ -1386,6 +1364,196 @@ end_value_box_row <- function(row_container) {
   parent_content
 }
 
+#' Start a manual layout column
+#'
+#' Creates a column container for explicit Quarto dashboard layout control.
+#' Use with \code{add_layout_row()} and \code{end_layout_column()}.
+#'
+#' @param content A content_collection or page_object.
+#' @param width Optional Quarto column width value.
+#' @param class Optional CSS class for the column.
+#' @param tabgroup Optional tabgroup metadata (reserved for future use).
+#' @param show_when Optional one-sided formula controlling visibility.
+#' @return A layout_column_container for piping.
+#' @export
+#' @examples
+#' \dontrun{
+#' content <- create_content() %>%
+#'   add_layout_column(width = 60) %>%
+#'   add_layout_row() %>%
+#'     add_text("### Row content") %>%
+#'   end_layout_row() %>%
+#' end_layout_column()
+#' }
+add_layout_column <- function(content, width = NULL, class = NULL, tabgroup = NULL, show_when = NULL) {
+  .validate_show_when(show_when)
+
+  if (!inherits(content, "page_object") && !is_content(content)) {
+    stop("add_layout_column() must be called on a content_collection or page_object", call. = FALSE)
+  }
+
+  if (!is.null(width) && length(width) != 1) {
+    stop("width must be NULL or a single value", call. = FALSE)
+  }
+  if (!is.null(class) && (!is.character(class) || length(class) != 1)) {
+    stop("class must be NULL or a single character string", call. = FALSE)
+  }
+
+  structure(list(
+    type = "layout_column",
+    width = width,
+    class = class,
+    tabgroup = .parse_tabgroup(tabgroup),
+    show_when = show_when,
+    items = list(),
+    defaults = content$defaults %||% list(),
+    data = content$data %||% NULL,
+    tabgroup_labels = content$tabgroup_labels %||% NULL,
+    shared_first_level = content$shared_first_level %||% TRUE,
+    needs_inputs = FALSE,
+    needs_metric_data = FALSE,
+    parent_content = if (is_content(content)) content else NULL,
+    parent_page = if (inherits(content, "page_object")) content else NULL,
+    parent_column = NULL,
+    .active_layout_row_id = NULL,
+    .layout_closed = FALSE
+  ), class = c("layout_column_container", "content_collection", "viz_collection", "content_block"))
+}
+
+#' Start a manual layout row inside a layout column
+#'
+#' @param column_container A layout_column_container created by \code{add_layout_column()}.
+#' @param class Optional CSS class for the row.
+#' @param tabgroup Optional tabgroup metadata (reserved for future use).
+#' @param show_when Optional one-sided formula controlling visibility.
+#' @return A layout_row_container for piping.
+#' @export
+add_layout_row <- function(column_container, class = NULL, tabgroup = NULL, show_when = NULL) {
+  .validate_show_when(show_when)
+
+  if (!inherits(column_container, "layout_column_container")) {
+    stop("add_layout_row() must be called on a layout_column_container (created by add_layout_column())", call. = FALSE)
+  }
+  if (isTRUE(column_container$.layout_closed)) {
+    stop("Cannot add a row to a closed layout column", call. = FALSE)
+  }
+  if (!is.null(column_container$.active_layout_row_id)) {
+    stop("A layout row is already open. Call end_layout_row() before starting another row.", call. = FALSE)
+  }
+  if (!is.null(class) && (!is.character(class) || length(class) != 1)) {
+    stop("class must be NULL or a single character string", call. = FALSE)
+  }
+
+  row_id <- paste0("layout_row_", as.integer(stats::runif(1, min = 1, max = 1e9)))
+  column_container$.active_layout_row_id <- row_id
+
+  structure(list(
+    type = "layout_row",
+    class = class,
+    tabgroup = .parse_tabgroup(tabgroup),
+    show_when = show_when,
+    items = list(),
+    defaults = column_container$defaults %||% list(),
+    data = column_container$data %||% NULL,
+    tabgroup_labels = column_container$tabgroup_labels %||% NULL,
+    shared_first_level = column_container$shared_first_level %||% TRUE,
+    needs_inputs = FALSE,
+    needs_metric_data = FALSE,
+    parent_content = NULL,
+    parent_page = NULL,
+    parent_column = column_container,
+    .layout_row_id = row_id,
+    .layout_closed = FALSE
+  ), class = c("layout_row_container", "content_collection", "viz_collection", "content_block"))
+}
+
+#' End a manual layout row
+#'
+#' @param row_container A layout_row_container created by \code{add_layout_row()}.
+#' @return The parent layout_column_container.
+#' @export
+end_layout_row <- function(row_container) {
+  if (!inherits(row_container, "layout_row_container")) {
+    stop("end_layout_row() must be called on a layout_row_container (created by add_layout_row())", call. = FALSE)
+  }
+  if (isTRUE(row_container$.layout_closed)) {
+    stop("This layout row is already closed", call. = FALSE)
+  }
+
+  parent_column <- row_container$parent_column
+  if (!inherits(parent_column, "layout_column_container")) {
+    stop("Invalid layout nesting: row container has no active layout column parent", call. = FALSE)
+  }
+  if (!identical(parent_column$.active_layout_row_id, row_container$.layout_row_id)) {
+    stop("Invalid layout order: end the currently active row before closing this row", call. = FALSE)
+  }
+
+  layout_row_block <- structure(list(
+    type = "layout_row",
+    items = row_container$items,
+    class = row_container$class,
+    tabgroup = row_container$tabgroup,
+    show_when = row_container$show_when
+  ), class = "content_block")
+
+  insertion_idx <- length(parent_column$items) + 1
+  layout_row_block$.insertion_index <- insertion_idx
+  parent_column$items <- c(parent_column$items, list(layout_row_block))
+  parent_column$.active_layout_row_id <- NULL
+  parent_column$needs_inputs <- isTRUE(parent_column$needs_inputs) || isTRUE(row_container$needs_inputs)
+  parent_column$needs_metric_data <- isTRUE(parent_column$needs_metric_data) || isTRUE(row_container$needs_metric_data)
+  row_container$.layout_closed <- TRUE
+  parent_column
+}
+
+#' End a manual layout column
+#'
+#' @param column_container A layout_column_container created by \code{add_layout_column()}.
+#' @return The parent content_collection or page_object.
+#' @export
+end_layout_column <- function(column_container) {
+  if (!inherits(column_container, "layout_column_container")) {
+    stop("end_layout_column() must be called on a layout_column_container (created by add_layout_column())", call. = FALSE)
+  }
+  if (isTRUE(column_container$.layout_closed)) {
+    stop("This layout column is already closed", call. = FALSE)
+  }
+  if (!is.null(column_container$.active_layout_row_id)) {
+    stop("Cannot close layout column while a layout row is still open. Call end_layout_row() first.", call. = FALSE)
+  }
+
+  layout_column_block <- structure(list(
+    type = "layout_column",
+    items = column_container$items,
+    width = column_container$width,
+    class = column_container$class,
+    tabgroup = column_container$tabgroup,
+    show_when = column_container$show_when
+  ), class = "content_block")
+
+  if (!is.null(column_container$parent_page)) {
+    parent_page <- column_container$parent_page
+    parent_page$.items <- c(parent_page$.items, list(layout_column_block))
+    parent_page$needs_inputs <- isTRUE(parent_page$needs_inputs) || isTRUE(column_container$needs_inputs)
+    parent_page$needs_metric_data <- isTRUE(parent_page$needs_metric_data) || isTRUE(column_container$needs_metric_data)
+    column_container$.layout_closed <- TRUE
+    return(parent_page)
+  }
+
+  parent_content <- column_container$parent_content
+  if (!is_content(parent_content)) {
+    stop("Invalid layout nesting: column container has no valid content_collection parent", call. = FALSE)
+  }
+
+  insertion_idx <- length(parent_content$items) + 1
+  layout_column_block$.insertion_index <- insertion_idx
+  parent_content$items <- c(parent_content$items, list(layout_column_block))
+  parent_content$needs_inputs <- isTRUE(parent_content$needs_inputs) || isTRUE(column_container$needs_inputs)
+  parent_content$needs_metric_data <- isTRUE(parent_content$needs_metric_data) || isTRUE(column_container$needs_metric_data)
+  column_container$.layout_closed <- TRUE
+  parent_content
+}
+
 # ============================================
 # SIDEBAR SYSTEM
 # ============================================
@@ -1406,7 +1574,9 @@ end_value_box_row <- function(row_container) {
 #'   \item \code{###} creates cards/sections (safe to use)
 #' }
 #' To avoid layout issues, use \code{###} headings or plain text in the main
-#' content area after the sidebar.
+#' content area after the sidebar. For advanced layouts, prefer explicit
+#' \code{add_layout_column()} / \code{add_layout_row()} APIs instead of
+#' heading-based layout shaping.
 #'
 #' @param content Content collection or page_object
 #' @param width CSS width for sidebar (default "250px")
@@ -1617,6 +1787,53 @@ end_sidebar <- function(sidebar_container) {
 #'   ) %>%
 #'   end_sidebar()
 #' }
+.normalize_linked_option_values <- function(values, parent_value) {
+  if (is.null(values)) {
+    stop(
+      "options_by_parent entry for parent value '", parent_value,
+      "' must contain at least one child option.",
+      call. = FALSE
+    )
+  }
+
+  values_chr <- as.character(values)
+  values_chr <- values_chr[!is.na(values_chr) & nzchar(values_chr)]
+  values_chr <- unique(values_chr)
+
+  if (length(values_chr) == 0) {
+    stop(
+      "options_by_parent entry for parent value '", parent_value,
+      "' must contain at least one non-empty child option.",
+      call. = FALSE
+    )
+  }
+
+  values_chr
+}
+
+.normalize_options_by_parent <- function(options_by_parent, parent_options) {
+  if (!is.list(options_by_parent) || is.null(names(options_by_parent))) {
+    stop("child$options_by_parent must be a named list", call. = FALSE)
+  }
+
+  mapped <- list()
+  for (parent_value in parent_options) {
+    if (!parent_value %in% names(options_by_parent)) {
+      stop(
+        "options_by_parent must contain a key for parent value: ",
+        parent_value,
+        call. = FALSE
+      )
+    }
+    mapped[[parent_value]] <- .normalize_linked_option_values(
+      options_by_parent[[parent_value]],
+      parent_value
+    )
+  }
+
+  mapped
+}
+
 add_linked_inputs <- function(x, parent, child, type = "select") {
   if (!inherits(x, "sidebar_container")) {
     stop("add_linked_inputs() must be used inside add_sidebar()", call. = FALSE)
@@ -1629,22 +1846,30 @@ add_linked_inputs <- function(x, parent, child, type = "select") {
     stop("child must have id, label, and options_by_parent", call. = FALSE)
   }
 
+  parent_options <- as.character(parent$options)
+  parent_options <- parent_options[!is.na(parent_options) & nzchar(parent_options)]
+  if (length(parent_options) == 0) {
+    stop("parent$options must include at least one non-empty option", call. = FALSE)
+  }
+
+  options_by_parent <- .normalize_options_by_parent(child$options_by_parent, parent_options)
+
   parent_type <- if (type == "select") "select_single" else "radio"
   parent_filter <- parent$filter_var %||% parent$id
   child_filter <- child$filter_var %||% child$id
-  default_parent <- parent$default_selected %||% parent$options[1]
-  initial_child_options <- child$options_by_parent[[default_parent]]
-  if (is.null(initial_child_options)) {
-    stop("options_by_parent must contain a key for default parent value: ", default_parent, call. = FALSE)
+  default_parent <- as.character(parent$default_selected %||% parent_options[1])[1]
+  if (!default_parent %in% parent_options) {
+    stop("default_selected must be one of parent$options", call. = FALSE)
   }
+  initial_child_options <- options_by_parent[[default_parent]]
 
   x <- add_input(x,
     input_id = parent$id,
     label = parent$label,
     type = parent_type,
     filter_var = parent_filter,
-    options = parent$options,
-    default_selected = parent$default_selected %||% parent$options[1]
+    options = parent_options,
+    default_selected = default_parent
   )
   x <- add_input(x,
     input_id = child$id,
@@ -1654,7 +1879,7 @@ add_linked_inputs <- function(x, parent, child, type = "select") {
     options = initial_child_options,
     default_selected = initial_child_options[1],
     .linked_parent_id = parent$id,
-    .options_by_parent = child$options_by_parent
+    .options_by_parent = options_by_parent
   )
   x$needs_linked_inputs <- TRUE
   x
@@ -2366,25 +2591,51 @@ merge_collections <- function(c1, c2) {
 #' @param filter_vars Optional character vector of input filter variables to apply to this block.
 #' @return Character vector of unique filter_var values
 #' @keywords internal
-.extract_filter_vars <- function(content) {
-  normalize_filter_var <- function(x) {
-    if (is.null(x)) return(character(0))
-    if (is.character(x)) return(x[nzchar(x)])
-    if (is.symbol(x)) return(as.character(x))
-    if (is.language(x)) {
-      out <- tryCatch(as.character(x), error = function(e) character(0))
-      return(out[nzchar(out)])
-    }
-    character(0)
+.normalize_filter_var_value <- function(x) {
+  if (is.null(x)) return(character(0))
+  if (is.character(x)) return(x[nzchar(x)])
+  if (is.factor(x)) return(as.character(x[nzchar(as.character(x))]))
+  if (is.symbol(x)) return(as.character(x))
+  if (is.language(x)) {
+    out <- tryCatch(as.character(x), error = function(e) character(0))
+    return(out[nzchar(out)])
+  }
+  character(0)
+}
+
+.collect_filter_vars_from_item <- function(item) {
+  if (is.null(item) || !is.list(item)) return(character(0))
+
+  vars <- character(0)
+  if (!is.null(item$type) && item$type == "input" && !is.null(item$filter_var)) {
+    vars <- c(vars, .normalize_filter_var_value(item$filter_var))
   }
 
+  if (!is.null(item$type) && item$type == "input_row" && !is.null(item$inputs)) {
+    for (inp in item$inputs) {
+      if (!is.null(inp$filter_var)) {
+        vars <- c(vars, .normalize_filter_var_value(inp$filter_var))
+      }
+    }
+  }
+
+  if (!is.null(item$items) && is.list(item$items)) {
+    for (child in item$items) {
+      vars <- c(vars, .collect_filter_vars_from_item(child))
+    }
+  }
+
+  vars
+}
+
+.extract_filter_vars <- function(content) {
   filter_vars <- character(0)
-  
+
   # Check sidebar blocks
   if (!is.null(content$sidebar) && !is.null(content$sidebar$blocks)) {
     for (block in content$sidebar$blocks) {
       if (!is.null(block$type) && block$type == "input" && !is.null(block$filter_var)) {
-        filter_vars <- c(filter_vars, normalize_filter_var(block$filter_var))
+        filter_vars <- c(filter_vars, .normalize_filter_var_value(block$filter_var))
       }
     }
   }
@@ -2392,33 +2643,14 @@ merge_collections <- function(c1, c2) {
   # Check content items (for input_row or standalone inputs)
   if (!is.null(content$items)) {
     for (item in content$items) {
-      if (!is.null(item$type) && item$type == "input" && !is.null(item$filter_var)) {
-        filter_vars <- c(filter_vars, normalize_filter_var(item$filter_var))
-      }
-      # Check input_row blocks
-      if (!is.null(item$type) && item$type == "input_row" && !is.null(item$inputs)) {
-        for (inp in item$inputs) {
-          if (!is.null(inp$filter_var)) {
-            filter_vars <- c(filter_vars, normalize_filter_var(inp$filter_var))
-          }
-        }
-      }
+      filter_vars <- c(filter_vars, .collect_filter_vars_from_item(item))
     }
   }
   
   # page_object-style inline items (defensive)
   if (!is.null(content$.items)) {
     for (item in content$.items) {
-      if (!is.null(item$type) && item$type == "input" && !is.null(item$filter_var)) {
-        filter_vars <- c(filter_vars, normalize_filter_var(item$filter_var))
-      }
-      if (!is.null(item$type) && item$type == "input_row" && !is.null(item$inputs)) {
-        for (inp in item$inputs) {
-          if (!is.null(inp$filter_var)) {
-            filter_vars <- c(filter_vars, normalize_filter_var(inp$filter_var))
-          }
-        }
-      }
+      filter_vars <- c(filter_vars, .collect_filter_vars_from_item(item))
     }
   }
   

@@ -5,11 +5,19 @@ project:
     - assets/
 
 website:
-  title: "T"
+  title: "dashboardr 5-Layout Showcase (Plotly)"
   navbar:
     left:
-      - href: charts.qmd
-        text: "Charts"
+      - href: layout_1___default_one_column.qmd
+        text: "Layout 1 - Default One Column"
+      - href: layout_2___explicit_one_column.qmd
+        text: "Layout 2 - Explicit One Column"
+      - href: layout_3___two_columns.qmd
+        text: "Layout 3 - Two Columns"
+      - href: layout_4___two_columns___table.qmd
+        text: "Layout 4 - Two Columns + Table"
+      - href: layout_5___two_columns_stacked.qmd
+        text: "Layout 5 - Two Columns Stacked"
     search: true
   bread-crumbs: true
   page-navigation: false

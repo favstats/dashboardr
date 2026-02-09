@@ -95,7 +95,7 @@ In the data below, Treatment B has no observations for 'High':") %>%
     title = "complete_groups = FALSE (Opt-out)",
     subtitle = "Only observed combinations shown - may cause misalignment",
     complete_groups = FALSE,
-    tabgroup = "Demo/Sparse (Opt-out)"
+    tabgroup = "Demo/Sparse (Opt-out)",
   ) %>%
 
   add_text("## Usage") %>%
@@ -108,6 +108,8 @@ viz_bar(data, x_var = "outcome", group_var = "treatment",
         complete_groups = FALSE)',
     language = "r"
   )
+
+# preview(page1_content, clean = T)
 
 # =============================================================================
 # PAGE 2: Pre-aggregated Data (Pure dashboardr with add_viz)

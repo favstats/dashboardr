@@ -55,37 +55,12 @@ create_viz <- function(data = NULL, tabgroup_labels = NULL, shared_first_level =
   dot_args_raw <- call_args[["..."]]
   if (is.null(dot_args_raw)) dot_args_raw <- list()
   
-  # Convert SINGLE variable parameters from symbols to strings (NSE support)
-  # e.g., x_var = mpg becomes x_var = "mpg"
-  var_params <- c("x_var", "y_var", "group_var", "stack_var", "weight_var",
-                  "time_var", "region_var", "value_var", "color_var", "size_var",
-                  "join_var", "click_var", "subgroup_var", "from_var", "to_var",
-                  "low_var", "high_var")
-  # Vector params should be evaluated, not converted to strings
-  # e.g., x_vars = my_vec evaluates to the actual vector
-  var_vector_params <- c("x_vars", "tooltip_vars")
-  
-  defaults <- lapply(names(dot_args_raw), function(nm) {
-    val <- dot_args_raw[[nm]]
-    if (nm %in% var_params && is.symbol(val)) {
-      # NSE for single column params: convert symbol to string
-      as.character(val)
-    } else if (nm %in% var_vector_params) {
-      # Vector params: always evaluate to get actual vector
-      if (is.call(val) && identical(val[[1]], as.symbol("c"))) {
-        # Handle c() with NSE elements: c(col1, col2) -> c("col1", "col2")
-        vapply(as.list(val)[-1], function(x) {
-          if (is.symbol(x)) as.character(x) else if (is.character(x)) x else eval(x, envir = call_env)
-        }, character(1))
-      } else {
-        # Evaluate symbols and other expressions in caller's environment
-        eval(val, envir = call_env)
-      }
-    } else {
-      eval(val, envir = call_env)
-    }
-  })
-  names(defaults) <- names(dot_args_raw)
+  defaults <- .capture_nse_defaults(
+    dot_args_raw = dot_args_raw,
+    call_env = call_env,
+    var_params = .default_viz_var_params(),
+    var_vector_params = .default_vector_var_params()
+  )
 
   structure(list(
     items = list(),
@@ -676,30 +651,12 @@ add_viz.default <- function(x, type = NULL, ..., tabgroup = NULL, title = NULL, 
     "text_after_tabset", "text_before_viz", "text_after_viz", "height", 
     "filter", "data", "drop_na_vars", "show_when")]
   
-  # Convert SINGLE variable parameters from symbols to strings (NSE support)
-  var_params <- c("x_var", "y_var", "group_var", "stack_var", "weight_var",
-                  "time_var", "region_var", "value_var", "color_var", "size_var",
-                  "join_var", "click_var", "subgroup_var", "from_var", "to_var",
-                  "low_var", "high_var")
-  var_vector_params <- c("x_vars", "tooltip_vars")
-
-  dot_args <- lapply(names(dot_args_raw), function(nm) {
-    val <- dot_args_raw[[nm]]
-    if (nm %in% var_params && is.symbol(val)) {
-      as.character(val)
-    } else if (nm %in% var_vector_params) {
-      if (is.call(val) && identical(val[[1]], as.symbol("c"))) {
-        vapply(as.list(val)[-1], function(x) {
-          if (is.symbol(x)) as.character(x) else if (is.character(x)) x else eval(x, envir = call_env)
-        }, character(1))
-      } else {
-        eval(val, envir = call_env)
-      }
-    } else {
-      eval(val, envir = call_env)
-    }
-  })
-  names(dot_args) <- names(dot_args_raw)
+  dot_args <- .capture_nse_defaults(
+    dot_args_raw = dot_args_raw,
+    call_env = call_env,
+    var_params = .default_viz_var_params(),
+    var_vector_params = .default_vector_var_params()
+  )
 
   # Merge parameters: explicitly provided > dots > defaults
   # Start with defaults
@@ -871,14 +828,7 @@ add_viz.default <- function(x, type = NULL, ..., tabgroup = NULL, title = NULL, 
   }
 
   # Validate show_when parameter (formula for conditional visibility)
-  if (!is.null(show_when)) {
-    if (!inherits(show_when, "formula")) {
-      stop("show_when must be a formula (e.g., ~ time_period == \"Over Time\") or NULL", call. = FALSE)
-    }
-    if (length(show_when) != 2) {
-      stop("show_when formula must have the form ~ condition (one-sided formula)", call. = FALSE)
-    }
-  }
+  .validate_show_when(show_when)
 
   # Validate and process data parameter
   # data can be: NULL (inherit from collection), character (dataset name), or data.frame
@@ -2527,6 +2477,7 @@ save_widget <- function(widget, file, selfcontained = TRUE) {
     "hc" = .render_hc_block_direct(block),
     "input" = .render_input_block_direct(block),
     "input_row" = .render_input_row_block_direct(block),
+    "reset_button" = render_reset_button(block),
     "modal" = .render_modal_block_direct(block),
     "viz" = NULL,  # Handled separately
     NULL
@@ -3600,7 +3551,8 @@ save_widget <- function(widget, file, selfcontained = TRUE) {
         
         viz_content <- .generate_viz_from_specs(page$visualizations, 
                                                  lazy_load_charts = FALSE, 
-                                                 lazy_load_tabs = FALSE)
+                                                 lazy_load_tabs = FALSE,
+                                                 contextual_viz_errors = page$contextual_viz_errors %||% FALSE)
         # Replace data path reference
         viz_content <- gsub("data\\.rds", paste0(page_name, "_data.rds"), viz_content)
         qmd_lines <- c(qmd_lines, viz_content)
@@ -5832,4 +5784,3 @@ show_structure <- function(x) {
     )
   )
 }
-

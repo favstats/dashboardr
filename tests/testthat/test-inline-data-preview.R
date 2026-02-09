@@ -377,4 +377,32 @@ test_that("preview does not warn without tabgroups", {
   })
 })
 
+test_that("mixed content + inline viz data is interned to dataset refs", {
+  temp_dir <- tempfile("inline_mixed_")
+  dir.create(temp_dir)
+  on.exit(unlink(temp_dir, recursive = TRUE), add = TRUE)
+
+  mixed <- create_content() %>%
+    add_text("### Mixed content") %>%
+    add_viz(type = "histogram", x_var = "mpg", data = mtcars, title = "MPG")
+
+  proj <- create_dashboard(output_dir = temp_dir, title = "Inline intern test") %>%
+    add_page("Mix", content = mixed)
+
+  page <- proj$pages[[1]]
+  expect_true(is.list(page$data_path) || is.character(page$data_path))
+
+  embedded_viz <- page$content_blocks[[1]]$items[[2]]
+  expect_equal(embedded_viz$type, "viz")
+  expect_true(is.null(embedded_viz$data_serialized))
+  expect_true(is.character(embedded_viz$data))
+
+  expect_no_error(generate_dashboard(proj, render = FALSE, open = FALSE, quiet = TRUE))
+
+  qmd_path <- file.path(temp_dir, "mix.qmd")
+  expect_true(file.exists(qmd_path))
+  qmd_text <- paste(readLines(qmd_path, warn = FALSE), collapse = "\n")
+  expect_false(grepl("as\\.data\\.frame\\(list\\(", qmd_text))
+})
+
 } # end covr CI skip

@@ -32,8 +32,13 @@
 
       function updateChildOptions() {
         var parentValue = parentSelect.value;
-        var newOptions = optionsByParent[parentValue];
-        if (newOptions == null) newOptions = [];
+        var rawOptions = optionsByParent[parentValue];
+        var newOptions = Array.isArray(rawOptions)
+          ? rawOptions
+          : (rawOptions == null ? [] : [rawOptions]);
+        newOptions = newOptions
+          .filter(function(opt) { return opt !== null && opt !== undefined; })
+          .map(function(opt) { return String(opt); });
 
         // Check if child is wrapped by Choices.js
         var choicesInstances = window.dashboardrChoicesInstances || {};

@@ -4,8 +4,32 @@
 .Ruserdata
 .cursor/
 _extensions/
+.playwright-cli/
 tests/testthat/test_*/
 tests/testthat/test[0-9]*/
 tests/testthat/*/.quarto/
 tests/testthat/*/docs/
 11111/
+
+# Non-canonical generated dashboard outputs (dev/scratch only)
+22222/
+here/
+here_hc/
+here_plotly/
+input_matrix_echarts/
+input_matrix_plotly/
+input_matrix_hc/
+input_matrix_mixed/
+output/playwright/
+dev/**/docs/
+dev/**/site_libs/
+dev/**/.quarto/
+
+# Local-only AI governance artifacts
+ai/
+AGENTS.md
+CLAUDE.md
+docs/llms.txt
+scripts/sync_ai_adapters.R
+scripts/check_ai_adapters.R
+tests/testthat/test-ai-adapter-sync.R

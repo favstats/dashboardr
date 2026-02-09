@@ -312,7 +312,7 @@ viz_stackedbar <- function(data,
     }
 
     # Build the core chart using internal crosstab logic
-    hc <- .viz_stackedbar_core(
+    chart <- .viz_stackedbar_core(
       data = data_long,
       x_var = "variable",
       stack_var = "response",
@@ -346,8 +346,15 @@ viz_stackedbar <- function(data,
       backend = backend
     )
 
+    backend_norm <- .normalize_backend(backend)
+
+    # Highcharter-only post processing
+    if (backend_norm != "highcharter") {
+      return(chart)
+    }
+
     # Set the xAxis categories explicitly so JS knows them
-    hc <- hc %>% highcharter::hc_xAxis(categories = axis_categories)
+    hc <- chart %>% highcharter::hc_xAxis(categories = axis_categories)
 
     # Override with show_var_tooltip if no custom tooltip was provided
     if (show_var_tooltip && is.null(tooltip)) {
@@ -852,36 +859,123 @@ viz_stackedbar <- function(data,
   title <- config$title
   x_label <- config$x_label
   y_label <- config$y_label
+  data_labels_enabled <- isTRUE(config$data_labels_enabled)
+  label_decimals <- config$label_decimals
+  tooltip <- config$tooltip
+  tooltip_prefix <- config$tooltip_prefix %||% ""
+  tooltip_suffix <- config$tooltip_suffix %||% ""
+  x_tooltip_suffix <- config$x_tooltip_suffix %||% ""
 
   x_levels <- levels(plot_data$.x_var_col)
   stack_levels <- levels(plot_data$.stack_var_col)
 
   barnorm <- if (stacked_type == "percent") "percent" else NULL
+  final_x_label <- x_label %||% ""
+  final_y_label <- y_label %||% if (stacked_type == "percent") "Percentage" else "Count"
+
+  default_dec <- if (stacked_type == "percent") 1L else 0L
+  dec <- if (is.null(label_decimals)) default_dec else as.integer(label_decimals)
+  dec <- if (is.na(dec) || dec < 0) default_dec else dec
+
+  if (is_tooltip(tooltip)) {
+    tooltip_prefix <- tooltip$prefix %||% tooltip_prefix
+    tooltip_suffix <- tooltip$suffix %||% tooltip_suffix
+  }
+  value_suffix <- if (stacked_type == "percent" && identical(tooltip_suffix, "")) "%" else tooltip_suffix
+
+  resolve_stack_color <- function(level_name, level_index) {
+    if (is.null(color_palette)) return(NULL)
+    if (!is.null(names(color_palette)) && level_name %in% names(color_palette)) {
+      return(unname(color_palette[[level_name]]))
+    }
+    if (is.null(names(color_palette)) && length(color_palette) >= level_index) {
+      return(color_palette[[level_index]])
+    }
+    NULL
+  }
+
+  stack_counts <- lapply(stack_levels, function(stk) {
+    stk_data <- plot_data[plot_data$.stack_var_col == stk, ]
+    x_vals <- as.character(stk_data$.x_var_col)
+    vapply(x_levels, function(x_lv) {
+      idx <- match(x_lv, x_vals)
+      if (is.na(idx)) 0 else stk_data$n[[idx]]
+    }, numeric(1))
+  })
+  names(stack_counts) <- stack_levels
+  x_totals <- Reduce(`+`, stack_counts, init = numeric(length(x_levels)))
 
   p <- plotly::plot_ly()
-  for (stk in stack_levels) {
-    stk_data <- plot_data[plot_data$.stack_var_col == stk, ]
-    if (horizontal) {
-      p <- plotly::add_trace(p, y = stk_data$.x_var_col, x = stk_data$n,
-                             type = "bar", orientation = "h", name = as.character(stk))
+  for (i in seq_along(stack_levels)) {
+    stk <- stack_levels[[i]]
+    y_vals <- stack_counts[[stk]]
+    pct_vals <- ifelse(x_totals > 0, (100 * y_vals) / x_totals, 0)
+    display_vals <- if (stacked_type == "percent") pct_vals else y_vals
+    label_vals <- if (stacked_type == "percent") {
+      sprintf(paste0("%.", dec, "f%%"), pct_vals)
     } else {
-      p <- plotly::add_trace(p, x = stk_data$.x_var_col, y = stk_data$n,
-                             type = "bar", name = as.character(stk))
+      sprintf(paste0("%.", dec, "f"), y_vals)
     }
+    hover_value_tpl <- paste0("%{customdata[1]:.", dec, "f}")
+    total_tpl <- if (stacked_type == "percent") {
+      "100%"
+    } else {
+      paste0("%{customdata[2]:.", dec, "f}")
+    }
+    category_tpl <- if (horizontal) "%{y}" else "%{x}"
+    hover_tpl <- paste0(
+      "<b>", category_tpl, x_tooltip_suffix, "</b><br>",
+      "%{fullData.name}: ", tooltip_prefix, hover_value_tpl, value_suffix, "<br>",
+      "Total: ", total_tpl, "<extra></extra>"
+    )
+
+    trace_color <- resolve_stack_color(stk, i)
+    trace_marker <- if (!is.null(trace_color)) list(color = trace_color) else NULL
+
+    trace_args <- list(
+      p = p,
+      type = "bar",
+      marker = trace_marker,
+      name = as.character(stk),
+      customdata = cbind(raw = y_vals, display = display_vals, total = x_totals),
+      hovertemplate = hover_tpl
+    )
+    if (data_labels_enabled) {
+      trace_args$text <- label_vals
+      trace_args$textposition <- "inside"
+    }
+
+    if (horizontal) {
+      trace_args$y <- x_levels
+      trace_args$x <- y_vals
+      trace_args$orientation <- "h"
+    } else {
+      trace_args$x <- x_levels
+      trace_args$y <- y_vals
+    }
+    p <- do.call(plotly::add_trace, trace_args)
   }
 
   layout_args <- list(p = p, barmode = "stack", title = title)
   if (!is.null(barnorm)) layout_args$barnorm <- barnorm
   if (horizontal) {
-    layout_args$yaxis <- list(title = x_label %||% "")
-    layout_args$xaxis <- list(title = y_label %||% "")
+    layout_args$yaxis <- list(
+      title = final_x_label,
+      categoryorder = "array",
+      categoryarray = x_levels
+    )
+    layout_args$xaxis <- list(title = final_y_label)
   } else {
-    layout_args$xaxis <- list(title = x_label %||% "")
-    layout_args$yaxis <- list(title = y_label %||% "")
+    layout_args$xaxis <- list(
+      title = final_x_label,
+      categoryorder = "array",
+      categoryarray = x_levels
+    )
+    layout_args$yaxis <- list(title = final_y_label)
   }
   p <- do.call(plotly::layout, layout_args)
 
-  if (!is.null(color_palette)) {
+  if (!is.null(color_palette) && is.null(names(color_palette))) {
     p <- plotly::layout(p, colorway = color_palette)
   }
 
@@ -900,14 +994,64 @@ viz_stackedbar <- function(data,
   subtitle <- config$subtitle
   x_label <- config$x_label
   y_label <- config$y_label
+  data_labels_enabled <- isTRUE(config$data_labels_enabled)
+  label_decimals <- config$label_decimals
+  tooltip <- config$tooltip
+  tooltip_prefix <- config$tooltip_prefix %||% ""
+  tooltip_suffix <- config$tooltip_suffix %||% ""
+  x_tooltip_suffix <- config$x_tooltip_suffix %||% ""
 
-  plot_data$.x_var_col <- as.character(plot_data$.x_var_col)
-  plot_data$.stack_var_col <- as.character(plot_data$.stack_var_col)
+  x_levels <- levels(plot_data$.x_var_col)
+  stack_levels <- levels(plot_data$.stack_var_col)
+  if (is.null(x_levels)) x_levels <- unique(as.character(plot_data$.x_var_col))
+  if (is.null(stack_levels)) stack_levels <- unique(as.character(plot_data$.stack_var_col))
 
-  e <- plot_data |>
+  default_dec <- if (stacked_type == "percent") 1L else 0L
+  dec <- if (is.null(label_decimals)) default_dec else as.integer(label_decimals)
+  dec <- if (is.na(dec) || dec < 0) default_dec else dec
+
+  if (is_tooltip(tooltip)) {
+    tooltip_prefix <- tooltip$prefix %||% tooltip_prefix
+    tooltip_suffix <- tooltip$suffix %||% tooltip_suffix
+  }
+  value_suffix <- if (stacked_type == "percent" && identical(tooltip_suffix, "")) "%" else tooltip_suffix
+  esc_js <- function(x) {
+    x <- x %||% ""
+    x <- gsub("\\\\", "\\\\\\\\", x)
+    gsub("'", "\\\\'", x, fixed = TRUE)
+  }
+  tooltip_prefix_js <- esc_js(tooltip_prefix)
+  value_suffix_js <- esc_js(value_suffix)
+  x_tooltip_suffix_js <- esc_js(x_tooltip_suffix)
+
+  plot_data_display <- plot_data |>
+    tidyr::complete(.x_var_col, .stack_var_col, fill = list(n = 0)) |>
+    dplyr::mutate(
+      .x_var_col = factor(.x_var_col, levels = x_levels),
+      .stack_var_col = factor(.stack_var_col, levels = stack_levels)
+    ) |>
+    dplyr::arrange(.x_var_col, .stack_var_col)
+
+  if (stacked_type == "percent") {
+    plot_data_display <- plot_data_display |>
+      dplyr::group_by(.x_var_col) |>
+      dplyr::mutate(
+        .display_n = {
+          total_n <- sum(n, na.rm = TRUE)
+          if (total_n > 0) (100 * n) / total_n else rep(0, dplyr::n())
+        }
+      ) |>
+      dplyr::ungroup()
+  } else {
+    plot_data_display$.display_n <- plot_data_display$n
+  }
+  plot_data_display$.x_var_col <- as.character(plot_data_display$.x_var_col)
+  plot_data_display$.stack_var_col <- as.character(plot_data_display$.stack_var_col)
+
+  e <- plot_data_display |>
     dplyr::group_by(.data$.stack_var_col) |>
     echarts4r::e_charts_(.x_var_col = ".x_var_col") |>
-    echarts4r::e_bar_("n", stack = "total")
+    echarts4r::e_bar_(".display_n", stack = "total")
 
   if (horizontal) {
     e <- e |> echarts4r::e_flip_coords()
@@ -919,8 +1063,90 @@ viz_stackedbar <- function(data,
 
   e <- e |>
     echarts4r::e_x_axis(name = x_label %||% "") |>
-    echarts4r::e_y_axis(name = y_label %||% "") |>
-    echarts4r::e_tooltip(trigger = "axis")
+    echarts4r::e_y_axis(name = y_label %||% if (stacked_type == "percent") "Percentage" else "Count")
+
+  if (stacked_type == "percent") {
+    if (horizontal) {
+      e <- e |> echarts4r::e_x_axis(max = 100)
+    } else {
+      e <- e |> echarts4r::e_y_axis(max = 100)
+    }
+  }
+
+  if (data_labels_enabled) {
+    label_fmt <- if (stacked_type == "percent") {
+      paste0(
+        "function(params) {",
+        "  var v = Number(params.value);",
+        "  if (!isFinite(v)) return '';",
+        "  return v.toFixed(", dec, ") + '%';",
+        "}"
+      )
+    } else {
+      paste0(
+        "function(params) {",
+        "  var v = Number(params.value);",
+        "  if (!isFinite(v)) return '';",
+        "  return v.toFixed(", dec, ");",
+        "}"
+      )
+    }
+    e <- e |>
+      echarts4r::e_labels(
+        show = TRUE,
+        position = if (horizontal) "insideRight" else "inside",
+        formatter = htmlwidgets::JS(label_fmt)
+      )
+  } else {
+    e <- e |> echarts4r::e_labels(show = FALSE)
+  }
+
+  tooltip_fmt <- if (stacked_type == "percent") {
+    paste0(
+      "function(params) {",
+      "  if (!params || !params.length) return '';",
+      "  var cat = params[0].axisValueLabel || params[0].name || '';",
+      "  var out = '<b>' + cat + '", x_tooltip_suffix_js, "</b><br/>';",
+      "  var total = 0;",
+      "  for (var i = 0; i < params.length; i++) {",
+      "    var v = Number(params[i].value);",
+      "    if (isFinite(v)) total += v;",
+      "  }",
+      "  for (var j = 0; j < params.length; j++) {",
+      "    var p = params[j];",
+      "    var val = Number(p.value);",
+      "    var txt = isFinite(val) ? val.toFixed(", dec, ") : '';",
+      "    out += (p.marker || '') + (p.seriesName || '') + ': ", tooltip_prefix_js, "' + txt + '", value_suffix_js, "<br/>';",
+      "  }",
+      "  out += 'Total: ' + total.toFixed(1) + '%';",
+      "  return out;",
+      "}"
+    )
+  } else {
+    paste0(
+      "function(params) {",
+      "  if (!params || !params.length) return '';",
+      "  var cat = params[0].axisValueLabel || params[0].name || '';",
+      "  var out = '<b>' + cat + '", x_tooltip_suffix_js, "</b><br/>';",
+      "  var total = 0;",
+      "  for (var i = 0; i < params.length; i++) {",
+      "    var v = Number(params[i].value);",
+      "    if (isFinite(v)) total += v;",
+      "  }",
+      "  for (var j = 0; j < params.length; j++) {",
+      "    var p = params[j];",
+      "    var val = Number(p.value);",
+      "    var txt = isFinite(val) ? val.toFixed(", dec, ") : '';",
+      "    out += (p.marker || '') + (p.seriesName || '') + ': ", tooltip_prefix_js, "' + txt + '", value_suffix_js, "<br/>';",
+      "  }",
+      "  out += 'Total: ' + total.toFixed(", dec, ");",
+      "  return out;",
+      "}"
+    )
+  }
+
+  e <- e |>
+    echarts4r::e_tooltip(trigger = "axis", formatter = htmlwidgets::JS(tooltip_fmt))
 
   if (!is.null(color_palette)) {
     e <- e |> echarts4r::e_color(color_palette)

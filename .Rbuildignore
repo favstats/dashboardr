@@ -35,3 +35,13 @@ dashboard_template
 ^11111$
 ^CRAN-SUBMISSION$
 ^gallery$
+^ai($|/)
+^AGENTS\.md$
+^CLAUDE\.md$
+^docs/llms\.txt$
+^output/playwright($|/)
+^input_matrix_echarts($|/)
+^input_matrix_plotly($|/)
+^input_matrix_hc($|/)
+^input_matrix_mixed($|/)
+^\.playwright-cli($|/)

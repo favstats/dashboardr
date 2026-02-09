@@ -48,7 +48,12 @@
   sections
 }
 
-.generate_viz_from_specs <- function(viz_specs, lazy_load_charts = FALSE, lazy_load_tabs = FALSE, heading_level = 2, dashboard_layout = FALSE) {
+.generate_viz_from_specs <- function(viz_specs,
+                                     lazy_load_charts = FALSE,
+                                     lazy_load_tabs = FALSE,
+                                     heading_level = 2,
+                                     dashboard_layout = FALSE,
+                                     contextual_viz_errors = FALSE) {
   lines <- character(0)
 
   if (dashboard_layout) {
@@ -57,18 +62,14 @@
     # Strategy:
     #   - Tabgroup specs → emit as-is (they manage their own structure)
     #   - Content blocks → emit as-is (between rows)
-    #   - Standalone viz specs → group into ### Row containers, 2 per row
+    #   - Standalone viz specs → group into ### Row containers, one per row by default
     # Within ### Row, individual viz titles use heading_level (typically 4).
 
     # First pass: classify each spec
     spec_types <- vapply(seq_along(viz_specs), function(i) {
       spec <- viz_specs[[i]]
       if (isTRUE(!is.null(spec$pagination_break) && isTRUE(spec$pagination_break))) return("pagination")
-      if (isTRUE(!is.null(spec$type) && spec$type %in% c(
-        "text", "image", "video", "callout", "divider", "code", "spacer",
-        "gt", "reactable", "table", "DT", "iframe", "accordion", "card",
-        "html", "quote", "badge", "metric", "value_box", "value_box_row"
-      ))) return("content")
+      if (.is_content_block_type(spec$type)) return("content")
       if (isTRUE(!is.null(spec$type) && spec$type == "tabgroup")) return("tabgroup")
       "viz"
     }, character(1))
@@ -93,12 +94,18 @@
       if (spec_types[i] == "tabgroup") {
         # Tabgroups manage their own structure - emit row wrapper around them
         lines <- c(lines, "", "### Row", "")
-        lines <- c(lines, .generate_tabgroup_viz(viz_specs[[i]], lazy_load_tabs = lazy_load_tabs, dashboard_layout = TRUE))
+        lines <- c(lines, .generate_tabgroup_viz(
+          viz_specs[[i]],
+          lazy_load_tabs = lazy_load_tabs,
+          dashboard_layout = TRUE,
+          contextual_viz_errors = contextual_viz_errors
+        ))
         i <- i + 1
         next
       }
 
-      # Standalone viz: collect consecutive standalone vizzes and group into rows of 2
+      # Standalone viz: collect consecutive standalone vizzes and group into rows.
+      # Default sidebar/dashboard layout is one chart per row.
       viz_group <- list()
       viz_group_indices <- integer(0)
       j <- i
@@ -108,8 +115,8 @@
         j <- j + 1
       }
 
-      # Emit rows of up to 2 vizzes each
-      row_size <- 2
+      # Emit rows of up to one viz each (default global behavior)
+      row_size <- 1
       for (k in seq(1, length(viz_group), by = row_size)) {
         end_k <- min(k + row_size - 1, length(viz_group))
         lines <- c(lines, "", "### Row", "")
@@ -123,7 +130,8 @@
           }
           lines <- c(lines, .generate_single_viz(spec_name, viz_group[[m]],
                                                     lazy_load = lazy_load_charts,
-                                                    heading_level = heading_level))
+                                                    heading_level = heading_level,
+                                                    contextual_viz_errors = contextual_viz_errors))
         }
       }
 
@@ -146,11 +154,7 @@
       }
 
       # Check if this is a content block (not a viz)
-      is_content_block <- isTRUE(!is.null(spec$type) && spec$type %in% c(
-        "text", "image", "video", "callout", "divider", "code", "spacer",
-        "gt", "reactable", "table", "DT", "iframe", "accordion", "card",
-        "html", "quote", "badge", "metric", "value_box", "value_box_row"
-      ))
+      is_content_block <- .is_content_block_type(spec$type)
 
       if (is_content_block) {
         # Generate content block using page_generation helpers
@@ -160,10 +164,20 @@
         }
       } else if (isTRUE(is.null(spec$type) || !isTRUE(spec$type == "tabgroup"))) {
         # For top-level single charts, apply lazy loading if enabled
-        lines <- c(lines, .generate_single_viz(spec_name, spec, lazy_load = lazy_load_charts, heading_level = heading_level))
+        lines <- c(lines, .generate_single_viz(
+          spec_name,
+          spec,
+          lazy_load = lazy_load_charts,
+          heading_level = heading_level,
+          contextual_viz_errors = contextual_viz_errors
+        ))
       } else {
         # Tabgroup
-        lines <- c(lines, .generate_tabgroup_viz(spec, lazy_load_tabs = lazy_load_tabs))
+        lines <- c(lines, .generate_tabgroup_viz(
+          spec,
+          lazy_load_tabs = lazy_load_tabs,
+          contextual_viz_errors = contextual_viz_errors
+        ))
       }
     }
   }
@@ -174,6 +188,10 @@
 # Helper to generate content blocks inline (when mixed with viz in tabgroups)
 .generate_content_block_inline <- function(block) {
   block_type <- block$type
+  .validate_content_block_for_generation(
+    block,
+    context = paste0("viz generation block type '", block_type %||% "<unknown>", "'")
+  )
   
   # Dispatch to appropriate generator based on type
   block_content <- switch(block_type,
@@ -204,7 +222,13 @@
   block_content
 }
 
-.generate_single_viz <- function(spec_name, spec, skip_header = FALSE, lazy_load = FALSE, is_first_tab = TRUE, heading_level = 2) {
+.generate_single_viz <- function(spec_name,
+                                 spec,
+                                 skip_header = FALSE,
+                                 lazy_load = FALSE,
+                                 is_first_tab = TRUE,
+                                 heading_level = 2,
+                                 contextual_viz_errors = FALSE) {
   lines <- character(0)
 
   # Remove nested_children from spec - it's only for structure, not for visualization generation
@@ -281,7 +305,7 @@
 
   # Dispatch to appropriate generator
   if ("viz_type" %in% names(spec) && !is.null(spec$viz_type)) {
-    lines <- c(lines, .generate_typed_viz(spec))
+    lines <- c(lines, .generate_typed_viz(spec, contextual_viz_errors = contextual_viz_errors))
   } else if ("fn" %in% names(spec)) {
     lines <- c(lines, .generate_function_viz(spec))
   } else {
@@ -336,7 +360,7 @@
 #' - Excludes internal parameters (type, data_path, tabgroup, text, icon, text_position)
 #' - Serializes all other parameters using .serialize_arg()
 #' - Formats the function call with proper indentation
-.generate_typed_viz <- function(spec) {
+.generate_typed_viz <- function(spec, contextual_viz_errors = FALSE) {
   lines <- character(0)
 
   ## TODO: this needs to create from some list of available visualizations (maybe!)
@@ -541,28 +565,43 @@
   viz_label <- spec$title %||% spec$viz_type %||% viz_function
   escaped_viz_label <- gsub("'", "\\\\'", as.character(viz_label))
   escaped_viz_type <- gsub("'", "\\\\'", as.character(spec$viz_type %||% "unknown"))
-  call_str <- c("result <- tryCatch({")
-  if (length(args) == 0) {
-    call_str <- c(call_str, paste0("  ", viz_function, "()"))
-  } else {
-    call_str <- c(call_str, paste0("  ", viz_function, "("))
-    for (i in seq_along(args)) {
-      arg_name <- names(args)[i]
-      arg_value <- args[[i]]
-      comma <- if (i < length(args)) "," else ""
-      call_str <- c(call_str, paste0("    ", arg_name, " = ", arg_value, comma))
+  if (isTRUE(contextual_viz_errors)) {
+    call_str <- c("result <- tryCatch({")
+    if (length(args) == 0) {
+      call_str <- c(call_str, paste0("  ", viz_function, "()"))
+    } else {
+      call_str <- c(call_str, paste0("  ", viz_function, "("))
+      for (i in seq_along(args)) {
+        arg_name <- names(args)[i]
+        arg_value <- args[[i]]
+        comma <- if (i < length(args)) "," else ""
+        call_str <- c(call_str, paste0("    ", arg_name, " = ", arg_value, comma))
+      }
+      call_str <- c(call_str, "  )")
     }
-    call_str <- c(call_str, "  )")
+    call_str <- c(
+      call_str,
+      "}, error = function(e) {",
+      paste0(
+        "  stop(\"Visualization failed ('", escaped_viz_label, "', type '", escaped_viz_type,
+        "'): \", conditionMessage(e), call. = FALSE)"
+      ),
+      "})"
+    )
+  } else {
+    if (length(args) == 0) {
+      call_str <- paste0("result <- ", viz_function, "()")
+    } else {
+      call_str <- c(paste0("result <- ", viz_function, "("))
+      for (i in seq_along(args)) {
+        arg_name <- names(args)[i]
+        arg_value <- args[[i]]
+        comma <- if (i < length(args)) "," else ""
+        call_str <- c(call_str, paste0("  ", arg_name, " = ", arg_value, comma))
+      }
+      call_str <- c(call_str, ")")
+    }
   }
-  call_str <- c(
-    call_str,
-    "}, error = function(e) {",
-    paste0(
-      "  stop(\"Visualization failed ('", escaped_viz_label, "', type '", escaped_viz_type,
-      "'): \", conditionMessage(e), call. = FALSE)"
-    ),
-    "})"
-  )
 
   # Set chart height BEFORE cross-tab embed (hc_size must run on the highchart object)
   if (!is.null(spec$height)) {
@@ -879,7 +918,10 @@
 }
 
 
-.generate_tabgroup_viz <- function(tabgroup_spec, lazy_load_tabs = FALSE, dashboard_layout = FALSE) {
+.generate_tabgroup_viz <- function(tabgroup_spec,
+                                   lazy_load_tabs = FALSE,
+                                   dashboard_layout = FALSE,
+                                   contextual_viz_errors = FALSE) {
   lines <- character(0)
 
   # Add section header if a label is provided
@@ -986,7 +1028,12 @@
       nested_spec$name <- NULL
       
       # Generate nested content
-      nested_lines <- .generate_tabgroup_viz_content(nested_spec, depth = 1, lazy_load_tabs = lazy_load_tabs)
+      nested_lines <- .generate_tabgroup_viz_content(
+        nested_spec,
+        depth = 1,
+        lazy_load_tabs = lazy_load_tabs,
+        contextual_viz_errors = contextual_viz_errors
+      )
       lines <- c(lines, nested_lines)
       
       # Close lazy load container if enabled
@@ -1050,7 +1097,7 @@
       
       if (should_generate) {
         # Check if this is a content block or a visualization
-        is_content <- isTRUE(!is.null(viz$type) && viz$type %in% c("text", "image", "video", "callout", "code", "divider", "spacer", "gt", "reactable", "table", "DT", "iframe", "accordion", "card", "html", "quote", "badge", "metric", "value_box", "value_box_row"))
+        is_content <- .is_content_block_type(viz$type)
         
         if (is_content) {
           # For content blocks, use the content block generator
@@ -1058,7 +1105,14 @@
         } else {
           # For visualizations, use the standard viz generator
           should_lazy_load <- isTRUE(lazy_load_tabs && !is_first_tab)
-          viz_lines <- .generate_single_viz(paste0("tab_", i), viz, skip_header = TRUE, lazy_load = should_lazy_load, is_first_tab = is_first_tab)
+          viz_lines <- .generate_single_viz(
+            paste0("tab_", i),
+            viz,
+            skip_header = TRUE,
+            lazy_load = should_lazy_load,
+            is_first_tab = is_first_tab,
+            contextual_viz_errors = contextual_viz_errors
+          )
         }
         
         lines <- c(lines, viz_lines)
@@ -1115,7 +1169,13 @@
             
             # Generate the content of this nested tabgroup (this will contain the Question tabs)
             # Don't add header since we already have the tab header
-            nested_content <- .generate_tabgroup_viz_content(nested_tabgroup, depth = 1, skip_header = TRUE, lazy_load_tabs = lazy_load_tabs)
+            nested_content <- .generate_tabgroup_viz_content(
+              nested_tabgroup,
+              depth = 1,
+              skip_header = TRUE,
+              lazy_load_tabs = lazy_load_tabs,
+              contextual_viz_errors = contextual_viz_errors
+            )
             lines <- c(lines, nested_content)
             
             # Close lazy load container if enabled
@@ -1156,7 +1216,11 @@
 
 # Helper function to generate tabset content without the ## header
 
-.generate_tabgroup_viz_content <- function(tabgroup_spec, depth = 0, skip_header = FALSE, lazy_load_tabs = FALSE) {
+.generate_tabgroup_viz_content <- function(tabgroup_spec,
+                                           depth = 0,
+                                           skip_header = FALSE,
+                                           lazy_load_tabs = FALSE,
+                                           contextual_viz_errors = FALSE) {
   lines <- character(0)
   
   # Add header for this tabgroup if it has a label (for nested tabgroups like "Age")
@@ -1180,11 +1244,7 @@
     viz <- tabgroup_spec$visualizations[[1]]
     
     # Check if this is a content block
-    is_content_block <- isTRUE(!is.null(viz$type) && viz$type %in% c(
-      "text", "image", "video", "callout", "divider", "code", "spacer",
-      "gt", "reactable", "table", "DT", "iframe", "accordion", "card",
-      "html", "quote", "badge", "metric", "value_box", "value_box_row"
-    ))
+    is_content_block <- .is_content_block_type(viz$type)
     
     if (is_content_block) {
       # Generate content block
@@ -1194,7 +1254,14 @@
       }
     } else {
       # First (and only) viz in tabgroup, no lazy load needed
-      viz_lines <- .generate_single_viz(paste0("viz_", depth), viz, skip_header = TRUE, lazy_load = FALSE, is_first_tab = TRUE)
+      viz_lines <- .generate_single_viz(
+        paste0("viz_", depth),
+        viz,
+        skip_header = TRUE,
+        lazy_load = FALSE,
+        is_first_tab = TRUE,
+        contextual_viz_errors = contextual_viz_errors
+      )
       lines <- c(lines, "", viz_lines)
     }
     return(lines)
@@ -1252,16 +1319,17 @@
       nested_spec$label <- NULL
       nested_spec$name <- NULL
       
-      nested_lines <- .generate_tabgroup_viz_content(nested_spec, depth = depth + 1, lazy_load_tabs = lazy_load_tabs)
+      nested_lines <- .generate_tabgroup_viz_content(
+        nested_spec,
+        depth = depth + 1,
+        lazy_load_tabs = lazy_load_tabs,
+        contextual_viz_errors = contextual_viz_errors
+      )
       lines <- c(lines, nested_lines)
       
     } else {
       # Check if this is a content block or a visualization
-      is_content_block <- isTRUE(!is.null(viz$type) && viz$type %in% c(
-        "text", "image", "video", "callout", "divider", "code", "spacer",
-        "gt", "reactable", "table", "DT", "iframe", "accordion", "card",
-        "html", "quote", "badge", "metric", "value_box", "value_box_row"
-      ))
+      is_content_block <- .is_content_block_type(viz$type)
       
       if (is_content_block) {
         # Content block in a tab
@@ -1313,7 +1381,14 @@
         # Generate visualization code
         # Apply lazy loading to non-first tabs if enabled
         should_lazy_load <- isTRUE(lazy_load_tabs && !is_first_tab)
-        viz_lines <- .generate_single_viz(paste0("tab_", depth, "_", i), viz, skip_header = TRUE, lazy_load = should_lazy_load, is_first_tab = is_first_tab)
+        viz_lines <- .generate_single_viz(
+          paste0("tab_", depth, "_", i),
+          viz,
+          skip_header = TRUE,
+          lazy_load = should_lazy_load,
+          is_first_tab = is_first_tab,
+          contextual_viz_errors = contextual_viz_errors
+        )
         lines <- c(lines, viz_lines)
       }
     }

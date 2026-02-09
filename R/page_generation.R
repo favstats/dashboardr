@@ -258,15 +258,19 @@
   # Without sidebar (html format), viz titles use ## as before.
   viz_heading_level <- if (has_sidebar) 4 else 2
   use_dashboard_layout <- has_sidebar
+  has_manual_layout <- .page_has_manual_layout(page)
+  needs_auto_main_column <- has_sidebar && !has_manual_layout
   
   # For left sidebar: output sidebar first, then ## Column marker
   if (has_sidebar && sidebar_position == "left") {
     content <- c(content, .generate_sidebar_block(sidebar, page))
-    content <- c(content, "", "## Column", "")
+    if (needs_auto_main_column) {
+      content <- c(content, "", "## Column", "")
+    }
   }
   
   # For right sidebar: output ## Column marker first (sidebar added at end)
-  if (has_sidebar && sidebar_position == "right") {
+  if (needs_auto_main_column && sidebar_position == "right") {
     content <- c(content, "", "## Column", "")
   }
 
@@ -367,41 +371,21 @@
                                                         page$lazy_load_charts %||% FALSE,
                                                         page$lazy_load_tabs %||% FALSE,
                                                         heading_level = viz_heading_level,
-                                                        dashboard_layout = use_dashboard_layout)
+                                                        dashboard_layout = use_dashboard_layout,
+                                                        contextual_viz_errors = page$contextual_viz_errors %||% FALSE)
               content <- c(content, viz_content)
             }
             i <- j
           } else {
             # Process single content item
-            item_content <- switch(item_type,
-              "text" = c("", item$content %||% item$text, ""),
-              "image" = .generate_image_block(item),
-              "callout" = .generate_callout_block(item),
-              "divider" = .generate_divider_block(item),
-              "code" = .generate_code_block(item),
-              "card" = .generate_card_block(item),
-              "accordion" = .generate_accordion_block(item),
-              "iframe" = .generate_iframe_block(item),
-              "video" = .generate_video_block(item),
-              "table" = .generate_table_block(item),
-              "gt" = .generate_gt_block(item),
-              "reactable" = .generate_reactable_block(item),
-              "DT" = .generate_DT_block(item),
-              "hc" = .generate_hc_block(item),
-              "widget" = .generate_widget_block(item),
-              "spacer" = .generate_spacer_block(item),
-              "html" = .generate_html_block(item),
-              "quote" = .generate_quote_block(item),
-              "badge" = .generate_badge_block(item),
-              "metric" = .generate_metric_block(item),
-              "value_box" = .generate_value_box_block(item),
-              "value_box_row" = .generate_value_box_row_block(item),
-              "input" = .generate_input_block(item, page),
-              "input_row" = .generate_input_row_block(item, page),
-              "modal" = .generate_modal_block(item),
-              NULL
+            item_content <- .generate_page_item_content(
+              item = item,
+              page = page,
+              page_filter_vars = page_filter_vars,
+              viz_heading_level = viz_heading_level,
+              dashboard_layout = use_dashboard_layout,
+              context_label = paste0("page '", page$name %||% "<unnamed>", "'")
             )
-            item_content <- .wrap_show_when_block(item_content, item$show_when)
             if (!is.null(item_content)) {
               content <- c(content, item_content)
             }
@@ -415,37 +399,14 @@
       block_type <- if (!is.null(block$type)) as.character(block$type)[1] else NULL
       if (is.null(block_type)) next
       
-      # Dispatch to appropriate generator based on type
-      block_content <- switch(block_type,
-        "text" = c("", block$content %||% block$text, ""),
-        "image" = .generate_image_block(block),
-        "callout" = .generate_callout_block(block),
-        "divider" = .generate_divider_block(block),
-        "code" = .generate_code_block(block),
-        "card" = .generate_card_block(block),
-        "accordion" = .generate_accordion_block(block),
-        "iframe" = .generate_iframe_block(block),
-        "video" = .generate_video_block(block),
-        "table" = .generate_table_block(block),
-        "gt" = .generate_gt_block(block),
-        "reactable" = .generate_reactable_block(block),
-        "DT" = .generate_DT_block(block),
-        "hc" = .generate_hc_block(block),
-        "widget" = .generate_widget_block(block),
-        "spacer" = .generate_spacer_block(block),
-        "html" = .generate_html_block(block),
-        "quote" = .generate_quote_block(block),
-        "badge" = .generate_badge_block(block),
-        "metric" = .generate_metric_block(block),
-        "value_box" = .generate_value_box_block(block),
-        "value_box_row" = .generate_value_box_row_block(block),
-        "input" = .generate_input_block(block, page),
-        "input_row" = .generate_input_row_block(block, page),
-        "modal" = .generate_modal_block(block),
-        NULL  # Unknown type - skip
+      block_content <- .generate_page_item_content(
+        item = block,
+        page = page,
+        page_filter_vars = page_filter_vars,
+        viz_heading_level = viz_heading_level,
+        dashboard_layout = use_dashboard_layout,
+        context_label = paste0("page '", page$name %||% "<unnamed>", "'")
       )
-      
-      block_content <- .wrap_show_when_block(block_content, block$show_when)
       if (!is.null(block_content)) {
         content <- c(content, block_content)
       }
@@ -461,44 +422,14 @@
       
       item_type <- item$type %||% ""
       
-      item_content <- switch(item_type,
-        "text" = c("", item$content %||% item$text, ""),  # Handle both $content and legacy $text
-        "callout" = {
-          # Convert add_callout format to content_block format
-          callout_block <- list(
-            type = "callout",
-            callout_type = item$callout_type %||% "note",
-            text = item$text,
-            title = item$title
-          )
-          .generate_callout_block(callout_block)
-        },
-        "image" = .generate_image_block(item),
-        "divider" = .generate_divider_block(item),
-        "code" = .generate_code_block(item),
-        "card" = .generate_card_block(item),
-        "accordion" = .generate_accordion_block(item),
-        "iframe" = .generate_iframe_block(item),
-        "video" = .generate_video_block(item),
-        "table" = .generate_table_block(item),
-        "gt" = .generate_gt_block(item),
-        "reactable" = .generate_reactable_block(item),
-        "DT" = .generate_DT_block(item),
-        "hc" = .generate_hc_block(item),
-        "spacer" = .generate_spacer_block(item),
-        "html" = .generate_html_block(item),
-        "quote" = .generate_quote_block(item),
-        "badge" = .generate_badge_block(item),
-        "metric" = .generate_metric_block(item),
-        "value_box" = .generate_value_box_block(item),
-        "value_box_row" = .generate_value_box_row_block(item),
-        "input" = .generate_input_block(item, page),
-        "input_row" = .generate_input_row_block(item, page),
-        "modal" = .generate_modal_block(item),
-        NULL
+      item_content <- .generate_page_item_content(
+        item = item,
+        page = page,
+        page_filter_vars = page_filter_vars,
+        viz_heading_level = viz_heading_level,
+        dashboard_layout = use_dashboard_layout,
+        context_label = paste0("page '", page$name %||% "<unnamed>", "'")
       )
-      
-      item_content <- .wrap_show_when_block(item_content, item$show_when)
       if (!is.null(item_content)) {
         content <- c(content, item_content)
       }
@@ -533,7 +464,14 @@
       })
     }
 
-    viz_content <- .generate_viz_from_specs(viz_specs, lazy_load_charts, lazy_load_tabs, heading_level = viz_heading_level, dashboard_layout = use_dashboard_layout)
+    viz_content <- .generate_viz_from_specs(
+      viz_specs,
+      lazy_load_charts,
+      lazy_load_tabs,
+      heading_level = viz_heading_level,
+      dashboard_layout = use_dashboard_layout,
+      contextual_viz_errors = page$contextual_viz_errors %||% FALSE
+    )
     content <- c(content, viz_content)
   } else if (isTRUE(is.null(page$text) || !nzchar(page$text))) {
     # Check if there's any content from various sources
@@ -550,6 +488,100 @@
   }
 
   content
+}
+
+.generate_page_item_content <- function(item,
+                                        page,
+                                        page_filter_vars,
+                                        viz_heading_level,
+                                        dashboard_layout,
+                                        context_label = "page") {
+  if (is.null(item) || !is.list(item)) {
+    return(NULL)
+  }
+
+  item_type <- item$type %||% ""
+  .validate_content_block_for_generation(
+    item,
+    context = paste0(context_label, " item type '", item_type, "'")
+  )
+
+  item_content <- switch(item_type,
+    "text" = c("", item$content %||% item$text, ""),
+    "callout" = {
+      callout_block <- list(
+        type = "callout",
+        callout_type = item$callout_type %||% "note",
+        content = item$content %||% item$text,
+        title = item$title
+      )
+      .generate_callout_block(callout_block)
+    },
+    "image" = .generate_image_block(item),
+    "divider" = .generate_divider_block(item),
+    "code" = .generate_code_block(item),
+    "card" = .generate_card_block(item),
+    "accordion" = .generate_accordion_block(item),
+    "iframe" = .generate_iframe_block(item),
+    "video" = .generate_video_block(item),
+    "table" = .generate_table_block(item),
+    "gt" = .generate_gt_block(item),
+    "reactable" = .generate_reactable_block(item),
+    "DT" = .generate_DT_block(item),
+    "hc" = .generate_hc_block(item),
+    "widget" = .generate_widget_block(item),
+    "spacer" = .generate_spacer_block(item),
+    "html" = .generate_html_block(item),
+    "quote" = .generate_quote_block(item),
+    "badge" = .generate_badge_block(item),
+    "metric" = .generate_metric_block(item),
+    "value_box" = .generate_value_box_block(item),
+    "value_box_row" = .generate_value_box_row_block(item),
+    "layout_column" = .generate_layout_column_block(item, page, page_filter_vars, viz_heading_level, dashboard_layout),
+    "layout_row" = .generate_layout_row_block(item, page, page_filter_vars, viz_heading_level, dashboard_layout),
+    "input" = .generate_input_block(item, page),
+    "input_row" = .generate_input_row_block(item, page),
+    "modal" = .generate_modal_block(item),
+    NULL
+  )
+
+  .wrap_show_when_block(item_content, item$show_when)
+}
+
+.node_has_manual_layout <- function(node) {
+  if (is.null(node) || !is.list(node)) return(FALSE)
+
+  node_type <- node$type %||% ""
+  if (node_type %in% c("layout_column", "layout_row")) {
+    return(TRUE)
+  }
+
+  if (!is.null(node$items) && is.list(node$items)) {
+    for (child in node$items) {
+      if (.node_has_manual_layout(child)) {
+        return(TRUE)
+      }
+    }
+  }
+
+  FALSE
+}
+
+.list_has_manual_layout <- function(nodes) {
+  if (is.null(nodes) || length(nodes) == 0) return(FALSE)
+
+  for (node in nodes) {
+    if (.node_has_manual_layout(node)) {
+      return(TRUE)
+    }
+  }
+
+  FALSE
+}
+
+.page_has_manual_layout <- function(page) {
+  .list_has_manual_layout(page$content_blocks) ||
+    .list_has_manual_layout(page$.items)
 }
 
 #' Generate image block markdown
@@ -639,6 +671,172 @@
   lines <- c(lines, block$content, ":::", "")
   
   lines
+}
+
+.build_layout_header <- function(level, label, class = NULL, width = NULL) {
+  attrs <- character(0)
+  if (isTRUE(!is.null(class) && nzchar(class))) {
+    class_tokens <- unlist(strsplit(class, "\\s+"))
+    class_tokens <- class_tokens[nzchar(class_tokens)]
+    attrs <- c(attrs, paste0(".", class_tokens))
+  }
+  if (!is.null(width) && nzchar(as.character(width))) {
+    attrs <- c(attrs, paste0("width=", as.character(width)))
+  }
+  attr_suffix <- if (length(attrs) > 0) paste0(" {", paste(attrs, collapse = " "), "}") else ""
+  paste0(paste(rep("#", level), collapse = ""), " ", label, attr_suffix)
+}
+
+.layout_items_in_order <- function(items) {
+  if (is.null(items) || length(items) == 0) return(list())
+  ordered_items <- items
+  if (length(ordered_items) > 1) {
+    indices <- sapply(ordered_items, function(x) x$.insertion_index %||% 999999L)
+    ordered_items <- ordered_items[order(indices)]
+  }
+  ordered_items
+}
+
+.validate_manual_layout_row_items <- function(items, page_name) {
+  if (is.null(items) || length(items) == 0) return(invisible(NULL))
+
+  for (idx in seq_along(items)) {
+    item <- items[[idx]]
+    if (is.null(item) || !is.list(item)) next
+    item_type <- item$type %||% "<unknown>"
+
+    if (identical(item_type, "pagination") || isTRUE(item$pagination_break)) {
+      stop(
+        "Manual layout rows do not support pagination markers (page '", page_name,
+        "', row item #", idx, ").",
+        call. = FALSE
+      )
+    }
+
+    if (!is.null(item$tabgroup)) {
+      stop(
+        "Manual layout rows do not support tabgroup markers on child blocks (page '", page_name,
+        "', row item #", idx, ").",
+        call. = FALSE
+      )
+    }
+  }
+
+  invisible(NULL)
+}
+
+.generate_layout_row_block <- function(block, page, page_filter_vars, viz_heading_level, dashboard_layout) {
+  page_name <- page$name %||% page$title %||% "<unnamed page>"
+  row_items <- .layout_items_in_order(block$items)
+  .validate_manual_layout_row_items(row_items, page_name)
+
+  lines <- c("", .build_layout_header(3, "Row", class = block$class), "")
+  i <- 1
+
+  while (i <= length(row_items)) {
+    item <- row_items[[i]]
+    if (is.null(item) || !is.list(item)) {
+      i <- i + 1
+      next
+    }
+
+    item_type <- item$type %||% ""
+    if (item_type == "viz") {
+      viz_items <- list(item)
+      j <- i + 1
+      while (j <= length(row_items)) {
+        next_item <- row_items[[j]]
+        if (!is.list(next_item) || !identical(next_item$type %||% "", "viz")) break
+        viz_items <- c(viz_items, list(next_item))
+        j <- j + 1
+      }
+
+      viz_coll <- structure(list(
+        items = viz_items,
+        defaults = block$defaults,
+        tabgroup_labels = block$tabgroup_labels,
+        shared_first_level = block$shared_first_level
+      ), class = c("content_collection", "viz_collection"))
+
+      processed_specs <- .process_visualizations(
+        viz_coll,
+        page$data_path,
+        filter_vars = page_filter_vars,
+        context_label = paste0("layout row in page '", page_name, "'")
+      )
+
+      if (!is.null(processed_specs) && length(processed_specs) > 0) {
+        page_backend <- page$backend %||% "highcharter"
+        if (page_backend != "highcharter") {
+          processed_specs <- lapply(processed_specs, function(spec) {
+            if (is.null(spec$backend)) spec$backend <- page_backend
+            if (!is.null(spec$nested_children)) {
+              spec$nested_children <- lapply(spec$nested_children, function(child) {
+                if (is.null(child$backend)) child$backend <- page_backend
+                child
+              })
+            }
+            spec
+          })
+        }
+
+        lines <- c(
+          lines,
+          .generate_viz_from_specs(
+            processed_specs,
+            lazy_load_charts = page$lazy_load_charts %||% FALSE,
+            lazy_load_tabs = page$lazy_load_tabs %||% FALSE,
+            heading_level = viz_heading_level,
+            dashboard_layout = FALSE,
+            contextual_viz_errors = page$contextual_viz_errors %||% FALSE
+          )
+        )
+      }
+      i <- j
+      next
+    }
+
+    item_lines <- .generate_page_item_content(
+      item = item,
+      page = page,
+      page_filter_vars = page_filter_vars,
+      viz_heading_level = viz_heading_level,
+      dashboard_layout = dashboard_layout,
+      context_label = paste0("layout row in page '", page_name, "'")
+    )
+    if (!is.null(item_lines)) lines <- c(lines, item_lines)
+    i <- i + 1
+  }
+
+  .wrap_show_when_block(lines, block$show_when)
+}
+
+.generate_layout_column_block <- function(block, page, page_filter_vars, viz_heading_level, dashboard_layout) {
+  column_lines <- c("", .build_layout_header(2, "Column", class = block$class, width = block$width), "")
+  column_items <- .layout_items_in_order(block$items)
+
+  for (idx in seq_along(column_items)) {
+    item <- column_items[[idx]]
+    if (is.null(item) || !is.list(item)) next
+    item_type <- item$type %||% ""
+
+    item_lines <- if (identical(item_type, "viz")) {
+      row_block <- list(type = "layout_row", items = list(item), class = NULL, show_when = NULL)
+      .generate_layout_row_block(row_block, page, page_filter_vars, viz_heading_level, dashboard_layout)
+    } else {
+      .generate_page_item_content(
+        item = item,
+        page = page,
+        page_filter_vars = page_filter_vars,
+        viz_heading_level = viz_heading_level,
+        dashboard_layout = dashboard_layout,
+        context_label = paste0("layout column in page '", page$name %||% "<unnamed>", "'")
+      )
+    }
+    if (!is.null(item_lines)) column_lines <- c(column_lines, item_lines)
+  }
+
+  .wrap_show_when_block(column_lines, block$show_when)
 }
 
 #' Generate divider block markdown
@@ -887,6 +1085,7 @@
   # Render the loaded reactable object directly - ALL styling preserved!
   table_var <- if (!is.null(block$table_var)) block$table_var else "data"
   if (!is.null(block$filter_vars)) {
+    data_expr <- block$table_filter_data_var %||% .serialize_arg(block$reactable_data)
     lines <- c(
       "",
       "```{r}",
@@ -897,7 +1096,7 @@
         table_var, ", ",
         "table_id = '", table_var, "', ",
         "filter_vars = ", .serialize_arg(block$filter_vars), ", ",
-        "data = ", .serialize_arg(block$reactable_data),
+        "data = ", data_expr,
         ")"
       ),
       table_var,
@@ -1041,6 +1240,7 @@
   # Render the loaded DT object directly - ALL styling preserved!
   table_var <- if (!is.null(block$table_var)) block$table_var else "data"
   if (!is.null(block$filter_vars)) {
+    data_expr <- block$table_filter_data_var %||% .serialize_arg(block$table_raw)
     lines <- c(
       "",
       "```{r}",
@@ -1051,7 +1251,7 @@
         table_var, ", ",
         "table_id = '", table_var, "', ",
         "filter_vars = ", .serialize_arg(block$filter_vars), ", ",
-        "data = ", .serialize_arg(block$table_raw),
+        "data = ", data_expr,
         ")"
       ),
       table_var,
@@ -1641,6 +1841,36 @@
   }
 }
 
+.collect_blocks_recursive_node <- function(node, filter_fn) {
+  if (is.null(node) || !is.list(node)) return(list())
+
+  collected <- list()
+  if (filter_fn(node)) {
+    collected <- c(collected, list(node))
+  }
+
+  if (!is.null(node$items) && is.list(node$items)) {
+    for (child in node$items) {
+      collected <- c(collected, .collect_blocks_recursive_node(child, filter_fn))
+    }
+  }
+
+  collected
+}
+
+.collect_blocks_recursive <- function(blocks, filter_fn) {
+  if (is.null(blocks) || length(blocks) == 0) return(list())
+
+  collected <- list()
+  for (block in blocks) {
+    if (is_content(block) || is_content_block(block)) {
+      collected <- c(collected, .collect_blocks_recursive_node(block, filter_fn))
+    }
+  }
+
+  collected
+}
+
 #' Generate global setup chunk for QMD files
 #'
 #' Creates a comprehensive setup chunk that includes libraries, data loading,
@@ -1752,25 +1982,7 @@
   # Load table objects from content blocks
   # This handles both direct content_block items and items nested inside content collections
   if (!is.null(page$content_blocks)) {
-    # Helper to collect all blocks (direct and nested in content collections)
-    collect_blocks <- function(blocks, filter_fn) {
-      result <- list()
-      for (block in blocks) {
-        if (is_content(block) && !is.null(block$items)) {
-          # Content collection - check items
-          for (item in block$items) {
-            if (filter_fn(item)) {
-              result <- c(result, list(item))
-            }
-          }
-        } else if (filter_fn(block)) {
-          result <- c(result, list(block))
-        }
-      }
-      result
-    }
-    
-    table_blocks <- collect_blocks(page$content_blocks, function(b) {
+    table_blocks <- .collect_blocks_recursive(page$content_blocks, function(b) {
       isTRUE(b$type %in% c("table", "gt", "reactable", "DT")) && !is.null(b$table_file)
     })
     if (length(table_blocks) > 0) {
@@ -1782,9 +1994,22 @@
       }
       lines <- c(lines, "")
     }
+
+    table_filter_data_blocks <- .collect_blocks_recursive(page$content_blocks, function(b) {
+      isTRUE(b$type %in% c("reactable", "DT")) &&
+        !is.null(b$table_filter_data_file) &&
+        !is.null(b$table_filter_data_var)
+    })
+    if (length(table_filter_data_blocks) > 0) {
+      lines <- c(lines, "# Load table filter datasets", "")
+      for (block in table_filter_data_blocks) {
+        lines <- c(lines, paste0(block$table_filter_data_var, " <- readRDS('", block$table_filter_data_file, "')"))
+      }
+      lines <- c(lines, "")
+    }
     
     # Load highcharter objects from content blocks
-    hc_blocks <- collect_blocks(page$content_blocks, function(b) {
+    hc_blocks <- .collect_blocks_recursive(page$content_blocks, function(b) {
       isTRUE(b$type == "hc") && !is.null(b$hc_file)
     })
     if (length(hc_blocks) > 0) {
@@ -1798,7 +2023,7 @@
     }
 
     # Load widget objects (plotly, leaflet, etc.) from content blocks
-    widget_blocks <- collect_blocks(page$content_blocks, function(b) {
+    widget_blocks <- .collect_blocks_recursive(page$content_blocks, function(b) {
       isTRUE(b$type == "widget") && !is.null(b$widget_file)
     })
     if (length(widget_blocks) > 0) {
@@ -1854,7 +2079,7 @@
 }
 
 
-.process_viz_specs <- function(content, viz_specs) {
+.process_viz_specs <- function(content, viz_specs, contextual_viz_errors = FALSE) {
   if (is.null(viz_specs) || length(viz_specs) == 0) {
     return(content)
   }
@@ -1862,7 +2087,10 @@
   viz_placeholder <- "{{visualizations}}"
 
   if (any(grepl(viz_placeholder, content, fixed = TRUE))) {
-    viz_content <- .generate_viz_from_specs(viz_specs)
+    viz_content <- .generate_viz_from_specs(
+      viz_specs,
+      contextual_viz_errors = contextual_viz_errors
+    )
     new_content <- character(0)
     for (line in content) {
       if (grepl(viz_placeholder, line, fixed = TRUE)) {

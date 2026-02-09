@@ -60,7 +60,7 @@ viz_collection <- create_viz() %>%
           chart_type = "stacked_area",
           title = "Happiness Trends Over Time",
           subtitle = "Stacked area chart showing distribution of happiness levels",
-          response_levels = c("Very Happy", "Pretty Happy", "Not Too Happy"),
+          y_levels = c("Very Happy", "Pretty Happy", "Not Too Happy"),
           color_palette = c("#2E86AB", "#A23B72", "#F18F01"),
           height = 800,  # Custom height
           tabgroup = "Trends/Happiness",
@@ -70,7 +70,7 @@ viz_collection <- create_viz() %>%
           y_var = "trust",
           group_var = "gender",
           chart_type = "line",
-          response_filter = "Can Trust",
+          y_filter = "Can Trust",
           title = "Social Trust by Gender",
           subtitle = "Line chart showing percentage who say 'Can Trust'",
           height = 400,  # Custom height

@@ -79,7 +79,9 @@
       storeOriginal: function(entry) {
         const chart = resolveHighchart(entry);
         if (!chart || entry.original) return;
-        const series = chart.series.map(s => ({
+        const series = (chart.series || [])
+          .filter(s => s && typeof s === 'object')
+          .map(s => ({
           name: s.name,
           data: deepClone(s.options.data || [])
         }));

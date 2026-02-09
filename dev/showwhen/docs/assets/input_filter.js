@@ -25,9 +25,34 @@
   const choicesInstances = window.dashboardrChoicesInstances;
   const inputState = {};
   const defaultValues = {};  // Store default values for reset
+
+  // Quarto sidebar code triggers jQuery events during collapse transitions.
+  // Provide a tiny fallback when jQuery is not present to avoid runtime errors.
+  if (typeof window.$ === 'undefined') {
+    window.$ = function(node) {
+      return {
+        trigger: function(eventName) {
+          if (!node || !eventName) return;
+          try {
+            node.dispatchEvent(new CustomEvent(String(eventName), { bubbles: true }));
+          } catch (e) {
+            // no-op
+          }
+        }
+      };
+    };
+  }
   
   // Store original data for restoration
   const originalSeriesData = new WeakMap();
+  const chartRegistry = window.dashboardrChartRegistry || null;
+
+  function getChartEntries() {
+    if (chartRegistry && typeof chartRegistry.getCharts === 'function') {
+      return chartRegistry.getCharts();
+    }
+    return [];
+  }
 
   function initDashboardrInputs() {
     const hasChoices = typeof Choices !== 'undefined';
@@ -89,6 +114,7 @@
         try {
           const isMultiple = input.multiple;
           const choices = new Choices(input, {
+            allowHTML: false,
             removeItemButton: isMultiple,
             searchEnabled: true,
             searchPlaceholderValue: 'Search...',
@@ -104,9 +130,6 @@
             }
           });
           choicesInstances[inputId] = choices;
-          // #region agent log
-          try{fetch('http://127.0.0.1:7242/ingest/cbfd47d0-c39e-4a3e-892f-ab3041f60f5c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'input_filter.js:choicesInit',message:'Choices.js instance created',data:{inputId:inputId,hasAddEventListener:typeof choices.addEventListener==='function',hasPassedElement:!!choices.passedElement,passedElementType:choices.passedElement?typeof choices.passedElement.element:'none'},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H5'})}).catch(function(){});}catch(e){}
-          // #endregion
           // Choices.js may not fire native 'change' on the select; listen on the instance if available
           if (typeof choices.addEventListener === 'function') {
             choices.addEventListener('change', () => {
@@ -133,9 +156,6 @@
       defaultValues[inputId] = { selected: selected.slice() };
 
       input.addEventListener('change', () => {
-        // #region agent log
-        try{fetch('http://127.0.0.1:7242/ingest/cbfd47d0-c39e-4a3e-892f-ab3041f60f5c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'input_filter.js:selectChangeHandler',message:'select native change fired',data:{inputId:inputId,filterVar:filterVar,newSelected:getSelectedValues(input)},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H5'})}).catch(function(){});}catch(e){}
-        // #endregion
         const selected = getSelectedValues(input);
         inputState[inputId].selected = selected;
         applyAllFilters();
@@ -220,9 +240,6 @@
       const radios = group.querySelectorAll('input[type="radio"]');
       radios.forEach(radio => {
         radio.addEventListener('change', () => {
-          // #region agent log
-          try{fetch('http://127.0.0.1:7242/ingest/cbfd47d0-c39e-4a3e-892f-ab3041f60f5c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'input_filter.js:radioChangeHandler',message:'radio change fired',data:{inputId:inputId,filterVar:filterVar,newSelected:getRadioValue(group)},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H1'})}).catch(function(){});}catch(e){}
-          // #endregion
           inputState[inputId].selected = getRadioValue(group);
           applyAllFilters();
         });
@@ -513,6 +530,34 @@
   }
 
   /**
+   * Resolve slider label index from current slider metadata.
+   * Supports both numeric ranges (min/max/step) and legacy 1-based sliders.
+   */
+  function resolveSliderLabelIndex(sliderInfo) {
+    if (!sliderInfo || !Array.isArray(sliderInfo.labels) || sliderInfo.labels.length === 0) {
+      return -1;
+    }
+
+    const labelsLen = sliderInfo.labels.length;
+    const value = Number(sliderInfo.value);
+    const min = Number(sliderInfo.min);
+    const step = Number(sliderInfo.step);
+
+    let idx;
+    if (Number.isFinite(value) && Number.isFinite(min) && Number.isFinite(step) && step > 0) {
+      idx = Math.round((value - min) / step);
+    } else {
+      // Fallback for legacy sliders that encode selected label as 1..N.
+      idx = Math.round(value) - 1;
+    }
+
+    if (!Number.isFinite(idx)) idx = 0;
+    if (idx < 0) idx = 0;
+    if (idx >= labelsLen) idx = labelsLen - 1;
+    return idx;
+  }
+
+  /**
    * Get selected values from checkbox group
    */
   function getCheckboxValues(group) {
@@ -548,22 +593,27 @@
    * Store original series data for later restoration
    */
   function storeOriginalData() {
-    if (typeof Highcharts === 'undefined') return;
-    
-    Highcharts.charts.filter(c => c).forEach(chart => {
-      if (!chart || !chart.series) return;
-      
-      chart.series.forEach(series => {
-        if (!originalSeriesData.has(series)) {
-          // Deep clone the data
-          const data = series.options.data ? 
-            JSON.parse(JSON.stringify(series.options.data)) : [];
-          originalSeriesData.set(series, {
-            data: data,
-            name: series.name
-          });
-        }
-      });
+    const entries = getChartEntries();
+    if (!entries || entries.length === 0) return;
+
+    entries.forEach(entry => {
+      if (!entry || !entry.backend) return;
+      if (entry.backend === 'highcharter') {
+        const chart = chartRegistry && chartRegistry.resolveHighchart
+          ? chartRegistry.resolveHighchart(entry)
+          : null;
+        if (!chart || !chart.series) return;
+        chart.series.forEach(series => {
+          if (!series || typeof series !== 'object') return;
+          if (!originalSeriesData.has(series)) {
+            const seriesOptions = series.options || {};
+            const data = seriesOptions.data ? JSON.parse(JSON.stringify(seriesOptions.data)) : [];
+            originalSeriesData.set(series, { data: data, name: series.name });
+          }
+        });
+      } else if (chartRegistry && chartRegistry.adapters && chartRegistry.adapters[entry.backend]) {
+        chartRegistry.adapters[entry.backend].storeOriginal(entry);
+      }
     });
   }
 
@@ -571,18 +621,15 @@
    * Apply all filters together
    */
   function applyAllFilters() {
-    if (typeof Highcharts === 'undefined') {
+    const entries = getChartEntries() || [];
+    const hasTables = chartRegistry && (
+      (chartRegistry.getTables && chartRegistry.getTables().length > 0) ||
+      (chartRegistry.getDTs && chartRegistry.getDTs().length > 0) ||
+      (chartRegistry.getReactables && chartRegistry.getReactables().length > 0)
+    );
+    if (entries.length === 0 && !hasTables) {
       return setTimeout(applyAllFilters, 200);
     }
-
-    const charts = Highcharts.charts.filter(c => c);
-    if (!charts || charts.length === 0) {
-      return setTimeout(applyAllFilters, 200);
-    }
-
-    // #region agent log
-    try{fetch('http://127.0.0.1:7242/ingest/cbfd47d0-c39e-4a3e-892f-ab3041f60f5c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'input_filter.js:applyAllFilters:entry',message:'applyAllFilters called',data:{chartCount:charts.length,inputStateKeys:Object.keys(inputState),inputStateSummary:Object.fromEntries(Object.entries(inputState).map(function(e){return[e[0],{filterVar:e[1].filterVar,selected:e[1].selected,inputType:e[1].inputType}]}))},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H1'})}).catch(function(){});}catch(e){}
-    // #endregion
 
     // Collect all active filters with their metadata
     const filters = {};
@@ -609,7 +656,10 @@
           textFilters[state.filterVar] = state.value.trim().toLowerCase();
         }
       } else if (state.inputType === 'number') {
-        numberFilters[state.filterVar] = state.value;
+        const rawValue = Array.isArray(state.selected) ? state.selected[0] : '';
+        if (rawValue !== '' && rawValue !== null && rawValue !== undefined) {
+          numberFilters[state.filterVar] = state.value;
+        }
       } else if (state.filterVar === 'period') {
         // Handle period presets (maps to year ranges)
         periodFilters[state.filterVar] = state.selected;
@@ -619,26 +669,51 @@
       }
     });
 
-    // #region agent log
-    try{fetch('http://127.0.0.1:7242/ingest/cbfd47d0-c39e-4a3e-892f-ab3041f60f5c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'input_filter.js:applyAllFilters:filters',message:'filters collected',data:{filters:filters,sliderFilters:sliderFilters,switchFilters:switchFilters,textFilters:textFilters,numberFilters:numberFilters,periodFilters:periodFilters,hasCrossTab:!!window.dashboardrCrossTab,crossTabKeys:window.dashboardrCrossTab?Object.keys(window.dashboardrCrossTab):[]},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H2-H3'})}).catch(function(){});}catch(e){}
-    // #endregion
-
-    charts.forEach(chart => {
-      if (!chart || !chart.series) return;
-      
-      // Check if this chart has cross-tab data for client-side filtering
-      const chartId = chart.options && chart.options.chart && chart.options.chart.id;
-      // #region agent log
-      try{fetch('http://127.0.0.1:7242/ingest/cbfd47d0-c39e-4a3e-892f-ab3041f60f5c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'input_filter.js:applyAllFilters:chartLookup',message:'chart cross-tab lookup',data:{chartId:chartId,hasCrossTabGlobal:!!window.dashboardrCrossTab,crossTabKeys:window.dashboardrCrossTab?Object.keys(window.dashboardrCrossTab):[],matchFound:!!(chartId&&window.dashboardrCrossTab&&window.dashboardrCrossTab[chartId])},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H2'})}).catch(function(){});}catch(e){}
-      // #endregion
-      if (chartId && window.dashboardrCrossTab && window.dashboardrCrossTab[chartId]) {
-        const crossTabInfo = window.dashboardrCrossTab[chartId];
-        const result = rebuildFromCrossTab(chart, crossTabInfo, filters);
-        if (result) {
-          // Chart was rebuilt from cross-tab, skip normal filtering
-          return;
+    // Collect switch overrides for cross-tab rebuilds
+    const switchOverrides = {};
+    Object.keys(inputState).forEach(id => {
+      const state = inputState[id];
+      if (state.inputType === 'switch' && state.toggleSeries && state.filterVar) {
+        if (!switchOverrides[state.filterVar]) {
+          switchOverrides[state.filterVar] = [];
         }
+        switchOverrides[state.filterVar].push({
+          seriesName: state.toggleSeries,
+          visible: !!state.value,
+          override: !!state.override
+        });
       }
+    });
+
+    // Rebuild charts from cross-tab data (all backends that support it)
+    const crossTabHandled = new Set();
+    if (window.dashboardrCrossTab) {
+      entries.forEach(entry => {
+        if (!entry || !entry.id) return;
+        const crossTabInfo = window.dashboardrCrossTab[entry.id];
+        if (crossTabInfo) {
+          const result = rebuildFromCrossTab(
+            entry,
+            crossTabInfo,
+            filters,
+            sliderFilters,
+            textFilters,
+            numberFilters,
+            switchOverrides
+          );
+          if (result) crossTabHandled.add(entry.id);
+        }
+      });
+    }
+
+    const highchartEntries = entries.filter(e => e.backend === 'highcharter' && !crossTabHandled.has(e.id));
+    const charts = highchartEntries.map(e => {
+      const chart = chartRegistry && chartRegistry.resolveHighchart ? chartRegistry.resolveHighchart(e) : null;
+      return { entry: e, chart };
+    }).filter(x => x.chart);
+
+    charts.forEach(({ chart, entry }) => {
+      if (!chart || !chart.series) return;
       
       // Store original categories if not already stored
       if (!chart._originalCategories && chart.xAxis && chart.xAxis[0] && chart.xAxis[0].categories) {
@@ -650,12 +725,19 @@
         (chart.xAxis && chart.xAxis[0] && chart.xAxis[0].categories ? chart.xAxis[0].categories : null);
       
       // Also check for numeric x-axis (no categories, but has point.x values)
-      const hasNumericXAxis = !originalCategories && chart.series.length > 0 && 
-        chart.series[0].data && chart.series[0].data.length > 0 &&
-        chart.series[0].data[0] && typeof chart.series[0].data[0].x === 'number';
+      const firstNumericSeries = (chart.series || []).find(s =>
+        s &&
+        Array.isArray(s.data) &&
+        s.data.length > 0 &&
+        s.data[0] &&
+        typeof s.data[0].x === 'number'
+      );
+      const hasNumericXAxis = !originalCategories && !!firstNumericSeries;
       
       // Determine which filters apply to series names vs categories
-      const seriesNames = chart.series.map(s => s.name);
+      const seriesNames = (chart.series || [])
+        .filter(s => s && typeof s === 'object')
+        .map(s => s.name);
       
       // Convert categories to strings for comparison (they might be numbers)
       const categoryStrings = originalCategories ? originalCategories.map(c => String(c)) : [];
@@ -706,6 +788,9 @@
         
         // Apply slider filters to determine visible categories
         Object.keys(sliderFilters).forEach(filterVar => {
+          if (entry && entry.x && String(filterVar) !== String(entry.x)) {
+            return;
+          }
           const sliderInfo = sliderFilters[filterVar];
           
           // If slider has labels, use label-based filtering
@@ -760,7 +845,8 @@
               'Column': 'column'
             };
             const hcType = typeMap[chartType] || 'line';
-            chart.series.forEach(series => {
+            (chart.series || []).forEach(series => {
+              if (!series || typeof series !== 'object') return;
               series.update({ type: hcType }, false);
             });
           }
@@ -786,7 +872,8 @@
           const timeValues = originalCategories || 
             (timeVar ? [...new Set(allData.map(d => d[timeVar]))].sort() : []);
           
-          chart.series.forEach(series => {
+          (chart.series || []).forEach(series => {
+            if (!series || typeof series !== 'object') return;
             const countryName = series.name;
             const countryData = allData.filter(d => 
               d.country === countryName && d.metric === selectedMetric
@@ -837,7 +924,8 @@
         }
       });
       
-      chart.series.forEach(series => {
+      (chart.series || []).forEach(series => {
+        if (!series || typeof series !== 'object') return;
         const seriesName = series.name;
         const original = originalSeriesData.get(series);
         
@@ -906,6 +994,9 @@
           // Handle charts with numeric x-axis (no categories)
           let filteredData = JSON.parse(JSON.stringify(original.data));
           Object.keys(sliderFilters).forEach(filterVar => {
+            if (entry && entry.x && String(filterVar) !== String(entry.x)) {
+              return;
+            }
             const sliderInfo = sliderFilters[filterVar];
             filteredData = filteredData.filter(point => {
               if (point === null) return false;
@@ -928,8 +1019,386 @@
       chart.redraw();
     });
 
+    // Apply filters to Plotly charts
+    const plotlyEntries = entries.filter(e => e.backend === 'plotly' && !crossTabHandled.has(e.id));
+    plotlyEntries.forEach(entry => {
+      applyPlotlyFilters(entry, filters, sliderFilters, textFilters, numberFilters, periodFilters);
+    });
+
+    // Apply filters to ECharts charts
+    const echartsEntries = entries.filter(e => e.backend === 'echarts4r' && !crossTabHandled.has(e.id));
+    echartsEntries.forEach(entry => {
+      applyEchartsFilters(entry, filters, sliderFilters, textFilters, numberFilters, periodFilters);
+    });
+
+    // Apply filters to tables and widgets
+    applyTableFilters(filters, sliderFilters, textFilters, numberFilters, periodFilters);
+
     // Update any charts that have dynamic title templates
     updateDynamicTitles();
+  }
+
+  function computeVisibleCategories(allCategories, filters, sliderFilters, periodFilters, xVarName) {
+    if (!allCategories || allCategories.length === 0) return null;
+    let visible = allCategories.slice();
+    const categoryStrings = visible.map(c => String(c));
+
+    // Period presets (numeric categories)
+    Object.keys(periodFilters).forEach(filterVar => {
+      const selected = periodFilters[filterVar];
+      if (selected && selected.length > 0) {
+        const periodValue = selected[0];
+        if (periodValue && !periodValue.includes('All')) {
+          visible = visible.filter(cat => {
+            const catNum = parseFloat(cat);
+            if (isNaN(catNum)) return true;
+            if (periodValue.includes('Pre-COVID') || periodValue.includes('2015-2019')) {
+              return catNum >= 2015 && catNum <= 2019;
+            } else if (periodValue.includes('Post-COVID') || periodValue.includes('2020')) {
+              return catNum >= 2020;
+            }
+            return true;
+          });
+        }
+      }
+    });
+
+    // Discrete filters
+    Object.keys(filters).forEach(filterVar => {
+      const selectedValues = filters[filterVar];
+      if (selectedValues && selectedValues.length > 0) {
+        const selectedStrings = selectedValues.map(v => String(v));
+        const isCategoryFilter = selectedStrings.some(v => categoryStrings.includes(v)) ||
+                                 categoryStrings.some(c => selectedStrings.includes(c));
+        if (isCategoryFilter) {
+          visible = visible.filter(cat => selectedStrings.includes(String(cat)));
+        }
+      }
+    });
+
+    // Slider filters
+    Object.keys(sliderFilters).forEach(filterVar => {
+      if (xVarName && String(filterVar) !== String(xVarName)) {
+        return;
+      }
+      const sliderInfo = sliderFilters[filterVar];
+      if (sliderInfo.labels && sliderInfo.labels.length > 0) {
+        const labelIdx = Math.round((sliderInfo.value - sliderInfo.min) / (sliderInfo.step || 1));
+        const startLabel = sliderInfo.labels[labelIdx];
+        if (startLabel) {
+          const startIdx = visible.findIndex(cat => String(cat) === String(startLabel));
+          if (startIdx >= 0) {
+            visible = visible.filter((_, idx) => idx >= startIdx);
+          }
+        }
+      } else {
+        visible = visible.filter(cat => {
+          const catNum = parseFloat(cat);
+          if (!isNaN(catNum)) {
+            return catNum >= sliderInfo.value;
+          }
+          return true;
+        });
+      }
+    });
+
+    return visible;
+  }
+
+  function shouldShowSeries(seriesName, filters, textFilters, seriesNames) {
+    // Text search
+    for (const filterVar in textFilters) {
+      const searchText = textFilters[filterVar];
+      if (seriesNames.some(n => n.toLowerCase().includes(searchText))) {
+        if (!seriesName.toLowerCase().includes(searchText)) {
+          return false;
+        }
+      }
+    }
+    // Discrete filters against series names
+    for (const filterVar in filters) {
+      const selectedValues = filters[filterVar];
+      if (selectedValues && selectedValues.length > 0) {
+        const isSeriesFilter = selectedValues.some(v => seriesNames.includes(v)) ||
+                               seriesNames.some(n => selectedValues.includes(n));
+        if (isSeriesFilter && !selectedValues.includes(seriesName)) {
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+
+  function normalizeSeriesName(name) {
+    if (name === undefined || name === null) return null;
+    const text = String(name).trim();
+    return text.length > 0 ? text : null;
+  }
+
+  function uniqueNonEmptyNames(names) {
+    const seen = new Set();
+    const out = [];
+    (Array.isArray(names) ? names : []).forEach(name => {
+      const normalized = normalizeSeriesName(name);
+      if (!normalized || seen.has(normalized)) return;
+      seen.add(normalized);
+      out.push(normalized);
+    });
+    return out;
+  }
+
+  function syncEchartsLegend(option, names) {
+    const legendNames = uniqueNonEmptyNames(names);
+    const selected = {};
+    legendNames.forEach(name => { selected[name] = true; });
+    if (Array.isArray(option.legend)) {
+      option.legend = option.legend.map(legend => {
+        const lg = legend && typeof legend === 'object' ? legend : {};
+        lg.data = legendNames;
+        lg.selected = selected;
+        return lg;
+      });
+    } else if (option.legend && typeof option.legend === 'object') {
+      option.legend.data = legendNames;
+      option.legend.selected = selected;
+    } else {
+      option.legend = { data: legendNames, selected: selected };
+    }
+  }
+
+  function applyPlotlyFilters(entry, filters, sliderFilters, textFilters, numberFilters, periodFilters) {
+    if (!entry || !entry.el || typeof Plotly === 'undefined') return;
+    if (!entry.original || !entry.original.data) {
+      if (chartRegistry && chartRegistry.adapters && chartRegistry.adapters.plotly) {
+        chartRegistry.adapters.plotly.storeOriginal(entry);
+      }
+    }
+    const original = entry.original && entry.original.data ? entry.original : { data: entry.el.data || [], layout: entry.el.layout || {} };
+    const data = original.data || [];
+    if (data.length === 0) return;
+
+    const seriesNames = data.map(t => t.name).filter(n => n !== undefined && n !== null);
+    let allCategories = null;
+    const allCategoryValues = [];
+    data.forEach(trace => {
+      if (trace && Array.isArray(trace.x) && trace.x.length) {
+        trace.x.forEach(v => allCategoryValues.push(v));
+      }
+    });
+    if (allCategoryValues.length) {
+      const seen = new Set();
+      allCategories = [];
+      allCategoryValues.forEach(v => {
+        const key = String(v);
+        if (!seen.has(key)) {
+          seen.add(key);
+          allCategories.push(v);
+        }
+      });
+    }
+    const visibleCategories = computeVisibleCategories(
+      allCategories,
+      filters,
+      sliderFilters,
+      periodFilters,
+      entry && entry.x ? entry.x : null
+    );
+    const visibleSet = visibleCategories ? new Set(visibleCategories.map(c => String(c))) : null;
+
+    // Switch-controlled series
+    const switchHiddenSeries = new Set();
+    const switchShownSeries = new Set();
+    Object.keys(inputState).forEach(id => {
+      const state = inputState[id];
+      if (state.inputType === 'switch' && state.toggleSeries) {
+        if (!state.value) switchHiddenSeries.add(state.toggleSeries);
+        else if (state.override) switchShownSeries.add(state.toggleSeries);
+      }
+    });
+
+    const newData = data.map(trace => {
+      const t = chartRegistry && chartRegistry.deepClone ? chartRegistry.deepClone(trace) : JSON.parse(JSON.stringify(trace));
+      const name = t.name || '';
+      let show = shouldShowSeries(name, filters, textFilters, seriesNames);
+      if (switchHiddenSeries.has(name)) show = false;
+      if (switchShownSeries.has(name)) show = true;
+      if (!show) t.visible = 'legendonly';
+
+      if (visibleSet && t.x && t.y) {
+        const newX = [];
+        const newY = [];
+        for (let i = 0; i < t.x.length; i++) {
+          const xVal = String(t.x[i]);
+          if (visibleSet.has(xVal)) {
+            newX.push(t.x[i]);
+            newY.push(t.y[i]);
+          }
+        }
+        t.x = newX;
+        t.y = newY;
+      }
+      return t;
+    });
+
+    Plotly.react(entry.el, newData, original.layout || entry.el.layout || {});
+  }
+
+  function applyEchartsFilters(entry, filters, sliderFilters, textFilters, numberFilters, periodFilters) {
+    if (!entry || !entry.el || typeof echarts === 'undefined') return;
+    if (!entry.original || !entry.original.option) {
+      if (chartRegistry && chartRegistry.adapters && chartRegistry.adapters.echarts4r) {
+        chartRegistry.adapters.echarts4r.storeOriginal(entry);
+      }
+    }
+    const inst = echarts.getInstanceByDom(entry.el);
+    if (!inst) return;
+    const original = entry.original && entry.original.option ? entry.original.option : inst.getOption();
+    if (!original) return;
+
+    const option = chartRegistry && chartRegistry.deepClone ? chartRegistry.deepClone(original) : JSON.parse(JSON.stringify(original));
+    const xAxis = option.xAxis && option.xAxis.length ? option.xAxis[0] : null;
+    const allCategories = xAxis && xAxis.data ? xAxis.data.slice() : null;
+    const visibleCategories = computeVisibleCategories(
+      allCategories,
+      filters,
+      sliderFilters,
+      periodFilters,
+      entry && entry.x ? entry.x : null
+    );
+    const visibleSet = visibleCategories ? new Set(visibleCategories.map(c => String(c))) : null;
+
+    const optionSeries = (option.series || [])
+      .filter(s => s && typeof s === 'object')
+      .map(series => {
+        const name = normalizeSeriesName(series.name);
+        if (!name) return null;
+        series.name = name;
+        return series;
+      })
+      .filter(Boolean);
+    const seriesNames = optionSeries.map(s => s.name);
+    const switchHiddenSeries = new Set();
+    const switchShownSeries = new Set();
+    Object.keys(inputState).forEach(id => {
+      const state = inputState[id];
+      if (state.inputType === 'switch' && state.toggleSeries) {
+        const seriesName = normalizeSeriesName(state.toggleSeries);
+        if (!seriesName) return;
+        if (!state.value) switchHiddenSeries.add(seriesName);
+        else if (state.override) switchShownSeries.add(seriesName);
+      }
+    });
+
+    option.series = optionSeries.map(series => {
+      const s = series;
+      const name = s.name || '';
+      let show = shouldShowSeries(name, filters, textFilters, seriesNames);
+      if (switchHiddenSeries.has(name)) show = false;
+      if (switchShownSeries.has(name)) show = true;
+      if (!show) return null;
+      if (visibleSet && Array.isArray(s.data) && allCategories) {
+        const newData = [];
+        const newCats = [];
+        for (let i = 0; i < allCategories.length; i++) {
+          if (visibleSet.has(String(allCategories[i]))) {
+            newCats.push(allCategories[i]);
+            newData.push(s.data[i]);
+          }
+        }
+        if (xAxis) xAxis.data = newCats;
+        s.data = newData;
+      }
+      return s;
+    }).filter(Boolean);
+
+    syncEchartsLegend(option, option.series.map(s => s && s.name));
+
+    inst.setOption(option, true);
+  }
+
+  function filterRowsByInputs(data, filterVars, filters, sliderFilters, textFilters, numberFilters, periodFilters) {
+    if (!data || data.length === 0) return data;
+    let rows = data.slice();
+    const allLabels = ['all', 'alle', 'tous', 'todo', 'tutti', 'すべて', '全部'];
+
+    (filterVars || []).forEach(filterVar => {
+      const selectedValues = filters[filterVar];
+      if (selectedValues && selectedValues.length > 0) {
+        const hasAll = selectedValues.some(v => allLabels.includes(String(v).toLowerCase()));
+        if (!hasAll) {
+          rows = rows.filter(row => selectedValues.includes(String(row[filterVar])));
+        }
+      }
+      const sliderInfo = sliderFilters[filterVar];
+      if (sliderInfo) {
+        if (sliderInfo.labels && sliderInfo.labels.length > 0) {
+          const selectedIndex = resolveSliderLabelIndex(sliderInfo);
+          const allowedLabels = sliderInfo.labels.slice(selectedIndex);
+          rows = rows.filter(row => allowedLabels.includes(String(row[filterVar])));
+        } else {
+          rows = rows.filter(row => {
+            const rowValue = Number(row[filterVar]);
+            return !isNaN(rowValue) && rowValue >= sliderInfo.value;
+          });
+        }
+      }
+      const text = textFilters[filterVar];
+      if (text) {
+        rows = rows.filter(row => String(row[filterVar]).toLowerCase().includes(text));
+      }
+      const num = numberFilters[filterVar];
+      if (num !== undefined && num !== null && num !== '') {
+        rows = rows.filter(row => String(row[filterVar]) === String(num));
+      }
+    });
+
+    return rows;
+  }
+
+  function applyTableFilters(filters, sliderFilters, textFilters, numberFilters, periodFilters) {
+    if (!chartRegistry) return;
+
+    // Basic HTML tables
+    chartRegistry.getTables().forEach(tbl => {
+      const filtered = filterRowsByInputs(tbl.data, tbl.filterVars || [], filters, sliderFilters, textFilters, numberFilters, periodFilters);
+      const tableEl = document.querySelector(`[data-dashboardr-table-id='${tbl.id}']`);
+      if (!tableEl) return;
+      const tbody = tableEl.querySelector('tbody');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+      filtered.forEach(row => {
+        const tr = document.createElement('tr');
+        tbl.columns.forEach(col => {
+          const td = document.createElement('td');
+          td.textContent = row[col] !== undefined ? row[col] : '';
+          tr.appendChild(td);
+        });
+        tbody.appendChild(tr);
+      });
+    });
+
+    // DT widgets
+    chartRegistry.getDTs().forEach(dt => {
+      if (!dt.el || !dt.data || typeof $ === 'undefined') return;
+      const filtered = filterRowsByInputs(dt.data, dt.filterVars || [], filters, sliderFilters, textFilters, numberFilters, periodFilters);
+      const cols = dt.data.length ? Object.keys(dt.data[0]) : [];
+      const rows = filtered.map(r => cols.map(c => r[c]));
+      try {
+        const instance = $(dt.el).DataTable();
+        instance.clear();
+        instance.rows.add(rows);
+        instance.draw(false);
+      } catch (e) { /* ignore */ }
+    });
+
+    // Reactable widgets
+    chartRegistry.getReactables().forEach(rt => {
+      if (!rt.el || !rt.data || typeof Reactable === 'undefined') return;
+      const filtered = filterRowsByInputs(rt.data, rt.filterVars || [], filters, sliderFilters, textFilters, numberFilters, periodFilters);
+      try {
+        Reactable.setData(rt.el, filtered);
+      } catch (e) { /* ignore */ }
+    });
   }
 
   /**
@@ -938,7 +1407,8 @@
    * reference either in their title template.
    */
   function updateDynamicTitles() {
-    if (typeof Highcharts === 'undefined' || !window.dashboardrCrossTab) return;
+    if (!window.dashboardrCrossTab) return;
+    var hasHighcharts = (typeof Highcharts !== 'undefined');
 
     // Build a combined lookup: input_id → value  AND  filter_var → value
     var lookup = {};
@@ -997,13 +1467,30 @@
       });
 
       // Find the Highcharts chart by its chart.id option (set via hc_chart(id = ...))
-      for (var j = 0; j < Highcharts.charts.length; j++) {
-        var c = Highcharts.charts[j];
-        if (!c) continue;
-        var cid = c.options && c.options.chart && c.options.chart.id;
-        if (cid === chartIds[i]) {
-          c.setTitle({ text: title });
-          break;
+      if (hasHighcharts) {
+        for (var j = 0; j < Highcharts.charts.length; j++) {
+          var c = Highcharts.charts[j];
+          if (!c) continue;
+          var cid = c.options && c.options.chart && c.options.chart.id;
+          if (cid === chartIds[i]) {
+            c.setTitle({ text: title });
+            break;
+          }
+        }
+      }
+
+      // Update other backends if registered
+      if (chartRegistry && chartRegistry.getCharts) {
+        var entries = chartRegistry.getCharts();
+        var entry = entries.find(function(e) { return e.id === chartIds[i]; });
+        if (entry && entry.backend === 'plotly' && typeof Plotly !== 'undefined' && entry.el) {
+          try { Plotly.relayout(entry.el, { 'title.text': title }); } catch (e) { /* ignore */ }
+        }
+        if (entry && entry.backend === 'echarts4r' && typeof echarts !== 'undefined' && entry.el) {
+          try {
+            var inst = echarts.getInstanceByDom(entry.el);
+            if (inst) inst.setOption({ title: { text: title } }, false);
+          } catch (e) { /* ignore */ }
         }
       }
     }
@@ -1107,12 +1594,16 @@
    * Rebuild chart from cross-tab data based on current filters
    * This enables true client-side data filtering by re-aggregating from pre-computed cross-tab
    * 
-   * @param {Highcharts.Chart} chart - The chart to update
+   * @param {Object} entry - Chart registry entry
    * @param {Object} crossTabInfo - Object with data array and config
    * @param {Object} filters - Current filter selections (filterVar -> selected values)
+   * @param {Object} sliderFilters - Current slider filter states (filterVar -> {value, min, max, step, labels})
+   * @param {Object} textFilters - Current text filters (filterVar -> lowercase text)
+   * @param {Object} numberFilters - Current number filters (filterVar -> numeric value)
+   * @param {Object} switchOverrides - Switch-controlled series per filterVar ({filterVar -> [{seriesName, visible, override}]})
    * @returns {boolean} True if chart was rebuilt, false if cross-tab doesn't apply
    */
-  function rebuildFromCrossTab(chart, crossTabInfo, filters) {
+  function rebuildFromCrossTab(entry, crossTabInfo, filters, sliderFilters, textFilters, numberFilters, switchOverrides) {
     if (!crossTabInfo || !crossTabInfo.data || !crossTabInfo.config) {
       return false;
     }
@@ -1127,6 +1618,20 @@
     const allLabels = ['all', 'alle', 'tous', 'todo', 'tutti', 'すべて', '全部'];
     
     for (const filterVar of filterVars) {
+      // Collect switch-overridden series names for this filterVar
+      // These series should always be included in the data when their switch is ON
+      const overrideSeriesNames = new Set();
+      if (switchOverrides && switchOverrides[filterVar]) {
+        switchOverrides[filterVar].forEach(sw => {
+          if (sw.visible && sw.override) {
+            overrideSeriesNames.add(sw.seriesName);
+          }
+        });
+      }
+      // Determine which column holds the series/group name for override matching
+      const groupCol = config.groupVar || config.stackVar;
+      
+      // First check regular filters (select, checkbox, radio)
       const selectedValues = filters[filterVar];
       if (selectedValues && selectedValues.length > 0) {
         const hasAllOption = selectedValues.some(v => 
@@ -1138,18 +1643,501 @@
         
         filteredData = filteredData.filter(row => {
           const rowValue = String(row[filterVar]);
-          return selectedValues.includes(rowValue);
+          // Include if value is selected OR if it's an override series that's toggled on
+          if (selectedValues.includes(rowValue)) return true;
+          if (overrideSeriesNames.size > 0 && groupCol) {
+            const groupValue = String(row[groupCol]);
+            if (overrideSeriesNames.has(groupValue)) return true;
+          }
+          return false;
         });
+        continue;
+      }
+      
+      // Then check slider filters
+      const sliderInfo = sliderFilters && sliderFilters[filterVar];
+      if (sliderInfo) {
+        const sliderValue = sliderInfo.value;
+        if (sliderInfo.labels && sliderInfo.labels.length > 0) {
+          // Slider with labels: include values from the selected position onwards
+          // Use slider min/step metadata when available to resolve label index.
+          const selectedIndex = resolveSliderLabelIndex(sliderInfo);
+          const allowedLabels = sliderInfo.labels.slice(selectedIndex);
+          filteredData = filteredData.filter(row => {
+            const rowValue = String(row[filterVar]);
+            return allowedLabels.includes(rowValue);
+          });
+        } else {
+          // Numeric slider: filter rows where value >= slider value
+          filteredData = filteredData.filter(row => {
+            const rowValue = Number(row[filterVar]);
+            return !isNaN(rowValue) && rowValue >= sliderValue;
+          });
+        }
+      }
+
+      // Then text filters (partial match, case-insensitive)
+      const textValue = textFilters && textFilters[filterVar];
+      if (textValue) {
+        filteredData = filteredData.filter(row =>
+          String(row[filterVar]).toLowerCase().includes(textValue)
+        );
+      }
+
+      // Then number filters (exact match)
+      const numberValue = numberFilters && numberFilters[filterVar];
+      if (numberValue !== undefined && numberValue !== null && numberValue !== '') {
+        filteredData = filteredData.filter(row =>
+          String(row[filterVar]) === String(numberValue)
+        );
       }
     }
     
-    // ---- Branch by chart type ----
-    if (config.chartType === 'timeline') {
-      return _rebuildTimelineSeries(chart, filteredData, config);
+    // ---- Branch by backend + chart type ----
+    const backend = entry && entry.backend ? entry.backend : 'highcharter';
+    if (backend === 'highcharter') {
+      const chart = chartRegistry && chartRegistry.resolveHighchart ? chartRegistry.resolveHighchart(entry) : null;
+      if (!chart) return false;
+      const ok = (config.chartType === 'timeline')
+        ? _rebuildTimelineSeries(chart, filteredData, config)
+        : _rebuildStackedBarSeries(chart, filteredData, config);
+      if (ok && switchOverrides) {
+        Object.keys(switchOverrides).forEach(filterVar => {
+          switchOverrides[filterVar].forEach(sw => {
+            (chart.series || []).forEach(series => {
+              if (!series || typeof series !== 'object') return;
+              if (series.name === sw.seriesName) {
+                if (!sw.visible) {
+                  series.setVisible(false, false);
+                  series.update({ showInLegend: false }, false);
+                } else {
+                  series.setVisible(true, false);
+                  series.update({ showInLegend: true }, false);
+                }
+              }
+            });
+          });
+        });
+        chart.redraw();
+      }
+      return ok;
     }
-    
-    // Default: stacked bar chart rebuild
-    return _rebuildStackedBarSeries(chart, filteredData, config);
+    if (backend === 'plotly') {
+      return (config.chartType === 'timeline')
+        ? _rebuildTimelinePlotly(entry, filteredData, config, switchOverrides)
+        : _rebuildStackedBarPlotly(entry, filteredData, config, switchOverrides);
+    }
+    if (backend === 'echarts4r') {
+      return (config.chartType === 'timeline')
+        ? _rebuildTimelineEcharts(entry, filteredData, config, switchOverrides)
+        : _rebuildStackedBarEcharts(entry, filteredData, config, switchOverrides);
+    }
+    return false;
+  }
+
+  function _rebuildStackedBarPlotly(entry, filteredData, config, switchOverrides) {
+    if (!entry || !entry.el || typeof Plotly === 'undefined') return false;
+    if (!entry.original || !entry.original.data) {
+      if (chartRegistry && chartRegistry.adapters && chartRegistry.adapters.plotly) {
+        chartRegistry.adapters.plotly.storeOriginal(entry);
+      }
+    }
+    const original = entry.original && entry.original.data ? entry.original : { data: entry.el.data || [], layout: entry.el.layout || {} };
+    const data = original.data || [];
+
+    const { xVar, stackVar, stackedType, stackOrder, xOrder, colorMap } = config;
+    const summed = {};
+    filteredData.forEach(row => {
+      const xVal = String(row[xVar]);
+      const stackVal = String(row[stackVar]);
+      const key = xVal + '|||' + stackVal;
+      if (!summed[key]) summed[key] = { xVal, stackVal, n: 0 };
+      summed[key].n += row.n;
+    });
+    const byX = {};
+    Object.values(summed).forEach(item => {
+      if (!byX[item.xVal]) byX[item.xVal] = {};
+      byX[item.xVal][item.stackVal] = item.n;
+    });
+    const xTotals = {};
+    Object.keys(byX).forEach(xVal => {
+      xTotals[xVal] = Object.values(byX[xVal]).reduce((sum, n) => sum + n, 0);
+    });
+    const isPercent = stackedType === 'percent';
+    const activeXValues = new Set(Object.keys(byX));
+    const orderedX = xOrder && xOrder.length > 0 ? xOrder.filter(xv => activeXValues.has(xv)) : Object.keys(byX);
+    const activeStackValues = new Set(Object.values(summed).map(s => s.stackVal));
+    const orderedStackRaw = stackOrder && stackOrder.length > 0
+      ? stackOrder.filter(sv => activeStackValues.has(sv))
+      : [...activeStackValues];
+    const orderedStack = uniqueNonEmptyNames(orderedStackRaw);
+
+    const switchHidden = new Set();
+    const switchShown = new Set();
+    if (switchOverrides) {
+      Object.keys(switchOverrides).forEach(filterVar => {
+        switchOverrides[filterVar].forEach(sw => {
+          const seriesName = normalizeSeriesName(sw.seriesName);
+          if (!seriesName) return;
+          if (!sw.visible) switchHidden.add(seriesName);
+          else if (sw.override) switchShown.add(seriesName);
+        });
+      });
+    }
+    const traceOrder = uniqueNonEmptyNames(data.map(t => t && t.name));
+    const seriesOrder = traceOrder.length
+      ? traceOrder.filter(name => orderedStack.includes(name))
+      : orderedStack;
+    const allSeries = uniqueNonEmptyNames([...seriesOrder, ...orderedStack, ...Array.from(switchShown)]);
+    const isHorizontal = data.some(t => t && t.orientation === 'h');
+
+    const newData = allSeries.map(name => {
+      const orig = data.find(t => t.name === name);
+      const trace = orig ? (chartRegistry && chartRegistry.deepClone ? chartRegistry.deepClone(orig) : JSON.parse(JSON.stringify(orig))) : {};
+      trace.type = trace.type || 'bar';
+      trace.name = name;
+      if (orderedStack.includes(name)) {
+        const values = orderedX.map(xVal => {
+          const count = (byX[xVal] && byX[xVal][name]) ? byX[xVal][name] : 0;
+          if (isPercent && xTotals[xVal] > 0) return (count / xTotals[xVal]) * 100;
+          return count;
+        });
+        if (isHorizontal) {
+          trace.y = orderedX;
+          trace.x = values;
+          trace.orientation = 'h';
+        } else {
+          trace.x = orderedX;
+          trace.y = values;
+        }
+        trace.visible = true;
+        trace.showlegend = true;
+        if (colorMap && colorMap[name]) {
+          trace.marker = trace.marker || {};
+          trace.marker.color = colorMap[name];
+        }
+      } else {
+        if (isHorizontal) {
+          trace.y = orderedX;
+          trace.x = orderedX.map(() => 0);
+          trace.orientation = 'h';
+        } else {
+          trace.x = orderedX;
+          trace.y = orderedX.map(() => 0);
+        }
+        trace.visible = 'legendonly';
+      }
+      if (switchHidden.has(name)) trace.visible = 'legendonly';
+      if (switchShown.has(name)) trace.visible = true;
+      return trace;
+    });
+
+    const layout = original.layout || entry.el.layout || {};
+    if (isHorizontal) {
+      layout.yaxis = layout.yaxis || {};
+      layout.yaxis.categoryorder = 'array';
+      layout.yaxis.categoryarray = orderedX;
+    } else {
+      layout.xaxis = layout.xaxis || {};
+      layout.xaxis.categoryorder = 'array';
+      layout.xaxis.categoryarray = orderedX;
+    }
+    Plotly.react(entry.el, newData, layout);
+    return true;
+  }
+
+  function _rebuildTimelinePlotly(entry, filteredData, config, switchOverrides) {
+    if (!entry || !entry.el || typeof Plotly === 'undefined') return false;
+    if (!entry.original || !entry.original.data) {
+      if (chartRegistry && chartRegistry.adapters && chartRegistry.adapters.plotly) {
+        chartRegistry.adapters.plotly.storeOriginal(entry);
+      }
+    }
+    const original = entry.original && entry.original.data ? entry.original : { data: entry.el.data || [], layout: entry.el.layout || {} };
+    const data = original.data || [];
+
+    const timeVar = config.timeVar;
+    const groupVar = config.groupVar;
+    const valueCol = 'value';
+
+    const timeValues = Array.from(new Set(filteredData.map(r => r[timeVar]))).map(v => v);
+    const numericTime = timeValues.every(v => v !== null && v !== '' && !isNaN(Number(v)));
+    if (numericTime) timeValues.sort((a, b) => Number(a) - Number(b));
+
+    const activeGroups = groupVar
+      ? uniqueNonEmptyNames(filteredData.map(r => r[groupVar]))
+      : [];
+    let groupValues = groupVar
+      ? (config.groupOrder && config.groupOrder.length
+          ? uniqueNonEmptyNames(config.groupOrder).filter(g => activeGroups.includes(g))
+          : activeGroups)
+      : [String(config.yVar || 'value')];
+
+    const switchHidden = new Set();
+    const switchShown = new Set();
+    if (switchOverrides) {
+      Object.keys(switchOverrides).forEach(filterVar => {
+        switchOverrides[filterVar].forEach(sw => {
+          const seriesName = normalizeSeriesName(sw.seriesName);
+          if (!seriesName) return;
+          if (!sw.visible) switchHidden.add(seriesName);
+          else if (sw.override) switchShown.add(seriesName);
+        });
+      });
+    }
+    if (groupVar && switchShown.size > 0) {
+      groupValues = uniqueNonEmptyNames([...groupValues, ...Array.from(switchShown)]);
+    }
+
+    const traces = [];
+    groupValues.forEach(group => {
+      const orig = data.find(t => t.name === String(group));
+      const trace = orig ? (chartRegistry && chartRegistry.deepClone ? chartRegistry.deepClone(orig) : JSON.parse(JSON.stringify(orig))) : {};
+      trace.name = String(group);
+      const rows = groupVar ? filteredData.filter(r => String(r[groupVar]) === String(group)) : filteredData;
+      const byTime = {};
+      rows.forEach(r => { byTime[String(r[timeVar])] = r[valueCol]; });
+      trace.x = timeValues;
+      trace.y = timeValues.map(t => {
+        const v = byTime[String(t)];
+        return v !== undefined ? v : null;
+      });
+      if (switchHidden.has(trace.name)) trace.visible = 'legendonly';
+      if (switchShown.has(trace.name)) trace.visible = true;
+      traces.push(trace);
+    });
+
+    const layout = original.layout || entry.el.layout || {};
+    layout.xaxis = layout.xaxis || {};
+    layout.xaxis.categoryorder = 'array';
+    layout.xaxis.categoryarray = timeValues;
+    Plotly.react(entry.el, traces, layout);
+    return true;
+  }
+
+  function _rebuildStackedBarEcharts(entry, filteredData, config, switchOverrides) {
+    if (!entry || !entry.el || typeof echarts === 'undefined') return false;
+    const inst = echarts.getInstanceByDom(entry.el);
+    if (!inst) return false;
+    if (!entry.original || !entry.original.option) {
+      if (chartRegistry && chartRegistry.adapters && chartRegistry.adapters.echarts4r) {
+        chartRegistry.adapters.echarts4r.storeOriginal(entry);
+      }
+    }
+    const original = entry.original && entry.original.option ? entry.original.option : inst.getOption();
+    if (!original) return false;
+
+    const { xVar, stackVar, stackedType, stackOrder, xOrder, colorMap } = config;
+    const summed = {};
+    filteredData.forEach(row => {
+      const xVal = String(row[xVar]);
+      const stackVal = String(row[stackVar]);
+      const key = xVal + '|||' + stackVal;
+      if (!summed[key]) summed[key] = { xVal, stackVal, n: 0 };
+      summed[key].n += row.n;
+    });
+    const byX = {};
+    Object.values(summed).forEach(item => {
+      if (!byX[item.xVal]) byX[item.xVal] = {};
+      byX[item.xVal][item.stackVal] = item.n;
+    });
+    const xTotals = {};
+    Object.keys(byX).forEach(xVal => {
+      xTotals[xVal] = Object.values(byX[xVal]).reduce((sum, n) => sum + n, 0);
+    });
+    const isPercent = stackedType === 'percent';
+    const activeXValues = new Set(Object.keys(byX));
+    const orderedX = xOrder && xOrder.length > 0 ? xOrder.filter(xv => activeXValues.has(xv)) : Object.keys(byX);
+    const activeStackValues = new Set(Object.values(summed).map(s => s.stackVal));
+    const orderedStackRaw = stackOrder && stackOrder.length > 0
+      ? stackOrder.filter(sv => activeStackValues.has(sv))
+      : [...activeStackValues];
+    const orderedStack = uniqueNonEmptyNames(orderedStackRaw);
+
+    const switchHidden = new Set();
+    const switchShown = new Set();
+    if (switchOverrides) {
+      Object.keys(switchOverrides).forEach(filterVar => {
+        switchOverrides[filterVar].forEach(sw => {
+          const seriesName = normalizeSeriesName(sw.seriesName);
+          if (!seriesName) return;
+          if (!sw.visible) switchHidden.add(seriesName);
+          else if (sw.override) switchShown.add(seriesName);
+        });
+      });
+    }
+
+    const option = chartRegistry && chartRegistry.deepClone ? chartRegistry.deepClone(original) : JSON.parse(JSON.stringify(original));
+
+    // Rebuilt series use explicit arrays; avoid stale dataset/encode mappings from htmlwidgets.
+    if (option.dataset) delete option.dataset;
+
+    const xAxisCfg = Array.isArray(option.xAxis)
+      ? (option.xAxis[0] = option.xAxis[0] || {})
+      : (option.xAxis = option.xAxis || {});
+    const yAxisCfg = Array.isArray(option.yAxis)
+      ? (option.yAxis[0] = option.yAxis[0] || {})
+      : (option.yAxis = option.yAxis || {});
+
+    const originalXAxis = Array.isArray(original.xAxis) ? (original.xAxis[0] || {}) : (original.xAxis || {});
+    const originalYAxis = Array.isArray(original.yAxis) ? (original.yAxis[0] || {}) : (original.yAxis || {});
+    const isHorizontal = String(originalYAxis.type || '').toLowerCase() === 'category' ||
+      (String(originalXAxis.type || '').toLowerCase() === 'value' &&
+       String(originalYAxis.type || '').toLowerCase() === 'category');
+
+    if (isHorizontal) {
+      yAxisCfg.type = 'category';
+      yAxisCfg.data = orderedX;
+      xAxisCfg.type = 'value';
+      xAxisCfg.data = null;
+      if (isPercent) {
+        xAxisCfg.min = 0;
+        xAxisCfg.max = 100;
+      } else {
+        if (xAxisCfg.max === 100) delete xAxisCfg.max;
+      }
+    } else {
+      xAxisCfg.type = 'category';
+      xAxisCfg.data = orderedX;
+      yAxisCfg.type = 'value';
+      yAxisCfg.data = null;
+      if (isPercent) {
+        yAxisCfg.min = 0;
+        yAxisCfg.max = 100;
+      } else {
+        if (yAxisCfg.max === 100) delete yAxisCfg.max;
+      }
+    }
+
+    const baseSeries = (option.series || [])
+      .filter(s => s && typeof s === 'object')
+      .map(series => {
+        const name = normalizeSeriesName(series.name);
+        if (!name) return null;
+        series.name = name;
+        return series;
+      })
+      .filter(Boolean);
+    const originalSeries = (original.series || [])
+      .filter(s => s && typeof s === 'object')
+      .map(series => {
+        const name = normalizeSeriesName(series.name);
+        if (!name) return null;
+        series.name = name;
+        return series;
+      })
+      .filter(Boolean);
+    const series = baseSeries.map(s => s.name);
+    const seriesOrder = series.length
+      ? series.filter(name => orderedStack.includes(name))
+      : orderedStack;
+    const allSeries = uniqueNonEmptyNames([...seriesOrder, ...orderedStack, ...Array.from(switchShown)]);
+    const visibleSeries = allSeries.filter(name => !switchHidden.has(name) || switchShown.has(name));
+
+    option.series = visibleSeries.map(name => {
+      const orig = originalSeries.find(s => s && s.name === name) || {};
+      const s = chartRegistry && chartRegistry.deepClone ? chartRegistry.deepClone(orig) : JSON.parse(JSON.stringify(orig));
+      s.name = name;
+      s.type = s.type || 'bar';
+      if (s.encode) delete s.encode;
+      if (s.datasetIndex !== undefined) delete s.datasetIndex;
+      if (orderedStack.includes(name)) {
+        const values = orderedX.map(xVal => {
+          const count = (byX[xVal] && byX[xVal][name]) ? byX[xVal][name] : 0;
+          if (isPercent && xTotals[xVal] > 0) return (count / xTotals[xVal]) * 100;
+          return count;
+        });
+        if (isHorizontal) {
+          s.data = orderedX.map((xVal, idx) => [values[idx], xVal]);
+        } else {
+          s.data = values;
+        }
+        s.show = true;
+        if (colorMap && colorMap[name]) {
+          s.itemStyle = s.itemStyle || {};
+          s.itemStyle.color = colorMap[name];
+        }
+      } else {
+        if (isHorizontal) {
+          s.data = orderedX.map(xVal => [0, xVal]);
+        } else {
+          s.data = orderedX.map(() => 0);
+        }
+      }
+      return s;
+    });
+    syncEchartsLegend(option, visibleSeries);
+
+    inst.setOption(option, true);
+    return true;
+  }
+
+  function _rebuildTimelineEcharts(entry, filteredData, config, switchOverrides) {
+    if (!entry || !entry.el || typeof echarts === 'undefined') return false;
+    const inst = echarts.getInstanceByDom(entry.el);
+    if (!inst) return false;
+    if (!entry.original || !entry.original.option) {
+      if (chartRegistry && chartRegistry.adapters && chartRegistry.adapters.echarts4r) {
+        chartRegistry.adapters.echarts4r.storeOriginal(entry);
+      }
+    }
+    const original = entry.original && entry.original.option ? entry.original.option : inst.getOption();
+    if (!original) return false;
+
+    const timeVar = config.timeVar;
+    const groupVar = config.groupVar;
+    const valueCol = 'value';
+
+    const timeValues = Array.from(new Set(filteredData.map(r => r[timeVar]))).map(v => v);
+    const numericTime = timeValues.every(v => v !== null && v !== '' && !isNaN(Number(v)));
+    if (numericTime) timeValues.sort((a, b) => Number(a) - Number(b));
+
+    const activeGroups = groupVar
+      ? uniqueNonEmptyNames(filteredData.map(r => r[groupVar]))
+      : [];
+    let groupValues = groupVar
+      ? (config.groupOrder && config.groupOrder.length
+          ? uniqueNonEmptyNames(config.groupOrder).filter(g => activeGroups.includes(g))
+          : activeGroups)
+      : [String(config.yVar || 'value')];
+
+    const switchHidden = new Set();
+    const switchShown = new Set();
+    if (switchOverrides) {
+      Object.keys(switchOverrides).forEach(filterVar => {
+        switchOverrides[filterVar].forEach(sw => {
+          const seriesName = normalizeSeriesName(sw.seriesName);
+          if (!seriesName) return;
+          if (!sw.visible) switchHidden.add(seriesName);
+          else if (sw.override) switchShown.add(seriesName);
+        });
+      });
+    }
+    if (groupVar && switchShown.size > 0) {
+      groupValues = uniqueNonEmptyNames([...groupValues, ...Array.from(switchShown)]);
+    }
+
+    const option = chartRegistry && chartRegistry.deepClone ? chartRegistry.deepClone(original) : JSON.parse(JSON.stringify(original));
+    if (option.xAxis && option.xAxis.length) option.xAxis[0].data = timeValues;
+
+    const visibleGroupValues = groupValues.filter(name => !switchHidden.has(name) || switchShown.has(name));
+    option.series = visibleGroupValues.map(group => {
+      const orig = (original.series || []).find(s => s && s.name === String(group)) || {};
+      const s = chartRegistry && chartRegistry.deepClone ? chartRegistry.deepClone(orig) : JSON.parse(JSON.stringify(orig));
+      s.name = String(group);
+      const rows = groupVar ? filteredData.filter(r => String(r[groupVar]) === String(group)) : filteredData;
+      const byTime = {};
+      rows.forEach(r => { byTime[String(r[timeVar])] = r[valueCol]; });
+      s.data = timeValues.map(t => {
+        const v = byTime[String(t)];
+        return v !== undefined ? v : null;
+      });
+      return s;
+    });
+    syncEchartsLegend(option, visibleGroupValues);
+
+    inst.setOption(option, true);
+    return true;
   }
 
   /**
@@ -1217,7 +2205,7 @@
         return count;
       });
       
-      let series = chart.series.find(s => s.name === stackVal);
+      let series = (chart.series || []).find(s => s && s.name === stackVal);
       if (series) {
         var updateOpts = { showInLegend: true };
         if (config.colorMap && config.colorMap[stackVal]) {
@@ -1230,7 +2218,8 @@
     });
     
     // Hide series that are NOT in the filtered data
-    chart.series.forEach(series => {
+    (chart.series || []).forEach(series => {
+      if (!series || typeof series !== 'object') return;
       if (!activeSeriesNames.has(series.name)) {
         series.setData(orderedX.map(() => 0), false);
         series.setVisible(false, false);
@@ -1318,7 +2307,7 @@
       dataPoints.forEach(function(pt) { lookup[pt.time] = pt.value; });
       
       var seriesName = (groupName === '__all__') ? (yVar || 'Value') : groupName;
-      var series = chart.series.find(function(s) { return s.name === seriesName; });
+      var series = (chart.series || []).find(function(s) { return s && s.name === seriesName; });
       
       if (series) {
         var newData;
@@ -1344,7 +2333,8 @@
     });
     
     // Hide series that are NOT in the filtered data
-    chart.series.forEach(function(series) {
+    (chart.series || []).forEach(function(series) {
+      if (!series || typeof series !== 'object') return;
       var seriesGroup = series.name;
       if (!activeGroups.has(seriesGroup)) {
         series.setData([], false);
@@ -1369,17 +2359,18 @@
   
   function waitForChartsAndApply() {
     if (filtersApplied) return;
-    
-    if (typeof Highcharts !== 'undefined') {
-      const charts = Highcharts.charts.filter(c => c);
-      if (charts.length > 0) {
-        filtersApplied = true;
-        storeOriginalData();
-        applyAllFilters();
-        return;
-      }
+    const entries = getChartEntries() || [];
+    const hasTables = chartRegistry && (
+      (chartRegistry.getTables && chartRegistry.getTables().length > 0) ||
+      (chartRegistry.getDTs && chartRegistry.getDTs().length > 0) ||
+      (chartRegistry.getReactables && chartRegistry.getReactables().length > 0)
+    );
+    if (entries.length > 0 || hasTables) {
+      filtersApplied = true;
+      storeOriginalData();
+      applyAllFilters();
+      return;
     }
-    // Charts not ready, retry
     setTimeout(waitForChartsAndApply, 200);
   }
   
@@ -1399,10 +2390,8 @@
     if (e.target.matches('[role="tab"], .nav-link, .panel-tab')) {
       setTimeout(() => {
         // Only re-apply filters, don't re-initialize
-        if (typeof Highcharts !== 'undefined') {
-          storeOriginalData();
-          applyAllFilters();
-        }
+        storeOriginalData();
+        applyAllFilters();
       }, 300);
     }
   });

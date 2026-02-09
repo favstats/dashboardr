@@ -113,8 +113,8 @@ viz_pie <- function(data,
   } else {
     plot_data <- plot_data %>%
       dplyr::mutate(
-        !!rlang::sym(x_var) := forcats::fct_explicit_na(
-          factor(!!rlang::sym(x_var)), na_level = na_label
+        !!rlang::sym(x_var) := forcats::fct_na_value_to_level(
+          factor(!!rlang::sym(x_var)), level = na_label
         )
       )
   }

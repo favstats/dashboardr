@@ -41,3 +41,53 @@ test_that(".generate_data_load_code case insensitive parquet", {
   code <- .generate_data_load_code("data/survey.PARQUET")
   expect_true(grepl("arrow::read_parquet", code))
 })
+
+test_that(".generate_global_setup_chunk loads externalized table filter data", {
+  .generate_global_setup_chunk <- dashboardr:::.generate_global_setup_chunk
+
+  page <- list(
+    data_path = "dataset_small_10obs.rds",
+    visualizations = NULL,
+    content_blocks = list(
+      structure(list(
+        type = "reactable",
+        table_file = "table_obj_1.rds",
+        table_var = "table_obj_1",
+        table_filter_data_file = "table_filter_data_1.rds",
+        table_filter_data_var = "table_filter_data_1"
+      ), class = "content_block")
+    ),
+    needs_show_when = FALSE
+  )
+
+  setup_lines <- .generate_global_setup_chunk(page)
+  setup_text <- paste(setup_lines, collapse = "\n")
+
+  expect_true(grepl("table_obj_1 <- readRDS\\('table_obj_1\\.rds'\\)", setup_text))
+  expect_true(grepl("table_filter_data_1 <- readRDS\\('table_filter_data_1\\.rds'\\)", setup_text))
+})
+
+test_that("DT/reactable generators reference filter data variable when present", {
+  .generate_DT_block <- dashboardr:::.generate_DT_block
+  .generate_reactable_block <- dashboardr:::.generate_reactable_block
+
+  dt_lines <- .generate_DT_block(list(
+    type = "DT",
+    table_var = "table_obj_2",
+    filter_vars = c("region"),
+    table_filter_data_var = "table_filter_data_2"
+  ))
+  dt_text <- paste(dt_lines, collapse = "\n")
+  expect_true(grepl("data = table_filter_data_2", dt_text, fixed = TRUE))
+  expect_false(grepl("as\\.data\\.frame\\(list\\(", dt_text))
+
+  react_lines <- .generate_reactable_block(list(
+    type = "reactable",
+    table_var = "table_obj_3",
+    filter_vars = c("region"),
+    table_filter_data_var = "table_filter_data_3"
+  ))
+  react_text <- paste(react_lines, collapse = "\n")
+  expect_true(grepl("data = table_filter_data_3", react_text, fixed = TRUE))
+  expect_false(grepl("as\\.data\\.frame\\(list\\(", react_text))
+})

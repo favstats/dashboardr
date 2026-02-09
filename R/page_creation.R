@@ -122,28 +122,12 @@ create_page <- function(name,
   dot_args_raw <- call_args[["..."]]
   if (is.null(dot_args_raw)) dot_args_raw <- list()
   
-  var_params <- c("x_var", "y_var", "group_var", "stack_var", 
-                  "region_var", "value_var", "color_var", "size_var",
-                  "join_var", "click_var", "subgroup_var")
-  var_vector_params <- c("x_vars", "tooltip_vars")
-  
-  extra_defaults <- lapply(names(dot_args_raw), function(nm) {
-    val <- dot_args_raw[[nm]]
-    if (nm %in% var_params && is.symbol(val)) {
-      as.character(val)
-    } else if (nm %in% var_vector_params) {
-      if (is.call(val) && identical(val[[1]], as.symbol("c"))) {
-        vapply(as.list(val)[-1], function(x) {
-          if (is.symbol(x)) as.character(x) else if (is.character(x)) x else eval(x, envir = call_env)
-        }, character(1))
-      } else {
-        eval(val, envir = call_env)
-      }
-    } else {
-      eval(val, envir = call_env)
-    }
-  })
-  names(extra_defaults) <- names(dot_args_raw)
+  extra_defaults <- .capture_nse_defaults(
+    dot_args_raw = dot_args_raw,
+    call_env = call_env,
+    var_params = .default_page_var_params(),
+    var_vector_params = .default_vector_var_params()
+  )
 
   structure(
     list(

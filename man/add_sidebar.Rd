@@ -55,7 +55,9 @@ heading levels have special meaning:
 \item \code{###} creates cards/sections (safe to use)
 }
 To avoid layout issues, use \code{###} headings or plain text in the main
-content area after the sidebar.
+content area after the sidebar. For advanced layouts, prefer explicit
+\code{add_layout_column()} / \code{add_layout_row()} APIs instead of
+heading-based layout shaping.
 }
 
 \examples{

@@ -1,0 +1,466 @@
+version: 1
+
+defaults:
+  forbidden_console_patterns:
+    - "Uncaught"
+    - "Unhandled promise rejection"
+    - "Cannot read properties of undefined"
+
+scenarios:
+  # ---------------------------------------------------------------------------
+  # S1: All-input sidebar + single bar (smoke)
+  # Bar chart does NOT support cross_tab_filter_vars, so filter/slider won't
+  # change chart state.  Dynamic text (show_when on slider year) SHOULD change.
+  # ---------------------------------------------------------------------------
+  - id: single-graph-echarts-s1
+    modes: [smoke, full]
+    source_type: docs
+    backend: echarts4r
+    url_path: /sidebar_single_echarts/docs/s1_all_inputs_single_bar.html
+    expect_chart_backend: [echarts4r]
+    interaction_plan: [slider, filter, sidebar_toggle]
+    preferred_filter_var: region
+    preferred_slider_var: year
+    expect_filter_effect: false
+    expect_slider_effect: false
+    expect_dynamic_text_effect: true
+    dynamic_text_selectors: ["#s1_dynamic_low", "#s1_dynamic_high", ".dashboardr-slider-value"]
+    min_non_empty_charts_expected: 1
+    required_selectors:
+      - "#pw-single-graph-s1"
+      - ".dashboardr-checkbox-group[data-filter-var='happiness']"
+      - ".dashboardr-slider[data-filter-var='year']"
+      - ".collapse-toggle"
+    required_texts:
+      - "S1_All_Inputs_Single_Bar"
+    forbidden_console_patterns: []
+
+  - id: single-graph-plotly-s1
+    modes: [smoke, full]
+    source_type: docs
+    backend: plotly
+    url_path: /sidebar_single_plotly/docs/s1_all_inputs_single_bar.html
+    expect_chart_backend: [plotly]
+    interaction_plan: [slider, filter, sidebar_toggle]
+    preferred_filter_var: region
+    preferred_slider_var: year
+    expect_filter_effect: false
+    expect_slider_effect: false
+    expect_dynamic_text_effect: true
+    dynamic_text_selectors: ["#s1_dynamic_low", "#s1_dynamic_high", ".dashboardr-slider-value"]
+    min_non_empty_charts_expected: 1
+    required_selectors:
+      - "#pw-single-graph-s1"
+      - ".dashboardr-checkbox-group[data-filter-var='happiness']"
+      - ".dashboardr-slider[data-filter-var='year']"
+      - ".collapse-toggle"
+    required_texts:
+      - "S1_All_Inputs_Single_Bar"
+    forbidden_console_patterns: []
+
+  - id: single-graph-hc-s1
+    modes: [smoke, full]
+    source_type: docs
+    backend: highcharter
+    url_path: /sidebar_single_hc/docs/s1_all_inputs_single_bar.html
+    expect_chart_backend: [highcharter]
+    interaction_plan: [slider, filter, sidebar_toggle]
+    preferred_filter_var: region
+    preferred_slider_var: year
+    expect_filter_effect: false
+    expect_slider_effect: false
+    expect_dynamic_text_effect: true
+    dynamic_text_selectors: ["#s1_dynamic_low", "#s1_dynamic_high", ".dashboardr-slider-value"]
+    min_non_empty_charts_expected: 1
+    required_selectors:
+      - "#pw-single-graph-s1"
+      - ".dashboardr-checkbox-group[data-filter-var='happiness']"
+      - ".dashboardr-slider[data-filter-var='year']"
+      - ".collapse-toggle"
+    required_texts:
+      - "S1_All_Inputs_Single_Bar"
+    forbidden_console_patterns: []
+
+  # ---------------------------------------------------------------------------
+  # S2: Pie + sidebar + show_when (smoke)
+  # Pie chart does NOT support cross_tab_filter_vars.
+  # show_when_toggle changes education select -> callouts toggle visibility.
+  # ---------------------------------------------------------------------------
+  - id: single-graph-echarts-s2
+    modes: [smoke, full]
+    source_type: docs
+    backend: echarts4r
+    url_path: /sidebar_single_echarts/docs/s2_pie_showwhen.html
+    expect_chart_backend: [echarts4r]
+    interaction_plan: [show_when_toggle, sidebar_toggle]
+    preferred_filter_var: education
+    expect_filter_effect: false
+    expect_dynamic_text_effect: false
+    min_non_empty_charts_expected: 1
+    required_selectors:
+      - "#pw-single-graph-s2"
+      - "[data-show-when]"
+      - ".collapse-toggle"
+    required_texts:
+      - "S2_Pie_ShowWhen"
+    forbidden_console_patterns: []
+
+  - id: single-graph-plotly-s2
+    modes: [smoke, full]
+    source_type: docs
+    backend: plotly
+    url_path: /sidebar_single_plotly/docs/s2_pie_showwhen.html
+    expect_chart_backend: [plotly]
+    interaction_plan: [show_when_toggle, sidebar_toggle]
+    preferred_filter_var: education
+    expect_filter_effect: false
+    expect_dynamic_text_effect: false
+    min_non_empty_charts_expected: 1
+    required_selectors:
+      - "#pw-single-graph-s2"
+      - "[data-show-when]"
+      - ".collapse-toggle"
+    required_texts:
+      - "S2_Pie_ShowWhen"
+    forbidden_console_patterns: []
+
+  - id: single-graph-hc-s2
+    modes: [smoke, full]
+    source_type: docs
+    backend: highcharter
+    url_path: /sidebar_single_hc/docs/s2_pie_showwhen.html
+    expect_chart_backend: [highcharter]
+    interaction_plan: [show_when_toggle, sidebar_toggle]
+    preferred_filter_var: education
+    expect_filter_effect: false
+    expect_dynamic_text_effect: false
+    min_non_empty_charts_expected: 1
+    required_selectors:
+      - "#pw-single-graph-s2"
+      - "[data-show-when]"
+      - ".collapse-toggle"
+    required_texts:
+      - "S2_Pie_ShowWhen"
+    forbidden_console_patterns: []
+
+  # ---------------------------------------------------------------------------
+  # S3: Scatter + linked inputs (full)
+  # Scatter chart does NOT support cross_tab_filter_vars.
+  # Linked inputs should still work (parent-child option cascade).
+  # ---------------------------------------------------------------------------
+  - id: single-graph-echarts-s3
+    modes: [full]
+    source_type: docs
+    backend: echarts4r
+    url_path: /sidebar_single_echarts/docs/s3_scatter_linked.html
+    expect_chart_backend: [echarts4r]
+    interaction_plan: [linked_inputs, filter, sidebar_toggle]
+    preferred_filter_var: region
+    expect_filter_effect: false
+    min_non_empty_charts_expected: 1
+    required_selectors:
+      - "#pw-single-graph-s3"
+      - "[data-linked-child-id]"
+      - ".collapse-toggle"
+    required_texts:
+      - "S3_Scatter_Linked"
+    forbidden_console_patterns: []
+
+  - id: single-graph-plotly-s3
+    modes: [full]
+    source_type: docs
+    backend: plotly
+    url_path: /sidebar_single_plotly/docs/s3_scatter_linked.html
+    expect_chart_backend: [plotly]
+    interaction_plan: [linked_inputs, filter, sidebar_toggle]
+    preferred_filter_var: region
+    expect_filter_effect: false
+    min_non_empty_charts_expected: 1
+    required_selectors:
+      - "#pw-single-graph-s3"
+      - "[data-linked-child-id]"
+      - ".collapse-toggle"
+    required_texts:
+      - "S3_Scatter_Linked"
+    forbidden_console_patterns: []
+
+  - id: single-graph-hc-s3
+    modes: [full]
+    source_type: docs
+    backend: highcharter
+    url_path: /sidebar_single_hc/docs/s3_scatter_linked.html
+    expect_chart_backend: [highcharter]
+    interaction_plan: [linked_inputs, filter, sidebar_toggle]
+    preferred_filter_var: region
+    expect_filter_effect: false
+    min_non_empty_charts_expected: 1
+    required_selectors:
+      - "#pw-single-graph-s3"
+      - "[data-linked-child-id]"
+      - ".collapse-toggle"
+    required_texts:
+      - "S3_Scatter_Linked"
+    forbidden_console_patterns: []
+
+  # ---------------------------------------------------------------------------
+  # S4: Boxplot + checkbox + slider (smoke)
+  # Boxplot does NOT support cross_tab_filter_vars.
+  # Dynamic text (show_when on year slider) SHOULD change.
+  # ---------------------------------------------------------------------------
+  - id: single-graph-echarts-s4
+    modes: [smoke, full]
+    source_type: docs
+    backend: echarts4r
+    url_path: /sidebar_single_echarts/docs/s4_boxplot_checkbox_slider.html
+    expect_chart_backend: [echarts4r]
+    interaction_plan: [slider, filter, sidebar_toggle]
+    preferred_filter_var: region
+    preferred_slider_var: year
+    expect_filter_effect: false
+    expect_slider_effect: false
+    expect_dynamic_text_effect: true
+    dynamic_text_selectors: ["#s4_dynamic_low", "#s4_dynamic_high", ".dashboardr-slider-value"]
+    min_non_empty_charts_expected: 1
+    required_selectors:
+      - "#pw-single-graph-s4"
+      - ".dashboardr-checkbox-group[data-filter-var='region']"
+      - ".dashboardr-slider[data-filter-var='year']"
+      - ".collapse-toggle"
+    required_texts:
+      - "S4_Boxplot_Checkbox_Slider"
+    forbidden_console_patterns: []
+
+  - id: single-graph-plotly-s4
+    modes: [smoke, full]
+    source_type: docs
+    backend: plotly
+    url_path: /sidebar_single_plotly/docs/s4_boxplot_checkbox_slider.html
+    expect_chart_backend: [plotly]
+    interaction_plan: [slider, filter, sidebar_toggle]
+    preferred_filter_var: region
+    preferred_slider_var: year
+    expect_filter_effect: false
+    expect_slider_effect: false
+    expect_dynamic_text_effect: true
+    dynamic_text_selectors: ["#s4_dynamic_low", "#s4_dynamic_high", ".dashboardr-slider-value"]
+    min_non_empty_charts_expected: 1
+    required_selectors:
+      - "#pw-single-graph-s4"
+      - ".dashboardr-checkbox-group[data-filter-var='region']"
+      - ".dashboardr-slider[data-filter-var='year']"
+      - ".collapse-toggle"
+    required_texts:
+      - "S4_Boxplot_Checkbox_Slider"
+    forbidden_console_patterns: []
+
+  - id: single-graph-hc-s4
+    modes: [smoke, full]
+    source_type: docs
+    backend: highcharter
+    url_path: /sidebar_single_hc/docs/s4_boxplot_checkbox_slider.html
+    expect_chart_backend: [highcharter]
+    interaction_plan: [slider, filter, sidebar_toggle]
+    preferred_filter_var: region
+    preferred_slider_var: year
+    expect_filter_effect: false
+    expect_slider_effect: false
+    expect_dynamic_text_effect: true
+    dynamic_text_selectors: ["#s4_dynamic_low", "#s4_dynamic_high", ".dashboardr-slider-value"]
+    min_non_empty_charts_expected: 1
+    required_selectors:
+      - "#pw-single-graph-s4"
+      - ".dashboardr-checkbox-group[data-filter-var='region']"
+      - ".dashboardr-slider[data-filter-var='year']"
+      - ".collapse-toggle"
+    required_texts:
+      - "S4_Boxplot_Checkbox_Slider"
+    forbidden_console_patterns: []
+
+  # ---------------------------------------------------------------------------
+  # S5: Single bar + reset button (full)
+  # Bar chart does NOT support cross_tab_filter_vars.
+  # Tests the reset button selector presence and sidebar toggle.
+  # ---------------------------------------------------------------------------
+  - id: single-graph-echarts-s5
+    modes: [full]
+    source_type: docs
+    backend: echarts4r
+    url_path: /sidebar_single_echarts/docs/s5_bar_reset_button.html
+    expect_chart_backend: [echarts4r]
+    interaction_plan: [filter, sidebar_toggle]
+    preferred_filter_var: region
+    expect_filter_effect: false
+    min_non_empty_charts_expected: 1
+    required_selectors:
+      - "#pw-single-graph-s5"
+      - ".dashboardr-reset-button"
+      - ".collapse-toggle"
+    required_texts:
+      - "S5_Bar_Reset_Button"
+    forbidden_console_patterns: []
+
+  - id: single-graph-plotly-s5
+    modes: [full]
+    source_type: docs
+    backend: plotly
+    url_path: /sidebar_single_plotly/docs/s5_bar_reset_button.html
+    expect_chart_backend: [plotly]
+    interaction_plan: [filter, sidebar_toggle]
+    preferred_filter_var: region
+    expect_filter_effect: false
+    min_non_empty_charts_expected: 1
+    required_selectors:
+      - "#pw-single-graph-s5"
+      - ".dashboardr-reset-button"
+      - ".collapse-toggle"
+    required_texts:
+      - "S5_Bar_Reset_Button"
+    forbidden_console_patterns: []
+
+  - id: single-graph-hc-s5
+    modes: [full]
+    source_type: docs
+    backend: highcharter
+    url_path: /sidebar_single_hc/docs/s5_bar_reset_button.html
+    expect_chart_backend: [highcharter]
+    interaction_plan: [filter, sidebar_toggle]
+    preferred_filter_var: region
+    expect_filter_effect: false
+    min_non_empty_charts_expected: 1
+    required_selectors:
+      - "#pw-single-graph-s5"
+      - ".dashboardr-reset-button"
+      - ".collapse-toggle"
+    required_texts:
+      - "S5_Bar_Reset_Button"
+    forbidden_console_patterns: []
+
+  # ---------------------------------------------------------------------------
+  # S6: Show_when on chart itself (smoke)
+  # Bar chart hidden/shown by show_when on view_mode select.
+  # Dynamic text toggles between "Chart view" and "Summary view".
+  # ---------------------------------------------------------------------------
+  - id: single-graph-echarts-s6
+    modes: [smoke, full]
+    source_type: docs
+    backend: echarts4r
+    url_path: /sidebar_single_echarts/docs/s6_showwhen_on_chart.html
+    expect_chart_backend: []
+    interaction_plan: [show_when_toggle, sidebar_toggle]
+    preferred_filter_var: view_mode
+    expect_filter_effect: false
+    expect_dynamic_text_effect: true
+    dynamic_text_selectors: ["#s6_dynamic_chart", "#s6_dynamic_summary"]
+    min_non_empty_charts_expected: 0
+    required_selectors:
+      - "#pw-single-graph-s6"
+      - "[data-show-when]"
+      - ".collapse-toggle"
+    required_texts:
+      - "S6_ShowWhen_On_Chart"
+    forbidden_console_patterns: []
+
+  - id: single-graph-plotly-s6
+    modes: [smoke, full]
+    source_type: docs
+    backend: plotly
+    url_path: /sidebar_single_plotly/docs/s6_showwhen_on_chart.html
+    expect_chart_backend: []
+    interaction_plan: [show_when_toggle, sidebar_toggle]
+    preferred_filter_var: view_mode
+    expect_filter_effect: false
+    expect_dynamic_text_effect: true
+    dynamic_text_selectors: ["#s6_dynamic_chart", "#s6_dynamic_summary"]
+    min_non_empty_charts_expected: 0
+    required_selectors:
+      - "#pw-single-graph-s6"
+      - "[data-show-when]"
+      - ".collapse-toggle"
+    required_texts:
+      - "S6_ShowWhen_On_Chart"
+    forbidden_console_patterns: []
+
+  - id: single-graph-hc-s6
+    modes: [smoke, full]
+    source_type: docs
+    backend: highcharter
+    url_path: /sidebar_single_hc/docs/s6_showwhen_on_chart.html
+    expect_chart_backend: []
+    interaction_plan: [show_when_toggle, sidebar_toggle]
+    preferred_filter_var: view_mode
+    expect_filter_effect: false
+    expect_dynamic_text_effect: true
+    dynamic_text_selectors: ["#s6_dynamic_chart", "#s6_dynamic_summary"]
+    min_non_empty_charts_expected: 0
+    required_selectors:
+      - "#pw-single-graph-s6"
+      - "[data-show-when]"
+      - ".collapse-toggle"
+    required_texts:
+      - "S6_ShowWhen_On_Chart"
+    forbidden_console_patterns: []
+
+  # ---------------------------------------------------------------------------
+  # S7: Stacked bar + compound show_when (full)
+  # Stackedbar DOES support cross_tab_filter_vars -> filter effect expected.
+  # show_when toggles callouts based on region radio selection.
+  # ---------------------------------------------------------------------------
+  - id: single-graph-echarts-s7
+    modes: [full]
+    source_type: docs
+    backend: echarts4r
+    url_path: /sidebar_single_echarts/docs/s7_stacked_compound_showwhen.html
+    expect_chart_backend: [echarts4r]
+    interaction_plan: [filter, show_when_toggle, sidebar_toggle]
+    preferred_filter_var: region
+    expect_filter_effect: true
+    expect_dynamic_text_effect: true
+    dynamic_text_selectors: ["#s7_dynamic_midwest", "#s7_dynamic_other"]
+    min_non_empty_charts_expected: 1
+    required_selectors:
+      - "#pw-single-graph-s7"
+      - "[data-show-when]"
+      - ".collapse-toggle"
+    required_texts:
+      - "S7_Stacked_Compound_ShowWhen"
+    forbidden_console_patterns: []
+
+  - id: single-graph-plotly-s7
+    modes: [full]
+    source_type: docs
+    backend: plotly
+    url_path: /sidebar_single_plotly/docs/s7_stacked_compound_showwhen.html
+    expect_chart_backend: [plotly]
+    interaction_plan: [filter, show_when_toggle, sidebar_toggle]
+    preferred_filter_var: region
+    expect_filter_effect: true
+    expect_dynamic_text_effect: true
+    dynamic_text_selectors: ["#s7_dynamic_midwest", "#s7_dynamic_other"]
+    min_non_empty_charts_expected: 1
+    required_selectors:
+      - "#pw-single-graph-s7"
+      - "[data-show-when]"
+      - ".collapse-toggle"
+    required_texts:
+      - "S7_Stacked_Compound_ShowWhen"
+    forbidden_console_patterns: []
+
+  - id: single-graph-hc-s7
+    modes: [full]
+    source_type: docs
+    backend: highcharter
+    url_path: /sidebar_single_hc/docs/s7_stacked_compound_showwhen.html
+    expect_chart_backend: [highcharter]
+    interaction_plan: [filter, show_when_toggle, sidebar_toggle]
+    preferred_filter_var: region
+    expect_filter_effect: true
+    expect_dynamic_text_effect: true
+    dynamic_text_selectors: ["#s7_dynamic_midwest", "#s7_dynamic_other"]
+    min_non_empty_charts_expected: 1
+    required_selectors:
+      - "#pw-single-graph-s7"
+      - "[data-show-when]"
+      - ".collapse-toggle"
+    required_texts:
+      - "S7_Stacked_Compound_ShowWhen"
+    forbidden_console_patterns: []

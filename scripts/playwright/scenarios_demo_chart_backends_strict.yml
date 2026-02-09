@@ -1,0 +1,321 @@
+version: 1
+
+defaults:
+  forbidden_console_patterns:
+    - "Uncaught"
+    - "Unhandled promise rejection"
+    - "Cannot read properties of undefined"
+  require_all_inputs_affect_all_charts: true
+  require_all_input_vars_affect_all_charts: true
+  require_all_charts_change_on_filter: true
+  require_all_charts_change_on_slider: true
+
+scenarios:
+  - id: demo-echarts-layout-1
+    modes: [smoke, full]
+    source_type: docs
+    backend: echarts4r
+    url_path: /here/docs/layout_1___default_one_column.html
+    expect_chart_backend: [echarts4r]
+    interaction_plan: [slider, filter, sidebar_toggle]
+    preferred_filter_var: region
+    preferred_slider_var: year
+    expect_filter_effect: true
+    expect_slider_effect: true
+    expect_dynamic_text_effect: true
+    min_non_empty_charts_expected: 1
+    required_selectors:
+      - ".dashboardr-checkbox-group[data-filter-var='region']"
+      - ".collapse-toggle"
+    required_texts:
+      - "Layout 1 - Default One Column"
+    forbidden_console_patterns: []
+
+  - id: demo-echarts-layout-2
+    modes: [full]
+    source_type: docs
+    backend: echarts4r
+    url_path: /here/docs/layout_2___explicit_one_column.html
+    expect_chart_backend: [echarts4r]
+    interaction_plan: [slider, filter, sidebar_toggle]
+    preferred_filter_var: year
+    preferred_slider_var: year
+    expect_filter_effect: true
+    expect_slider_effect: true
+    expect_dynamic_text_effect: true
+    min_non_empty_charts_expected: 2
+    required_selectors:
+      - ".two-r1"
+      - ".collapse-toggle"
+    required_texts:
+      - "Layout 2 - Explicit One Column"
+    forbidden_console_patterns: []
+
+  - id: demo-echarts-layout-3
+    modes: [full]
+    source_type: docs
+    backend: echarts4r
+    url_path: /here/docs/layout_3___two_columns.html
+    expect_chart_backend: [echarts4r]
+    interaction_plan: [filter, sidebar_toggle]
+    preferred_filter_var: education
+    preferred_slider_var: year
+    expect_filter_effect: true
+    expect_slider_effect: false
+    min_non_empty_charts_expected: 2
+    require_education_boxplot_categories: true
+    required_selectors:
+      - ".three-left-r1"
+      - ".three-right-r1"
+      - ".collapse-toggle"
+    required_texts:
+      - "Layout 3 - Two Columns"
+    forbidden_console_patterns: []
+
+  - id: demo-echarts-layout-4
+    modes: [full]
+    source_type: docs
+    backend: echarts4r
+    url_path: /here/docs/layout_4___two_columns___table.html
+    expect_chart_backend: [echarts4r]
+    interaction_plan: [slider, filter, sidebar_toggle]
+    preferred_filter_var: year
+    preferred_slider_var: year
+    expect_filter_effect: true
+    expect_slider_effect: true
+    expect_dynamic_text_effect: true
+    min_non_empty_charts_expected: 2
+    required_selectors:
+      - ".four-left-r1"
+      - ".four-right-r1"
+      - ".datatables"
+      - ".collapse-toggle"
+    required_texts:
+      - "Layout 4 - Two Columns + Table"
+    forbidden_console_patterns: []
+
+  - id: demo-echarts-layout-5
+    modes: [full]
+    source_type: docs
+    backend: echarts4r
+    url_path: /here/docs/layout_5___two_columns_stacked.html
+    expect_chart_backend: [echarts4r]
+    interaction_plan: [filter, sidebar_toggle]
+    preferred_filter_var: happiness
+    preferred_slider_var: year
+    expect_filter_effect: true
+    expect_slider_effect: false
+    min_non_empty_charts_expected: 4
+    required_selectors:
+      - ".five-left-r1"
+      - ".five-right-r2"
+      - ".collapse-toggle"
+    required_texts:
+      - "Layout 5 - Two Columns Stacked"
+    forbidden_console_patterns: []
+
+  - id: demo-plotly-layout-1
+    modes: [smoke, full]
+    source_type: docs
+    backend: plotly
+    url_path: /here_plotly/docs/layout_1___default_one_column.html
+    expect_chart_backend: [plotly]
+    interaction_plan: [slider, filter, sidebar_toggle]
+    preferred_filter_var: region
+    preferred_slider_var: year
+    expect_filter_effect: true
+    expect_slider_effect: true
+    expect_dynamic_text_effect: true
+    min_non_empty_charts_expected: 1
+    required_selectors:
+      - ".dashboardr-checkbox-group[data-filter-var='region']"
+      - ".collapse-toggle"
+    required_texts:
+      - "Layout 1 - Default One Column"
+    forbidden_console_patterns: []
+
+  - id: demo-plotly-layout-2
+    modes: [full]
+    source_type: docs
+    backend: plotly
+    url_path: /here_plotly/docs/layout_2___explicit_one_column.html
+    expect_chart_backend: [plotly]
+    interaction_plan: [slider, filter, sidebar_toggle]
+    preferred_filter_var: year
+    preferred_slider_var: year
+    expect_filter_effect: true
+    expect_slider_effect: true
+    expect_dynamic_text_effect: true
+    min_non_empty_charts_expected: 2
+    required_selectors:
+      - ".two-r1"
+      - ".collapse-toggle"
+    required_texts:
+      - "Layout 2 - Explicit One Column"
+    forbidden_console_patterns: []
+
+  - id: demo-plotly-layout-3
+    modes: [full]
+    source_type: docs
+    backend: plotly
+    url_path: /here_plotly/docs/layout_3___two_columns.html
+    expect_chart_backend: [plotly]
+    interaction_plan: [filter, sidebar_toggle]
+    preferred_filter_var: education
+    preferred_slider_var: year
+    expect_filter_effect: true
+    expect_slider_effect: false
+    min_non_empty_charts_expected: 2
+    require_education_boxplot_categories: true
+    required_selectors:
+      - ".three-left-r1"
+      - ".three-right-r1"
+      - ".collapse-toggle"
+    required_texts:
+      - "Layout 3 - Two Columns"
+    forbidden_console_patterns: []
+
+  - id: demo-plotly-layout-4
+    modes: [full]
+    source_type: docs
+    backend: plotly
+    url_path: /here_plotly/docs/layout_4___two_columns___table.html
+    expect_chart_backend: [plotly]
+    interaction_plan: [slider, filter, sidebar_toggle]
+    preferred_filter_var: year
+    preferred_slider_var: year
+    expect_filter_effect: true
+    expect_slider_effect: true
+    expect_dynamic_text_effect: true
+    min_non_empty_charts_expected: 2
+    required_selectors:
+      - ".four-left-r1"
+      - ".four-right-r1"
+      - ".datatables"
+      - ".collapse-toggle"
+    required_texts:
+      - "Layout 4 - Two Columns + Table"
+    forbidden_console_patterns: []
+
+  - id: demo-plotly-layout-5
+    modes: [full]
+    source_type: docs
+    backend: plotly
+    url_path: /here_plotly/docs/layout_5___two_columns_stacked.html
+    expect_chart_backend: [plotly]
+    interaction_plan: [filter, sidebar_toggle]
+    preferred_filter_var: happiness
+    preferred_slider_var: year
+    expect_filter_effect: true
+    expect_slider_effect: false
+    min_non_empty_charts_expected: 4
+    required_selectors:
+      - ".five-left-r1"
+      - ".five-right-r2"
+      - ".collapse-toggle"
+    required_texts:
+      - "Layout 5 - Two Columns Stacked"
+    forbidden_console_patterns: []
+
+  - id: demo-highcharter-layout-1
+    modes: [smoke, full]
+    source_type: docs
+    backend: highcharter
+    url_path: /here_hc/docs/layout_1___default_one_column.html
+    expect_chart_backend: [highcharter]
+    interaction_plan: [slider, filter, sidebar_toggle]
+    preferred_filter_var: region
+    preferred_slider_var: year
+    expect_filter_effect: true
+    expect_slider_effect: true
+    expect_dynamic_text_effect: true
+    min_non_empty_charts_expected: 1
+    required_selectors:
+      - ".dashboardr-checkbox-group[data-filter-var='region']"
+      - ".collapse-toggle"
+    required_texts:
+      - "Layout 1 - Default One Column"
+    forbidden_console_patterns: []
+
+  - id: demo-highcharter-layout-2
+    modes: [full]
+    source_type: docs
+    backend: highcharter
+    url_path: /here_hc/docs/layout_2___explicit_one_column.html
+    expect_chart_backend: [highcharter]
+    interaction_plan: [slider, filter, sidebar_toggle]
+    preferred_filter_var: year
+    preferred_slider_var: year
+    expect_filter_effect: true
+    expect_slider_effect: true
+    expect_dynamic_text_effect: true
+    min_non_empty_charts_expected: 2
+    required_selectors:
+      - ".two-r1"
+      - ".collapse-toggle"
+    required_texts:
+      - "Layout 2 - Explicit One Column"
+    forbidden_console_patterns: []
+
+  - id: demo-highcharter-layout-3
+    modes: [full]
+    source_type: docs
+    backend: highcharter
+    url_path: /here_hc/docs/layout_3___two_columns.html
+    expect_chart_backend: [highcharter]
+    interaction_plan: [filter, sidebar_toggle]
+    preferred_filter_var: education
+    preferred_slider_var: year
+    expect_filter_effect: true
+    expect_slider_effect: false
+    min_non_empty_charts_expected: 2
+    require_education_boxplot_categories: true
+    required_selectors:
+      - ".three-left-r1"
+      - ".three-right-r1"
+      - ".collapse-toggle"
+    required_texts:
+      - "Layout 3 - Two Columns"
+    forbidden_console_patterns: []
+
+  - id: demo-highcharter-layout-4
+    modes: [full]
+    source_type: docs
+    backend: highcharter
+    url_path: /here_hc/docs/layout_4___two_columns___table.html
+    expect_chart_backend: [highcharter]
+    interaction_plan: [slider, filter, sidebar_toggle]
+    preferred_filter_var: year
+    preferred_slider_var: year
+    expect_filter_effect: true
+    expect_slider_effect: true
+    expect_dynamic_text_effect: true
+    min_non_empty_charts_expected: 2
+    required_selectors:
+      - ".four-left-r1"
+      - ".four-right-r1"
+      - ".datatables"
+      - ".collapse-toggle"
+    required_texts:
+      - "Layout 4 - Two Columns + Table"
+    forbidden_console_patterns: []
+
+  - id: demo-highcharter-layout-5
+    modes: [full]
+    source_type: docs
+    backend: highcharter
+    url_path: /here_hc/docs/layout_5___two_columns_stacked.html
+    expect_chart_backend: [highcharter]
+    interaction_plan: [filter, sidebar_toggle]
+    preferred_filter_var: happiness
+    preferred_slider_var: year
+    expect_filter_effect: true
+    expect_slider_effect: false
+    min_non_empty_charts_expected: 4
+    required_selectors:
+      - ".five-left-r1"
+      - ".five-right-r2"
+      - ".collapse-toggle"
+    required_texts:
+      - "Layout 5 - Two Columns Stacked"
+    forbidden_console_patterns: []

@@ -444,7 +444,7 @@ density = list(
 #' @param backend Character backend value.
 #' @param warn_alias Logical. If TRUE, emits a warning when an alias is used.
 #' @keywords internal
-.normalize_backend <- function(backend, warn_alias = TRUE) {
+.normalize_backend <- function(backend, warn_alias = FALSE) {
   if (is.null(backend)) {
     return(backend)
   }
@@ -456,7 +456,7 @@ density = list(
   if (identical(b, "echarts")) {
     if (isTRUE(warn_alias)) {
       warning(
-        "backend = 'echarts' is deprecated; using 'echarts4r' instead.",
+        "backend = 'echarts' is an alias for 'echarts4r'; using 'echarts4r'.",
         call. = FALSE
       )
     }

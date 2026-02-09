@@ -1,0 +1,54 @@
+version: 1
+
+defaults:
+  forbidden_console_patterns:
+    - "Uncaught"
+    - "Unhandled promise rejection"
+    - "Cannot read properties of undefined"
+
+scenarios:
+  - id: demo-sidebar-gss-echarts
+    modes: [smoke, full]
+    source_type: docs
+    backend: echarts4r
+    url_path: /sidebar_gss_demo_echarts/docs/explorer.html
+    expect_chart_backend: [echarts4r]
+    interaction_plan: [linked_inputs, filter, show_when_toggle, sidebar_toggle]
+    preferred_filter_var: breakdown_type
+    expect_filter_effect: true
+    min_non_empty_charts_expected: 1
+    max_large_empty_cards: 0
+    large_empty_card_min_height: 180
+    required_selectors:
+      - "#pw-sidebar-marker-echarts4r"
+      - "[data-linked-child-id]"
+      - "[data-show-when]"
+      - ".collapse-toggle"
+      - ".echarts4r, .echarts"
+    required_texts:
+      - "GSS Explorer"
+      - "Compare by"
+    forbidden_console_patterns: []
+
+  - id: demo-sidebar-gss-plotly
+    modes: [smoke, full]
+    source_type: docs
+    backend: plotly
+    url_path: /sidebar_gss_demo_plotly/docs/explorer.html
+    expect_chart_backend: [plotly]
+    interaction_plan: [linked_inputs, filter, show_when_toggle, sidebar_toggle]
+    preferred_filter_var: breakdown_type
+    expect_filter_effect: true
+    min_non_empty_charts_expected: 1
+    max_large_empty_cards: 0
+    large_empty_card_min_height: 180
+    required_selectors:
+      - "#pw-sidebar-marker-plotly"
+      - "[data-linked-child-id]"
+      - "[data-show-when]"
+      - ".collapse-toggle"
+      - ".js-plotly-plot"
+    required_texts:
+      - "GSS Explorer"
+      - "Compare by"
+    forbidden_console_patterns: []

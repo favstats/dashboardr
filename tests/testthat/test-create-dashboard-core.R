@@ -165,6 +165,14 @@ test_that("create_dashboard accepts lazy loading parameters", {
   expect_true(result$lazy_load_tabs)
 })
 
+test_that("create_dashboard accepts contextual_viz_errors parameter", {
+  result_default <- create_dashboard("test", "Test")
+  result_enabled <- create_dashboard("test", "Test", contextual_viz_errors = TRUE)
+
+  expect_false(result_default$contextual_viz_errors)
+  expect_true(result_enabled$contextual_viz_errors)
+})
+
 test_that("create_dashboard accepts pagination parameters", {
   result <- create_dashboard(
     "test", "Test",

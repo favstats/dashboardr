@@ -164,7 +164,7 @@ viz_scatter <- function(data,
     if (include_na) {
       plot_data <- plot_data %>%
         dplyr::mutate(
-          !!rlang::sym(color_var) := forcats::fct_explicit_na(!!rlang::sym(color_var), na_level = na_label)
+          !!rlang::sym(color_var) := forcats::fct_na_value_to_level(!!rlang::sym(color_var), level = na_label)
         )
     } else {
       plot_data <- plot_data %>%
@@ -534,4 +534,3 @@ viz_scatter <- function(data,
     ggplot2::labs(title = title, x = final_x_label, y = final_y_label)
   ggiraph::girafe(ggobj = p)
 }
-

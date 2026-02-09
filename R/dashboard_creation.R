@@ -117,6 +117,8 @@
 #' @param powered_by_dashboardr Whether to automatically add "Powered by dashboardr" branding (default: TRUE). When TRUE, adds a badge-style branding element. Can be overridden by explicitly calling add_powered_by_dashboardr() with custom options, or set to FALSE to disable entirely.
 #' @param chart_export Whether to enable chart export functionality (default FALSE)
 #' @param backend Rendering backend: "highcharter" (default), "plotly", "echarts4r", or "ggiraph".
+#' @param contextual_viz_errors Logical. If TRUE, generated visualization chunks wrap viz calls
+#'   in tryCatch and prepend contextual labels (title/type) to error messages. Default: FALSE.
 #' @return A dashboard_project object
 #' @export
 #' @examples
@@ -281,7 +283,8 @@ create_dashboard <- function(output_dir = "site",
                             pagination_position = "bottom",
                             powered_by_dashboardr = TRUE,
                             chart_export = FALSE,
-                            backend = "highcharter") {
+                            backend = "highcharter",
+                            contextual_viz_errors = FALSE) {
 
   output_dir <- .resolve_output_dir(output_dir, allow_inside_pkg)
 
@@ -294,6 +297,10 @@ create_dashboard <- function(output_dir = "site",
   backend <- .normalize_backend(backend)
   valid_backends <- c("highcharter", "plotly", "echarts4r", "ggiraph")
   backend <- match.arg(backend, valid_backends)
+  
+  if (!is.logical(contextual_viz_errors) || length(contextual_viz_errors) != 1 || is.na(contextual_viz_errors)) {
+    stop("contextual_viz_errors must be TRUE or FALSE", call. = FALSE)
+  }
 
   # Validate tabset_theme
   valid_themes <- c("modern", "minimal", "pills", "classic", "underline", "segmented", "none")
@@ -421,6 +428,7 @@ create_dashboard <- function(output_dir = "site",
     powered_by_dashboardr = powered_by_dashboardr,
     chart_export = chart_export,
     backend = backend,
+    contextual_viz_errors = contextual_viz_errors,
     pages = list(),
     data_files = NULL
   ), class = "dashboard_project")
@@ -455,6 +463,229 @@ create_dashboard <- function(output_dir = "site",
     }
   }
   FALSE
+}
+
+.dataset_hash_for_path <- function(existing_data, path) {
+  if (is.null(path)) return(NULL)
+  existing_data[[path]] %||% existing_data[[basename(path)]]
+}
+
+.queue_dataset_for_project <- function(proj, existing_data, df) {
+  data_hash <- digest::digest(df)
+
+  existing_path <- NULL
+  for (p in names(existing_data)) {
+    if (identical(existing_data[[p]], data_hash)) {
+      existing_path <- p
+      break
+    }
+  }
+
+  if (is.null(existing_path)) {
+    base <- "dataset"
+    if (nrow(df) < 1000) {
+      base <- paste0(base, "_small")
+    } else if (nrow(df) > 5000) {
+      base <- paste0(base, "_large")
+    }
+    base <- paste0(base, "_", nrow(df), "obs")
+    candidate <- paste0(base, ".rds")
+    counter <- 2
+    while (candidate %in% names(existing_data)) {
+      candidate <- paste0(base, "_", counter, ".rds")
+      counter <- counter + 1
+    }
+    existing_path <- candidate
+
+    existing_data[[existing_path]] <- data_hash
+    if (is.null(proj$data_files)) {
+      proj$data_files <- list()
+    }
+    proj$data_files[[existing_path]] <- data_hash
+    if (is.null(proj$pending_data)) {
+      proj$pending_data <- list()
+    }
+    proj$pending_data[[existing_path]] <- df
+  }
+
+  list(
+    proj = proj,
+    existing_data = existing_data,
+    path = basename(existing_path),
+    hash = data_hash
+  )
+}
+
+.next_dataset_ref_name <- function(existing_names) {
+  if (!("dataset" %in% existing_names)) return("dataset")
+  idx <- 2L
+  repeat {
+    candidate <- paste0("dataset_", idx)
+    if (!(candidate %in% existing_names)) return(candidate)
+    idx <- idx + 1L
+  }
+}
+
+.build_page_hash_to_ref <- function(existing_data, data_path) {
+  hash_to_ref <- list()
+
+  if (!is.null(data_path) && !is.list(data_path)) {
+    page_hash <- .dataset_hash_for_path(existing_data, data_path)
+    if (!is.null(page_hash)) {
+      hash_to_ref[[page_hash]] <- "data"
+    }
+  } else if (is.list(data_path) && length(data_path) > 0) {
+    for (nm in names(data_path)) {
+      h <- .dataset_hash_for_path(existing_data, data_path[[nm]])
+      if (!is.null(h)) {
+        hash_to_ref[[h]] <- nm
+      }
+    }
+  }
+
+  hash_to_ref
+}
+
+.intern_inline_viz_data_node <- function(item, page_name, path_label, proj, existing_data, data_path, is_multi_dataset, hash_to_ref) {
+  if (is.null(item) || !is.list(item)) {
+    return(list(
+      item = item,
+      proj = proj,
+      existing_data = existing_data,
+      data_path = data_path,
+      is_multi_dataset = is_multi_dataset,
+      hash_to_ref = hash_to_ref
+    ))
+  }
+
+  if (identical(item$type, "viz") && !is.null(item$data_serialized) && nzchar(item$data_serialized)) {
+    viz_label <- item$title %||% item$viz_type %||% path_label
+    viz_df <- tryCatch(
+      as.data.frame(eval(parse(text = item$data_serialized), envir = baseenv())),
+      error = function(e) {
+        stop(
+          "Failed to deserialize inline viz data in page '", page_name,
+          "' (", viz_label, "): ", conditionMessage(e),
+          call. = FALSE
+        )
+      }
+    )
+
+    viz_hash <- digest::digest(viz_df)
+    dataset_ref <- hash_to_ref[[viz_hash]] %||% NULL
+
+    if (is.null(dataset_ref)) {
+      queued <- .queue_dataset_for_project(proj, existing_data, viz_df)
+      proj <- queued$proj
+      existing_data <- queued$existing_data
+
+      if (is.null(data_path)) {
+        data_path <- queued$path
+        is_multi_dataset <- FALSE
+        dataset_ref <- "data"
+      } else if (!is.list(data_path)) {
+        data_path <- list(data = basename(data_path))
+        is_multi_dataset <- TRUE
+        dataset_ref <- .next_dataset_ref_name(names(data_path))
+        data_path[[dataset_ref]] <- queued$path
+      } else {
+        dataset_ref <- .next_dataset_ref_name(names(data_path))
+        data_path[[dataset_ref]] <- queued$path
+      }
+      hash_to_ref[[viz_hash]] <- dataset_ref
+    }
+
+    item$data <- dataset_ref
+    item$data_serialized <- NULL
+    item$data_is_dataframe <- FALSE
+  }
+
+  if (!is.null(item$items) && is.list(item$items) && length(item$items) > 0) {
+    for (k in seq_along(item$items)) {
+      child_label <- paste0(path_label, " > item ", k)
+      child_result <- .intern_inline_viz_data_node(
+        item$items[[k]],
+        page_name = page_name,
+        path_label = child_label,
+        proj = proj,
+        existing_data = existing_data,
+        data_path = data_path,
+        is_multi_dataset = is_multi_dataset,
+        hash_to_ref = hash_to_ref
+      )
+      item$items[[k]] <- child_result$item
+      proj <- child_result$proj
+      existing_data <- child_result$existing_data
+      data_path <- child_result$data_path
+      is_multi_dataset <- child_result$is_multi_dataset
+      hash_to_ref <- child_result$hash_to_ref
+    }
+  }
+
+  list(
+    item = item,
+    proj = proj,
+    existing_data = existing_data,
+    data_path = data_path,
+    is_multi_dataset = is_multi_dataset,
+    hash_to_ref = hash_to_ref
+  )
+}
+
+.intern_inline_viz_data_for_page <- function(proj, page_name, data_path, is_multi_dataset, visualizations, content_blocks) {
+  existing_data <- proj$data_files %||% list()
+  hash_to_ref <- .build_page_hash_to_ref(existing_data, data_path)
+
+  if (!is.null(visualizations) && is_content(visualizations) &&
+      !is.null(visualizations$items) && length(visualizations$items) > 0) {
+    for (i in seq_along(visualizations$items)) {
+      result <- .intern_inline_viz_data_node(
+        visualizations$items[[i]],
+        page_name = page_name,
+        path_label = paste0("visualizations item ", i),
+        proj = proj,
+        existing_data = existing_data,
+        data_path = data_path,
+        is_multi_dataset = is_multi_dataset,
+        hash_to_ref = hash_to_ref
+      )
+      visualizations$items[[i]] <- result$item
+      proj <- result$proj
+      existing_data <- result$existing_data
+      data_path <- result$data_path
+      is_multi_dataset <- result$is_multi_dataset
+      hash_to_ref <- result$hash_to_ref
+    }
+  }
+
+  if (!is.null(content_blocks) && length(content_blocks) > 0) {
+    for (i in seq_along(content_blocks)) {
+      result <- .intern_inline_viz_data_node(
+        content_blocks[[i]],
+        page_name = page_name,
+        path_label = paste0("content_blocks[[", i, "]]"),
+        proj = proj,
+        existing_data = existing_data,
+        data_path = data_path,
+        is_multi_dataset = is_multi_dataset,
+        hash_to_ref = hash_to_ref
+      )
+      content_blocks[[i]] <- result$item
+      proj <- result$proj
+      existing_data <- result$existing_data
+      data_path <- result$data_path
+      is_multi_dataset <- result$is_multi_dataset
+      hash_to_ref <- result$hash_to_ref
+    }
+  }
+
+  list(
+    proj = proj,
+    data_path = data_path,
+    is_multi_dataset = is_multi_dataset,
+    visualizations = visualizations,
+    content_blocks = content_blocks
+  )
 }
 
 #' Add a page to the dashboard
@@ -913,123 +1144,22 @@ add_dashboard_page <- function(proj, name, data = NULL, data_path = NULL,
 
   # Intern inline viz-level data frames into page/global dataset files so
   # generated QMD uses shared dataset objects instead of huge inline literals.
-  if (!is.null(visualizations) && is_content(visualizations) &&
-      !is.null(visualizations$items) && length(visualizations$items) > 0) {
-    existing_data <- proj$data_files %||% list()
-
-    get_hash_for_path <- function(path) {
-      if (is.null(path)) return(NULL)
-      existing_data[[path]] %||% existing_data[[basename(path)]]
-    }
-
-    queue_dataset <- function(df) {
-      data_hash <- digest::digest(df)
-
-      existing_path <- NULL
-      for (p in names(existing_data)) {
-        if (identical(existing_data[[p]], data_hash)) {
-          existing_path <- p
-          break
-        }
-      }
-
-      if (is.null(existing_path)) {
-        base <- "dataset"
-        if (nrow(df) < 1000) {
-          base <- paste0(base, "_small")
-        } else if (nrow(df) > 5000) {
-          base <- paste0(base, "_large")
-        }
-        base <- paste0(base, "_", nrow(df), "obs")
-        candidate <- paste0(base, ".rds")
-        counter <- 2
-        while (candidate %in% names(existing_data)) {
-          candidate <- paste0(base, "_", counter, ".rds")
-          counter <- counter + 1
-        }
-        existing_path <- candidate
-        existing_data[[existing_path]] <- data_hash
-        if (is.null(proj$data_files)) proj$data_files <<- list()
-        proj$data_files[[existing_path]] <<- data_hash
-        if (is.null(proj$pending_data)) proj$pending_data <<- list()
-        proj$pending_data[[existing_path]] <<- df
-      }
-
-      list(path = basename(existing_path), hash = data_hash)
-    }
-
-    # Build a hash -> dataset reference map for this page.
-    hash_to_ref <- list()
-    if (!is.null(data_path) && !is.list(data_path)) {
-      page_hash <- get_hash_for_path(data_path)
-      if (!is.null(page_hash)) {
-        hash_to_ref[[page_hash]] <- "data"
-      }
-    } else if (is.list(data_path) && length(data_path) > 0) {
-      for (nm in names(data_path)) {
-        h <- get_hash_for_path(data_path[[nm]])
-        if (!is.null(h)) {
-          hash_to_ref[[h]] <- nm
-        }
-      }
-    }
-
-    next_dataset_ref <- function(existing_names) {
-      if (!("dataset" %in% existing_names)) return("dataset")
-      idx <- 2L
-      repeat {
-        candidate <- paste0("dataset_", idx)
-        if (!(candidate %in% existing_names)) return(candidate)
-        idx <- idx + 1L
-      }
-    }
-
-    for (i in seq_along(visualizations$items)) {
-      item <- visualizations$items[[i]]
-      if (is.null(item) || !is.list(item) || !identical(item$type, "viz")) next
-      if (is.null(item$data_serialized) || !nzchar(item$data_serialized)) next
-
-      viz_label <- item$title %||% item$viz_type %||% paste0("viz #", i)
-      viz_df <- tryCatch(
-        as.data.frame(eval(parse(text = item$data_serialized), envir = baseenv())),
-        error = function(e) {
-          stop(
-            "Failed to deserialize inline viz data in page '", name,
-            "' (", viz_label, "): ", conditionMessage(e),
-            call. = FALSE
-          )
-        }
-      )
-
-      viz_hash <- digest::digest(viz_df)
-      dataset_ref <- hash_to_ref[[viz_hash]] %||% NULL
-
-      # Not found yet: queue/reuse a file and add one page-level reference.
-      if (is.null(dataset_ref)) {
-        queued <- queue_dataset(viz_df)
-
-        if (is.null(data_path)) {
-          # First dataset on the page: keep single-dataset mode.
-          data_path <- queued$path
-          is_multi_dataset <- FALSE
-          dataset_ref <- "data"
-        } else if (!is.list(data_path)) {
-          # Page already has a different single dataset -> switch to multi dataset.
-          data_path <- list(data = basename(data_path))
-          is_multi_dataset <- TRUE
-          dataset_ref <- next_dataset_ref(names(data_path))
-          data_path[[dataset_ref]] <- queued$path
-        } else {
-          dataset_ref <- next_dataset_ref(names(data_path))
-          data_path[[dataset_ref]] <- queued$path
-        }
-        hash_to_ref[[viz_hash]] <- dataset_ref
-      }
-
-      visualizations$items[[i]]$data <- dataset_ref
-      visualizations$items[[i]]$data_serialized <- NULL
-      visualizations$items[[i]]$data_is_dataframe <- FALSE
-    }
+  # This runs across both top-level visualizations and visualizations embedded in
+  # mixed content blocks.
+  if (!is.null(visualizations) || !is.null(content_blocks)) {
+    intern_result <- .intern_inline_viz_data_for_page(
+      proj = proj,
+      page_name = name,
+      data_path = data_path,
+      is_multi_dataset = is_multi_dataset,
+      visualizations = visualizations,
+      content_blocks = content_blocks
+    )
+    proj <- intern_result$proj
+    data_path <- intern_result$data_path
+    is_multi_dataset <- intern_result$is_multi_dataset
+    visualizations <- intern_result$visualizations
+    content_blocks <- intern_result$content_blocks
   }
 
   # Process visualization specifications
@@ -1197,6 +1327,7 @@ add_dashboard_page <- function(proj, name, data = NULL, data_path = NULL,
     pagination_separator = pagination_separator %||% proj$pagination_separator %||% "of",
     chart_export = proj$chart_export %||% FALSE,
     backend = proj$backend %||% "highcharter",
+    contextual_viz_errors = proj$contextual_viz_errors %||% FALSE,
     tabgroup_labels = page_tabgroup_labels
   )
 

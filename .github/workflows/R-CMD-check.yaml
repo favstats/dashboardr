@@ -28,6 +28,7 @@ jobs:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
       R_KEEP_PKG_SOURCE: yes
       DASHBOARDR_COVR_CI: true
+      DASHBOARDR_MATRIX_LEVEL: pr
 
     steps:
       - uses: actions/checkout@v4
@@ -48,6 +49,12 @@ jobs:
           http-user-agent: ${{ matrix.config.http-user-agent }}
           use-public-rspm: true
           extra-repositories: https://kjhealy.r-universe.dev
+
+      - name: Enforce artifact policy
+        run: Rscript scripts/check_artifacts.R
+
+      - name: Verify managed assets are in sync
+        run: Rscript scripts/sync_assets.R --check
 
       - name: Pre-install gssr from r-universe
         run: |

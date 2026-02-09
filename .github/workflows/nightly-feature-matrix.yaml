@@ -1,0 +1,56 @@
+name: nightly-feature-matrix
+
+on:
+  schedule:
+    - cron: '0 8 * * *'
+  workflow_dispatch:
+
+permissions: read-all
+
+jobs:
+  nightly-feature-matrix:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    env:
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+      DASHBOARDR_MATRIX_LEVEL: nightly
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Free runner resources
+        run: |
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /opt/ghc
+          sudo rm -rf /usr/local/share/boost
+
+      - uses: r-lib/actions/setup-pandoc@v2
+
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          use-public-rspm: true
+          extra-repositories: https://kjhealy.r-universe.dev
+
+      - name: Enforce artifact policy
+        run: Rscript scripts/check_artifacts.R
+
+      - name: Verify managed assets are in sync
+        run: Rscript scripts/sync_assets.R --check
+
+      - uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          extra-packages: any::devtools, any::yaml, any::plotly, any::leaflet, any::echarts4r, any::ggiraph, any::testthat
+          needs: test
+          install-quarto: false
+
+      - name: Run nightly feature matrix tests
+        run: |
+          devtools::load_all(quiet = TRUE)
+          testthat::test_file('tests/testthat/test-content-feature-matrix.R')
+          testthat::test_file('tests/testthat/test-feature-matrix-scenarios.R')
+          testthat::test_file('tests/testthat/test-viz-feature-matrix.R')
+          testthat::test_file('tests/testthat/test-backend-feature-matrix.R')
+          testthat::test_file('tests/testthat/test-layout-sidebar-feature-matrix.R')
+          testthat::test_file('tests/testthat/test-input-showwhen-filter-integration.R')
+          testthat::test_file('tests/testthat/test-generation-structure-golden-matrix.R')
+        shell: Rscript {0}

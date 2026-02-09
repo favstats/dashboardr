@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.5.57">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>S3_Scatter_Linked – Sidebar Single Graph (echarts4r)</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script src="site_libs/quarto-dashboard/quarto-dashboard.js"></script>
+<script src="site_libs/quarto-dashboard/stickythead.js"></script>
+<script src="site_libs/quarto-dashboard/datatables.min.js" kdttablesentinel="true"></script>
+<script src="site_libs/quarto-dashboard/pdfmake.min.js" kdttablesentinel="true"></script>
+<script src="site_libs/quarto-dashboard/vfs_fonts.js" kdttablesentinel="true"></script>
+<script src="site_libs/quarto-dashboard/web-components.js" type="module"></script>
+<script src="site_libs/quarto-dashboard/components.js"></script>
+<link href="site_libs/quarto-dashboard/datatables.min.css" rel="stylesheet" kdttablesentinel="true">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<link href="site_libs/htmltools-fill-0.5.9/fill.css" rel="stylesheet">
+<script src="site_libs/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<script src="site_libs/echarts4r-4.8.0/echarts-en.min.js"></script>
+<script src="site_libs/echarts4r-4.8.0/ecStat.min.js"></script>
+<script src="site_libs/echarts4r-4.8.0/dataTool.min.js"></script>
+<script src="site_libs/echarts4r-binding-0.4.6/echarts4r.js"></script>
+
+
+</head>
+
+<body class="quarto-dashboard nav-fixed dashboard-fill dashboard-sidebar fullcontent">
+
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">Sidebar Single Graph (echarts4r)</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="./s1_all_inputs_single_bar.html"> 
+<span class="menu-text">S1_All_Inputs_Single_Bar</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./s2_pie_showwhen.html"> 
+<span class="menu-text">S2_Pie_ShowWhen</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link active" href="./s3_scatter_linked.html" aria-current="page"> 
+<span class="menu-text">S3_Scatter_Linked</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./s4_boxplot_checkbox_slider.html"> 
+<span class="menu-text">S4_Boxplot_Checkbox_Slider</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./s5_bar_reset_button.html"> 
+<span class="menu-text">S5_Bar_Reset_Button</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./s6_showwhen_on_chart.html"> 
+<span class="menu-text">S6_ShowWhen_On_Chart</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./s7_stacked_compound_showwhen.html"> 
+<span class="menu-text">S7_Stacked_Compound_ShowWhen</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+<header id="quarto-dashboard-header">
+<nav class="navbar navbar-expand-md slim" data-bs-theme="dark">
+  <div class="navbar-container container-fluid">
+    <button class="navbar-toggler hidden" type="button" data-bs-toggle="collapse" data-bs-target="#dashboard-collapse" aria-controls="dashboard-collapse" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>    
+
+
+    <div class="navbar-brand-container">       
+
+      <div class="navbar-title">
+        <div class="navbar-title-text"><a href="#">S3_Scatter_Linked</a></div>
+        
+        
+      </div>
+    </div>
+</div>
+</nav>
+</header></header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-layout-custom page-navbar quarto-dashboard-content bslib-gap-spacing html-fill-container bslib-page-fill dashboard-sidebar-container">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+<!-- main -->
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js@10.2.0/public/assets/styles/choices.min.css" class="bslib-grid-item html-fill-item">
+<script src="https://cdn.jsdelivr.net/npm/choices.js@10.2.0/public/assets/scripts/choices.min.js"></script>
+<link rel="stylesheet" href="assets/input_filter.css?v=20260209122137" class="bslib-grid-item html-fill-item">
+<script src="assets/filter_hook.js?v=20260209122137"></script>
+<script src="assets/chart_adapters.js?v=20260209122137"></script>
+<script src="assets/input_filter.js?v=20260209122137"></script>
+<script src="assets/linked_inputs.js?v=20260209122137"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Wait for Highcharts to be available
+  var checkHC = setInterval(function() {
+    if (typeof Highcharts !== 'undefined') {
+      clearInterval(checkHC);
+      // Set global default: enable exporting on all charts
+      Highcharts.setOptions({
+        exporting: {
+          enabled: true,
+          buttons: {
+            contextButton: {
+              menuItems: [
+                'viewFullscreen',
+                'separator',
+                'downloadPNG',
+                'downloadSVG',
+                'downloadPDF',
+                'separator',
+                'downloadCSV',
+                'downloadXLS'
+              ],
+              theme: {
+                fill: 'transparent',
+                stroke: 'none',
+                'stroke-width': 0,
+                r: 4,
+                states: {
+                  hover: { fill: '#f0f0f0' },
+                  select: { fill: '#e0e0e0' }
+                }
+              }
+            }
+          }
+        }
+      });
+      // Re-apply to any charts already rendered
+      if (Highcharts.charts) {
+        Highcharts.charts.forEach(function(chart) {
+          if (chart) {
+            chart.update({ exporting: { enabled: true } }, false);
+            chart.redraw();
+          }
+        });
+      }
+    }
+  }, 200);
+});
+</script>
+<link rel="stylesheet" href="assets/sidebar.css?v=20260209122137" class="bslib-grid-item html-fill-item">
+<script>
+(function() {
+  function markLeftSidebars() {
+    var layouts = document.querySelectorAll('.bslib-sidebar-layout, [data-bslib-sidebar-layout]');
+    layouts.forEach(function(layout) {
+      // Quarto already adds 'sidebar-right' class for right sidebars
+      // We only need to add 'sidebar-left' for sidebars that are NOT right
+      if (!layout.classList.contains('sidebar-right')) {
+        layout.classList.add('sidebar-left');
+        layout.setAttribute('data-sidebar-position', 'left');
+      } else {
+        layout.setAttribute('data-sidebar-position', 'right');
+      }
+    });
+  }
+  
+  // Run on DOM ready and after short delay for dynamic content
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', markLeftSidebars);
+  } else {
+    markLeftSidebars();
+  }
+  setTimeout(markLeftSidebars, 100);
+})();
+</script>
+<div class="bslib-sidebar-layout html-fill-item html-fill-container" data-bslib-sidebar-open="desktop" data-bslib-sidebar-init="true" style=" --bslib-sidebar-width: 285px" data-bslib-sidebar-border="false" data-bslib-sidebar-border-radius="false"><div class="main html-fill-container html-fill-item"><div class="sidebar-content html-fill-item html-fill-container">
+<div class="bslib-grid html-fill-item html-fill-container" style="display: grid; grid-template-columns: minmax(3em, 1fr);
+grid-auto-rows: minmax(0, 1fr);">
+<div class="bslib-grid html-fill-item html-fill-container" style="display: grid; grid-template-rows: minmax(3em, max-content) minmax(3em, 1fr); grid-auto-columns: minmax(0, 1fr);">
+<div class="card bslib-card html-fill-container html-fill-item" data-fill="false" data-bslib-card-init="" data-require-bs-caller="card()" data-full-screen="false">
+<div class="card-body html-fill-item html-fill-container">
+<div id="pw-single-graph-s3" class="html-fill-item html-fill-container">
+
+</div>
+</div>
+<bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()">
+    <template>Expand</template>
+    <span class="bslib-full-screen-enter badge rounded-pill">
+        <svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24" style="height:1em;width:1em;" aria-hidden="true" role="img"><path d="M20 5C20 4.4 19.6 4 19 4H13C12.4 4 12 3.6 12 3C12 2.4 12.4 2 13 2H21C21.6 2 22 2.4 22 3V11C22 11.6 21.6 12 21 12C20.4 12 20 11.6 20 11V5ZM4 19C4 19.6 4.4 20 5 20H11C11.6 20 12 20.4 12 21C12 21.6 11.6 22 11 22H3C2.4 22 2 21.6 2 21V13C2 12.4 2.4 12 3 12C3.6 12 4 12.4 4 13V19Z"></path></svg>
+    </span>
+</bslib-tooltip><script data-bslib-card-init="">bslib.Card.initializeAllCards();</script></div>
+<div class="bslib-grid html-fill-item html-fill-container" style="display: grid; grid-template-columns: minmax(3em, 1fr);
+grid-auto-rows: minmax(0, 1fr);">
+<div class="bslib-grid html-fill-item html-fill-container" style="display: grid; grid-template-rows: minmax(3em, 1fr); grid-auto-columns: minmax(0, 1fr);">
+<div class="card cell bslib-card html-fill-container html-fill-item" data-bslib-card-init="" data-require-bs-caller="card()" data-full-screen="false">
+<div class="card-body html-fill-item html-fill-container">
+<div class="cell-output-display html-fill-item html-fill-container">
+<div class="echarts4r html-widget html-fill-item html-fill-container" id="htmlwidget-19bdb8165ebf8cea8db2" style="width:100%;height:500px;"></div>
+<script type="application/json" data-for="htmlwidget-19bdb8165ebf8cea8db2">{"x":{"theme":"","tl":false,"draw":true,"renderer":"canvas","events":[],"buttons":[],"opts":{"yAxis":[{"show":true,"name":"score"}],"xAxis":[{"type":"value","name":"age"}],"legend":{"data":["Midwest","Northeast","South","West"]},"series":[{"data":[{"value":[18,57]},{"value":[18,62.8]},{"value":[18,62.7]},{"value":[18,50.1]},{"value":[18,62.1]},{"value":[18,63.2]},{"value":[18,63]},{"value":[19,60.4]},{"value":[21,46.9]},{"value":[21,65.3]},{"value":[21,49.6]},{"value":[21,45.7]},{"value":[22,60.8]},{"value":[22,59.3]},{"value":[22,57.8]},{"value":[24,55.7]},{"value":[25,56.5]},{"value":[25,52.4]},{"value":[26,61.2]},{"value":[26,66.90000000000001]},{"value":[27,56.8]},{"value":[29,58.5]},{"value":[29,50.7]},{"value":[29,70.5]},{"value":[29,60]},{"value":[29,58.7]},{"value":[29,58.4]},{"value":[29,60]},{"value":[29,65.8]},{"value":[29,65.7]},{"value":[30,65]},{"value":[30,56.5]},{"value":[30,61.6]},{"value":[30,58.1]},{"value":[30,50.7]},{"value":[31,66.2]},{"value":[31,52.1]},{"value":[31,61.8]},{"value":[31,52.9]},{"value":[32,69.59999999999999]},{"value":[32,58.7]},{"value":[32,66.2]},{"value":[33,59.4]},{"value":[33,62.2]},{"value":[33,59.2]},{"value":[33,78.90000000000001]},{"value":[34,55.4]},{"value":[34,56.9]},{"value":[34,70.5]},{"value":[34,51.4]},{"value":[35,64.8]},{"value":[35,58]},{"value":[35,55.5]},{"value":[36,65.5]},{"value":[36,60.4]},{"value":[36,61.6]},{"value":[36,48.7]},{"value":[36,55.4]},{"value":[37,69.3]},{"value":[37,60.6]},{"value":[37,66.7]},{"value":[37,70.7]},{"value":[37,61.5]},{"value":[37,50.4]},{"value":[38,63.8]},{"value":[38,58.7]},{"value":[38,53.3]},{"value":[39,62.9]},{"value":[39,75.09999999999999]},{"value":[39,47.4]},{"value":[39,53.2]},{"value":[39,68.3]},{"value":[39,68.09999999999999]},{"value":[39,48]},{"value":[40,62]},{"value":[40,58.4]},{"value":[40,67.09999999999999]},{"value":[40,53.6]},{"value":[40,67.09999999999999]},{"value":[40,68.3]},{"value":[40,65.09999999999999]},{"value":[40,58.4]},{"value":[40,56.4]},{"value":[40,64.09999999999999]},{"value":[41,53.4]},{"value":[41,63.3]},{"value":[41,58.7]},{"value":[41,62.3]},{"value":[41,52.5]},{"value":[41,55.8]},{"value":[41,63.6]},{"value":[41,66.3]},{"value":[42,58.6]},{"value":[42,58.3]},{"value":[42,54.2]},{"value":[42,51.6]},{"value":[42,50.3]},{"value":[42,61.7]},{"value":[42,57.8]},{"value":[43,52.6]},{"value":[43,53.4]},{"value":[43,57.9]},{"value":[43,60]},{"value":[43,63.7]},{"value":[43,53.4]},{"value":[44,48.3]},{"value":[44,61.4]},{"value":[44,58]},{"value":[44,68.09999999999999]},{"value":[45,52.3]},{"value":[45,59.7]},{"value":[45,57.2]},{"value":[45,52.9]},{"value":[45,59.7]},{"value":[45,56.8]},{"value":[45,55.7]},{"value":[45,61.4]},{"value":[45,61.4]},{"value":[46,53.4]},{"value":[46,64.8]},{"value":[46,56.2]},{"value":[46,53.3]},{"value":[46,48.3]},{"value":[46,60.6]},{"value":[46,61.4]},{"value":[46,54.2]},{"value":[46,65.09999999999999]},{"value":[47,58.4]},{"value":[47,66]},{"value":[47,67.59999999999999]},{"value":[47,48.2]},{"value":[47,53.7]},{"value":[48,61.7]},{"value":[48,52.5]},{"value":[48,65.59999999999999]},{"value":[48,58.4]},{"value":[48,62.8]},{"value":[48,57.4]},{"value":[49,68.7]},{"value":[49,51.1]},{"value":[49,61.3]},{"value":[49,71.8]},{"value":[49,69.3]},{"value":[50,66.8]},{"value":[50,71.59999999999999]},{"value":[50,58]},{"value":[50,61.4]},{"value":[50,53.5]},{"value":[50,43.7]},{"value":[50,62.2]},{"value":[51,53.4]},{"value":[51,49.2]},{"value":[51,61.6]},{"value":[51,53.8]},{"value":[51,57.4]},{"value":[51,65]},{"value":[51,56.5]},{"value":[51,52.1]},{"value":[52,50.3]},{"value":[52,60.2]},{"value":[52,43.1]},{"value":[52,55.1]},{"value":[52,67.7]},{"value":[52,64]},{"value":[52,55.5]},{"value":[52,68.59999999999999]},{"value":[53,67.2]},{"value":[53,48.3]},{"value":[53,45.6]},{"value":[54,68.3]},{"value":[54,61]},{"value":[54,62.9]},{"value":[55,55.4]},{"value":[55,60.4]},{"value":[55,61.4]},{"value":[55,60.6]},{"value":[55,64.3]},{"value":[56,60.4]},{"value":[56,48.7]},{"value":[56,44.9]},{"value":[56,48.7]},{"value":[57,59.5]},{"value":[57,63.9]},{"value":[58,52.4]},{"value":[58,60.7]},{"value":[58,46.5]},{"value":[59,54.5]},{"value":[59,58.9]},{"value":[59,46.7]},{"value":[60,63.9]},{"value":[60,56.4]},{"value":[60,47.9]},{"value":[61,65.5]},{"value":[62,67]},{"value":[63,47.6]},{"value":[64,56.7]},{"value":[64,69.59999999999999]},{"value":[65,66.2]},{"value":[65,55.7]},{"value":[66,56.1]},{"value":[66,63.2]},{"value":[66,58.5]},{"value":[67,55.5]},{"value":[68,60.3]},{"value":[70,60.8]},{"value":[70,65.7]},{"value":[71,63.2]},{"value":[71,54.4]},{"value":[75,74.3]},{"value":[75,57]},{"value":[78,67.90000000000001]},{"value":[79,63.1]},{"value":[85,57.4]}],"name":"Midwest","type":"scatter","symbol":null,"coordinateSystem":"cartesian2d","yAxisIndex":0,"xAxisIndex":0,"symbolSize":3},{"data":[{"value":[18,66.7]},{"value":[18,53.5]},{"value":[18,60.6]},{"value":[18,57.3]},{"value":[18,59.4]},{"value":[18,59.8]},{"value":[18,51.5]},{"value":[19,60.7]},{"value":[19,53.6]},{"value":[21,51.6]},{"value":[21,57.9]},{"value":[22,52.8]},{"value":[23,69.09999999999999]},{"value":[24,53]},{"value":[24,53]},{"value":[25,52.6]},{"value":[26,69.59999999999999]},{"value":[26,56.3]},{"value":[27,55.3]},{"value":[27,65.40000000000001]},{"value":[28,63.6]},{"value":[28,65.40000000000001]},{"value":[28,62.3]},{"value":[29,64]},{"value":[29,71.2]},{"value":[29,64.90000000000001]},{"value":[29,59.8]},{"value":[30,64.2]},{"value":[31,52.5]},{"value":[31,53.2]},{"value":[31,65.3]},{"value":[32,70.90000000000001]},{"value":[32,59.8]},{"value":[32,62.4]},{"value":[33,70.2]},{"value":[33,70.5]},{"value":[33,68.7]},{"value":[33,59.8]},{"value":[34,62.5]},{"value":[34,53.5]},{"value":[34,65.90000000000001]},{"value":[34,55.5]},{"value":[34,71.5]},{"value":[34,52.6]},{"value":[34,51.7]},{"value":[34,56.2]},{"value":[34,51]},{"value":[35,65.40000000000001]},{"value":[36,60.7]},{"value":[36,54.1]},{"value":[36,48.3]},{"value":[36,67.40000000000001]},{"value":[36,63]},{"value":[37,53.4]},{"value":[37,53.3]},{"value":[37,54]},{"value":[37,56.3]},{"value":[37,49.5]},{"value":[38,66.59999999999999]},{"value":[38,59.7]},{"value":[38,63.9]},{"value":[38,48.7]},{"value":[38,51]},{"value":[39,60.4]},{"value":[39,62.8]},{"value":[39,66.8]},{"value":[39,64.5]},{"value":[39,56.3]},{"value":[39,60.4]},{"value":[40,52.8]},{"value":[40,57.5]},{"value":[40,50.3]},{"value":[40,75.09999999999999]},{"value":[40,65.7]},{"value":[40,67.90000000000001]},{"value":[41,65.5]},{"value":[41,53.9]},{"value":[41,48]},{"value":[41,57]},{"value":[41,58.1]},{"value":[41,66.59999999999999]},{"value":[41,61.7]},{"value":[41,63]},{"value":[41,61.5]},{"value":[41,59]},{"value":[42,59.1]},{"value":[42,61.1]},{"value":[42,57.1]},{"value":[42,61.7]},{"value":[42,59.2]},{"value":[42,62.3]},{"value":[43,52.8]},{"value":[43,76.3]},{"value":[43,41.8]},{"value":[43,59.7]},{"value":[43,64.40000000000001]},{"value":[43,64.8]},{"value":[43,64.40000000000001]},{"value":[43,73.40000000000001]},{"value":[43,62.9]},{"value":[44,69.3]},{"value":[44,57.4]},{"value":[44,71.5]},{"value":[44,61.4]},{"value":[44,55.2]},{"value":[45,60.5]},{"value":[45,72.5]},{"value":[45,48.1]},{"value":[45,62.8]},{"value":[45,57.7]},{"value":[45,60.6]},{"value":[45,49.7]},{"value":[45,56.9]},{"value":[45,70.40000000000001]},{"value":[45,60.4]},{"value":[46,58.6]},{"value":[46,60.4]},{"value":[46,61.3]},{"value":[46,60.1]},{"value":[46,61.7]},{"value":[46,63.2]},{"value":[46,56.3]},{"value":[46,57.8]},{"value":[47,50.7]},{"value":[47,69.5]},{"value":[48,70.3]},{"value":[48,48.8]},{"value":[48,70]},{"value":[48,54.3]},{"value":[48,68.90000000000001]},{"value":[48,62.4]},{"value":[48,55.6]},{"value":[48,57]},{"value":[49,56.4]},{"value":[49,48.2]},{"value":[50,50.8]},{"value":[50,63.6]},{"value":[50,56.6]},{"value":[50,58.5]},{"value":[50,63.6]},{"value":[50,62.1]},{"value":[50,63.5]},{"value":[50,59.1]},{"value":[50,65.90000000000001]},{"value":[51,61.6]},{"value":[52,62.4]},{"value":[52,72.5]},{"value":[52,65.59999999999999]},{"value":[52,55]},{"value":[52,63.6]},{"value":[53,70.09999999999999]},{"value":[53,65.8]},{"value":[53,70.59999999999999]},{"value":[53,59.5]},{"value":[53,66.59999999999999]},{"value":[54,58.4]},{"value":[54,62.6]},{"value":[54,62.2]},{"value":[54,53.3]},{"value":[54,64.40000000000001]},{"value":[55,71.3]},{"value":[56,73.3]},{"value":[56,60.6]},{"value":[57,52.4]},{"value":[57,67.59999999999999]},{"value":[57,53.2]},{"value":[57,67.40000000000001]},{"value":[57,63.3]},{"value":[57,68.2]},{"value":[57,64.2]},{"value":[57,62.8]},{"value":[57,55.7]},{"value":[58,60.5]},{"value":[58,69.3]},{"value":[58,60.7]},{"value":[59,57]},{"value":[59,48.5]},{"value":[59,72]},{"value":[59,56.6]},{"value":[60,63]},{"value":[60,60]},{"value":[60,48]},{"value":[61,56.4]},{"value":[62,64.09999999999999]},{"value":[62,57]},{"value":[63,62.4]},{"value":[63,49.5]},{"value":[63,57.3]},{"value":[63,60.9]},{"value":[64,63.7]},{"value":[64,67.8]},{"value":[64,60]},{"value":[64,50.9]},{"value":[65,61.6]},{"value":[65,61.2]},{"value":[66,50]},{"value":[66,58.2]},{"value":[67,62.6]},{"value":[67,62.8]},{"value":[68,66.3]},{"value":[68,62.9]},{"value":[70,67.2]},{"value":[71,54.2]},{"value":[71,47.4]},{"value":[71,54.6]},{"value":[76,56.7]},{"value":[76,66.8]}],"name":"Northeast","type":"scatter","symbol":null,"coordinateSystem":"cartesian2d","yAxisIndex":0,"xAxisIndex":0,"symbolSize":3},{"data":[{"value":[18,44]},{"value":[18,45.5]},{"value":[18,53.6]},{"value":[18,48.6]},{"value":[18,51]},{"value":[18,75.09999999999999]},{"value":[19,58.8]},{"value":[20,67.90000000000001]},{"value":[20,59.8]},{"value":[23,53.7]},{"value":[23,70.40000000000001]},{"value":[23,68.2]},{"value":[23,67.59999999999999]},{"value":[24,62.4]},{"value":[24,50.2]},{"value":[25,52.7]},{"value":[25,69.40000000000001]},{"value":[25,56.4]},{"value":[25,68.09999999999999]},{"value":[25,55.6]},{"value":[26,62.5]},{"value":[26,58.2]},{"value":[26,72]},{"value":[26,56.6]},{"value":[26,68.2]},{"value":[27,53.4]},{"value":[27,73.8]},{"value":[29,65.8]},{"value":[30,67.5]},{"value":[30,59.9]},{"value":[31,48.1]},{"value":[31,62]},{"value":[31,63.4]},{"value":[31,46.3]},{"value":[31,52]},{"value":[31,68.09999999999999]},{"value":[31,60.4]},{"value":[31,56.8]},{"value":[31,69.90000000000001]},{"value":[32,58.5]},{"value":[32,63.5]},{"value":[33,49.9]},{"value":[33,52.8]},{"value":[33,56.5]},{"value":[34,56.8]},{"value":[34,69.09999999999999]},{"value":[34,66.90000000000001]},{"value":[34,59.1]},{"value":[34,64.40000000000001]},{"value":[34,55.9]},{"value":[35,59.5]},{"value":[35,64.7]},{"value":[35,83.5]},{"value":[35,56.3]},{"value":[36,54]},{"value":[36,63.3]},{"value":[36,66]},{"value":[36,60.5]},{"value":[36,61.2]},{"value":[37,64.3]},{"value":[37,47.7]},{"value":[37,70.90000000000001]},{"value":[37,72.3]},{"value":[38,61]},{"value":[38,68.8]},{"value":[38,62.8]},{"value":[38,61.7]},{"value":[39,48.9]},{"value":[39,54]},{"value":[39,60]},{"value":[39,59.3]},{"value":[39,54.7]},{"value":[39,61.6]},{"value":[40,52.6]},{"value":[40,65.59999999999999]},{"value":[40,52.2]},{"value":[40,69.5]},{"value":[40,54.2]},{"value":[40,64.40000000000001]},{"value":[41,46.3]},{"value":[41,53.3]},{"value":[41,67.8]},{"value":[41,69.09999999999999]},{"value":[41,55.8]},{"value":[42,53.3]},{"value":[42,57.9]},{"value":[42,54.6]},{"value":[42,78.7]},{"value":[42,68.40000000000001]},{"value":[42,59.8]},{"value":[42,47.6]},{"value":[43,63.6]},{"value":[43,64]},{"value":[43,62.7]},{"value":[43,62.6]},{"value":[43,66.5]},{"value":[44,67.90000000000001]},{"value":[44,54.5]},{"value":[44,54.7]},{"value":[44,67.7]},{"value":[44,54.5]},{"value":[44,53.3]},{"value":[44,62.6]},{"value":[45,64.7]},{"value":[45,51.5]},{"value":[45,51.7]},{"value":[45,54.9]},{"value":[45,65.3]},{"value":[45,48.9]},{"value":[45,57]},{"value":[45,47.7]},{"value":[46,75.90000000000001]},{"value":[46,60.1]},{"value":[46,71]},{"value":[46,49.1]},{"value":[46,59.6]},{"value":[47,57.9]},{"value":[47,65.8]},{"value":[47,55.4]},{"value":[47,60.2]},{"value":[47,62.8]},{"value":[47,58.2]},{"value":[47,68.90000000000001]},{"value":[48,60.9]},{"value":[48,69.7]},{"value":[48,62]},{"value":[48,60.8]},{"value":[49,53.1]},{"value":[49,48.9]},{"value":[49,62]},{"value":[49,43.7]},{"value":[49,43.2]},{"value":[49,56.7]},{"value":[49,59.2]},{"value":[50,61.7]},{"value":[50,62.2]},{"value":[50,60.2]},{"value":[50,67.90000000000001]},{"value":[50,66.2]},{"value":[51,64.59999999999999]},{"value":[51,73.3]},{"value":[51,60.2]},{"value":[51,59.7]},{"value":[51,71.59999999999999]},{"value":[51,62]},{"value":[51,63.1]},{"value":[52,66.8]},{"value":[52,68.5]},{"value":[52,55.7]},{"value":[53,50.2]},{"value":[53,50.1]},{"value":[53,56.2]},{"value":[53,60.6]},{"value":[53,64.40000000000001]},{"value":[53,67]},{"value":[53,67.90000000000001]},{"value":[54,62.7]},{"value":[54,63.2]},{"value":[54,52.6]},{"value":[54,55.7]},{"value":[54,64.5]},{"value":[54,68]},{"value":[55,53.4]},{"value":[55,71.8]},{"value":[55,59.6]},{"value":[56,58]},{"value":[56,74.40000000000001]},{"value":[56,64.2]},{"value":[57,64.09999999999999]},{"value":[57,70.90000000000001]},{"value":[57,60.9]},{"value":[58,71.90000000000001]},{"value":[58,52]},{"value":[59,65.40000000000001]},{"value":[59,60.3]},{"value":[59,62.8]},{"value":[59,75.3]},{"value":[60,53.9]},{"value":[62,39.9]},{"value":[63,60.5]},{"value":[63,60.2]},{"value":[64,63.6]},{"value":[64,58.6]},{"value":[65,50.9]},{"value":[66,63.8]},{"value":[68,52.1]},{"value":[68,44.1]},{"value":[69,57.1]},{"value":[71,71.40000000000001]},{"value":[73,47.8]},{"value":[75,61.3]},{"value":[81,63.6]}],"name":"South","type":"scatter","symbol":null,"coordinateSystem":"cartesian2d","yAxisIndex":0,"xAxisIndex":0,"symbolSize":3},{"data":[{"value":[18,62.7]},{"value":[18,68.2]},{"value":[18,50.7]},{"value":[18,62.2]},{"value":[18,51.6]},{"value":[20,62.7]},{"value":[24,58.8]},{"value":[25,64.09999999999999]},{"value":[25,58.3]},{"value":[25,59.8]},{"value":[25,64.8]},{"value":[25,53.8]},{"value":[26,63.2]},{"value":[26,58.5]},{"value":[26,66.2]},{"value":[26,59.9]},{"value":[27,58.3]},{"value":[27,65.59999999999999]},{"value":[28,70.09999999999999]},{"value":[28,44.6]},{"value":[28,54.9]},{"value":[29,67.09999999999999]},{"value":[29,65.2]},{"value":[29,51.3]},{"value":[30,56.6]},{"value":[30,54.6]},{"value":[30,49.1]},{"value":[30,70]},{"value":[31,63.2]},{"value":[31,45.2]},{"value":[32,56.5]},{"value":[32,69.59999999999999]},{"value":[32,57.4]},{"value":[33,53.4]},{"value":[33,57.7]},{"value":[33,60.7]},{"value":[33,60.3]},{"value":[33,59.1]},{"value":[33,69.90000000000001]},{"value":[33,64.59999999999999]},{"value":[33,62.4]},{"value":[33,56.5]},{"value":[33,60.9]},{"value":[34,54.9]},{"value":[35,61.1]},{"value":[35,62.1]},{"value":[35,58]},{"value":[35,69.90000000000001]},{"value":[36,58.8]},{"value":[37,58.8]},{"value":[37,57.9]},{"value":[38,58.9]},{"value":[38,64.8]},{"value":[38,61.5]},{"value":[39,64.2]},{"value":[39,61.6]},{"value":[39,64.59999999999999]},{"value":[39,78.2]},{"value":[39,53.1]},{"value":[39,54.1]},{"value":[39,58.4]},{"value":[39,68]},{"value":[40,55]},{"value":[40,51.4]},{"value":[41,61.3]},{"value":[41,59.5]},{"value":[41,48.2]},{"value":[41,61.8]},{"value":[41,63.7]},{"value":[42,53.5]},{"value":[42,55.4]},{"value":[42,59.7]},{"value":[42,65.2]},{"value":[43,61.3]},{"value":[43,62.6]},{"value":[43,64.7]},{"value":[43,62.8]},{"value":[43,64.7]},{"value":[43,59.4]},{"value":[43,52]},{"value":[43,63.5]},{"value":[43,53.9]},{"value":[43,67.7]},{"value":[43,58.8]},{"value":[44,53.9]},{"value":[44,82.5]},{"value":[44,63.7]},{"value":[44,56]},{"value":[44,62.4]},{"value":[44,60.6]},{"value":[44,63.5]},{"value":[44,67.09999999999999]},{"value":[44,62]},{"value":[44,47.4]},{"value":[45,58.8]},{"value":[45,51.3]},{"value":[45,62.6]},{"value":[45,59.1]},{"value":[45,53.2]},{"value":[46,70.8]},{"value":[46,59]},{"value":[46,50.1]},{"value":[46,52.6]},{"value":[46,72]},{"value":[46,45.1]},{"value":[47,58.4]},{"value":[47,60.2]},{"value":[47,68.40000000000001]},{"value":[47,60.8]},{"value":[47,56.7]},{"value":[47,55.7]},{"value":[47,54]},{"value":[48,54.8]},{"value":[48,50.5]},{"value":[48,64.09999999999999]},{"value":[48,53.5]},{"value":[48,48.6]},{"value":[48,55.4]},{"value":[48,61.5]},{"value":[48,69.09999999999999]},{"value":[48,62.3]},{"value":[49,70.2]},{"value":[49,55.1]},{"value":[49,52.5]},{"value":[49,54.5]},{"value":[49,49.2]},{"value":[49,50.1]},{"value":[49,51.9]},{"value":[49,54.5]},{"value":[49,69.3]},{"value":[50,53.8]},{"value":[50,62.9]},{"value":[50,51.8]},{"value":[50,56.8]},{"value":[50,56.2]},{"value":[51,54.2]},{"value":[51,67.40000000000001]},{"value":[51,63.1]},{"value":[51,60.5]},{"value":[51,52.4]},{"value":[51,53.9]},{"value":[51,43.9]},{"value":[52,57]},{"value":[52,67.09999999999999]},{"value":[52,69.8]},{"value":[52,69.7]},{"value":[52,56.1]},{"value":[52,71.90000000000001]},{"value":[52,68.59999999999999]},{"value":[53,57.7]},{"value":[53,59.4]},{"value":[53,48.8]},{"value":[53,61]},{"value":[54,55.6]},{"value":[54,60.9]},{"value":[54,69.2]},{"value":[54,66.8]},{"value":[54,55]},{"value":[55,68.3]},{"value":[55,68.3]},{"value":[55,55.6]},{"value":[55,62.7]},{"value":[56,68.8]},{"value":[57,54.4]},{"value":[57,57.1]},{"value":[58,57.3]},{"value":[58,62.6]},{"value":[58,60.2]},{"value":[59,58.4]},{"value":[60,60.2]},{"value":[60,49.9]},{"value":[60,64.8]},{"value":[61,52]},{"value":[62,74]},{"value":[62,61.4]},{"value":[64,59.7]},{"value":[64,53]},{"value":[64,65.5]},{"value":[64,63.8]},{"value":[66,62.6]},{"value":[67,59.4]},{"value":[69,46.8]},{"value":[69,50.9]},{"value":[70,58.1]},{"value":[71,49.8]},{"value":[72,55.1]},{"value":[73,62.2]},{"value":[77,58.2]}],"name":"West","type":"scatter","symbol":null,"coordinateSystem":"cartesian2d","yAxisIndex":0,"xAxisIndex":0,"symbolSize":3}],"title":[{"text":"Score vs Age by region"}],"tooltip":{"trigger":"item"}},"dispose":true},"evals":[],"jsHooks":{"render":[{"code":"function(el, x) {  if (window.dashboardrRegisterChart) {    window.dashboardrRegisterChart({      id: 'dr_chart_14934332fc',      backend: 'echarts4r',      el: el,      x: x,      filterVars: null    });  }}","data":null}]}}</script>
+</div>
+</div>
+<bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()">
+    <template>Expand</template>
+    <span class="bslib-full-screen-enter badge rounded-pill">
+        <svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24" style="height:1em;width:1em;" aria-hidden="true" role="img"><path d="M20 5C20 4.4 19.6 4 19 4H13C12.4 4 12 3.6 12 3C12 2.4 12.4 2 13 2H21C21.6 2 22 2.4 22 3V11C22 11.6 21.6 12 21 12C20.4 12 20 11.6 20 11V5ZM4 19C4 19.6 4.4 20 5 20H11C11.6 20 12 20.4 12 21C12 21.6 11.6 22 11 22H3C2.4 22 2 21.6 2 21V13C2 12.4 2.4 12 3 12C3.6 12 4 12.4 4 13V19Z"></path></svg>
+    </span>
+</bslib-tooltip><script data-bslib-card-init="">bslib.Card.initializeAllCards();</script></div>
+
+
+<div id="3ade8a4a-fb1d-4a6c-8409-ac45482d5fc9" class="hidden html-fill-item html-fill-container">
+
+</div>
+</div>
+</div>
+</div>
+</div>
+</div></div><aside id="bslib-sidebar-1" class="sidebar html-fill-container html-fill-item"><div class="html-fill-container html-fill-item">
+<section id="echarts---s3">
+<div class="h3">
+ECharts
+
+-
+
+S3
+</div>
+<div data-linked-child-id="s3_question" data-options-by-parent="{&quot;Economy&quot;:[&quot;Income&quot;,&quot;Job Security&quot;,&quot;Inflation&quot;],&quot;Wellbeing&quot;:[&quot;Life Satisfaction&quot;,&quot;Stress&quot;,&quot;Community&quot;],&quot;Trust&quot;:[&quot;Media Trust&quot;,&quot;Gov Trust&quot;,&quot;Business Trust&quot;]}"><div class="dashboardr-input-group align-center size-md" style="width: 300px;">
+  <label class="dashboardr-input-label" for="s3_dimension">Dimension</label>
+  <select id="s3_dimension" class="dashboardr-input" data-filter-var="s3_dimension" data-input-type="select" data-placeholder="Select...">
+    <option value="Economy" selected="">Economy</option>
+    <option value="Wellbeing">Wellbeing</option>
+    <option value="Trust">Trust</option>
+  </select>
+<script>if(typeof dashboardrFilterHook!=="undefined")dashboardrFilterHook("s3_dimension","s3_dimension");</script>
+</div></div>
+<div class="dashboardr-input-group align-center size-md" style="width: 300px;">
+  <label class="dashboardr-input-label" for="s3_question">Question</label>
+  <select id="s3_question" class="dashboardr-input" data-filter-var="s3_question" data-input-type="select" data-placeholder="Select...">
+    <option value="Income" selected="">Income</option>
+    <option value="Job Security">Job Security</option>
+    <option value="Inflation">Inflation</option>
+  </select>
+<script>if(typeof dashboardrFilterHook!=="undefined")dashboardrFilterHook("s3_question","s3_question");</script>
+</div>
+<div class="dashboardr-input-group align-center size-md" style="width: 300px;">
+  <label class="dashboardr-input-label" for="s3_region">Region</label>
+  <select id="s3_region" class="dashboardr-input" data-filter-var="region" data-input-type="select" data-placeholder="Select...">
+    <option value="Midwest" selected="">Midwest</option>
+    <option value="Northeast">Northeast</option>
+    <option value="South">South</option>
+    <option value="West">West</option>
+  </select>
+<script>if(typeof dashboardrFilterHook!=="undefined")dashboardrFilterHook("s3_region","region");</script>
+</div>
+</section>
+</div></aside>
+<button class="collapse-toggle" type="button" title="Toggle sidebar" aria-expanded="true" aria-controls="bslib-sidebar-1">
+    <svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 16 16" class="bi bi-chevron-left collapse-icon" style="fill:currentColor;" aria-hidden="true" role="img">
+      <path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"></path>
+    </svg>
+</button>
+<script data-bslib-sidebar-init="">
+bslib.Sidebar.initCollapsibleAll()
+</script>
+</div>
+
+
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
+<p><a href="https://favstats.github.io/dashboardr/" target="_blank" rel="noopener" style="display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.25rem 0.5rem; background: rgba(0, 0, 0, 0.05); border-radius: 4px; font-size: 1rem; color: inherit; text-decoration: none; opacity: 0.8; transition: opacity 0.2s ease, background 0.2s ease;" onmouseover="this.style.opacity='1'; this.style.background='rgba(0, 0, 0, 0.08)';" onmouseout="this.style.opacity='0.8'; this.style.background='rgba(0, 0, 0, 0.05)';"><img src="https://raw.githubusercontent.com/favstats/dashboardr/refs/heads/main/man/figures/logo.svg" alt="dashboardr logo" style="width: 24px; height: 24px; object-fit: contain;"><span style="font-weight: 500;">Powered by dashboardr</span></a></p>
+</div>
+  </div>
+</footer>
+
+<script type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (_event) {
+  if (window.bslib.Card) {
+    window.bslib.Card.initializeAllCards();
+  }
+}); 
+</script>
+  
+
+
+
+</body></html>

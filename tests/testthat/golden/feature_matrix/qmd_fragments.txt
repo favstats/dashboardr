@@ -1,0 +1,8 @@
+## Column {.gold-col}
+show_when_open('{"var":"cyl","op":"eq","val":6}')
+show_when_open('{"var":"cyl","op":"eq","val":6}')
+### Row {.gold-row}
+dashboardr:::.render_filterable_table(table_obj_1, table_id = 'table_obj_1', caption = NULL, filter_vars = "cyl")
+show_when_close()
+show_when_close()
+### Row

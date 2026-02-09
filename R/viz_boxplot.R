@@ -248,7 +248,8 @@ viz_boxplot <- function(data,
       list(
         category = cat,
         index = i - 1,  # 0-indexed for highcharter
-        stats = stats
+        stats = stats,
+        raw_values = as.numeric(y_values)
       )
     })
   } else {
@@ -265,7 +266,8 @@ viz_boxplot <- function(data,
       list(
         category = categories,
         index = 0,
-        stats = stats
+        stats = stats,
+        raw_values = as.numeric(df[[y_var]])
       )
     )
   }
@@ -425,6 +427,7 @@ viz_boxplot <- function(data,
   x_label <- config$x_label; y_label <- config$y_label
   color_palette <- config$color_palette
   horizontal <- config$horizontal
+  show_outliers <- config$show_outliers
   x_var <- config$x_var; categories <- config$categories
 
   p <- plotly::plot_ly()
@@ -432,20 +435,44 @@ viz_boxplot <- function(data,
   for (i in seq_along(boxplot_data)) {
     bp <- boxplot_data[[i]]
     stats <- bp$stats
+    category_label <- as.character(bp$category)
+    raw_values <- bp$raw_values %||% numeric(0)
+    raw_values <- as.numeric(raw_values)
+    raw_values <- raw_values[is.finite(raw_values)]
 
-    # Plotly box trace expects lowerfence, q1, median, q3, upperfence
     trace_args <- list(
       p = p,
       type = "box",
-      name = as.character(bp$category),
-      lowerfence = list(stats$low),
-      q1 = list(stats$q1),
-      median = list(stats$median),
-      q3 = list(stats$q3),
-      upperfence = list(stats$high)
+      name = category_label,
+      boxpoints = if (isTRUE(show_outliers)) "outliers" else FALSE
     )
 
-    if (horizontal) trace_args$orientation <- "h"
+    # Prefer raw samples so Plotly computes box stats correctly.
+    # Fall back to pre-computed statistics only if raw values are unavailable.
+    if (length(raw_values) > 0) {
+      if (horizontal) {
+        trace_args$orientation <- "h"
+        trace_args$x <- raw_values
+        trace_args$y <- rep(category_label, length(raw_values))
+      } else {
+        trace_args$orientation <- "v"
+        trace_args$x <- rep(category_label, length(raw_values))
+        trace_args$y <- raw_values
+      }
+    } else {
+      trace_args$lowerfence <- list(stats$low)
+      trace_args$q1 <- list(stats$q1)
+      trace_args$median <- list(stats$median)
+      trace_args$q3 <- list(stats$q3)
+      trace_args$upperfence <- list(stats$high)
+      if (horizontal) {
+        trace_args$orientation <- "h"
+        trace_args$x <- list(category_label)
+      } else {
+        trace_args$orientation <- "v"
+        trace_args$x <- list(category_label)
+      }
+    }
 
     if (!is.null(color_palette) && i <= length(color_palette)) {
       trace_args$marker <- list(color = color_palette[i])
@@ -459,9 +486,9 @@ viz_boxplot <- function(data,
   if (!is.null(title)) layout_args$title <- title
   if (horizontal) {
     layout_args$xaxis <- list(title = y_label)
-    layout_args$yaxis <- list(title = x_label)
+    layout_args$yaxis <- list(title = x_label, type = "category")
   } else {
-    layout_args$xaxis <- list(title = x_label)
+    layout_args$xaxis <- list(title = x_label, type = "category")
     layout_args$yaxis <- list(title = y_label)
   }
 
