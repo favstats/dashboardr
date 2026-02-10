@@ -1,3 +1,11 @@
+# dashboardr 0.4.1
+
+## Bug Fixes
+
+### Content Tabgroups (Issue #14)
+
+- **Fixed**: The `tabgroup` argument is now correctly applied to all content block types (`add_text`, `add_card`, `add_reactable`, and other content types), not just visualizations. Previously, `tabgroup` had no effect for non-viz content. Standalone content blocks, items inside content collections, and items added directly to pages via `add_text()` / `add_card()` / etc. now all respect `tabgroup` and render in their respective tabs.
+
 # dashboardr 0.4.0
 
 ## Bug Fixes

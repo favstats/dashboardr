@@ -289,20 +289,44 @@
 
   # Add content blocks (text, images, and other content types) before visualizations
   if (!is.null(page$content_blocks)) {
-    for (block in page$content_blocks) {
+    # Pre-process: group consecutive standalone content_blocks with tabgroups
+    # This enables tabgroup support for standalone blocks (not inside a collection)
+    content_blocks_processed <- .preprocess_content_blocks_tabgroups(
+      page$content_blocks, page, page_filter_vars, viz_heading_level,
+      use_dashboard_layout
+    )
+
+    for (block in content_blocks_processed) {
       # Skip NULL blocks
       if (is.null(block)) next
-      
+
       # Skip non-list blocks
       if (!is.list(block)) next
-      
+
+      # Check if this is a pre-processed tabset container
+      if (!is.null(block$type) && block$type == "content_tabset") {
+        ctx_label <- paste0("page '", page$name %||% "<unnamed>", "'")
+        tab_content <- .generate_content_tabset(
+          tabset_spec = block,
+          page = page,
+          page_filter_vars = page_filter_vars,
+          viz_heading_level = viz_heading_level,
+          dashboard_layout = use_dashboard_layout,
+          context_label = ctx_label
+        )
+        if (!is.null(tab_content)) {
+          content <- c(content, tab_content)
+        }
+        next
+      }
+
       # Check for content collection first (may contain visualizations)
       is_coll <- is_content(block)
       is_block <- is_content_block(block)
-      
+
       # Skip if neither
       if (!is_coll && !is_block) next
-      
+
       # If it's a content collection, handle it by processing each item IN ORDER
       if (is_coll) {
         # Process mixed collections (content + viz combined via + operator)
@@ -390,19 +414,55 @@
             }
             i <- j
           } else {
-            # Process single content item
-            item_content <- .generate_page_item_content(
-              item = item,
-              page = page,
-              page_filter_vars = page_filter_vars,
-              viz_heading_level = viz_heading_level,
-              dashboard_layout = use_dashboard_layout,
-              context_label = paste0("page '", page$name %||% "<unnamed>", "'")
-            )
-            if (!is.null(item_content)) {
-              content <- c(content, item_content)
+            # Collect consecutive non-viz content items for tabgroup processing
+            content_items <- list(item)
+            j <- i + 1
+            while (j <= length(items_with_idx)) {
+              next_item <- items_with_idx[[j]]
+              if (is.null(next_item)) {
+                j <- j + 1
+                next
+              }
+              next_type <- next_item$type %||% ""
+              if (next_type != "viz" && next_type != "pagination") {
+                content_items <- c(content_items, list(next_item))
+                j <- j + 1
+              } else {
+                break
+              }
             }
-            i <- i + 1
+
+            # Process through content tabgroup handler
+            ctx_label <- paste0("page '", page$name %||% "<unnamed>", "'")
+            processed_content <- .process_content_tabgroups(content_items)
+            for (proc_item in processed_content) {
+              if (!is.null(proc_item$type) && proc_item$type == "content_tabset") {
+                tab_content <- .generate_content_tabset(
+                  tabset_spec = proc_item,
+                  page = page,
+                  page_filter_vars = page_filter_vars,
+                  viz_heading_level = viz_heading_level,
+                  dashboard_layout = use_dashboard_layout,
+                  context_label = ctx_label
+                )
+                if (!is.null(tab_content)) {
+                  content <- c(content, tab_content)
+                }
+              } else {
+                item_content <- .generate_page_item_content(
+                  item = proc_item,
+                  page = page,
+                  page_filter_vars = page_filter_vars,
+                  viz_heading_level = viz_heading_level,
+                  dashboard_layout = use_dashboard_layout,
+                  context_label = ctx_label
+                )
+                if (!is.null(item_content)) {
+                  content <- c(content, item_content)
+                }
+              }
+            }
+            i <- j
           }
         }
         next
@@ -428,23 +488,41 @@
   
   # Handle page$.items (from add_text.page_object, add_callout.page_object, etc.)
   # These are items added directly to a page_object via piping
+  # Pre-process to group items with tabgroups into tabset containers
   if (!is.null(page$.items) && length(page$.items) > 0) {
-    for (item in page$.items) {
+    processed_items <- .process_content_tabgroups(page$.items)
+    ctx_label <- paste0("page '", page$name %||% "<unnamed>", "'")
+
+    for (item in processed_items) {
       if (is.null(item)) next
       if (!is.list(item)) next
-      
-      item_type <- item$type %||% ""
-      
-      item_content <- .generate_page_item_content(
-        item = item,
-        page = page,
-        page_filter_vars = page_filter_vars,
-        viz_heading_level = viz_heading_level,
-        dashboard_layout = use_dashboard_layout,
-        context_label = paste0("page '", page$name %||% "<unnamed>", "'")
-      )
-      if (!is.null(item_content)) {
-        content <- c(content, item_content)
+
+      if (!is.null(item$type) && item$type == "content_tabset") {
+        # Render tabset
+        tab_content <- .generate_content_tabset(
+          tabset_spec = item,
+          page = page,
+          page_filter_vars = page_filter_vars,
+          viz_heading_level = viz_heading_level,
+          dashboard_layout = use_dashboard_layout,
+          context_label = ctx_label
+        )
+        if (!is.null(tab_content)) {
+          content <- c(content, tab_content)
+        }
+      } else {
+        # Regular item
+        item_content <- .generate_page_item_content(
+          item = item,
+          page = page,
+          page_filter_vars = page_filter_vars,
+          viz_heading_level = viz_heading_level,
+          dashboard_layout = use_dashboard_layout,
+          context_label = ctx_label
+        )
+        if (!is.null(item_content)) {
+          content <- c(content, item_content)
+        }
       }
     }
   }
@@ -561,6 +639,264 @@
   )
 
   .wrap_show_when_block(item_content, item$show_when)
+}
+
+# ---- Content tabgroup processing ----
+# These helpers enable tabgroup support for ALL content block types,
+# reusing .insert_into_hierarchy() from viz_processing.R for the tree structure.
+
+#' Pre-process page$content_blocks to group consecutive standalone content_blocks
+#' that have tabgroups. Returns a new list where groups of standalone blocks with
+#' tabgroups have been replaced by content_tabset containers.
+#' Content collections (is_content) are passed through as-is.
+#' @noRd
+.preprocess_content_blocks_tabgroups <- function(blocks, page, page_filter_vars,
+                                                  viz_heading_level, dashboard_layout) {
+  if (is.null(blocks) || length(blocks) == 0) return(blocks)
+
+  # Check if any standalone block has tabgroup — fast path
+  has_any <- FALSE
+  for (block in blocks) {
+    if (is_content_block(block) && !is.null(block$tabgroup)) {
+      has_any <- TRUE
+      break
+    }
+  }
+  if (!has_any) return(blocks)
+
+  # Group consecutive standalone content_blocks, process groups with tabgroups
+
+  result <- list()
+  i <- 1
+  while (i <= length(blocks)) {
+    block <- blocks[[i]]
+
+    if (is.null(block) || !is.list(block)) {
+      result <- c(result, list(block))
+      i <- i + 1
+      next
+    }
+
+    # If it's a content_collection, pass through
+    if (is_content(block)) {
+      result <- c(result, list(block))
+      i <- i + 1
+      next
+    }
+
+    # If it's a standalone content_block, collect consecutive ones
+    if (is_content_block(block)) {
+      group <- list(block)
+      j <- i + 1
+      while (j <= length(blocks)) {
+        next_block <- blocks[[j]]
+        if (!is.null(next_block) && is.list(next_block) && is_content_block(next_block)) {
+          group <- c(group, list(next_block))
+          j <- j + 1
+        } else {
+          break
+        }
+      }
+
+      # Check if any in this group have tabgroup
+      group_has_tabgroup <- any(sapply(group, function(b) !is.null(b$tabgroup)))
+      if (group_has_tabgroup) {
+        # Process through tabgroup handler
+        processed <- .process_content_tabgroups(group)
+        result <- c(result, processed)
+      } else {
+        # No tabgroups — pass through individually
+        result <- c(result, group)
+      }
+      i <- j
+    } else {
+      # Unknown type — pass through
+      result <- c(result, list(block))
+      i <- i + 1
+    }
+  }
+
+  result
+}
+
+#' Process a list of content items, grouping those with tabgroup into tabgroup containers
+#' @param items List of content block items (may or may not have tabgroup)
+#' @return Flat list mixing standalone items and content_tabgroup container specs, in insertion order
+#' @noRd
+.process_content_tabgroups <- function(items) {
+  if (is.null(items) || length(items) == 0) return(list())
+
+  # Check if any items have tabgroup — fast path if none do
+
+  has_any_tabgroup <- FALSE
+  for (item in items) {
+    if (!is.null(item$tabgroup)) {
+      has_any_tabgroup <- TRUE
+      break
+    }
+  }
+  if (!has_any_tabgroup) return(items)
+
+  # Build hierarchy tree
+  tree <- list(visualizations = list(), children = list())
+
+  for (i in seq_along(items)) {
+    item <- items[[i]]
+    if (is.null(item)) next
+
+    # Ensure insertion index
+    item$.insertion_index <- item$.insertion_index %||% i
+
+    # Parse tabgroup if needed (page_object items may store raw string)
+    tg <- item$tabgroup
+    if (is.character(tg) && length(tg) == 1 && grepl("/", tg, fixed = TRUE)) {
+      tg <- .parse_tabgroup(tg)
+    }
+
+    if (!is.null(tg)) {
+      # Ensure tg is a character vector for .insert_into_hierarchy
+      if (!is.character(tg)) tg <- as.character(tg)
+      tree <- .insert_into_hierarchy(tree, tg, item)
+    } else {
+      # No tabgroup — standalone item
+      tree$visualizations <- c(tree$visualizations, list(item))
+    }
+  }
+
+  # Convert tree to flat output list
+  .content_tree_to_list(tree)
+}
+
+#' Convert a hierarchy tree to a flat list of standalone items and content_tabgroup specs
+#' @param tree Hierarchy tree (from .insert_into_hierarchy)
+#' @return Flat list sorted by insertion order. Children at the same level
+#'   are wrapped in a single content_tabset container (which renders as one
+#'   `::: {.panel-tabset}` block). Each child within becomes a tab.
+#' @noRd
+.content_tree_to_list <- function(tree) {
+  result <- list()
+
+  # Add standalone items (those without tabgroup)
+  if (!is.null(tree$visualizations) && length(tree$visualizations) > 0) {
+    for (item in tree$visualizations) {
+      result <- c(result, list(item))
+    }
+  }
+
+  # Wrap all children at this level into a single content_tabset container
+  if (!is.null(tree$children) && length(tree$children) > 0) {
+    # Sort children by insertion order
+    child_names <- names(tree$children)
+    child_indices <- sapply(child_names, function(nm) {
+      tree$children[[nm]]$.min_index %||% Inf
+    })
+    child_names_sorted <- child_names[order(child_indices)]
+
+    tabs <- list()
+    min_idx <- Inf
+    for (child_name in child_names_sorted) {
+      child_node <- tree$children[[child_name]]
+      child_min <- child_node$.min_index %||% Inf
+      if (child_min < min_idx) min_idx <- child_min
+
+      # Recursively convert child items
+      child_items <- .content_tree_to_list(child_node)
+
+      tabs <- c(tabs, list(list(
+        name = child_name,
+        items = child_items
+      )))
+    }
+
+    tabset_spec <- list(
+      type = "content_tabset",
+      tabs = tabs,
+      .insertion_index = min_idx
+    )
+    result <- c(result, list(tabset_spec))
+  }
+
+  # Sort by insertion index to preserve original order
+  if (length(result) > 1) {
+    indices <- sapply(result, function(x) {
+      x$.insertion_index %||% Inf
+    })
+    result <- result[order(indices)]
+  }
+
+  result
+}
+
+#' Generate Quarto markdown for a content_tabset (wraps tabs in panel-tabset)
+#'
+#' A content_tabset has $tabs — a list where each tab has $name and $items.
+#' Each tab's items may include nested content_tabset specs (for nested tabs).
+#'
+#' @param tabset_spec A content_tabset spec with $tabs
+#' @param page The page object
+#' @param page_filter_vars Filter variables
+#' @param viz_heading_level Heading level for viz items
+#' @param dashboard_layout Whether in dashboard layout mode
+#' @param context_label Context label for error messages
+#' @param depth Nesting depth (0 = top level)
+#' @return Character vector of markdown lines
+#' @noRd
+.generate_content_tabset <- function(tabset_spec,
+                                     page,
+                                     page_filter_vars,
+                                     viz_heading_level,
+                                     dashboard_layout,
+                                     context_label,
+                                     depth = 0) {
+  lines <- character(0)
+
+  tabs <- tabset_spec$tabs
+  if (is.null(tabs) || length(tabs) == 0) return(lines)
+
+  # Open tabset
+  lines <- c(lines, "", "::: {.panel-tabset}", "")
+
+  tab_header <- paste0(rep("#", 3 + depth), collapse = "")
+
+  for (tab in tabs) {
+    tab_title <- tab$name %||% "Tab"
+    lines <- c(lines, paste0(tab_header, " ", tab_title), "")
+
+    # Render each item in this tab
+    for (item in tab$items) {
+      if (!is.null(item$type) && item$type == "content_tabset") {
+        # Nested tabset — recurse
+        nested_lines <- .generate_content_tabset(
+          tabset_spec = item,
+          page = page,
+          page_filter_vars = page_filter_vars,
+          viz_heading_level = viz_heading_level,
+          dashboard_layout = dashboard_layout,
+          context_label = context_label,
+          depth = depth + 1
+        )
+        lines <- c(lines, nested_lines)
+      } else {
+        # Regular content item
+        item_content <- .generate_page_item_content(
+          item = item,
+          page = page,
+          page_filter_vars = page_filter_vars,
+          viz_heading_level = viz_heading_level,
+          dashboard_layout = dashboard_layout,
+          context_label = context_label
+        )
+        if (!is.null(item_content)) {
+          lines <- c(lines, item_content)
+        }
+      }
+    }
+  }
+
+  # Close tabset
+  lines <- c(lines, "", ":::", "")
+
+  lines
 }
 
 .node_has_manual_layout <- function(node) {
