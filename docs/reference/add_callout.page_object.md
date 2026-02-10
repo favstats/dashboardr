@@ -10,7 +10,8 @@ add_callout.page_object(
   text,
   type = "note",
   title = NULL,
-  tabgroup = NULL
+  tabgroup = NULL,
+  show_when = NULL
 )
 ```
 
@@ -35,6 +36,11 @@ add_callout.page_object(
 - tabgroup:
 
   Optional tabgroup
+
+- show_when:
+
+  One-sided formula controlling conditional display based on input
+  values.
 
 ## Value
 

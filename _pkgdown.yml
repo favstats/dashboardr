@@ -67,6 +67,8 @@ navbar:
       - text: -------
       - text: "⚙️ Advanced Features"
         href: articles/advanced-features.html
+      - text: "📦 Chart backends"
+        href: articles/chart-backends.html
       - text: "🌐 Publishing Dashboards"
         href: articles/publishing_dashboards.html
       - text: -------
@@ -147,6 +149,7 @@ articles:
   navbar: ~
   contents:
   - advanced-features
+  - chart-backends
 
 - title: Publishing
   navbar: ~
@@ -265,6 +268,10 @@ reference:
   - navbar_menu
   - add_navbar_element
   - sidebar_group
+  - add_layout_column
+  - add_layout_row
+  - end_layout_row
+  - end_layout_column
   - icon
 
 - title: Content Helpers
@@ -338,6 +345,9 @@ reference:
 - title: Embedded Content
   desc: Functions for embedding external content
   contents:
+  - add_widget
+  - add_plotly
+  - add_leaflet
   - add_iframe
   - add_video
 

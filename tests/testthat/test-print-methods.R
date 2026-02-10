@@ -9,7 +9,8 @@ test_that("print.viz_collection doesn't error", {
     add_viz(title = "Chart 1") %>%
     add_viz(title = "Chart 2")
   
-  expect_no_error(print(viz))
+  output <- capture.output(print(viz))
+  expect_true(length(output) > 0)
 })
 
 test_that("print.viz_collection works with tabgroups", {
@@ -21,7 +22,8 @@ test_that("print.viz_collection works with tabgroups", {
     add_viz(title = "Item 1", tabgroup = "demographics/age/item1") %>%
     add_viz(title = "Item 2", tabgroup = "demographics/gender/item2")
   
-  expect_no_error(print(viz))
+  output <- capture.output(print(viz))
+  expect_true(length(output) > 0)
 })
 
 test_that("print.viz_collection works with combine_viz", {
@@ -33,7 +35,8 @@ test_that("print.viz_collection works with combine_viz", {
   
   combined <- combine_viz(viz1, viz2)
   
-  expect_no_error(print(combined))
+  output <- capture.output(print(combined))
+  expect_true(length(output) > 0)
 })
 
 test_that("print.dashboard_project doesn't error", {
@@ -43,8 +46,8 @@ test_that("print.dashboard_project doesn't error", {
   ) %>%
     add_page("Home", text = "Welcome", is_landing_page = TRUE)
   
-  expect_no_error(print(dashboard))
-  
+  output <- capture.output(print(dashboard))
+  expect_true(length(output) > 0)
 })
 
 test_that("print.dashboard_project works with visualizations", {
@@ -62,6 +65,6 @@ test_that("print.dashboard_project works with visualizations", {
       is_landing_page = TRUE
     )
   
-  expect_no_error(print(dashboard))
-  
+  output <- capture.output(print(dashboard))
+  expect_true(length(output) > 0)
 })

@@ -27,9 +27,15 @@ dev/**/.quarto/
 
 # Local-only AI governance artifacts
 ai/
+output/
+scripts/
 AGENTS.md
 CLAUDE.md
 docs/llms.txt
 scripts/sync_ai_adapters.R
 scripts/check_ai_adapters.R
 tests/testthat/test-ai-adapter-sync.R
+CONTRIBUTING.md
+node_modules/
+package-lock.json
+package.json

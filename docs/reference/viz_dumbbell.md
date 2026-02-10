@@ -31,7 +31,8 @@ viz_dumbbell(
   color_palette = NULL,
   tooltip = NULL,
   tooltip_prefix = "",
-  tooltip_suffix = ""
+  tooltip_suffix = "",
+  backend = "highcharter"
 )
 ```
 
@@ -135,6 +136,11 @@ viz_dumbbell(
 - tooltip_suffix:
 
   Optional string appended to tooltip values.
+
+- backend:
+
+  Rendering backend: "highcharter" (default), "plotly", "echarts4r", or
+  "ggiraph".
 
 ## Value
 

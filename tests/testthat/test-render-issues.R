@@ -1,6 +1,6 @@
 test_that("detects remnant .rmarkdown files with helpful error", {
   # Skip if Quarto is not available (rendering won't happen, so error won't be thrown)
-  skip_if(Sys.which("quarto") == "", "Quarto not available")
+  skip_if_no_quarto()
   
   temp_dir <- tempfile()
   dir.create(temp_dir)
@@ -58,16 +58,13 @@ test_that("open parameter is respected", {
     add_dashboard_page("Home", text = "Test", is_landing_page = TRUE)
   
   # Should accept different open values
-  expect_no_error(
-    generate_dashboard(dashboard, render = FALSE, open = "browser")
-  )
-  
-  expect_no_error(
-    generate_dashboard(dashboard, render = FALSE, open = FALSE)
-  )
-  
-  expect_no_error(
-    generate_dashboard(dashboard, render = FALSE, open = "viewer")
-  )
+  r1 <- generate_dashboard(dashboard, render = FALSE, open = "browser")
+  expect_s3_class(r1, "dashboard_project")
+
+  r2 <- generate_dashboard(dashboard, render = FALSE, open = FALSE)
+  expect_s3_class(r2, "dashboard_project")
+
+  r3 <- generate_dashboard(dashboard, render = FALSE, open = "viewer")
+  expect_s3_class(r3, "dashboard_project")
 })
 

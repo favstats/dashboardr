@@ -5,7 +5,7 @@ Add markdown text content directly to a page object.
 ## Usage
 
 ``` r
-add_text.page_object(page, text, ..., tabgroup = NULL)
+add_text.page_object(page, text, ..., tabgroup = NULL, show_when = NULL)
 ```
 
 ## Arguments
@@ -25,6 +25,11 @@ add_text.page_object(page, text, ..., tabgroup = NULL)
 - tabgroup:
 
   Optional tabgroup for the text
+
+- show_when:
+
+  One-sided formula controlling conditional display based on input
+  values.
 
 ## Value
 

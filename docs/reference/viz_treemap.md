@@ -26,6 +26,8 @@ viz_treemap(
   tooltip_format = NULL,
   credits = FALSE,
   pre_aggregated = FALSE,
+  legend_position = NULL,
+  backend = "highcharter",
   ...
 )
 ```
@@ -112,6 +114,15 @@ viz_treemap(
   Logical. If TRUE, skips summing and uses `value_var` directly. Use
   this when your data is already aggregated (one row per leaf node).
   Default is FALSE.
+
+- legend_position:
+
+  Position of the legend ("top", "bottom", "left", "right", "none")
+
+- backend:
+
+  Rendering backend: "highcharter" (default), "plotly", "echarts4r", or
+  "ggiraph".
 
 - ...:
 

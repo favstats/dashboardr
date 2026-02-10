@@ -279,14 +279,12 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
 
         # Attempt to install iconify extension with proper error handling
         install_success <- .install_iconify_extension(output_dir)
-        if (!install_success) {
-          warning("Failed to install iconify extension automatically. Icons may not display correctly.")
-          if (!quiet) {
-            message("To fix this manually:")
-            message("  cd ", output_dir)
-            message("  quarto add mcanouil/quarto-iconify")
-            message("\nOr remove icons from your dashboard to render without them")
-          }
+        if (!install_success && !quiet) {
+          message("Failed to install iconify extension automatically. Icons may not display correctly.")
+          message("To fix this manually:")
+          message("  cd ", output_dir)
+          message("  quarto add mcanouil/quarto-iconify")
+          message("\nOr remove icons from your dashboard to render without them")
         }
       } else {
         if (!quiet) message("Iconify extension already installed")

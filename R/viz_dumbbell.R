@@ -395,7 +395,7 @@ viz_dumbbell <- function(data,
 
   e <- e |>
     echarts4r::e_x_axis(name = final_x_label) |>
-    echarts4r::e_y_axis(name = final_y_label) |>
+    echarts4r::e_y_axis(name = final_y_label, min = .echarts_padded_min()) |>
     echarts4r::e_tooltip(trigger = "axis")
 
   e

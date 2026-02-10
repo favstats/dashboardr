@@ -5,7 +5,13 @@ Add reactable table
 ## Usage
 
 ``` r
-add_reactable(content, reactable_object, tabgroup = NULL)
+add_reactable(
+  content,
+  reactable_object,
+  tabgroup = NULL,
+  filter_vars = NULL,
+  show_when = NULL
+)
 ```
 
 ## Arguments
@@ -23,6 +29,16 @@ add_reactable(content, reactable_object, tabgroup = NULL)
 
   Optional tabgroup for organizing content (character vector for nested
   tabs)
+
+- filter_vars:
+
+  Optional character vector of input filter variables to apply to this
+  block.
+
+- show_when:
+
+  One-sided formula controlling conditional display based on input
+  values.
 
 ## Value
 

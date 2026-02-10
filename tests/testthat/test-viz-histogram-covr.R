@@ -66,8 +66,11 @@ test_that("viz_histogram with x_order", {
 })
 
 test_that("viz_histogram with x_map_values", {
-  hc <- viz_histogram(df, x_var = "category",
-                      x_map_values = list("A" = "Alpha", "B" = "Beta"))
+  expect_warning(
+    hc <- viz_histogram(df, x_var = "category",
+                        x_map_values = list("A" = "Alpha", "B" = "Beta")),
+    "x_map_values"
+  )
   expect_s3_class(hc, "highchart")
 })
 

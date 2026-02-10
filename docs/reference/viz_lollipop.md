@@ -31,7 +31,8 @@ viz_lollipop(
   label_decimals = NULL,
   tooltip = NULL,
   tooltip_prefix = "",
-  tooltip_suffix = ""
+  tooltip_suffix = "",
+  backend = "highcharter"
 )
 ```
 
@@ -140,6 +141,11 @@ viz_lollipop(
 - tooltip_suffix:
 
   Optional string appended to tooltip values.
+
+- backend:
+
+  Rendering backend: "highcharter" (default), "plotly", "echarts4r", or
+  "ggiraph".
 
 ## Value
 

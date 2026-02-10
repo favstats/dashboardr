@@ -141,6 +141,20 @@ content_types:
     supports_sidebar: true
     supports_manual_layout_row: true
     supports_input_dependency: false
+  sparkline_card:
+    supports_tabgroup: true
+    supports_show_when: true
+    supports_filter_vars: false
+    supports_sidebar: true
+    supports_manual_layout_row: true
+    supports_input_dependency: false
+  sparkline_card_row:
+    supports_tabgroup: true
+    supports_show_when: true
+    supports_filter_vars: false
+    supports_sidebar: true
+    supports_manual_layout_row: true
+    supports_input_dependency: false
   hc:
     supports_tabgroup: true
     supports_show_when: true

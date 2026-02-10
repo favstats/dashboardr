@@ -11,13 +11,11 @@ test_that("custom progress display can be enabled/disabled", {
     add_dashboard_page("Home", text = "Test", is_landing_page = TRUE)
   
   # Should accept show_progress parameter
-  expect_no_error(
-    generate_dashboard(dashboard, render = FALSE, show_progress = TRUE)
-  )
-  
-  expect_no_error(
-    generate_dashboard(dashboard, render = FALSE, show_progress = FALSE)
-  )
+  result1 <- generate_dashboard(dashboard, render = FALSE, show_progress = TRUE)
+  expect_s3_class(result1, "dashboard_project")
+
+  result2 <- generate_dashboard(dashboard, render = FALSE, show_progress = FALSE)
+  expect_s3_class(result2, "dashboard_project")
 })
 
 test_that("custom progress tracks page generation", {

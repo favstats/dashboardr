@@ -2,20 +2,18 @@
 % Please edit documentation in R/content_collection.R
 \name{.normalize_filter_var_value}
 \alias{.normalize_filter_var_value}
-\title{Extract filter_var values from content collection}
+\title{Normalize a filter_var value to a character vector}
 \usage{
 .normalize_filter_var_value(x)
 }
 \arguments{
-\item{content}{A content_collection or list with sidebar/items}
-
-\item{filter_vars}{Optional character vector of input filter variables to apply to this block.}
+\item{x}{A filter_var value (character, factor, symbol, or language object)}
 }
 \value{
 Character vector of unique filter_var values
 }
 \description{
-Internal helper to detect filter_var columns from add_input() calls.
-Used to enable automatic cross-tab filtering.
+Internal helper to coerce various filter_var representations
+(character, factor, symbol, language) to a character vector.
 }
 \keyword{internal}

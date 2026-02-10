@@ -26,7 +26,8 @@ viz_funnel(
   tooltip = NULL,
   tooltip_prefix = "",
   tooltip_suffix = "",
-  height = 400
+  height = 400,
+  backend = "highcharter"
 )
 ```
 
@@ -114,6 +115,11 @@ viz_funnel(
 - height:
 
   Numeric. Chart height in pixels. Default 400.
+
+- backend:
+
+  Rendering backend: "highcharter" (default), "plotly", "echarts4r", or
+  "ggiraph".
 
 ## Value
 

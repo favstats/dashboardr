@@ -3,6 +3,7 @@
 # Function: viz_timeline
 # --------------------------------------------------------------------------
 #' @title Create a Timeline Chart
+#' @importFrom stats weighted.mean
 #' @description
 #' Creates interactive timeline visualizations showing changes in survey
 #' responses over time, or simple line charts for pre-aggregated time series data.
@@ -111,6 +112,7 @@
 #' plot3
 #' }
 #'
+#' @param legend_position Position of the legend ("top", "bottom", "left", "right", "none")
 #' @export
 
 
@@ -147,6 +149,7 @@ viz_timeline <- function(data,
                             # Cross-tab filtering for sidebar inputs (auto-detected)
                             cross_tab_filter_vars = NULL,
                             title_map = NULL,
+                            legend_position = NULL,
                             backend = "highcharter") {
 
   # Convert variable arguments to strings (supports both quoted and unquoted)
@@ -477,7 +480,8 @@ viz_timeline <- function(data,
     weight_var = weight_var,
     time_var = time_var,
     x_label = x_label, y_label = y_label,
-    y_filter_label = y_filter_label
+    y_filter_label = y_filter_label,
+    legend_position = legend_position
   )
 
   # Prepare cross-tab data for client-side filtering (all backends)
@@ -508,6 +512,7 @@ viz_timeline <- function(data,
         timeVar = time_var,
         yVar = y_var,
         groupVar = group_var,
+        agg = agg,
         filterVars = valid_filter_vars,
         groupOrder = if (!is.null(group_order)) group_order else unique(as.character(cross_tab[[group_var %||% "group"]])),
         colorMap = if (!is.null(color_palette) && !is.null(names(color_palette))) as.list(color_palette) else NULL
@@ -922,6 +927,9 @@ viz_timeline <- function(data,
       )
   }
 
+  # --- Legend position ---
+  hc <- .apply_legend_highcharter(hc, config$legend_position, default_show = TRUE)
+
   return(hc)
 }
 
@@ -935,6 +943,7 @@ viz_timeline <- function(data,
   group_var <- config$group_var
   value_col <- config$value_col
   chart_type <- config$chart_type
+  agg <- config$agg
   color_palette <- config$color_palette
   title <- config$title
   x_axis_title <- config$x_axis_title
@@ -946,13 +955,21 @@ viz_timeline <- function(data,
   mode <- switch(chart_type,
     "line" = "lines+markers",
     "spline" = "lines+markers",
-    "area" = "lines",
+    "area" =, "stacked_area" = "lines",
     "column" = NULL,
     "lines+markers"
   )
   is_bar <- chart_type %in% c("column", "bar")
+  is_stacked <- chart_type == "stacked_area"
+  fill_mode <- if (chart_type %in% c("area", "stacked_area")) "tozeroy" else "none"
 
-  if (is.null(group_var)) {
+  # For percentage mode without group_var, the y_var column acts as the grouping
+  effective_group <- group_var
+  if (is.null(effective_group) && agg == "percentage" && y_var %in% names(agg_data)) {
+    effective_group <- y_var
+  }
+
+  if (is.null(effective_group)) {
     # Single series
     if (is_bar) {
       p <- plotly::plot_ly(agg_data, x = ~get(time_var_plot), y = ~get(value_col),
@@ -960,21 +977,24 @@ viz_timeline <- function(data,
     } else {
       p <- plotly::plot_ly(agg_data, x = ~get(time_var_plot), y = ~get(value_col),
                            type = "scatter", mode = mode, name = y_var,
-                           fill = if (chart_type == "area") "tozeroy" else "none")
+                           fill = fill_mode)
     }
   } else {
     # Grouped series
-    group_levels <- if (!is.null(group_order)) group_order else unique(agg_data[[group_var]])
+    group_levels <- if (!is.null(group_order)) group_order else unique(agg_data[[effective_group]])
     p <- plotly::plot_ly()
+    stackgroup <- if (is_stacked) "one" else NULL
     for (grp in group_levels) {
-      grp_data <- agg_data[agg_data[[group_var]] == grp, ]
+      grp_data <- agg_data[agg_data[[effective_group]] == grp, ]
       if (is_bar) {
         p <- plotly::add_trace(p, x = grp_data[[time_var_plot]], y = grp_data[[value_col]],
                                type = "bar", name = as.character(grp))
       } else {
-        p <- plotly::add_trace(p, x = grp_data[[time_var_plot]], y = grp_data[[value_col]],
-                               type = "scatter", mode = mode, name = as.character(grp),
-                               fill = if (chart_type == "area") "tozeroy" else "none")
+        trace_args <- list(p = p, x = grp_data[[time_var_plot]], y = grp_data[[value_col]],
+                           type = "scatter", mode = mode, name = as.character(grp),
+                           fill = if (is_stacked) "tonexty" else fill_mode)
+        if (!is.null(stackgroup)) trace_args$stackgroup <- stackgroup
+        p <- do.call(plotly::add_trace, trace_args)
       }
     }
   }
@@ -990,6 +1010,9 @@ viz_timeline <- function(data,
     p <- plotly::layout(p, colorway = color_palette)
   }
 
+  # --- Legend position ---
+  p <- .apply_legend_plotly(p, config$legend_position, default_show = TRUE)
+
   p
 }
 
@@ -1000,8 +1023,10 @@ viz_timeline <- function(data,
 
   time_var_plot <- config$time_var_plot
   group_var <- config$group_var
+  y_var <- config$y_var
   value_col <- config$value_col
   chart_type <- config$chart_type
+  agg <- config$agg
   color_palette <- config$color_palette
   title <- config$title
   subtitle <- config$subtitle
@@ -1012,19 +1037,30 @@ viz_timeline <- function(data,
 
   agg_data[[time_var_plot]] <- as.character(agg_data[[time_var_plot]])
 
-  if (is.null(group_var)) {
+  # For percentage mode without group_var, the y_var column (e.g. happiness levels)
+
+  # acts as the implicit grouping variable for separate series
+  effective_group <- group_var
+  if (is.null(effective_group) && agg == "percentage" && y_var %in% names(agg_data)) {
+    effective_group <- y_var
+  }
+
+  if (is.null(effective_group)) {
     e <- agg_data |>
       echarts4r::e_charts_(time_var_plot)
   } else {
-    agg_data[[group_var]] <- as.character(agg_data[[group_var]])
+    agg_data[[effective_group]] <- as.character(agg_data[[effective_group]])
     e <- agg_data |>
-      dplyr::group_by(.data[[group_var]]) |>
+      dplyr::group_by(.data[[effective_group]]) |>
       echarts4r::e_charts_(time_var_plot)
   }
+
+  is_stacked <- chart_type == "stacked_area"
 
   e <- switch(chart_type,
     "line" =, "spline" = e |> echarts4r::e_line_(value_col, smooth = chart_type == "spline"),
     "area" = e |> echarts4r::e_area_(value_col),
+    "stacked_area" = e |> echarts4r::e_area_(value_col, stack = "total"),
     "column" =, "bar" = e |> echarts4r::e_bar_(value_col),
     e |> echarts4r::e_line_(value_col)
   )
@@ -1035,12 +1071,15 @@ viz_timeline <- function(data,
 
   e <- e |>
     echarts4r::e_x_axis(name = x_axis_title) |>
-    echarts4r::e_y_axis(name = y_axis_title, max = y_max, min = y_min) |>
+    echarts4r::e_y_axis(name = y_axis_title, max = y_max, min = y_min %||% .echarts_padded_min()) |>
     echarts4r::e_tooltip(trigger = "axis")
 
   if (!is.null(color_palette)) {
     e <- e |> echarts4r::e_color(color_palette)
   }
+
+  # --- Legend position ---
+  e <- .apply_legend_echarts(e, config$legend_position, default_show = TRUE)
 
   e
 }
@@ -1053,8 +1092,10 @@ viz_timeline <- function(data,
 
   time_var_plot <- config$time_var_plot
   group_var <- config$group_var
+  y_var <- config$y_var
   value_col <- config$value_col
   chart_type <- config$chart_type
+  agg <- config$agg
   color_palette <- config$color_palette
   title <- config$title
   subtitle <- config$subtitle
@@ -1063,33 +1104,47 @@ viz_timeline <- function(data,
   y_max <- config$y_max
   y_min <- config$y_min
 
+  # For percentage mode without group_var, the y_var column acts as the grouping
+  effective_group <- group_var
+  if (is.null(effective_group) && agg == "percentage" && y_var %in% names(agg_data)) {
+    effective_group <- y_var
+  }
+
   # Build tooltip
   agg_data$.tooltip <- paste0(
     agg_data[[time_var_plot]],
-    if (!is.null(group_var)) paste0(" (", agg_data[[group_var]], ")") else "",
+    if (!is.null(effective_group)) paste0(" (", agg_data[[effective_group]], ")") else "",
     ": ", round(agg_data[[value_col]], 2)
   )
 
-  aes_base <- if (is.null(group_var)) {
+  is_stacked <- chart_type == "stacked_area"
+
+  aes_base <- if (is.null(effective_group)) {
     ggplot2::aes(x = .data[[time_var_plot]], y = .data[[value_col]])
   } else {
     ggplot2::aes(x = .data[[time_var_plot]], y = .data[[value_col]],
-                 color = .data[[group_var]], group = .data[[group_var]])
+                 color = .data[[effective_group]], group = .data[[effective_group]])
   }
 
   p <- ggplot2::ggplot(agg_data, aes_base)
 
   if (chart_type %in% c("column", "bar")) {
-    fill_aes <- if (!is.null(group_var)) {
-      ggplot2::aes(fill = .data[[group_var]], tooltip = .data$.tooltip, data_id = .data[[time_var_plot]])
+    fill_aes <- if (!is.null(effective_group)) {
+      ggplot2::aes(fill = .data[[effective_group]], tooltip = .data$.tooltip, data_id = .data[[time_var_plot]])
     } else {
       ggplot2::aes(tooltip = .data$.tooltip, data_id = .data[[time_var_plot]])
     }
     p <- p + ggiraph::geom_bar_interactive(fill_aes, stat = "identity",
-                                            position = if (!is.null(group_var)) "dodge" else "identity")
-  } else if (chart_type == "area") {
+                                            position = if (!is.null(effective_group)) "dodge" else "identity")
+  } else if (chart_type %in% c("area", "stacked_area")) {
+    fill_aes <- if (!is.null(effective_group)) {
+      ggplot2::aes(fill = .data[[effective_group]])
+    } else {
+      NULL
+    }
+    position_arg <- if (is_stacked) "stack" else "identity"
     p <- p +
-      ggplot2::geom_area(alpha = 0.3) +
+      ggplot2::geom_area(fill_aes, alpha = 0.3, position = position_arg) +
       ggiraph::geom_point_interactive(ggplot2::aes(tooltip = .data$.tooltip, data_id = .data[[time_var_plot]]))
   } else {
     p <- p +
@@ -1099,6 +1154,9 @@ viz_timeline <- function(data,
 
   if (!is.null(color_palette)) {
     p <- p + ggplot2::scale_color_manual(values = color_palette)
+    if (is_stacked || chart_type == "area") {
+      p <- p + ggplot2::scale_fill_manual(values = color_palette)
+    }
   }
 
   p <- p +
@@ -1109,6 +1167,9 @@ viz_timeline <- function(data,
   if (!is.null(y_max) || !is.null(y_min)) {
     p <- p + ggplot2::coord_cartesian(ylim = c(y_min, y_max))
   }
+
+  # --- Legend position ---
+  p <- .apply_legend_ggplot(p, config$legend_position, default_show = TRUE)
 
   ggiraph::girafe(ggobj = p)
 }

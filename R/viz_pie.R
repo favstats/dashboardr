@@ -50,6 +50,7 @@
 #' df <- data.frame(category = c("A", "B", "C"), count = c(40, 35, 25))
 #' viz_pie(df, x_var = "category", y_var = "count")
 #' }
+#' @param legend_position Position of the legend ("top", "bottom", "left", "right", "none")
 #' @export
 viz_pie <- function(data,
                     x_var,
@@ -70,6 +71,7 @@ viz_pie <- function(data,
                     tooltip_prefix = "",
                     tooltip_suffix = "",
                     center_text = NULL,
+                    legend_position = NULL,
                     backend = "highcharter") {
 
   # Convert variable arguments to strings (supports both quoted and unquoted)
@@ -171,7 +173,8 @@ viz_pie <- function(data,
     show_in_legend = show_in_legend,
     tooltip = tooltip, tooltip_prefix = tooltip_prefix,
     tooltip_suffix = tooltip_suffix,
-    center_text = center_text
+    center_text = center_text,
+    legend_position = legend_position
   )
 
   # Dispatch to backend renderer
@@ -280,6 +283,9 @@ viz_pie <- function(data,
       )
     )
 
+  # --- Legend position ---
+  hc <- .apply_legend_highcharter(hc, config$legend_position, default_show = TRUE)
+
   return(hc)
 }
 
@@ -312,6 +318,9 @@ viz_pie <- function(data,
   if (!is.null(title)) layout_args$title <- title
 
   p <- do.call(plotly::layout, layout_args)
+
+  # --- Legend position ---
+  p <- .apply_legend_plotly(p, config$legend_position, default_show = TRUE)
 
   p
 }
@@ -347,6 +356,24 @@ viz_pie <- function(data,
   if (!is.null(color_palette)) {
     e <- e |> echarts4r::e_color(color_palette)
   }
+
+  # --- Data labels ---
+  if (isTRUE(config$data_labels_enabled)) {
+    label_dec <- config$label_decimals %||% 1L
+    label_fmt <- paste0(
+      "function(params) {",
+      "  if (!params.percent) return '';",
+      "  return params.name + ': ' + params.percent.toFixed(", label_dec, ") + '%';",
+      "}"
+    )
+    e <- e |> echarts4r::e_labels(
+      show = TRUE,
+      formatter = htmlwidgets::JS(label_fmt)
+    )
+  }
+
+  # --- Legend position ---
+  e <- .apply_legend_echarts(e, config$legend_position, default_show = TRUE)
 
   e
 }
@@ -386,6 +413,9 @@ viz_pie <- function(data,
   if (!is.null(color_palette)) {
     p <- p + ggplot2::scale_fill_manual(values = color_palette)
   }
+
+  # --- Legend position ---
+  p <- .apply_legend_ggplot(p, config$legend_position, default_show = TRUE)
 
   ggiraph::girafe(ggobj = p)
 }

@@ -365,7 +365,7 @@ PY
     forbid_patterns+=("$pat")
   done < <(jq -r ".defaults.forbidden_console_patterns[]?, .scenarios[$i].forbidden_console_patterns[]?" "$RESOLVED" | awk 'NF' | sort -u)
   if [[ -n "$console_rel" && -f "$RUN_DIR/$console_rel" ]]; then
-    for pat in "${forbid_patterns[@]}"; do
+    for pat in "${forbid_patterns[@]-}"; do
       if [[ -n "$pat" ]] && grep -Fqi -- "$pat" "$RUN_DIR/$console_rel"; then
         result_json="$(jq --arg msg "Forbidden console pattern matched: $pat" \
           '.failures = ((.failures // []) + [$msg]) | .status = "fail"' <<<"$result_json")"

@@ -67,6 +67,7 @@
 #' )
 #' plot3
 #'
+#' @param legend_position Position of the legend ("top", "bottom", "left", "right", "none")
 #' @export
 
 viz_scatter <- function(data,
@@ -89,6 +90,7 @@ viz_scatter <- function(data,
                            tooltip_format = NULL,
                            jitter = FALSE,
                            jitter_amount = 0.2,
+                           legend_position = NULL,
                            backend = "highcharter") {
   
   # Convert variable arguments to strings (supports both quoted and unquoted)
@@ -223,7 +225,8 @@ viz_scatter <- function(data,
     trend_method = trend_method,
     alpha = alpha,
     tooltip = tooltip,
-    tooltip_format = tooltip_format
+    tooltip_format = tooltip_format,
+    legend_position = legend_position
   )
 
   # Dispatch to backend renderer
@@ -427,11 +430,8 @@ viz_scatter <- function(data,
       )
   }
 
-  # Enable legend if color grouping is used
-  hc <- hc %>%
-    highcharter::hc_legend(
-      enabled = !is.null(color_var) || show_trend
-    )
+  # --- Legend position ---
+  hc <- .apply_legend_highcharter(hc, config$legend_position, default_show = !is.null(color_var))
 
   return(hc)
 }
@@ -473,6 +473,8 @@ viz_scatter <- function(data,
     xaxis = list(title = final_x_label),
     yaxis = list(title = final_y_label)
   )
+  # --- Legend position ---
+  p <- .apply_legend_plotly(p, config$legend_position, default_show = !is.null(config$color_var))
   p
 }
 
@@ -500,8 +502,15 @@ viz_scatter <- function(data,
   ec <- ec |>
     echarts4r::e_title(text = title) |>
     echarts4r::e_x_axis(name = final_x_label) |>
-    echarts4r::e_y_axis(name = final_y_label) |>
+    echarts4r::e_y_axis(name = final_y_label, min = .echarts_padded_min()) |>
     echarts4r::e_tooltip(trigger = "item")
+  # --- Color palette ---
+  if (!is.null(config$color_palette)) {
+    ec <- ec |> echarts4r::e_color(config$color_palette)
+  }
+
+  # --- Legend position ---
+  ec <- .apply_legend_echarts(ec, config$legend_position, default_show = !is.null(config$color_var))
   ec
 }
 
@@ -532,5 +541,12 @@ viz_scatter <- function(data,
   }
   p <- p +
     ggplot2::labs(title = title, x = final_x_label, y = final_y_label)
+  # --- Color palette ---
+  if (!is.null(config$color_var) && !is.null(config$color_palette)) {
+    p <- p + ggplot2::scale_color_manual(values = config$color_palette)
+  }
+
+  # --- Legend position ---
+  p <- .apply_legend_ggplot(p, config$legend_position, default_show = !is.null(config$color_var))
   ggiraph::girafe(ggobj = p)
 }

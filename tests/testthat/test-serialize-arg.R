@@ -72,10 +72,10 @@ test_that("tutorial_dashboard generates valid QMD with curly braces", {
   # Generate tutorial dashboard without rendering
   temp_dir <- tempfile("tutorial_test")
   
-  # Suppress output
-  capture.output({
+  # Suppress output and Quarto-not-available warnings
+  suppressWarnings(capture.output({
     tutorial_dashboard(directory = temp_dir)
-  }, type = "message")
+  }, type = "message"))
   
   # Check that QMD files were generated
   qmd_files <- list.files(temp_dir, pattern = "\\.qmd$", full.names = TRUE)

@@ -50,9 +50,12 @@ test_that("preview mode handles page name case-insensitively", {
     add_dashboard_page("MyPage", text = "Content")
   
   # Should work with different cases
-  expect_no_error(generate_dashboard(dashboard, preview = "mypage", render = FALSE))
-  expect_no_error(generate_dashboard(dashboard, preview = "MyPage", render = FALSE))
-  expect_no_error(generate_dashboard(dashboard, preview = "MYPAGE", render = FALSE))
+  r1 <- generate_dashboard(dashboard, preview = "mypage", render = FALSE)
+  expect_s3_class(r1, "dashboard_project")
+  r2 <- generate_dashboard(dashboard, preview = "MyPage", render = FALSE)
+  expect_s3_class(r2, "dashboard_project")
+  r3 <- generate_dashboard(dashboard, preview = "MYPAGE", render = FALSE)
+  expect_s3_class(r3, "dashboard_project")
 })
 
 test_that("preview mode errors on non-existent page", {
@@ -209,10 +212,10 @@ test_that("preview mode respects incremental builds", {
     add_dashboard_page("Analysis", text = "Analysis")
   
   # First build (full)
-  result1 <- generate_dashboard(dashboard, incremental = TRUE)
+  result1 <- generate_dashboard(dashboard, incremental = TRUE, render = FALSE)
   
   # Second build with preview should work with incremental
-  result2 <- generate_dashboard(dashboard, preview = "Analysis", incremental = TRUE)
+  result2 <- generate_dashboard(dashboard, preview = "Analysis", incremental = TRUE, render = FALSE)
   
   expect_true(file.exists(file.path(temp_dir, ".dashboardr_manifest.rds")))
 })

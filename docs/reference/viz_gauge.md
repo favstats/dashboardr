@@ -25,7 +25,8 @@ viz_gauge(
   background_color = "#e6e6e6",
   target = NULL,
   target_color = "#333333",
-  height = 300
+  height = 300,
+  backend = "highcharter"
 )
 ```
 
@@ -113,6 +114,11 @@ viz_gauge(
 - height:
 
   Numeric. Chart height in pixels. Default 300.
+
+- backend:
+
+  Rendering backend: "highcharter" (default), "plotly", "echarts4r", or
+  "ggiraph".
 
 ## Value
 

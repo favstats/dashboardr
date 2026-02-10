@@ -26,7 +26,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">dashboardr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -45,6 +45,7 @@
     <li><a class="dropdown-item" href="../articles/dashboards.html">- Dashboards</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><a class="dropdown-item" href="../articles/advanced-features.html">⚙️ Advanced Features</a></li>
+    <li><a class="dropdown-item" href="../articles/chart-backends.html">📦 Chart backends</a></li>
     <li><a class="dropdown-item" href="../articles/publishing_dashboards.html">🌐 Publishing Dashboards</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>📊 Visualization Types</h6></li>
@@ -96,6 +97,41 @@
     </div>
 
     <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.4.0" id="dashboardr-040">dashboardr 0.4.0<a class="anchor" aria-label="anchor" href="#dashboardr-040"></a></h2>
+<div class="section level3">
+<h3 id="new-features-0-4-0">New Features<a class="anchor" aria-label="anchor" href="#new-features-0-4-0"></a></h3>
+<div class="section level4">
+<h4 id="multi-backend-chart-support-0-4-0">Multi-Backend Chart Support<a class="anchor" aria-label="anchor" href="#multi-backend-chart-support-0-4-0"></a></h4>
+<p>All 17 visualization functions now support a <code>backend</code> parameter for rendering with different charting libraries. The default backend remains <code>"highcharter"</code> for full backward compatibility.</p>
+<p>Supported backends: <code>"highcharter"</code> (default), <code>"plotly"</code>, <code>"echarts4r"</code>, <code>"ggiraph"</code>.</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Per-chart backend selection</span></span>
+<span><span class="fu"><a href="../reference/viz_bar.html">viz_bar</a></span><span class="op">(</span><span class="va">data</span>, x_var <span class="op">=</span> <span class="st">"category"</span>, backend <span class="op">=</span> <span class="st">"plotly"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/viz_timeline.html">viz_timeline</a></span><span class="op">(</span><span class="va">data</span>, time_var <span class="op">=</span> <span class="st">"year"</span>, y_var <span class="op">=</span> <span class="st">"value"</span>, backend <span class="op">=</span> <span class="st">"echarts4r"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Dashboard-wide backend (applies to all charts)</span></span>
+<span><span class="fu"><a href="../reference/create_dashboard.html">create_dashboard</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"My Dashboard"</span>, backend <span class="op">=</span> <span class="st">"plotly"</span><span class="op">)</span></span></code></pre></div>
+<p>Alternative backends are optional dependencies (in <code>Suggests</code>). Install only what you need:</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"plotly"</span>, <span class="st">"echarts4r"</span>, <span class="st">"ggiraph"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level4">
+<h4 id="widget-embedding-0-4-0">Widget Embedding<a class="anchor" aria-label="anchor" href="#widget-embedding-0-4-0"></a></h4>
+<p>New functions for embedding arbitrary htmlwidgets in dashboards:</p>
+<ul><li>
+<code><a href="../reference/add_widget.html">add_widget()</a></code>: Embed any htmlwidget object directly</li>
+<li>
+<code><a href="../reference/add_plotly.html">add_plotly()</a></code>: Convenience wrapper for plotly objects</li>
+<li>
+<code><a href="../reference/add_leaflet.html">add_leaflet()</a></code>: Convenience wrapper for leaflet maps</li>
+</ul><div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://plotly-r.com" class="external-link">plotly</a></span><span class="op">)</span></span>
+<span><span class="va">my_plot</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/plotly/man/plot_ly.html" class="external-link">plot_ly</a></span><span class="op">(</span><span class="va">mtcars</span>, x <span class="op">=</span> <span class="op">~</span><span class="va">wt</span>, y <span class="op">=</span> <span class="op">~</span><span class="va">mpg</span>, type <span class="op">=</span> <span class="st">"scatter"</span>, mode <span class="op">=</span> <span class="st">"markers"</span><span class="op">)</span></span>
+<span><span class="va">collection</span> <span class="op">&lt;-</span> <span class="fu">content_collection</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="../reference/add_plotly.html">add_plotly</a></span><span class="op">(</span><span class="va">my_plot</span>, title <span class="op">=</span> <span class="st">"Weight vs MPG"</span><span class="op">)</span></span></code></pre></div>
+<hr></div>
+</div>
+</div>
+    <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.3.0" id="dashboardr-030">dashboardr 0.3.0<a class="anchor" aria-label="anchor" href="#dashboardr-030"></a></h2>
 <div class="section level3">
 <h3 id="new-features-0-3-0">New Features<a class="anchor" aria-label="anchor" href="#new-features-0-3-0"></a></h3>
@@ -133,13 +169,13 @@
 <ul><li><p><strong><code>show_when</code></strong>: Conditionally show/hide visualizations based on sidebar input values. Uses formula syntax (e.g., <code>show_when = ~ time_period == "Over Time"</code>). Hidden elements fully collapse in layout, including empty <code>bslib-grid</code> containers.</p></li>
 <li>
 <p><strong><code>title_map</code></strong>: Dynamic chart titles that interpolate sidebar input values. Uses <code>{placeholder}</code> syntax in titles with a simple named-vector mapping. Auto-detects which input to read from — no manual wiring needed.</p>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">title_map</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>key_response <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Marijuana"</span> <span class="op">=</span> <span class="st">"Legal"</span>, <span class="st">"Gun Control"</span> <span class="op">=</span> <span class="st">"Favor"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 </li>
 <li><p><strong><code>group_order</code></strong> (timeline): Control the order of series in timeline charts. Pass a character vector to enforce consistent series/legend ordering across chart types.</p></li>
 <li>
 <p><strong>Named <code>color_palette</code></strong>: Pass a named character vector to <code>color_palette</code> to assign fixed colors per series name, ensuring consistent colors across stacked bars and timelines.</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">color_palette</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Male"</span> <span class="op">=</span> <span class="st">"#F28E2B"</span>, <span class="st">"Female"</span> <span class="op">=</span> <span class="st">"#E15759"</span>, <span class="st">"White"</span> <span class="op">=</span> <span class="st">"#EDC948"</span><span class="op">)</span></span></code></pre></div>
 <p>Unnamed vectors still work as positional color cycles (backwards compatible).</p>
 </li>
@@ -199,16 +235,16 @@
 <h3 id="unified-stacked-bar-chart-function-0-1-0">Unified Stacked Bar Chart Function<a class="anchor" aria-label="anchor" href="#unified-stacked-bar-chart-function-0-1-0"></a></h3>
 <p><code><a href="../reference/viz_stackedbar.html">viz_stackedbar()</a></code> is now a unified function that supports <strong>two modes</strong>:</p>
 <p><strong>Mode 1: Grouped/Crosstab</strong> (use <code>x_var</code> + <code>stack_var</code>)</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Show how one variable breaks down by another</span></span>
 <span><span class="fu"><a href="../reference/viz_stackedbar.html">viz_stackedbar</a></span><span class="op">(</span><span class="va">data</span>, x_var <span class="op">=</span> <span class="st">"education"</span>, stack_var <span class="op">=</span> <span class="st">"gender"</span><span class="op">)</span></span></code></pre></div>
 <p><strong>Mode 2: Multi-Variable/Battery</strong> (use <code>x_vars</code>)</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Compare multiple survey questions side-by-side</span></span>
 <span><span class="fu"><a href="../reference/viz_stackedbar.html">viz_stackedbar</a></span><span class="op">(</span><span class="va">data</span>, x_vars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"q1"</span>, <span class="st">"q2"</span>, <span class="st">"q3"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>This eliminates confusion between <code><a href="../reference/viz_stackedbar.html">viz_stackedbar()</a></code> and <code><a href="../reference/viz_stackedbars.html">viz_stackedbars()</a></code> - you now only need to remember one function! The function automatically detects which mode to use based on the parameters you provide.</p>
 <p><strong>Migration from <code><a href="../reference/viz_stackedbars.html">viz_stackedbars()</a></code>:</strong> Simply change the function name - all parameters work the same way:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Old way (still works, shows deprecation notice)</span></span>
 <span><span class="fu"><a href="../reference/viz_stackedbars.html">viz_stackedbars</a></span><span class="op">(</span><span class="va">data</span>, x_vars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"q1"</span>, <span class="st">"q2"</span>, <span class="st">"q3"</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
@@ -276,7 +312,7 @@
 <li>Customizable appearance via <code>error_bar_color</code> and <code>error_bar_width</code> parameters</li>
 <li>Works with both simple and grouped bar charts</li>
 </ul><p>Example usage:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Bar chart with means and 95% CI</span></span>
 <span><span class="fu"><a href="../reference/viz_bar.html">viz_bar</a></span><span class="op">(</span></span>
 <span>  data <span class="op">=</span> <span class="va">mtcars</span>,</span>

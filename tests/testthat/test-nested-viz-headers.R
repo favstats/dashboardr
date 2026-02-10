@@ -213,7 +213,6 @@ test_that("Graphs render correctly in nested tabs (visualization code present)",
 
 test_that("Complex nested structure with age and gender tabgroups works correctly", {
 
-  skip("Skipping flaky nested tabgroup ordering test - needs investigation")
   
   # This tests the user's exact final structure:
   # sis -> Wave 1/2 -> Age/Gender -> Question 1/2/3
@@ -402,10 +401,4 @@ test_that("Complex nested structure with age and gender tabgroups works correctl
   }
 })
 
-test_that("title_tabset still works for nested visualizations when explicitly provided", {
-  # KNOWN ISSUE: title_tabset is not being used for nested visualizations
-  # when they are wrapped in tabgroups. The tabgroup name takes precedence.
-  # This is a pre-existing issue separate from the tab ordering changes.
-  skip("Known issue: title_tabset not used for wrapped nested visualizations - needs separate fix")
-})
 

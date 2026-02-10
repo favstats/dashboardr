@@ -380,7 +380,6 @@
 
 #' Extract all insertion indices from a viz item (including nested items)
 #' @param item A viz item, which could be a tabgroup with nested visualizations
-#' @param backend Rendering backend: "highcharter" (default), "plotly", "echarts4r", or "ggiraph".
 #' @return Vector of all insertion indices found in this item and its children
 #' @keywords internal
 .extract_all_insertion_indices <- function(item) {

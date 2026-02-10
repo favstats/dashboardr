@@ -12,7 +12,8 @@ add_metric(
   icon = NULL,
   color = NULL,
   subtitle = NULL,
-  tabgroup = NULL
+  tabgroup = NULL,
+  show_when = NULL
 )
 ```
 
@@ -46,3 +47,8 @@ add_metric(
 
   Optional tabgroup for organizing content (character vector for nested
   tabs)
+
+- show_when:
+
+  One-sided formula controlling conditional display based on input
+  values.

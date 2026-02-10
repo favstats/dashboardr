@@ -25,7 +25,9 @@ viz_boxplot(
   na_label = "(Missing)",
   tooltip = NULL,
   tooltip_prefix = "",
-  tooltip_suffix = ""
+  tooltip_suffix = "",
+  legend_position = NULL,
+  backend = "highcharter"
 )
 ```
 
@@ -111,6 +113,15 @@ viz_boxplot(
 - tooltip_suffix:
 
   Optional string appended to values in tooltip.
+
+- legend_position:
+
+  Position of the legend ("top", "bottom", "left", "right", "none")
+
+- backend:
+
+  Rendering backend: "highcharter" (default), "plotly", "echarts4r", or
+  "ggiraph".
 
 ## Value
 

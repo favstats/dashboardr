@@ -279,22 +279,23 @@ test_that("viz_map handles different map types", {
   expect_s3_class(world_map, "highchart")
 })
 
-# Skip US map test that requires special data
 test_that("viz_map handles US map type", {
-  skip("Requires US state data format")
-  
+  skip_on_cran()
+  skip_if_offline()
+  skip_if_not_installed("highcharter")
+
   us_data <- data.frame(
-    state = c("CA", "TX", "NY"),
+    state = c("California", "Texas", "New York"),
     value = c(100, 80, 90)
   )
-  
+
   us_map <- viz_map(
     data = us_data,
     value_var = "value",
     join_var = "state",
     map_type = "countries/us/us-all"
   )
-  
+
   expect_s3_class(us_map, "highchart")
 })
 

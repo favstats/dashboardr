@@ -7,7 +7,7 @@ pipeable syntax with end_value_box_row():
 ## Usage
 
 ``` r
-add_value_box_row(content, tabgroup = NULL)
+add_value_box_row(content, tabgroup = NULL, show_when = NULL)
 ```
 
 ## Arguments
@@ -20,6 +20,11 @@ add_value_box_row(content, tabgroup = NULL)
 
   Optional tabgroup for organizing content (character vector for nested
   tabs)
+
+- show_when:
+
+  One-sided formula controlling conditional display based on input
+  values.
 
 ## Examples
 

@@ -435,6 +435,15 @@ fm_make_content_for_type <- function(type,
     "modal" = content |>
       add_text("[details](#matrix-details){.modal-link}") |>
       add_modal(modal_id = "matrix-details", title = "Details", modal_content = "Modal body"),
+    "sparkline_card" = content |>
+      add_sparkline_card_row(tabgroup = tg, show_when = sw) |>
+      add_sparkline_card(x_var = "mpg", subtitle = "MPG") |>
+      end_sparkline_card_row(),
+    "sparkline_card_row" = content |>
+      add_sparkline_card_row(tabgroup = tg, show_when = sw) |>
+      add_sparkline_card(x_var = "mpg", subtitle = "MPG") |>
+      add_sparkline_card(x_var = "hp", subtitle = "HP") |>
+      end_sparkline_card_row(),
     stop("Unsupported content type in helper: ", type, call. = FALSE)
   )
 }
@@ -462,7 +471,7 @@ fm_generate_dashboard_files <- function(content, backend = "highcharter", page_n
     add_content(content)
 
   proj <- proj |> add_pages(page)
-  generate_dashboard(proj, render = FALSE, open = FALSE, quiet = TRUE)
+  suppressWarnings(generate_dashboard(proj, render = FALSE, open = FALSE, quiet = TRUE))
 
   page_file <- paste0(tolower(gsub("[^A-Za-z0-9]+", "_", page_name)), ".qmd")
   qmd_path <- file.path(out_dir, page_file)

@@ -5,7 +5,7 @@ Add raw HTML content
 ## Usage
 
 ``` r
-add_html(content, html, tabgroup = NULL)
+add_html(content, html, tabgroup = NULL, show_when = NULL)
 ```
 
 ## Arguments
@@ -22,3 +22,8 @@ add_html(content, html, tabgroup = NULL)
 
   Optional tabgroup for organizing content (character vector for nested
   tabs)
+
+- show_when:
+
+  One-sided formula controlling conditional display based on input
+  values.

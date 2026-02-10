@@ -1,7 +1,10 @@
 library(testthat)
 
 test_that("echarts filter asset keeps legend in sync with visible series", {
-  asset_path <- testthat::test_path("..", "..", "inst", "assets", "input_filter.js")
+  asset_path <- system.file("assets", "input_filter.js", package = "dashboardr")
+  if (!nzchar(asset_path)) {
+    asset_path <- testthat::test_path("..", "..", "inst", "assets", "input_filter.js")
+  }
   expect_true(file.exists(asset_path))
 
   js <- paste(readLines(asset_path, warn = FALSE), collapse = "\n")

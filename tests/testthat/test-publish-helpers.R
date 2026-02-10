@@ -284,16 +284,10 @@ test_that(".cleanup_review_folder handles non-existent folder", {
   dir.create(temp_dir, showWarnings = FALSE)
   
   # Should not error when folder doesn't exist
-  expect_no_error({
-    dashboardr:::.cleanup_review_folder(temp_dir)
-  })
+  dashboardr:::.cleanup_review_folder(temp_dir)
+  expect_true(TRUE)  # survived without error
   
   # Cleanup
   unlink(temp_dir, recursive = TRUE)
 })
 
-# --- .create_review_folder() ---
-# Skip this test as it requires a usethis project context
-test_that(".create_review_folder requires project context", {
-  skip("Requires usethis project context")
-})

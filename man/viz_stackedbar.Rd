@@ -41,6 +41,7 @@ viz_stackedbar(
   label_decimals = NULL,
   cross_tab_filter_vars = NULL,
   title_map = NULL,
+  legend_position = NULL,
   backend = "highcharter"
 )
 }
@@ -135,6 +136,8 @@ Set explicitly to override (e.g., \code{label_decimals = 2}).}
 
 \item{title_map}{Named list mapping variable names to custom display titles
 for dynamic title updates when filtering by cross-tab variables.}
+
+\item{legend_position}{Position of the legend ("top", "bottom", "left", "right", "none")}
 
 \item{backend}{Rendering backend: "highcharter" (default), "plotly", "echarts4r", or "ggiraph".}
 }

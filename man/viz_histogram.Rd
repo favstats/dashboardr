@@ -28,6 +28,7 @@ viz_histogram(
   weight_var = NULL,
   data_labels_enabled = TRUE,
   label_decimals = NULL,
+  legend_position = NULL,
   backend = "highcharter"
 )
 }
@@ -93,6 +94,8 @@ Default TRUE.}
 \item{label_decimals}{Optional integer. Number of decimal places for data labels.
 When NULL (default), uses smart defaults: 0 for counts, 1 for percent.
 Set explicitly to override (e.g., \code{label_decimals = 2}).}
+
+\item{legend_position}{Position of the legend ("top", "bottom", "left", "right", "none")}
 
 \item{backend}{Rendering backend: "highcharter" (default), "plotly", "echarts4r", or "ggiraph".}
 }

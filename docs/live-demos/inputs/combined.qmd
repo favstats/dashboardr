@@ -170,7 +170,7 @@ if (inherits(result, 'highchart')) {
   result <- highcharter::hc_size(result, height = 500)
 }
 
-result <- dashboardr::.embed_cross_tab(result)
+result <- dashboardr:::.embed_cross_tab(result)
 
 # Force container height with explicit wrapper
 result <- htmltools::div(

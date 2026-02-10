@@ -200,7 +200,10 @@ dashboardr::render_input(
 
 ## Column
 
-### {dimension}: {question} by {breakdown}
+
+### Row
+
+#### {dimension}: {question} by {breakdown}
 
 ```{r stackedbar-question-response}
 #| results: 'asis'
@@ -219,13 +222,16 @@ result <- viz_stackedbar(
   cross_tab_filter_vars = c("dimension", "question", "time_period", "breakdown_type")
 )
 
-result <- dashboardr::.embed_cross_tab(result)
+result <- dashboardr:::.embed_cross_tab(result)
 
 result
 show_when_close()
 ```
 
-### {dimension}: {question} by {breakdown} ({time_period})
+
+### Row
+
+#### {dimension}: {question} by {breakdown} ({time_period})
 
 ```{r stackedbar-response-breakdown-value}
 #| results: 'asis'
@@ -246,13 +252,16 @@ result <- viz_stackedbar(
   cross_tab_filter_vars = c("dimension", "question", "time_period", "breakdown_type")
 )
 
-result <- dashboardr::.embed_cross_tab(result)
+result <- dashboardr:::.embed_cross_tab(result)
 
 result
 show_when_close()
 ```
 
-### {dimension} - {question}: % responding '{key_response}' by {breakdown}
+
+### Row
+
+#### {dimension} - {question}: % responding '{key_response}' by {breakdown}
 
 ```{r timeline-score-breakdown-value}
 #| results: 'asis'
@@ -273,7 +282,7 @@ result <- viz_timeline(
   cross_tab_filter_vars = c("dimension", "question", "time_period", "breakdown_type")
 )
 
-result <- dashboardr::.embed_cross_tab(result)
+result <- dashboardr:::.embed_cross_tab(result)
 
 result
 show_when_close()

@@ -191,6 +191,7 @@
 #'    \item **Tooltip Customization:** Defines a JavaScript `tooltip.formatter` for detailed hover information.
 #'    }
 #'
+#' @param legend_position Position of the legend ("top", "bottom", "left", "right", "none")
 #' @export
 #'
 
@@ -230,6 +231,7 @@ viz_heatmap <- function(data,
                            agg_fun = mean,
                            weight_var = NULL,
                            pre_aggregated = FALSE,
+                           legend_position = NULL,
                            backend = "highcharter"
 ) {
 
@@ -472,7 +474,8 @@ viz_heatmap <- function(data,
     tooltip = tooltip, tooltip_prefix = tooltip_prefix, tooltip_suffix = tooltip_suffix,
     x_tooltip_suffix = x_tooltip_suffix, y_tooltip_suffix = y_tooltip_suffix,
     x_tooltip_prefix = x_tooltip_prefix, y_tooltip_prefix = y_tooltip_prefix,
-    final_x_levels = final_x_levels, final_y_levels = final_y_levels
+    final_x_levels = final_x_levels, final_y_levels = final_y_levels,
+    legend_position = legend_position
   )
 
   # Dispatch to backend renderer
@@ -634,6 +637,9 @@ viz_heatmap <- function(data,
     )
   }
 
+  # --- Legend position ---
+  hc <- .apply_legend_highcharter(hc, config$legend_position, default_show = FALSE)
+
   return(hc)
 }
 
@@ -694,6 +700,9 @@ viz_heatmap <- function(data,
 
   p <- do.call(plotly::layout, layout_args)
 
+  # --- Legend position ---
+  p <- .apply_legend_plotly(p, config$legend_position, default_show = FALSE)
+
   p
 }
 
@@ -715,6 +724,9 @@ viz_heatmap <- function(data,
       .y_plot = as.character(.y_plot)
     )
 
+  data_labels_enabled <- config$data_labels_enabled %||% TRUE
+  label_decimals <- config$label_decimals %||% 0L
+
   e <- plot_df |>
     echarts4r::e_charts(.x_plot) |>
     echarts4r::e_heatmap(.y_plot, .value_plot) |>
@@ -733,6 +745,27 @@ viz_heatmap <- function(data,
     echarts4r::e_x_axis(name = final_x_label) |>
     echarts4r::e_y_axis(name = final_y_label) |>
     echarts4r::e_tooltip(trigger = "item")
+
+  # Data labels on heatmap cells
+  if (isTRUE(data_labels_enabled)) {
+    label_fmt <- paste0(
+      "function(params) {",
+      "  var v = Array.isArray(params.value) ? params.value[2] : params.value;",
+      "  if (v === null || v === undefined) return '';",
+      "  return Number(v).toFixed(", label_decimals, ");",
+      "}"
+    )
+    e <- e |> echarts4r::e_labels(
+      show = TRUE,
+      position = "inside",
+      formatter = htmlwidgets::JS(label_fmt),
+      fontSize = 12,
+      color = "#333"
+    )
+  }
+
+  # --- Legend position ---
+  e <- .apply_legend_echarts(e, config$legend_position, default_show = FALSE)
 
   e
 }
@@ -780,6 +813,9 @@ viz_heatmap <- function(data,
     if (!is.null(color_min) && !is.null(color_max)) fill_args$limits <- c(color_min, color_max)
     p <- p + do.call(ggplot2::scale_fill_gradientn, fill_args)
   }
+
+  # --- Legend position ---
+  p <- .apply_legend_ggplot(p, config$legend_position, default_show = FALSE)
 
   ggiraph::girafe(ggobj = p)
 }

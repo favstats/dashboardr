@@ -30,7 +30,7 @@ sliders, text search, number inputs, and button groups."><meta property="og:imag
 
     <a class="navbar-brand me-2" href="../index.html">dashboardr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -49,6 +49,7 @@ sliders, text search, number inputs, and button groups."><meta property="og:imag
     <li><a class="dropdown-item" href="../articles/dashboards.html">- Dashboards</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><a class="dropdown-item" href="../articles/advanced-features.html">⚙️ Advanced Features</a></li>
+    <li><a class="dropdown-item" href="../articles/chart-backends.html">📦 Chart backends</a></li>
     <li><a class="dropdown-item" href="../articles/publishing_dashboards.html">🌐 Publishing Dashboards</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>📊 Visualization Types</h6></li>
@@ -124,6 +125,7 @@ sliders, text search, number inputs, and button groups.</p>
 <span>  max <span class="op">=</span> <span class="fl">100</span>,</span>
 <span>  step <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  value <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  default_value <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  show_value <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  inline <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  stacked <span class="op">=</span> <span class="cn">FALSE</span>,</span>
@@ -216,6 +218,10 @@ first option (for radio/button_group).</p></dd>
 
 <dt id="arg-value">value<a class="anchor" aria-label="anchor" href="#arg-value"></a></dt>
 <dd><p>Initial value (for slider/switch/text/number types)</p></dd>
+
+
+<dt id="arg-default-value">default_value<a class="anchor" aria-label="anchor" href="#arg-default-value"></a></dt>
+<dd><p>Default value for the input (alias for value, used for reset)</p></dd>
 
 
 <dt id="arg-show-value">show_value<a class="anchor" aria-label="anchor" href="#arg-show-value"></a></dt>

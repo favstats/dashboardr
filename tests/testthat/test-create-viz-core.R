@@ -170,9 +170,9 @@ test_that("add_viz accepts height parameter", {
 
 test_that("add_viz accepts icon parameter", {
   result <- create_viz() %>%
-    add_viz(type = "histogram", x_var = "mpg", tabgroup = "test", icon = "chart-bar")
+    add_viz(type = "histogram", x_var = "mpg", tabgroup = "test", icon = "ph:chart-bar")
   
-  expect_equal(result$items[[1]]$icon, "chart-bar")
+  expect_equal(result$items[[1]]$icon, "ph:chart-bar")
 })
 
 test_that("add_viz accepts data parameter override", {

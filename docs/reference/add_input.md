@@ -23,6 +23,7 @@ add_input(
   max = 100,
   step = 1,
   value = NULL,
+  default_value = NULL,
   show_value = TRUE,
   inline = TRUE,
   stacked = FALSE,
@@ -114,6 +115,10 @@ add_input(
 - value:
 
   Initial value (for slider/switch/text/number types)
+
+- default_value:
+
+  Default value for the input (alias for value, used for reset)
 
 - show_value:
 

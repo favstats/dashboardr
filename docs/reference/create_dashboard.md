@@ -96,7 +96,9 @@ create_dashboard(
   pagination_separator = "of",
   pagination_position = "bottom",
   powered_by_dashboardr = TRUE,
-  chart_export = FALSE
+  chart_export = FALSE,
+  backend = "highcharter",
+  contextual_viz_errors = FALSE
 )
 ```
 
@@ -505,6 +507,17 @@ create_dashboard(
 - chart_export:
 
   Whether to enable chart export functionality (default FALSE)
+
+- backend:
+
+  Rendering backend: "highcharter" (default), "plotly", "echarts4r", or
+  "ggiraph".
+
+- contextual_viz_errors:
+
+  Logical. If TRUE, generated visualization chunks wrap viz calls in
+  tryCatch and prepend contextual labels (title/type) to error messages.
+  Default: FALSE.
 
 ## Value
 

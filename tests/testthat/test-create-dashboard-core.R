@@ -134,11 +134,11 @@ test_that("create_dashboard accepts tabset parameters", {
   result <- create_dashboard(
     "test", "Test",
     tabset_theme = "modern",
-    tabset_colors = list(active = "#ff0000")
+    tabset_colors = list(active_bg = "#ff0000")
   )
   
   expect_equal(result$tabset_theme, "modern")
-  expect_equal(result$tabset_colors$active, "#ff0000")
+  expect_equal(result$tabset_colors$active_bg, "#ff0000")
 })
 
 test_that("create_dashboard accepts analytics parameters", {
@@ -186,9 +186,8 @@ test_that("create_dashboard accepts pagination parameters", {
 
 test_that("create_dashboard allow_inside_pkg prevents error", {
   # Without allow_inside_pkg = TRUE, it might error if inside a package
-  expect_no_error({
-    create_dashboard("test", "Test", allow_inside_pkg = TRUE)
-  })
+  result <- create_dashboard("test", "Test", allow_inside_pkg = TRUE)
+  expect_s3_class(result, "dashboard_project")
 })
 
 # --- add_page() tests ---

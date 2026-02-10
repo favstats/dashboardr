@@ -72,6 +72,7 @@
 #' plot3
 #' }
 #'
+#' @param legend_position Position of the legend ("top", "bottom", "left", "right", "none")
 #' @export
 viz_density <- function(data,
                         x_var,
@@ -90,6 +91,7 @@ viz_density <- function(data,
                         na_label = "(Missing)",
                         tooltip = NULL,
                         tooltip_suffix = "",
+                        legend_position = NULL,
                         backend = "highcharter") {
   
   # Convert variable arguments to strings (supports both quoted and unquoted)
@@ -179,7 +181,7 @@ viz_density <- function(data,
       if (is.null(bw)) {
         bw <- "nrd0"
       }
-      dens <- density(x, weights = weights / sum(weights, na.rm = TRUE), bw = bw)
+      dens <- suppressWarnings(density(x, weights = weights / sum(weights, na.rm = TRUE), bw = bw))
     } else {
       if (is.null(bw)) {
         dens <- density(x)
@@ -241,6 +243,7 @@ viz_density <- function(data,
     group_var = group_var,
     x_var = x_var,
     tooltip = tooltip, tooltip_suffix = tooltip_suffix,
+    legend_position = legend_position,
     raw_df = df
   )
 
@@ -385,8 +388,8 @@ viz_density <- function(data,
       )
   }
   
-  hc <- hc |>
-    highcharter::hc_legend(enabled = !is.null(group_var))
+  # --- Legend position ---
+  hc <- .apply_legend_highcharter(hc, config$legend_position, default_show = !is.null(group_var))
 
   hc
 }
@@ -450,6 +453,9 @@ viz_density <- function(data,
 
   p <- do.call(plotly::layout, layout_args)
 
+  # --- Legend position ---
+  p <- .apply_legend_plotly(p, config$legend_position, default_show = !is.null(group_var))
+
   p
 }
 
@@ -478,8 +484,10 @@ viz_density <- function(data,
   e <- e |>
     echarts4r::e_x_axis(name = x_label) |>
     echarts4r::e_y_axis(name = y_label) |>
-    echarts4r::e_tooltip(trigger = "axis") |>
-    echarts4r::e_legend(show = !is.null(group_var))
+    echarts4r::e_tooltip(trigger = "axis")
+
+  # --- Legend position ---
+  e <- .apply_legend_echarts(e, config$legend_position, default_show = !is.null(group_var))
 
   if (!is.null(color_palette)) {
     e <- e |> echarts4r::e_color(color_palette)
@@ -548,9 +556,8 @@ viz_density <- function(data,
       ggplot2::scale_color_manual(values = color_palette)
   }
 
-  if (is.null(group_var)) {
-    p <- p + ggplot2::theme(legend.position = "none")
-  }
+  # --- Legend position ---
+  p <- .apply_legend_ggplot(p, config$legend_position, default_show = !is.null(group_var))
 
   ggiraph::girafe(ggobj = p)
 }

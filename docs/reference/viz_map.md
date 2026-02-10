@@ -27,6 +27,7 @@ viz_map(
   border_color = "#FFFFFF",
   border_width = 0.5,
   credits = FALSE,
+  backend = "highcharter",
   ...
 )
 ```
@@ -116,6 +117,11 @@ viz_map(
 - credits:
 
   Show Highcharts credits (default: FALSE)
+
+- backend:
+
+  Rendering backend: "highcharter" (default), "plotly", "echarts4r", or
+  "ggiraph".
 
 - ...:
 

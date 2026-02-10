@@ -17,7 +17,8 @@ add_image(
   align = c("center", "left", "right"),
   link = NULL,
   class = NULL,
-  tabgroup = NULL
+  tabgroup = NULL,
+  show_when = NULL
 )
 ```
 
@@ -63,6 +64,11 @@ add_image(
 
   Optional tabgroup for organizing content (character vector for nested
   tabs)
+
+- show_when:
+
+  One-sided formula controlling conditional display based on input
+  values.
 
 ## Value
 

@@ -45,3 +45,18 @@ dashboard_template
 ^input_matrix_hc($|/)
 ^input_matrix_mixed($|/)
 ^\.playwright-cli($|/)
+
+# Local-only AI governance artifacts
+ai/
+AGENTS.md
+CLAUDE.md
+docs/llms.txt
+scripts/
+output/
+scripts/sync_ai_adapters.R
+scripts/check_ai_adapters.R
+tests/testthat/test-ai-adapter-sync.R
+CONTRIBUTING.md
+node_modules/
+package-lock.json
+package.json

@@ -28,7 +28,7 @@ Supports viz_collection as first argument for seamless piping."><meta property="
 
     <a class="navbar-brand me-2" href="../index.html">dashboardr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -47,6 +47,7 @@ Supports viz_collection as first argument for seamless piping."><meta property="
     <li><a class="dropdown-item" href="../articles/dashboards.html">- Dashboards</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><a class="dropdown-item" href="../articles/advanced-features.html">⚙️ Advanced Features</a></li>
+    <li><a class="dropdown-item" href="../articles/chart-backends.html">📦 Chart backends</a></li>
     <li><a class="dropdown-item" href="../articles/publishing_dashboards.html">🌐 Publishing Dashboards</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>📊 Visualization Types</h6></li>
@@ -105,7 +106,7 @@ Supports viz_collection as first argument for seamless piping.</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">add_text</span><span class="op">(</span>x <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">text</span>, <span class="va">...</span>, tabgroup <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">add_text</span><span class="op">(</span>x <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">text</span>, <span class="va">...</span>, tabgroup <span class="op">=</span> <span class="cn">NULL</span>, show_when <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -126,6 +127,10 @@ Supports viz_collection as first argument for seamless piping.</p>
 
 <dt id="arg-tabgroup">tabgroup<a class="anchor" aria-label="anchor" href="#arg-tabgroup"></a></dt>
 <dd><p>Optional tabgroup for organizing content (character vector for nested tabs)</p></dd>
+
+
+<dt id="arg-show-when">show_when<a class="anchor" aria-label="anchor" href="#arg-show-when"></a></dt>
+<dd><p>One-sided formula controlling conditional display based on input values.</p></dd>
 
 </dl></div>
     <div class="section level2">

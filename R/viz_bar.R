@@ -116,6 +116,7 @@
 #' )
 #' plot5
 #'
+#' @param legend_position Position of the legend ("top", "bottom", "left", "right", "none")
 #' @export
 
 viz_bar <- function(data,
@@ -148,6 +149,7 @@ viz_bar <- function(data,
                        x_tooltip_suffix = "",
                        data_labels_enabled = TRUE,
                        label_decimals = NULL,
+                       legend_position = NULL,
                        complete_groups = TRUE,
                        y_var = NULL,
                        backend = "highcharter") {
@@ -311,11 +313,11 @@ viz_bar <- function(data,
         t_val = stats::qt((1 + ci_lvl) / 2, df = pmax(.data$n - 1, 1)),
         ci_val = .data$t_val * .data$se_val,
         # Compute low/high based on error type
-        error_amount = dplyr::case_when(
-          error_type == "sd" ~ .data$sd_val,
-          error_type == "se" ~ .data$se_val,
-          error_type == "ci" ~ .data$ci_val,
-          TRUE ~ 0
+        error_amount = switch(error_type,
+          "sd" = .data$sd_val,
+          "se" = .data$se_val,
+          "ci" = .data$ci_val,
+          0
         ),
         low = .data$mean_val - .data$error_amount,
         high = .data$mean_val + .data$error_amount,
@@ -484,6 +486,7 @@ viz_bar <- function(data,
     tooltip = tooltip, tooltip_prefix = tooltip_prefix,
     tooltip_suffix = tooltip_suffix, x_tooltip_suffix = x_tooltip_suffix,
     data_labels_enabled = data_labels_enabled, label_decimals = label_decimals,
+    legend_position = legend_position,
     value_var = value_var, weight_var = weight_var
   )
 
@@ -828,7 +831,10 @@ viz_bar <- function(data,
     
     hc <- hc %>% highcharter::hc_tooltip(formatter = highcharter::JS(tooltip_fn), useHTML = TRUE)
   }
-  
+
+  # --- Legend position ---
+  hc <- .apply_legend_highcharter(hc, config$legend_position, default_show = !is.null(group_var))
+
   return(hc)
 }
 
@@ -913,6 +919,17 @@ viz_bar <- function(data,
     }
   }
 
+  # Data labels
+  if (isTRUE(data_labels_enabled)) {
+    dec <- label_decimals %||% 0L
+    fmt <- paste0("%{", if (horizontal) "x" else "y", ":.", dec, "f}")
+    p <- p |> plotly::style(
+      text = if (is.null(group_var)) round(agg_data$value, dec) else NULL,
+      textposition = if (horizontal) "outside" else "outside",
+      texttemplate = fmt
+    )
+  }
+
   # Labels and title
   layout_args <- list(p = p)
   if (!is.null(title)) layout_args$title <- title
@@ -924,6 +941,9 @@ viz_bar <- function(data,
     layout_args$yaxis <- list(title = final_y_label)
   }
   p <- do.call(plotly::layout, layout_args)
+
+  # --- Legend position ---
+  p <- .apply_legend_plotly(p, config$legend_position, default_show = !is.null(group_var))
 
   p
 }
@@ -943,6 +963,9 @@ viz_bar <- function(data,
   final_x_label <- config$x_label
   final_y_label <- config$y_label
   error_bars <- config$error_bars
+  tooltip_prefix <- config$tooltip_prefix %||% ""
+  tooltip_suffix <- config$tooltip_suffix %||% ""
+  x_tooltip_suffix <- config$x_tooltip_suffix %||% ""
 
   has_error_bars <- error_bars != "none" && "low" %in% names(agg_data) && "high" %in% names(agg_data)
 
@@ -950,9 +973,23 @@ viz_bar <- function(data,
   agg_data[[x_var_plot]] <- as.character(agg_data[[x_var_plot]])
 
   if (is.null(group_var)) {
+    # Assign per-bar colors so each category gets a distinct color
+    if (!is.null(color_palette) && length(color_palette) >= nrow(agg_data)) {
+      agg_data$.color <- color_palette[seq_len(nrow(agg_data))]
+    } else if (!is.null(color_palette) && length(color_palette) > 0) {
+      agg_data$.color <- rep_len(color_palette, nrow(agg_data))
+    }
+
     e <- agg_data |>
       echarts4r::e_charts_(x_var_plot) |>
       echarts4r::e_bar_("value", name = final_y_label)
+
+    # Apply per-bar colors via itemStyle
+    if (".color" %in% names(agg_data)) {
+      e <- e |> echarts4r::e_add_nested("itemStyle", color = .color)
+    }
+
+    # Default: hide legend for ungrouped bars (legend color doesn't match per-bar colors)
 
     if (has_error_bars) {
       e <- e |> echarts4r::e_error_bar_("low", "high")
@@ -975,12 +1012,76 @@ viz_bar <- function(data,
 
   e <- e |>
     echarts4r::e_x_axis(name = final_x_label) |>
-    echarts4r::e_y_axis(name = final_y_label) |>
-    echarts4r::e_tooltip(trigger = "axis")
+    echarts4r::e_y_axis(name = final_y_label)
 
-  if (!is.null(color_palette)) {
+  # --- Tooltip ---
+  esc_js <- function(s) gsub("'", "\\\\'", s %||% "")
+  pre_js <- esc_js(tooltip_prefix)
+  suf_js <- esc_js(tooltip_suffix)
+  xsuf_js <- esc_js(x_tooltip_suffix)
+
+  is_grouped <- !is.null(group_var)
+  if (nzchar(tooltip_prefix) || nzchar(tooltip_suffix) || nzchar(x_tooltip_suffix)) {
+    # For ungrouped bars, skip series name in tooltip to avoid redundant labels
+    series_label_js <- if (is_grouped) {
+      "(p.marker || '') + (p.seriesName || '') + ': '"
+    } else {
+      "(p.marker || '') + ''"
+    }
+    tooltip_fn <- paste0(
+      "function(params) {",
+      "  if (!params || !params.length) return '';",
+      "  var getVal = function(v) { return Array.isArray(v) ? Number(v[", if (horizontal) 0 else 1, "]) : Number(v); };",
+      "  var cat = params[0].axisValueLabel || params[0].name || '';",
+      "  var out = '<b>' + cat + '", xsuf_js, "</b><br/>';",
+      "  for (var i = 0; i < params.length; i++) {",
+      "    var p = params[i];",
+      "    var val = getVal(p.value);",
+      "    var txt = isFinite(val) ? val.toLocaleString() : '';",
+      "    out += ", series_label_js, " + '", pre_js, "' + txt + '", suf_js, "<br/>';",
+      "  }",
+      "  return out;",
+      "}"
+    )
+    e <- e |> echarts4r::e_tooltip(
+      trigger = "axis",
+      formatter = htmlwidgets::JS(tooltip_fn)
+    )
+  } else {
+    e <- e |> echarts4r::e_tooltip(trigger = "axis")
+  }
+
+  # --- Colors for grouped bars ---
+  if (!is.null(group_var) && !is.null(color_palette)) {
     e <- e |> echarts4r::e_color(color_palette)
   }
+
+  # --- Data labels ---
+  data_labels_enabled <- config$data_labels_enabled
+  label_decimals <- config$label_decimals %||% 0L
+  if (isTRUE(data_labels_enabled)) {
+    # When e_flip_coords() is used (horizontal), value array index changes:
+    # vertical: value = [category, y_val] -> index 1
+    # horizontal: value = [y_val, category] -> index 0
+    val_idx <- if (horizontal) 0 else 1
+    label_fmt <- paste0(
+      "function(params) {",
+      "  var v = Array.isArray(params.value) ? Number(params.value[", val_idx, "]) : Number(params.value);",
+      "  if (!isFinite(v)) return '';",
+      "  return v.toFixed(", label_decimals, ");",
+      "}"
+    )
+    e <- e |>
+      echarts4r::e_labels(
+        show = TRUE,
+        position = if (horizontal) "right" else "top",
+        formatter = htmlwidgets::JS(label_fmt),
+        color = "#333"
+      )
+  }
+
+  # --- Legend position ---
+  e <- .apply_legend_echarts(e, config$legend_position, default_show = !is.null(group_var))
 
   e
 }
@@ -1046,9 +1147,22 @@ viz_bar <- function(data,
                   x = final_x_label, y = final_y_label) +
     ggplot2::theme_minimal()
 
+  data_labels_enabled <- config$data_labels_enabled
+  label_decimals <- config$label_decimals %||% 0L
+  if (isTRUE(data_labels_enabled)) {
+    p <- p + ggplot2::geom_text(
+      ggplot2::aes(label = round(.data$value, label_decimals)),
+      vjust = -0.5, size = 3,
+      position = if (!is.null(group_var)) ggplot2::position_dodge(0.9) else "identity"
+    )
+  }
+
   if (horizontal) {
     p <- p + ggplot2::coord_flip()
   }
+
+  # --- Legend position ---
+  p <- .apply_legend_ggplot(p, config$legend_position, default_show = !is.null(group_var))
 
   ggiraph::girafe(ggobj = p)
 }

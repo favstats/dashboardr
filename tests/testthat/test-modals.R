@@ -47,9 +47,6 @@ test_that("modal_content with image and text", {
   expect_equal(content$attribs$id, "img-modal")
 })
 
-test_that("quick_modal is deprecated - use add_modal() instead", {
-  skip("quick_modal() is deprecated in favor of add_modal()")
-})
 
 test_that("modal_content with custom HTML", {
   content <- modal_content(

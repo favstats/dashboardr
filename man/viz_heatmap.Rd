@@ -40,6 +40,7 @@ viz_heatmap(
   agg_fun = mean,
   weight_var = NULL,
   pre_aggregated = FALSE,
+  legend_position = NULL,
   backend = "highcharter"
 )
 }
@@ -133,6 +134,8 @@ When provided, the function uses \code{weighted.mean()} instead of the \code{agg
 \item{pre_aggregated}{Logical. If TRUE, skips aggregation and uses \code{value_var} directly.
 Use this when your data is already aggregated (one row per x/y combination).
 Default is FALSE.}
+
+\item{legend_position}{Position of the legend ("top", "bottom", "left", "right", "none")}
 
 \item{backend}{Rendering backend: "highcharter" (default), "plotly", "echarts4r", or "ggiraph".}
 }

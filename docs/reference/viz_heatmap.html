@@ -36,7 +36,7 @@ as explicit categories."><meta property="og:image" content="https://favstats.git
 
     <a class="navbar-brand me-2" href="../index.html">dashboardr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -55,6 +55,7 @@ as explicit categories."><meta property="og:image" content="https://favstats.git
     <li><a class="dropdown-item" href="../articles/dashboards.html">- Dashboards</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><a class="dropdown-item" href="../articles/advanced-features.html">⚙️ Advanced Features</a></li>
+    <li><a class="dropdown-item" href="../articles/chart-backends.html">📦 Chart backends</a></li>
     <li><a class="dropdown-item" href="../articles/publishing_dashboards.html">🌐 Publishing Dashboards</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>📊 Visualization Types</h6></li>
@@ -152,7 +153,9 @@ as explicit categories.</p>
 <span>  y_map_values <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  agg_fun <span class="op">=</span> <span class="va">mean</span>,</span>
 <span>  weight_var <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  pre_aggregated <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  pre_aggregated <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  legend_position <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  backend <span class="op">=</span> <span class="st">"highcharter"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -318,6 +321,14 @@ When provided, the function uses <code><a href="https://rdrr.io/r/stats/weighted
 <dd><p>Logical. If TRUE, skips aggregation and uses <code>value_var</code> directly.
 Use this when your data is already aggregated (one row per x/y combination).
 Default is FALSE.</p></dd>
+
+
+<dt id="arg-legend-position">legend_position<a class="anchor" aria-label="anchor" href="#arg-legend-position"></a></dt>
+<dd><p>Position of the legend ("top", "bottom", "left", "right", "none")</p></dd>
+
+
+<dt id="arg-backend">backend<a class="anchor" aria-label="anchor" href="#arg-backend"></a></dt>
+<dd><p>Rendering backend: "highcharter" (default), "plotly", "echarts4r", or "ggiraph".</p></dd>
 
 </dl></div>
     <div class="section level2">

@@ -7,7 +7,7 @@ names to function names and serializing parameters.
 ## Usage
 
 ``` r
-.generate_typed_viz(spec)
+.generate_typed_viz(spec, contextual_viz_errors = FALSE)
 ```
 
 ## Arguments

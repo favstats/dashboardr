@@ -194,7 +194,8 @@ test_that("missing dataset name in viz causes error or warning", {
   
   # Should either error or generate code that references the wrong dataset
   # (Implementation detail - just ensure it doesn't crash silently)
-  expect_no_error(generate_dashboard(dashboard, render = FALSE))
+  result <- generate_dashboard(dashboard, render = FALSE)
+  expect_s3_class(result, "dashboard_project")
   
 })
 

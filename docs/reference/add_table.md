@@ -5,7 +5,14 @@ Add generic table (data frame)
 ## Usage
 
 ``` r
-add_table(content, table_object, caption = NULL, tabgroup = NULL)
+add_table(
+  content,
+  table_object,
+  caption = NULL,
+  tabgroup = NULL,
+  filter_vars = NULL,
+  show_when = NULL
+)
 ```
 
 ## Arguments
@@ -26,6 +33,16 @@ add_table(content, table_object, caption = NULL, tabgroup = NULL)
 
   Optional tabgroup for organizing content (character vector for nested
   tabs)
+
+- filter_vars:
+
+  Optional character vector of input filter variables to apply to this
+  block.
+
+- show_when:
+
+  One-sided formula controlling conditional display based on input
+  values.
 
 ## Value
 

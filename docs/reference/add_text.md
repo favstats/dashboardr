@@ -6,7 +6,7 @@ a pipe. Supports viz_collection as first argument for seamless piping.
 ## Usage
 
 ``` r
-add_text(x = NULL, text, ..., tabgroup = NULL)
+add_text(x = NULL, text, ..., tabgroup = NULL, show_when = NULL)
 ```
 
 ## Arguments
@@ -28,6 +28,11 @@ add_text(x = NULL, text, ..., tabgroup = NULL)
 
   Optional tabgroup for organizing content (character vector for nested
   tabs)
+
+- show_when:
+
+  One-sided formula controlling conditional display based on input
+  values.
 
 ## Value
 

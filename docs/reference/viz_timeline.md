@@ -40,7 +40,9 @@ viz_timeline(
   tooltip_suffix = "",
   group_order = NULL,
   cross_tab_filter_vars = NULL,
-  title_map = NULL
+  title_map = NULL,
+  legend_position = NULL,
+  backend = "highcharter"
 )
 ```
 
@@ -215,6 +217,15 @@ viz_timeline(
 
   Named list mapping variable names to custom display titles for dynamic
   title updates when filtering by cross-tab variables.
+
+- legend_position:
+
+  Position of the legend ("top", "bottom", "left", "right", "none")
+
+- backend:
+
+  Rendering backend: "highcharter" (default), "plotly", "echarts4r", or
+  "ggiraph".
 
 ## Value
 

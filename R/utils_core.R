@@ -936,3 +936,137 @@ section {
   )))
   htmltools::tagList(table_tag, script)
 }
+
+
+# --------------------------------------------------------------------------
+# Legend position helpers (shared across backends)
+# --------------------------------------------------------------------------
+
+#' JavaScript function for echarts4r y-axis min with padding.
+#' Returns a JS function that computes dataMin minus ~5% of the data range,
+#' giving a comfortable buffer below the lowest value.
+#' @return An htmlwidgets::JS object
+#' @keywords internal
+.echarts_padded_min <- function() {
+  htmlwidgets::JS(
+    "function(value) { return Math.floor(value.min - (value.max - value.min) * 0.05); }"
+  )
+}
+
+#' Darken a hex color by a given factor
+#' @param col Hex color string (e.g. "#E41A1C")
+#' @param factor Numeric between 0-1; higher means darker (default 0.3)
+#' @return Hex color string
+#' @keywords internal
+.darken_color <- function(col, factor = 0.3) {
+  rgb_vals <- grDevices::col2rgb(col)[, 1]
+  darkened <- pmax(0, round(rgb_vals * (1 - factor)))
+  grDevices::rgb(darkened[1], darkened[2], darkened[3], maxColorValue = 255)
+}
+
+#' Apply legend position to an echarts4r chart
+#' @param e echarts4r chart object
+#' @param legend_position Character: "top", "bottom", "left", "right", or "none"
+#' @param default_show Logical: whether to show legend by default (when legend_position is NULL)
+#' @keywords internal
+.apply_legend_echarts <- function(e, legend_position, default_show = TRUE) {
+  if (is.null(legend_position)) {
+    if (!default_show) {
+      return(e |> echarts4r::e_legend(show = FALSE))
+    }
+    return(e)
+  }
+  if (identical(legend_position, "none")) {
+    return(e |> echarts4r::e_legend(show = FALSE))
+  }
+  lp <- switch(legend_position,
+    "top"    = list(orient = "horizontal", top = "top", left = "center"),
+    "bottom" = list(orient = "horizontal", top = "bottom", left = "center"),
+    "left"   = list(orient = "vertical", left = "left", top = "middle"),
+    "right"  = list(orient = "vertical", right = "right", top = "middle"),
+    list(orient = "horizontal", top = "top", left = "center")
+  )
+  e |> echarts4r::e_legend(
+    show = TRUE,
+    orient = lp$orient,
+    top = lp$top %||% NULL,
+    left = lp$left %||% NULL,
+    right = lp$right %||% NULL
+  )
+}
+
+#' Apply legend position to a highcharter chart
+#' @param hc highcharter chart object
+#' @param legend_position Character: "top", "bottom", "left", "right", or "none"
+#' @param default_show Logical: whether to show legend by default
+#' @keywords internal
+.apply_legend_highcharter <- function(hc, legend_position, default_show = TRUE) {
+  if (is.null(legend_position)) {
+    if (!default_show) {
+      return(hc |> highcharter::hc_legend(enabled = FALSE))
+    }
+    return(hc)
+  }
+  if (identical(legend_position, "none")) {
+    return(hc |> highcharter::hc_legend(enabled = FALSE))
+  }
+  lp <- switch(legend_position,
+    "top"    = list(align = "center", verticalAlign = "top", layout = "horizontal"),
+    "bottom" = list(align = "center", verticalAlign = "bottom", layout = "horizontal"),
+    "left"   = list(align = "left", verticalAlign = "middle", layout = "vertical"),
+    "right"  = list(align = "right", verticalAlign = "middle", layout = "vertical"),
+    list(align = "center", verticalAlign = "bottom", layout = "horizontal")
+  )
+  hc |> highcharter::hc_legend(
+    enabled = TRUE,
+    align = lp$align,
+    verticalAlign = lp$verticalAlign,
+    layout = lp$layout
+  )
+}
+
+#' Apply legend position to a plotly chart
+#' @param p plotly chart object
+#' @param legend_position Character: "top", "bottom", "left", "right", or "none"
+#' @param default_show Logical: whether to show legend by default
+#' @keywords internal
+.apply_legend_plotly <- function(p, legend_position, default_show = TRUE) {
+  if (is.null(legend_position)) {
+    if (!default_show) {
+      return(p |> plotly::layout(showlegend = FALSE))
+    }
+    return(p)
+  }
+  if (identical(legend_position, "none")) {
+    return(p |> plotly::layout(showlegend = FALSE))
+  }
+  lp <- switch(legend_position,
+    "top"    = list(orientation = "h", x = 0.5, xanchor = "center", y = 1.02, yanchor = "bottom"),
+    "bottom" = list(orientation = "h", x = 0.5, xanchor = "center", y = -0.15, yanchor = "top"),
+    "left"   = list(orientation = "v", x = -0.15, xanchor = "right", y = 0.5, yanchor = "middle"),
+    "right"  = list(orientation = "v", x = 1.02, xanchor = "left", y = 0.5, yanchor = "middle"),
+    list(orientation = "h", x = 0.5, xanchor = "center", y = 1.02, yanchor = "bottom")
+  )
+  p |> plotly::layout(
+    showlegend = TRUE,
+    legend = lp
+  )
+}
+
+#' Apply legend position to a ggiraph/ggplot chart
+#' @param p ggplot object (before girafe())
+#' @param legend_position Character: "top", "bottom", "left", "right", or "none"
+#' @param default_show Logical: whether to show legend by default
+#' @keywords internal
+.apply_legend_ggplot <- function(p, legend_position, default_show = TRUE) {
+  if (is.null(legend_position)) {
+    if (!default_show) {
+      return(p + ggplot2::theme(legend.position = "none"))
+    }
+    return(p)
+  }
+  if (identical(legend_position, "none")) {
+    return(p + ggplot2::theme(legend.position = "none"))
+  }
+  p + ggplot2::theme(legend.position = legend_position)
+}

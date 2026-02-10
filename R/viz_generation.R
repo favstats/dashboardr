@@ -8,7 +8,6 @@
 #' into sections based on pagination_break markers.
 #'
 #' @param viz_specs List of visualization specifications
-#' @param backend Rendering backend: "highcharter" (default), "plotly", "echarts4r", or "ggiraph".
 #' @return List of sections, where each section is a list of viz specs
 #' @keywords internal
 .split_by_pagination <- function(viz_specs) {
@@ -216,6 +215,8 @@
     "metric" = .generate_metric_block(block),
     "value_box" = .generate_value_box_block(block),
     "value_box_row" = .generate_value_box_row_block(block),
+    "sparkline_card" = .generate_sparkline_card_block(block, block$backend),
+    "sparkline_card_row" = .generate_sparkline_card_row_block(block, block$backend),
     NULL  # Unknown type - skip
   )
   

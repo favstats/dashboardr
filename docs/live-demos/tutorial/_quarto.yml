@@ -1,6 +1,6 @@
 project:
   type: website
-  output-dir: /Users/favstats/Dropbox/postdoc/dashboardr/docs/live-demos/tutorial
+  output-dir: /Users/favstats/Dropbox/dashboardr/dashboardr/docs/live-demos/tutorial
   resources:
     - assets/
 

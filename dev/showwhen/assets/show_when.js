@@ -7,19 +7,46 @@
 (function() {
   'use strict';
 
+  var debugState = window.dashboardrDebugState = window.dashboardrDebugState || { events: [] };
+  function isDebugEnabled() {
+    if (window.DASHBOARDR_DEBUG === true || window.dashboardrDebug === true) return true;
+    try {
+      if (window.localStorage && window.localStorage.getItem('dashboardr_debug') === '1') return true;
+    } catch (e) {
+      // ignore localStorage errors
+    }
+    try {
+      var qs = new URLSearchParams(window.location.search || '');
+      if (qs.get('dashboardr_debug') === '1' || qs.get('debug') === '1') return true;
+    } catch (e) {
+      // ignore URL parsing errors
+    }
+    return false;
+  }
+  function debugLog(event, payload) {
+    if (!isDebugEnabled()) return;
+    var row = { ts: Date.now(), event: event, payload: payload || null };
+    debugState.events.push(row);
+    if (debugState.events.length > 1000) debugState.events.shift();
+    try {
+      console.log('[dashboardr:debug]', event, payload || {});
+    } catch (e) {
+      // no-op
+    }
+  }
+
   // Inject hiding helpers that use !important to override bslib's grid styles.
   // Includes an explicit rule for Quarto/bslib "hidden" filler nodes that can
   // otherwise reserve full grid rows.
   var styleEl = document.createElement('style');
   styleEl.textContent = ''
     + '.dashboardr-sw-hidden { display: none !important; height: 0 !important; min-height: 0 !important; overflow: hidden !important; margin: 0 !important; padding: 0 !important; }'
-    + '.bslib-grid > .hidden.html-fill-item.html-fill-container:empty { display: none !important; height: 0 !important; min-height: 0 !important; overflow: hidden !important; margin: 0 !important; padding: 0 !important; }';
+    + '.bslib-grid > .hidden.html-fill-item.html-fill-container { display: none !important; height: 0 !important; min-height: 0 !important; overflow: hidden !important; margin: 0 !important; padding: 0 !important; }';
   document.head.appendChild(styleEl);
 
-  function hasVizContent(grid) {
-    if (!grid) return false;
-    if (grid.querySelector('[data-show-when]')) return true;
-    return !!grid.querySelector(
+  function hasVizContent(node) {
+    if (!node || typeof node.querySelector !== 'function') return false;
+    return !!node.querySelector(
       '.html-widget, .js-plotly-plot, .echarts4r, .echarts, .highcharts-container, [id^="htmlwidget-"]'
     );
   }
@@ -28,10 +55,7 @@
     document
       .querySelectorAll('.bslib-grid > .hidden.html-fill-item.html-fill-container')
       .forEach(function(el) {
-        var isEmpty = el.children.length === 0 && String(el.textContent || '').trim() === '';
-        if (isEmpty) {
-          el.classList.add('dashboardr-sw-hidden');
-        }
+        el.classList.add('dashboardr-sw-hidden');
       });
   }
 
@@ -59,9 +83,25 @@
                 .getPropertyValue('--chart-min-height').trim() || '400px';
     document.querySelectorAll('.sidebar-content .bslib-grid[style*="grid-template-rows"]')
       .forEach(function(grid) {
-        // Skip non-visualization grids (e.g., marker-only rows), which can
-        // otherwise become large empty blocks when min-height is forced.
+        // Skip non-visualization grids.
         if (!hasVizContent(grid)) return;
+        // Skip mixed-content grids (text/markers + chart rows), otherwise
+        // forcing min-height on auto-rows creates large empty cards above charts.
+        var children = Array.from(grid.children || []);
+        if (children.length > 1) {
+          var hasVisibleNonVizChild = children.some(function(child) {
+            var hiddenByClass = child.classList && child.classList.contains('dashboardr-sw-hidden');
+            var hiddenAttr = child.hasAttribute && child.hasAttribute('hidden');
+            var hiddenFiller = child.classList &&
+              child.classList.contains('hidden') &&
+              child.children &&
+              child.children.length === 0 &&
+              String(child.textContent || '').trim() === '';
+            if (hiddenByClass || hiddenAttr || hiddenFiller) return false;
+            return !hasVizContent(child);
+          });
+          if (hasVisibleNonVizChild) return;
+        }
         grid.style.setProperty('grid-template-rows', 'none', 'important');
         grid.style.setProperty('grid-auto-rows', 'minmax(' + minH + ', max-content)', 'important');
       });
@@ -70,17 +110,31 @@
   function collectInputValues() {
     var values = {};
 
-    // Collect from <select> elements
+    // Collect from <select> elements (Choices.js-aware)
+    var choicesMap = window.dashboardrChoicesInstances || {};
     document.querySelectorAll('select').forEach(function(el) {
       var id = el.getAttribute('data-input-id') || el.name || el.id;
-      if (id) values[id] = el.value;
+      // Read value from Choices.js instance if available (native select may be stale)
+      var val = el.value;
+      if (id && choicesMap[id] && typeof choicesMap[id].getValue === 'function') {
+        var choicesVal = choicesMap[id].getValue(true);
+        if (choicesVal !== undefined && choicesVal !== null) {
+          val = Array.isArray(choicesVal) ? (choicesVal[0] || '') : choicesVal;
+        }
+      } else if (el.id && choicesMap[el.id] && typeof choicesMap[el.id].getValue === 'function') {
+        var choicesVal2 = choicesMap[el.id].getValue(true);
+        if (choicesVal2 !== undefined && choicesVal2 !== null) {
+          val = Array.isArray(choicesVal2) ? (choicesVal2[0] || '') : choicesVal2;
+        }
+      }
+      if (id) values[id] = val;
       // Also map by data-filter-var if present on the element or parent
       var fv = el.getAttribute('data-filter-var');
       if (!fv) {
         var group = el.closest('[data-filter-var]');
         if (group) fv = group.getAttribute('data-filter-var');
       }
-      if (fv && el.value) values[fv] = el.value;
+      if (fv && val) values[fv] = val;
     });
 
     // Collect from checked radio buttons
@@ -93,6 +147,33 @@
         var fv = group.getAttribute('data-filter-var');
         if (fv && el.value) values[fv] = el.value;
       }
+    });
+
+    // Collect from checkbox groups (multi-select semantics)
+    document.querySelectorAll('.dashboardr-checkbox-group[data-filter-var]').forEach(function(group) {
+      var fv = group.getAttribute('data-filter-var');
+      if (!fv) return;
+      var selected = Array.from(group.querySelectorAll('input[type="checkbox"]:checked'))
+        .map(function(el) { return el.value; })
+        .filter(function(v) { return String(v || '') !== ''; });
+      values[fv] = selected;
+    });
+
+    // Collect from button groups
+    document.querySelectorAll('.dashboardr-button-group[data-filter-var]').forEach(function(group) {
+      var fv = group.getAttribute('data-filter-var');
+      if (!fv) return;
+      var active = group.querySelector('.dashboardr-button-option.active');
+      if (active && active.value != null) values[fv] = active.value;
+    });
+
+    // Collect from non-radio/checkbox inputs (slider, text, number, etc.)
+    document.querySelectorAll('input[data-filter-var], textarea[data-filter-var]').forEach(function(el) {
+      var fv = el.getAttribute('data-filter-var');
+      if (!fv) return;
+      var type = String(el.type || '').toLowerCase();
+      if (type === 'radio' || type === 'checkbox') return;
+      values[fv] = el.value;
     });
 
     return values;
@@ -112,10 +193,19 @@
     // Try numeric comparison for gt/lt/gte/lte operators
     var numVal = parseFloat(val);
     var numCond = parseFloat(cond.val);
+    var valueIsArray = Array.isArray(val);
+    var condIsArray = Array.isArray(cond.val);
     switch (cond.op) {
-      case 'eq': return val === cond.val;
-      case 'neq': return val !== cond.val;
-      case 'in': return Array.isArray(cond.val) && cond.val.indexOf(val) !== -1;
+      case 'eq':
+        if (valueIsArray) return val.indexOf(cond.val) !== -1;
+        return val === cond.val;
+      case 'neq':
+        if (valueIsArray) return val.indexOf(cond.val) === -1;
+        return val !== cond.val;
+      case 'in':
+        if (valueIsArray && condIsArray) return val.some(function(v) { return cond.val.indexOf(v) !== -1; });
+        if (condIsArray) return cond.val.indexOf(val) !== -1;
+        return false;
       case 'gt': return !isNaN(numVal) && !isNaN(numCond) && numVal > numCond;
       case 'lt': return !isNaN(numVal) && !isNaN(numCond) && numVal < numCond;
       case 'gte': return !isNaN(numVal) && !isNaN(numCond) && numVal >= numCond;
@@ -229,6 +319,10 @@
   function evaluateAllShowWhen() {
     var inputs = collectInputValues();
     var elements = document.querySelectorAll('[data-show-when]');
+    var beforeVisible = 0;
+    elements.forEach(function(el) {
+      if (!el.classList.contains('dashboardr-sw-hidden')) beforeVisible++;
+    });
 
     elements.forEach(function(el) {
       try {
@@ -257,6 +351,17 @@
     requestAnimationFrame(function() {
       reflowVisibleCharts();
     });
+
+    var afterVisible = 0;
+    elements.forEach(function(el) {
+      if (!el.classList.contains('dashboardr-sw-hidden')) afterVisible++;
+    });
+    debugLog('show-when-evaluated', {
+      inputs: inputs,
+      elements: elements.length,
+      beforeVisible: beforeVisible,
+      afterVisible: afterVisible
+    });
   }
 
   document.addEventListener('change', evaluateAllShowWhen);
@@ -276,4 +381,10 @@
     evaluateAllShowWhen();
     fixChartMinHeight();
   });
+
+  window.dashboardrShowWhenDebug = {
+    enabled: isDebugEnabled,
+    collectInputValues: collectInputValues,
+    evaluate: evaluateAllShowWhen
+  };
 })();

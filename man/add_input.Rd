@@ -83,6 +83,8 @@ first option (for radio/button_group).}
 
 \item{value}{Initial value (for slider/switch/text/number types)}
 
+\item{default_value}{Default value for the input (alias for value, used for reset)}
+
 \item{show_value}{Whether to show current value (for slider, default TRUE)}
 
 \item{inline}{Whether to display options inline (for checkbox/radio, default TRUE)}

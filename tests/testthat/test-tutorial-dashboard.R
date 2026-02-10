@@ -1,6 +1,6 @@
 ## Skip entire file under covr CI to prevent OOM (exit code 143)
 if (identical(Sys.getenv("DASHBOARDR_COVR_CI"), "true") || !identical(Sys.getenv("NOT_CRAN"), "true")) {
-  test_that("skipped on CRAN/covr CI", { skip("Memory-intensive tests skipped on CRAN and covr CI") })
+  # skipped on CRAN/covr CI
 } else {
 
 test_that("tutorial_dashboard respects directory parameter", {
@@ -10,10 +10,10 @@ test_that("tutorial_dashboard respects directory parameter", {
   # Create temporary directory
   temp_dir <- tempfile("tutorial_dir_test")
   
-  # Suppress messages
-  suppressMessages({
+  # Suppress messages and Quarto-not-available warnings
+  suppressWarnings(suppressMessages({
     tutorial_dashboard(directory = temp_dir)
-  })
+  }))
   
   # Verify dashboard was created in specified directory
   expect_true(dir.exists(temp_dir))
@@ -34,10 +34,10 @@ test_that("tutorial_dashboard generates valid QMD with curly braces", {
   # Create temporary directory
   temp_dir <- tempfile("tutorial_curly_test")
   
-  # Suppress messages
-  suppressMessages({
+  # Suppress messages and Quarto-not-available warnings
+  suppressWarnings(suppressMessages({
     tutorial_dashboard(directory = temp_dir)
-  })
+  }))
   
   # Read charts QMD (has visualizations)
   qmd_file <- file.path(temp_dir, "charts.qmd")
@@ -63,10 +63,10 @@ test_that("showcase_dashboard respects directory parameter", {
   # Create temporary directory
   temp_dir <- tempfile("showcase_dir_test")
   
-  # Suppress messages
-  suppressMessages({
+  # Suppress messages and Quarto-not-available warnings
+  suppressWarnings(suppressMessages({
     showcase_dashboard(directory = temp_dir)
-  })
+  }))
   
   # Verify dashboard was created in specified directory
   expect_true(dir.exists(temp_dir))
@@ -87,10 +87,10 @@ test_that("showcase_dashboard generates valid QMD with curly braces", {
   # Create temporary directory
   temp_dir <- tempfile("showcase_curly_test")
   
-  # Suppress messages
-  suppressMessages({
+  # Suppress messages and Quarto-not-available warnings
+  suppressWarnings(suppressMessages({
     showcase_dashboard(directory = temp_dir)
-  })
+  }))
   
   # Read demographics QMD (has visualizations)
   qmd_file <- file.path(temp_dir, "demographics.qmd")

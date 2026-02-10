@@ -155,19 +155,20 @@ resolve_demo_open <- function() {
   "browser"
 }
 
+resolve_demo_debug <- function() {
+  raw <- tolower(trimws(Sys.getenv("DASHBOARDR_DEBUG", unset = "true")))
+  if (raw %in% c("false", "0", "no", "off")) {
+    return(FALSE)
+  }
+  TRUE
+}
+
 region_palette <- c(
   "Midwest" = "#4E79A7",
   "Northeast" = "#59A14F",
   "South" = "#F28E2B",
   "West" = "#E15759"
 )
-
-pw_anchor <- function(id) {
-  sprintf(
-    "<div id='%s' class='pw-scenario-anchor' style='display:none !important; width:0 !important; height:0 !important; min-height:0 !important; overflow:hidden !important;' aria-hidden='true'></div>",
-    id
-  )
-}
 
 happiness_palette <- c(
   "Very Happy" = "#2E86AB",
@@ -337,7 +338,6 @@ sidebar_for_p6 <- function(sidebar_title) {
 page_p1 <- function(data, sidebar_title) {
   create_page(name = "P1_Bar_Palette_Slider", data = data) %>%
     add_content(sidebar_for_p1(sidebar_title)) %>%
-    add_html(pw_anchor("pw-input-matrix-p1")) %>%
     add_html("<div id='pw-title-p1' class='pw-page-label'>P1: Bar + color palette + slider</div>") %>%
     add_html("<div id='p1_dynamic_low' class='pw-dynamic-text'>Context: Younger cohort (<=45).</div>", show_when = ~ age <= 45) %>%
     add_html("<div id='p1_dynamic_high' class='pw-dynamic-text'>Context: Older cohort (>=46).</div>", show_when = ~ age >= 46) %>%
@@ -356,7 +356,6 @@ page_p1 <- function(data, sidebar_title) {
 page_p2 <- function(data, sidebar_title) {
   create_page(name = "P2_Stackedbar_Palette", data = data) %>%
     add_content(sidebar_for_p2(sidebar_title)) %>%
-    add_html(pw_anchor("pw-input-matrix-p2")) %>%
     add_html("<div id='pw-title-p2' class='pw-page-label'>P2: Stackedbar + palette + button group</div>") %>%
     add_viz(
       type = "stackedbar",
@@ -373,8 +372,7 @@ page_p2 <- function(data, sidebar_title) {
 page_p3 <- function(data, sidebar_title) {
   create_page(name = "P3_Timeline_Radio", data = data) %>%
     add_content(sidebar_for_p3(sidebar_title)) %>%
-    add_html(pw_anchor("pw-input-matrix-p3")) %>%
-    add_text("### P3: Timeline + radio + slider") %>%
+    add_html("<div id='pw-title-p3' class='pw-page-label'>P3: Timeline + radio + slider</div>") %>%
     add_html("<div id='p3_dynamic_early' class='pw-dynamic-text'>Window: early period</div>", show_when = ~ year <= 2021) %>%
     add_html("<div id='p3_dynamic_late' class='pw-dynamic-text'>Window: late period</div>", show_when = ~ year >= 2022) %>%
     add_viz(
@@ -391,8 +389,7 @@ page_p3 <- function(data, sidebar_title) {
 page_p4 <- function(data, sidebar_title) {
   create_page(name = "P4_Linked_Inputs", data = data) %>%
     add_content(sidebar_for_p4(sidebar_title)) %>%
-    add_html(pw_anchor("pw-input-matrix-p4")) %>%
-    add_text("### P4: Linked inputs (dimension -> question)") %>%
+    add_html("<div id='pw-title-p4' class='pw-page-label'>P4: Linked inputs (dimension -> question)</div>") %>%
     add_viz(
       type = "bar",
       x_var = "question",
@@ -405,7 +402,6 @@ page_p4 <- function(data, sidebar_title) {
 page_p5 <- function(data, sidebar_title) {
   create_page(name = "P5_Complex_Show_When", data = data) %>%
     add_content(sidebar_for_p5(sidebar_title)) %>%
-    add_html(pw_anchor("pw-input-matrix-p5")) %>%
     add_html("<div id='pw-title-p5' class='pw-page-label'>P5: Complex show_when + switch</div>") %>%
     add_callout(
       title = "Overview mode",
@@ -439,8 +435,7 @@ page_p5 <- function(data, sidebar_title) {
 page_p6 <- function(data, table_data, sidebar_title) {
   create_page(name = "P6_Text_Number", data = data) %>%
     add_content(sidebar_for_p6(sidebar_title)) %>%
-    add_html(pw_anchor("pw-input-matrix-p6")) %>%
-    add_text("### P6: Text + number filters") %>%
+    add_html("<div id='pw-title-p6' class='pw-page-label'>P6: Text + number filters</div>") %>%
     add_viz(
       type = "timeline",
       time_var = "year",
@@ -457,14 +452,15 @@ page_p6 <- function(data, table_data, sidebar_title) {
     )
 }
 
-build_core_dashboard <- function(title, output_dir, backend, data, p5_chart_data, table_data, sidebar_title) {
+build_core_dashboard <- function(title, output_dir, backend, data, p5_chart_data, table_data, sidebar_title, debug_mode = FALSE) {
   prepare_output_dir(output_dir)
 
   create_dashboard(
     title = title,
     output_dir = output_dir,
     backend = backend,
-    chart_export = TRUE
+    chart_export = TRUE,
+    lazy_debug = debug_mode
   ) %>%
     add_pages(
       page_p1(data, paste0(sidebar_title, " - P1")),
@@ -476,7 +472,7 @@ build_core_dashboard <- function(title, output_dir, backend, data, p5_chart_data
     )
 }
 
-build_mixed_dashboard <- function(title, output_dir, data) {
+build_mixed_dashboard <- function(title, output_dir, data, debug_mode = FALSE) {
   prepare_output_dir(output_dir)
 
   mixed_sidebar <- create_content() %>%
@@ -533,7 +529,6 @@ build_mixed_dashboard <- function(title, output_dir, data) {
 
   mixed_page <- create_page(name = "M1_Mixed_Backends_Integration", data = data) %>%
     add_content(mixed_sidebar) %>%
-    add_html(pw_anchor("pw-input-matrix-m1")) %>%
     add_html("<div id='pw-title-m1' class='pw-page-label'>M1: Mixed backend integration</div>") %>%
     add_html("<div id='m1_dynamic_low' class='pw-dynamic-text'>Mixed helper: early-year context.</div>", show_when = ~ year <= 2021) %>%
     add_html("<div id='m1_dynamic_high' class='pw-dynamic-text'>Mixed helper: recent-year context.</div>", show_when = ~ year >= 2022) %>%
@@ -570,7 +565,8 @@ build_mixed_dashboard <- function(title, output_dir, data) {
     title = title,
     output_dir = output_dir,
     backend = "echarts4r",
-    chart_export = TRUE
+    chart_export = TRUE,
+    lazy_debug = debug_mode
   ) %>%
     add_pages(mixed_page)
 }
@@ -580,6 +576,8 @@ build_mixed_dashboard <- function(title, output_dir, data) {
 # -----------------------------------------------------------------------------
 
 demo_open <- resolve_demo_open()
+demo_debug <- resolve_demo_debug()
+cat("Debug mode (DASHBOARDR_DEBUG):", demo_debug, "\n")
 
 proj_echarts <- build_core_dashboard(
   title = "Input Matrix Demo (echarts4r)",
@@ -588,7 +586,8 @@ proj_echarts <- build_core_dashboard(
   data = base_data,
   p5_chart_data = p5_data,
   table_data = analysis_table,
-  sidebar_title = "ECharts Input Matrix"
+  sidebar_title = "ECharts Input Matrix",
+  debug_mode = demo_debug
 )
 res_echarts <- generate_dashboard(proj_echarts, render = TRUE, open = demo_open)
 cat("\nGenerated echarts4r input matrix at:", normalizePath(res_echarts$output_dir, mustWork = FALSE), "\n")
@@ -600,7 +599,8 @@ proj_plotly <- build_core_dashboard(
   data = base_data,
   p5_chart_data = p5_data,
   table_data = analysis_table,
-  sidebar_title = "Plotly Input Matrix"
+  sidebar_title = "Plotly Input Matrix",
+  debug_mode = demo_debug
 )
 res_plotly <- generate_dashboard(proj_plotly, render = TRUE, open = demo_open)
 cat("\nGenerated plotly input matrix at:", normalizePath(res_plotly$output_dir, mustWork = FALSE), "\n")
@@ -612,7 +612,8 @@ proj_hc <- build_core_dashboard(
   data = base_data,
   p5_chart_data = p5_data,
   table_data = analysis_table,
-  sidebar_title = "Highcharter Input Matrix"
+  sidebar_title = "Highcharter Input Matrix",
+  debug_mode = demo_debug
 )
 res_hc <- generate_dashboard(proj_hc, render = TRUE, open = demo_open)
 cat("\nGenerated highcharter input matrix at:", normalizePath(res_hc$output_dir, mustWork = FALSE), "\n")
@@ -620,7 +621,8 @@ cat("\nGenerated highcharter input matrix at:", normalizePath(res_hc$output_dir,
 proj_mixed <- build_mixed_dashboard(
   title = "Input Matrix Demo (mixed backends)",
   output_dir = "input_matrix_mixed",
-  data = base_data
+  data = base_data,
+  debug_mode = demo_debug
 )
 res_mixed <- generate_dashboard(proj_mixed, render = TRUE, open = demo_open)
 cat("\nGenerated mixed-backend input matrix at:", normalizePath(res_mixed$output_dir, mustWork = FALSE), "\n")

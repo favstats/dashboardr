@@ -14,7 +14,7 @@ NULL
 # Declare NSE variables and data.table/rlang operators as global variables
 # to avoid R CMD check NOTEs about "no visible binding for global variable"
 if (getRversion() >= "2.15.1") utils::globalVariables(c(
-  ".data", ".filtered", ".mean_val", ".stack_var_col", ".value_plot", ".weight",
+  ".color", ".data", ".filtered", ".mean_val", ".stack_var_col", ".value_plot", ".weight",
   ".x_factor", ".x_plot", ".x_raw", ".x_var_col", ".y_plot", ".y_raw",
   ":=", "across",
   "age", "age_1a", "category", "class_1a", "class_raw",

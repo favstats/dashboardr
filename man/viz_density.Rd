@@ -22,6 +22,7 @@ viz_density(
   na_label = "(Missing)",
   tooltip = NULL,
   tooltip_suffix = "",
+  legend_position = NULL,
   backend = "highcharter"
 )
 }
@@ -67,6 +68,8 @@ OR a format string with \{placeholders\}. Available placeholders:
 See \code{\link{tooltip}} for full customization options.}
 
 \item{tooltip_suffix}{Optional string appended to density values in tooltip (simple customization).}
+
+\item{legend_position}{Position of the legend ("top", "bottom", "left", "right", "none")}
 
 \item{backend}{Rendering backend: "highcharter" (default), "plotly", "echarts4r", or "ggiraph".}
 }

@@ -316,15 +316,14 @@ test_that("apply_theme validates font parameters", {
 })
 
 test_that("built-in themes pass validation", {
-  # All built-in themes should pass validation
-
-  expect_no_error(apply_theme(theme = theme_ascor()))
-  expect_no_error(apply_theme(theme = theme_uva()))
-  expect_no_error(apply_theme(theme = theme_academic()))
-  expect_no_error(apply_theme(theme = theme_modern()))
-  expect_no_error(apply_theme(theme = theme_modern("purple")))
-  expect_no_error(apply_theme(theme = theme_modern("green")))
-  expect_no_error(apply_theme(theme = theme_modern("orange")))
-  expect_no_error(apply_theme(theme = theme_modern("white")))
-  expect_no_error(apply_theme(theme = theme_clean()))
+  # All built-in themes should pass validation and return lists
+  expect_type(apply_theme(theme = theme_ascor()), "list")
+  expect_type(apply_theme(theme = theme_uva()), "list")
+  expect_type(apply_theme(theme = theme_academic()), "list")
+  expect_type(apply_theme(theme = theme_modern()), "list")
+  expect_type(apply_theme(theme = theme_modern("purple")), "list")
+  expect_type(apply_theme(theme = theme_modern("green")), "list")
+  expect_type(apply_theme(theme = theme_modern("orange")), "list")
+  expect_type(apply_theme(theme = theme_modern("white")), "list")
+  expect_type(apply_theme(theme = theme_clean()), "list")
 })

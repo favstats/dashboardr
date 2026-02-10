@@ -37,6 +37,7 @@ utils::globalVariables(c("name", "value", "colorValue"))
 #' @param backend Rendering backend: "highcharter" (default), "plotly", "echarts4r", or "ggiraph".
 #' @param ... Additional parameters passed to highcharter
 #'
+#' @param legend_position Position of the legend ("top", "bottom", "left", "right", "none")
 #' @return A highcharter treemap object
 #' @export
 #'
@@ -72,6 +73,7 @@ viz_treemap <- function(
     tooltip_format = NULL,
     credits = FALSE,
     pre_aggregated = FALSE,
+    legend_position = NULL,
     backend = "highcharter",
     ...
 ) {
@@ -247,7 +249,8 @@ viz_treemap <- function(
     tooltip = tooltip,
     tooltip_format = tooltip_format,
     credits = credits,
-    hc_data = hc_data
+    hc_data = hc_data,
+    legend_position = legend_position
   )
 
   # Dispatch to backend renderer
@@ -372,6 +375,9 @@ viz_treemap <- function(
   # Credits
   hc <- hc %>% highcharter::hc_credits(enabled = credits)
 
+  # --- Legend position ---
+  hc <- .apply_legend_highcharter(hc, config$legend_position, default_show = FALSE)
+
   hc
 }
 
@@ -414,6 +420,9 @@ viz_treemap <- function(
   }
 
   p <- p %>% plotly::layout(title = title, height = height)
+
+  # --- Legend position ---
+  p <- .apply_legend_plotly(p, config$legend_position, default_show = FALSE)
 
   p
 }
@@ -458,7 +467,13 @@ viz_treemap <- function(
     opts$color <- as.list(color_palette)
   }
 
-  echarts4r::e_charts() |> echarts4r::e_list(opts)
+  e <- echarts4r::e_charts() |> echarts4r::e_list(opts)
+
+  # --- Legend position ---
+  # Note: legend hidden for treemaps
+  e <- .apply_legend_echarts(e, config$legend_position, default_show = FALSE)
+
+  e
 }
 
 # --- ggiraph backend ---

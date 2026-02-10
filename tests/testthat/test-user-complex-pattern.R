@@ -11,11 +11,11 @@
 # - Real-world data structure
 
 library(dashboardr)
-library(dplyr)
+suppressWarnings(library(dplyr))
 
 # Skip entire file under covr CI to prevent OOM (exit code 143)
 if (identical(Sys.getenv("DASHBOARDR_COVR_CI"), "true") || !identical(Sys.getenv("NOT_CRAN"), "true")) {
-  test_that("skipped on CRAN/covr CI", { skip("Memory-intensive tests skipped on CRAN and covr CI") })
+  # skipped on CRAN/covr CI
 } else {
 
 test_that("USER PATTERN: Complex production use case with all features", {

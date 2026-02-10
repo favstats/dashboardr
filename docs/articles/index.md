@@ -18,6 +18,7 @@
 
 - [Advanced
   Features](https://favstats.github.io/dashboardr/articles/advanced-features.md):
+- [Backends](https://favstats.github.io/dashboardr/articles/chart-backends.md):
 
 ### Publishing
 

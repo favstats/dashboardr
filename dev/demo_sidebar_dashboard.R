@@ -321,7 +321,7 @@ if (dir.exists(output_dir)) {
 }
 dir.create(output_dir, showWarnings = FALSE, recursive = TRUE)
 
-explorer_content <- create_content(data = page_data) %>%
+explorer_content <- create_content(data = page_data, legend_position = "bottom") %>%
   add_sidebar(title = "Controls", width = "300px") %>%
     add_linked_inputs(
       parent = list(
@@ -373,6 +373,7 @@ explorer_content <- create_content(data = page_data) %>%
     horizontal   = TRUE,
     stack_order  = all_responses,
     stack_label  = "Response",
+    label_decimals = 1,
     show_when    = ~ time_period %in% c("2022", "2024") & breakdown == "Overall"
   ) %>%
   # Comparison view: response bars stacked by breakdown groups
@@ -389,6 +390,7 @@ explorer_content <- create_content(data = page_data) %>%
     x_order        = all_responses,
     stack_label    = "Group",
     color_palette  = group_colors,
+    label_decimals = 1,
     show_when      = ~ time_period %in% c("2022", "2024") & breakdown != "Overall"
   ) %>%
   add_viz(

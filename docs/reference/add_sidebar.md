@@ -81,7 +81,11 @@ where heading levels have special meaning:
 - `###` creates cards/sections (safe to use)
 
 To avoid layout issues, use `###` headings or plain text in the main
-content area after the sidebar.
+content area after the sidebar. For advanced layouts, prefer explicit
+[`add_layout_column()`](https://favstats.github.io/dashboardr/reference/add_layout_column.md)
+/
+[`add_layout_row()`](https://favstats.github.io/dashboardr/reference/add_layout_row.md)
+APIs instead of heading-based layout shaping.
 
 ## Examples
 

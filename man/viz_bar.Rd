@@ -35,6 +35,7 @@ viz_bar(
   x_tooltip_suffix = "",
   data_labels_enabled = TRUE,
   label_decimals = NULL,
+  legend_position = NULL,
   complete_groups = TRUE,
   y_var = NULL,
   backend = "highcharter"
@@ -115,6 +116,8 @@ Default TRUE.}
 \item{label_decimals}{Optional integer. Number of decimal places for data labels.
 When NULL (default), uses smart defaults: 0 for counts/percent, 1 for means.
 Set explicitly to override (e.g., \code{label_decimals = 2} for two decimal places).}
+
+\item{legend_position}{Position of the legend ("top", "bottom", "left", "right", "none")}
 
 \item{complete_groups}{Logical. When TRUE (default), ensures all x_var/group_var
 combinations are present in the output, filling missing combinations with 0.

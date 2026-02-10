@@ -11,7 +11,8 @@ add_iframe(
   height = "500px",
   width = "100%",
   style = NULL,
-  tabgroup = NULL
+  tabgroup = NULL,
+  show_when = NULL
 )
 ```
 
@@ -43,6 +44,11 @@ add_iframe(
 
   Optional tabgroup for organizing content (character vector for nested
   tabs)
+
+- show_when:
+
+  One-sided formula controlling conditional display based on input
+  values.
 
 ## Value
 

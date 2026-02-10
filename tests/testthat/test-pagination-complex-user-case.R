@@ -12,7 +12,7 @@ library(dashboardr)
 
 # Skip entire file under covr CI to prevent OOM (exit code 143)
 if (identical(Sys.getenv("DASHBOARDR_COVR_CI"), "true") || !identical(Sys.getenv("NOT_CRAN"), "true")) {
-  test_that("skipped on CRAN/covr CI", { skip("Memory-intensive tests skipped on CRAN and covr CI") })
+  # skipped on CRAN/covr CI
 } else {
 
 test_that("pagination survives ALL layers in complex real-world use case", {
@@ -189,7 +189,7 @@ test_that("pagination survives ALL layers in complex real-world use case", {
   
   # === LAYER 6: generate_dashboard() ===
   
-  result <- generate_dashboard(dashboard, render = FALSE, open = FALSE)
+  result <- suppressWarnings(suppressMessages(generate_dashboard(dashboard, render = FALSE, open = FALSE, quiet = TRUE)))
   output_dir <- normalizePath(result$output_dir, mustWork = FALSE)
   
   # Verify multiple page files were created
@@ -216,11 +216,6 @@ test_that("pagination survives ALL layers in complex real-world use case", {
     "Second page should have create_pagination_nav call"
   )
   
-  # Should contain the viz that came after pagination
-  # Note: Skip checking for specific variable name as it's an implementation detail
-  skip_if(TRUE, "Test checks for specific variable name in generated code")
-  
-  # Clean up
 })
 
 test_that("print method handles pagination markers without crashing", {
@@ -270,21 +265,18 @@ test_that("lazy loading does not interfere with pagination marker detection", {
     )
   
   # Generate
-  result <- generate_dashboard(dashboard, render = FALSE, open = FALSE)
+  result <- suppressWarnings(suppressMessages(generate_dashboard(dashboard, render = FALSE, open = FALSE, quiet = TRUE)))
   output_dir <- normalizePath(result$output_dir, mustWork = FALSE)
   
   # Should create paginated files even with lazy loading
   expect_true(file.exists(file.path(output_dir, "test.qmd")))
   expect_true(file.exists(file.path(output_dir, "test_p2.qmd")))
   
-  # Verify lazy loading script is in BOTH pages
+  # Verify both pages have content
   page1_content <- readLines(file.path(output_dir, "test.qmd"))
   page2_content <- readLines(file.path(output_dir, "test_p2.qmd"))
-  
-  # Note: Skip checking for specific function name as it's an implementation detail
-  skip_if(TRUE, "Test checks for specific lazy loading function name in generated code")
-  
-  # Clean up
+  expect_true(length(page1_content) > 0, "Page 1 should have content")
+  expect_true(length(page2_content) > 0, "Page 2 should have content")
 })
 
 test_that("multiple pagination markers create multiple pages", {
@@ -311,7 +303,7 @@ test_that("multiple pagination markers create multiple pages", {
       visualizations = viz_collection
     )
   
-  result <- generate_dashboard(dashboard, render = FALSE, open = FALSE)
+  result <- suppressWarnings(suppressMessages(generate_dashboard(dashboard, render = FALSE, open = FALSE, quiet = TRUE)))
   output_dir <- normalizePath(result$output_dir, mustWork = FALSE)
   
   # Should create 3 page files
@@ -361,7 +353,7 @@ test_that("complex nested tabgroups preserve pagination", {
   dashboard <- create_dashboard(output_dir = test_output_dir) %>%
     add_page(name = "Test", data = mtcars, visualizations = combined)
   
-  result <- generate_dashboard(dashboard, render = FALSE, open = FALSE)
+  result <- suppressWarnings(suppressMessages(generate_dashboard(dashboard, render = FALSE, open = FALSE, quiet = TRUE)))
   output_dir <- normalizePath(result$output_dir, mustWork = FALSE)
   
   expect_true(file.exists(file.path(output_dir, "test.qmd")))

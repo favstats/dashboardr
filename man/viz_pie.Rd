@@ -24,6 +24,7 @@ viz_pie(
   tooltip_prefix = "",
   tooltip_suffix = "",
   center_text = NULL,
+  legend_position = NULL,
   backend = "highcharter"
 )
 }
@@ -72,6 +73,8 @@ See \code{\link{tooltip}} for full customization options.}
 
 \item{center_text}{Optional character string. Text to display in the center of a donut chart.
 Only visible when inner_size > "0\%".}
+
+\item{legend_position}{Position of the legend ("top", "bottom", "left", "right", "none")}
 
 \item{backend}{Rendering backend: "highcharter" (default), "plotly", "echarts4r", or "ggiraph".}
 }

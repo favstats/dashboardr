@@ -16,7 +16,8 @@ add_value_box(
   bg_color = "#2c3e50",
   description = NULL,
   description_title = "About this source",
-  tabgroup = NULL
+  tabgroup = NULL,
+  show_when = NULL
 )
 ```
 
@@ -58,6 +59,11 @@ add_value_box(
 
   Optional tabgroup for organizing content (character vector for nested
   tabs)
+
+- show_when:
+
+  One-sided formula controlling conditional display based on input
+  values.
 
 ## Details
 

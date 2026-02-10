@@ -12,7 +12,8 @@ add_callout(
   title = NULL,
   icon = NULL,
   collapse = FALSE,
-  tabgroup = NULL
+  tabgroup = NULL,
+  show_when = NULL
 )
 ```
 
@@ -47,6 +48,11 @@ add_callout(
 
   Optional tabgroup for organizing content (character vector for nested
   tabs)
+
+- show_when:
+
+  One-sided formula controlling conditional display based on input
+  values.
 
 ## Value
 

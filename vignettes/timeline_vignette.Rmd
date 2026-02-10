@@ -4,7 +4,7 @@ author: "Alexandra Pafford"
 date: "2025-08-14"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Creating interactive timeline visualizations with `viz_timeline`}
+  %\VignetteIndexEntry{Getting Started With `viz_timeline()`}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

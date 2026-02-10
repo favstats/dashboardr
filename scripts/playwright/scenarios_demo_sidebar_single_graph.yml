@@ -8,9 +8,7 @@ defaults:
 
 scenarios:
   # ---------------------------------------------------------------------------
-  # S1: All-input sidebar + single bar (smoke)
-  # Bar chart does NOT support cross_tab_filter_vars, so filter/slider won't
-  # change chart state.  Dynamic text (show_when on slider year) SHOULD change.
+  # S1: All-input sidebar + filterable stacked bar (smoke)
   # ---------------------------------------------------------------------------
   - id: single-graph-echarts-s1
     modes: [smoke, full]
@@ -21,13 +19,14 @@ scenarios:
     interaction_plan: [slider, filter, sidebar_toggle]
     preferred_filter_var: region
     preferred_slider_var: year
-    expect_filter_effect: false
-    expect_slider_effect: false
+    expect_filter_effect: true
+    expect_slider_effect: true
     expect_dynamic_text_effect: true
+    require_all_input_vars_affect_all_charts: true
     dynamic_text_selectors: ["#s1_dynamic_low", "#s1_dynamic_high", ".dashboardr-slider-value"]
     min_non_empty_charts_expected: 1
     required_selectors:
-      - "#pw-single-graph-s1"
+      - "#s1_dynamic_low"
       - ".dashboardr-checkbox-group[data-filter-var='happiness']"
       - ".dashboardr-slider[data-filter-var='year']"
       - ".collapse-toggle"
@@ -44,13 +43,14 @@ scenarios:
     interaction_plan: [slider, filter, sidebar_toggle]
     preferred_filter_var: region
     preferred_slider_var: year
-    expect_filter_effect: false
-    expect_slider_effect: false
+    expect_filter_effect: true
+    expect_slider_effect: true
     expect_dynamic_text_effect: true
+    require_all_input_vars_affect_all_charts: true
     dynamic_text_selectors: ["#s1_dynamic_low", "#s1_dynamic_high", ".dashboardr-slider-value"]
     min_non_empty_charts_expected: 1
     required_selectors:
-      - "#pw-single-graph-s1"
+      - "#s1_dynamic_low"
       - ".dashboardr-checkbox-group[data-filter-var='happiness']"
       - ".dashboardr-slider[data-filter-var='year']"
       - ".collapse-toggle"
@@ -67,13 +67,14 @@ scenarios:
     interaction_plan: [slider, filter, sidebar_toggle]
     preferred_filter_var: region
     preferred_slider_var: year
-    expect_filter_effect: false
-    expect_slider_effect: false
+    expect_filter_effect: true
+    expect_slider_effect: true
     expect_dynamic_text_effect: true
+    require_all_input_vars_affect_all_charts: true
     dynamic_text_selectors: ["#s1_dynamic_low", "#s1_dynamic_high", ".dashboardr-slider-value"]
     min_non_empty_charts_expected: 1
     required_selectors:
-      - "#pw-single-graph-s1"
+      - "#s1_dynamic_low"
       - ".dashboardr-checkbox-group[data-filter-var='happiness']"
       - ".dashboardr-slider[data-filter-var='year']"
       - ".collapse-toggle"
@@ -82,9 +83,7 @@ scenarios:
     forbidden_console_patterns: []
 
   # ---------------------------------------------------------------------------
-  # S2: Pie + sidebar + show_when (smoke)
-  # Pie chart does NOT support cross_tab_filter_vars.
-  # show_when_toggle changes education select -> callouts toggle visibility.
+  # S2: Filterable timeline + show_when (smoke)
   # ---------------------------------------------------------------------------
   - id: single-graph-echarts-s2
     modes: [smoke, full]
@@ -92,13 +91,14 @@ scenarios:
     backend: echarts4r
     url_path: /sidebar_single_echarts/docs/s2_pie_showwhen.html
     expect_chart_backend: [echarts4r]
-    interaction_plan: [show_when_toggle, sidebar_toggle]
+    interaction_plan: [filter, show_when_toggle, sidebar_toggle]
     preferred_filter_var: education
-    expect_filter_effect: false
+    expect_filter_effect: true
     expect_dynamic_text_effect: false
+    require_all_input_vars_affect_all_charts: true
     min_non_empty_charts_expected: 1
     required_selectors:
-      - "#pw-single-graph-s2"
+      - "#s2_education"
       - "[data-show-when]"
       - ".collapse-toggle"
     required_texts:
@@ -111,13 +111,14 @@ scenarios:
     backend: plotly
     url_path: /sidebar_single_plotly/docs/s2_pie_showwhen.html
     expect_chart_backend: [plotly]
-    interaction_plan: [show_when_toggle, sidebar_toggle]
+    interaction_plan: [filter, show_when_toggle, sidebar_toggle]
     preferred_filter_var: education
-    expect_filter_effect: false
+    expect_filter_effect: true
     expect_dynamic_text_effect: false
+    require_all_input_vars_affect_all_charts: true
     min_non_empty_charts_expected: 1
     required_selectors:
-      - "#pw-single-graph-s2"
+      - "#s2_education"
       - "[data-show-when]"
       - ".collapse-toggle"
     required_texts:
@@ -130,13 +131,14 @@ scenarios:
     backend: highcharter
     url_path: /sidebar_single_hc/docs/s2_pie_showwhen.html
     expect_chart_backend: [highcharter]
-    interaction_plan: [show_when_toggle, sidebar_toggle]
+    interaction_plan: [filter, show_when_toggle, sidebar_toggle]
     preferred_filter_var: education
-    expect_filter_effect: false
+    expect_filter_effect: true
     expect_dynamic_text_effect: false
+    require_all_input_vars_affect_all_charts: true
     min_non_empty_charts_expected: 1
     required_selectors:
-      - "#pw-single-graph-s2"
+      - "#s2_education"
       - "[data-show-when]"
       - ".collapse-toggle"
     required_texts:
@@ -144,9 +146,7 @@ scenarios:
     forbidden_console_patterns: []
 
   # ---------------------------------------------------------------------------
-  # S3: Scatter + linked inputs (full)
-  # Scatter chart does NOT support cross_tab_filter_vars.
-  # Linked inputs should still work (parent-child option cascade).
+  # S3: Filterable timeline + linked inputs (full)
   # ---------------------------------------------------------------------------
   - id: single-graph-echarts-s3
     modes: [full]
@@ -156,10 +156,11 @@ scenarios:
     expect_chart_backend: [echarts4r]
     interaction_plan: [linked_inputs, filter, sidebar_toggle]
     preferred_filter_var: region
-    expect_filter_effect: false
+    expect_filter_effect: true
+    require_all_input_vars_affect_all_charts: true
     min_non_empty_charts_expected: 1
     required_selectors:
-      - "#pw-single-graph-s3"
+      - "#dimension"
       - "[data-linked-child-id]"
       - ".collapse-toggle"
     required_texts:
@@ -174,10 +175,11 @@ scenarios:
     expect_chart_backend: [plotly]
     interaction_plan: [linked_inputs, filter, sidebar_toggle]
     preferred_filter_var: region
-    expect_filter_effect: false
+    expect_filter_effect: true
+    require_all_input_vars_affect_all_charts: true
     min_non_empty_charts_expected: 1
     required_selectors:
-      - "#pw-single-graph-s3"
+      - "#dimension"
       - "[data-linked-child-id]"
       - ".collapse-toggle"
     required_texts:
@@ -192,10 +194,11 @@ scenarios:
     expect_chart_backend: [highcharter]
     interaction_plan: [linked_inputs, filter, sidebar_toggle]
     preferred_filter_var: region
-    expect_filter_effect: false
+    expect_filter_effect: true
+    require_all_input_vars_affect_all_charts: true
     min_non_empty_charts_expected: 1
     required_selectors:
-      - "#pw-single-graph-s3"
+      - "#dimension"
       - "[data-linked-child-id]"
       - ".collapse-toggle"
     required_texts:
@@ -203,9 +206,7 @@ scenarios:
     forbidden_console_patterns: []
 
   # ---------------------------------------------------------------------------
-  # S4: Boxplot + checkbox + slider (smoke)
-  # Boxplot does NOT support cross_tab_filter_vars.
-  # Dynamic text (show_when on year slider) SHOULD change.
+  # S4: Filterable timeline + checkbox + slider (smoke)
   # ---------------------------------------------------------------------------
   - id: single-graph-echarts-s4
     modes: [smoke, full]
@@ -216,13 +217,14 @@ scenarios:
     interaction_plan: [slider, filter, sidebar_toggle]
     preferred_filter_var: region
     preferred_slider_var: year
-    expect_filter_effect: false
-    expect_slider_effect: false
+    expect_filter_effect: true
+    expect_slider_effect: true
     expect_dynamic_text_effect: true
+    require_all_input_vars_affect_all_charts: true
     dynamic_text_selectors: ["#s4_dynamic_low", "#s4_dynamic_high", ".dashboardr-slider-value"]
     min_non_empty_charts_expected: 1
     required_selectors:
-      - "#pw-single-graph-s4"
+      - "#s4_dynamic_low"
       - ".dashboardr-checkbox-group[data-filter-var='region']"
       - ".dashboardr-slider[data-filter-var='year']"
       - ".collapse-toggle"
@@ -239,13 +241,14 @@ scenarios:
     interaction_plan: [slider, filter, sidebar_toggle]
     preferred_filter_var: region
     preferred_slider_var: year
-    expect_filter_effect: false
-    expect_slider_effect: false
+    expect_filter_effect: true
+    expect_slider_effect: true
     expect_dynamic_text_effect: true
+    require_all_input_vars_affect_all_charts: true
     dynamic_text_selectors: ["#s4_dynamic_low", "#s4_dynamic_high", ".dashboardr-slider-value"]
     min_non_empty_charts_expected: 1
     required_selectors:
-      - "#pw-single-graph-s4"
+      - "#s4_dynamic_low"
       - ".dashboardr-checkbox-group[data-filter-var='region']"
       - ".dashboardr-slider[data-filter-var='year']"
       - ".collapse-toggle"
@@ -262,13 +265,14 @@ scenarios:
     interaction_plan: [slider, filter, sidebar_toggle]
     preferred_filter_var: region
     preferred_slider_var: year
-    expect_filter_effect: false
-    expect_slider_effect: false
+    expect_filter_effect: true
+    expect_slider_effect: true
     expect_dynamic_text_effect: true
+    require_all_input_vars_affect_all_charts: true
     dynamic_text_selectors: ["#s4_dynamic_low", "#s4_dynamic_high", ".dashboardr-slider-value"]
     min_non_empty_charts_expected: 1
     required_selectors:
-      - "#pw-single-graph-s4"
+      - "#s4_dynamic_low"
       - ".dashboardr-checkbox-group[data-filter-var='region']"
       - ".dashboardr-slider[data-filter-var='year']"
       - ".collapse-toggle"
@@ -277,9 +281,7 @@ scenarios:
     forbidden_console_patterns: []
 
   # ---------------------------------------------------------------------------
-  # S5: Single bar + reset button (full)
-  # Bar chart does NOT support cross_tab_filter_vars.
-  # Tests the reset button selector presence and sidebar toggle.
+  # S5: Filterable timeline + reset button (full)
   # ---------------------------------------------------------------------------
   - id: single-graph-echarts-s5
     modes: [full]
@@ -289,11 +291,12 @@ scenarios:
     expect_chart_backend: [echarts4r]
     interaction_plan: [filter, sidebar_toggle]
     preferred_filter_var: region
-    expect_filter_effect: false
+    expect_filter_effect: true
+    require_all_input_vars_affect_all_charts: true
     min_non_empty_charts_expected: 1
     required_selectors:
-      - "#pw-single-graph-s5"
-      - ".dashboardr-reset-button"
+      - "#s5_education"
+      - ".dashboardr-checkbox-group[data-filter-var='region']"
       - ".collapse-toggle"
     required_texts:
       - "S5_Bar_Reset_Button"
@@ -307,11 +310,12 @@ scenarios:
     expect_chart_backend: [plotly]
     interaction_plan: [filter, sidebar_toggle]
     preferred_filter_var: region
-    expect_filter_effect: false
+    expect_filter_effect: true
+    require_all_input_vars_affect_all_charts: true
     min_non_empty_charts_expected: 1
     required_selectors:
-      - "#pw-single-graph-s5"
-      - ".dashboardr-reset-button"
+      - "#s5_education"
+      - ".dashboardr-checkbox-group[data-filter-var='region']"
       - ".collapse-toggle"
     required_texts:
       - "S5_Bar_Reset_Button"
@@ -325,11 +329,12 @@ scenarios:
     expect_chart_backend: [highcharter]
     interaction_plan: [filter, sidebar_toggle]
     preferred_filter_var: region
-    expect_filter_effect: false
+    expect_filter_effect: true
+    require_all_input_vars_affect_all_charts: true
     min_non_empty_charts_expected: 1
     required_selectors:
-      - "#pw-single-graph-s5"
-      - ".dashboardr-reset-button"
+      - "#s5_education"
+      - ".dashboardr-checkbox-group[data-filter-var='region']"
       - ".collapse-toggle"
     required_texts:
       - "S5_Bar_Reset_Button"
@@ -337,7 +342,7 @@ scenarios:
 
   # ---------------------------------------------------------------------------
   # S6: Show_when on chart itself (smoke)
-  # Bar chart hidden/shown by show_when on view_mode select.
+  # Filterable chart hidden/shown by show_when on view_mode select.
   # Dynamic text toggles between "Chart view" and "Summary view".
   # ---------------------------------------------------------------------------
   - id: single-graph-echarts-s6
@@ -346,14 +351,14 @@ scenarios:
     backend: echarts4r
     url_path: /sidebar_single_echarts/docs/s6_showwhen_on_chart.html
     expect_chart_backend: []
-    interaction_plan: [show_when_toggle, sidebar_toggle]
-    preferred_filter_var: view_mode
-    expect_filter_effect: false
+    interaction_plan: [filter, show_when_toggle, sidebar_toggle]
+    preferred_filter_var: region
+    expect_filter_effect: true
     expect_dynamic_text_effect: true
     dynamic_text_selectors: ["#s6_dynamic_chart", "#s6_dynamic_summary"]
     min_non_empty_charts_expected: 0
     required_selectors:
-      - "#pw-single-graph-s6"
+      - "#s6_dynamic_chart"
       - "[data-show-when]"
       - ".collapse-toggle"
     required_texts:
@@ -366,14 +371,14 @@ scenarios:
     backend: plotly
     url_path: /sidebar_single_plotly/docs/s6_showwhen_on_chart.html
     expect_chart_backend: []
-    interaction_plan: [show_when_toggle, sidebar_toggle]
-    preferred_filter_var: view_mode
-    expect_filter_effect: false
+    interaction_plan: [filter, show_when_toggle, sidebar_toggle]
+    preferred_filter_var: region
+    expect_filter_effect: true
     expect_dynamic_text_effect: true
     dynamic_text_selectors: ["#s6_dynamic_chart", "#s6_dynamic_summary"]
     min_non_empty_charts_expected: 0
     required_selectors:
-      - "#pw-single-graph-s6"
+      - "#s6_dynamic_chart"
       - "[data-show-when]"
       - ".collapse-toggle"
     required_texts:
@@ -386,14 +391,14 @@ scenarios:
     backend: highcharter
     url_path: /sidebar_single_hc/docs/s6_showwhen_on_chart.html
     expect_chart_backend: []
-    interaction_plan: [show_when_toggle, sidebar_toggle]
-    preferred_filter_var: view_mode
-    expect_filter_effect: false
+    interaction_plan: [filter, show_when_toggle, sidebar_toggle]
+    preferred_filter_var: region
+    expect_filter_effect: true
     expect_dynamic_text_effect: true
     dynamic_text_selectors: ["#s6_dynamic_chart", "#s6_dynamic_summary"]
     min_non_empty_charts_expected: 0
     required_selectors:
-      - "#pw-single-graph-s6"
+      - "#s6_dynamic_chart"
       - "[data-show-when]"
       - ".collapse-toggle"
     required_texts:
@@ -402,7 +407,6 @@ scenarios:
 
   # ---------------------------------------------------------------------------
   # S7: Stacked bar + compound show_when (full)
-  # Stackedbar DOES support cross_tab_filter_vars -> filter effect expected.
   # show_when toggles callouts based on region radio selection.
   # ---------------------------------------------------------------------------
   - id: single-graph-echarts-s7
@@ -415,10 +419,11 @@ scenarios:
     preferred_filter_var: region
     expect_filter_effect: true
     expect_dynamic_text_effect: true
+    require_all_input_vars_affect_all_charts: true
     dynamic_text_selectors: ["#s7_dynamic_midwest", "#s7_dynamic_other"]
     min_non_empty_charts_expected: 1
     required_selectors:
-      - "#pw-single-graph-s7"
+      - "#s7_region_1"
       - "[data-show-when]"
       - ".collapse-toggle"
     required_texts:
@@ -435,10 +440,11 @@ scenarios:
     preferred_filter_var: region
     expect_filter_effect: true
     expect_dynamic_text_effect: true
+    require_all_input_vars_affect_all_charts: true
     dynamic_text_selectors: ["#s7_dynamic_midwest", "#s7_dynamic_other"]
     min_non_empty_charts_expected: 1
     required_selectors:
-      - "#pw-single-graph-s7"
+      - "#s7_region_1"
       - "[data-show-when]"
       - ".collapse-toggle"
     required_texts:
@@ -455,10 +461,11 @@ scenarios:
     preferred_filter_var: region
     expect_filter_effect: true
     expect_dynamic_text_effect: true
+    require_all_input_vars_affect_all_charts: true
     dynamic_text_selectors: ["#s7_dynamic_midwest", "#s7_dynamic_other"]
     min_non_empty_charts_expected: 1
     required_selectors:
-      - "#pw-single-graph-s7"
+      - "#s7_region_1"
       - "[data-show-when]"
       - ".collapse-toggle"
     required_texts:

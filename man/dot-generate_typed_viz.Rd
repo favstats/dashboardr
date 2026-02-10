@@ -4,7 +4,7 @@
 \alias{.generate_typed_viz}
 \title{Generate R code for typed visualizations}
 \usage{
-.generate_typed_viz(spec)
+.generate_typed_viz(spec, contextual_viz_errors = FALSE)
 }
 \arguments{
 \item{spec}{Visualization specification list containing type and parameters}

@@ -7,7 +7,14 @@ directly without using dashboardr's viz\_\* functions.
 ## Usage
 
 ``` r
-add_hc(content, hc_object, height = NULL, tabgroup = NULL)
+add_hc(
+  content,
+  hc_object,
+  height = NULL,
+  tabgroup = NULL,
+  filter_vars = NULL,
+  show_when = NULL
+)
 ```
 
 ## Arguments
@@ -29,6 +36,16 @@ add_hc(content, hc_object, height = NULL, tabgroup = NULL)
 
   Optional tabgroup for organizing content (character vector for nested
   tabs)
+
+- filter_vars:
+
+  Optional character vector of input filter variables to apply to this
+  block.
+
+- show_when:
+
+  One-sided formula controlling conditional display based on input
+  values.
 
 ## Value
 

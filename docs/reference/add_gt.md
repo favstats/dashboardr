@@ -5,7 +5,7 @@ Add gt table
 ## Usage
 
 ``` r
-add_gt(content, gt_object, caption = NULL, tabgroup = NULL)
+add_gt(content, gt_object, caption = NULL, tabgroup = NULL, show_when = NULL)
 ```
 
 ## Arguments
@@ -27,6 +27,11 @@ add_gt(content, gt_object, caption = NULL, tabgroup = NULL)
 
   Optional tabgroup for organizing content (character vector for nested
   tabs)
+
+- show_when:
+
+  One-sided formula controlling conditional display based on input
+  values.
 
 ## Value
 

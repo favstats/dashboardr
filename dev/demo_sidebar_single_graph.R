@@ -34,15 +34,26 @@ questions_by_dimension <- list(
 question_table <- tibble::enframe(questions_by_dimension, name = "dimension", value = "question") %>%
   tidyr::unnest(question)
 
-base_data <- tidyr::crossing(
-  year = years,
-  region = regions,
-  education = education_levels,
-  happiness = happiness_levels,
-  channel = channels,
-  segment = segments,
-  question_table
+# Build non-uniform data so that filtering by ANY variable changes chart output.
+# Using weighted sampling instead of crossing() avoids equal-count distributions.
+n_rows <- 6000
+base_data <- tibble::tibble(
+  year      = sample(years, n_rows, replace = TRUE, prob = c(0.08, 0.10, 0.12, 0.14, 0.16, 0.18, 0.22)),
+  region    = sample(regions, n_rows, replace = TRUE, prob = c(0.35, 0.25, 0.25, 0.15)),
+  education = sample(education_levels, n_rows, replace = TRUE, prob = c(0.40, 0.25, 0.20, 0.15)),
+  happiness = sample(happiness_levels, n_rows, replace = TRUE, prob = c(0.30, 0.50, 0.20)),
+  channel   = sample(channels, n_rows, replace = TRUE, prob = c(0.50, 0.30, 0.20)),
+  segment   = sample(segments, n_rows, replace = TRUE, prob = c(0.55, 0.30, 0.15))
 ) %>%
+  mutate(
+    dim_idx   = sample(seq_along(names(questions_by_dimension)), n(), replace = TRUE),
+    dimension = names(questions_by_dimension)[dim_idx],
+    question  = purrr::map_chr(seq_len(n()), ~ {
+      qs <- questions_by_dimension[[dimension[.x]]]
+      sample(qs, 1)
+    })
+  ) %>%
+  select(-dim_idx) %>%
   mutate(
     age = pmax(18, pmin(85, round(rnorm(n(), mean = 44, sd = 13)))),
     base_income = case_when(
@@ -114,6 +125,11 @@ resolve_demo_open <- function() {
     return(FALSE)
   }
   "browser"
+}
+
+resolve_demo_debug <- function() {
+  raw <- tolower(trimws(Sys.getenv("DASHBOARDR_DEBUG", unset = "true")))
+  !raw %in% c("false", "0", "no", "off")
 }
 
 region_palette <- c(
@@ -197,15 +213,18 @@ page_s1 <- function(data, sidebar_title) {
       show_value = TRUE
     ) %>%
     end_sidebar() %>%
-    add_html("<div id='pw-single-graph-s1'></div>") %>%
-    add_text("### S1: All-input sidebar + single bar") %>%
     add_html("<div id='s1_dynamic_low' class='pw-dynamic-text'>Slider: early years (2019-2021)</div>", show_when = ~ year <= 2021) %>%
     add_html("<div id='s1_dynamic_high' class='pw-dynamic-text'>Slider: recent years (2022+)</div>", show_when = ~ year >= 2022) %>%
     add_viz(
-      type = "bar",
+      type = "stackedbar",
       x_var = "region",
-      group_var = "education",
+      stack_var = "education",
+      stacked_type = "count",
+      weight_var = "count",
       color_palette = unname(education_palette),
+      horizontal = TRUE,
+      data_labels_enabled = TRUE,
+      cross_tab_filter_vars = c("region", "education", "happiness", "channel", "segment", "year"),
       title = "Responses by region and education"
     )
 }
@@ -235,8 +254,6 @@ page_s2 <- function(data, sidebar_title) {
       default_selected = happiness_levels
     ) %>%
     end_sidebar() %>%
-    add_html("<div id='pw-single-graph-s2'></div>") %>%
-    add_text("### S2: Pie + sidebar + show_when") %>%
     add_callout(
       title = "Graduate filter active",
       text = "You are filtering to Graduate education level.",
@@ -250,10 +267,15 @@ page_s2 <- function(data, sidebar_title) {
       show_when = ~ education != "Graduate"
     ) %>%
     add_viz(
-      type = "pie",
-      x_var = "region",
+      type = "timeline",
+      time_var = "year",
+      y_var = "count",
+      group_var = "region",
+      agg = "sum",
+      chart_type = "stacked_area",
       color_palette = unname(region_palette),
-      title = "Distribution by region"
+      cross_tab_filter_vars = c("education", "happiness", "region", "year"),
+      title = "Response volume over time by region"
     )
 }
 
@@ -267,12 +289,12 @@ page_s3 <- function(data, sidebar_title) {
     add_sidebar(position = "left", width = "285px", title = sidebar_title) %>%
     add_linked_inputs(
       parent = list(
-        id = "s3_dimension",
+        id = "dimension",
         label = "Dimension",
         options = names(questions_by_dimension)
       ),
       child = list(
-        id = "s3_question",
+        id = "question",
         label = "Question",
         options_by_parent = questions_by_dimension
       )
@@ -286,15 +308,16 @@ page_s3 <- function(data, sidebar_title) {
       default_selected = regions[1]
     ) %>%
     end_sidebar() %>%
-    add_html("<div id='pw-single-graph-s3'></div>") %>%
-    add_text("### S3: Scatter + linked inputs") %>%
     add_viz(
-      type = "scatter",
-      x_var = "age",
+      type = "timeline",
+      time_var = "year",
       y_var = "score",
-      color_var = "region",
+      group_var = "region",
+      agg = "mean",
+      chart_type = "line",
       color_palette = unname(region_palette),
-      title = "Score vs Age by region"
+      cross_tab_filter_vars = c("dimension", "question", "region"),
+      title = "Score trend by region"
     )
 }
 
@@ -327,16 +350,18 @@ page_s4 <- function(data, sidebar_title) {
       show_value = TRUE
     ) %>%
     end_sidebar() %>%
-    add_html("<div id='pw-single-graph-s4'></div>") %>%
-    add_text("### S4: Boxplot + checkbox + slider") %>%
     add_html("<div id='s4_dynamic_low' class='pw-dynamic-text'>Slider: early years</div>", show_when = ~ year <= 2021) %>%
     add_html("<div id='s4_dynamic_high' class='pw-dynamic-text'>Slider: recent years</div>", show_when = ~ year >= 2022) %>%
     add_viz(
-      type = "boxplot",
-      x_var = "region",
+      type = "timeline",
+      time_var = "year",
       y_var = "income",
+      group_var = "region",
+      agg = "mean",
+      chart_type = "line",
       color_palette = unname(region_palette),
-      title = "Income distribution by region"
+      cross_tab_filter_vars = c("region", "year", "education"),
+      title = "Income trend by region"
     )
 }
 
@@ -366,14 +391,16 @@ page_s5 <- function(data, sidebar_title) {
     ) %>%
     add_reset_button() %>%
     end_sidebar() %>%
-    add_html("<div id='pw-single-graph-s5'></div>") %>%
-    add_text("### S5: Single bar + reset button") %>%
     add_viz(
-      type = "bar",
-      x_var = "region",
+      type = "timeline",
+      time_var = "year",
+      y_var = "count",
       group_var = "happiness",
+      agg = "sum",
+      chart_type = "line",
       color_palette = unname(happiness_palette),
-      title = "Region by happiness level"
+      cross_tab_filter_vars = c("region", "education", "happiness", "year", "channel", "segment"),
+      title = "Happiness trend over time"
     )
 }
 
@@ -402,15 +429,17 @@ page_s6 <- function(data, sidebar_title) {
       default_selected = regions
     ) %>%
     end_sidebar() %>%
-    add_html("<div id='pw-single-graph-s6'></div>") %>%
-    add_text("### S6: Show_when on chart itself") %>%
     add_html("<div id='s6_dynamic_chart' class='pw-dynamic-text'>Chart view is active.</div>", show_when = ~ view_mode == "Chart") %>%
     add_html("<div id='s6_dynamic_summary' class='pw-dynamic-text'>Summary view is active.</div>", show_when = ~ view_mode == "Summary") %>%
     add_viz(
-      type = "bar",
+      type = "stackedbar",
       x_var = "region",
-      group_var = "education",
+      stack_var = "education",
+      stacked_type = "count",
+      weight_var = "count",
       color_palette = unname(education_palette),
+      data_labels_enabled = TRUE,
+      cross_tab_filter_vars = c("region", "education", "happiness", "year"),
       title = "Region by education (chart view)",
       show_when = ~ view_mode == "Chart"
     ) %>%
@@ -447,8 +476,6 @@ page_s7 <- function(data, sidebar_title) {
       default_selected = happiness_levels
     ) %>%
     end_sidebar() %>%
-    add_html("<div id='pw-single-graph-s7'></div>") %>%
-    add_text("### S7: Stacked bar + compound show_when") %>%
     add_callout(
       title = "Midwest selected",
       text = "You are viewing the Midwest region.",
@@ -467,7 +494,8 @@ page_s7 <- function(data, sidebar_title) {
       type = "stackedbar",
       x_var = "education",
       stack_var = "happiness",
-      stacked_type = "percent",
+      stacked_type = "count",
+      weight_var = "n",
       color_palette = unname(happiness_palette),
       cross_tab_filter_vars = c("education", "happiness", "region", "year"),
       title = "Education by happiness level"
@@ -480,16 +508,18 @@ page_s7 <- function(data, sidebar_title) {
 
 build_single_graph_dashboard <- function(title, output_dir, backend, sidebar_label) {
   prepare_output_dir(output_dir)
+  debug_mode <- resolve_demo_debug()
 
   create_dashboard(
     title = title,
     output_dir = output_dir,
     backend = backend,
-    chart_export = TRUE
+    chart_export = TRUE,
+    lazy_debug = debug_mode
   ) %>%
     add_pages(
       page_s1(base_data, paste0(sidebar_label, " - S1")),
-      page_s2(pie_data, paste0(sidebar_label, " - S2")),
+      page_s2(base_data, paste0(sidebar_label, " - S2")),
       page_s3(scatter_data, paste0(sidebar_label, " - S3")),
       page_s4(boxplot_data, paste0(sidebar_label, " - S4")),
       page_s5(base_data, paste0(sidebar_label, " - S5")),
@@ -503,6 +533,8 @@ build_single_graph_dashboard <- function(title, output_dir, backend, sidebar_lab
 # =============================================================================
 
 demo_open <- resolve_demo_open()
+demo_debug <- resolve_demo_debug()
+cat("Debug mode (DASHBOARDR_DEBUG):", demo_debug, "\n")
 
 proj_echarts <- build_single_graph_dashboard(
   title = "Sidebar Single Graph (echarts4r)",

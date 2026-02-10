@@ -28,7 +28,7 @@ the piping workflow with add_landingpage() and add_page()."><meta property="og:i
 
     <a class="navbar-brand me-2" href="../index.html">dashboardr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -47,6 +47,7 @@ the piping workflow with add_landingpage() and add_page()."><meta property="og:i
     <li><a class="dropdown-item" href="../articles/dashboards.html">- Dashboards</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><a class="dropdown-item" href="../articles/advanced-features.html">⚙️ Advanced Features</a></li>
+    <li><a class="dropdown-item" href="../articles/chart-backends.html">📦 Chart backends</a></li>
     <li><a class="dropdown-item" href="../articles/publishing_dashboards.html">🌐 Publishing Dashboards</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>📊 Visualization Types</h6></li>
@@ -195,7 +196,9 @@ the piping workflow with add_landingpage() and add_page().</p>
 <span>  pagination_separator <span class="op">=</span> <span class="st">"of"</span>,</span>
 <span>  pagination_position <span class="op">=</span> <span class="st">"bottom"</span>,</span>
 <span>  powered_by_dashboardr <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  chart_export <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  chart_export <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  backend <span class="op">=</span> <span class="st">"highcharter"</span>,</span>
+<span>  contextual_viz_errors <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -579,6 +582,15 @@ horizontal scrolling issues on mobile.</p></dd>
 
 <dt id="arg-chart-export">chart_export<a class="anchor" aria-label="anchor" href="#arg-chart-export"></a></dt>
 <dd><p>Whether to enable chart export functionality (default FALSE)</p></dd>
+
+
+<dt id="arg-backend">backend<a class="anchor" aria-label="anchor" href="#arg-backend"></a></dt>
+<dd><p>Rendering backend: "highcharter" (default), "plotly", "echarts4r", or "ggiraph".</p></dd>
+
+
+<dt id="arg-contextual-viz-errors">contextual_viz_errors<a class="anchor" aria-label="anchor" href="#arg-contextual-viz-errors"></a></dt>
+<dd><p>Logical. If TRUE, generated visualization chunks wrap viz calls
+in tryCatch and prepend contextual labels (title/type) to error messages. Default: FALSE.</p></dd>
 
 </dl></div>
     <div class="section level2">

@@ -161,6 +161,7 @@
 #'        }
 #'    }
 #'
+#' @param legend_position Position of the legend ("top", "bottom", "left", "right", "none")
 #' @export
 viz_histogram <- function(data,
                              x_var,
@@ -185,6 +186,7 @@ viz_histogram <- function(data,
                             weight_var = NULL,
                             data_labels_enabled = TRUE,
                             label_decimals = NULL,
+                            legend_position = NULL,
                             backend = "highcharter") {
   # Convert variable arguments to strings (supports both quoted and unquoted)
   x_var <- .as_var_string(rlang::enquo(x_var))
@@ -378,7 +380,8 @@ viz_histogram <- function(data,
     data_labels_enabled = data_labels_enabled, label_decimals = label_decimals,
     tooltip = tooltip, tooltip_prefix = tooltip_prefix,
     tooltip_suffix = tooltip_suffix, x_tooltip_suffix = x_tooltip_suffix,
-    series_data = series_data
+    series_data = series_data,
+    legend_position = legend_position
   )
 
   backend <- .normalize_backend(backend)
@@ -476,6 +479,10 @@ viz_histogram <- function(data,
   }
 
   if (!is.null(color_palette)) hc <- hc %>% highcharter::hc_colors(color_palette)
+
+  # --- Legend position ---
+  hc <- .apply_legend_highcharter(hc, config$legend_position, default_show = FALSE)
+
   return(hc)
 }
 
@@ -509,6 +516,9 @@ viz_histogram <- function(data,
       bargap = 0
     )
 
+  # --- Legend position ---
+  p <- .apply_legend_plotly(p, config$legend_position, default_show = FALSE)
+
   p
 }
 
@@ -539,11 +549,31 @@ viz_histogram <- function(data,
     p <- p |> echarts4r::e_title(text = config$title, subtext = config$subtitle)
   }
   if (!is.null(config$color_palette)) {
-    p <- p |> echarts4r::e_color(config$color_palette)
+    if (length(config$color_palette) > 1 && length(config$color_palette) >= nrow(plot_df)) {
+      # Assign per-bar colors via itemStyle
+      plot_df$.color <- config$color_palette[seq_len(nrow(plot_df))]
+      p <- plot_df |>
+        echarts4r::e_charts(category) |>
+        echarts4r::e_bar(value, name = "Count") |>
+        echarts4r::e_add_nested("itemStyle", color = .color) |>
+        echarts4r::e_x_axis(name = config$x_label) |>
+        echarts4r::e_y_axis(name = config$y_label) |>
+        echarts4r::e_tooltip(trigger = "axis")
+      if (!is.null(config$title)) {
+        p <- p |> echarts4r::e_title(text = config$title, subtext = config$subtitle)
+      }
+    } else {
+      p <- p |> echarts4r::e_color(config$color_palette)
+    }
   }
   if (config$data_labels_enabled) {
     p <- p |> echarts4r::e_labels(show = TRUE, position = "top")
   }
+
+  # --- Legend position ---
+  # Default: hide legend (histograms are single-series, and per-bar colors don't sync with legend)
+  p <- .apply_legend_echarts(p, config$legend_position, default_show = FALSE)
+
   p
 }
 
@@ -569,7 +599,7 @@ viz_histogram <- function(data,
 
   p <- ggplot2::ggplot(plot_df, ggplot2::aes(x = category, y = value)) +
     ggiraph::geom_col_interactive(
-      ggplot2::aes(tooltip = tooltip_text, data_id = category),
+      ggplot2::aes(tooltip = .data$tooltip_text, data_id = category),
       fill = fill_color, width = 0.9
     ) +
     ggplot2::labs(
@@ -584,6 +614,9 @@ viz_histogram <- function(data,
       vjust = -0.5, size = 3
     )
   }
+
+  # --- Legend position ---
+  p <- .apply_legend_ggplot(p, config$legend_position, default_show = FALSE)
 
   ggiraph::girafe(ggobj = p)
 }

@@ -4,7 +4,7 @@ author: "Alexandra Pafford"
 date: "14/08/2025"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Creating Multi-Question Stacked Bar Charts (Legacy)}
+  %\VignetteIndexEntry{Multi-Question Stacked Bar Charts (Legacy Reference)}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

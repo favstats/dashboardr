@@ -203,6 +203,7 @@ add_text <- function(x = NULL, text, ..., tabgroup = NULL, show_when = NULL) {
 #' @param link Optional URL to link the image to
 #' @param class Optional CSS class for custom styling
 #' @param tabgroup Optional tabgroup for organizing content (character vector for nested tabs)
+#' @param show_when One-sided formula controlling conditional display based on input values.
 #' @return Updated content_collection object
 #' @export
 #' @examples
@@ -1758,35 +1759,16 @@ end_sidebar <- function(sidebar_container) {
   parent_content
 }
 
-#' Add linked parent-child inputs (cascading dropdowns)
+#' Normalize linked option values for a parent value
 #'
-#' Creates two linked select inputs where the child's available options depend on
-#' the parent's current selection. Use inside a sidebar (after \code{add_sidebar()}).
+#' Validates and coerces child option values for a given parent value
+#' in a linked input configuration.
 #'
-#' @param x A sidebar_container (from \code{add_sidebar()}).
-#' @param parent List with: \code{id}, \code{label}, \code{options}; optionally
-#'   \code{default_selected}, \code{filter_var}.
-#' @param child List with: \code{id}, \code{label}, \code{options_by_parent}
-#'   (named list mapping each parent value to a character vector of child options);
-#'   optionally \code{filter_var}.
-#' @param type Input type for parent: \code{"select"} (default) or \code{"radio"}.
-#' @return The modified sidebar_container for piping.
+#' @param values Character vector of child options for one parent value.
+#' @param parent_value The parent value these options belong to.
+#' @return Character vector of cleaned, unique child option values.
+#' @keywords internal
 #' @export
-#' @examples
-#' \dontrun{
-#' add_sidebar() %>%
-#'   add_linked_inputs(
-#'     parent = list(id = "dimension", label = "Dimension",
-#'                   options = c("AI", "Safety", "Digital Health")),
-#'     child = list(id = "question", label = "Question",
-#'                  options_by_parent = list(
-#'                    "AI" = c("Overall", "Using AI Tools"),
-#'                    "Safety" = c("Overall", "Passwords", "Phishing"),
-#'                    "Digital Health" = c("Overall", "Screen Time")
-#'                  ))
-#'   ) %>%
-#'   end_sidebar()
-#' }
 .normalize_linked_option_values <- function(values, parent_value) {
   if (is.null(values)) {
     stop(
@@ -1834,6 +1816,35 @@ end_sidebar <- function(sidebar_container) {
   mapped
 }
 
+#' Add linked parent-child inputs (cascading dropdowns)
+#'
+#' Creates two linked select inputs where the child's available options depend on
+#' the parent's current selection. Use inside a sidebar (after \code{add_sidebar()}).
+#'
+#' @param x A sidebar_container (from \code{add_sidebar()}).
+#' @param parent List with: \code{id}, \code{label}, \code{options}; optionally
+#'   \code{default_selected}, \code{filter_var}.
+#' @param child List with: \code{id}, \code{label}, \code{options_by_parent}
+#'   (named list mapping each parent value to a character vector of child options);
+#'   optionally \code{filter_var}.
+#' @param type Input type for parent: \code{"select"} (default) or \code{"radio"}.
+#' @return The modified sidebar_container for piping.
+#' @export
+#' @examples
+#' \dontrun{
+#' add_sidebar() %>%
+#'   add_linked_inputs(
+#'     parent = list(id = "dimension", label = "Dimension",
+#'                   options = c("AI", "Safety", "Digital Health")),
+#'     child = list(id = "question", label = "Question",
+#'                  options_by_parent = list(
+#'                    "AI" = c("Overall", "Using AI Tools"),
+#'                    "Safety" = c("Overall", "Passwords", "Phishing"),
+#'                    "Digital Health" = c("Overall", "Screen Time")
+#'                  ))
+#'   ) %>%
+#'   end_sidebar()
+#' }
 add_linked_inputs <- function(x, parent, child, type = "select") {
   if (!inherits(x, "sidebar_container")) {
     stop("add_linked_inputs() must be used inside add_sidebar()", call. = FALSE)
@@ -1938,6 +1949,7 @@ add_linked_inputs <- function(x, parent, child, type = "select") {
 #' @param mr Margin right (CSS value)
 #' @param mb Margin bottom (CSS value)
 #' @param ml Margin left (CSS value)
+#' @param default_value Default value for the input (alias for value, used for reset)
 #' @param tabgroup Optional tabgroup for organizing content
 #' @param .linked_parent_id Internal. ID of linked parent input for cascading inputs
 #' @param .options_by_parent Internal. Named list mapping parent values to child options
@@ -2582,13 +2594,12 @@ merge_collections <- function(c1, c2) {
   result
 }
 
-#' Extract filter_var values from content collection
+#' Normalize a filter_var value to a character vector
 #' 
-#' Internal helper to detect filter_var columns from add_input() calls.
-#' Used to enable automatic cross-tab filtering.
+#' Internal helper to coerce various filter_var representations
+#' (character, factor, symbol, language) to a character vector.
 #' 
-#' @param content A content_collection or list with sidebar/items
-#' @param filter_vars Optional character vector of input filter variables to apply to this block.
+#' @param x A filter_var value (character, factor, symbol, or language object)
 #' @return Character vector of unique filter_var values
 #' @keywords internal
 .normalize_filter_var_value <- function(x) {

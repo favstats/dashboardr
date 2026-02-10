@@ -5,7 +5,14 @@ Add a blockquote
 ## Usage
 
 ``` r
-add_quote(content, quote, attribution = NULL, cite = NULL, tabgroup = NULL)
+add_quote(
+  content,
+  quote,
+  attribution = NULL,
+  cite = NULL,
+  tabgroup = NULL,
+  show_when = NULL
+)
 ```
 
 ## Arguments
@@ -30,3 +37,8 @@ add_quote(content, quote, attribution = NULL, cite = NULL, tabgroup = NULL)
 
   Optional tabgroup for organizing content (character vector for nested
   tabs)
+
+- show_when:
+
+  One-sided formula controlling conditional display based on input
+  values.

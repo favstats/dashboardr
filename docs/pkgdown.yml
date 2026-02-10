@@ -5,6 +5,7 @@ articles:
   advanced-features: advanced-features.html
   bar_vignette: bar_vignette.html
   boxplot_vignette: boxplot_vignette.html
+  chart-backends: chart-backends.html
   content-collections: content-collections.html
   dashboards: dashboards.html
   demos: demos.html
@@ -22,7 +23,7 @@ articles:
   timeline_vignette: timeline_vignette.html
   treemap_vignette: treemap_vignette.html
   tutorial_dashboard_code: tutorial_dashboard_code.html
-last_built: 2026-02-07T15:35Z
+last_built: 2026-02-10T08:33Z
 urls:
   reference: https://favstats.github.io/dashboardr/reference
   article: https://favstats.github.io/dashboardr/articles

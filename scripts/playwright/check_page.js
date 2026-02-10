@@ -1235,29 +1235,85 @@ async (page) => {
           return !!(choices && visible(choices));
         });
       if (select) {
-        const options = Array.from(select.options).filter((o) => !o.disabled && o.value !== '');
-        if (select.multiple && options.length > 1) {
-          const selectedCount = options.filter((o) => o.selected).length;
-          if (selectedCount >= options.length) {
-            options.forEach((o, i) => { o.selected = i < (options.length - 1); });
-            result.detail = 'select-multiple-var-drop-one';
+        // Choices.js-aware option discovery (Choices.js reduces select.options to 1)
+        const inputId = select.id || '';
+        const choicesInst = inputId && window.dashboardrChoicesInstances && window.dashboardrChoicesInstances[inputId];
+        let allValues = [];
+        let currentValue = select.value;
+        if (choicesInst) {
+          const storeChoices = (choicesInst._store && Array.isArray(choicesInst._store.choices))
+            ? choicesInst._store.choices
+            : (choicesInst._store && choicesInst._store.state && Array.isArray(choicesInst._store.state.choices))
+              ? choicesInst._store.state.choices : null;
+          if (storeChoices) {
+            allValues = storeChoices.filter((c) => !c.disabled && String(c.value || '') !== '').map((c) => c.value);
+            const active = storeChoices.filter((c) => c.selected);
+            if (active.length > 0) currentValue = active[0].value;
+          }
+          if (!allValues.length && choicesInst.config && Array.isArray(choicesInst.config.choices)) {
+            allValues = choicesInst.config.choices.filter((c) => !c.disabled && String(c.value || '') !== '').map((c) => c.value);
+          }
+          if (!allValues.length && choicesInst.choiceList && choicesInst.choiceList.element) {
+            const items = choicesInst.choiceList.element.querySelectorAll('[data-choice][data-value]');
+            allValues = Array.from(items).filter((it) => !it.classList.contains('is-disabled')).map((it) => it.getAttribute('data-value'));
+          }
+          if (typeof choicesInst.getValue === 'function') {
+            const val = choicesInst.getValue(true);
+            if (val !== undefined && val !== null) currentValue = Array.isArray(val) ? (val[0] || '') : val;
+          }
+        }
+        // Fallback to native options
+        if (!allValues.length) {
+          allValues = Array.from(select.options || []).filter((o) => !o.disabled && o.value !== '').map((o) => o.value);
+        }
+
+        if (select.multiple && allValues.length > 1) {
+          // For multi-select: toggle between all-selected and dropping one
+          if (choicesInst && typeof choicesInst.removeActiveItems === 'function') {
+            const selectedValues = (typeof choicesInst.getValue === 'function')
+              ? [].concat(choicesInst.getValue(true) || [])
+              : allValues;
+            if (selectedValues.length >= allValues.length) {
+              choicesInst.removeActiveItems();
+              choicesInst.setChoiceByValue(allValues.slice(0, allValues.length - 1));
+              result.detail = 'select-multiple-var-drop-one-choices';
+            } else {
+              choicesInst.removeActiveItems();
+              choicesInst.setChoiceByValue(allValues);
+              result.detail = 'select-multiple-var-all-choices';
+            }
           } else {
-            options.forEach((o) => { o.selected = true; });
-            result.detail = 'select-multiple-var-all';
+            const options = Array.from(select.options).filter((o) => !o.disabled && o.value !== '');
+            const selectedCount = options.filter((o) => o.selected).length;
+            if (selectedCount >= options.length) {
+              options.forEach((o, i) => { o.selected = i < (options.length - 1); });
+              result.detail = 'select-multiple-var-drop-one';
+            } else {
+              options.forEach((o) => { o.selected = true; });
+              result.detail = 'select-multiple-var-all';
+            }
           }
           select.dispatchEvent(new Event('change', { bubbles: true }));
           result.performed = true;
           result.kind = 'select-multiple';
           return result;
         }
-        if (options.length > 1) {
-          const target = pickDifferent(options.map((o) => o.value), select.value);
+        if (allValues.length > 1) {
+          const target = pickDifferent(allValues, currentValue);
           if (target !== null) {
-            select.value = target;
+            if (choicesInst && typeof choicesInst.setChoiceByValue === 'function') {
+              choicesInst.setChoiceByValue(target);
+              if (String(select.value) !== String(target)) {
+                select.value = target;
+              }
+            } else {
+              select.value = target;
+            }
+            select.dispatchEvent(new Event('input', { bubbles: true }));
             select.dispatchEvent(new Event('change', { bubbles: true }));
             result.performed = true;
             result.kind = 'select-single';
-            result.detail = 'select-single-var-changed';
+            result.detail = choicesInst ? 'select-single-var-changed-choices' : 'select-single-var-changed';
             return result;
           }
         }
@@ -1383,36 +1439,71 @@ async (page) => {
           continue;
         }
 
-        let options = Array.from(parent.options || []).filter((o) => !o.disabled && o.value !== '');
-        if (options.length < 2) {
+        // Choices.js-aware option discovery for linked parent
+        const parentId = parent.id || '';
+        const parentChoicesInst = parentId && window.dashboardrChoicesInstances && window.dashboardrChoicesInstances[parentId];
+        let allParentValues = [];
+        let parentCurrent = parent.value;
+        if (parentChoicesInst) {
+          const storeChoices = (parentChoicesInst._store && Array.isArray(parentChoicesInst._store.choices))
+            ? parentChoicesInst._store.choices
+            : (parentChoicesInst._store && parentChoicesInst._store.state && Array.isArray(parentChoicesInst._store.state.choices))
+              ? parentChoicesInst._store.state.choices : null;
+          if (storeChoices) {
+            allParentValues = storeChoices.filter((c) => !c.disabled && String(c.value || '') !== '').map((c) => c.value);
+            const active = storeChoices.filter((c) => c.selected);
+            if (active.length > 0) parentCurrent = active[0].value;
+          }
+          if (!allParentValues.length && parentChoicesInst.config && Array.isArray(parentChoicesInst.config.choices)) {
+            allParentValues = parentChoicesInst.config.choices.filter((c) => !c.disabled && String(c.value || '') !== '').map((c) => c.value);
+          }
+          if (typeof parentChoicesInst.getValue === 'function') {
+            const val = parentChoicesInst.getValue(true);
+            if (val !== undefined && val !== null) parentCurrent = Array.isArray(val) ? (val[0] || '') : val;
+          }
+        }
+        // Fallback to native options
+        if (!allParentValues.length) {
+          allParentValues = Array.from(parent.options || []).filter((o) => !o.disabled && o.value !== '').map((o) => o.value);
+        }
+        // Fallback to data-options-by-parent mapping
+        if (allParentValues.length < 2) {
           const mappingRaw = wrapper.getAttribute('data-options-by-parent');
           if (mappingRaw) {
             try {
               const mapping = JSON.parse(mappingRaw);
               const keys = Object.keys(mapping || {});
-              keys.forEach((key) => {
-                const exists = Array.from(parent.options || []).some((opt) => String(opt.value) === String(key));
-                if (!exists) {
-                  const opt = document.createElement('option');
-                  opt.value = String(key);
-                  opt.textContent = String(key);
-                  parent.appendChild(opt);
-                }
-              });
-              options = Array.from(parent.options || []).filter((o) => !o.disabled && o.value !== '');
-            } catch (_) {
-              // ignore parse failures, fallback to original options
-            }
+              if (keys.length > allParentValues.length) allParentValues = keys;
+            } catch (_) {}
           }
         }
-        if (options.length < 2) {
+        if (allParentValues.length < 2) {
           continue;
         }
 
-        const before = Array.from(child.options || []).map((o) => o.value).join('|');
-        const current = parent.value;
-        const target = options.find((o) => String(o.value) !== String(current)) || options[0];
-        parent.value = target.value;
+        // Discover child options similarly
+        const childChoicesInst = child.id && window.dashboardrChoicesInstances && window.dashboardrChoicesInstances[child.id];
+        let childBefore = [];
+        if (childChoicesInst) {
+          const childStore = (childChoicesInst._store && Array.isArray(childChoicesInst._store.choices))
+            ? childChoicesInst._store.choices
+            : (childChoicesInst._store && childChoicesInst._store.state && Array.isArray(childChoicesInst._store.state.choices))
+              ? childChoicesInst._store.state.choices : null;
+          if (childStore) childBefore = childStore.filter((c) => String(c.value || '') !== '').map((c) => c.value);
+        }
+        if (!childBefore.length) {
+          childBefore = Array.from(child.options || []).filter((o) => o.value !== '').map((o) => o.value);
+        }
+        const before = childBefore.join('|');
+
+        const targetValue = allParentValues.find((v) => String(v) !== String(parentCurrent)) || allParentValues[0];
+        if (parentChoicesInst && typeof parentChoicesInst.setChoiceByValue === 'function') {
+          parentChoicesInst.setChoiceByValue(targetValue);
+          if (String(parent.value) !== String(targetValue)) parent.value = targetValue;
+        } else {
+          parent.value = targetValue;
+        }
+        parent.dispatchEvent(new Event('input', { bubbles: true }));
         parent.dispatchEvent(new Event('change', { bubbles: true }));
 
         out.performed = true;
@@ -1432,6 +1523,17 @@ async (page) => {
       if (!childId) return null;
       const child = childId ? document.getElementById(childId) : null;
       if (!child) return null;
+      // Choices.js-aware child option reading
+      const childChoicesInst = child.id && window.dashboardrChoicesInstances && window.dashboardrChoicesInstances[child.id];
+      if (childChoicesInst) {
+        const childStore = (childChoicesInst._store && Array.isArray(childChoicesInst._store.choices))
+          ? childChoicesInst._store.choices
+          : (childChoicesInst._store && childChoicesInst._store.state && Array.isArray(childChoicesInst._store.state.choices))
+            ? childChoicesInst._store.state.choices : null;
+        if (childStore) {
+          return childStore.filter((c) => String(c.value || '') !== '').map((c) => c.value).join('|');
+        }
+      }
       return Array.from(child.options || []).map((o) => o.value).join('|');
     }, result.child_id || null);
 
@@ -1529,6 +1631,37 @@ async (page) => {
         if (cond.condition) flattenVars(cond.condition, set);
       };
 
+      const collectVarHints = (cond, out) => {
+        if (!cond || typeof cond !== 'object') return;
+        const op = String(cond.op || '').toLowerCase();
+        const key = cond.var ? String(cond.var).trim() : '';
+        if (key) {
+          if (!Array.isArray(out[key])) out[key] = [];
+          if ((op === 'eq' || op === 'neq') && cond.val != null && !Array.isArray(cond.val)) {
+            const val = String(cond.val);
+            if (val && !out[key].includes(val)) out[key].push(val);
+          } else if (op === 'in' && Array.isArray(cond.val)) {
+            cond.val.forEach((entry) => {
+              const val = String(entry == null ? '' : entry);
+              if (val && !out[key].includes(val)) out[key].push(val);
+            });
+          }
+        }
+        if (Array.isArray(cond.conditions)) cond.conditions.forEach((x) => collectVarHints(x, out));
+        if (cond.condition) collectVarHints(cond.condition, out);
+      };
+
+      const pickTargetValue = (filterVar, allValues, currentValue, varHints) => {
+        const values = Array.from(new Set((allValues || []).map((x) => String(x == null ? '' : x)).filter((x) => x)));
+        if (!values.length) return null;
+        const current = String(currentValue == null ? '' : currentValue);
+        const hints = Array.isArray(varHints[filterVar]) ? varHints[filterVar].map((x) => String(x)) : [];
+        for (const hint of hints) {
+          if (hint !== current && values.includes(hint)) return hint;
+        }
+        return values.find((v) => v !== current) || values[0];
+      };
+
       const triggerInputOrLabel = (input) => {
         if (!input) return false;
         const label = input.closest('label');
@@ -1542,6 +1675,8 @@ async (page) => {
         }
         return false;
       };
+
+      const varHints = {};
 
       const changeForVar = (varName) => {
         const filterVar = String(varName || '').trim();
@@ -1589,7 +1724,8 @@ async (page) => {
           }
 
           if (allValues.length > 1) {
-            const targetVal = allValues.find((v) => String(v) !== String(currentValue)) || allValues[0];
+            const targetVal = pickTargetValue(filterVar, allValues, currentValue, varHints);
+            if (!targetVal) return false;
             if (choicesInst && typeof choicesInst.setChoiceByValue === 'function') {
               if (select.multiple) {
                 choicesInst.removeActiveItems();
@@ -1614,7 +1750,16 @@ async (page) => {
         if (radioGroup) {
           const radios = Array.from(radioGroup.querySelectorAll('input[type="radio"]')).filter((r) => !r.disabled);
           if (radios.length > 1) {
-            const candidate = radios.find((r) => !r.checked) || radios[0];
+            const currentRadio = radios.find((r) => r.checked);
+            const targetValue = pickTargetValue(
+              filterVar,
+              radios.map((r) => r.value),
+              currentRadio ? currentRadio.value : '',
+              varHints
+            );
+            const candidate = radios.find((r) => String(r.value) === String(targetValue) && !r.checked) ||
+              radios.find((r) => !r.checked) ||
+              radios[0];
             if (candidate) return triggerInputOrLabel(candidate);
           }
         }
@@ -1708,6 +1853,7 @@ async (page) => {
           if (!raw) return;
           const cond = JSON.parse(raw);
           flattenVars(cond, vars);
+          collectVarHints(cond, varHints);
         } catch (_) {
           // ignore
         }
@@ -1931,6 +2077,25 @@ async (page) => {
       timeout: 45000
     });
     await wait(1200);
+
+    // Wait for chart widgets to finish rendering (Highcharts, plotly, echarts)
+    // Some backends (especially highcharter) load data asynchronously after DOM ready.
+    const chartsReady = await page.evaluate(() => {
+      const hasHCWidgets = document.querySelectorAll('.htmlwidget-output, .html-widget').length > 0;
+      if (!hasHCWidgets) return true;
+      const hcCharts = (window.Highcharts && Array.isArray(window.Highcharts.charts))
+        ? window.Highcharts.charts.filter((x) => !!x && !!x.series) : [];
+      if (hcCharts.length > 0 && hcCharts.every((c) => c.series.length > 0)) return true;
+      const plotlyDivs = document.querySelectorAll('.js-plotly-plot');
+      if (plotlyDivs.length > 0 && Array.from(plotlyDivs).every((d) => d.data && d.data.length > 0)) return true;
+      const echartsWidgets = document.querySelectorAll('[_echarts_instance_]');
+      if (echartsWidgets.length > 0) return true;
+      return false;
+    });
+    if (!chartsReady) {
+      // Extra wait for slow backends
+      await wait(3000);
+    }
 
     for (const selector of requiredSelectors) {
       const locator = page.locator(selector).first();

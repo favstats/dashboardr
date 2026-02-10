@@ -981,17 +981,17 @@ render_input_row <- function(inputs, style = "boxed", align = "center") {
 #' Add a reset button to reset filters
 #'
 #' Creates a button that resets specified inputs to their default values.
+#' Can be used inside a sidebar pipeline (pass a sidebar_container as the
+#' first argument) or standalone to generate the raw HTML.
 #'
+#' @param sidebar_container A sidebar_container (created by add_sidebar()),
+#'   or NULL for standalone HTML output.
 #' @param targets Character vector of input IDs to reset, or NULL for all
 #' @param label Button label
 #' @param size Size variant: "sm", "md", or "lg"
-#' @return HTML output
+#' @return Modified sidebar_container when piped, or HTML string when standalone.
 #' @export
-add_reset_button <- function(sidebar_container, targets = NULL, label = "Reset Filters", size = "md") {
-  if (!inherits(sidebar_container, "sidebar_container")) {
-    stop("add_reset_button() must be called on a sidebar_container (created by add_sidebar())", call. = FALSE)
-  }
-  
+add_reset_button <- function(sidebar_container = NULL, targets = NULL, label = "Reset Filters", size = "md") {
   reset_button_block <- structure(
     list(
       type = "reset_button",
@@ -1001,7 +1001,16 @@ add_reset_button <- function(sidebar_container, targets = NULL, label = "Reset F
     ),
     class = "content_block"
   )
-  
+
+  # Standalone mode: return rendered HTML directly
+  if (is.null(sidebar_container)) {
+    return(render_reset_button(reset_button_block))
+  }
+
+  if (!inherits(sidebar_container, "sidebar_container")) {
+    stop("add_reset_button() must be called on a sidebar_container (created by add_sidebar()) or with no first argument for standalone HTML", call. = FALSE)
+  }
+
   sidebar_container$blocks <- c(sidebar_container$blocks, list(reset_button_block))
   sidebar_container
 }

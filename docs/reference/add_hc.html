@@ -30,7 +30,7 @@ directly without using dashboardr's viz_* functions."><meta property="og:image" 
 
     <a class="navbar-brand me-2" href="../index.html">dashboardr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -49,6 +49,7 @@ directly without using dashboardr's viz_* functions."><meta property="og:image" 
     <li><a class="dropdown-item" href="../articles/dashboards.html">- Dashboards</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><a class="dropdown-item" href="../articles/advanced-features.html">⚙️ Advanced Features</a></li>
+    <li><a class="dropdown-item" href="../articles/chart-backends.html">📦 Chart backends</a></li>
     <li><a class="dropdown-item" href="../articles/publishing_dashboards.html">🌐 Publishing Dashboards</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>📊 Visualization Types</h6></li>
@@ -108,7 +109,14 @@ directly without using dashboardr's viz_* functions.</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">add_hc</span><span class="op">(</span><span class="va">content</span>, <span class="va">hc_object</span>, height <span class="op">=</span> <span class="cn">NULL</span>, tabgroup <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">add_hc</span><span class="op">(</span></span>
+<span>  <span class="va">content</span>,</span>
+<span>  <span class="va">hc_object</span>,</span>
+<span>  height <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  tabgroup <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  filter_vars <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  show_when <span class="op">=</span> <span class="cn">NULL</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -129,6 +137,14 @@ directly without using dashboardr's viz_* functions.</p>
 
 <dt id="arg-tabgroup">tabgroup<a class="anchor" aria-label="anchor" href="#arg-tabgroup"></a></dt>
 <dd><p>Optional tabgroup for organizing content (character vector for nested tabs)</p></dd>
+
+
+<dt id="arg-filter-vars">filter_vars<a class="anchor" aria-label="anchor" href="#arg-filter-vars"></a></dt>
+<dd><p>Optional character vector of input filter variables to apply to this block.</p></dd>
+
+
+<dt id="arg-show-when">show_when<a class="anchor" aria-label="anchor" href="#arg-show-when"></a></dt>
+<dd><p>One-sided formula controlling conditional display based on input values.</p></dd>
 
 </dl></div>
     <div class="section level2">

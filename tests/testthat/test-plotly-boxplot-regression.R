@@ -48,7 +48,10 @@ test_that("viz_boxplot(plotly) keeps non-empty raw-value traces per category", {
 })
 
 test_that("plotly filter asset derives visible categories from all traces", {
-  asset_path <- testthat::test_path("..", "..", "inst", "assets", "input_filter.js")
+  asset_path <- system.file("assets", "input_filter.js", package = "dashboardr")
+  if (!nzchar(asset_path)) {
+    asset_path <- testthat::test_path("..", "..", "inst", "assets", "input_filter.js")
+  }
   expect_true(file.exists(asset_path))
 
   js <- paste(readLines(asset_path, warn = FALSE), collapse = "\n")

@@ -120,7 +120,7 @@ print(dashboard)
 #> 
 #> 📊 DASHBOARD PROJECT ====================================================
 #> │ 🏷️  Title: GSS Explorer
-#> │ 📁 Output: /Users/favstats/Dropbox/postdoc/output
+#> │ 📁 Output: /Users/favstats/Dropbox/dashboardr/output
 #> │
 #> │ ⚙️  FEATURES:
 #> │    • 🔍 Search

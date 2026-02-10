@@ -24,7 +24,9 @@ viz_density(
   include_na = FALSE,
   na_label = "(Missing)",
   tooltip = NULL,
-  tooltip_suffix = ""
+  tooltip_suffix = "",
+  legend_position = NULL,
+  backend = "highcharter"
 )
 ```
 
@@ -108,6 +110,15 @@ viz_density(
 
   Optional string appended to density values in tooltip (simple
   customization).
+
+- legend_position:
+
+  Position of the legend ("top", "bottom", "left", "right", "none")
+
+- backend:
+
+  Rendering backend: "highcharter" (default), "plotly", "echarts4r", or
+  "ggiraph".
 
 ## Value
 

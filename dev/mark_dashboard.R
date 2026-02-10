@@ -366,7 +366,7 @@ dashboard <- create_dashboard(
   output_dir = "mark_publication_dashboard",
   tabset_theme = "modern",
   author = "Mark's Research Project",
-  description = "Interactive dashboard exploring publication trends across 120+ countries from the 1970s to 2020s",
+  description = "Interactive dashboard exploring publication trends across 120+ countries from the 1970s to 2020s", backend = "echarts",
   # Modern navbar styling
 
   navbar_bg_color = "#1e3a5f",

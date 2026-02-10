@@ -222,7 +222,7 @@ page5 <- create_page("About") %>%
 dashboard <- create_dashboard(
   title = "Multi-Page Sidebar Demo",
   output_dir = "output_dir",
-  theme = "cosmo"
+  theme = "cosmo", backend = "echarts4r"
 ) %>%
   add_page(page1) %>%
   add_page(page2) %>%

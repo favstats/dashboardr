@@ -22,7 +22,7 @@ scenarios:
     dynamic_text_selectors: ["#p1_dynamic_low", "#p1_dynamic_high", ".dashboardr-slider-value"]
     min_non_empty_charts_expected: 1
     required_selectors:
-      - "#pw-input-matrix-p1"
+      - "#pw-title-p1"
       - ".dashboardr-checkbox-group[data-filter-var='region']"
       - ".dashboardr-slider[data-filter-var='year']"
     required_texts:
@@ -41,7 +41,7 @@ scenarios:
     require_all_inputs_affect_all_charts: true
     min_non_empty_charts_expected: 1
     required_selectors:
-      - "#pw-input-matrix-p2"
+      - "#pw-title-p2"
       - "select[data-filter-var='education']"
       - ".dashboardr-button-group[data-filter-var='channel']"
     required_texts:
@@ -64,7 +64,7 @@ scenarios:
     require_all_inputs_affect_all_charts: true
     min_non_empty_charts_expected: 1
     required_selectors:
-      - "#pw-input-matrix-p3"
+      - "#pw-title-p3"
       - ".dashboardr-radio-group[data-filter-var='channel']"
       - ".dashboardr-slider[data-filter-var='year']"
     required_texts:
@@ -82,7 +82,7 @@ scenarios:
     expect_filter_effect: true
     min_non_empty_charts_expected: 1
     required_selectors:
-      - "#pw-input-matrix-p4"
+      - "#pw-title-p4"
       - "[data-linked-child-id]"
       - "select[data-filter-var='segment']"
     required_texts:
@@ -102,7 +102,7 @@ scenarios:
     dynamic_text_selectors: ["#p5_dynamic_detail"]
     min_non_empty_charts_expected: 1
     required_selectors:
-      - "#pw-input-matrix-p5"
+      - "#pw-title-p5"
       - "[data-show-when]"
       - "input[data-input-type='switch'][data-filter-var='benchmark_toggle']"
     required_texts:
@@ -120,7 +120,7 @@ scenarios:
     expect_filter_effect: true
     min_non_empty_charts_expected: 1
     required_selectors:
-      - "#pw-input-matrix-p6"
+      - "#pw-title-p6"
       - "input[data-input-type='text'][data-filter-var='region']"
       - "input[data-input-type='number'][data-filter-var='year']"
     required_texts:
@@ -142,7 +142,7 @@ scenarios:
     dynamic_text_selectors: ["#p1_dynamic_low", "#p1_dynamic_high", ".dashboardr-slider-value"]
     min_non_empty_charts_expected: 1
     required_selectors:
-      - "#pw-input-matrix-p1"
+      - "#pw-title-p1"
       - ".dashboardr-checkbox-group[data-filter-var='region']"
       - ".dashboardr-slider[data-filter-var='year']"
     required_texts:
@@ -161,7 +161,7 @@ scenarios:
     require_all_inputs_affect_all_charts: true
     min_non_empty_charts_expected: 1
     required_selectors:
-      - "#pw-input-matrix-p2"
+      - "#pw-title-p2"
       - "select[data-filter-var='education']"
       - ".dashboardr-button-group[data-filter-var='channel']"
     required_texts:
@@ -184,7 +184,7 @@ scenarios:
     require_all_inputs_affect_all_charts: true
     min_non_empty_charts_expected: 1
     required_selectors:
-      - "#pw-input-matrix-p3"
+      - "#pw-title-p3"
       - ".dashboardr-radio-group[data-filter-var='channel']"
       - ".dashboardr-slider[data-filter-var='year']"
     required_texts:
@@ -202,7 +202,7 @@ scenarios:
     expect_filter_effect: true
     min_non_empty_charts_expected: 1
     required_selectors:
-      - "#pw-input-matrix-p4"
+      - "#pw-title-p4"
       - "[data-linked-child-id]"
       - "select[data-filter-var='segment']"
     required_texts:
@@ -222,7 +222,7 @@ scenarios:
     dynamic_text_selectors: ["#p5_dynamic_detail"]
     min_non_empty_charts_expected: 1
     required_selectors:
-      - "#pw-input-matrix-p5"
+      - "#pw-title-p5"
       - "[data-show-when]"
       - "input[data-input-type='switch'][data-filter-var='benchmark_toggle']"
     required_texts:
@@ -240,7 +240,7 @@ scenarios:
     expect_filter_effect: true
     min_non_empty_charts_expected: 1
     required_selectors:
-      - "#pw-input-matrix-p6"
+      - "#pw-title-p6"
       - "input[data-input-type='text'][data-filter-var='region']"
       - "input[data-input-type='number'][data-filter-var='year']"
     required_texts:
@@ -262,7 +262,7 @@ scenarios:
     dynamic_text_selectors: ["#p1_dynamic_low", "#p1_dynamic_high", ".dashboardr-slider-value"]
     min_non_empty_charts_expected: 1
     required_selectors:
-      - "#pw-input-matrix-p1"
+      - "#pw-title-p1"
       - ".dashboardr-checkbox-group[data-filter-var='region']"
       - ".dashboardr-slider[data-filter-var='year']"
     required_texts:
@@ -281,7 +281,7 @@ scenarios:
     require_all_inputs_affect_all_charts: true
     min_non_empty_charts_expected: 1
     required_selectors:
-      - "#pw-input-matrix-p2"
+      - "#pw-title-p2"
       - "select[data-filter-var='education']"
       - ".dashboardr-button-group[data-filter-var='channel']"
     required_texts:
@@ -304,7 +304,7 @@ scenarios:
     require_all_inputs_affect_all_charts: true
     min_non_empty_charts_expected: 1
     required_selectors:
-      - "#pw-input-matrix-p3"
+      - "#pw-title-p3"
       - ".dashboardr-radio-group[data-filter-var='channel']"
       - ".dashboardr-slider[data-filter-var='year']"
     required_texts:
@@ -322,7 +322,7 @@ scenarios:
     expect_filter_effect: true
     min_non_empty_charts_expected: 1
     required_selectors:
-      - "#pw-input-matrix-p4"
+      - "#pw-title-p4"
       - "[data-linked-child-id]"
       - "select[data-filter-var='segment']"
     required_texts:
@@ -342,7 +342,7 @@ scenarios:
     dynamic_text_selectors: ["#p5_dynamic_detail"]
     min_non_empty_charts_expected: 1
     required_selectors:
-      - "#pw-input-matrix-p5"
+      - "#pw-title-p5"
       - "[data-show-when]"
       - "input[data-input-type='switch'][data-filter-var='benchmark_toggle']"
     required_texts:
@@ -360,7 +360,7 @@ scenarios:
     expect_filter_effect: true
     min_non_empty_charts_expected: 1
     required_selectors:
-      - "#pw-input-matrix-p6"
+      - "#pw-title-p6"
       - "input[data-input-type='text'][data-filter-var='region']"
       - "input[data-input-type='number'][data-filter-var='year']"
     required_texts:
@@ -382,7 +382,7 @@ scenarios:
     dynamic_text_selectors: ["#m1_dynamic_low", "#m1_dynamic_high", ".dashboardr-slider-value"]
     min_non_empty_charts_expected: 3
     required_selectors:
-      - "#pw-input-matrix-m1"
+      - "#pw-title-m1"
       - ".dashboardr-checkbox-group[data-filter-var='region']"
       - ".dashboardr-slider[data-filter-var='year']"
     required_texts:

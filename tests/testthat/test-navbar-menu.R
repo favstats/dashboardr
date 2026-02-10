@@ -3,7 +3,7 @@ library(testthat)
 
 # Skip entire file under covr CI to prevent OOM (exit code 143)
 if (identical(Sys.getenv("DASHBOARDR_COVR_CI"), "true") || !identical(Sys.getenv("NOT_CRAN"), "true")) {
-  test_that("skipped on CRAN/covr CI", { skip("Memory-intensive tests skipped on CRAN and covr CI") })
+  # skipped on CRAN/covr CI
 } else {
 
 test_that("navbar_menu creates correct structure", {
@@ -106,7 +106,7 @@ test_that("navbar_menu YAML generation works", {
     add_page("Performance", text = "Performance page", icon = "ph:trophy")
   
   # Generate without rendering
-  generate_dashboard(dashboard, render = FALSE)
+  generate_dashboard(dashboard, render = FALSE, quiet = TRUE)
   
   # Read the YAML
   yaml_file <- file.path(dashboard$output_dir, "_quarto.yml")
@@ -140,7 +140,7 @@ test_that("navbar_menu generates correct YAML indentation", {
     add_page("Strategic Information", text = "Strategic") %>%
     add_page("Critical Information", text = "Critical")
   
-  generate_dashboard(dashboard, render = FALSE)
+  generate_dashboard(dashboard, render = FALSE, quiet = TRUE)
   
   yaml_file <- file.path(dashboard$output_dir, "_quarto.yml")
   yaml_content <- readLines(yaml_file, warn = FALSE)
@@ -183,7 +183,7 @@ test_that("navbar_menu works with multiple menus", {
     add_page("About", text = "About") %>%
     add_page("Help", text = "Help")
   
-  generate_dashboard(dashboard, render = FALSE)
+  generate_dashboard(dashboard, render = FALSE, quiet = TRUE)
   
   yaml_file <- file.path(dashboard$output_dir, "_quarto.yml")
   yaml_content <- readLines(yaml_file, warn = FALSE)
@@ -216,7 +216,7 @@ test_that("navbar_menu preserves page icons in dropdown", {
     add_page("Page A", text = "A", icon = "ph:star") %>%
     add_page("Page B", text = "B", icon = "ph:heart")
   
-  generate_dashboard(dashboard, render = FALSE)
+  generate_dashboard(dashboard, render = FALSE, quiet = TRUE)
   
   yaml_file <- file.path(dashboard$output_dir, "_quarto.yml")
   yaml_content <- readLines(yaml_file, warn = FALSE)
@@ -245,7 +245,7 @@ test_that("navbar_menu works alongside regular pages", {
     add_page("Standalone", text = "Not in menu") %>%
     add_page("About", text = "Also standalone", navbar_align = "right")
   
-  generate_dashboard(dashboard, render = FALSE)
+  generate_dashboard(dashboard, render = FALSE, quiet = TRUE)
   
   yaml_file <- file.path(dashboard$output_dir, "_quarto.yml")
   yaml_content <- readLines(yaml_file, warn = FALSE)
@@ -281,7 +281,7 @@ test_that("navbar_menu handles missing pages gracefully", {
     # Note: "DoesNotExist" is NOT added
   
   # Should not error (may produce warnings about missing pages or Quarto)
-  expect_no_error(generate_dashboard(dashboard, render = FALSE))
+  expect_no_error(suppressWarnings(generate_dashboard(dashboard, render = FALSE, quiet = TRUE)))
   
   yaml_file <- file.path(dashboard$output_dir, "_quarto.yml")
   yaml_content <- readLines(yaml_file, warn = FALSE)
@@ -326,7 +326,7 @@ test_that("navbar_menu can be mixed with navbar_section (hybrid)", {
     add_page("Page B", text = "In hybrid sidebar")
   
   # Should not error (may produce Quarto warnings)
-  expect_no_error(generate_dashboard(dashboard, render = FALSE))
+  expect_no_error(suppressWarnings(generate_dashboard(dashboard, render = FALSE, quiet = TRUE)))
   
   yaml_file <- file.path(dashboard$output_dir, "_quarto.yml")
   yaml_content <- readLines(yaml_file, warn = FALSE)
@@ -353,7 +353,7 @@ test_that("navbar_menu uses correct QMD filenames", {
     add_page("My Page With Spaces", text = "Spaces") %>%
     add_page("Another-Page", text = "Dashes")
   
-  generate_dashboard(dashboard, render = FALSE)
+  generate_dashboard(dashboard, render = FALSE, quiet = TRUE)
   
   yaml_file <- file.path(dashboard$output_dir, "_quarto.yml")
   yaml_content <- readLines(yaml_file, warn = FALSE)
@@ -410,7 +410,7 @@ test_that("right-aligned navbar_menu pages don't appear as individual navbar ite
     add_page("About", text = "About content", icon = "ph:info-fill") %>%
     add_page("Wave 1", text = "Wave 1 content", icon = "ph:number-one")
   
-  generate_dashboard(dashboard, render = FALSE)
+  generate_dashboard(dashboard, render = FALSE, quiet = TRUE)
   
   yaml_file <- file.path(dashboard$output_dir, "_quarto.yml")
   yaml_content <- readLines(yaml_file, warn = FALSE)
@@ -478,7 +478,7 @@ test_that("mixed left and right navbar_menus work correctly", {
     add_page("About", text = "About content") %>%
     add_page("Standalone", text = "Not in any menu")  # This should appear as individual item
   
-  generate_dashboard(dashboard, render = FALSE)
+  generate_dashboard(dashboard, render = FALSE, quiet = TRUE)
   
   yaml_file <- file.path(dashboard$output_dir, "_quarto.yml")
   yaml_content <- readLines(yaml_file, warn = FALSE)

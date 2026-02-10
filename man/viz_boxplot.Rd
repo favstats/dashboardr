@@ -23,6 +23,7 @@ viz_boxplot(
   tooltip = NULL,
   tooltip_prefix = "",
   tooltip_suffix = "",
+  legend_position = NULL,
   backend = "highcharter"
 )
 }
@@ -70,6 +71,8 @@ See \code{\link{tooltip}} for full customization options.}
 \item{tooltip_prefix}{Optional string prepended to values in tooltip.}
 
 \item{tooltip_suffix}{Optional string appended to values in tooltip.}
+
+\item{legend_position}{Position of the legend ("top", "bottom", "left", "right", "none")}
 
 \item{backend}{Rendering backend: "highcharter" (default), "plotly", "echarts4r", or "ggiraph".}
 }

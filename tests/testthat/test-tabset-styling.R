@@ -8,15 +8,13 @@ test_that("default theme is applied", {
   ) %>%
     add_page("Home", text = "Test", is_landing_page = TRUE)
   
-  generate_dashboard(dashboard, render = FALSE)
+  suppressWarnings(suppressMessages(
+    generate_dashboard(dashboard, render = FALSE, quiet = TRUE)
+  ))
   
-  yaml_file <- file.path(dashboard$output_dir, "_quarto.yml")
-  yaml_content <- paste(readLines(yaml_file, warn = FALSE), collapse = "\n")
-  
-  # Should have default theme (modern)
-  # Skip checking specific SCSS filename - implementation detail
-  skip_if(TRUE, "Test checks for specific SCSS file name which may change")
-  
+  # Should have a tabset SCSS file (the default theme)
+  scss_files <- list.files(dashboard$output_dir, pattern = "_tabset_.*\\.scss")
+  expect_true(length(scss_files) >= 1, "Default theme should generate a SCSS file")
 })
 
 test_that("modern theme generates correct SCSS file", {
@@ -27,7 +25,7 @@ test_that("modern theme generates correct SCSS file", {
   ) %>%
     add_page("Home", text = "Test", is_landing_page = TRUE)
   
-  generate_dashboard(dashboard, render = FALSE)
+  suppressWarnings(suppressMessages(generate_dashboard(dashboard, render = FALSE, quiet = TRUE)))
   
   scss_file <- file.path(dashboard$output_dir, "_tabset_modern.scss")
   expect_true(file.exists(scss_file))
@@ -45,7 +43,7 @@ test_that("minimal theme generates correct SCSS file", {
   ) %>%
     add_page("Home", text = "Test", is_landing_page = TRUE)
   
-  generate_dashboard(dashboard, render = FALSE)
+  suppressWarnings(suppressMessages(generate_dashboard(dashboard, render = FALSE, quiet = TRUE)))
   
   scss_file <- file.path(dashboard$output_dir, "_tabset_minimal.scss")
   expect_true(file.exists(scss_file))
@@ -64,7 +62,7 @@ test_that("pills theme generates correct SCSS file", {
   ) %>%
     add_page("Home", text = "Test", is_landing_page = TRUE)
   
-  generate_dashboard(dashboard, render = FALSE)
+  suppressWarnings(suppressMessages(generate_dashboard(dashboard, render = FALSE, quiet = TRUE)))
   
   scss_file <- file.path(dashboard$output_dir, "_tabset_pills.scss")
   expect_true(file.exists(scss_file))
@@ -79,7 +77,7 @@ test_that("classic theme generates correct SCSS file", {
   ) %>%
     add_page("Home", text = "Test", is_landing_page = TRUE)
   
-  generate_dashboard(dashboard, render = FALSE)
+  suppressWarnings(suppressMessages(generate_dashboard(dashboard, render = FALSE, quiet = TRUE)))
   
   scss_file <- file.path(dashboard$output_dir, "_tabset_classic.scss")
   expect_true(file.exists(scss_file))
@@ -94,7 +92,7 @@ test_that("underline theme generates correct SCSS file", {
   ) %>%
     add_page("Home", text = "Test", is_landing_page = TRUE)
   
-  generate_dashboard(dashboard, render = FALSE)
+  suppressWarnings(suppressMessages(generate_dashboard(dashboard, render = FALSE, quiet = TRUE)))
   
   scss_file <- file.path(dashboard$output_dir, "_tabset_underline.scss")
   expect_true(file.exists(scss_file))
@@ -109,7 +107,7 @@ test_that("segmented theme generates correct SCSS file", {
   ) %>%
     add_page("Home", text = "Test", is_landing_page = TRUE)
   
-  generate_dashboard(dashboard, render = FALSE)
+  suppressWarnings(suppressMessages(generate_dashboard(dashboard, render = FALSE, quiet = TRUE)))
   
   scss_file <- file.path(dashboard$output_dir, "_tabset_segmented.scss")
   expect_true(file.exists(scss_file))
@@ -124,7 +122,7 @@ test_that("none theme does not generate SCSS file", {
   ) %>%
     add_page("Home", text = "Test", is_landing_page = TRUE)
   
-  generate_dashboard(dashboard, render = FALSE)
+  suppressWarnings(suppressMessages(generate_dashboard(dashboard, render = FALSE, quiet = TRUE)))
   
   # Should not have any tabset SCSS file
   scss_files <- list.files(dashboard$output_dir, pattern = "_tabset_.*\\.scss")
@@ -144,8 +142,6 @@ test_that("invalid theme causes error", {
 })
 
 test_that("custom colors are applied", {
-  skip("Custom color application - edge case")
-  
   dashboard <- create_dashboard(
     output_dir = tempfile("custom_colors"),
     title = "Test",
@@ -158,7 +154,12 @@ test_that("custom colors are applied", {
   ) %>%
     add_page("Home", text = "Test", is_landing_page = TRUE)
   
-  generate_dashboard(dashboard, render = FALSE)
+  suppressWarnings(suppressMessages(
+    generate_dashboard(dashboard, render = FALSE, quiet = TRUE)
+  ))
+  
+  # Custom colors should be stored in the dashboard
+  expect_equal(dashboard$tabset_colors$active_bg, "#FF0000")
 })
 
 test_that("invalid tabset_colors structure causes error", {
@@ -210,8 +211,6 @@ test_that("per-page custom colors override dashboard colors", {
 })
 
 test_that("custom SCSS file can be provided", {
-  skip("Custom SCSS file copying - edge case")
-  
   custom_scss <- tempfile(fileext = ".scss")
   writeLines(c(".panel-tabset { background: #CUSTOM; }"), custom_scss)
   
@@ -222,7 +221,12 @@ test_that("custom SCSS file can be provided", {
   ) %>%
     add_page("Home", text = "Test", is_landing_page = TRUE)
   
-  generate_dashboard(dashboard, render = FALSE)
+  suppressWarnings(suppressMessages(
+    generate_dashboard(dashboard, render = FALSE, quiet = TRUE)
+  ))
+  
+  # Should have stored the custom SCSS path
+  expect_true(!is.null(dashboard$custom_scss))
   unlink(custom_scss)
 })
 
@@ -242,7 +246,7 @@ test_that("theme works with visualizations", {
       is_landing_page = TRUE
     )
   
-  generate_dashboard(dashboard, render = FALSE)
+  suppressWarnings(suppressMessages(generate_dashboard(dashboard, render = FALSE, quiet = TRUE)))
   
   # Should have pills theme
   scss_file <- file.path(dashboard$output_dir, "_tabset_pills.scss")
@@ -261,7 +265,7 @@ test_that("all themes remove borders as expected", {
     ) %>%
       add_page("Home", text = "Test", is_landing_page = TRUE)
     
-    generate_dashboard(dashboard, render = FALSE)
+    suppressWarnings(suppressMessages(generate_dashboard(dashboard, render = FALSE, quiet = TRUE)))
     
     scss_file <- file.path(dashboard$output_dir, paste0("_tabset_", theme, ".scss"))
     scss_content <- paste(readLines(scss_file, warn = FALSE), collapse = "\n")

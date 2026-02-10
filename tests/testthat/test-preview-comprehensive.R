@@ -39,7 +39,7 @@ expect_html_contains <- function(html_path, patterns, info_prefix = "") {
 
 # Skip entire file under covr CI to prevent OOM (exit code 143)
 if (identical(Sys.getenv("DASHBOARDR_COVR_CI"), "true") || !identical(Sys.getenv("NOT_CRAN"), "true")) {
-  test_that("skipped on CRAN/covr CI", { skip("Memory-intensive tests skipped on CRAN and covr CI") })
+  # skipped on CRAN/covr CI
 } else {
 
 # -----------------------------------------------------------------------------
@@ -422,7 +422,7 @@ test_that("preview with tabgroups works in direct mode", {
 # -----------------------------------------------------------------------------
 
 test_that("preview quarto mode works for content collection", {
-  skip_if(Sys.which("quarto") == "", "Quarto not available")
+  skip_if_no_quarto()
   skip_on_ci()  # Quarto rendering can be flaky in CI environments
   
   content <- create_content(data = mtcars) %>%
@@ -444,7 +444,7 @@ test_that("preview quarto mode works for content collection", {
 })
 
 test_that("preview quarto mode works for dashboard_project", {
-  skip_if(Sys.which("quarto") == "", "Quarto not available")
+  skip_if_no_quarto()
   skip_on_ci()  # Quarto rendering can be flaky in CI environments
   
   temp_dir <- tempfile()
@@ -469,7 +469,7 @@ test_that("preview quarto mode works for dashboard_project", {
 })
 
 test_that("preview quarto mode applies dashboard theme", {
-  skip_if(Sys.which("quarto") == "", "Quarto not available")
+  skip_if_no_quarto()
   skip_on_ci()  # Quarto rendering can be flaky in CI environments
   
   temp_dir <- tempfile()

@@ -8,8 +8,6 @@
 }
 \arguments{
 \item{item}{A viz item, which could be a tabgroup with nested visualizations}
-
-\item{backend}{Rendering backend: "highcharter" (default), "plotly", "echarts4r", or "ggiraph".}
 }
 \value{
 Vector of all insertion indices found in this item and its children

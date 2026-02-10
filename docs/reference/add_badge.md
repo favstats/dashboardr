@@ -5,7 +5,7 @@ Add a status badge
 ## Usage
 
 ``` r
-add_badge(content, text, color = "primary", tabgroup = NULL)
+add_badge(content, text, color = "primary", tabgroup = NULL, show_when = NULL)
 ```
 
 ## Arguments
@@ -26,3 +26,8 @@ add_badge(content, text, color = "primary", tabgroup = NULL)
 
   Optional tabgroup for organizing content (character vector for nested
   tabs)
+
+- show_when:
+
+  One-sided formula controlling conditional display based on input
+  values.

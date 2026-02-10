@@ -72,6 +72,7 @@
 #' plot3
 #' }
 #'
+#' @param legend_position Position of the legend ("top", "bottom", "left", "right", "none")
 #' @export
 viz_boxplot <- function(data,
                         y_var,
@@ -91,6 +92,7 @@ viz_boxplot <- function(data,
                         tooltip = NULL,
                         tooltip_prefix = "",
                         tooltip_suffix = "",
+                        legend_position = NULL,
                         backend = "highcharter") {
   
   # Convert variable arguments to strings (supports both quoted and unquoted)
@@ -286,7 +288,8 @@ viz_boxplot <- function(data,
     x_var = x_var,
     categories = categories,
     tooltip = tooltip, tooltip_prefix = tooltip_prefix,
-    tooltip_suffix = tooltip_suffix
+    tooltip_suffix = tooltip_suffix,
+    legend_position = legend_position
   )
 
   # Dispatch to backend renderer
@@ -412,8 +415,8 @@ viz_boxplot <- function(data,
       )
   }
   
-  hc <- hc |>
-    highcharter::hc_legend(enabled = FALSE)
+  # --- Legend position ---
+  hc <- .apply_legend_highcharter(hc, config$legend_position, default_show = FALSE)
 
   hc
 }
@@ -494,6 +497,9 @@ viz_boxplot <- function(data,
 
   p <- do.call(plotly::layout, layout_args)
 
+  # --- Legend position ---
+  p <- .apply_legend_plotly(p, config$legend_position, default_show = FALSE)
+
   p
 }
 
@@ -515,8 +521,23 @@ viz_boxplot <- function(data,
   # Alternatively, construct the chart via e_list for pre-computed data.
 
   # Build pre-computed boxplot data as list of [low, q1, median, q3, high]
-  box_series_data <- lapply(boxplot_data, function(bp) {
-    as.list(c(bp$stats$low, bp$stats$q1, bp$stats$median, bp$stats$q3, bp$stats$high))
+  # Each item gets an itemStyle.color for per-box coloring
+  box_series_data <- lapply(seq_along(boxplot_data), function(i) {
+    bp <- boxplot_data[[i]]
+    item <- list(
+      value = c(bp$stats$low, bp$stats$q1, bp$stats$median, bp$stats$q3, bp$stats$high)
+    )
+    if (!is.null(color_palette) && i <= length(color_palette)) {
+      # Use palette color for fill, darken it for borders/lines so median is visible
+      fill_col <- color_palette[i]
+      border_col <- .darken_color(fill_col, 0.35)
+      item$itemStyle <- list(
+        color = fill_col,
+        borderColor = border_col,
+        borderWidth = 2
+      )
+    }
+    item
   })
 
   cat_names <- vapply(boxplot_data, function(bp) as.character(bp$category), character(1))
@@ -557,8 +578,13 @@ viz_boxplot <- function(data,
     opts$yAxis <- tmp
   }
 
-  echarts4r::e_charts() |>
+  e <- echarts4r::e_charts() |>
     echarts4r::e_list(opts)
+
+  # --- Legend position ---
+  e <- .apply_legend_echarts(e, config$legend_position, default_show = FALSE)
+
+  e
 }
 
 # --- ggiraph backend ---
@@ -634,6 +660,9 @@ viz_boxplot <- function(data,
       )
     }
   }
+
+  # --- Legend position ---
+  p <- .apply_legend_ggplot(p, config$legend_position, default_show = FALSE)
 
   ggiraph::girafe(ggobj = p)
 }

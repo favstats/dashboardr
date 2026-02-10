@@ -1,5 +1,53 @@
 # Changelog
 
+## dashboardr 0.4.0
+
+### New Features
+
+#### Multi-Backend Chart Support
+
+All 17 visualization functions now support a `backend` parameter for
+rendering with different charting libraries. The default backend remains
+`"highcharter"` for full backward compatibility.
+
+Supported backends: `"highcharter"` (default), `"plotly"`,
+`"echarts4r"`, `"ggiraph"`.
+
+``` r
+# Per-chart backend selection
+viz_bar(data, x_var = "category", backend = "plotly")
+viz_timeline(data, time_var = "year", y_var = "value", backend = "echarts4r")
+
+# Dashboard-wide backend (applies to all charts)
+create_dashboard(title = "My Dashboard", backend = "plotly")
+```
+
+Alternative backends are optional dependencies (in `Suggests`). Install
+only what you need:
+
+``` r
+install.packages(c("plotly", "echarts4r", "ggiraph"))
+```
+
+#### Widget Embedding
+
+New functions for embedding arbitrary htmlwidgets in dashboards:
+
+- [`add_widget()`](https://favstats.github.io/dashboardr/reference/add_widget.md):
+  Embed any htmlwidget object directly
+- [`add_plotly()`](https://favstats.github.io/dashboardr/reference/add_plotly.md):
+  Convenience wrapper for plotly objects
+- [`add_leaflet()`](https://favstats.github.io/dashboardr/reference/add_leaflet.md):
+  Convenience wrapper for leaflet maps
+
+``` r
+library(plotly)
+my_plot <- plot_ly(mtcars, x = ~wt, y = ~mpg, type = "scatter", mode = "markers")
+collection <- content_collection() + add_plotly(my_plot, title = "Weight vs MPG")
+```
+
+------------------------------------------------------------------------
+
 ## dashboardr 0.3.0
 
 ### New Features

@@ -95,7 +95,8 @@ create_dashboard(
   pagination_position = "bottom",
   powered_by_dashboardr = TRUE,
   chart_export = FALSE,
-  backend = "highcharter"
+  backend = "highcharter",
+  contextual_viz_errors = FALSE
 )
 }
 \arguments{
@@ -298,6 +299,9 @@ horizontal scrolling issues on mobile.}
 \item{chart_export}{Whether to enable chart export functionality (default FALSE)}
 
 \item{backend}{Rendering backend: "highcharter" (default), "plotly", "echarts4r", or "ggiraph".}
+
+\item{contextual_viz_errors}{Logical. If TRUE, generated visualization chunks wrap viz calls
+in tryCatch and prepend contextual labels (title/type) to error messages. Default: FALSE.}
 }
 \value{
 A dashboard_project object

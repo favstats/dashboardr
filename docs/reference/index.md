@@ -150,6 +150,14 @@ Functions for dashboard navigation and structure
   : Add a custom navbar element to dashboard
 - [`sidebar_group()`](https://favstats.github.io/dashboardr/reference/sidebar_group.md)
   : Create a sidebar group for hybrid navigation
+- [`add_layout_column()`](https://favstats.github.io/dashboardr/reference/add_layout_column.md)
+  : Start a manual layout column
+- [`add_layout_row()`](https://favstats.github.io/dashboardr/reference/add_layout_row.md)
+  : Start a manual layout row inside a layout column
+- [`end_layout_row()`](https://favstats.github.io/dashboardr/reference/end_layout_row.md)
+  : End a manual layout row
+- [`end_layout_column()`](https://favstats.github.io/dashboardr/reference/end_layout_column.md)
+  : End a manual layout column
 - [`icon()`](https://favstats.github.io/dashboardr/reference/icon.md) :
   Create iconify icon shortcode
 
@@ -275,6 +283,12 @@ Functions for adding page sidebars with filters
 
 Functions for embedding external content
 
+- [`add_widget()`](https://favstats.github.io/dashboardr/reference/add_widget.md)
+  : Add a generic htmlwidget to the dashboard
+- [`add_plotly()`](https://favstats.github.io/dashboardr/reference/add_plotly.md)
+  : Add a plotly chart to the dashboard
+- [`add_leaflet()`](https://favstats.github.io/dashboardr/reference/add_leaflet.md)
+  : Add a leaflet map to the dashboard
 - [`add_iframe()`](https://favstats.github.io/dashboardr/reference/add_iframe.md)
   : Add iframe
 - [`add_video()`](https://favstats.github.io/dashboardr/reference/add_video.md)
