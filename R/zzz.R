@@ -15,6 +15,39 @@
   }
 }
 
+#' Find Quarto binary path
+#'
+#' Searches PATH, the quarto R package, and the RStudio-bundled location.
+#' If found outside PATH, adds the directory to PATH so child processes
+#' (e.g. system2 calls) can also find it.
+#' @return Path to quarto binary, or "" if not found
+#' @keywords internal
+.find_quarto_path <- function() {
+  # 1. Check PATH
+  q <- Sys.which("quarto")
+  if (nzchar(q)) return(as.character(q))
+
+  # 2. Check quarto R package
+
+  if (requireNamespace("quarto", quietly = TRUE)) {
+    qp <- tryCatch(quarto::quarto_path(), error = function(e) NULL)
+    if (!is.null(qp) && nzchar(qp) && file.exists(qp)) {
+      # Add to PATH for child processes
+      Sys.setenv(PATH = paste(dirname(qp), Sys.getenv("PATH"), sep = ":"))
+      return(qp)
+    }
+  }
+
+  # 3. Check RStudio-bundled Quarto (macOS)
+  rstudio_quarto <- "/Applications/RStudio.app/Contents/Resources/app/quarto/bin/quarto"
+  if (file.exists(rstudio_quarto)) {
+    Sys.setenv(PATH = paste(dirname(rstudio_quarto), Sys.getenv("PATH"), sep = ":"))
+    return(rstudio_quarto)
+  }
+
+  ""
+}
+
 #' Check Quarto version
 #' 
 #' @description Internal function to check if Quarto >= 1.4 is installed
@@ -22,7 +55,7 @@
 #' @keywords internal
 check_quarto_version <- function() {
   # Check if quarto is available
-  quarto_path <- Sys.which("quarto")
+  quarto_path <- .find_quarto_path()
   if (quarto_path == "") {
     warning(
       "Quarto is not installed or not found in PATH.\n",

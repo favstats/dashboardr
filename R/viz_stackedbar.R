@@ -1,6 +1,7 @@
 # --------------------------------------------------------------------------
 # Function: viz_stackedbar (Unified)
 # --------------------------------------------------------------------------
+#' @param legend_position Position of the legend ("top", "bottom", "left", "right", "none")
 #' @export
 #' @title Create a Stacked Bar Chart
 #'
@@ -194,6 +195,7 @@ viz_stackedbar <- function(data,
                            # Cross-tab filtering for sidebar inputs (auto-detected)
                            cross_tab_filter_vars = NULL,
                            title_map = NULL,
+                           legend_position = NULL,
                            backend = "highcharter") {
 
   # Convert variable arguments to strings (supports both quoted and unquoted)
@@ -343,6 +345,7 @@ viz_stackedbar <- function(data,
       weight_var = weight_var,
       data_labels_enabled = data_labels_enabled,
       label_decimals = label_decimals,
+      legend_position = legend_position,
       backend = backend
     )
 
@@ -420,6 +423,7 @@ viz_stackedbar <- function(data,
     label_decimals = label_decimals,
     cross_tab_filter_vars = cross_tab_filter_vars,
     title_map = title_map,
+    legend_position = legend_position,
     backend = backend
   )
 }
@@ -461,6 +465,7 @@ viz_stackedbar <- function(data,
                                   label_decimals = NULL,
                                   cross_tab_filter_vars = NULL,
                                   title_map = NULL,
+                                  legend_position = NULL,
                                   backend = "highcharter") {
 
   # Validation for core function (x_var and stack_var are already strings)
@@ -645,7 +650,8 @@ viz_stackedbar <- function(data,
     tooltip = tooltip, tooltip_prefix = tooltip_prefix,
     tooltip_suffix = tooltip_suffix, x_tooltip_suffix = x_tooltip_suffix,
     cross_tab_filter_vars = cross_tab_filter_vars, title_map = title_map,
-    x_var = x_var, stack_var = stack_var, y_var = y_var, data = data
+    x_var = x_var, stack_var = stack_var, y_var = y_var, data = data,
+    legend_position = legend_position
   )
 
   # Prepare cross-tab data for client-side filtering (all backends)
@@ -671,7 +677,8 @@ viz_stackedbar <- function(data,
         stackedType = stacked_type,
         stackOrder = if (!is.null(stack_order)) stack_order else unique(as.character(cross_tab[[stack_var]])),
         xOrder = if (!is.null(x_order)) x_order else unique(as.character(cross_tab[[x_var]])),
-        colorMap = if (!is.null(color_palette) && !is.null(names(color_palette))) as.list(color_palette) else NULL
+        colorMap = if (!is.null(color_palette) && !is.null(names(color_palette))) as.list(color_palette) else NULL,
+        labelDecimals = if (!is.null(label_decimals)) as.integer(label_decimals) else if (stacked_type == "percent") 1L else 0L
       )
       if (!is.null(title) && grepl("\\{\\w+\\}", title)) {
         chart_config$titleTemplate <- title
@@ -746,26 +753,29 @@ viz_stackedbar <- function(data,
   hchart_obj <- highcharter::hc_yAxis(hchart_obj, title = list(text = final_y_label))
 
   # Stacking and data labels
-  if (!is.null(label_decimals)) {
-    dec <- as.integer(label_decimals)
-    data_label_format <- if (stacked_type == "percent") {
-      sprintf("{point.percentage:.%df}%%", dec)
-    } else {
-      sprintf("{point.y:.%df}", dec)
-    }
-  } else {
-    data_label_format <- if (stacked_type == "percent") '{point.percentage:.1f}%' else '{point.y:.0f}'
-  }
-  stacking_type_hc <- if (stacked_type == "percent") "percent" else "normal"
+  dec <- if (!is.null(label_decimals)) as.integer(label_decimals) else
+           if (stacked_type == "percent") 1L else 0L
 
+  stacking_type_hc <- if (stacked_type == "percent") "percent" else "normal"
   series_type <- if (horizontal) "bar" else "column"
+
+  # Use a JS formatter that hides labels on very small segments (< 5% of stack)
+  hc_label_fmt <- if (stacked_type == "percent") {
+    htmlwidgets::JS(sprintf(
+      "function() { if (this.percentage < 5) return ''; return this.percentage.toFixed(%d) + '%%'; }",
+      dec))
+  } else {
+    htmlwidgets::JS(sprintf(
+      "function() { if (this.percentage < 5) return ''; return this.y.toFixed(%d); }",
+      dec))
+  }
 
   plot_options <- list()
   plot_options[[series_type]] <- list(
     stacking = stacking_type_hc,
     dataLabels = list(
       enabled = data_labels_enabled,
-      format = data_label_format,
+      formatter = hc_label_fmt,
       style = list(textOutline = "none", fontSize = "10px")
     )
   )
@@ -844,6 +854,9 @@ viz_stackedbar <- function(data,
     hchart_obj <- highcharter::hc_chart(hchart_obj, id = cross_tab_attrs$id)
   }
 
+  # --- Legend position ---
+  hchart_obj <- .apply_legend_highcharter(hchart_obj, config$legend_position, default_show = TRUE)
+
   hchart_obj <- .register_chart_widget(hchart_obj, backend = "highcharter")
   return(hchart_obj)
 }
@@ -911,10 +924,12 @@ viz_stackedbar <- function(data,
     y_vals <- stack_counts[[stk]]
     pct_vals <- ifelse(x_totals > 0, (100 * y_vals) / x_totals, 0)
     display_vals <- if (stacked_type == "percent") pct_vals else y_vals
+    # Compute labels, hiding values on very small segments (< 5% of stack)
     label_vals <- if (stacked_type == "percent") {
-      sprintf(paste0("%.", dec, "f%%"), pct_vals)
+      ifelse(pct_vals < 5, "", sprintf(paste0("%.", dec, "f%%"), pct_vals))
     } else {
-      sprintf(paste0("%.", dec, "f"), y_vals)
+      ifelse(x_totals > 0 & (y_vals / x_totals) < 0.05, "",
+             sprintf(paste0("%.", dec, "f"), y_vals))
     }
     hover_value_tpl <- paste0("%{customdata[1]:.", dec, "f}")
     total_tpl <- if (stacked_type == "percent") {
@@ -978,6 +993,9 @@ viz_stackedbar <- function(data,
   if (!is.null(color_palette) && is.null(names(color_palette))) {
     p <- plotly::layout(p, colorway = color_palette)
   }
+
+  # --- Legend position ---
+  p <- .apply_legend_plotly(p, config$legend_position, default_show = TRUE)
 
   p
 }
@@ -1045,12 +1063,15 @@ viz_stackedbar <- function(data,
   } else {
     plot_data_display$.display_n <- plot_data_display$n
   }
+  # Round display values in R so echarts never sees raw floats
+
+  plot_data_display$.display_n <- round(plot_data_display$.display_n, dec)
   plot_data_display$.x_var_col <- as.character(plot_data_display$.x_var_col)
   plot_data_display$.stack_var_col <- as.character(plot_data_display$.stack_var_col)
 
   e <- plot_data_display |>
     dplyr::group_by(.data$.stack_var_col) |>
-    echarts4r::e_charts_(.x_var_col = ".x_var_col") |>
+    echarts4r::e_charts_(".x_var_col") |>
     echarts4r::e_bar_(".display_n", stack = "total")
 
   if (horizontal) {
@@ -1073,20 +1094,35 @@ viz_stackedbar <- function(data,
     }
   }
 
+  # When e_flip_coords() is used (horizontal), array index changes
+  lbl_val_idx <- if (horizontal) 0 else 1
+
+  # Compute minimum threshold to hide labels on very small segments.
+  # For percent mode: hide if segment < 5% of the bar.
+  # For count mode:   hide if segment < 5% of the tallest stack.
+  if (stacked_type == "percent") {
+    lbl_min_threshold <- 5
+  } else {
+    stack_totals <- tapply(plot_data_display$.display_n, plot_data_display$.x_var_col,
+                           sum, na.rm = TRUE)
+    max_stack <- if (length(stack_totals) > 0) max(stack_totals, na.rm = TRUE) else 1
+    lbl_min_threshold <- round(max_stack * 0.05, 6)
+  }
+
   if (data_labels_enabled) {
     label_fmt <- if (stacked_type == "percent") {
       paste0(
         "function(params) {",
-        "  var v = Number(params.value);",
-        "  if (!isFinite(v)) return '';",
+        "  var v = Array.isArray(params.value) ? Number(params.value[", lbl_val_idx, "]) : Number(params.value);",
+        "  if (!isFinite(v) || v === 0 || v < ", lbl_min_threshold, ") return '';",
         "  return v.toFixed(", dec, ") + '%';",
         "}"
       )
     } else {
       paste0(
         "function(params) {",
-        "  var v = Number(params.value);",
-        "  if (!isFinite(v)) return '';",
+        "  var v = Array.isArray(params.value) ? Number(params.value[", lbl_val_idx, "]) : Number(params.value);",
+        "  if (!isFinite(v) || v === 0 || v < ", lbl_min_threshold, ") return '';",
         "  return v.toFixed(", dec, ");",
         "}"
       )
@@ -1101,20 +1137,28 @@ viz_stackedbar <- function(data,
     e <- e |> echarts4r::e_labels(show = FALSE)
   }
 
+  # echarts4r value extraction helper:
+  # params[i].value can be a scalar or array [x, y] depending on chart config.
+  # When e_flip_coords() is used (horizontal), the array becomes [value, category],
+  # so we need index 0 instead of 1. For vertical charts, it's [category, value].
+  val_idx <- if (horizontal) 0 else 1
+  val_extract_js <- paste0("function(v) { return Array.isArray(v) ? Number(v[", val_idx, "]) : Number(v); }")
+
   tooltip_fmt <- if (stacked_type == "percent") {
     paste0(
       "function(params) {",
       "  if (!params || !params.length) return '';",
+      "  var getVal = ", val_extract_js, ";",
       "  var cat = params[0].axisValueLabel || params[0].name || '';",
       "  var out = '<b>' + cat + '", x_tooltip_suffix_js, "</b><br/>';",
       "  var total = 0;",
       "  for (var i = 0; i < params.length; i++) {",
-      "    var v = Number(params[i].value);",
+      "    var v = getVal(params[i].value);",
       "    if (isFinite(v)) total += v;",
       "  }",
       "  for (var j = 0; j < params.length; j++) {",
       "    var p = params[j];",
-      "    var val = Number(p.value);",
+      "    var val = getVal(p.value);",
       "    var txt = isFinite(val) ? val.toFixed(", dec, ") : '';",
       "    out += (p.marker || '') + (p.seriesName || '') + ': ", tooltip_prefix_js, "' + txt + '", value_suffix_js, "<br/>';",
       "  }",
@@ -1126,16 +1170,17 @@ viz_stackedbar <- function(data,
     paste0(
       "function(params) {",
       "  if (!params || !params.length) return '';",
+      "  var getVal = ", val_extract_js, ";",
       "  var cat = params[0].axisValueLabel || params[0].name || '';",
       "  var out = '<b>' + cat + '", x_tooltip_suffix_js, "</b><br/>';",
       "  var total = 0;",
       "  for (var i = 0; i < params.length; i++) {",
-      "    var v = Number(params[i].value);",
+      "    var v = getVal(params[i].value);",
       "    if (isFinite(v)) total += v;",
       "  }",
       "  for (var j = 0; j < params.length; j++) {",
       "    var p = params[j];",
-      "    var val = Number(p.value);",
+      "    var val = getVal(p.value);",
       "    var txt = isFinite(val) ? val.toFixed(", dec, ") : '';",
       "    out += (p.marker || '') + (p.seriesName || '') + ': ", tooltip_prefix_js, "' + txt + '", value_suffix_js, "<br/>';",
       "  }",
@@ -1151,6 +1196,9 @@ viz_stackedbar <- function(data,
   if (!is.null(color_palette)) {
     e <- e |> echarts4r::e_color(color_palette)
   }
+
+  # --- Legend position ---
+  e <- .apply_legend_echarts(e, config$legend_position, default_show = TRUE)
 
   e
 }
@@ -1168,6 +1216,21 @@ viz_stackedbar <- function(data,
   subtitle <- config$subtitle
   x_label <- config$x_label
   y_label <- config$y_label
+
+  # Compute .display_n for data labels (percent or raw count)
+  if (stacked_type == "percent") {
+    plot_data <- plot_data |>
+      dplyr::group_by(.x_var_col) |>
+      dplyr::mutate(
+        .display_n = {
+          total_n <- sum(n, na.rm = TRUE)
+          if (total_n > 0) (100 * n) / total_n else rep(0, dplyr::n())
+        }
+      ) |>
+      dplyr::ungroup()
+  } else {
+    plot_data$.display_n <- plot_data$n
+  }
 
   plot_data$.tooltip <- paste0(
     plot_data$.x_var_col, " - ", plot_data$.stack_var_col, ": ", round(plot_data$n, 1)
@@ -1195,6 +1258,28 @@ viz_stackedbar <- function(data,
   if (horizontal) {
     p <- p + ggplot2::coord_flip()
   }
+
+  # --- Data labels (hide on very small segments < 5% of stack) ---
+  if (isTRUE(config$data_labels_enabled)) {
+    dec <- config$label_decimals %||% if (config$stacked_type == "percent") 1L else 0L
+    suffix <- if (config$stacked_type == "percent") "%" else ""
+    if (stacked_type == "percent") {
+      lbl_min <- 5
+    } else {
+      stack_tots <- tapply(plot_data$n, plot_data$.x_var_col, sum, na.rm = TRUE)
+      max_stack <- if (length(stack_tots) > 0) max(stack_tots, na.rm = TRUE) else 1
+      lbl_min <- max_stack * 0.05
+    }
+    p <- p + ggplot2::geom_text(
+      ggplot2::aes(label = ifelse(.data$.display_n < lbl_min, "",
+        paste0(round(.data$.display_n, dec), suffix))),
+      position = ggplot2::position_stack(vjust = 0.5),
+      size = 3, color = "white"
+    )
+  }
+
+  # --- Legend position ---
+  p <- .apply_legend_ggplot(p, config$legend_position, default_show = TRUE)
 
   ggiraph::girafe(ggobj = p)
 }

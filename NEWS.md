@@ -1,5 +1,24 @@
 # dashboardr 0.4.0
 
+## Bug Fixes
+
+### Cross-Tab Stacked Bar Labels (Critical)
+
+- **Fixed**: Stacked bar data labels showed full floating-point precision (e.g. `61.53846153846154`) when charts were rebuilt client-side via cross-tab filtering. The R-side rounding was correct, but the JavaScript `_rebuildStackedBarEcharts`, `_rebuildStackedBarPlotly`, and `_rebuildStackedBarSeries` (Highcharts) functions recomputed percentages from raw counts without rounding. All three JS rebuild paths now round to the configured `label_decimals` (default: 1 for percent, 0 for count).
+- **New**: `labelDecimals` is now passed from R to the JS cross-tab config so client-side rebuilds respect the same decimal precision as the initial R render.
+- **New**: Labels on very small bar segments (< 5% of their stack) are now automatically hidden across all backends (echarts4r, Highcharts, Plotly, ggiraph) to avoid visual clutter.
+
+### Quarto Discovery
+
+- **Fixed**: `preview(quarto = TRUE)` and `.install_iconify_extension()` now use `.find_quarto_path()` which searches PATH, the `quarto` R package, and the RStudio-bundled Quarto location. Previously, only `Sys.which("quarto")` was used, causing failures in environments where Quarto was installed but not on PATH.
+
+### Documentation & Tests
+
+- Documented `legend_position` parameter across all 10 visualization functions.
+- Added `.color` to `globalVariables()` to suppress R CMD check note.
+- Marked `sparkline_card` functions as `@keywords internal` to fix pkgdown reference index.
+- Fixed all empty `testthat` tests and resolved Quarto detection skips.
+
 ## New Features
 
 ### Multi-Backend Chart Support
@@ -21,10 +40,6 @@ Alternative backends are optional dependencies (in `Suggests`). Install only wha
 ```r
 install.packages(c("plotly", "echarts4r", "ggiraph"))
 ```
-
-Functions with multi-backend support: `viz_bar()`, `viz_histogram()`, `viz_timeline()`, `viz_stackedbar()`, `viz_scatter()`, `viz_pie()`, `viz_heatmap()`, `viz_boxplot()`, `viz_density()`, `viz_map()`, `viz_treemap()`, `viz_sankey()`, `viz_waffle()`, `viz_gauge()`, `viz_funnel()`, `viz_lollipop()`, `viz_dumbbell()`.
-
-**Note:** Client-side cross-tab filtering only works with the highcharter backend.
 
 ### Widget Embedding
 

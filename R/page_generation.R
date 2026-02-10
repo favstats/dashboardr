@@ -187,6 +187,19 @@
     
     content <- c(content, .generate_loading_overlay_chunk(overlay_theme, overlay_text, overlay_duration))
   }
+
+  # Enable runtime debug hooks for input/show_when/chart auditing when lazy_debug is set.
+  # This is intentionally independent of lazy loading so maintainers can inspect
+  # input/filter state transitions on any page.
+  if (isTRUE(page$lazy_debug)) {
+    content <- c(
+      content,
+      "```{r, echo=FALSE, results='asis'}",
+      "cat(\"<script>window.DASHBOARDR_DEBUG = true; window.dashboardrDebug = true;</script>\")",
+      "```",
+      ""
+    )
+  }
   
   # Add lazy loading script if enabled
   if (isTRUE(!is.null(page$lazy_load_charts) && page$lazy_load_charts)) {
@@ -537,6 +550,8 @@
     "metric" = .generate_metric_block(item),
     "value_box" = .generate_value_box_block(item),
     "value_box_row" = .generate_value_box_row_block(item),
+    "sparkline_card" = .generate_sparkline_card_block(item, page$backend %||% "highcharter"),
+    "sparkline_card_row" = .generate_sparkline_card_row_block(item, page$backend %||% "highcharter"),
     "layout_column" = .generate_layout_column_block(item, page, page_filter_vars, viz_heading_level, dashboard_layout),
     "layout_row" = .generate_layout_row_block(item, page, page_filter_vars, viz_heading_level, dashboard_layout),
     "input" = .generate_input_block(item, page),
@@ -1511,6 +1526,82 @@
   lines
 }
 
+#' Generate sparkline card block markdown
+#' @param block Sparkline card content block
+#' @return Character vector of markdown lines
+#' @keywords internal
+.generate_sparkline_card_block <- function(block, backend = NULL) {
+  be <- backend %||% block$backend %||% "echarts4r"
+  lines <- c(
+    "",
+    "```{r}",
+    "#| echo: false",
+    "dashboardr::render_sparkline_card(",
+    "  data = data,",
+    paste0("  x_var = ", .serialize_arg(block$x_var), ","),
+    paste0("  y_var = ", .serialize_arg(block$y_var), ","),
+    paste0("  value = ", .serialize_arg(block$value), ","),
+    paste0("  subtitle = ", .serialize_arg(block$subtitle %||% ""), ","),
+    paste0("  agg = ", .serialize_arg(block$agg %||% "count"), ","),
+    paste0("  line_color = ", .serialize_arg(block$line_color %||% "#2b74ff"), ","),
+    paste0("  bg_color = ", .serialize_arg(block$bg_color %||% "#ffffff"), ","),
+    paste0("  text_color = ", .serialize_arg(block$text_color %||% "#111827"), ","),
+    paste0("  height = ", block$height %||% 130, ","),
+    paste0("  smooth = ", block$smooth %||% 0.6, ","),
+    paste0("  area_opacity = ", block$area_opacity %||% 0.18, ","),
+    paste0("  filter_expr = ", .serialize_arg(block$filter_expr), ","),
+    paste0("  value_prefix = ", .serialize_arg(block$value_prefix %||% ""), ","),
+    paste0("  value_suffix = ", .serialize_arg(block$value_suffix %||% ""), ","),
+    paste0("  connect_group = ", .serialize_arg(block$connect_group), ","),
+    paste0("  backend = ", .serialize_arg(be)),
+    ")",
+    "```",
+    ""
+  )
+  lines
+}
+
+#' Generate sparkline card row block markdown
+#' @param block Sparkline card row content block
+#' @return Character vector of markdown lines
+#' @keywords internal
+.generate_sparkline_card_row_block <- function(block, backend = NULL) {
+  be <- backend %||% block$backend %||% "echarts4r"
+  lines <- c(
+    "",
+    "```{r}",
+    "#| echo: false",
+    paste0("dashboardr::render_sparkline_card_row(data = data, list(")
+  )
+
+  for (i in seq_along(block$cards)) {
+    card <- block$cards[[i]]
+    card_lines <- c(
+      "  list(",
+      paste0("    x_var = ", .serialize_arg(card$x_var), ","),
+      paste0("    y_var = ", .serialize_arg(card$y_var), ","),
+      paste0("    value = ", .serialize_arg(card$value), ","),
+      paste0("    subtitle = ", .serialize_arg(card$subtitle %||% ""), ","),
+      paste0("    agg = ", .serialize_arg(card$agg %||% "count"), ","),
+      paste0("    line_color = ", .serialize_arg(card$line_color %||% "#2b74ff"), ","),
+      paste0("    bg_color = ", .serialize_arg(card$bg_color %||% "#ffffff"), ","),
+      paste0("    text_color = ", .serialize_arg(card$text_color %||% "#111827"), ","),
+      paste0("    height = ", card$height %||% 130, ","),
+      paste0("    smooth = ", card$smooth %||% 0.6, ","),
+      paste0("    area_opacity = ", card$area_opacity %||% 0.18, ","),
+      paste0("    filter_expr = ", .serialize_arg(card$filter_expr), ","),
+      paste0("    value_prefix = ", .serialize_arg(card$value_prefix %||% ""), ","),
+      paste0("    value_suffix = ", .serialize_arg(card$value_suffix %||% ""), ","),
+      paste0("    connect_group = ", .serialize_arg(card$connect_group)),
+      if (i < length(block$cards)) "  )," else "  )"
+    )
+    lines <- c(lines, card_lines)
+  }
+
+  lines <- c(lines, paste0("), backend = ", .serialize_arg(be), ")"), "```", "")
+  lines
+}
+
 #' Generate input block markdown
 #'
 #' Internal function to generate markdown for input filter widgets
@@ -1740,9 +1831,11 @@
       "callout" = .generate_callout_block(block),
       "accordion" = .generate_accordion_block(block),
       "card" = .generate_card_block(block),
+      "sparkline_card" = .generate_sparkline_card_block(block, (page$backend %||% "highcharter")),
+      "sparkline_card_row" = .generate_sparkline_card_row_block(block, (page$backend %||% "highcharter")),
       NULL
     )
-    
+
     if (!is.null(block_content)) {
       block_content <- .wrap_show_when_block(block_content, block$show_when)
       lines <- c(lines, block_content)

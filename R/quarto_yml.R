@@ -1629,6 +1629,9 @@
 #' @return Logical indicating if installation was successful
 #' @keywords internal
 .install_iconify_extension <- function(output_dir) {
+  # Ensure Quarto is discoverable (also checks RStudio-bundled path)
+  .find_quarto_path()
+
   # Check if Quarto is available
   quarto_result <- tryCatch({
     system2("quarto", "--version", stdout = TRUE, stderr = TRUE)
@@ -1637,7 +1640,7 @@
   })
 
   if (is.null(quarto_result) || length(quarto_result) == 0) {
-    warning("Quarto is not installed. Cannot install iconify extension automatically.")
+    message("Quarto is not installed. Cannot install iconify extension automatically.")
     message("To install Quarto: https://quarto.org/docs/get-started/")
     message("Or install the extension manually:")
     message("  quarto add mcanouil/quarto-iconify")

@@ -46,6 +46,56 @@
   // Store original data for restoration
   const originalSeriesData = new WeakMap();
   const chartRegistry = window.dashboardrChartRegistry || null;
+  const debugState = window.dashboardrDebugState = window.dashboardrDebugState || { events: [] };
+
+  function isDebugEnabled() {
+    if (window.DASHBOARDR_DEBUG === true || window.dashboardrDebug === true) return true;
+    try {
+      if (window.localStorage && window.localStorage.getItem('dashboardr_debug') === '1') return true;
+    } catch (e) {
+      // ignore localStorage errors
+    }
+    try {
+      const qs = new URLSearchParams(window.location.search || '');
+      if (qs.get('dashboardr_debug') === '1' || qs.get('debug') === '1') return true;
+    } catch (e) {
+      // ignore URL parsing errors
+    }
+    return false;
+  }
+
+  function debugLog(event, payload) {
+    if (!isDebugEnabled()) return;
+    const row = {
+      ts: Date.now(),
+      event: event,
+      payload: payload || null
+    };
+    debugState.events.push(row);
+    if (debugState.events.length > 1000) debugState.events.shift();
+    try {
+      console.log('[dashboardr:debug]', event, payload || {});
+    } catch (e) {
+      // no-op
+    }
+  }
+
+  function debugInputState(inputId, source) {
+    if (!isDebugEnabled()) return;
+    const st = inputState[inputId];
+    if (!st) {
+      debugLog('input-missing-state', { inputId: inputId, source: source });
+      return;
+    }
+    debugLog('input-change', {
+      source: source,
+      inputId: inputId,
+      filterVar: st.filterVar,
+      inputType: st.inputType,
+      selected: Array.isArray(st.selected) ? st.selected.slice() : st.selected,
+      value: Object.prototype.hasOwnProperty.call(st, 'value') ? st.value : null
+    });
+  }
 
   function getChartEntries() {
     if (chartRegistry && typeof chartRegistry.getCharts === 'function') {
@@ -56,6 +106,12 @@
 
   function initDashboardrInputs() {
     const hasChoices = typeof Choices !== 'undefined';
+    debugLog('init-start', {
+      hasChoices: hasChoices,
+      existingChartEntries: getChartEntries().map(function(e) {
+        return { id: e.id, backend: e.backend, x: e.x, filterVars: e.filterVars };
+      })
+    });
     
     if (!hasChoices) {
       console.warn('Choices.js not loaded - using native HTML for selects');
@@ -135,6 +191,7 @@
             choices.addEventListener('change', () => {
               const selected = getSelectedValues(input);
               inputState[inputId].selected = selected;
+              debugInputState(inputId, 'select-choices-change');
               applyAllFilters();
             });
           }
@@ -158,6 +215,7 @@
       input.addEventListener('change', () => {
         const selected = getSelectedValues(input);
         inputState[inputId].selected = selected;
+        debugInputState(inputId, 'select-native-change');
         applyAllFilters();
       });
     });
@@ -199,6 +257,7 @@
       checkboxes.forEach(cb => {
         cb.addEventListener('change', () => {
           inputState[inputId].selected = getCheckboxValues(group);
+          debugInputState(inputId, 'checkbox-change');
           applyAllFilters();
         });
       });
@@ -241,6 +300,7 @@
       radios.forEach(radio => {
         radio.addEventListener('change', () => {
           inputState[inputId].selected = getRadioValue(group);
+          debugInputState(inputId, 'radio-change');
           applyAllFilters();
         });
       });
@@ -288,6 +348,7 @@
       input.addEventListener('change', () => {
         inputState[inputId].selected = input.checked ? ['true'] : ['false'];
         inputState[inputId].value = input.checked;
+        debugInputState(inputId, 'switch-change');
         applyAllFilters();
       });
     });
@@ -356,6 +417,7 @@
         
         updateSliderDisplay(inputId, input, labels, newValue, min, step);
         updateSliderTrack(input);
+        debugInputState(inputId, 'slider-input');
         applyAllFilters();
       });
     });
@@ -419,6 +481,7 @@
         debounceTimer = setTimeout(() => {
           inputState[inputId].selected = [input.value];
           inputState[inputId].value = input.value;
+          debugInputState(inputId, 'text-input');
           applyAllFilters();
         }, 300);
       });
@@ -463,6 +526,7 @@
         const newValue = parseFloat(input.value) || 0;
         inputState[inputId].selected = [input.value];
         inputState[inputId].value = newValue;
+        debugInputState(inputId, 'number-input');
         applyAllFilters();
       });
     });
@@ -512,6 +576,7 @@
           btn.classList.add('active');
           
           inputState[inputId].selected = [btn.dataset.value];
+          debugInputState(inputId, 'button-group-click');
           applyAllFilters();
         });
       });
@@ -668,6 +733,18 @@
         filters[state.filterVar] = state.selected;
       }
     });
+    debugLog('apply-all-filters', {
+      filters: filters,
+      sliderFilters: sliderFilters,
+      switchFilters: switchFilters,
+      textFilters: textFilters,
+      numberFilters: numberFilters,
+      periodFilters: periodFilters,
+      chartEntries: entries.map(function(e) {
+        return { id: e.id, backend: e.backend, x: e.x, filterVars: e.filterVars };
+      }),
+      crossTabKeys: window.dashboardrCrossTab ? Object.keys(window.dashboardrCrossTab) : []
+    });
 
     // Collect switch overrides for cross-tab rebuilds
     const switchOverrides = {};
@@ -714,6 +791,13 @@
 
     charts.forEach(({ chart, entry }) => {
       if (!chart || !chart.series) return;
+      debugLog('highcharter-entry', {
+        id: entry && entry.id,
+        backend: entry && entry.backend,
+        x: entry && entry.x,
+        filterVars: entry && entry.filterVars,
+        seriesCount: chart && chart.series ? chart.series.length : 0
+      });
       
       // Store original categories if not already stored
       if (!chart._originalCategories && chart.xAxis && chart.xAxis[0] && chart.xAxis[0].categories) {
@@ -1746,6 +1830,8 @@
     const data = original.data || [];
 
     const { xVar, stackVar, stackedType, stackOrder, xOrder, colorMap } = config;
+    var labelDec = (config.labelDecimals != null) ? config.labelDecimals : (stackedType === 'percent' ? 1 : 0);
+    var labelMinPct = 5;
     const summed = {};
     filteredData.forEach(row => {
       const xVal = String(row[xVar]);
@@ -1797,10 +1883,20 @@
       trace.type = trace.type || 'bar';
       trace.name = name;
       if (orderedStack.includes(name)) {
+        var factor = Math.pow(10, labelDec);
         const values = orderedX.map(xVal => {
           const count = (byX[xVal] && byX[xVal][name]) ? byX[xVal][name] : 0;
-          if (isPercent && xTotals[xVal] > 0) return (count / xTotals[xVal]) * 100;
+          if (isPercent && xTotals[xVal] > 0) {
+            return Math.round(((count / xTotals[xVal]) * 100) * factor) / factor;
+          }
           return count;
+        });
+        // Generate text labels, hiding small segments
+        const labels = values.map((v, i) => {
+          var pct = xTotals[orderedX[i]] > 0 ? (v / (isPercent ? 100 : xTotals[orderedX[i]])) * 100 : 0;
+          if (isPercent) pct = v;
+          if (pct < labelMinPct) return '';
+          return v.toFixed(labelDec) + (isPercent ? '%' : '');
         });
         if (isHorizontal) {
           trace.y = orderedX;
@@ -1810,6 +1906,8 @@
           trace.x = orderedX;
           trace.y = values;
         }
+        trace.text = labels;
+        trace.textposition = 'inside';
         trace.visible = true;
         trace.showlegend = true;
         if (colorMap && colorMap[name]) {
@@ -1928,6 +2026,8 @@
     if (!original) return false;
 
     const { xVar, stackVar, stackedType, stackOrder, xOrder, colorMap } = config;
+    var labelDec = (config.labelDecimals != null) ? config.labelDecimals : (stackedType === 'percent' ? 1 : 0);
+    var labelMinPct = 5; // hide labels on segments < 5% of their stack
     const summed = {};
     filteredData.forEach(row => {
       const xVal = String(row[xVar]);
@@ -2042,9 +2142,12 @@
       if (s.encode) delete s.encode;
       if (s.datasetIndex !== undefined) delete s.datasetIndex;
       if (orderedStack.includes(name)) {
+        var factor = Math.pow(10, labelDec);
         const values = orderedX.map(xVal => {
           const count = (byX[xVal] && byX[xVal][name]) ? byX[xVal][name] : 0;
-          if (isPercent && xTotals[xVal] > 0) return (count / xTotals[xVal]) * 100;
+          if (isPercent && xTotals[xVal] > 0) {
+            return Math.round(((count / xTotals[xVal]) * 100) * factor) / factor;
+          }
           return count;
         });
         if (isHorizontal) {
@@ -2057,6 +2160,16 @@
           s.itemStyle = s.itemStyle || {};
           s.itemStyle.color = colorMap[name];
         }
+        // Update label formatter to round and hide small segments
+        s.label = s.label || {};
+        s.label.show = true;
+        s.label.position = isHorizontal ? 'insideRight' : 'inside';
+        var valIdx = isHorizontal ? 0 : 1;
+        s.label.formatter = new Function('params',
+          'var v = Array.isArray(params.value) ? Number(params.value[' + valIdx + ']) : Number(params.value);' +
+          'if (!isFinite(v) || v === 0 || v < ' + labelMinPct + ') return "";' +
+          'return v.toFixed(' + labelDec + ')' + (isPercent ? ' + "%"' : '') + ';'
+        );
       } else {
         if (isHorizontal) {
           s.data = orderedX.map(xVal => [0, xVal]);
@@ -2145,6 +2258,8 @@
    */
   function _rebuildStackedBarSeries(chart, filteredData, config) {
     const { xVar, stackVar, stackedType, stackOrder, xOrder } = config;
+    var labelDec = (config.labelDecimals != null) ? config.labelDecimals : (stackedType === 'percent' ? 1 : 0);
+    var factor = Math.pow(10, labelDec);
     
     // Sum by x_var and stack_var (drop filter dimensions)
     const summed = {};
@@ -2200,7 +2315,7 @@
       const seriesData = orderedX.map(xVal => {
         const count = (byX[xVal] && byX[xVal][stackVal]) ? byX[xVal][stackVal] : 0;
         if (isPercent && xTotals[xVal] > 0) {
-          return (count / xTotals[xVal]) * 100;
+          return Math.round(((count / xTotals[xVal]) * 100) * factor) / factor;
         }
         return count;
       });
@@ -2236,10 +2351,11 @@
    */
   function _rebuildTimelineSeries(chart, filteredData, config) {
     const { timeVar, groupVar, yVar } = config;
-    
+    var aggMethod = config.agg || 'mean'; // 'sum' or 'mean'
+
     if (filteredData.length === 0) {
       // No data after filtering — hide all series
-      chart.series.forEach(function(s) {
+      chart.series.slice().forEach(function(s) {
         s.setData([], false);
         s.setVisible(false, false);
         s.update({ showInLegend: false }, false);
@@ -2247,81 +2363,95 @@
       chart.redraw();
       return true;
     }
-    
-    // Aggregate: average value per time + group
-    const agg = {};
+
+    // Aggregate value per time + group, using yVar or fallback to 'value'
+    var aggBuckets = {};
     filteredData.forEach(function(row) {
-      const tVal = String(row[timeVar]);
+      var tVal = String(row[timeVar]);
       var gVal = groupVar ? String(row[groupVar]) : '__all__';
       var key = tVal + '|||' + gVal;
-      
-      if (!agg[key]) {
-        agg[key] = { time: tVal, group: gVal, sum: 0, count: 0 };
+
+      if (!aggBuckets[key]) {
+        aggBuckets[key] = { time: tVal, group: gVal, sum: 0, count: 0 };
       }
-      agg[key].sum += (row.value !== undefined ? row.value : 0);
-      agg[key].count += 1;
+      // Use yVar column if present, fall back to 'value' column, then to 1 for count-based
+      var rawVal = yVar && row[yVar] !== undefined ? row[yVar] : (row.value !== undefined ? row.value : 1);
+      aggBuckets[key].sum += (typeof rawVal === 'number' ? rawVal : Number(rawVal) || 0);
+      aggBuckets[key].count += 1;
     });
-    
+
     // Build per-group series data
     var byGroup = {};
-    Object.values(agg).forEach(function(item) {
+    Object.values(aggBuckets).forEach(function(item) {
       if (!byGroup[item.group]) byGroup[item.group] = [];
-      byGroup[item.group].push({
-        time: item.time,
-        value: item.count > 0 ? item.sum / item.count : 0
-      });
+      var val;
+      if (aggMethod === 'sum') {
+        val = item.sum;
+      } else {
+        val = item.count > 0 ? item.sum / item.count : 0;
+      }
+      byGroup[item.group].push({ time: item.time, value: val });
     });
-    
+
     // Detect if time axis is numeric (years) or categorical (strings)
-    var sampleTime = Object.values(agg)[0].time;
+    var sampleTime = Object.values(aggBuckets)[0].time;
     var isNumericTime = !isNaN(Number(sampleTime));
-    
+
     // Get sorted unique time values
-    var allTimes = [...new Set(Object.values(agg).map(function(a) { return a.time; }))];
+    var allTimes = [];
+    var seenTimes = {};
+    Object.values(aggBuckets).forEach(function(a) {
+      if (!seenTimes[a.time]) { seenTimes[a.time] = true; allTimes.push(a.time); }
+    });
     if (isNumericTime) {
       allTimes.sort(function(a, b) { return Number(a) - Number(b); });
     } else {
       allTimes.sort();
     }
-    
+
     var activeGroups = new Set(Object.keys(byGroup));
-    
+
     // Respect group_order from config if provided
     var orderedGroups;
     if (config.groupOrder && config.groupOrder.length > 0) {
       orderedGroups = config.groupOrder.filter(function(g) { return activeGroups.has(g); });
     } else {
-      orderedGroups = [...activeGroups];
+      orderedGroups = Array.from(activeGroups);
     }
-    
+
     // Update x-axis categories if categorical
     if (!isNumericTime && chart.xAxis && chart.xAxis[0]) {
       chart.xAxis[0].setCategories(allTimes, false);
     }
-    
-    // Update each group's series
-    orderedGroups.forEach(function(groupName) {
+
+    // Build a set of series names we've handled
+    var handledSeries = new Set();
+
+    // Update or add each group's series
+    orderedGroups.forEach(function(groupName, groupIndex) {
       var dataPoints = byGroup[groupName];
       // Build a time -> value lookup
       var lookup = {};
       dataPoints.forEach(function(pt) { lookup[pt.time] = pt.value; });
-      
+
       var seriesName = (groupName === '__all__') ? (yVar || 'Value') : groupName;
+      handledSeries.add(seriesName);
+
+      var newData;
+      if (isNumericTime) {
+        newData = allTimes.map(function(t) {
+          return [Number(t), lookup[t] !== undefined ? lookup[t] : null];
+        });
+      } else {
+        newData = allTimes.map(function(t) {
+          return lookup[t] !== undefined ? lookup[t] : null;
+        });
+      }
+
       var series = (chart.series || []).find(function(s) { return s && s.name === seriesName; });
-      
+
       if (series) {
-        var newData;
-        if (isNumericTime) {
-          // Numeric time: data = [[x, y], ...]
-          newData = allTimes.map(function(t) {
-            return [Number(t), lookup[t] !== undefined ? lookup[t] : null];
-          });
-        } else {
-          // Categorical: data = [y1, y2, ...]  matching categories order
-          newData = allTimes.map(function(t) {
-            return lookup[t] !== undefined ? lookup[t] : null;
-          });
-        }
+        // Update existing series
         var updateOpts = { showInLegend: true };
         if (config.colorMap && config.colorMap[groupName]) {
           updateOpts.color = config.colorMap[groupName];
@@ -2329,20 +2459,36 @@
         series.setData(newData, false);
         series.setVisible(true, false);
         series.update(updateOpts, false);
+      } else {
+        // Add new series (chart may start empty for cross-tab charts)
+        var addOpts = {
+          name: seriesName,
+          data: newData,
+          visible: true,
+          showInLegend: true
+        };
+        if (config.colorMap && config.colorMap[groupName]) {
+          addOpts.color = config.colorMap[groupName];
+        }
+        // Determine series type from chart type config or chart defaults
+        var chartType = chart.options && chart.options.chart ? chart.options.chart.type : null;
+        if (chartType) {
+          addOpts.type = chartType;
+        }
+        chart.addSeries(addOpts, false);
       }
     });
-    
+
     // Hide series that are NOT in the filtered data
-    (chart.series || []).forEach(function(series) {
+    chart.series.slice().forEach(function(series) {
       if (!series || typeof series !== 'object') return;
-      var seriesGroup = series.name;
-      if (!activeGroups.has(seriesGroup)) {
+      if (!handledSeries.has(series.name)) {
         series.setData([], false);
         series.setVisible(false, false);
         series.update({ showInLegend: false }, false);
       }
     });
-    
+
     chart.redraw();
     return true;
   }
@@ -2407,6 +2553,23 @@
     state: inputState,
     defaults: defaultValues,
     choices: choicesInstances
+  };
+
+  window.dashboardrInputDebug = {
+    enabled: isDebugEnabled,
+    events: debugState.events,
+    getState: function() {
+      try { return JSON.parse(JSON.stringify(inputState)); } catch (e) { return null; }
+    },
+    getDefaults: function() {
+      try { return JSON.parse(JSON.stringify(defaultValues)); } catch (e) { return null; }
+    },
+    getCharts: function() {
+      return getChartEntries().map(function(e) {
+        return { id: e.id, backend: e.backend, x: e.x, filterVars: e.filterVars };
+      });
+    },
+    applyFilters: applyAllFilters
   };
 
 })();

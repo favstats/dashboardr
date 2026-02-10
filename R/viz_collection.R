@@ -20,7 +20,6 @@
 #' @param ... Default parameters to apply to all subsequent add_viz() calls.
 #'   Any parameter specified in add_viz() will override the default.
 #'   Useful for setting common parameters like type, color_palette, stacked_type, etc.
-#' @param backend Rendering backend: "highcharter" (default), "plotly", "echarts4r", or "ggiraph".
 #' @return A viz_collection object
 #' @export
 #' @examples
@@ -3008,8 +3007,8 @@ save_widget <- function(widget, file, selfcontained = TRUE) {
 #' Quarto-based preview (original implementation)
 #' @noRd
 .preview_quarto <- function(collection, title, theme, clean, preview_dir = NULL, output_filename = "preview.html", styling = NULL, debug = FALSE) {
-  # Check for Quarto
-  quarto_path <- Sys.which("quarto")
+  # Check for Quarto (also checks RStudio-bundled path)
+  quarto_path <- .find_quarto_path()
   if (quarto_path == "") {
     stop("Quarto is required for quarto=TRUE but was not found on PATH. ",
          "Please install Quarto from https://quarto.org/docs/get-started/ ",
@@ -3457,8 +3456,8 @@ save_widget <- function(widget, file, selfcontained = TRUE) {
 .preview_dashboard_quarto <- function(proj, pages, title, theme, clean, preview_dir, output_filename,
                                        debug = FALSE) {
   
-  # Check for Quarto
-  quarto_path <- Sys.which("quarto")
+  # Check for Quarto (also checks RStudio-bundled path)
+  quarto_path <- .find_quarto_path()
   if (quarto_path == "") {
     stop("Quarto is required for quarto=TRUE but was not found on PATH. ",
          "Please install Quarto from https://quarto.org/docs/get-started/ ",
