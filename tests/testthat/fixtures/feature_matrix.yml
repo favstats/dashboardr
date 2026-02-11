@@ -169,6 +169,13 @@ content_types:
     supports_sidebar: true
     supports_manual_layout_row: true
     supports_input_dependency: true
+  ggplot:
+    supports_tabgroup: true
+    supports_show_when: true
+    supports_filter_vars: false
+    supports_sidebar: true
+    supports_manual_layout_row: true
+    supports_input_dependency: false
   layout_column:
     supports_tabgroup: true
     supports_show_when: true

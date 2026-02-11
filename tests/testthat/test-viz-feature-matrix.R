@@ -1,6 +1,7 @@
 library(testthat)
 
 test_that("viz content renders across configured backends", {
+  skip_on_covr_ci()
   skip_if_not_installed("yaml")
   matrix <- fm_get_matrix()
 

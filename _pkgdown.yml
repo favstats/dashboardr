@@ -347,6 +347,9 @@ reference:
   contents:
   - add_widget
   - add_plotly
+  - add_echarts
+  - add_ggiraph
+  - add_ggplot
   - add_leaflet
   - add_iframe
   - add_video

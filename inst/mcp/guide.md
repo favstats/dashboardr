@@ -1,0 +1,590 @@
+# dashboardr
+
+**dashboardr** lets you build interactive HTML dashboards from R using a
+simple, composable grammar. Think of it like building with Lego blocks:
+
+- **No web development needed** - just R code
+- **Interactive charts** powered by Highcharts
+- **Beautiful themes** from Bootswatch
+- **Flexible layouts** with tabs, pages, and navigation
+
+## Installation
+
+``` r
+# From R-Universe (recommended — includes pre-built binaries)
+install.packages("dashboardr",
+  repos = c("https://favstats.r-universe.dev", "https://cloud.r-project.org"))
+
+# Or from GitHub
+# install.packages("pak")
+pak::pak("favstats/dashboardr")
+```
+
+### Optional: Install gssr for tutorials
+
+The tutorials and demos use the `gssr` package (General Social Survey
+data). Install it from r-universe:
+
+``` r
+install.packages('gssr', repos = c('https://kjhealy.r-universe.dev', 'https://cloud.r-project.org'))
+
+# Also recommended: install gssrdoc for documentation
+install.packages('gssrdoc', repos = c('https://kjhealy.r-universe.dev', 'https://cloud.r-project.org'))
+```
+
+## The Three Layers
+
+Just as ggplot2 builds plots from layers, dashboardr builds dashboards
+from three layers:
+
+| Layer | Purpose | Key Functions |
+|----|----|----|
+| **Content** | What to show (charts, text) | [`create_content()`](https://favstats.github.io/dashboardr/reference/create_content.md), [`add_viz()`](https://favstats.github.io/dashboardr/reference/add_viz.md), [`add_text()`](https://favstats.github.io/dashboardr/reference/add_text.md) |
+| **Page** | Where content lives | [`create_page()`](https://favstats.github.io/dashboardr/reference/create_page.md), [`add_content()`](https://favstats.github.io/dashboardr/reference/add_content.md) |
+| **Dashboard** | Final output + config | [`create_dashboard()`](https://favstats.github.io/dashboardr/reference/create_dashboard.md), [`add_pages()`](https://favstats.github.io/dashboardr/reference/add_pages.md) |
+
+Each layer flows into the next using pipes (`%>%`).
+
+## Quick Start
+
+``` r
+library(dashboardr)
+library(dplyr)
+
+# Prepare data
+data <- mtcars %>% mutate(cyl_label = paste(cyl, "cylinders"))
+
+# LAYER 1: Content - what to show
+charts <- create_content(data = data, type = "bar") %>%
+add_viz(x_var = "cyl_label", title = "Cylinders", tabgroup = "overview") %>%
+  add_viz(x_var = "gear", title = "Gears", tabgroup = "overview")
+
+# LAYER 2: Pages - where content lives
+home <- create_page("Home", is_landing_page = TRUE) %>%
+  add_text("# Car Dashboard", "", "Explore the mtcars dataset.")
+
+analysis <- create_page("Analysis", data = data) %>%
+  add_content(charts)
+
+# LAYER 3: Dashboard - final output
+create_dashboard(
+  title = "Car Explorer",
+  output_dir = "my_dashboard",
+  theme = "flatly"
+) %>%
+  add_pages(home, analysis) %>%
+  generate_dashboard(render = TRUE, open = "browser")
+```
+
+That’s it! A complete interactive dashboard.
+
+## Visualization Types
+
+| Function | Description | Use Case |
+|----|----|----|
+| [`viz_bar()`](https://favstats.github.io/dashboardr/reference/viz_bar.md) | Bar charts | Category comparisons |
+| [`viz_histogram()`](https://favstats.github.io/dashboardr/reference/viz_histogram.md) | Distributions | Age, income, scores |
+| [`viz_stackedbar()`](https://favstats.github.io/dashboardr/reference/viz_stackedbar.md) | Stacked bars | Likert scales, compositions |
+| [`viz_stackedbars()`](https://favstats.github.io/dashboardr/reference/viz_stackedbars.md) | Multiple stacked bars | Survey question batteries |
+| [`viz_timeline()`](https://favstats.github.io/dashboardr/reference/viz_timeline.md) | Time series | Trends over time |
+| [`viz_heatmap()`](https://favstats.github.io/dashboardr/reference/viz_heatmap.md) | 2D heatmap | Correlations, matrices |
+| [`viz_scatter()`](https://favstats.github.io/dashboardr/reference/viz_scatter.md) | Scatter plots | Relationships between variables |
+| [`viz_treemap()`](https://favstats.github.io/dashboardr/reference/viz_treemap.md) | Treemaps | Hierarchical proportions |
+| [`viz_map()`](https://favstats.github.io/dashboardr/reference/viz_map.md) | Choropleth maps | Geographic data |
+
+## Function Overview
+
+dashboardr uses consistent naming so you always know what a function
+does:
+
+| Prefix | Purpose | Examples |
+|----|----|----|
+| `create_*` | **Create containers** - Start a new dashboard, page, or content collection | [`create_dashboard()`](https://favstats.github.io/dashboardr/reference/create_dashboard.md), [`create_page()`](https://favstats.github.io/dashboardr/reference/create_page.md), [`create_content()`](https://favstats.github.io/dashboardr/reference/create_content.md) |
+| `add_*` | **Add to containers** - Insert visualizations, text, pages, or content | [`add_viz()`](https://favstats.github.io/dashboardr/reference/add_viz.md), [`add_text()`](https://favstats.github.io/dashboardr/reference/add_text.md), [`add_page()`](https://favstats.github.io/dashboardr/reference/add_page.md), [`add_content()`](https://favstats.github.io/dashboardr/reference/add_content.md) |
+| `viz_*` | **Build visualizations** - Create individual charts (bar, histogram, timeline, etc.) | [`viz_bar()`](https://favstats.github.io/dashboardr/reference/viz_bar.md), [`viz_histogram()`](https://favstats.github.io/dashboardr/reference/viz_histogram.md), [`viz_timeline()`](https://favstats.github.io/dashboardr/reference/viz_timeline.md) |
+| `set_*` | **Modify properties** - Change settings like tab labels | [`set_tabgroup_labels()`](https://favstats.github.io/dashboardr/reference/set_tabgroup_labels.md) |
+| `generate_*` | **Produce output** - Create Quarto files and render to HTML | [`generate_dashboard()`](https://favstats.github.io/dashboardr/reference/generate_dashboard.md) |
+| `theme_*` | **Apply styling** - Set visual themes | [`theme_modern()`](https://favstats.github.io/dashboardr/reference/theme_modern.md), [`theme_clean()`](https://favstats.github.io/dashboardr/reference/theme_clean.md) |
+| `combine_*` | **Merge collections** - Join multiple content collections | [`combine_content()`](https://favstats.github.io/dashboardr/reference/combine_content.md), [`combine_viz()`](https://favstats.github.io/dashboardr/reference/combine_viz.md) |
+| [`preview()`](https://favstats.github.io/dashboardr/reference/preview.md) | **Quick look** - See content without generating files | [`preview()`](https://favstats.github.io/dashboardr/reference/preview.md) |
+
+### The Typical Pattern
+
+``` r
+# 1. CREATE a container
+create_content(data = my_data, type = "bar") %>%
+  # 2. ADD elements to it
+  add_viz(x_var = "category", title = "My Chart") %>%
+  add_text("## Summary", "Key findings here.")
+```
+
+## Documentation
+
+| Topic | Resource |
+|----|----|
+| Getting started | [`vignette("getting-started")`](https://favstats.github.io/dashboardr/articles/getting-started.md) |
+| Content & visualizations | [`vignette("content-collections")`](https://favstats.github.io/dashboardr/articles/content-collections.md) |
+| Pages | [`vignette("pages")`](https://favstats.github.io/dashboardr/articles/pages.md) |
+| Dashboards | [`vignette("dashboards")`](https://favstats.github.io/dashboardr/articles/dashboards.md) |
+| Advanced features | [`vignette("advanced-features")`](https://favstats.github.io/dashboardr/articles/advanced-features.md) |
+| Publishing | [`vignette("publishing_dashboards")`](https://favstats.github.io/dashboardr/articles/publishing_dashboards.md) |
+
+## Community Gallery
+
+Browse dashboards built with dashboardr by the community:
+
+**[View the Gallery →](https://favstats.github.io/dashboardr/gallery/)**
+
+Built something with dashboardr? **[Submit your
+dashboard](https://github.com/favstats/dashboardr/issues/new?labels=gallery-submission&title=%5BGallery%5D+My+Dashboard)**
+to the gallery and share it with the community!
+
+## Live Demos
+
+See dashboardr in action:
+
+| Demo | Description |
+|----|----|
+| [**Showcase Dashboard**](https://favstats.github.io/dashboardr/live-demos/showcase/) | Advanced features: value boxes, multi-page layouts, themed charts |
+| [**Tutorial Dashboard**](https://favstats.github.io/dashboardr/live-demos/tutorial/) | Beginner-friendly introduction to core features |
+| [**GSS Explorer**](https://favstats.github.io/dashboardr/live-demos/sidebar-gss/explorer.html) | Sidebar dashboard with cascading filters |
+| [**DigIQ Monitor**](https://www.digiqmonitor.nl/) | Real-world production dashboard for Dutch digital competence |
+
+## Contributing
+
+Contributions welcome! Please submit a Pull Request.
+
+**Share your dashboard** — Add it to the [Community
+Gallery](https://favstats.github.io/dashboardr/gallery/) by [opening a
+Gallery
+submission](https://github.com/favstats/dashboardr/issues/new?labels=gallery-submission&title=%5BGallery%5D+My+Dashboard).
+
+## License
+
+MIT License - see
+[LICENSE.md](https://favstats.github.io/dashboardr/LICENSE.md)
+
+# Package index
+
+## Dashboard Creation
+
+Functions for creating and managing dashboards
+
+- [`create_dashboard()`](https://favstats.github.io/dashboardr/reference/create_dashboard.md)
+  : Create a new dashboard project
+- [`add_dashboard_page()`](https://favstats.github.io/dashboardr/reference/add_dashboard_page.md)
+  : Add a page to the dashboard
+- [`add_page()`](https://favstats.github.io/dashboardr/reference/add_page.md)
+  : Add Page to Dashboard (Alias)
+- [`add_pages()`](https://favstats.github.io/dashboardr/reference/add_pages.md)
+  : Add multiple pages to a dashboard
+- [`create_page()`](https://favstats.github.io/dashboardr/reference/create_page.md)
+  : Create a page object
+- [`add_content()`](https://favstats.github.io/dashboardr/reference/add_content.md)
+  : Add content collection(s) to a page
+- [`generate_dashboard()`](https://favstats.github.io/dashboardr/reference/generate_dashboard.md)
+  : Generate all dashboard files
+- [`generate_dashboards()`](https://favstats.github.io/dashboardr/reference/generate_dashboards.md)
+  : Generate multiple dashboards
+- [`publish_dashboard()`](https://favstats.github.io/dashboardr/reference/publish_dashboard.md)
+  : Publish dashboard to GitHub Pages
+- [`update_dashboard()`](https://favstats.github.io/dashboardr/reference/update_dashboard.md)
+  : Update dashboard on GitHub
+- [`create_loading_overlay()`](https://favstats.github.io/dashboardr/reference/create_loading_overlay.md)
+  : Create a loading overlay for a dashboard page
+- [`create_pagination_nav()`](https://favstats.github.io/dashboardr/reference/create_pagination_nav.md)
+  : Create pagination navigation controls for a dashboard page
+- [`add_powered_by_dashboardr()`](https://favstats.github.io/dashboardr/reference/add_powered_by_dashboardr.md)
+  : Add "Powered by dashboardr" branding to footer
+
+## Demo Dashboards
+
+Built-in demo dashboards showcasing package features
+
+- [`tutorial_dashboard()`](https://favstats.github.io/dashboardr/reference/tutorial_dashboard.md)
+  : Generate a tutorial dashboard.
+- [`showcase_dashboard()`](https://favstats.github.io/dashboardr/reference/showcase_dashboard.md)
+  : Generate a showcase dashboard demonstrating all dashboardr features.
+- [`ascor_dashboard()`](https://favstats.github.io/dashboardr/reference/ascor_dashboard.md)
+  : Generate an ASCoR-themed dashboard for the University of Amsterdam
+
+## Visualization Creation
+
+Functions for creating visualizations
+
+- [`create_viz()`](https://favstats.github.io/dashboardr/reference/create_viz.md)
+  : Create a new visualization collection
+- [`create_content()`](https://favstats.github.io/dashboardr/reference/create_content.md)
+  : Create a new content/visualization collection (alias for create_viz)
+- [`add_viz()`](https://favstats.github.io/dashboardr/reference/add_viz.md)
+  : Add a visualization to the collection
+- [`add_vizzes()`](https://favstats.github.io/dashboardr/reference/add_vizzes.md)
+  : Add Multiple Visualizations at Once
+- [`combine_viz()`](https://favstats.github.io/dashboardr/reference/combine_viz.md)
+  : Combine visualization collections
+- [`combine_content()`](https://favstats.github.io/dashboardr/reference/combine_content.md)
+  : Combine content collections (universal combiner)
+- [`merge_collections()`](https://favstats.github.io/dashboardr/reference/merge_collections.md)
+  : Merge two content/viz collections
+- [`add_pagination()`](https://favstats.github.io/dashboardr/reference/add_pagination.md)
+  [`add_pagination.page_object()`](https://favstats.github.io/dashboardr/reference/add_pagination.md)
+  : Add pagination break to visualization collection
+- [`set_tabgroup_labels()`](https://favstats.github.io/dashboardr/reference/set_tabgroup_labels.md)
+  : Set or update tabgroup display labels
+- [`preview()`](https://favstats.github.io/dashboardr/reference/preview.md)
+  : Preview any dashboardr object
+- [`save_widget()`](https://favstats.github.io/dashboardr/reference/save_widget.md)
+  : Save widget as self-contained HTML
+- [`validate_specs()`](https://favstats.github.io/dashboardr/reference/validate_specs.md)
+  : Validate visualization specifications in a collection
+
+## Visualization Types
+
+Functions for different chart types
+
+- [`viz_histogram()`](https://favstats.github.io/dashboardr/reference/viz_histogram.md)
+  : Create an Histogram
+- [`viz_density()`](https://favstats.github.io/dashboardr/reference/viz_density.md)
+  : Create a Density Plot
+- [`viz_boxplot()`](https://favstats.github.io/dashboardr/reference/viz_boxplot.md)
+  : Create a Box Plot
+- [`viz_bar()`](https://favstats.github.io/dashboardr/reference/viz_bar.md)
+  : Create Bar Chart
+- [`viz_stackedbar()`](https://favstats.github.io/dashboardr/reference/viz_stackedbar.md)
+  : Create a Stacked Bar Chart
+- [`viz_stackedbars()`](https://favstats.github.io/dashboardr/reference/viz_stackedbars.md)
+  : Stacked Bar Charts for Multiple Variables (Superseded)
+- [`viz_timeline()`](https://favstats.github.io/dashboardr/reference/viz_timeline.md)
+  : Create a Timeline Chart
+- [`viz_heatmap()`](https://favstats.github.io/dashboardr/reference/viz_heatmap.md)
+  : Create a Heatmap
+- [`viz_scatter()`](https://favstats.github.io/dashboardr/reference/viz_scatter.md)
+  : Create Scatter Plot
+- [`viz_map()`](https://favstats.github.io/dashboardr/reference/viz_map.md)
+  : Create an interactive map visualization
+- [`viz_treemap()`](https://favstats.github.io/dashboardr/reference/viz_treemap.md)
+  : Create a treemap visualization
+- [`viz_lollipop()`](https://favstats.github.io/dashboardr/reference/viz_lollipop.md)
+  : Create a Lollipop Chart
+- [`viz_dumbbell()`](https://favstats.github.io/dashboardr/reference/viz_dumbbell.md)
+  : Create a Dumbbell Chart
+- [`viz_funnel()`](https://favstats.github.io/dashboardr/reference/viz_funnel.md)
+  : Create a Funnel Chart
+- [`viz_gauge()`](https://favstats.github.io/dashboardr/reference/viz_gauge.md)
+  : Create a Gauge or Bullet Chart
+- [`viz_pie()`](https://favstats.github.io/dashboardr/reference/viz_pie.md)
+  : Create a Pie or Donut Chart
+- [`viz_sankey()`](https://favstats.github.io/dashboardr/reference/viz_sankey.md)
+  : Create a Sankey Diagram
+- [`viz_waffle()`](https://favstats.github.io/dashboardr/reference/viz_waffle.md)
+  : Create a Waffle Chart
+
+## Tooltip Customization
+
+Functions for customizing chart tooltips
+
+- [`tooltip()`](https://favstats.github.io/dashboardr/reference/tooltip.md)
+  : Create a Tooltip Configuration
+- [`print(`*`<dashboardr_tooltip>`*`)`](https://favstats.github.io/dashboardr/reference/print.dashboardr_tooltip.md)
+  : Print method for tooltip configurations
+- [`add_hc()`](https://favstats.github.io/dashboardr/reference/add_hc.md)
+  : Add a custom highcharter chart
+
+## Stacked Bar Charts
+
+[`viz_stackedbar()`](https://favstats.github.io/dashboardr/reference/viz_stackedbar.md)
+is the unified function for all stacked bar charts. Use `x_var` +
+`stack_var` for crosstabs, or `x_vars` for multi-variable comparisons.
+[`viz_stackedbars()`](https://favstats.github.io/dashboardr/reference/viz_stackedbars.md)
+is a legacy wrapper that calls
+[`viz_stackedbar()`](https://favstats.github.io/dashboardr/reference/viz_stackedbar.md).
+
+- [`viz_stackedbar()`](https://favstats.github.io/dashboardr/reference/viz_stackedbar.md)
+  : Create a Stacked Bar Chart
+- [`viz_stackedbars()`](https://favstats.github.io/dashboardr/reference/viz_stackedbars.md)
+  : Stacked Bar Charts for Multiple Variables (Superseded)
+
+## Navigation & Layout
+
+Functions for dashboard navigation and structure
+
+- [`navbar_section()`](https://favstats.github.io/dashboardr/reference/navbar_section.md)
+  : Create a navbar section for hybrid navigation
+- [`navbar_menu()`](https://favstats.github.io/dashboardr/reference/navbar_menu.md)
+  : Create a navbar dropdown menu
+- [`add_navbar_element()`](https://favstats.github.io/dashboardr/reference/add_navbar_element.md)
+  : Add a custom navbar element to dashboard
+- [`sidebar_group()`](https://favstats.github.io/dashboardr/reference/sidebar_group.md)
+  : Create a sidebar group for hybrid navigation
+- [`add_layout_column()`](https://favstats.github.io/dashboardr/reference/add_layout_column.md)
+  : Start a manual layout column
+- [`add_layout_row()`](https://favstats.github.io/dashboardr/reference/add_layout_row.md)
+  : Start a manual layout row inside a layout column
+- [`end_layout_row()`](https://favstats.github.io/dashboardr/reference/end_layout_row.md)
+  : End a manual layout row
+- [`end_layout_column()`](https://favstats.github.io/dashboardr/reference/end_layout_column.md)
+  : End a manual layout column
+- [`icon()`](https://favstats.github.io/dashboardr/reference/icon.md) :
+  Create iconify icon shortcode
+
+## Content Helpers
+
+Functions for adding content to dashboards
+
+- [`md_text()`](https://favstats.github.io/dashboardr/reference/md_text.md)
+  : Create multi-line markdown text content
+- [`text_lines()`](https://favstats.github.io/dashboardr/reference/text_lines.md)
+  : Create text content from a character vector
+- [`create_blockquote()`](https://favstats.github.io/dashboardr/reference/create_blockquote.md)
+  : Create a Styled Blockquote
+- [`card()`](https://favstats.github.io/dashboardr/reference/card.md) :
+  Create a Bootstrap card component
+- [`card_row()`](https://favstats.github.io/dashboardr/reference/card_row.md)
+  : Display cards in a Bootstrap row
+- [`spec_viz()`](https://favstats.github.io/dashboardr/reference/spec_viz.md)
+  : Create a single visualization specification
+
+## Content Blocks
+
+Functions for adding rich content blocks to pages
+
+- [`add_text()`](https://favstats.github.io/dashboardr/reference/add_text.md)
+  : Add text to content collection (pipeable)
+- [`add_image()`](https://favstats.github.io/dashboardr/reference/add_image.md)
+  : Add image to content collection (pipeable)
+- [`add_callout()`](https://favstats.github.io/dashboardr/reference/add_callout.md)
+  : Add callout box
+- [`add_divider()`](https://favstats.github.io/dashboardr/reference/add_divider.md)
+  : Add horizontal divider
+- [`add_code()`](https://favstats.github.io/dashboardr/reference/add_code.md)
+  : Add code block
+- [`add_card()`](https://favstats.github.io/dashboardr/reference/add_card.md)
+  : Add card
+- [`add_accordion()`](https://favstats.github.io/dashboardr/reference/add_accordion.md)
+  : Add collapsible accordion/details section
+- [`add_spacer()`](https://favstats.github.io/dashboardr/reference/add_spacer.md)
+  : Add vertical spacer
+- [`add_html()`](https://favstats.github.io/dashboardr/reference/add_html.md)
+  : Add raw HTML content
+- [`add_quote()`](https://favstats.github.io/dashboardr/reference/add_quote.md)
+  : Add a blockquote
+- [`add_badge()`](https://favstats.github.io/dashboardr/reference/add_badge.md)
+  : Add a status badge
+
+## Modals
+
+Functions for adding interactive modal dialogs
+
+- [`add_modal()`](https://favstats.github.io/dashboardr/reference/add_modal.md)
+  : Add Modal to Content Collection (Pipeable)
+- [`enable_modals()`](https://favstats.github.io/dashboardr/reference/enable_modals.md)
+  : Enable Modal Functionality
+- [`modal_content()`](https://favstats.github.io/dashboardr/reference/modal_content.md)
+  : Create Modal Content Container
+- [`modal_link()`](https://favstats.github.io/dashboardr/reference/modal_link.md)
+  : Create Modal Link
+
+## Metrics & Value Boxes
+
+Functions for displaying KPIs and metrics
+
+- [`add_metric()`](https://favstats.github.io/dashboardr/reference/add_metric.md)
+  : Add a metric/value box
+- [`add_value_box()`](https://favstats.github.io/dashboardr/reference/add_value_box.md)
+  : Add a custom styled value box
+- [`add_value_box_row()`](https://favstats.github.io/dashboardr/reference/add_value_box_row.md)
+  : Start a value box row
+- [`end_value_box_row()`](https://favstats.github.io/dashboardr/reference/end_value_box_row.md)
+  : End a value box row
+- [`render_value_box()`](https://favstats.github.io/dashboardr/reference/render_value_box.md)
+  : Render a single value box
+- [`render_value_box_row()`](https://favstats.github.io/dashboardr/reference/render_value_box_row.md)
+  : Render a row of value boxes
+
+## Interactive Inputs
+
+Functions for adding interactive inputs to dashboards
+
+- [`add_input()`](https://favstats.github.io/dashboardr/reference/add_input.md)
+  : Add an interactive input filter
+- [`add_filter()`](https://favstats.github.io/dashboardr/reference/add_filter.md)
+  : Add a filter control (simplified interface)
+- [`add_input_row()`](https://favstats.github.io/dashboardr/reference/add_input_row.md)
+  : Start an input row
+- [`add_reset_button()`](https://favstats.github.io/dashboardr/reference/add_reset_button.md)
+  : Add a reset button to reset filters
+- [`add_linked_inputs()`](https://favstats.github.io/dashboardr/reference/add_linked_inputs.md)
+  : Add linked parent-child inputs (cascading dropdowns)
+- [`enable_inputs()`](https://favstats.github.io/dashboardr/reference/enable_inputs.md)
+  : Enable Input Filter Functionality
+- [`enable_show_when()`](https://favstats.github.io/dashboardr/reference/enable_show_when.md)
+  : Enable show_when (conditional visibility) script only
+- [`enable_chart_export()`](https://favstats.github.io/dashboardr/reference/enable_chart_export.md)
+  : Enable chart export buttons (PNG/SVG/PDF/CSV)
+- [`end_input_row()`](https://favstats.github.io/dashboardr/reference/end_input_row.md)
+  : End an input row
+- [`render_input()`](https://favstats.github.io/dashboardr/reference/render_input.md)
+  : Render an input widget
+- [`render_input_row()`](https://favstats.github.io/dashboardr/reference/render_input_row.md)
+  : Render a row of input widgets
+- [`render_viz_html()`](https://favstats.github.io/dashboardr/reference/render_viz_html.md)
+  : Render a viz result as raw HTML
+- [`show_when_open()`](https://favstats.github.io/dashboardr/reference/show_when_open.md)
+  : Open a conditional-visibility wrapper
+- [`show_when_close()`](https://favstats.github.io/dashboardr/reference/show_when_close.md)
+  : Close a conditional-visibility wrapper
+
+## Sidebars
+
+Functions for adding page sidebars with filters
+
+- [`add_sidebar()`](https://favstats.github.io/dashboardr/reference/add_sidebar.md)
+  : Add a sidebar to a page
+- [`end_sidebar()`](https://favstats.github.io/dashboardr/reference/end_sidebar.md)
+  : End a sidebar
+- [`enable_sidebar()`](https://favstats.github.io/dashboardr/reference/enable_sidebar.md)
+  : Enable Sidebar Styling
+
+## Embedded Content
+
+Functions for embedding external content
+
+- [`add_widget()`](https://favstats.github.io/dashboardr/reference/add_widget.md)
+  : Add a generic htmlwidget to the dashboard
+- [`add_plotly()`](https://favstats.github.io/dashboardr/reference/add_plotly.md)
+  : Add a plotly chart to the dashboard
+- [`add_leaflet()`](https://favstats.github.io/dashboardr/reference/add_leaflet.md)
+  : Add a leaflet map to the dashboard
+- [`add_iframe()`](https://favstats.github.io/dashboardr/reference/add_iframe.md)
+  : Add iframe
+- [`add_video()`](https://favstats.github.io/dashboardr/reference/add_video.md)
+  : Add video
+
+## Tables
+
+Functions for adding tables to pages
+
+- [`add_table()`](https://favstats.github.io/dashboardr/reference/add_table.md)
+  : Add generic table (data frame)
+- [`add_gt()`](https://favstats.github.io/dashboardr/reference/add_gt.md)
+  : Add gt table
+- [`add_reactable()`](https://favstats.github.io/dashboardr/reference/add_reactable.md)
+  : Add reactable table
+- [`add_DT()`](https://favstats.github.io/dashboardr/reference/add_DT.md)
+  : Add DT datatable
+
+## Themes & Styling
+
+Functions for customizing dashboard appearance
+
+- [`apply_theme()`](https://favstats.github.io/dashboardr/reference/apply_theme.md)
+  : Apply Theme to Dashboard
+- [`theme_modern()`](https://favstats.github.io/dashboardr/reference/theme_modern.md)
+  : Apply a Modern Tech Theme to Dashboard
+- [`theme_clean()`](https://favstats.github.io/dashboardr/reference/theme_clean.md)
+  : Apply a Clean Theme to Dashboard
+- [`theme_academic()`](https://favstats.github.io/dashboardr/reference/theme_academic.md)
+  : Apply a Professional Academic Theme to Dashboard
+- [`theme_ascor()`](https://favstats.github.io/dashboardr/reference/theme_ascor.md)
+  : Apply ASCoR/UvA Theme to Dashboard
+- [`theme_uva()`](https://favstats.github.io/dashboardr/reference/theme_uva.md)
+  : Apply UvA Theme to Dashboard (Alias)
+
+## Print Methods
+
+S3 methods for displaying objects
+
+- [`print(`*`<viz_collection>`*`)`](https://favstats.github.io/dashboardr/reference/print.viz_collection.md)
+  : Print Visualization Collection
+- [`print(`*`<dashboard_project>`*`)`](https://favstats.github.io/dashboardr/reference/print.dashboard_project.md)
+  : Print Dashboard Project
+- [`print(`*`<page_object>`*`)`](https://favstats.github.io/dashboardr/reference/print.page_object.md)
+  : Print method for page objects
+- [`print(`*`<dashboardr_widget>`*`)`](https://favstats.github.io/dashboardr/reference/print.dashboardr_widget.md)
+  : Print method for dashboardr_widget - opens in viewer
+- [`knit_print(`*`<content_collection>`*`)`](https://favstats.github.io/dashboardr/reference/knit_print.content_collection.md)
+  : Knitr print method for content collections
+- [`knit_print(`*`<page_object>`*`)`](https://favstats.github.io/dashboardr/reference/knit_print.page_object.md)
+  : Knitr print method for page objects
+- [`knit_print(`*`<dashboard_project>`*`)`](https://favstats.github.io/dashboardr/reference/knit_print.dashboard_project.md)
+  : Knitr print method for dashboard projects
+- [`show_structure()`](https://favstats.github.io/dashboardr/reference/show_structure.md)
+  : Show collection structure (even with data attached)
+- [`` `+`( ``*`<viz_collection>`*`)`](https://favstats.github.io/dashboardr/reference/plus-.viz_collection.md)
+  : Combine Visualization Collections with + Operator
+- [`` `+`( ``*`<content_collection>`*`)`](https://favstats.github.io/dashboardr/reference/plus-.content_collection.md)
+  : Combine Content Collections with + Operator
+
+## Page Object Methods
+
+S3 methods for page objects
+
+- [`add_text.page_object()`](https://favstats.github.io/dashboardr/reference/add_text.page_object.md)
+  : Add text to a page
+- [`add_callout.page_object()`](https://favstats.github.io/dashboardr/reference/add_callout.page_object.md)
+  : Add a callout to a page
+- [`set_tabgroup_labels.page_object()`](https://favstats.github.io/dashboardr/reference/set_tabgroup_labels.page_object.md)
+  : Set tabgroup labels for a page
+
+# Articles
+
+### Getting Started
+
+- [Getting Started with
+  dashboardr](https://favstats.github.io/dashboardr/articles/getting-started.md):
+
+### The Three Layers
+
+- [Content Collections: Deep
+  Dive](https://favstats.github.io/dashboardr/articles/content-collections.md):
+- [Pages: Deep
+  Dive](https://favstats.github.io/dashboardr/articles/pages.md):
+- [Dashboards: Deep
+  Dive](https://favstats.github.io/dashboardr/articles/dashboards.md):
+
+### Advanced Features
+
+- [Advanced
+  Features](https://favstats.github.io/dashboardr/articles/advanced-features.md):
+- [Backends](https://favstats.github.io/dashboardr/articles/chart-backends.md):
+
+### Publishing
+
+- [Publishing Dashboards to GitHub
+  Pages](https://favstats.github.io/dashboardr/articles/publishing_dashboards.md):
+
+### Live Demos
+
+- [Live Demos](https://favstats.github.io/dashboardr/articles/demos.md):
+
+### Demo Dashboard Code
+
+- [Tutorial Dashboard Code
+  Examples](https://favstats.github.io/dashboardr/articles/tutorial_dashboard_code.md):
+- [Showcase Dashboard Code
+  Examples](https://favstats.github.io/dashboardr/articles/showcase_dashboard_code.md):
+
+### Visualization Types
+
+- [Creating Bar Charts with
+  viz_bar()](https://favstats.github.io/dashboardr/articles/bar_vignette.md):
+- [Getting Started With
+  \`viz_timeline()\`](https://favstats.github.io/dashboardr/articles/timeline_vignette.md):
+- [Creating Interactive Stacked Bar Charts with
+  \`viz_stackedbar\`](https://favstats.github.io/dashboardr/articles/stackedbar_vignette.md):
+- [Multi-Question Stacked Bar Charts (Legacy
+  Reference)](https://favstats.github.io/dashboardr/articles/stackedbars_vignette.md):
+- [Creating Interactive Heatmaps with
+  \`viz_heatmap\`](https://favstats.github.io/dashboardr/articles/heatmap_vignette.md):
+- [Creating Histograms with
+  viz_histogram()](https://favstats.github.io/dashboardr/articles/histogram_vignette.md):
+- [Creating Density Plots with
+  viz_density()](https://favstats.github.io/dashboardr/articles/density_vignette.md):
+- [Creating Box Plots with
+  viz_boxplot()](https://favstats.github.io/dashboardr/articles/boxplot_vignette.md):
+- [Creating Scatter Plots with
+  viz_scatter()](https://favstats.github.io/dashboardr/articles/scatter_vignette.md):
+- [Creating Treemaps with
+  viz_treemap()](https://favstats.github.io/dashboardr/articles/treemap_vignette.md):
+- [Creating Maps with
+  viz_map()](https://favstats.github.io/dashboardr/articles/map_vignette.md):

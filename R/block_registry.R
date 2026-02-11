@@ -9,7 +9,7 @@
     "gt", "reactable", "table", "DT", "iframe", "accordion", "card",
     "html", "quote", "badge", "metric", "value_box", "value_box_row",
     "sparkline_card", "sparkline_card_row",
-    "hc", "widget", "layout_column", "layout_row", "input", "input_row", "modal"
+    "hc", "widget", "ggplot", "layout_column", "layout_row", "input", "input_row", "modal"
   )
 }
 

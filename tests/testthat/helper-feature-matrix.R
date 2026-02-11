@@ -407,6 +407,13 @@ fm_make_content_for_type <- function(type,
         filter_vars = fv,
         show_when = sw
       ),
+    "ggplot" = content |>
+      add_ggplot(
+        ggplot2::ggplot(head(mtcars), ggplot2::aes(wt, mpg)) + ggplot2::geom_point(),
+        title = "GGPlot",
+        tabgroup = tg,
+        show_when = sw
+      ),
     "layout_column" = content |>
       add_layout_column(class = "matrix-col", tabgroup = tg, show_when = sw) |>
       add_text("Inside column") |>

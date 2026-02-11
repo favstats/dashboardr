@@ -208,6 +208,7 @@
     "reactable" = .generate_reactable_block(block),
     "DT" = .generate_DT_block(block),
     "hc" = .generate_hc_block(block),
+    "ggplot" = .generate_ggplot_block(block),
     "spacer" = .generate_spacer_block(block),
     "html" = .generate_html_block(block),
     "quote" = .generate_quote_block(block),

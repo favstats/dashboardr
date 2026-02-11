@@ -1,3 +1,29 @@
+# dashboardr 0.4.2
+
+## New Features
+
+### Widget Convenience Wrappers
+
+New exported convenience functions for embedding charts from alternative backends:
+
+- `add_echarts()`: Embed an echarts4r chart directly into a dashboard page.
+- `add_ggiraph()`: Embed a ggiraph interactive plot directly into a dashboard page.
+- `add_ggplot()`: Embed a static ggplot2 plot, rendered via Quarto's knitr graphics device with optional `height`/`width` control.
+
+### MCP Server for LLM Assistants
+
+- `dashboardr_mcp_server()`: Launch an MCP (Model Context Protocol) server that exposes dashboardr documentation, function reference, example code, and visualization guides to LLM-powered coding assistants (Claude Desktop, Claude Code, Cursor, VS Code Copilot). Requires optional packages `ellmer` + `mcptools` (or `mcpr` as fallback).
+
+## Bug Fixes
+
+### Content Tabgroups (Issue #14)
+
+- **Fixed**: The `tabgroup` argument is now correctly applied to all content block types (`add_text`, `add_card`, `add_reactable`, and other content types), not just visualizations. Previously, `tabgroup` had no effect for non-viz content. Standalone content blocks, items inside content collections, and items added directly to pages via `add_text()` / `add_card()` / etc. now all respect `tabgroup` and render in their respective tabs.
+
+### CI Stability
+
+- **Fixed**: GitHub Actions coverage and R CMD check workflows were failing with exit code 143 (OOM kill). Added `skip_on_covr_ci()` to feature-matrix and generation-heavy tests that were running under covr instrumentation without memory guards. Added memory diagnostics and `timeout-minutes` to workflows for better failure reporting.
+
 # dashboardr 0.4.1
 
 ## Bug Fixes

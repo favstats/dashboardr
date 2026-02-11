@@ -1,6 +1,7 @@
 library(testthat)
 
 test_that("manual layout row rejects tabgroup child markers", {
+  skip_on_covr_ci()
   exp <- fm_unsupported_expectation("manual_layout_row_tabgroup_child")
 
   temp_dir <- tempfile("layout_tabgroup_matrix_")
@@ -24,6 +25,7 @@ test_that("manual layout row rejects tabgroup child markers", {
 })
 
 test_that("manual layout row rejects pagination markers", {
+  skip_on_covr_ci()
   exp <- fm_unsupported_expectation("manual_layout_row_pagination_child")
 
   temp_dir <- tempfile("layout_pagination_matrix_")
@@ -49,6 +51,7 @@ test_that("manual layout row rejects pagination markers", {
 })
 
 test_that("sidebar + manual layout + show_when render required structure", {
+  skip_on_covr_ci()
   temp_dir <- tempfile("layout_sidebar_matrix_")
   dir.create(temp_dir)
   on.exit(unlink(temp_dir, recursive = TRUE), add = TRUE)

@@ -1,6 +1,7 @@
 library(testthat)
 
 test_that("pairwise scenario selection is complete and deterministic by level", {
+  skip_on_covr_ci()
   skip_if_not_installed("yaml")
 
   pr_a <- fm_generate_scenarios(level = "pr")
@@ -25,6 +26,7 @@ test_that("pairwise scenario selection is complete and deterministic by level", 
 })
 
 test_that("generated combo scenarios produce stable files across feature dimensions", {
+  skip_on_covr_ci()
   skip_if_not_installed("yaml")
 
   level <- fm_matrix_level()

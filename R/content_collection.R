@@ -780,6 +780,111 @@ add_leaflet <- function(content, map, title = NULL, height = NULL, tabgroup = NU
   add_widget(content, map, title = title, height = height, tabgroup = tabgroup, filter_vars = filter_vars, show_when = show_when)
 }
 
+#' Add an echarts4r chart to the dashboard
+#'
+#' Convenience wrapper around \code{\link{add_widget}} for echarts4r objects.
+#'
+#' @param content A content_collection, page_object, or dashboard_project
+#' @param chart An echarts4r object (created with \code{echarts4r::e_charts()})
+#' @param title Optional title displayed above the chart
+#' @param height Optional CSS height
+#' @param tabgroup Optional tabgroup for organizing content
+#' @param filter_vars Optional character vector of input filter variables to apply to this block.
+#' @param show_when One-sided formula controlling conditional display based on input values.
+#' @return Updated content object
+#' @export
+add_echarts <- function(content, chart, title = NULL, height = NULL,
+                        tabgroup = NULL, filter_vars = NULL, show_when = NULL) {
+  if (!inherits(chart, "echarts4r")) {
+    stop("chart must be an echarts4r object (created with e_charts())", call. = FALSE)
+  }
+  add_widget(content, chart, title = title, height = height,
+             tabgroup = tabgroup, filter_vars = filter_vars, show_when = show_when)
+}
+
+#' Add a ggiraph interactive plot to the dashboard
+#'
+#' Convenience wrapper around \code{\link{add_widget}} for ggiraph objects.
+#'
+#' @param content A content_collection, page_object, or dashboard_project
+#' @param plot A girafe object (created with \code{ggiraph::girafe()})
+#' @param title Optional title displayed above the plot
+#' @param height Optional CSS height
+#' @param tabgroup Optional tabgroup for organizing content
+#' @param filter_vars Not supported for ggiraph widgets.
+#' @param show_when One-sided formula controlling conditional display based on input values.
+#' @return Updated content object
+#' @export
+add_ggiraph <- function(content, plot, title = NULL, height = NULL,
+                        tabgroup = NULL, filter_vars = NULL, show_when = NULL) {
+  if (!inherits(plot, "girafe")) {
+    stop("plot must be a girafe object (created with ggiraph::girafe())", call. = FALSE)
+  }
+  add_widget(content, plot, title = title, height = height,
+             tabgroup = tabgroup, filter_vars = filter_vars, show_when = show_when)
+}
+
+#' Add a static ggplot2 plot to the dashboard
+#'
+#' Embed a ggplot2 object directly into a dashboard page. The plot is rendered
+#' as a static image via Quarto's built-in knitr graphics device.
+#'
+#' @param content A content_collection, page_object, or dashboard_project
+#' @param plot A ggplot2 object (created with \code{ggplot2::ggplot()})
+#' @param title Optional title displayed above the plot
+#' @param height Optional figure height in inches (passed to knitr fig.height)
+#' @param width Optional figure width in inches (passed to knitr fig.width)
+#' @param tabgroup Optional tabgroup for organizing content
+#' @param show_when One-sided formula controlling conditional display based on input values.
+#' @return Updated content object
+#' @export
+add_ggplot <- function(content, plot, title = NULL, height = NULL, width = NULL,
+                       tabgroup = NULL, show_when = NULL) {
+  if (!inherits(plot, "gg")) {
+    stop("plot must be a ggplot2 object (created with ggplot())", call. = FALSE)
+  }
+
+  ggplot_block <- structure(list(
+    type = "ggplot",
+    ggplot_object = plot,
+    title = title,
+    height = height,
+    width = width,
+    tabgroup = .parse_tabgroup(tabgroup),
+    show_when = show_when
+  ), class = "content_block")
+
+  # Handle dashboard_project - add to last page's content_blocks
+  if (inherits(content, "dashboard_project")) {
+    if (length(content$pages) == 0) {
+      stop("Dashboard has no pages. Add a page first with add_page().", call. = FALSE)
+    }
+    last_page_name <- names(content$pages)[length(content$pages)]
+    if (is.null(content$pages[[last_page_name]]$content_blocks)) {
+      content$pages[[last_page_name]]$content_blocks <- list()
+    }
+    content$pages[[last_page_name]]$content_blocks <- c(
+      content$pages[[last_page_name]]$content_blocks,
+      list(ggplot_block)
+    )
+    return(content)
+  }
+
+  if (inherits(content, "page_object")) {
+    content$.items <- c(content$.items, list(ggplot_block))
+    return(content)
+  }
+
+  if (!is_content(content)) {
+    stop("First argument must be a content collection, page_object, or dashboard_project", call. = FALSE)
+  }
+
+  insertion_idx <- length(content$items) + 1
+  ggplot_block$.insertion_index <- insertion_idx
+  content$items <- c(content$items, list(ggplot_block))
+  content
+}
+
 #' Add generic table (data frame)
 #' @param content A content_collection object
 #' @param table_object A data frame or tibble

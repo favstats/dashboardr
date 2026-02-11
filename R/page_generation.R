@@ -621,6 +621,7 @@
     "DT" = .generate_DT_block(item),
     "hc" = .generate_hc_block(item),
     "widget" = .generate_widget_block(item),
+    "ggplot" = .generate_ggplot_block(item),
     "spacer" = .generate_spacer_block(item),
     "html" = .generate_html_block(item),
     "quote" = .generate_quote_block(item),
@@ -1580,6 +1581,37 @@
   lines
 }
 
+.generate_ggplot_block <- function(block) {
+  gg_var <- block$ggplot_var %||% "gg_obj"
+
+  title_lines <- character(0)
+  if (!is.null(block$title) && nzchar(block$title)) {
+    title_lines <- c("", paste0("### ", block$title), "")
+  }
+
+  # Build chunk options
+  chunk_opts <- c("#| echo: false")
+  if (!is.null(block$height)) {
+    chunk_opts <- c(chunk_opts, paste0("#| fig-height: ", block$height))
+  }
+  if (!is.null(block$width)) {
+    chunk_opts <- c(chunk_opts, paste0("#| fig-width: ", block$width))
+  }
+
+  lines <- c(
+    title_lines,
+    "",
+    "```{r}",
+    chunk_opts,
+    "",
+    gg_var,
+    "```",
+    ""
+  )
+
+  lines
+}
+
 #' Generate DT datatable block markdown
 #'
 #' Internal function to generate markdown for DT::datatable content blocks
@@ -2463,6 +2495,36 @@
         }
       }
       lines <- c(lines, "")
+    }
+
+    # Load ggplot objects from content blocks
+    ggplot_blocks <- .collect_blocks_recursive(page$content_blocks, function(b) {
+      isTRUE(b$type == "ggplot") && !is.null(b$ggplot_file)
+    })
+    if (length(ggplot_blocks) > 0) {
+      lines <- c(lines, "# Load ggplot2 objects", "")
+      for (block in ggplot_blocks) {
+        if (isTRUE(!is.null(block$ggplot_var) && !is.null(block$ggplot_file))) {
+          lines <- c(lines, paste0(block$ggplot_var, " <- readRDS('", block$ggplot_file, "')"))
+        }
+      }
+      lines <- c(lines, "")
+    }
+  }
+
+  # Also load objects from page$.items (piped items)
+  if (!is.null(page$.items) && length(page$.items) > 0) {
+    for (item in page$.items) {
+      if (is.null(item) || !is.list(item)) next
+      if (isTRUE(item$type == "hc") && !is.null(item$hc_var) && !is.null(item$hc_file)) {
+        lines <- c(lines, paste0(item$hc_var, " <- readRDS('", item$hc_file, "')"))
+      }
+      if (isTRUE(item$type == "widget") && !is.null(item$widget_var) && !is.null(item$widget_file)) {
+        lines <- c(lines, paste0(item$widget_var, " <- readRDS('", item$widget_file, "')"))
+      }
+      if (isTRUE(item$type == "ggplot") && !is.null(item$ggplot_var) && !is.null(item$ggplot_file)) {
+        lines <- c(lines, paste0(item$ggplot_var, " <- readRDS('", item$ggplot_file, "')"))
+      }
     }
   }
 

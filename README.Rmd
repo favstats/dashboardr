@@ -175,6 +175,65 @@ Contributions welcome! Please submit a Pull Request.
 
 **Share your dashboard** — Add it to the [Community Gallery](https://favstats.github.io/dashboardr/gallery/) by [opening a Gallery submission](https://github.com/favstats/dashboardr/issues/new?labels=gallery-submission&title=%5BGallery%5D+My+Dashboard).
 
+## LLM Support
+
+dashboardr includes a built-in [MCP server](https://modelcontextprotocol.io/) that gives AI coding assistants full access to dashboardr documentation, function help, and runnable examples. Works with Claude Code, Claude Desktop, VS Code Copilot, Cursor, and any MCP-compatible client.
+
+### Setup
+
+First, install the optional dependencies:
+
+```{r mcp-install, eval = FALSE}
+install.packages(c("ellmer", "mcptools"))
+```
+
+Then configure your client:
+
+**Claude Code:**
+
+```bash
+claude mcp add dashboardr -- Rscript -e "dashboardr::dashboardr_mcp_server()"
+```
+
+**Claude Desktop** (`claude_desktop_config.json`):
+
+```json
+{
+  "mcpServers": {
+    "dashboardr": {
+      "command": "Rscript",
+      "args": ["-e", "dashboardr::dashboardr_mcp_server()"]
+    }
+  }
+}
+```
+
+**VS Code / Cursor** (`.vscode/mcp.json` or Cursor equivalent):
+
+```json
+{
+  "mcp": {
+    "servers": {
+      "dashboardr": {
+        "type": "stdio",
+        "command": "Rscript",
+        "args": ["-e", "dashboardr::dashboardr_mcp_server()"]
+      }
+    }
+  }
+}
+```
+
+### Available Tools
+
+| Tool | Description |
+|------|-------------|
+| `dashboardr_guide` | Full package guide — architecture, API overview, quick start |
+| `dashboardr_function_help` | Look up help for any exported function |
+| `dashboardr_list_functions` | List functions by category (viz, content, input, layout, ...) |
+| `dashboardr_example` | Get runnable example code for common patterns |
+| `dashboardr_viz_types` | Quick reference of all visualization types and parameters |
+
 ## License
 
 MIT License - see [LICENSE.md](LICENSE.md)

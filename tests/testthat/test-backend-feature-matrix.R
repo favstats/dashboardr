@@ -32,6 +32,7 @@ test_that("add_widget enforces filter_vars backend constraints", {
 })
 
 test_that("backend injection appears for non-highcharter viz generation", {
+  skip_on_covr_ci()
   for (backend in c("plotly", "echarts4r", "ggiraph")) {
     content <- fm_make_viz_content(backend = backend, tabgroup = FALSE, show_when = FALSE)
     files <- fm_generate_dashboard_files(content, backend = backend, page_name = paste("Backend", backend))

@@ -15,6 +15,7 @@ jobs:
     runs-on: ${{ matrix.config.os }}
 
     name: ${{ matrix.config.os }} (${{ matrix.config.r }})
+    timeout-minutes: 60
 
     strategy:
       fail-fast: false
@@ -40,6 +41,10 @@ jobs:
           sudo rm -rf /usr/share/dotnet
           sudo rm -rf /opt/ghc
           sudo rm -rf /usr/local/share/boost
+
+      - name: Log available memory
+        if: runner.os == 'Linux'
+        run: free -h
 
       - uses: r-lib/actions/setup-pandoc@v2
 
@@ -92,3 +97,12 @@ jobs:
           args: 'c("--no-manual", "--as-cran")'
         env:
           _R_CHECK_FORCE_SUGGESTS_: false
+
+      - name: Diagnose OOM on failure
+        if: failure() && runner.os == 'Linux'
+        run: |
+          echo "::warning::Process may have been killed by OOM (exit 143 = SIGTERM)."
+          echo "--- Memory at failure ---"
+          free -h
+          echo "--- dmesg OOM entries ---"
+          sudo dmesg | grep -i -E 'oom|killed|out of memory' | tail -20 || true

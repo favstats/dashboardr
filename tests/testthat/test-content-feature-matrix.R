@@ -63,6 +63,7 @@ test_that("matrix lists explicit unsupported combinations", {
 })
 
 test_that("base scenarios generate dashboard files for runnable content types", {
+  skip_on_covr_ci()
   skip_if_not_installed("yaml")
 
   scenarios <- fm_generate_scenarios(level = "pr")

@@ -1,6 +1,6 @@
 Package: dashboardr
 Title: Build Interactive HTML Dashboards from R
-Version: 0.4.1
+Version: 0.4.2
 Authors@R: c(
     person("Fabio", "Votta", , "fabio.votta@gmail.com", role = c("aut", "cre")),
     person("Alexandra", "Pafford", role = "aut"),
@@ -43,6 +43,7 @@ Suggests:
   devtools,
   DT,
   echarts4r,
+  ellmer,
   gapminder,
   ggalluvial,
   ggiraph,
@@ -53,6 +54,8 @@ Suggests:
   httr,
   knitr,
   leaflet,
+  mcpr,
+  mcptools,
   plotly,
   purrr,
   reactable,

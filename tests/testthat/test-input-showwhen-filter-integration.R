@@ -77,6 +77,7 @@ test_that("add_reset_button renders expected attributes", {
 })
 
 test_that("show_when and filter_vars survive generation together", {
+  skip_on_covr_ci()
   temp_dir <- tempfile("showwhen_filter_matrix_")
   dir.create(temp_dir)
   on.exit(unlink(temp_dir, recursive = TRUE), add = TRUE)
@@ -99,6 +100,7 @@ test_that("show_when and filter_vars survive generation together", {
 })
 
 test_that("layout_row/layout_column can host show_when and filter-aware blocks", {
+  skip_on_covr_ci()
   temp_dir <- tempfile("showwhen_layout_matrix_")
   dir.create(temp_dir)
   on.exit(unlink(temp_dir, recursive = TRUE), add = TRUE)
@@ -123,6 +125,7 @@ test_that("layout_row/layout_column can host show_when and filter-aware blocks",
 })
 
 test_that("add_plotly tabgroup inside manual layout row is rejected", {
+  skip_on_covr_ci()
   exp <- fm_unsupported_expectation("manual_layout_row_tabgroup_child")
   skip_if_not_installed("plotly")
 
@@ -148,6 +151,7 @@ test_that("add_plotly tabgroup inside manual layout row is rejected", {
 })
 
 test_that("add_reset_button markup survives content rendering path", {
+  skip_on_covr_ci()
   temp_dir <- tempfile("reset_button_render_")
   dir.create(temp_dir)
   on.exit(unlink(temp_dir, recursive = TRUE), add = TRUE)

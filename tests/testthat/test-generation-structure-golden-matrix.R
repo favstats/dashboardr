@@ -5,6 +5,7 @@ read_golden <- function(path) {
 }
 
 test_that("feature-matrix structural fragments match golden fixtures", {
+  skip_on_covr_ci()
   temp_dir <- tempfile("golden_matrix_")
   dir.create(temp_dir)
   on.exit(unlink(temp_dir, recursive = TRUE), add = TRUE)

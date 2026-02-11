@@ -70,6 +70,15 @@
     block$widget_var <- paste0("widget_obj_", counters$hc)
   }
 
+  if (isTRUE(block$type == "ggplot") && !is.null(block$ggplot_object)) {
+    counters$hc <- counters$hc + 1L
+    gg_filename <- paste0("ggplot_obj_", counters$hc, ".rds")
+    gg_filepath <- file.path(output_dir, gg_filename)
+    saveRDS(block$ggplot_object, gg_filepath)
+    block$ggplot_file <- gg_filename
+    block$ggplot_var <- paste0("ggplot_obj_", counters$hc)
+  }
+
   list(block = block, counters = counters)
 }
 
@@ -490,7 +499,19 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
         page$content_blocks <- saved_page_blocks$content_blocks
         block_save_counters <- saved_page_blocks$counters
       }
-      
+
+      # Also save assets from page$.items (piped items)
+      if (!is.null(page$.items) && length(page$.items) > 0) {
+        for (idx in seq_along(page$.items)) {
+          saved_item <- .save_block_assets(
+            page$.items[[idx]], output_dir = output_dir,
+            counters = block_save_counters, include_widgets = TRUE
+          )
+          page$.items[[idx]] <- saved_item$block
+          block_save_counters <- saved_item$counters
+        }
+      }
+
       # Now generate the page content with updated blocks
       if (!is.null(page$template)) {
         # Custom template
