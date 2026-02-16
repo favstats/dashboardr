@@ -5,6 +5,17 @@ defaults:
     - "Uncaught"
     - "Unhandled promise rejection"
     - "Cannot read properties of undefined"
+  max_large_empty_cards: 0
+  font_expectations:
+    - selector: "body"
+      contains_any: ["system-ui", "Segoe UI", "Roboto", "Helvetica", "Arial", "sans-serif"]
+      not_contains_any: ["Times New Roman"]
+    - selector: ".navbar .nav-link, .navbar-brand, .menu-text"
+      contains_any: ["system-ui", "Segoe UI", "Roboto", "Helvetica", "Arial", "sans-serif"]
+      not_contains_any: ["Times New Roman"]
+    - selector: ".dashboardr-input-group label, .dashboardr-radio-group label, .dashboardr-checkbox-group label"
+      contains_any: ["system-ui", "Segoe UI", "Roboto", "Helvetica", "Arial", "sans-serif"]
+      not_contains_any: ["Times New Roman"]
 
 scenarios:
   # ---------------------------------------------------------------------------

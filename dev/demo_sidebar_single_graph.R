@@ -107,7 +107,33 @@ pie_data <- base_data %>%
 
 # Stacked bar data for S7
 stacked_data <- base_data %>%
-  count(region, education, happiness, year, name = "n")
+  count(region, education, happiness, year, name = "n") %>%
+  mutate(
+    region_weight = case_when(
+      region == "Midwest" ~ 1.30,
+      region == "Northeast" ~ 1.05,
+      region == "South" ~ 0.90,
+      region == "West" ~ 0.78,
+      TRUE ~ 1.00
+    ),
+    education_weight = case_when(
+      education == "Graduate" ~ 1.12,
+      education == "Bachelor's" ~ 1.05,
+      education == "Some College" ~ 0.96,
+      education == "High School" ~ 0.88,
+      TRUE ~ 1.00
+    ),
+    happiness_weight = case_when(
+      happiness == "Very Happy" ~ 1.08,
+      happiness == "Pretty Happy" ~ 1.00,
+      happiness == "Not Too Happy" ~ 0.92,
+      TRUE ~ 1.00
+    ),
+    n = pmax(1L, as.integer(round(n * region_weight * education_weight * happiness_weight)))
+  ) %>%
+  select(region, education, happiness, year, n) %>%
+  tidyr::uncount(weights = n, .remove = TRUE) %>%
+  mutate(n = 1L)
 
 # -----------------------------------------------------------------------------
 # Helpers
@@ -495,7 +521,6 @@ page_s7 <- function(data, sidebar_title) {
       x_var = "education",
       stack_var = "happiness",
       stacked_type = "count",
-      weight_var = "n",
       color_palette = unname(happiness_palette),
       cross_tab_filter_vars = c("education", "happiness", "region", "year"),
       title = "Education by happiness level"

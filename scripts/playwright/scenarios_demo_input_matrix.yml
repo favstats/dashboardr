@@ -5,6 +5,17 @@ defaults:
     - "Uncaught"
     - "Unhandled promise rejection"
     - "Cannot read properties of undefined"
+  max_large_empty_cards: 0
+  font_expectations:
+    - selector: "body"
+      contains_any: ["system-ui", "Segoe UI", "Roboto", "Helvetica", "Arial", "sans-serif"]
+      not_contains_any: ["Times New Roman"]
+    - selector: ".navbar .nav-link, .navbar-brand, .menu-text"
+      contains_any: ["system-ui", "Segoe UI", "Roboto", "Helvetica", "Arial", "sans-serif"]
+      not_contains_any: ["Times New Roman"]
+    - selector: ".dashboardr-input-group label, .dashboardr-radio-group label, .dashboardr-checkbox-group label"
+      contains_any: ["system-ui", "Segoe UI", "Roboto", "Helvetica", "Arial", "sans-serif"]
+      not_contains_any: ["Times New Roman"]
 
 scenarios:
   - id: input-matrix-echarts-p1
@@ -80,6 +91,7 @@ scenarios:
     interaction_plan: [linked_inputs, filter, sidebar_toggle]
     preferred_filter_var: segment
     expect_filter_effect: true
+    require_all_input_vars_affect_all_charts: true
     min_non_empty_charts_expected: 1
     required_selectors:
       - "#pw-title-p4"
@@ -107,6 +119,8 @@ scenarios:
       - "input[data-input-type='switch'][data-filter-var='benchmark_toggle']"
     required_texts:
       - "P5_Complex_Show_When"
+    forbidden_texts:
+      - "undefined"
     forbidden_console_patterns: []
 
   - id: input-matrix-echarts-p6
@@ -118,6 +132,7 @@ scenarios:
     interaction_plan: [filter, sidebar_toggle]
     preferred_filter_var: year
     expect_filter_effect: true
+    require_all_input_vars_affect_all_charts: true
     min_non_empty_charts_expected: 1
     required_selectors:
       - "#pw-title-p6"
@@ -200,6 +215,7 @@ scenarios:
     interaction_plan: [linked_inputs, filter, sidebar_toggle]
     preferred_filter_var: segment
     expect_filter_effect: true
+    require_all_input_vars_affect_all_charts: true
     min_non_empty_charts_expected: 1
     required_selectors:
       - "#pw-title-p4"
@@ -227,6 +243,8 @@ scenarios:
       - "input[data-input-type='switch'][data-filter-var='benchmark_toggle']"
     required_texts:
       - "P5_Complex_Show_When"
+    forbidden_texts:
+      - "undefined"
     forbidden_console_patterns: []
 
   - id: input-matrix-plotly-p6
@@ -238,6 +256,7 @@ scenarios:
     interaction_plan: [filter, sidebar_toggle]
     preferred_filter_var: year
     expect_filter_effect: true
+    require_all_input_vars_affect_all_charts: true
     min_non_empty_charts_expected: 1
     required_selectors:
       - "#pw-title-p6"
@@ -320,6 +339,7 @@ scenarios:
     interaction_plan: [linked_inputs, filter, sidebar_toggle]
     preferred_filter_var: segment
     expect_filter_effect: true
+    require_all_input_vars_affect_all_charts: true
     min_non_empty_charts_expected: 1
     required_selectors:
       - "#pw-title-p4"
@@ -347,6 +367,8 @@ scenarios:
       - "input[data-input-type='switch'][data-filter-var='benchmark_toggle']"
     required_texts:
       - "P5_Complex_Show_When"
+    forbidden_texts:
+      - "undefined"
     forbidden_console_patterns: []
 
   - id: input-matrix-highcharter-p6
@@ -358,6 +380,7 @@ scenarios:
     interaction_plan: [filter, sidebar_toggle]
     preferred_filter_var: year
     expect_filter_effect: true
+    require_all_input_vars_affect_all_charts: true
     min_non_empty_charts_expected: 1
     required_selectors:
       - "#pw-title-p6"

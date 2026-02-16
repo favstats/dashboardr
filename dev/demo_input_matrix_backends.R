@@ -262,11 +262,13 @@ sidebar_for_p4 <- function(sidebar_title) {
       parent = list(
         id = "p4_dimension",
         label = "Dimension",
+        filter_var = "dimension",
         options = names(questions_by_dimension)
       ),
       child = list(
         id = "p4_question",
         label = "Question",
+        filter_var = "question",
         options_by_parent = questions_by_dimension
       )
     ) %>%
@@ -391,10 +393,13 @@ page_p4 <- function(data, sidebar_title) {
     add_content(sidebar_for_p4(sidebar_title)) %>%
     add_html("<div id='pw-title-p4' class='pw-page-label'>P4: Linked inputs (dimension -> question)</div>") %>%
     add_viz(
-      type = "bar",
+      type = "stackedbar",
       x_var = "question",
-      group_var = "segment",
+      stack_var = "segment",
+      stacked_type = "count",
+      weight_var = "count",
       color_palette = c("#4E79A7", "#F28E2B", "#76B7B2"),
+      cross_tab_filter_vars = c("segment", "dimension", "question", "region", "education", "happiness", "channel", "year"),
       title = "Responses by question and segment"
     )
 }
@@ -442,7 +447,7 @@ page_p6 <- function(data, table_data, sidebar_title) {
       y_var = "income",
       group_var = "region",
       color_palette = unname(region_palette),
-      cross_tab_filter_vars = c("region", "education", "happiness", "channel", "segment", "dimension", "question"),
+      cross_tab_filter_vars = c("region", "year", "education", "happiness", "channel", "segment", "dimension", "question"),
       title = "Income trend by region"
     ) %>%
     add_DT(

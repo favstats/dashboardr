@@ -2010,12 +2010,15 @@
     const data = original.data || [];
 
     const { xVar, stackVar, stackedType, stackOrder, xOrder, colorMap } = config;
+    const seriesVar = stackVar || config.groupVar;
     var labelDec = (config.labelDecimals != null) ? config.labelDecimals : (stackedType === 'percent' ? 1 : 0);
     var labelMinPct = 5;
     const summed = {};
     filteredData.forEach(row => {
       const xVal = String(row[xVar]);
-      const stackVal = String(row[stackVar]);
+      const rawSeries = row[seriesVar];
+      const stackVal = normalizeSeriesName(rawSeries);
+      if (!stackVal) return;
       const key = xVal + '|||' + stackVal;
       if (!summed[key]) summed[key] = { xVal, stackVal, n: 0 };
       summed[key].n += row.n;
@@ -2206,12 +2209,15 @@
     if (!original) return false;
 
     const { xVar, stackVar, stackedType, stackOrder, xOrder, colorMap } = config;
+    const seriesVar = stackVar || config.groupVar;
     var labelDec = (config.labelDecimals != null) ? config.labelDecimals : (stackedType === 'percent' ? 1 : 0);
     var labelMinPct = 5; // hide labels on segments < 5% of their stack
     const summed = {};
     filteredData.forEach(row => {
       const xVal = String(row[xVar]);
-      const stackVal = String(row[stackVar]);
+      const rawSeries = row[seriesVar];
+      const stackVal = normalizeSeriesName(rawSeries);
+      if (!stackVal) return;
       const key = xVal + '|||' + stackVal;
       if (!summed[key]) summed[key] = { xVal, stackVal, n: 0 };
       summed[key].n += row.n;

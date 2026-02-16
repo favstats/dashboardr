@@ -11,6 +11,9 @@ async (page) => {
   const requiredTexts = Array.isArray(scenario.required_texts)
     ? scenario.required_texts
     : (scenario.required_texts ? [scenario.required_texts] : []);
+  const forbiddenTexts = Array.isArray(scenario.forbidden_texts)
+    ? scenario.forbidden_texts
+    : (scenario.forbidden_texts ? [scenario.forbidden_texts] : []);
   const interactionPlan = Array.isArray(scenario.interaction_plan)
     ? scenario.interaction_plan
     : (scenario.interaction_plan ? [scenario.interaction_plan] : []);
@@ -20,6 +23,46 @@ async (page) => {
   const dynamicTextSelectors = Array.isArray(scenario.dynamic_text_selectors)
     ? scenario.dynamic_text_selectors
     : (scenario.dynamic_text_selectors ? [scenario.dynamic_text_selectors] : []);
+  const normalizeStringList = (value) => {
+    if (Array.isArray(value)) {
+      return value.map((x) => String(x || '').trim()).filter((x) => x.length > 0);
+    }
+    if (value === null || value === undefined) return [];
+    const single = String(value).trim();
+    return single.length > 0 ? [single] : [];
+  };
+  const fontExpectations = (() => {
+    const raw = Array.isArray(scenario.font_expectations)
+      ? scenario.font_expectations
+      : (scenario.font_expectations ? [scenario.font_expectations] : []);
+    return raw
+      .map((rule) => {
+        if (!rule) return null;
+        if (typeof rule === 'string') {
+          const selector = String(rule).trim();
+          if (!selector) return null;
+          return {
+            selector,
+            contains_any: [],
+            not_contains_any: [],
+            min_size_px: null,
+            required: true
+          };
+        }
+        if (typeof rule !== 'object') return null;
+        const selector = String(rule.selector || '').trim();
+        if (!selector) return null;
+        const minSizeRaw = Number(rule.min_size_px);
+        return {
+          selector,
+          contains_any: normalizeStringList(rule.contains_any || rule.contains || rule.expected_contains_any),
+          not_contains_any: normalizeStringList(rule.not_contains_any || rule.forbid_contains_any),
+          min_size_px: Number.isFinite(minSizeRaw) ? minSizeRaw : null,
+          required: rule.required !== false
+        };
+      })
+      .filter((x) => !!x);
+  })();
 
   const fail = (msg) => {
     failures.push(String(msg));
@@ -126,6 +169,24 @@ async (page) => {
       before_selectors_text: String((beforeSnapshot && beforeSnapshot.selectors_text) || ''),
       after_selectors_text: String((afterSnapshot && afterSnapshot.selectors_text) || '')
     };
+  };
+
+  const assertForbiddenTextsAbsent = async (stage) => {
+    for (const textNeedle of forbiddenTexts) {
+      const found = await page.evaluate((needle) => {
+        if (!document || !document.body) return false;
+        const normalize = (value) => String(value || '')
+          .replace(/\s+/g, ' ')
+          .trim()
+          .toLowerCase();
+        const text = normalize(document.body.innerText || '');
+        const target = normalize(needle);
+        return text.includes(target);
+      }, textNeedle);
+      if (found) {
+        fail(`Forbidden text found (${stage}): ${textNeedle}`);
+      }
+    }
   };
 
   const captureChartState = async () => {
@@ -989,7 +1050,7 @@ async (page) => {
       return result;
     }, preferredFilterVar);
 
-    await wait(1200);
+    await wait(1500);
     const after = await captureChartState();
     const dynamicTextAfter = await captureDynamicTextSnapshot();
     const changed = signatureForExpected(before) !== signatureForExpected(after);
@@ -1066,7 +1127,7 @@ async (page) => {
       return result;
     }, preferredSliderVar);
 
-    await wait(1200);
+    await wait(1500);
     const after = await captureChartState();
     const dynamicTextAfter = await captureDynamicTextSnapshot();
 
@@ -1351,8 +1412,27 @@ async (page) => {
         .find((el) => !el.disabled && visible(el) && String(el.getAttribute('data-filter-var') || '') === filterVar);
       if (textInput) {
         const type = String(textInput.type || '').toLowerCase();
+        const collectCrossTabValues = () => {
+          const out = [];
+          const registry = (window.dashboardrCrossTab && typeof window.dashboardrCrossTab === 'object')
+            ? window.dashboardrCrossTab
+            : {};
+          Object.keys(registry).forEach((key) => {
+            const entry = registry[key] || {};
+            const rows = Array.isArray(entry.data) ? entry.data : [];
+            rows.forEach((row) => {
+              if (!row || typeof row !== 'object') return;
+              if (!Object.prototype.hasOwnProperty.call(row, filterVar)) return;
+              const val = String(row[filterVar] == null ? '' : row[filterVar]).trim();
+              if (val) out.push(val);
+            });
+          });
+          return Array.from(new Set(out));
+        };
         if (type === 'text' || type === 'search') {
-          const next = String(textInput.value || '') + 'x';
+          const options = collectCrossTabValues();
+          const current = String(textInput.value || '').trim();
+          const next = pickDifferent(options, current) || (current ? '' : String(textInput.placeholder || '').trim() || 'x');
           textInput.value = next;
           textInput.dispatchEvent(new Event('input', { bubbles: true }));
           textInput.dispatchEvent(new Event('change', { bubbles: true }));
@@ -1363,7 +1443,24 @@ async (page) => {
         }
         if (type === 'number') {
           const currentNum = Number(textInput.value);
-          const next = Number.isFinite(currentNum) ? currentNum + 1 : 1;
+          const minVal = Number(textInput.min);
+          const maxVal = Number(textInput.max);
+          const valueOptions = collectCrossTabValues()
+            .map((x) => Number(x))
+            .filter((x) => Number.isFinite(x));
+          let next = Number.isFinite(currentNum) ? currentNum + 1 : (Number.isFinite(minVal) ? minVal : 1);
+          if (valueOptions.length > 1) {
+            const currentText = Number.isFinite(currentNum) ? String(currentNum) : String(textInput.value || '');
+            const pick = pickDifferent(valueOptions.map((x) => String(x)), currentText);
+            if (pick !== null) next = Number(pick);
+          }
+          if (Number.isFinite(maxVal) && next > maxVal) next = Number.isFinite(minVal) ? minVal : maxVal;
+          if (Number.isFinite(minVal) && next < minVal) next = minVal;
+          if (Number.isFinite(currentNum) && Math.abs(next - currentNum) < 1e-9) {
+            next = Number.isFinite(maxVal) && maxVal !== currentNum
+              ? maxVal
+              : (Number.isFinite(minVal) ? minVal : currentNum + 1);
+          }
           textInput.value = String(next);
           textInput.dispatchEvent(new Event('input', { bubbles: true }));
           textInput.dispatchEvent(new Event('change', { bubbles: true }));
@@ -1378,7 +1475,7 @@ async (page) => {
       return result;
     }, filterVar);
 
-    await wait(1200);
+    await wait(1500);
     const after = await captureChartState();
     const dynamicTextAfter = await captureDynamicTextSnapshot();
 
@@ -2071,6 +2168,103 @@ async (page) => {
     }, { minHeight: largeEmptyCardMinHeight, minWidth: largeEmptyCardMinWidth });
   };
 
+  const assertFontExpectations = async () => {
+    if (!fontExpectations.length) return [];
+    const checks = await page.evaluate((rules) => {
+      const isVisible = (el) => {
+        if (!el) return false;
+        const st = window.getComputedStyle(el);
+        if (!st || st.display === 'none' || st.visibility === 'hidden' || st.opacity === '0') return false;
+        const r = el.getBoundingClientRect();
+        return r.width > 0 && r.height > 0;
+      };
+
+      const parsePx = (value) => {
+        const n = Number.parseFloat(String(value || ''));
+        return Number.isFinite(n) ? n : null;
+      };
+
+      return (rules || []).map((rule) => {
+        const selector = String((rule && rule.selector) || '').trim();
+        const selectors = selector.split(',').map((x) => x.trim()).filter((x) => x.length > 0);
+        let selected = null;
+        let matchedSelector = null;
+
+        for (const sel of selectors) {
+          const nodes = Array.from(document.querySelectorAll(sel));
+          const visibleNode = nodes.find((node) => isVisible(node));
+          if (visibleNode) {
+            selected = visibleNode;
+            matchedSelector = sel;
+            break;
+          }
+          if (!selected && nodes.length > 0) {
+            selected = nodes[0];
+            matchedSelector = sel;
+          }
+        }
+
+        if (!selected) {
+          return {
+            selector,
+            found: false,
+            matched_selector: null,
+            font_family: '',
+            font_size_px: null,
+            font_weight: null
+          };
+        }
+
+        const style = window.getComputedStyle(selected);
+        return {
+          selector,
+          found: true,
+          matched_selector: matchedSelector,
+          font_family: String(style.fontFamily || ''),
+          font_size_px: parsePx(style.fontSize),
+          font_weight: style.fontWeight ? String(style.fontWeight) : null
+        };
+      });
+    }, fontExpectations);
+
+    checks.forEach((entry, idx) => {
+      const rule = fontExpectations[idx] || {};
+      const selector = String(rule.selector || entry.selector || '').trim();
+      if (!entry.found) {
+        if (rule.required !== false) {
+          fail(`Font check selector not found: ${selector}`);
+        }
+        return;
+      }
+
+      const family = String(entry.font_family || '');
+      const familyLower = family.toLowerCase();
+      const containsAny = Array.isArray(rule.contains_any) ? rule.contains_any : [];
+      const notContainsAny = Array.isArray(rule.not_contains_any) ? rule.not_contains_any : [];
+
+      if (!family.trim()) {
+        fail(`Font family is empty for selector '${selector}'.`);
+      }
+      if (containsAny.length > 0) {
+        const ok = containsAny.some((token) => familyLower.includes(String(token || '').toLowerCase()));
+        if (!ok) {
+          fail(`Font family '${family}' for selector '${selector}' did not match expected set.`);
+        }
+      }
+      if (notContainsAny.length > 0) {
+        const blocked = notContainsAny.find((token) => familyLower.includes(String(token || '').toLowerCase()));
+        if (blocked) {
+          fail(`Font family '${family}' for selector '${selector}' contains forbidden token '${blocked}'.`);
+        }
+      }
+      if (Number.isFinite(rule.min_size_px) && Number.isFinite(entry.font_size_px) && entry.font_size_px < rule.min_size_px) {
+        fail(`Font size ${entry.font_size_px}px for selector '${selector}' is below minimum ${rule.min_size_px}px.`);
+      }
+    });
+
+    return checks;
+  };
+
   try {
     // Ensure viewport is large enough for Quarto dashboard fill layouts
     await page.setViewportSize({ width: 1440, height: 900 });
@@ -2122,6 +2316,11 @@ async (page) => {
       if (!found) {
         fail(`Missing required text: ${textNeedle}`);
       }
+    }
+    await assertForbiddenTextsAbsent('initial');
+
+    if (fontExpectations.length > 0) {
+      interactionResults.fonts = await assertFontExpectations();
     }
 
     const initialState = await captureChartState();
@@ -2225,6 +2424,7 @@ async (page) => {
 
     const finalState = await captureChartState();
     assertExpectedBackendsVisible(finalState);
+    await assertForbiddenTextsAbsent('final');
     if (minNonEmptyChartsExpected !== null) {
       const nonEmptyCharts = countNonEmptyForExpected(finalState);
       if (nonEmptyCharts < minNonEmptyChartsExpected) {
