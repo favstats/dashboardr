@@ -54,70 +54,7 @@
   # (Sidebar pages need dashboard format for proper layout with ## Column markers)
   page_format <- if (has_page_sidebar) "dashboard" else "html"
 
-  content <- c(
-    "---",
-    paste0("title: \"", title_content, "\""),
-    paste0("format: ", page_format),
-    "---",
-    "",
-    "```{r, include=FALSE}",
-    "# Initialize dashboardr page configuration (CSS/JS for charts)",
-    "dashboardr::.page_config()",
-    "```",
-    ""
-  )
-
-  # Add custom text content if provided
-  if (isTRUE(!is.null(page$text) && nzchar(page$text))) {
-    content <- c(content, page$text, "")
-  }
-  
-  # Auto-enable modals if needed (flag set by add_modal())
-  if (isTRUE(page$needs_modals)) {
-    content <- c(content,
-      "```{r, echo=FALSE, results='asis'}",
-      "dashboardr::enable_modals()",
-      "```",
-      ""
-    )
-  }
-  
-  # Auto-enable inputs if needed (flag set by add_input())
-  if (isTRUE(page$needs_inputs)) {
-    args <- character(0)
-    if (isTRUE(page$needs_linked_inputs)) args <- c(args, "linked = TRUE")
-    if (isTRUE(page$needs_show_when)) args <- c(args, "show_when = TRUE")
-    enable_call <- paste0("dashboardr::enable_inputs(", paste(args, collapse = ", "), ")")
-    content <- c(content,
-      "```{r, echo=FALSE, results='asis'}",
-      enable_call,
-      "```",
-      ""
-    )
-  }
-  # Show_when without inputs (e.g. conditional viz only)
-  if (!isTRUE(page$needs_inputs) && isTRUE(page$needs_show_when)) {
-    content <- c(content,
-      "```{r, echo=FALSE, results='asis'}",
-      "dashboardr::enable_show_when()",
-      "```",
-      ""
-    )
-  }
-
-  # Enable chart export buttons if requested
-  if (isTRUE(page$chart_export)) {
-    content <- c(content,
-      "```{r, echo=FALSE, results='asis'}",
-      "# Enable chart export buttons (download as PNG/SVG/PDF/CSV)",
-      "dashboardr::enable_chart_export()",
-      "```",
-      ""
-    )
-  }
-  
-  # Auto-enable sidebar styling if page has a sidebar
-  # Check both page$sidebar and content_blocks for sidebar
+  # Detect sidebar early so we can include it in .page_config()
   page_has_sidebar <- !is.null(page$sidebar)
   if (!page_has_sidebar && !is.null(page$content_blocks)) {
     for (block in page$content_blocks) {
@@ -127,14 +64,38 @@
       }
     }
   }
-  
-  if (page_has_sidebar) {
-    content <- c(content,
-      "```{r, echo=FALSE, results='asis'}",
-      "dashboardr::enable_sidebar()",
-      "```",
-      ""
-    )
+
+  # Build .page_config() arguments — one call for setup + all dependencies
+  cfg_args <- "accessibility = TRUE"
+  if (isTRUE(page$needs_modals))         cfg_args <- c(cfg_args, "modals = TRUE")
+  if (isTRUE(page$needs_inputs)) {
+    cfg_args <- c(cfg_args, "inputs = TRUE")
+    if (isTRUE(page$needs_linked_inputs)) cfg_args <- c(cfg_args, "linked = TRUE")
+    if (isTRUE(page$needs_show_when))     cfg_args <- c(cfg_args, "show_when = TRUE")
+    if (isTRUE(page$url_params))          cfg_args <- c(cfg_args, "url_params = TRUE")
+  } else if (isTRUE(page$needs_show_when)) {
+    cfg_args <- c(cfg_args, "show_when = TRUE")
+  }
+  if (isTRUE(page$chart_export))          cfg_args <- c(cfg_args, "chart_export = TRUE")
+  if (page_has_sidebar)                   cfg_args <- c(cfg_args, "sidebar = TRUE")
+
+  config_call <- paste0("dashboardr::.page_config(", paste(cfg_args, collapse = ", "), ")")
+
+  content <- c(
+    "---",
+    paste0("title: \"", title_content, "\""),
+    paste0("format: ", page_format),
+    "---",
+    "",
+    "```{r, echo=FALSE, results='asis', message=FALSE, warning=FALSE}",
+    config_call,
+    "```",
+    ""
+  )
+
+  # Add custom text content if provided
+  if (isTRUE(!is.null(page$text) && nzchar(page$text))) {
+    content <- c(content, page$text, "")
   }
 
   # Add global setup chunk with libraries, data, and settings
@@ -281,11 +242,19 @@
       content <- c(content, "", "## Column", "")
     }
   }
-  
+
   # For right sidebar: output ## Column marker first (sidebar added at end)
   if (needs_auto_main_column && sidebar_position == "right") {
     content <- c(content, "", "## Column", "")
   }
+
+  # Main content landmark (id + role="main") is added by accessibility.js at runtime
+  # to avoid a wrapping div that breaks Quarto's dashboard grid structure.
+
+  # Track content length after ## Column so we can wrap loose content in ### Row
+  # when in dashboard layout mode (prevents Quarto from creating implicit grid cells
+  # that squish the layout)
+  content_len_after_column <- length(content)
 
   # Add content blocks (text, images, and other content types) before visualizations
   if (!is.null(page$content_blocks)) {
@@ -432,6 +401,31 @@
               }
             }
 
+            # In dashboard layout, check if viz items follow these content items.
+            # If so, wrap content in ### Row to prevent Quarto creating implicit
+            # grid cells that squish the layout.
+            has_following_viz <- FALSE
+            if (use_dashboard_layout && j <= length(items_with_idx)) {
+              for (k in j:length(items_with_idx)) {
+                fv_item <- items_with_idx[[k]]
+                if (!is.null(fv_item)) {
+                  fv_type <- fv_item$type %||% ""
+                  if (fv_type == "viz" || fv_type == "pagination") {
+                    has_following_viz <- TRUE
+                    break
+                  }
+                }
+              }
+            }
+            # Skip row wrapper when content items include layout containers
+            # (layout_column/layout_row) that already manage their own grid structure.
+            has_layout_container <- any(vapply(content_items, function(ci) {
+              (ci$type %||% "") %in% c("layout_column", "layout_row")
+            }, logical(1)))
+            if (has_following_viz && !has_layout_container) {
+              content <- c(content, "", "### Row {height=\"auto\"}", "")
+            }
+
             # Process through content tabgroup handler
             ctx_label <- paste0("page '", page$name %||% "<unnamed>", "'")
             processed_content <- .process_content_tabgroups(content_items)
@@ -527,6 +521,24 @@
     }
   }
 
+  # In dashboard layout, wrap any loose content blocks in ### Row so they don't
+  # create implicit grid cells that squish the layout alongside viz ### Row containers.
+  # Only wrap when there are subsequent visualizations that will add their own ### Row.
+  # Skip wrapping when the loose content already contains its own ## Column markers
+  # (e.g. from add_layout_column) since those manage their own grid structure.
+  has_upcoming_viz <- !is.null(page$visualizations) && !isTRUE(page$viz_embedded_in_content)
+  loose_content_added <- length(content) > content_len_after_column
+  if (use_dashboard_layout && loose_content_added && has_upcoming_viz) {
+    loose_lines <- content[(content_len_after_column + 1):length(content)]
+    has_own_column <- any(grepl("^## Column", loose_lines))
+    if (!has_own_column) {
+      # Replace them with a ### Row wrapper
+      content <- content[seq_len(content_len_after_column)]
+      content <- c(content, "", "### Row {height=\"auto\"}", "")
+      content <- c(content, loose_lines)
+    }
+  }
+
   # Add visualizations (unless they're already embedded in content_blocks from + operator)
   if (!is.null(page$visualizations) && !isTRUE(page$viz_embedded_in_content)) {
     # Get lazy load settings
@@ -577,6 +589,8 @@
   if (has_sidebar && sidebar_position == "right") {
     content <- c(content, .generate_sidebar_block(sidebar, page))
   }
+
+  # (main content landmark is added by accessibility.js — no closing div needed)
 
   content
 }
@@ -1025,15 +1039,19 @@
   lines
 }
 
-.build_layout_header <- function(level, label, class = NULL, width = NULL) {
+.build_layout_header <- function(level, label, class = NULL, width = NULL, style = NULL) {
   attrs <- character(0)
   if (isTRUE(!is.null(class) && nzchar(class))) {
     class_tokens <- unlist(strsplit(class, "\\s+"))
     class_tokens <- class_tokens[nzchar(class_tokens)]
     attrs <- c(attrs, paste0(".", class_tokens))
   }
+
   if (!is.null(width) && nzchar(as.character(width))) {
     attrs <- c(attrs, paste0("width=", as.character(width)))
+  }
+  if (!is.null(style) && nzchar(style)) {
+    attrs <- c(attrs, paste0("style=\"", style, "\""))
   }
   attr_suffix <- if (length(attrs) > 0) paste0(" {", paste(attrs, collapse = " "), "}") else ""
   paste0(paste(rep("#", level), collapse = ""), " ", label, attr_suffix)
@@ -1082,7 +1100,15 @@
   row_items <- .layout_items_in_order(block$items)
   .validate_manual_layout_row_items(row_items, page_name)
 
-  lines <- c("", .build_layout_header(3, "Row", class = block$class), "")
+  # In dashboard mode (has sidebar), use ### Row heading for Quarto dashboard grid.
+  # In non-dashboard mode (html format), use layout-ncol divs for side-by-side layout.
+  row_style <- block$style
+  if (dashboard_layout) {
+    lines <- c("", .build_layout_header(3, "Row", class = block$class, style = row_style), "")
+  } else {
+    lines <- character(0)
+  }
+
   i <- 1
 
   while (i <= length(row_items)) {
@@ -1132,9 +1158,30 @@
           })
         }
 
-        lines <- c(
-          lines,
-          .generate_viz_from_specs(
+        # In non-dashboard mode with multiple vizzes, generate each viz
+        # separately and wrap in layout-ncol with individual div children.
+        # This avoids ## headings breaking out of the layout-ncol context.
+        n_viz <- length(viz_items)
+        if (!dashboard_layout && n_viz > 1) {
+          per_viz_lines <- character(0)
+          for (vi in seq_along(processed_specs)) {
+            single_lines <- .generate_viz_from_specs(
+              processed_specs[vi],
+              lazy_load_charts = page$lazy_load_charts %||% FALSE,
+              lazy_load_tabs = page$lazy_load_tabs %||% FALSE,
+              heading_level = viz_heading_level,
+              dashboard_layout = FALSE,
+              contextual_viz_errors = page$contextual_viz_errors %||% FALSE
+            )
+            per_viz_lines <- c(per_viz_lines, "", ":::: {}", single_lines, "", "::::")
+          }
+          ncol_attrs <- paste0("layout-ncol=", n_viz)
+          if (!is.null(row_style) && nzchar(row_style)) {
+            ncol_attrs <- paste0(ncol_attrs, " style=\"", row_style, "\"")
+          }
+          lines <- c(lines, "", paste0("::: {", ncol_attrs, "}"), per_viz_lines, "", ":::", "")
+        } else {
+          viz_lines <- .generate_viz_from_specs(
             processed_specs,
             lazy_load_charts = page$lazy_load_charts %||% FALSE,
             lazy_load_tabs = page$lazy_load_tabs %||% FALSE,
@@ -1142,12 +1189,57 @@
             dashboard_layout = FALSE,
             contextual_viz_errors = page$contextual_viz_errors %||% FALSE
           )
-        )
+          lines <- c(lines, viz_lines)
+        }
       }
       i <- j
       next
     }
 
+    # Non-viz item: in non-dashboard mode, group consecutive non-viz items
+    # for layout-ncol wrapping
+    if (!dashboard_layout) {
+      non_viz_items <- list(item)
+      j <- i + 1
+      while (j <= length(row_items)) {
+        next_item <- row_items[[j]]
+        if (!is.list(next_item) || identical(next_item$type %||% "", "viz")) break
+        non_viz_items <- c(non_viz_items, list(next_item))
+        j <- j + 1
+      }
+
+      # Generate content for each non-viz item
+      group_lines <- character(0)
+      for (nv_item in non_viz_items) {
+        if (is.null(nv_item) || !is.list(nv_item)) next
+        item_lines <- .generate_page_item_content(
+          item = nv_item,
+          page = page,
+          page_filter_vars = page_filter_vars,
+          viz_heading_level = viz_heading_level,
+          dashboard_layout = dashboard_layout,
+          context_label = paste0("layout row in page '", page_name, "'")
+        )
+        if (!is.null(item_lines)) group_lines <- c(group_lines, item_lines)
+      }
+
+      n_items <- length(non_viz_items)
+      if (n_items > 1 && length(group_lines) > 0) {
+        # Wrap in layout-ncol div for side-by-side rendering
+        ncol_attrs <- paste0("layout-ncol=", n_items)
+        if (!is.null(row_style) && nzchar(row_style)) {
+          ncol_attrs <- paste0(ncol_attrs, " style=\"", row_style, "\"")
+        }
+        lines <- c(lines, "", paste0("::: {", ncol_attrs, "}"), group_lines, ":::", "")
+      } else if (length(group_lines) > 0) {
+        lines <- c(lines, group_lines)
+      }
+
+      i <- j
+      next
+    }
+
+    # Dashboard mode: emit items individually (### Row handles layout)
     item_lines <- .generate_page_item_content(
       item = item,
       page = page,
@@ -1164,7 +1256,18 @@
 }
 
 .generate_layout_column_block <- function(block, page, page_filter_vars, viz_heading_level, dashboard_layout) {
-  column_lines <- c("", .build_layout_header(2, "Column", class = block$class, width = block$width), "")
+  # In dashboard mode (has sidebar), use ## Column heading for Quarto dashboard grid.
+  # In non-dashboard mode (html format), suppress heading; use width div only when needed.
+  if (dashboard_layout) {
+    column_lines <- c("", .build_layout_header(2, "Column", class = block$class, width = block$width), "")
+  } else {
+    width <- block$width
+    if (!is.null(width) && nzchar(as.character(width))) {
+      column_lines <- c("", paste0(":::{style=\"width:", width, "%\"}"), "")
+    } else {
+      column_lines <- character(0)
+    }
+  }
   column_items <- .layout_items_in_order(block$items)
 
   for (idx in seq_along(column_items)) {
@@ -1188,6 +1291,11 @@
     if (!is.null(item_lines)) column_lines <- c(column_lines, item_lines)
   }
 
+  # Close width div in non-dashboard mode
+  if (!dashboard_layout && !is.null(block$width) && nzchar(as.character(block$width))) {
+    column_lines <- c(column_lines, ":::", "")
+  }
+
   .wrap_show_when_block(column_lines, block$show_when)
 }
 
@@ -1201,13 +1309,14 @@
 .generate_divider_block <- function(block) {
   # Use Quarto horizontal rule or custom HTML
   style <- block$style %||% "default"
-  
-  if (style == "thick") {
-    c("", "<hr style='border: 3px solid #333;' />", "")
-  } else if (style == "dashed") {
-    c("", "<hr style='border-top: 2px dashed #ccc;' />", "")
-  } else if (style == "dotted") {
-    c("", "<hr style='border-top: 2px dotted #ccc;' />", "")
+
+  if (style %in% c("thick", "dashed", "dotted")) {
+    c("",
+      "```{r}",
+      "#| echo: false",
+      paste0("dashboardr::html_divider(", .serialize_arg(style), ")"),
+      "```",
+      "")
   } else {
     # Default markdown horizontal rule
     c("", "---", "")
@@ -1239,18 +1348,14 @@
 #' @return Character vector of markdown lines
 #' @keywords internal
 .generate_card_block <- function(block) {
-  # Use Bootstrap card or custom div
-  lines <- c("", "<div class='card'>")
-  
-  if (isTRUE(!is.null(block$title) && nzchar(block$title))) {
-    lines <- c(lines, paste0("<div class='card-header'>", block$title, "</div>"))
-  }
-  
-  lines <- c(lines, "<div class='card-body'>")
-  lines <- c(lines, block$text)
-  lines <- c(lines, "</div>", "</div>", "")
-  
-  lines
+  c("",
+    "```{r}",
+    "#| echo: false",
+    paste0("dashboardr::html_card(",
+           "body = ", .serialize_arg(block$text), ", ",
+           "title = ", .serialize_arg(block$title), ")"),
+    "```",
+    "")
 }
 
 #' Generate accordion block markdown
@@ -1265,7 +1370,7 @@
   lines <- c("", "<details>")
   lines <- c(lines, paste0("<summary>", block$title %||% "Details", "</summary>"))
   lines <- c(lines, "", block$text, "", "</details>", "")
-  
+
   lines
 }
 
@@ -1281,25 +1386,16 @@
   width <- block$width %||% "100%"
   extra_style <- block$style
 
-  # Build style string with width/height (supports all CSS units like vw, vh, calc())
-  style_parts <- c(
-    paste0("width: ", width, ";"),
-    paste0("height: ", height, ";")
-  )
-  if (!is.null(extra_style) && nzchar(extra_style)) {
-    style_parts <- c(style_parts, extra_style)
-  }
-  style_str <- paste(style_parts, collapse = " ")
-
-  iframe_tag <- paste0(
-    "<iframe src='", block$url, "'",
-    " frameborder='0'",
-    " allowfullscreen",
-    " style='", style_str, "'",
-    "></iframe>"
-  )
-  
-  c("", iframe_tag, "")
+  c("",
+    "```{r}",
+    "#| echo: false",
+    paste0("dashboardr::html_iframe(",
+           "url = ", .serialize_arg(block$url), ", ",
+           "height = ", .serialize_arg(height), ", ",
+           "width = ", .serialize_arg(width), ", ",
+           "style = ", .serialize_arg(extra_style), ")"),
+    "```",
+    "")
 }
 
 #' Generate video block markdown
@@ -1667,7 +1763,12 @@
 #' @keywords internal
 .generate_spacer_block <- function(block) {
   height <- block$height %||% "1rem"
-  c("", paste0("<div style='height: ", height, ";'></div>"), "")
+  c("",
+    "```{r}",
+    "#| echo: false",
+    paste0("dashboardr::html_spacer(", .serialize_arg(height), ")"),
+    "```",
+    "")
 }
 
 #' Generate HTML block markdown
@@ -1741,23 +1842,14 @@
 #' @return Character vector of markdown lines
 #' @keywords internal
 .generate_badge_block <- function(block) {
-  color_class <- switch(block$color,
-    "success" = "badge-success",
-    "warning" = "badge-warning",
-    "danger" = "badge-danger",
-    "info" = "badge-info",
-    "primary" = "badge-primary",
-    "secondary" = "badge-secondary",
-    "badge-primary"  # default
-  )
-  
-  badge_html <- paste0(
-    "<span class='badge ", color_class, "'>",
-    block$text,
-    "</span>"
-  )
-  
-  c("", badge_html, "")
+  c("",
+    "```{r}",
+    "#| echo: false",
+    paste0("dashboardr::html_badge(",
+           "text = ", .serialize_arg(block$text), ", ",
+           "color = ", .serialize_arg(block$color %||% "primary"), ")"),
+    "```",
+    "")
 }
 
 #' Generate metric block markdown
@@ -1768,38 +1860,23 @@
 #' @return Character vector of markdown lines
 #' @keywords internal
 .generate_metric_block <- function(block) {
-  icon_html <- ""
-  if (!is.null(block$icon)) {
-    icon_html <- paste0("{{< iconify ", block$icon, " size=2em >}}")
-  }
-  
-  color_style <- ""
-  if (!is.null(block$color)) {
-    color_style <- paste0(" style='border-left: 4px solid ", block$color, ";'")
-  }
-  
-  subtitle_html <- ""
-  if (!is.null(block$subtitle)) {
-    subtitle_html <- paste0("<p class='text-muted small'>", block$subtitle, "</p>")
-  }
-  
-  metric_html <- paste0(
-    "<div class='card mb-3'", color_style, ">",
-    "  <div class='card-body'>",
-    "    <div class='d-flex justify-content-between align-items-start'>",
-    "      <div>",
-    "        <h6 class='card-subtitle mb-2 text-muted'>", block$title, "</h6>",
-    "        <h2 class='card-title mb-1'>", block$value, "</h2>",
-    "        ", subtitle_html, "  ",
-    "      </div>",
-    "      <div class='text-primary'>", icon_html, "</div>",
-    "    </div>",
-    "  </div>",
-    "</div>"
-  )
-  
-  # Wrap HTML in Quarto HTML block so it renders properly
-  c("", "```{=html}", metric_html, "```", "")
+  c("",
+    "```{r}",
+    "#| echo: false",
+    paste0("dashboardr::html_metric(",
+           "value = ", .serialize_arg(block$value), ", ",
+           "title = ", .serialize_arg(block$title), ", ",
+           "icon = ", .serialize_arg(block$icon), ", ",
+           "color = ", .serialize_arg(block$color), ", ",
+           "bg_color = ", .serialize_arg(block$bg_color), ", ",
+           "text_color = ", .serialize_arg(block$text_color), ", ",
+           "value_prefix = ", .serialize_arg(block$value_prefix), ", ",
+           "value_suffix = ", .serialize_arg(block$value_suffix), ", ",
+           "border_radius = ", .serialize_arg(block$border_radius), ", ",
+           "subtitle = ", .serialize_arg(block$subtitle), ", ",
+           "aria_label = ", .serialize_arg(block$aria_label), ")"),
+    "```",
+    "")
 }
 
 #' Generate value box block markdown
@@ -1815,22 +1892,22 @@
     "",
     "```{r}",
     "#| echo: false",
-    "#| results: 'asis'",
     paste0("dashboardr::render_value_box("),
     paste0("  title = ", .serialize_arg(block$title), ","),
     paste0("  value = ", .serialize_arg(block$value), ","),
     paste0("  bg_color = ", .serialize_arg(block$bg_color), ","),
     paste0("  logo_url = ", .serialize_arg(block$logo_url), ","),
-    paste0("  logo_text = ", .serialize_arg(block$logo_text)),
+    paste0("  logo_text = ", .serialize_arg(block$logo_text), ","),
+    paste0("  aria_label = ", .serialize_arg(block$aria_label)),
     ")",
     "```"
   )
-  
+
   # Add collapsible description if provided
   if (isTRUE(!is.null(block$description) && nzchar(block$description))) {
     # Convert markdown to HTML using pandoc via commonmark
     description_text <- block$description
-    
+
     # Simple markdown conversion for common patterns
     # Convert [text](url) to <a href="url">text</a>
     description_text <- gsub("\\[([^]]+)\\]\\(([^)]+)\\)", "<a href='\\2' target='_blank' rel='noopener'>\\1</a>", description_text)
@@ -1840,21 +1917,17 @@
     description_text <- gsub("\\*([^*]+)\\*", "<em>\\1</em>", description_text)
     # Convert line breaks to <br>
     description_text <- gsub("\n", "<br>", description_text)
-    
-    description_html <- paste0(
-      "<details style='background-color: #f8f9fa; border: 1px solid rgba(0, 0, 0, 0.08); border-radius: 8px; padding: 1rem; margin-top: 1rem;'>",
-      "  <summary style='cursor: pointer; font-weight: 600; font-size: 0.9rem; user-select: none; list-style: none; display: flex; justify-content: space-between; align-items: center;'>",
-      "    <span>", block$description_title, "</span>",
-      "    <span class='expand-icon' style='font-size: 0.8rem; opacity: 0.5; transition: transform 0.3s ease, opacity 0.3s ease; transform: rotate(0deg);'>\u25bc</span>",
-      "  </summary>",
-      "  <div style='margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid rgba(0, 0, 0, 0.1); font-size: 0.85rem;'>",
-      "    ", description_text,
-      "  </div>",
-      "</details>"
-    )
-    lines <- c(lines, "", "```{=html}", description_html, "```")
+
+    # Build the description accordion as raw HTML
+    lines <- c(lines, "",
+      "<details>",
+      paste0("<summary>", block$description_title %||% "Details", "</summary>"),
+      "",
+      description_text,
+      "",
+      "</details>")
   }
-  
+
   c(lines, "")
 }
 
@@ -1871,7 +1944,6 @@
     "",
     "```{r}",
     "#| echo: false",
-    "#| results: 'asis'",
     "dashboardr::render_value_box_row(list("
   )
   

@@ -1257,20 +1257,36 @@ add_badge <- function(content, text, color = "primary", tabgroup = NULL, show_wh
 #' @param title Metric title
 #' @param icon Optional icon
 #' @param color Optional color theme
+#' @param bg_color Optional background color (e.g. "#3498db").
+#' @param text_color Optional text color (e.g. "#ffffff").
+#' @param value_prefix Optional string prepended to the displayed value.
+#' @param value_suffix Optional string appended to the displayed value.
+#' @param border_radius Optional CSS border-radius (e.g. "12px", "0").
 #' @param subtitle Optional subtitle text
 #' @param tabgroup Optional tabgroup for organizing content (character vector for nested tabs)
 #' @param show_when One-sided formula controlling conditional display based on input values.
+#' @param aria_label Optional ARIA label for accessibility.
 #' @export
-add_metric <- function(content, value, title, icon = NULL, color = NULL, subtitle = NULL, tabgroup = NULL, show_when = NULL) {
+add_metric <- function(content, value, title, icon = NULL, color = NULL,
+                       bg_color = NULL, text_color = NULL,
+                       value_prefix = NULL, value_suffix = NULL,
+                       border_radius = NULL,
+                       subtitle = NULL, tabgroup = NULL, show_when = NULL, aria_label = NULL) {
   metric_block <- structure(list(
     type = "metric",
     value = value,
     title = title,
     icon = icon,
     color = color,
+    bg_color = bg_color,
+    text_color = text_color,
+    value_prefix = value_prefix,
+    value_suffix = value_suffix,
+    border_radius = border_radius,
     subtitle = subtitle,
     tabgroup = .parse_tabgroup(tabgroup),
-    show_when = show_when
+    show_when = show_when,
+    aria_label = aria_label
   ), class = "content_block")
   
   if (inherits(content, "page_object")) {
@@ -1314,6 +1330,7 @@ add_metric <- function(content, value, title, icon = NULL, color = NULL, subtitl
 #' @param description_title Title for collapsible section, default "About this source"
 #' @param tabgroup Optional tabgroup for organizing content (character vector for nested tabs)
 #' @param show_when One-sided formula controlling conditional display based on input values.
+#' @param aria_label Optional ARIA label for accessibility.
 #' @export
 #' @examples
 #' \dontrun{
@@ -1325,18 +1342,18 @@ add_metric <- function(content, value, title, icon = NULL, color = NULL, subtitl
 #'     logo_text = "$",
 #'     bg_color = "#2E86AB"
 #'   )
-#'   
+#'
 #' # Row of value boxes (pipeable!)
 #' content <- create_content() %>%
 #'   add_value_box_row() %>%
 #'     add_value_box(title = "Users", value = "1,234") %>%
 #'     add_value_box(title = "Revenue", value = "EUR 56K")
 #' }
-add_value_box <- function(content, title, value, logo_url = NULL, logo_text = NULL, 
-                          bg_color = "#2c3e50", description = NULL, 
-                          description_title = "About this source", tabgroup = NULL, show_when = NULL) {
+add_value_box <- function(content, title, value, logo_url = NULL, logo_text = NULL,
+                          bg_color = "#2c3e50", description = NULL,
+                          description_title = "About this source", tabgroup = NULL, show_when = NULL, aria_label = NULL) {
   .validate_show_when(show_when)
-  
+
   # Create the box specification
   box_spec <- list(
     title = title,
@@ -1345,7 +1362,8 @@ add_value_box <- function(content, title, value, logo_url = NULL, logo_text = NU
     logo_text = logo_text,
     bg_color = bg_color,
     description = description,
-    description_title = description_title
+    description_title = description_title,
+    aria_label = aria_label
   )
   
   # Check if we're adding to a row container
@@ -1530,11 +1548,14 @@ add_layout_column <- function(content, width = NULL, class = NULL, tabgroup = NU
 #'
 #' @param column_container A layout_column_container created by \code{add_layout_column()}.
 #' @param class Optional CSS class for the row.
+#' @param style Optional inline CSS style string applied to the row wrapper.
+#'   In non-dashboard mode this is added to the \code{layout-ncol} div;
+#'   in dashboard mode it is added to the \code{### Row} attributes.
 #' @param tabgroup Optional tabgroup metadata (reserved for future use).
 #' @param show_when Optional one-sided formula controlling visibility.
 #' @return A layout_row_container for piping.
 #' @export
-add_layout_row <- function(column_container, class = NULL, tabgroup = NULL, show_when = NULL) {
+add_layout_row <- function(column_container, class = NULL, style = NULL, tabgroup = NULL, show_when = NULL) {
   .validate_show_when(show_when)
 
   if (!inherits(column_container, "layout_column_container")) {
@@ -1549,6 +1570,9 @@ add_layout_row <- function(column_container, class = NULL, tabgroup = NULL, show
   if (!is.null(class) && (!is.character(class) || length(class) != 1)) {
     stop("class must be NULL or a single character string", call. = FALSE)
   }
+  if (!is.null(style) && (!is.character(style) || length(style) != 1)) {
+    stop("style must be NULL or a single character string", call. = FALSE)
+  }
 
   row_id <- paste0("layout_row_", as.integer(stats::runif(1, min = 1, max = 1e9)))
   column_container$.active_layout_row_id <- row_id
@@ -1556,6 +1580,7 @@ add_layout_row <- function(column_container, class = NULL, tabgroup = NULL, show
   structure(list(
     type = "layout_row",
     class = class,
+    style = style,
     tabgroup = .parse_tabgroup(tabgroup),
     show_when = show_when,
     items = list(),
@@ -2157,8 +2182,9 @@ add_linked_inputs <- function(x, parent, child, type = "select") {
 add_input <- function(content,
                       input_id,
                       label = NULL,
-                      type = c("select_multiple", "select_single", "checkbox", 
-                               "radio", "switch", "slider", "text", "number", "button_group"),
+                      type = c("select_multiple", "select_single", "checkbox",
+                               "radio", "switch", "slider", "text", "number", "button_group",
+                               "date", "daterange"),
                       filter_var,
                       options = NULL,
                       options_from = NULL,
@@ -2604,6 +2630,7 @@ end_input_row <- function(row_container) {
   if (!is.null(row_container$parent_page)) {
     parent_page <- row_container$parent_page
     parent_page$.items <- c(parent_page$.items, list(input_row_block))
+    parent_page$needs_inputs <- TRUE
     return(parent_page)
   }
   

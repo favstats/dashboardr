@@ -7,6 +7,7 @@
 add_layout_row(
   column_container,
   class = NULL,
+  style = NULL,
   tabgroup = NULL,
   show_when = NULL
 )
@@ -15,6 +16,10 @@ add_layout_row(
 \item{column_container}{A layout_column_container created by \code{add_layout_column()}.}
 
 \item{class}{Optional CSS class for the row.}
+
+\item{style}{Optional inline CSS style string applied to the row wrapper.
+In non-dashboard mode this is added to the \code{layout-ncol} div;
+in dashboard mode it is added to the \code{### Row} attributes.}
 
 \item{tabgroup}{Optional tabgroup metadata (reserved for future use).}
 

@@ -10,9 +10,15 @@ add_metric(
   title,
   icon = NULL,
   color = NULL,
+  bg_color = NULL,
+  text_color = NULL,
+  value_prefix = NULL,
+  value_suffix = NULL,
+  border_radius = NULL,
   subtitle = NULL,
   tabgroup = NULL,
-  show_when = NULL
+  show_when = NULL,
+  aria_label = NULL
 )
 }
 \arguments{
@@ -26,11 +32,23 @@ add_metric(
 
 \item{color}{Optional color theme}
 
+\item{bg_color}{Optional background color (e.g. "#3498db").}
+
+\item{text_color}{Optional text color (e.g. "#ffffff").}
+
+\item{value_prefix}{Optional string prepended to the displayed value.}
+
+\item{value_suffix}{Optional string appended to the displayed value.}
+
+\item{border_radius}{Optional CSS border-radius (e.g. "12px", "0").}
+
 \item{subtitle}{Optional subtitle text}
 
 \item{tabgroup}{Optional tabgroup for organizing content (character vector for nested tabs)}
 
 \item{show_when}{One-sided formula controlling conditional display based on input values.}
+
+\item{aria_label}{Optional ARIA label for accessibility.}
 }
 \description{
 Add a metric/value box
