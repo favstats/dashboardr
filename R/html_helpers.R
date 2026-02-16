@@ -153,8 +153,12 @@ html_metric <- function(value, title, icon = NULL, color = NULL,
   # Display value with optional prefix/suffix
   display_value <- paste0(value_prefix %||% "", value, value_suffix %||% "")
 
+  # When text_color is set, drop text-muted so the color inherits properly
+  title_class <- if (!is.null(text_color)) "card-subtitle mb-2" else "card-subtitle mb-2 text-muted"
+  subtitle_class <- if (!is.null(text_color)) "small" else "text-muted small"
+
   subtitle_el <- if (!is.null(subtitle)) {
-    htmltools::tags$p(class = "text-muted small", subtitle)
+    htmltools::tags$p(class = subtitle_class, subtitle)
   }
 
   aria_args <- list()
@@ -176,7 +180,7 @@ html_metric <- function(value, title, icon = NULL, color = NULL,
       htmltools::div(class = "card-body",
         htmltools::div(class = "d-flex justify-content-between align-items-start",
           htmltools::div(
-            htmltools::tags$h6(class = "card-subtitle mb-2 text-muted", title),
+            htmltools::tags$h6(class = title_class, title),
             htmltools::tags$h2(class = "card-title mb-1", display_value),
             subtitle_el
           ),

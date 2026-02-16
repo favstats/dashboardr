@@ -163,6 +163,8 @@ test_that("html_metric applies text_color", {
   expect_true(grepl("color: #ffffff;", html, fixed = TRUE))
   # Icon wrapper should NOT have the text-primary class when text_color is set
   expect_false(grepl("text-primary", html))
+  # Title and subtitle should NOT have text-muted when text_color is set
+  expect_false(grepl("text-muted", html))
 })
 
 test_that("html_metric renders value_prefix and value_suffix", {
