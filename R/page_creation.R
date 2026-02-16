@@ -396,7 +396,18 @@ add_pages <- function(proj, ...) {
   if (isTRUE(page$needs_modals)) {
     content$needs_modals <- TRUE
   }
-  
+
+  # Propagate needs_inputs and related flags from page_object
+  if (isTRUE(page$needs_inputs)) {
+    content$needs_inputs <- TRUE
+  }
+  if (isTRUE(page$needs_metric_data)) {
+    content$needs_metric_data <- TRUE
+  }
+  if (isTRUE(page$needs_linked_inputs)) {
+    content$needs_linked_inputs <- TRUE
+  }
+
   content
 }
 
@@ -415,11 +426,23 @@ add_pages <- function(proj, ...) {
   # Build text from text field if present
   text_content <- page$text
 
+  # When external content collections carry their own data (different from the
+
+  # page's data), combine_content() merges everything into a named list
+  # (e.g. list(data_1 = page_df, data_2 = collection_df)).  Pass that merged
+  # structure so add_dashboard_page() saves each dataset and the setup chunk
+  # creates the right readRDS() lines (data_1, data_2, ...).
+  page_data <- page$data
+  if (!is.null(combined_content) && !is.null(combined_content$data) &&
+      is.list(combined_content$data) && !is.data.frame(combined_content$data)) {
+    page_data <- combined_content$data
+  }
+
   # Call add_page with all the page's parameters
   add_dashboard_page(
     proj = proj,
     name = page$name,
-    data = page$data,
+    data = page_data,
     data_path = page$data_path,
     content = combined_content,
     text = text_content,

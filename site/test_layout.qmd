@@ -1,0 +1,105 @@
+---
+title: "Test Layout"
+format: html
+---
+
+```{r, echo=FALSE, results='asis', message=FALSE, warning=FALSE}
+dashboardr::.page_config(accessibility = TRUE)
+```
+
+```{r setup}
+#| echo: false
+#| warning: false
+#| message: false
+#| error: false
+#| results: 'hide'
+
+# Load dashboardr (includes dplyr, highcharter as dependencies)
+library(dashboardr)
+
+# Global chunk options
+knitr::opts_chunk$set(
+  echo = FALSE,
+  warning = FALSE,
+  message = FALSE,
+  error = FALSE,
+  fig.width = 12,
+  fig.height = 8,
+  dpi = 300
+)
+
+```
+
+
+# Trying to obtain this:
+
+
+### A row with multiple objects / metrics / custom html elements
+
+
+```{r}
+#| echo: false
+dashboardr::render_value_box_row(list(
+  list(
+    title = "VB 1",
+    value = 100,
+    bg_color = "#cb333b",
+    logo_url = NULL,
+    logo_text = NULL
+  ),
+  list(
+    title = "VB 2",
+    value = 200,
+    bg_color = "#c6d7ad",
+    logo_url = NULL,
+    logo_text = NULL
+  ),
+  list(
+    title = "VB 3",
+    value = 300,
+    bg_color = "#2c3e50",
+    logo_url = NULL,
+    logo_text = NULL
+  )
+))
+```
+
+
+::: {.callout-note}
+Add_value_box_row works correctly with multiple value boxes
+:::
+
+
+### Trying to obtain the same result using
+
+- **add_layout_column**
+- **add_layout_row**
+
+
+::: {.callout-warning}
+The layout functions are not working as expected, the metrics are not being displayed in the same row and column as they should be,
+              and the metric element do not properly render
+:::
+
+
+::: {layout-ncol=2}
+
+```{r}
+#| echo: false
+dashboardr::html_metric(value = 100, title = "metric 1 - this is between add_layout_row and column", icon = NULL, color = "#cb333b", subtitle = "subtitle1", aria_label = NULL)
+```
+
+
+```{r}
+#| echo: false
+dashboardr::html_metric(value = 2000, title = "metric 2 -this is also between add_layout_row and column", icon = NULL, color = NULL, subtitle = "subtitle2", aria_label = NULL)
+```
+
+:::
+
+
+```{r}
+#| echo: false
+dashboardr::html_metric(value = 3000, title = "metric 3 - this is alone", icon = NULL, color = NULL, subtitle = "subtitle2", aria_label = NULL)
+```
+

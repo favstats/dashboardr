@@ -628,24 +628,50 @@ viz_lollipop <- function(data,
     ": ", round(agg_data$value, 2)
   )
 
+  # Pre-compute data label column
+  bar_type <- config$bar_type
+  data_labels_enabled <- config$data_labels_enabled
+  label_decimals <- config$label_decimals %||% if (bar_type == "percent") 1L else 0L
+  if (isTRUE(data_labels_enabled)) {
+    label_suffix <- if (bar_type == "percent") "%" else ""
+    agg_data$.label <- paste0(round(agg_data$value, label_decimals), label_suffix)
+  }
+
   if (is.null(group_var)) {
-    p <- ggplot2::ggplot(agg_data, ggplot2::aes(
-      x = .data[[x_var]], y = .data$value
-    )) +
-      ggplot2::geom_segment(
-        ggplot2::aes(x = .data[[x_var]], xend = .data[[x_var]], y = 0, yend = .data$value),
-        linewidth = stem_width * 0.3, color = "#999999"
-      ) +
-      ggiraph::geom_point_interactive(
-        ggplot2::aes(tooltip = .data$.tooltip, data_id = .data[[x_var]]),
-        size = dot_size * 0.5
-      )
+    if (!is.null(color_palette)) {
+      p <- ggplot2::ggplot(agg_data, ggplot2::aes(
+        x = .data[[x_var]], y = .data$value, color = .data[[x_var]]
+      )) +
+        ggplot2::geom_segment(
+          ggplot2::aes(x = .data[[x_var]], xend = .data[[x_var]], y = 0, yend = .data$value),
+          linewidth = stem_width * 0.3, color = "#999999"
+        ) +
+        ggiraph::geom_point_interactive(
+          ggplot2::aes(tooltip = .data$.tooltip, data_id = .data[[x_var]]),
+          size = dot_size * 0.5
+        ) +
+        ggplot2::scale_color_manual(values = color_palette) +
+        ggplot2::guides(color = "none")
+    } else {
+      p <- ggplot2::ggplot(agg_data, ggplot2::aes(
+        x = .data[[x_var]], y = .data$value
+      )) +
+        ggplot2::geom_segment(
+          ggplot2::aes(x = .data[[x_var]], xend = .data[[x_var]], y = 0, yend = .data$value),
+          linewidth = stem_width * 0.3, color = "#999999"
+        ) +
+        ggiraph::geom_point_interactive(
+          ggplot2::aes(tooltip = .data$.tooltip, data_id = .data[[x_var]]),
+          size = dot_size * 0.5, color = "steelblue"
+        )
+    }
   } else {
     p <- ggplot2::ggplot(agg_data, ggplot2::aes(
       x = .data[[x_var]], y = .data$value, color = .data[[group_var]]
     )) +
       ggplot2::geom_segment(
-        ggplot2::aes(x = .data[[x_var]], xend = .data[[x_var]], y = 0, yend = .data$value),
+        ggplot2::aes(x = .data[[x_var]], xend = .data[[x_var]], y = 0, yend = .data$value,
+                     color = .data[[group_var]]),
         linewidth = stem_width * 0.3,
         position = ggplot2::position_dodge(0.5)
       ) +
@@ -654,10 +680,9 @@ viz_lollipop <- function(data,
         size = dot_size * 0.5,
         position = ggplot2::position_dodge(0.5)
       )
-  }
-
-  if (!is.null(color_palette)) {
-    p <- p + ggplot2::scale_color_manual(values = color_palette)
+    if (!is.null(color_palette)) {
+      p <- p + ggplot2::scale_color_manual(values = color_palette)
+    }
   }
 
   p <- p +
@@ -665,9 +690,21 @@ viz_lollipop <- function(data,
                   x = final_x_label, y = final_y_label) +
     ggplot2::theme_minimal()
 
+  # --- Data labels ---
+  if (isTRUE(data_labels_enabled)) {
+    p <- p + ggplot2::geom_text(
+      ggplot2::aes(label = .data$.label),
+      vjust = -0.5, size = 3,
+      position = if (!is.null(group_var)) ggplot2::position_dodge(0.5) else "identity"
+    )
+  }
+
   if (horizontal) {
     p <- p + ggplot2::coord_flip()
   }
+
+  # --- Legend position ---
+  p <- .apply_legend_ggplot(p, config$legend_position, default_show = !is.null(group_var))
 
   ggiraph::girafe(ggobj = p)
 }

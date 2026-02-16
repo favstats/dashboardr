@@ -144,12 +144,16 @@ articles:
   - content-collections
   - pages
   - dashboards
+  - date-inputs
 
 - title: Advanced Features
   navbar: ~
   contents:
   - advanced-features
   - chart-backends
+  - customizing-visualizations
+  - url-parameters
+  - accessibility
 
 - title: Publishing
   navbar: ~
@@ -299,6 +303,17 @@ reference:
   - add_quote
   - add_badge
 
+- title: HTML Helpers
+  desc: Standalone HTML generation functions for use in custom content
+  contents:
+  - html_accordion
+  - html_badge
+  - html_card
+  - html_divider
+  - html_iframe
+  - html_metric
+  - html_spacer
+
 - title: Modals
   desc: Functions for adding interactive modal dialogs
   contents:
@@ -328,6 +343,8 @@ reference:
   - enable_inputs
   - enable_show_when
   - enable_chart_export
+  - enable_accessibility
+  - enable_url_params
   - end_input_row
   - render_input
   - render_input_row
@@ -385,6 +402,11 @@ reference:
   - show_structure
   - "+.viz_collection"
   - "+.content_collection"
+
+- title: MCP Server
+  desc: Model Context Protocol server for LLM-assisted dashboard coding
+  contents:
+  - dashboardr_mcp_server
 
 - title: Page Object Methods
   desc: S3 methods for page objects

@@ -1,0 +1,117 @@
+---
+title: "{{< iconify ph chart-line >}} Time Series"
+format: html
+---
+
+```{r, include=FALSE}
+# Initialize dashboardr page configuration (CSS/JS for charts)
+dashboardr::.page_config()
+```
+
+```{r, echo=FALSE, results='asis'}
+cat('<a href="#dashboardr-main-content" class="dashboardr-skip-link">Skip to main content</a>')
+```
+
+```{r, echo=FALSE, results='asis'}
+dashboardr::enable_accessibility()
+```
+
+```{r setup}
+#| echo: false
+#| warning: false
+#| message: false
+#| error: false
+#| results: 'hide'
+
+# Load dashboardr (includes dplyr, highcharter as dependencies)
+library(dashboardr)
+
+# Global chunk options
+knitr::opts_chunk$set(
+  echo = FALSE,
+  warning = FALSE,
+  message = FALSE,
+  error = FALSE,
+  fig.width = 12,
+  fig.height = 8,
+  dpi = 300
+)
+
+# Load data
+data <- readRDS('survey_500obs.rds')
+
+# Data summary
+cat('Dataset loaded:', nrow(data), 'rows,', ncol(data), 'columns\n')
+
+```
+
+```{r, echo=FALSE, results='asis'}
+cat('<div id="dashboardr-main-content" role="main">')
+```
+
+
+::: {.panel-tabset}
+
+### Line
+
+
+```{r line}
+# Timeline Line (grouped, color_palette)
+result <- viz_timeline(
+  data = data,
+  title = "Timeline Line (grouped, color_palette)",
+  time_var = "year",
+  y_var = "score",
+  group_var = "region",
+  chart_type = "line",
+  color_palette = c("#E15759", "#4E79A7", "#76B7B2", "#F28E2B")
+)
+
+result
+```
+
+
+### Column
+
+
+```{r column}
+# Timeline Column (grouped, color_palette)
+result <- viz_timeline(
+  data = data,
+  title = "Timeline Column (grouped, color_palette)",
+  time_var = "year",
+  y_var = "score",
+  group_var = "region",
+  chart_type = "column",
+  agg = "mean",
+  color_palette = c("#E15759", "#4E79A7", "#76B7B2", "#F28E2B")
+)
+
+result
+```
+
+
+### Stacked Area
+
+
+```{r stacked-area}
+# Timeline Stacked Area (color_palette)
+result <- viz_timeline(
+  data = data,
+  title = "Timeline Stacked Area (color_palette)",
+  time_var = "year",
+  y_var = "region",
+  chart_type = "stacked_area",
+  color_palette = c("#E15759", "#4E79A7", "#76B7B2", "#F28E2B")
+)
+
+result
+```
+
+
+:::
+
+
+```{r, echo=FALSE, results='asis'}
+cat('</div>')
+```

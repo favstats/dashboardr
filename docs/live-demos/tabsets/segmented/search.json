@@ -1,31 +1,17 @@
 [
   {
-    "objectID": "1_level.html",
-    "href": "1_level.html",
-    "title": " 1 Level",
-    "section": "",
-    "text": "Each visualization gets a different tabgroup name, creating separate top-level tabs:\nadd_viz(..., tabgroup = \"age\") %&gt;%\nadd_viz(..., tabgroup = \"education\") %&gt;%\nadd_viz(..., tabgroup = \"region\")\n\nBy AgeBy EducationBy Region"
-  },
-  {
     "objectID": "1_level.html#single-level-tabs",
     "href": "1_level.html#single-level-tabs",
     "title": " 1 Level",
-    "section": "",
-    "text": "Each visualization gets a different tabgroup name, creating separate top-level tabs:\nadd_viz(..., tabgroup = \"age\") %&gt;%\nadd_viz(..., tabgroup = \"education\") %&gt;%\nadd_viz(..., tabgroup = \"region\")\n\nBy AgeBy EducationBy Region"
-  },
-  {
-    "objectID": "2_levels.html",
-    "href": "2_levels.html",
-    "title": " 2 Levels",
-    "section": "",
-    "text": "Use / to create parent and child tabs:\nadd_viz(..., tabgroup = \"satisfaction/by_age\") %&gt;%\nadd_viz(..., tabgroup = \"satisfaction/by_education\") %&gt;%\nadd_viz(..., tabgroup = \"education/by_age\")"
+    "section": "Single Level Tabs",
+    "text": "Single Level Tabs\nEach visualization gets a different tabgroup name, creating separate top-level tabs:\nadd_viz(..., tabgroup = \"age\") %&gt;%\nadd_viz(..., tabgroup = \"education\") %&gt;%\nadd_viz(..., tabgroup = \"region\")\n\nBy AgeBy EducationBy Region"
   },
   {
     "objectID": "2_levels.html#two-level-nested-tabs",
     "href": "2_levels.html#two-level-nested-tabs",
     "title": " 2 Levels",
-    "section": "",
-    "text": "Use / to create parent and child tabs:\nadd_viz(..., tabgroup = \"satisfaction/by_age\") %&gt;%\nadd_viz(..., tabgroup = \"satisfaction/by_education\") %&gt;%\nadd_viz(..., tabgroup = \"education/by_age\")"
+    "section": "Two Level Nested Tabs",
+    "text": "Two Level Nested Tabs\nUse / to create parent and child tabs:\nadd_viz(..., tabgroup = \"satisfaction/by_age\") %&gt;%\nadd_viz(..., tabgroup = \"satisfaction/by_education\") %&gt;%\nadd_viz(..., tabgroup = \"education/by_age\")"
   },
   {
     "objectID": "2_levels.html#satisfaction-analysis",
@@ -42,18 +28,11 @@
     "text": "Education Analysis\n\nBy AgeBy Region"
   },
   {
-    "objectID": "3_levels.html",
-    "href": "3_levels.html",
-    "title": " 3 Levels",
-    "section": "",
-    "text": "Add more / for deeper nesting:\nadd_viz(..., tabgroup = \"survey/satisfaction/age\") %&gt;%\nadd_viz(..., tabgroup = \"survey/demographics/education\") %&gt;%\nadd_viz(..., tabgroup = \"analysis/trends/regional\")"
-  },
-  {
     "objectID": "3_levels.html#three-level-nested-tabs",
     "href": "3_levels.html#three-level-nested-tabs",
     "title": " 3 Levels",
-    "section": "",
-    "text": "Add more / for deeper nesting:\nadd_viz(..., tabgroup = \"survey/satisfaction/age\") %&gt;%\nadd_viz(..., tabgroup = \"survey/demographics/education\") %&gt;%\nadd_viz(..., tabgroup = \"analysis/trends/regional\")"
+    "section": "Three Level Nested Tabs",
+    "text": "Three Level Nested Tabs\nAdd more / for deeper nesting:\nadd_viz(..., tabgroup = \"survey/satisfaction/age\") %&gt;%\nadd_viz(..., tabgroup = \"survey/demographics/education\") %&gt;%\nadd_viz(..., tabgroup = \"analysis/trends/regional\")"
   },
   {
     "objectID": "3_levels.html#survey-results",
@@ -70,38 +49,24 @@
     "text": "Analysis\n\nTrends\n\n\n\nRegionalEducational"
   },
   {
-    "objectID": "about.html",
-    "href": "about.html",
-    "title": " About",
-    "section": "",
-    "text": "This dashboard demonstrates the segmented tabset theme in dashboardr. Each page shows a different nesting level — from flat tabs to three levels of hierarchy.\n\n\n\n\n\nTheme\nDescription\n\n\n\n\npills\nPill-shaped tab buttons\n\n\nmodern\nClean modern design\n\n\nminimal\nSubtle, minimal styling\n\n\nclassic\nTraditional tab appearance\n\n\nunderline\nUnderline indicator\n\n\nsegmented\nSegmented control look\n\n\n\n\n\n\ncreate_dashboard(\n  tabset_theme = \"segmented\"\n) %&gt;%\n  add_page(\n    \"My Page\",\n    data = my_data\n  ) %&gt;%\n    add_viz(tabgroup = \"parent/child\", ...)\n\n\n\nThe full R code that generates all tabset theme dashboards is available on GitHub:\n\nView Source Code\n\n\n\n\n\ndashboardr Documentation\nCommunity Gallery"
-  },
-  {
     "objectID": "about.html#about-this-demo-segmented-theme",
     "href": "about.html#about-this-demo-segmented-theme",
     "title": " About",
-    "section": "",
-    "text": "This dashboard demonstrates the segmented tabset theme in dashboardr. Each page shows a different nesting level — from flat tabs to three levels of hierarchy.\n\n\n\n\n\nTheme\nDescription\n\n\n\n\npills\nPill-shaped tab buttons\n\n\nmodern\nClean modern design\n\n\nminimal\nSubtle, minimal styling\n\n\nclassic\nTraditional tab appearance\n\n\nunderline\nUnderline indicator\n\n\nsegmented\nSegmented control look\n\n\n\n\n\n\ncreate_dashboard(\n  tabset_theme = \"segmented\"\n) %&gt;%\n  add_page(\n    \"My Page\",\n    data = my_data\n  ) %&gt;%\n    add_viz(tabgroup = \"parent/child\", ...)\n\n\n\nThe full R code that generates all tabset theme dashboards is available on GitHub:\n\nView Source Code\n\n\n\n\n\ndashboardr Documentation\nCommunity Gallery"
-  },
-  {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": " Home",
-    "section": "",
-    "text": "This dashboard demonstrates the segmented tabset theme with different nesting levels.\n\n\ncreate_dashboard(\n  title = \"My Dashboard\",\n  output_dir = \"my_dashboard\",\n  tabset_theme = \"segmented\"\n)\n\n\n\n\n1 Level - Simple tabs (Demographics, Regions)\n2 Levels - Nested tabs (Topic &gt; Subtopic)\n3 Levels - Deep nesting (Category &gt; Subcategory &gt; Detail)"
+    "section": "About This Demo: segmented Theme",
+    "text": "About This Demo: segmented Theme\nThis dashboard demonstrates the segmented tabset theme in dashboardr. Each page shows a different nesting level — from flat tabs to three levels of hierarchy.\n\nAvailable Tabset Themes\n\n\n\nTheme\nDescription\n\n\n\n\npills\nPill-shaped tab buttons\n\n\nmodern\nClean modern design\n\n\nminimal\nSubtle, minimal styling\n\n\nclassic\nTraditional tab appearance\n\n\nunderline\nUnderline indicator\n\n\nsegmented\nSegmented control look\n\n\n\n\n\nUsage\ncreate_dashboard(\n  tabset_theme = \"segmented\"\n) %&gt;%\n  add_page(\n    \"My Page\",\n    data = my_data\n  ) %&gt;%\n    add_viz(tabgroup = \"parent/child\", ...)\n\n\nSource Code\nThe full R code that generates all tabset theme dashboards is available on GitHub:\n\nView Source Code\n\n\n\nLearn More\n\ndashboardr Documentation\nCommunity Gallery"
   },
   {
     "objectID": "index.html#how-to-use-this-theme",
     "href": "index.html#how-to-use-this-theme",
     "title": " Home",
-    "section": "",
-    "text": "create_dashboard(\n  title = \"My Dashboard\",\n  output_dir = \"my_dashboard\",\n  tabset_theme = \"segmented\"\n)"
+    "section": "How to Use This Theme",
+    "text": "How to Use This Theme\ncreate_dashboard(\n  title = \"My Dashboard\",\n  output_dir = \"my_dashboard\",\n  tabset_theme = \"segmented\"\n)"
   },
   {
     "objectID": "index.html#demo-pages",
     "href": "index.html#demo-pages",
     "title": " Home",
-    "section": "",
-    "text": "1 Level - Simple tabs (Demographics, Regions)\n2 Levels - Nested tabs (Topic &gt; Subtopic)\n3 Levels - Deep nesting (Category &gt; Subcategory &gt; Detail)"
+    "section": "Demo Pages",
+    "text": "Demo Pages\n\n1 Level - Simple tabs (Demographics, Regions)\n2 Levels - Nested tabs (Topic &gt; Subtopic)\n3 Levels - Deep nesting (Category &gt; Subcategory &gt; Detail)"
   }
 ]

@@ -624,6 +624,7 @@ viz_boxplot <- function(data,
       ggplot2::aes(
         lower = .data$q1, upper = .data$q3, middle = .data$median,
         ymin = .data$low, ymax = .data$high,
+        fill = .data$category,
         tooltip = .data$.tooltip, data_id = .data$category
       ),
       stat = "identity"

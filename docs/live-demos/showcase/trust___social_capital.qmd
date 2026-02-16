@@ -3,20 +3,11 @@ title: "{{< iconify ph handshake >}} Trust & Social Capital"
 format: dashboard
 ---
 
-```{r, include=FALSE}
-# Initialize dashboardr page configuration (CSS/JS for charts)
-dashboardr::.page_config()
+```{r, echo=FALSE, results='asis', message=FALSE, warning=FALSE}
+dashboardr::.page_config(accessibility = TRUE, inputs = TRUE, sidebar = TRUE)
 ```
 
 Use the filters to explore regional patterns in social trust.
-
-```{r, echo=FALSE, results='asis'}
-dashboardr::enable_inputs()
-```
-
-```{r, echo=FALSE, results='asis'}
-dashboardr::enable_sidebar()
-```
 
 ```{r setup}
 #| echo: false

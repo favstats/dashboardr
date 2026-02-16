@@ -288,8 +288,8 @@ test_that("page_object modals generate correct QMD output", {
   qmd_content <- readLines(qmd_file)
   qmd_text <- paste(qmd_content, collapse = "\n")
   
-  # Check that enable_modals() is included
-  expect_true(grepl("enable_modals\\(\\)", qmd_text))
+  # Check that modals are enabled (via .page_config or standalone enable_modals)
+  expect_true(grepl("modals = TRUE", qmd_text) || grepl("enable_modals\\(\\)", qmd_text))
   
   # Check that modal_content() is included with correct ID
   expect_true(grepl("modal_content\\(", qmd_text))

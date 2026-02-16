@@ -13,7 +13,8 @@ add_metric(
   color = NULL,
   subtitle = NULL,
   tabgroup = NULL,
-  show_when = NULL
+  show_when = NULL,
+  aria_label = NULL
 )
 ```
 
@@ -52,3 +53,7 @@ add_metric(
 
   One-sided formula controlling conditional display based on input
   values.
+
+- aria_label:
+
+  Optional ARIA label for accessibility.

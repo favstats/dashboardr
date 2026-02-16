@@ -35,18 +35,11 @@
     "text": "Political Ideology by Gender"
   },
   {
-    "objectID": "about.html",
-    "href": "about.html",
-    "title": " About",
-    "section": "",
-    "text": "The General Social Survey (GSS) is a nationally representative survey of adults in the United States, conducted since 1972 by NORC at the University of Chicago.\nThe GSS monitors societal change and the growing complexity of American society. It is one of the most frequently analyzed sources of information in the social sciences.\nLearn more: GSS Website"
-  },
-  {
     "objectID": "about.html#about-the-general-social-survey",
     "href": "about.html#about-the-general-social-survey",
     "title": " About",
-    "section": "",
-    "text": "The General Social Survey (GSS) is a nationally representative survey of adults in the United States, conducted since 1972 by NORC at the University of Chicago.\nThe GSS monitors societal change and the growing complexity of American society. It is one of the most frequently analyzed sources of information in the social sciences.\nLearn more: GSS Website"
+    "section": "About the General Social Survey",
+    "text": "About the General Social Survey\nThe General Social Survey (GSS) is a nationally representative survey of adults in the United States, conducted since 1972 by NORC at the University of Chicago.\nThe GSS monitors societal change and the growing complexity of American society. It is one of the most frequently analyzed sources of information in the social sciences.\nLearn more: GSS Website"
   },
   {
     "objectID": "about.html#variables-in-this-dashboard",
@@ -63,17 +56,10 @@
     "text": "Data Citation\nSmith, Tom W., Davern, Michael, Freese, Jeremy, and Morgan, Stephen L., General Social Surveys, 1972-2022 [machine-readable data file]. Principal Investigator, Tom W. Smith; Co-Principal Investigators, Michael Davern, Jeremy Freese and Stephen L. Morgan; Sponsored by National Science Foundation.\n\nThis dashboard was created with dashboardr."
   },
   {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": " Overview",
-    "section": "",
-    "text": "Exploring happiness, trust, and social attitudes across America.\n\n\n View Full Dashboard Code\n\nlibrary(dashboardr)\nlibrary(gssr)\nlibrary(dplyr)\n\n# Load and prepare GSS data\ndata(gss_all)\ngss_clean &lt;- gss_all %&gt;%\n  filter(year &gt;= 2010) %&gt;%\n  mutate(\n    sex = haven::as_factor(sex),\n    degree = haven::as_factor(degree),\n    happy = haven::as_factor(happy),\n    region = haven::as_factor(region),\n    polviews = haven::as_factor(polviews),\n    partyid = haven::as_factor(partyid)\n  ) %&gt;%\n  filter(!is.na(age), !is.na(sex), !is.na(degree))\n\n# Create visualizations with nested tabsets\nanalysis_vizzes &lt;- create_content() %&gt;%\n  add_viz(type = \"stackedbar\",\n          x_var = \"degree\", stack_var = \"happy\",\n          title = \"Happiness by Education\",\n          tabgroup = \"happiness\") %&gt;%\n  add_viz(type = \"boxplot\",\n          x_var = \"happy\", y_var = \"age\",\n          title = \"Age by Happiness\",\n          tabgroup = \"happiness\") %&gt;%\n  add_viz(type = \"histogram\",\n          x_var = \"age\",\n          title = \"Age Distribution\",\n          tabgroup = \"age\")\n\n# Create dashboard with value boxes\ndashboard &lt;- create_dashboard(\n  output_dir = \"showcase_dashboard\",\n  title = \"GSS Data Explorer\",\n  theme = \"flatly\"\n) %&gt;%\n  add_page(\n    name = \"Overview\",\n    content = create_content() %&gt;%\n      add_value_box_row() %&gt;%\n        add_value_box(title = \"Respondents\", value = \"2,849\") %&gt;%\n        add_value_box(title = \"Very Happy\", value = \"32%\") %&gt;%\n      end_value_box_row(),\n    is_landing_page = TRUE\n  ) %&gt;%\n  add_page(\n    name = \"Demographics\",\n    data = gss_clean,\n    content = analysis_vizzes\n  )\n\n# Generate\ngenerate_dashboard(dashboard)\nView full showcase_dashboard source code\n\n                    N                                    Total Respondents                          2,849                                                                            Very Happy                          32%                                                                            Trust Others                          34%                    \n                                                        College Educated                          28%                                                                            Regions                          9                                                                            Survey Year                          2020                    \n\n\n\n Demographics - Explore happiness and wellbeing by demographic groups\n Trust & Social Capital - Filter and explore trust patterns across regions\n Political Attitudes - Party identification and ideology breakdowns\n About - Data sources and methodology"
-  },
-  {
     "objectID": "index.html#quick-navigation",
     "href": "index.html#quick-navigation",
     "title": " Overview",
-    "section": "",
-    "text": "Demographics - Explore happiness and wellbeing by demographic groups\n Trust & Social Capital - Filter and explore trust patterns across regions\n Political Attitudes - Party identification and ideology breakdowns\n About - Data sources and methodology"
+    "section": "Quick Navigation",
+    "text": "Quick Navigation\n Demographics - Explore happiness and wellbeing by demographic groups\n Trust & Social Capital - Filter and explore trust patterns across regions\n Political Attitudes - Party identification and ideology breakdowns\n About - Data sources and methodology"
   }
 ]

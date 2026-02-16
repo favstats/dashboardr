@@ -30,8 +30,8 @@ reference, example code, and visualization guides to LLM-powered coding
 assistants like Claude Desktop, Claude Code, Cursor, and VS Code Copilot.
 }
 \details{
-Tools are defined using \code{\link[ellmer:tool]{ellmer::tool()}} and served via
-\code{\link[mcptools:server]{mcptools::mcp_server()}} (default) or \code{\link[mcpr:serve_io]{mcpr::serve_io()}} as a fallback.
+Tools are defined using \code{ellmer::tool()} and served via
+\code{mcptools::mcp_server()} (default) or \code{mcpr::serve_io()} as a fallback.
 
 The server exposes five tools:
 \describe{

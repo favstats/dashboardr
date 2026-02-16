@@ -1,6 +1,155 @@
 # Changelog
 
+## dashboardr 0.5.0
+
+### New Features
+
+#### Standalone HTML Export
+
+- `generate_dashboard(standalone = TRUE)`: Generate a single
+  self-contained HTML file with all CSS, JavaScript, images, and fonts
+  embedded inline. The resulting file can be shared via email or file
+  transfer without a web server.
+
+#### New Vignettes
+
+- **Customizing Visualizations**: Comprehensive guide to color palettes,
+  tooltips, legends, data labels, axis formatting, error bars, sorting,
+  and backend options — with GSS data examples.
+- **Date Inputs**: Using `type = "date"` and `type = "daterange"` for
+  time-based filtering.
+- **URL Parameters**: Shareable dashboard links with pre-set filter
+  state via
+  [`enable_url_params()`](https://favstats.github.io/dashboardr/reference/enable_url_params.md).
+- **Accessibility**: WCAG 2.1 AA features including skip-to-content,
+  focus indicators, modal focus trapping, keyboard tab navigation, ARIA
+  live regions, and reduced motion support via
+  [`enable_accessibility()`](https://favstats.github.io/dashboardr/reference/enable_accessibility.md).
+
+#### HTML Helper Functions
+
+- New exported helpers:
+  [`html_spacer()`](https://favstats.github.io/dashboardr/reference/html_spacer.md),
+  [`html_divider()`](https://favstats.github.io/dashboardr/reference/html_divider.md),
+  [`html_card()`](https://favstats.github.io/dashboardr/reference/html_card.md),
+  [`html_accordion()`](https://favstats.github.io/dashboardr/reference/html_accordion.md),
+  [`html_iframe()`](https://favstats.github.io/dashboardr/reference/html_iframe.md),
+  [`html_badge()`](https://favstats.github.io/dashboardr/reference/html_badge.md),
+  [`html_metric()`](https://favstats.github.io/dashboardr/reference/html_metric.md).
+
+### Internal
+
+- Viz type registry (`R/viz_registry.R`) replaces hardcoded switch
+  dispatch in `R/viz_generation.R`.
+- Raw HTML in generated QMD replaced with clean R function calls.
+- R CMD check clean (0 errors, 0 warnings).
+
+## dashboardr 0.4.2
+
+### New Features
+
+#### Widget Convenience Wrappers
+
+New exported convenience functions for embedding charts from alternative
+backends:
+
+- [`add_echarts()`](https://favstats.github.io/dashboardr/reference/add_echarts.md):
+  Embed an echarts4r chart directly into a dashboard page.
+- [`add_ggiraph()`](https://favstats.github.io/dashboardr/reference/add_ggiraph.md):
+  Embed a ggiraph interactive plot directly into a dashboard page.
+- [`add_ggplot()`](https://favstats.github.io/dashboardr/reference/add_ggplot.md):
+  Embed a static ggplot2 plot, rendered via Quarto’s knitr graphics
+  device with optional `height`/`width` control.
+
+#### MCP Server for LLM Assistants
+
+- [`dashboardr_mcp_server()`](https://favstats.github.io/dashboardr/reference/dashboardr_mcp_server.md):
+  Launch an MCP (Model Context Protocol) server that exposes dashboardr
+  documentation, function reference, example code, and visualization
+  guides to LLM-powered coding assistants (Claude Desktop, Claude Code,
+  Cursor, VS Code Copilot). Requires optional packages `ellmer` +
+  `mcptools` (or `mcpr` as fallback).
+
+### Bug Fixes
+
+#### Content Tabgroups (Issue \#14)
+
+- **Fixed**: The `tabgroup` argument is now correctly applied to all
+  content block types (`add_text`, `add_card`, `add_reactable`, and
+  other content types), not just visualizations. Previously, `tabgroup`
+  had no effect for non-viz content. Standalone content blocks, items
+  inside content collections, and items added directly to pages via
+  [`add_text()`](https://favstats.github.io/dashboardr/reference/add_text.md)
+  /
+  [`add_card()`](https://favstats.github.io/dashboardr/reference/add_card.md)
+  / etc. now all respect `tabgroup` and render in their respective tabs.
+
+#### CI Stability
+
+- **Fixed**: GitHub Actions coverage and R CMD check workflows were
+  failing with exit code 143 (OOM kill). Added `skip_on_covr_ci()` to
+  feature-matrix and generation-heavy tests that were running under covr
+  instrumentation without memory guards. Added memory diagnostics and
+  `timeout-minutes` to workflows for better failure reporting.
+
+## dashboardr 0.4.1
+
+### Bug Fixes
+
+#### Content Tabgroups (Issue \#14)
+
+- **Fixed**: The `tabgroup` argument is now correctly applied to all
+  content block types (`add_text`, `add_card`, `add_reactable`, and
+  other content types), not just visualizations. Previously, `tabgroup`
+  had no effect for non-viz content. Standalone content blocks, items
+  inside content collections, and items added directly to pages via
+  [`add_text()`](https://favstats.github.io/dashboardr/reference/add_text.md)
+  /
+  [`add_card()`](https://favstats.github.io/dashboardr/reference/add_card.md)
+  / etc. now all respect `tabgroup` and render in their respective tabs.
+
 ## dashboardr 0.4.0
+
+### Bug Fixes
+
+#### Cross-Tab Stacked Bar Labels (Critical)
+
+- **Fixed**: Stacked bar data labels showed full floating-point
+  precision (e.g. `61.53846153846154`) when charts were rebuilt
+  client-side via cross-tab filtering. The R-side rounding was correct,
+  but the JavaScript `_rebuildStackedBarEcharts`,
+  `_rebuildStackedBarPlotly`, and `_rebuildStackedBarSeries`
+  (Highcharts) functions recomputed percentages from raw counts without
+  rounding. All three JS rebuild paths now round to the configured
+  `label_decimals` (default: 1 for percent, 0 for count).
+- **New**: `labelDecimals` is now passed from R to the JS cross-tab
+  config so client-side rebuilds respect the same decimal precision as
+  the initial R render.
+- **New**: Labels on very small bar segments (\< 5% of their stack) are
+  now automatically hidden across all backends (echarts4r, Highcharts,
+  Plotly, ggiraph) to avoid visual clutter.
+
+#### Quarto Discovery
+
+- **Fixed**: `preview(quarto = TRUE)` and
+  [`.install_iconify_extension()`](https://favstats.github.io/dashboardr/reference/dot-install_iconify_extension.md)
+  now use
+  [`.find_quarto_path()`](https://favstats.github.io/dashboardr/reference/dot-find_quarto_path.md)
+  which searches PATH, the `quarto` R package, and the RStudio-bundled
+  Quarto location. Previously, only `Sys.which("quarto")` was used,
+  causing failures in environments where Quarto was installed but not on
+  PATH.
+
+#### Documentation & Tests
+
+- Documented `legend_position` parameter across all 10 visualization
+  functions.
+- Added `.color` to
+  [`globalVariables()`](https://rdrr.io/r/utils/globalVariables.html) to
+  suppress R CMD check note.
+- Marked `sparkline_card` functions as `@keywords internal` to fix
+  pkgdown reference index.
+- Fixed all empty `testthat` tests and resolved Quarto detection skips.
 
 ### New Features
 

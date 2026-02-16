@@ -51,7 +51,7 @@
 
     <a class="navbar-brand me-2" href="index.html">dashboardr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -469,6 +469,78 @@
 </h2>
 <p>Contributions welcome! Please submit a Pull Request.</p>
 <p><strong>Share your dashboard</strong> — Add it to the <a href="https://favstats.github.io/dashboardr/gallery/">Community Gallery</a> by <a href="https://github.com/favstats/dashboardr/issues/new?labels=gallery-submission&amp;title=%5BGallery%5D+My+Dashboard" class="external-link">opening a Gallery submission</a>.</p>
+</div>
+<div class="section level2">
+<h2 id="llm-support">LLM Support<a class="anchor" aria-label="anchor" href="#llm-support"></a>
+</h2>
+<p>dashboardr includes a built-in <a href="https://modelcontextprotocol.io/" class="external-link">MCP server</a> that gives AI coding assistants full access to dashboardr documentation, function help, and runnable examples. Works with Claude Code, Claude Desktop, VS Code Copilot, Cursor, and any MCP-compatible client.</p>
+<div class="section level3">
+<h3 id="setup">Setup<a class="anchor" aria-label="anchor" href="#setup"></a>
+</h3>
+<p>First, install the optional dependencies:</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ellmer"</span>, <span class="st">"mcptools"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p>Then configure your client:</p>
+<p><strong>Claude Code:</strong></p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="ex">claude</span> mcp add dashboardr <span class="at">--</span> Rscript <span class="at">-e</span> <span class="st">"dashboardr::dashboardr_mcp_server()"</span></span></code></pre></div>
+<p><strong>Claude Desktop</strong> (<code>claude_desktop_config.json</code>):</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode json"><code class="sourceCode json"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>  <span class="dt">"mcpServers"</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a>    <span class="dt">"dashboardr"</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a>      <span class="dt">"command"</span><span class="fu">:</span> <span class="st">"Rscript"</span><span class="fu">,</span></span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a>      <span class="dt">"args"</span><span class="fu">:</span> <span class="ot">[</span><span class="st">"-e"</span><span class="ot">,</span> <span class="st">"dashboardr::dashboardr_mcp_server()"</span><span class="ot">]</span></span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a>    <span class="fu">}</span></span>
+<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a>  <span class="fu">}</span></span>
+<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<p><strong>VS Code / Cursor</strong> (<code>.vscode/mcp.json</code> or Cursor equivalent):</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode json"><code class="sourceCode json"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>  <span class="dt">"mcp"</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a>    <span class="dt">"servers"</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a>      <span class="dt">"dashboardr"</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a>        <span class="dt">"type"</span><span class="fu">:</span> <span class="st">"stdio"</span><span class="fu">,</span></span>
+<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a>        <span class="dt">"command"</span><span class="fu">:</span> <span class="st">"Rscript"</span><span class="fu">,</span></span>
+<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a>        <span class="dt">"args"</span><span class="fu">:</span> <span class="ot">[</span><span class="st">"-e"</span><span class="ot">,</span> <span class="st">"dashboardr::dashboardr_mcp_server()"</span><span class="ot">]</span></span>
+<span id="cb8-8"><a href="#cb8-8" tabindex="-1"></a>      <span class="fu">}</span></span>
+<span id="cb8-9"><a href="#cb8-9" tabindex="-1"></a>    <span class="fu">}</span></span>
+<span id="cb8-10"><a href="#cb8-10" tabindex="-1"></a>  <span class="fu">}</span></span>
+<span id="cb8-11"><a href="#cb8-11" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="available-tools">Available Tools<a class="anchor" aria-label="anchor" href="#available-tools"></a>
+</h3>
+<table class="table">
+<colgroup>
+<col width="50%">
+<col width="50%">
+</colgroup>
+<thead><tr>
+<th>Tool</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>dashboardr_guide</code></td>
+<td>Full package guide — architecture, API overview, quick start</td>
+</tr>
+<tr>
+<td><code>dashboardr_function_help</code></td>
+<td>Look up help for any exported function</td>
+</tr>
+<tr>
+<td><code>dashboardr_list_functions</code></td>
+<td>List functions by category (viz, content, input, layout, …)</td>
+</tr>
+<tr>
+<td><code>dashboardr_example</code></td>
+<td>Get runnable example code for common patterns</td>
+</tr>
+<tr>
+<td><code>dashboardr_viz_types</code></td>
+<td>Quick reference of all visualization types and parameters</td>
+</tr>
+</tbody>
+</table>
+</div>
 </div>
 <div class="section level2">
 <h2 id="license">License<a class="anchor" aria-label="anchor" href="#license"></a>

@@ -729,9 +729,16 @@
     "",
     "format:",
     "  html:",
-    "    prefer-html: true",
-    "    theme:"
+    "    prefer-html: true"
   )
+
+  # Add embed-resources for standalone HTML export
+
+  if (isTRUE(proj$embed_resources)) {
+    yaml_lines <- c(yaml_lines, "    embed-resources: true")
+  }
+
+  yaml_lines <- c(yaml_lines, "    theme:")
   
   # Add base theme
   yaml_lines <- c(yaml_lines, paste0("      - ", proj$theme %||% "default"))

@@ -2,15 +2,43 @@
 % Please edit documentation in R/utils_core.R
 \name{.page_config}
 \alias{.page_config}
-\title{Generate page configuration HTML}
+\title{Page configuration and dependency loader}
 \usage{
-.page_config()
+.page_config(
+  accessibility = TRUE,
+  inputs = FALSE,
+  linked = FALSE,
+  show_when = FALSE,
+  url_params = FALSE,
+  modals = FALSE,
+  chart_export = FALSE,
+  sidebar = FALSE
+)
+}
+\arguments{
+\item{accessibility}{Logical; include accessibility CSS/JS (default TRUE).}
+
+\item{inputs}{Logical; include input filter CSS/JS.}
+
+\item{linked}{Logical; include linked-input script (only when \code{inputs = TRUE}).}
+
+\item{show_when}{Logical; include show_when script.}
+
+\item{url_params}{Logical; include URL-params script (only when \code{inputs = TRUE}).}
+
+\item{modals}{Logical; include modal CSS/JS.}
+
+\item{chart_export}{Logical; enable Highcharts export buttons.}
+
+\item{sidebar}{Logical; include sidebar CSS/JS.}
 }
 \value{
-Invisible NULL (outputs HTML via knitr)
+An \code{htmltools::tagList} of HTML tags (rendered via
+\code{results='asis'}).
 }
 \description{
-Internal helper that outputs CSS and JavaScript for chart containers and reflow.
-Called from generated QMD setup chunks.
+Outputs chart-container CSS/JS for reflow and, when feature flags are
+supplied, loads all page-level CSS/JS dependencies (accessibility, inputs,
+modals, sidebar, chart export) in a single call.
 }
 \keyword{internal}

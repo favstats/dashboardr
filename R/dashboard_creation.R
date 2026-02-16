@@ -119,6 +119,7 @@
 #' @param backend Rendering backend: "highcharter" (default), "plotly", "echarts4r", or "ggiraph".
 #' @param contextual_viz_errors Logical. If TRUE, generated visualization chunks wrap viz calls
 #'   in tryCatch and prepend contextual labels (title/type) to error messages. Default: FALSE.
+#' @param url_params Logical. If TRUE, enable URL parameter support for inputs. Default: FALSE.
 #' @return A dashboard_project object
 #' @export
 #' @examples
@@ -284,7 +285,8 @@ create_dashboard <- function(output_dir = "site",
                             powered_by_dashboardr = TRUE,
                             chart_export = FALSE,
                             backend = "highcharter",
-                            contextual_viz_errors = FALSE) {
+                            contextual_viz_errors = FALSE,
+                            url_params = FALSE) {
 
   output_dir <- .resolve_output_dir(output_dir, allow_inside_pkg)
 
@@ -429,6 +431,7 @@ create_dashboard <- function(output_dir = "site",
     chart_export = chart_export,
     backend = backend,
     contextual_viz_errors = contextual_viz_errors,
+    url_params = url_params,
     pages = list(),
     data_files = NULL
   ), class = "dashboard_project")
@@ -1328,6 +1331,7 @@ add_dashboard_page <- function(proj, name, data = NULL, data_path = NULL,
     chart_export = proj$chart_export %||% FALSE,
     backend = proj$backend %||% "highcharter",
     contextual_viz_errors = proj$contextual_viz_errors %||% FALSE,
+    url_params = proj$url_params %||% FALSE,
     tabgroup_labels = page_tabgroup_labels
   )
 

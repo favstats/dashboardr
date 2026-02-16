@@ -67,6 +67,7 @@ enable_sidebar <- function() {
 #'   select inputs. Set automatically when the page uses \code{add_linked_inputs()}.
 #' @param show_when If TRUE, also include script for conditional viz visibility
 #'   (\code{show_when} in \code{add_viz()}). Set automatically when the page uses it.
+#' @param url_params If TRUE, also include script for URL parameter support.
 #' @return HTML tags to include input filter functionality
 #' @export
 #'
@@ -77,7 +78,7 @@ enable_sidebar <- function() {
 #' enable_inputs(linked = TRUE)  # when using add_linked_inputs()
 #' enable_inputs(show_when = TRUE)  # when using show_when in add_viz()
 #' }
-enable_inputs <- function(linked = FALSE, show_when = FALSE) {
+enable_inputs <- function(linked = FALSE, show_when = FALSE, url_params = FALSE) {
   # Add version parameter to bust cache
   version <- format(Sys.time(), "%Y%m%d%H%M%S")
   
@@ -116,6 +117,11 @@ enable_inputs <- function(linked = FALSE, show_when = FALSE) {
       src = paste0("assets/show_when.js?v=", version)
     ))
   }
+  if (isTRUE(url_params)) {
+    out <- htmltools::tagList(out, htmltools::tags$script(
+      src = paste0("assets/url_params.js?v=", version)
+    ))
+  }
   out
 }
 
@@ -129,6 +135,44 @@ enable_inputs <- function(linked = FALSE, show_when = FALSE) {
 enable_show_when <- function() {
   version <- format(Sys.time(), "%Y%m%d%H%M%S")
   htmltools::tags$script(src = paste0("assets/show_when.js?v=", version))
+}
+
+#' Enable URL Parameter Deep Linking
+#'
+#' Adds JavaScript that reads filter state from URL query parameters on page load
+#' and updates the URL as filters change. Enables shareable dashboard URLs with
+#' pre-set filters and tab navigation via hash fragments.
+#'
+#' @return HTML script tag for url_params.js
+#' @export
+enable_url_params <- function() {
+  version <- format(Sys.time(), "%Y%m%d%H%M%S")
+  htmltools::tags$script(
+    src = paste0("assets/url_params.js?v=", version)
+  )
+}
+
+#' Enable Accessibility Enhancements
+#'
+#' Adds CSS and JavaScript for WCAG 2.1 AA accessibility improvements:
+#' focus indicators, modal focus trapping, tab keyboard navigation,
+#' ARIA live region for filter announcements, and reduced motion support.
+#'
+#' Called automatically during page generation.
+#'
+#' @return HTML tags to include accessibility enhancements
+#' @export
+enable_accessibility <- function() {
+  version <- format(Sys.time(), "%Y%m%d%H%M%S")
+  htmltools::tagList(
+    htmltools::tags$link(
+      rel = "stylesheet",
+      href = paste0("assets/accessibility.css?v=", version)
+    ),
+    htmltools::tags$script(
+      src = paste0("assets/accessibility.js?v=", version)
+    )
+  )
 }
 
 #' Enable chart export buttons (PNG/SVG/PDF/CSV)
@@ -729,6 +773,131 @@ render_viz_html <- function(result) {
 }
 
 # =================================================================
+# Date Input Generators
+# =================================================================
+
+.generate_date_html <- function(input_id, label, filter_var, value, min, max,
+                                 width, align, size = "md", help = NULL, disabled = FALSE) {
+  size_class <- paste0(" size-", size)
+  disabled_attr <- if (disabled) ' disabled' else ''
+
+  # Format min/max as date strings if they are Date objects
+  min_attr <- ""
+  max_attr <- ""
+  if (!is.null(min) && !identical(min, 0)) {
+    min_attr <- paste0(' min="', as.character(min), '"')
+  }
+  if (!is.null(max) && !identical(max, 100)) {
+    max_attr <- paste0(' max="', as.character(max), '"')
+  }
+
+  value_attr <- ""
+  if (!is.null(value)) {
+    value_attr <- paste0(' value="', as.character(value), '"')
+  }
+
+  html_lines <- c()
+  html_lines <- c(html_lines, paste0('<div class="dashboardr-input-group align-', align, size_class, '" style="width: ', width, ';">'))
+
+  if (!is.null(label) && nzchar(label)) {
+    html_lines <- c(html_lines, paste0('  <label class="dashboardr-input-label" for="', input_id, '">', htmltools::htmlEscape(label), '</label>'))
+  }
+
+  html_lines <- c(html_lines, paste0(
+    '  <input type="date" id="', input_id, '"',
+    ' class="dashboardr-input dashboardr-date-input"',
+    ' data-filter-var="', htmltools::htmlEscape(filter_var), '"',
+    ' data-input-type="date"',
+    value_attr, min_attr, max_attr, disabled_attr,
+    ' style="width: 100%;" />'
+  ))
+
+  if (!is.null(help) && nzchar(help)) {
+    html_lines <- c(html_lines, paste0('  <span class="dashboardr-input-help">', htmltools::htmlEscape(help), '</span>'))
+  }
+
+  html_lines <- c(html_lines, paste0('<script>if(typeof dashboardrFilterHook!=="undefined")dashboardrFilterHook("', input_id, '","', filter_var, '");</script>'))
+  html_lines <- c(html_lines, '</div>')
+
+  paste(html_lines, collapse = "\n")
+}
+
+.generate_daterange_html <- function(input_id, label, filter_var, value, min, max,
+                                      width, align, size = "md", help = NULL, disabled = FALSE) {
+  size_class <- paste0(" size-", size)
+  disabled_attr <- if (disabled) ' disabled' else ''
+
+  # Format min/max as date strings if they are Date objects
+  min_attr <- ""
+  max_attr <- ""
+  if (!is.null(min) && !identical(min, 0)) {
+    min_attr <- paste0(' min="', as.character(min), '"')
+  }
+  if (!is.null(max) && !identical(max, 100)) {
+    max_attr <- paste0(' max="', as.character(max), '"')
+  }
+
+  # value can be a vector of 2 for start/end defaults
+  start_val <- ""
+  end_val <- ""
+  if (!is.null(value)) {
+    if (length(value) >= 2) {
+      start_val <- paste0(' value="', as.character(value[1]), '"')
+      end_val <- paste0(' value="', as.character(value[2]), '"')
+    } else {
+      start_val <- paste0(' value="', as.character(value[1]), '"')
+    }
+  }
+
+  start_id <- paste0(input_id, "_start")
+  end_id <- paste0(input_id, "_end")
+
+  html_lines <- c()
+  html_lines <- c(html_lines, paste0('<div class="dashboardr-input-group align-', align, size_class, '" style="width: ', width, ';">'))
+
+  if (!is.null(label) && nzchar(label)) {
+    html_lines <- c(html_lines, paste0('  <label class="dashboardr-input-label">', htmltools::htmlEscape(label), '</label>'))
+  }
+
+  html_lines <- c(html_lines, paste0(
+    '  <div id="', input_id, '" class="dashboardr-daterange-container"',
+    ' data-filter-var="', htmltools::htmlEscape(filter_var), '"',
+    ' data-input-type="daterange">'
+  ))
+
+  html_lines <- c(html_lines, paste0(
+    '    <div class="dashboardr-daterange-field">',
+    '      <label class="dashboardr-daterange-label" for="', start_id, '">From</label>',
+    '      <input type="date" id="', start_id, '"',
+    ' class="dashboardr-input dashboardr-date-input"',
+    ' data-role="start"',
+    start_val, min_attr, max_attr, disabled_attr, ' />',
+    '    </div>'
+  ))
+
+  html_lines <- c(html_lines, paste0(
+    '    <div class="dashboardr-daterange-field">',
+    '      <label class="dashboardr-daterange-label" for="', end_id, '">To</label>',
+    '      <input type="date" id="', end_id, '"',
+    ' class="dashboardr-input dashboardr-date-input"',
+    ' data-role="end"',
+    end_val, min_attr, max_attr, disabled_attr, ' />',
+    '    </div>'
+  ))
+
+  html_lines <- c(html_lines, '  </div>')
+
+  if (!is.null(help) && nzchar(help)) {
+    html_lines <- c(html_lines, paste0('  <span class="dashboardr-input-help">', htmltools::htmlEscape(help), '</span>'))
+  }
+
+  html_lines <- c(html_lines, paste0('<script>if(typeof dashboardrFilterHook!=="undefined")dashboardrFilterHook("', input_id, '","', filter_var, '");</script>'))
+  html_lines <- c(html_lines, '</div>')
+
+  paste(html_lines, collapse = "\n")
+}
+
+# =================================================================
 # PUBLIC API: render_input
 # =================================================================
 
@@ -738,8 +907,9 @@ render_viz_html <- function(result) {
 #'
 #' @param input_id Unique ID for this input widget
 #' @param label Optional label displayed above the input
-#' @param type Input type: "select_multiple", "select_single", "checkbox", 
-#'   "radio", "switch", "slider", "text", "number", or "button_group"
+#' @param type Input type: "select_multiple", "select_single", "checkbox",
+#'   "radio", "switch", "slider", "text", "number", "button_group",
+#'   "date", or "daterange"
 #' @param filter_var The variable name to filter by (matches Highcharts series names)
 #' @param options Character vector of options to display (for select/checkbox/radio/button_group).
 #'   Can also be a named list for grouped options in selects.
@@ -772,8 +942,9 @@ render_viz_html <- function(result) {
 #' @export
 render_input <- function(input_id,
                          label = NULL,
-                         type = c("select_multiple", "select_single", "checkbox", 
-                                  "radio", "switch", "slider", "text", "number", "button_group"),
+                         type = c("select_multiple", "select_single", "checkbox",
+                                  "radio", "switch", "slider", "text", "number", "button_group",
+                                  "date", "daterange"),
                          filter_var,
                          options = NULL,
                          options_from = NULL,
@@ -845,9 +1016,13 @@ render_input <- function(input_id,
     "button_group" = .generate_button_group_html(input_id, label, filter_var, options,
                                                   default_selected, width, align,
                                                   size, help, disabled),
+    "date" = .generate_date_html(input_id, label, filter_var, value, min, max,
+                                  width, align, size, help, disabled),
+    "daterange" = .generate_daterange_html(input_id, label, filter_var, value, min, max,
+                                            width, align, size, help, disabled),
     stop(
       "Unknown input type: '", type, "'. Valid types: ",
-      "select_multiple, select_single, checkbox, radio, switch, slider, text, number, button_group. ",
+      "select_multiple, select_single, checkbox, radio, switch, slider, text, number, button_group, date, daterange. ",
       "See https://favstats.github.io/dashboardr/ for details.",
       call. = FALSE
     )

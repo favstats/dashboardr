@@ -143,8 +143,9 @@ test_that("each pagination page renders independently", {
     qmd <- readLines(file.path(output_dir, page_file))
     
     # Count R chunks (rough proxy for chart count)
+    # Each page has ~25 chart chunks + setup/config + accessibility chunks (~6 overhead)
     chunk_count <- sum(grepl("```\\{r", qmd))
-    expect_lt(chunk_count, 30,
+    expect_lt(chunk_count, 34,
               label = paste("Page", page_num, "should have ~25 charts, not all 100"))
   }
   

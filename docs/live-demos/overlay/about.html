@@ -184,6 +184,46 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
+
+<style>
+/* Ensure chart containers expand to fit content */
+.cell-output-display,
+.cell-output,
+.panel-tabset-tabby > .tab-content,
+.panel-tabset > .tab-content,
+.tab-pane,
+.tab-pane.active,
+.card-body,
+.quarto-figure,
+section {
+  overflow: visible !important;
+  height: auto !important;
+  max-height: none !important;
+}
+.highcharts-container,
+.html-widget,
+.htmlwidget {
+  overflow: visible !important;
+}
+</style>
+<script>
+(function() {
+  function reflowCharts() {
+    if (typeof Highcharts !== 'undefined' && Highcharts.charts) {
+      Highcharts.charts.forEach(function(c) { if (c) try { c.reflow(); } catch(e) {} });
+    }
+  }
+  [0, 100, 250, 500, 1000, 2000].forEach(function(d) {
+    setTimeout(function() { window.dispatchEvent(new Event('resize')); requestAnimationFrame(reflowCharts); }, d);
+  });
+  document.addEventListener('click', function(e) {
+    if (e.target.matches('.nav-link, [data-bs-toggle="tab"]')) setTimeout(reflowCharts, 50);
+  });
+})();
+</script>
+
+<link rel="stylesheet" href="assets/accessibility.css?v=20260216172116">
+<script src="assets/accessibility.js?v=20260216172116"></script>
 <section id="about-this-demo" class="level2">
 <h2 class="anchored" data-anchor-id="about-this-demo">About This Demo</h2>
 <p>This dashboard demonstrates the four loading overlay themes available in dashboardr.</p>

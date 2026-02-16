@@ -30,7 +30,7 @@ preview mode to generate only specific pages."><meta property="og:image" content
 
     <a class="navbar-brand me-2" href="../index.html">dashboardr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -116,7 +116,8 @@ preview mode to generate only specific pages.</p>
 <span>  incremental <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  preview <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  show_progress <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  quiet <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  quiet <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  standalone <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -161,6 +162,13 @@ visual indicators for each generation stage. Set to FALSE for minimal output.</p
 silences all messages, progress indicators, and Quarto rendering output. Useful for
 scripts and automated workflows. Overrides show_progress.</p></dd>
 
+
+<dt id="arg-standalone">standalone<a class="anchor" aria-label="anchor" href="#arg-standalone"></a></dt>
+<dd><p>Whether to embed all resources (CSS, JS, images, fonts) into a single
+self-contained HTML file (default: FALSE). When TRUE, sets Quarto's
+<code>embed-resources: true</code> so the output HTML can be shared without a web server.
+Implies <code>render = TRUE</code>.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
@@ -184,6 +192,9 @@ scripts and automated workflows. Overrides show_progress.</p></dd>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Quiet mode for scripts</span></span></span>
 <span class="r-in"><span><span class="va">dashboard</span> <span class="op"><a href="pipe.html">%&gt;%</a></span> <span class="fu">generate_dashboard</span><span class="op">(</span>render <span class="op">=</span> <span class="cn">FALSE</span>, quiet <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Standalone HTML (single file, all resources embedded)</span></span></span>
+<span class="r-in"><span><span class="va">dashboard</span> <span class="op"><a href="pipe.html">%&gt;%</a></span> <span class="fu">generate_dashboard</span><span class="op">(</span>standalone <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 </code></pre></div>
     </div>

@@ -151,27 +151,40 @@
 #' @param quiet Whether to suppress all output (default: FALSE). When TRUE, completely
 #'   silences all messages, progress indicators, and Quarto rendering output. Useful for
 #'   scripts and automated workflows. Overrides show_progress.
+#' @param standalone Whether to embed all resources (CSS, JS, images, fonts) into a single
+#'   self-contained HTML file (default: FALSE). When TRUE, sets Quarto's
+#'   \code{embed-resources: true} so the output HTML can be shared without a web server.
+#'   Implies \code{render = TRUE}.
 #' @return Invisibly returns the project object with build_info attached
 #' @export
 #' @examples
 #' \dontrun{
 #' # Generate and render dashboard
 #' dashboard %>% generate_dashboard(render = TRUE, open = "browser")
-#' 
+#'
 #' # Generate without rendering (faster for quick iterations)
 #' dashboard %>% generate_dashboard(render = FALSE)
-#' 
+#'
 #' # Incremental builds (skip unchanged pages)
 #' dashboard %>% generate_dashboard(render = TRUE, incremental = TRUE)
-#' 
+#'
 #' # Preview specific page
 #' dashboard %>% generate_dashboard(preview = "Analysis")
-#' 
+#'
 #' # Quiet mode for scripts
 #' dashboard %>% generate_dashboard(render = FALSE, quiet = TRUE)
+#'
+#' # Standalone HTML (single file, all resources embedded)
+#' dashboard %>% generate_dashboard(standalone = TRUE)
 #' }
-generate_dashboard <- function(proj, render = TRUE, open = "browser", incremental = FALSE, preview = NULL, 
-                              show_progress = TRUE, quiet = FALSE) {
+generate_dashboard <- function(proj, render = TRUE, open = "browser", incremental = FALSE, preview = NULL,
+                              show_progress = TRUE, quiet = FALSE, standalone = FALSE) {
+  # Standalone mode: embed all resources into a single HTML file
+  if (isTRUE(standalone)) {
+    render <- TRUE
+    proj$embed_resources <- TRUE
+  }
+
   # Check Quarto version (>= 1.4 required) only if rendering
   quarto_available <- TRUE
   if (render) {
@@ -327,7 +340,10 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
     choices_js <- system.file("assets", "choices.min.js", package = "dashboardr")
     tab_scroll_fix_js <- system.file("assets", "tab-scroll-fix.js", package = "dashboardr")
     sidebar_css <- system.file("assets", "sidebar.css", package = "dashboardr")
-    
+    accessibility_css <- system.file("assets", "accessibility.css", package = "dashboardr")
+    accessibility_js <- system.file("assets", "accessibility.js", package = "dashboardr")
+    url_params_js <- system.file("assets", "url_params.js", package = "dashboardr")
+
     if (file.exists(modal_css)) {
       file.copy(modal_css, file.path(assets_dir, "modal.css"), overwrite = TRUE)
     }
@@ -366,6 +382,15 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
     }
     if (file.exists(sidebar_css)) {
       file.copy(sidebar_css, file.path(assets_dir, "sidebar.css"), overwrite = TRUE)
+    }
+    if (file.exists(accessibility_css)) {
+      file.copy(accessibility_css, file.path(assets_dir, "accessibility.css"), overwrite = TRUE)
+    }
+    if (file.exists(accessibility_js)) {
+      file.copy(accessibility_js, file.path(assets_dir, "accessibility.js"), overwrite = TRUE)
+    }
+    if (file.exists(url_params_js)) {
+      file.copy(url_params_js, file.path(assets_dir, "url_params.js"), overwrite = TRUE)
     }
 
     # Copy tabset theme SCSS file if using a built-in theme

@@ -3,14 +3,19 @@
 # LLM-powered coding assistants via the Model Context Protocol.
 # Requires optional packages: ellmer + mcptools (primary) or ellmer + mcpr (alternative)
 
+# Runtime wrappers to avoid static `::` references for packages not in Suggests
+.e_tool <- function(...) getExportedValue("ellmer", "tool")(...)
+.e_type_string <- function(...) getExportedValue("ellmer", "type_string")(...)
+.e_type_enum <- function(...) getExportedValue("ellmer", "type_enum")(...)
+
 #' Start dashboardr MCP Server
 #'
 #' Launches an MCP server that exposes dashboardr documentation, function
 #' reference, example code, and visualization guides to LLM-powered coding
 #' assistants like Claude Desktop, Claude Code, Cursor, and VS Code Copilot.
 #'
-#' Tools are defined using [ellmer::tool()] and served via
-#' [mcptools::mcp_server()] (default) or [mcpr::serve_io()] as a fallback.
+#' Tools are defined using \code{ellmer::tool()} and served via
+#' \code{mcptools::mcp_server()} (default) or \code{mcpr::serve_io()} as a fallback.
 #'
 #' @param backend Character, which MCP backend to use. `"mcptools"` (default,
 #'   Posit-maintained) or `"mcpr"` (alternative). If the chosen backend is not
@@ -94,19 +99,22 @@ dashboardr_mcp_server <- function(
 }
 
 .mcp_resolve_backend <- function(backend) {
-  if (backend == "mcptools" && requireNamespace("mcptools", quietly = TRUE)) {
+  has_mcptools <- nzchar(system.file(package = "mcptools"))
+  has_mcpr <- nzchar(system.file(package = "mcpr"))
+
+  if (backend == "mcptools" && has_mcptools) {
     return("mcptools")
   }
-  if (backend == "mcpr" && requireNamespace("mcpr", quietly = TRUE)) {
+  if (backend == "mcpr" && has_mcpr) {
     return("mcpr")
   }
   # Fallback: try the other
 
-  if (backend == "mcptools" && requireNamespace("mcpr", quietly = TRUE)) {
+  if (backend == "mcptools" && has_mcpr) {
     cli::cli_alert_info("mcptools not found, using mcpr backend instead.")
     return("mcpr")
   }
-  if (backend == "mcpr" && requireNamespace("mcptools", quietly = TRUE)) {
+  if (backend == "mcpr" && has_mcptools) {
     cli::cli_alert_info("mcpr not found, using mcptools backend instead.")
     return("mcptools")
   }
@@ -118,7 +126,7 @@ dashboardr_mcp_server <- function(
 }
 
 .mcp_serve_mcptools <- function(tools, transport, port) {
-  mcptools::mcp_server(
+  getExportedValue("mcptools", "mcp_server")(
     tools = tools,
     type = transport,
     port = port,
@@ -127,7 +135,7 @@ dashboardr_mcp_server <- function(
 }
 
 .mcp_serve_mcpr <- function(tools, transport, port) {
-  server <- mcpr::new_server(
+  server <- getExportedValue("mcpr", "new_server")(
     name = "dashboardr",
     description = paste(
       "dashboardr API reference, examples, and code generation helpers.",
@@ -137,12 +145,12 @@ dashboardr_mcp_server <- function(
   )
 
   for (tool in tools) {
-    server <- mcpr::add_capability(server, tool)
+    server <- getExportedValue("mcpr", "add_capability")(server, tool)
   }
 
   switch(transport,
-    stdio = mcpr::serve_io(server),
-    http = mcpr::serve_http(server, port = port)
+    stdio = getExportedValue("mcpr", "serve_io")(server),
+    http = getExportedValue("mcpr", "serve_http")(server, port = port)
   )
 }
 
@@ -163,7 +171,7 @@ dashboardr_mcp_server <- function(
 # ── Tool 1: dashboardr_guide ──────────────────────────────────────────────
 
 .tool_guide <- function() {
-  ellmer::tool(
+  .e_tool(
     fun = .mcp_guide_handler,
     description = paste(
       "Get the complete dashboardr API guide.",
@@ -188,7 +196,7 @@ dashboardr_mcp_server <- function(
 # ── Tool 2: dashboardr_function_help ──────────────────────────────────────
 
 .tool_function_help <- function() {
-  ellmer::tool(
+  .e_tool(
     fun = .mcp_function_help_handler,
     description = paste(
       "Look up detailed help for a specific dashboardr function.",
@@ -200,7 +208,7 @@ dashboardr_mcp_server <- function(
     ),
     name = "dashboardr_function_help",
     arguments = list(
-      function_name = ellmer::type_string(
+      function_name = .e_type_string(
         "The name of the dashboardr function to look up (without parentheses). Examples: 'viz_bar', 'create_content', 'add_input'."
       )
     )
@@ -219,12 +227,7 @@ dashboardr_mcp_server <- function(
     return(msg)
   }
 
-  help_text <- tryCatch({
-    rd <- utils:::.getHelpFile(utils::help(function_name, package = "dashboardr"))
-    utils::capture.output(tools::Rd2txt(rd, width = 80))
-  }, error = function(e) {
-    .mcp_help_fallback(function_name)
-  })
+  help_text <- .mcp_help_fallback(function_name)
 
   if (is.null(help_text) || length(help_text) == 0) {
     return(paste0(
@@ -265,7 +268,7 @@ dashboardr_mcp_server <- function(
 # ── Tool 3: dashboardr_list_functions ─────────────────────────────────────
 
 .tool_list_functions <- function() {
-  ellmer::tool(
+  .e_tool(
     fun = .mcp_list_functions_handler,
     description = paste(
       "List dashboardr exported functions, optionally filtered by category.",
@@ -276,7 +279,7 @@ dashboardr_mcp_server <- function(
     ),
     name = "dashboardr_list_functions",
     arguments = list(
-      category = ellmer::type_enum(
+      category = .e_type_enum(
         "Filter functions by category. Use 'all' to see everything.",
         values = c(
           "all", "dashboard", "page", "content", "viz", "table",
@@ -433,7 +436,7 @@ dashboardr_mcp_server <- function(
 # ── Tool 4: dashboardr_example ────────────────────────────────────────────
 
 .tool_example <- function() {
-  ellmer::tool(
+  .e_tool(
     fun = .mcp_example_handler,
     description = paste(
       "Get runnable example code for common dashboardr patterns.",
@@ -445,7 +448,7 @@ dashboardr_mcp_server <- function(
     ),
     name = "dashboardr_example",
     arguments = list(
-      pattern = ellmer::type_enum(
+      pattern = .e_type_enum(
         "The dashboard pattern to get example code for.",
         values = c(
           "basic_dashboard", "bar_chart", "multi_chart",
@@ -482,7 +485,7 @@ dashboardr_mcp_server <- function(
 # ── Tool 5: dashboardr_viz_types ──────────────────────────────────────────
 
 .tool_viz_types <- function() {
-  ellmer::tool(
+  .e_tool(
     fun = .mcp_viz_types_handler,
     description = paste(
       "Quick reference of all dashboardr visualization types.",

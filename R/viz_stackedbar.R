@@ -1232,18 +1232,22 @@ viz_stackedbar <- function(data,
     plot_data$.display_n <- plot_data$n
   }
 
+  tooltip_suffix <- if (stacked_type == "percent") "%" else ""
   plot_data$.tooltip <- paste0(
-    plot_data$.x_var_col, " - ", plot_data$.stack_var_col, ": ", round(plot_data$n, 1)
+    plot_data$.x_var_col, " - ", plot_data$.stack_var_col, ": ",
+    round(plot_data$.display_n, 1), tooltip_suffix
   )
 
-  position_fn <- if (stacked_type == "percent") "fill" else "stack"
+  # Use .display_n (already 0-100% for percent, raw counts otherwise) with "stack"
 
+  # position. Using "fill" with raw counts causes y-axis to auto-scale to count range
+  # while bars are compressed to [0,1], making them invisible.
   p <- ggplot2::ggplot(plot_data, ggplot2::aes(
-    x = .data$.x_var_col, y = .data$n, fill = .data$.stack_var_col
+    x = .data$.x_var_col, y = .data$.display_n, fill = .data$.stack_var_col
   )) +
     ggiraph::geom_bar_interactive(
       ggplot2::aes(tooltip = .data$.tooltip, data_id = .data$.x_var_col),
-      stat = "identity", position = position_fn
+      stat = "identity", position = "stack"
     )
 
   if (!is.null(color_palette)) {

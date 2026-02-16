@@ -7,7 +7,7 @@ for a polished multi-select experience.
 ## Usage
 
 ``` r
-enable_inputs(linked = FALSE, show_when = FALSE)
+enable_inputs(linked = FALSE, show_when = FALSE, url_params = FALSE)
 ```
 
 ## Arguments
@@ -24,6 +24,10 @@ enable_inputs(linked = FALSE, show_when = FALSE)
   (`show_when` in
   [`add_viz()`](https://favstats.github.io/dashboardr/reference/add_viz.md)).
   Set automatically when the page uses it.
+
+- url_params:
+
+  If TRUE, also include script for URL parameter support.
 
 ## Value
 

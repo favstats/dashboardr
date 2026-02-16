@@ -3,9 +3,8 @@ title: "{{< iconify ph chalkboard-simple-bold >}} Text & Content"
 format: html
 ---
 
-```{r, include=FALSE}
-# Initialize dashboardr page configuration (CSS/JS for charts)
-dashboardr::.page_config()
+```{r, echo=FALSE, results='asis', message=FALSE, warning=FALSE}
+dashboardr::.page_config(accessibility = TRUE)
 ```
 
 ```{r setup}

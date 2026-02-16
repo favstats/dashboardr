@@ -17,7 +17,8 @@ add_value_box(
   description = NULL,
   description_title = "About this source",
   tabgroup = NULL,
-  show_when = NULL
+  show_when = NULL,
+  aria_label = NULL
 )
 ```
 
@@ -65,6 +66,10 @@ add_value_box(
   One-sided formula controlling conditional display based on input
   values.
 
+- aria_label:
+
+  Optional ARIA label for accessibility.
+
 ## Details
 
 Can be used standalone or within a value box row:
@@ -86,7 +91,7 @@ content <- create_content() %>%
     logo_text = "$",
     bg_color = "#2E86AB"
   )
-  
+
 # Row of value boxes (pipeable!)
 content <- create_content() %>%
   add_value_box_row() %>%

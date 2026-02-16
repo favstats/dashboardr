@@ -10,7 +10,8 @@ render_value_box(
   value,
   bg_color = "#2c3e50",
   logo_url = NULL,
-  logo_text = NULL
+  logo_text = NULL,
+  aria_label = NULL
 )
 ```
 
@@ -35,3 +36,11 @@ render_value_box(
 - logo_text:
 
   Optional text to display as logo (if no logo_url)
+
+- aria_label:
+
+  Optional ARIA label for accessibility.
+
+## Value
+
+An htmltools tag object.

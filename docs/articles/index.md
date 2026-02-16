@@ -13,12 +13,19 @@
   Dive](https://favstats.github.io/dashboardr/articles/pages.md):
 - [Dashboards: Deep
   Dive](https://favstats.github.io/dashboardr/articles/dashboards.md):
+- [Date
+  Inputs](https://favstats.github.io/dashboardr/articles/date-inputs.md):
 
 ### Advanced Features
 
 - [Advanced
   Features](https://favstats.github.io/dashboardr/articles/advanced-features.md):
 - [Backends](https://favstats.github.io/dashboardr/articles/chart-backends.md):
+- [Customizing
+  Visualizations](https://favstats.github.io/dashboardr/articles/customizing-visualizations.md):
+- [URL
+  Parameters](https://favstats.github.io/dashboardr/articles/url-parameters.md):
+- [Accessibility](https://favstats.github.io/dashboardr/articles/accessibility.md):
 
 ### Publishing
 

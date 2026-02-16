@@ -62,6 +62,10 @@
 #'   counts or values. When provided, skips aggregation and uses these values directly.
 #'   Useful when working with already-aggregated data (e.g., Column 1: Group, Column 2: Count).
 #'
+#' @param cross_tab_filter_vars Optional character vector of variable names to use as
+#'   cross-tab filter controls for this chart. Enables dynamic filtering.
+#' @param title_map Optional named list mapping filter values to custom chart titles.
+#'   When cross_tab_filter_vars are used, this controls the displayed title for each filter value.
 #' @param backend Rendering backend: "highcharter" (default), "plotly", "echarts4r", or "ggiraph".
 #' @return A highcharter plot object.
 #'
@@ -152,6 +156,8 @@ viz_bar <- function(data,
                        legend_position = NULL,
                        complete_groups = TRUE,
                        y_var = NULL,
+                       cross_tab_filter_vars = NULL,
+                       title_map = NULL,
                        backend = "highcharter") {
   
   # Convert variable arguments to strings (supports both quoted and unquoted)
@@ -490,6 +496,52 @@ viz_bar <- function(data,
     value_var = value_var, weight_var = weight_var
   )
 
+  # Prepare cross-tab data for client-side filtering (all backends)
+  cross_tab_attrs <- NULL
+  if (!is.null(cross_tab_filter_vars) && length(cross_tab_filter_vars) > 0) {
+    valid_filter_vars <- cross_tab_filter_vars[cross_tab_filter_vars %in% names(data)]
+    if (length(valid_filter_vars) > 0) {
+      group_vars <- c(x_var, valid_filter_vars)
+      if (!is.null(group_var)) group_vars <- c(group_vars, group_var)
+      if (!is.null(value_var) && value_var %in% names(data) && is.numeric(data[[value_var]])) {
+        cross_tab <- data %>%
+          dplyr::group_by(dplyr::across(dplyr::all_of(group_vars))) %>%
+          dplyr::summarise(n = sum(.data[[value_var]], na.rm = TRUE), .groups = "drop")
+      } else if (!is.null(y_var) && y_var %in% names(data) && is.numeric(data[[y_var]])) {
+        cross_tab <- data %>%
+          dplyr::group_by(dplyr::across(dplyr::all_of(group_vars))) %>%
+          dplyr::summarise(n = sum(.data[[y_var]], na.rm = TRUE), .groups = "drop")
+      } else {
+        cross_tab <- data %>%
+          dplyr::count(dplyr::across(dplyr::all_of(group_vars)), name = "n")
+      }
+      chart_id <- paste0("crosstab_", substr(digest::digest(paste(x_var, group_var %||% "", collapse = "_")), 1, 8))
+      chart_config <- list(
+        chartId = chart_id,
+        chartType = "bar",
+        xVar = x_var,
+        groupVar = group_var,
+        filterVars = valid_filter_vars,
+        barType = bar_type,
+        xOrder = if (!is.null(x_order)) x_order else unique(as.character(agg_data[[x_var_plot]])),
+        groupOrder = if (!is.null(group_order)) group_order else if (!is.null(group_var)) unique(as.character(agg_data[[group_var]])) else NULL,
+        colorMap = if (!is.null(color_palette) && !is.null(names(color_palette))) as.list(color_palette) else NULL,
+        labelDecimals = if (!is.null(label_decimals)) as.integer(label_decimals) else 0L
+      )
+      if (!is.null(title) && grepl("\\{\\w+\\}", title)) {
+        chart_config$titleTemplate <- title
+      }
+      if (!is.null(title_map) && is.list(title_map)) {
+        tl_js <- lapply(names(title_map), function(nm) {
+          list(values = as.list(title_map[[nm]]))
+        })
+        names(tl_js) <- names(title_map)
+        chart_config$titleLookups <- tl_js
+      }
+      cross_tab_attrs <- list(data = cross_tab, config = chart_config, id = chart_id)
+    }
+  }
+
   # Dispatch to backend renderer
   backend <- .normalize_backend(backend)
   backend <- match.arg(backend, c("highcharter", "plotly", "echarts4r", "ggiraph"))
@@ -501,6 +553,14 @@ viz_bar <- function(data,
     ggiraph     = .viz_bar_ggiraph
   )
   result <- render_fn(agg_data, config)
+  if (!is.null(cross_tab_attrs)) {
+    attr(result, "cross_tab_data") <- cross_tab_attrs$data
+    attr(result, "cross_tab_config") <- cross_tab_attrs$config
+    attr(result, "cross_tab_id") <- cross_tab_attrs$id
+    if (inherits(result, "highchart")) {
+      result <- highcharter::hc_chart(result, id = cross_tab_attrs$id)
+    }
+  }
   result <- .register_chart_widget(result, backend = backend)
   return(result)
 }
@@ -1112,14 +1172,34 @@ viz_bar <- function(data,
     ": ", round(agg_data$value, 2)
   )
 
+  # Pre-compute data label column
+  data_labels_enabled <- config$data_labels_enabled
+  label_decimals <- config$label_decimals %||% 0L
+  if (isTRUE(data_labels_enabled)) {
+    label_suffix <- if (bar_type == "percent") "%" else ""
+    agg_data$.label <- paste0(round(agg_data$value, label_decimals), label_suffix)
+  }
+
   if (is.null(group_var)) {
-    p <- ggplot2::ggplot(agg_data, ggplot2::aes(
-      x = .data[[x_var_plot]], y = .data$value
-    )) +
-      ggiraph::geom_bar_interactive(
-        ggplot2::aes(tooltip = .data$.tooltip, data_id = .data[[x_var_plot]]),
-        stat = "identity"
-      )
+    if (!is.null(color_palette)) {
+      p <- ggplot2::ggplot(agg_data, ggplot2::aes(
+        x = .data[[x_var_plot]], y = .data$value, fill = .data[[x_var_plot]]
+      )) +
+        ggiraph::geom_bar_interactive(
+          ggplot2::aes(tooltip = .data$.tooltip, data_id = .data[[x_var_plot]]),
+          stat = "identity"
+        ) +
+        ggplot2::scale_fill_manual(values = color_palette) +
+        ggplot2::guides(fill = "none")
+    } else {
+      p <- ggplot2::ggplot(agg_data, ggplot2::aes(
+        x = .data[[x_var_plot]], y = .data$value
+      )) +
+        ggiraph::geom_bar_interactive(
+          ggplot2::aes(tooltip = .data$.tooltip, data_id = .data[[x_var_plot]]),
+          stat = "identity", fill = "steelblue"
+        )
+    }
   } else {
     p <- ggplot2::ggplot(agg_data, ggplot2::aes(
       x = .data[[x_var_plot]], y = .data$value, fill = .data[[group_var]]
@@ -1128,6 +1208,9 @@ viz_bar <- function(data,
         ggplot2::aes(tooltip = .data$.tooltip, data_id = .data[[x_var_plot]]),
         stat = "identity", position = "dodge"
       )
+    if (!is.null(color_palette)) {
+      p <- p + ggplot2::scale_fill_manual(values = color_palette)
+    }
   }
 
   if (has_error_bars) {
@@ -1138,20 +1221,14 @@ viz_bar <- function(data,
     )
   }
 
-  if (!is.null(color_palette)) {
-    p <- p + ggplot2::scale_fill_manual(values = color_palette)
-  }
-
   p <- p +
     ggplot2::labs(title = title, subtitle = subtitle,
                   x = final_x_label, y = final_y_label) +
     ggplot2::theme_minimal()
 
-  data_labels_enabled <- config$data_labels_enabled
-  label_decimals <- config$label_decimals %||% 0L
   if (isTRUE(data_labels_enabled)) {
     p <- p + ggplot2::geom_text(
-      ggplot2::aes(label = round(.data$value, label_decimals)),
+      ggplot2::aes(label = .data$.label),
       vjust = -0.5, size = 3,
       position = if (!is.null(group_var)) ggplot2::position_dodge(0.9) else "identity"
     )

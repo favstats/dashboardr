@@ -287,8 +287,12 @@
   }
   use_show_when_wrapper <- !is.null(show_when_json)
 
+  # Alt text for accessibility (passed via ... in add_viz)
+  use_alt_text <- !is.null(spec$alt_text) && nzchar(spec$alt_text)
+
   # Simple R chunk - caching enabled for performance
   chunk_header <- paste0("```{r ", chunk_label, "}")
+  # Only need results: 'asis' for show_when (cat-based wrappers)
   if (use_show_when_wrapper) {
     chunk_header <- c(chunk_header, "#| results: 'asis'")
   }
@@ -305,6 +309,18 @@
     )
   }
 
+  # When alt_text is used without show_when, capture result and wrap with htmltools
+  # When both are used, fall back to cat() since we're already in asis mode
+  if (use_alt_text && use_show_when_wrapper) {
+    lines <- c(lines,
+      paste0("cat('<div class=\"dashboardr-viz-a11y\" role=\"img\" aria-label=\"", htmltools::htmlEscape(spec$alt_text), "\">')")
+    )
+  }
+
+  if (use_alt_text && !use_show_when_wrapper) {
+    lines <- c(lines, ".__viz__ <- local({")
+  }
+
   # Dispatch to appropriate generator
   if ("viz_type" %in% names(spec) && !is.null(spec$viz_type)) {
     lines <- c(lines, .generate_typed_viz(spec, contextual_viz_errors = contextual_viz_errors))
@@ -312,6 +328,17 @@
     lines <- c(lines, .generate_function_viz(spec))
   } else {
     lines <- c(lines, .generate_auto_viz(spec_name, spec))
+  }
+
+  # Close alt_text wrapper
+  if (use_alt_text && !use_show_when_wrapper) {
+    escaped_alt <- gsub('"', '\\\\"', spec$alt_text)
+    lines <- c(lines, "})")
+    lines <- c(lines,
+      paste0('htmltools::div(class = "dashboardr-viz-a11y", role = "img", `aria-label` = "', htmltools::htmlEscape(spec$alt_text), '", .__viz__)')
+    )
+  } else if (use_alt_text && use_show_when_wrapper) {
+    lines <- c(lines, "cat('</div>')")
   }
 
   if (use_show_when_wrapper) {
@@ -365,31 +392,8 @@
 .generate_typed_viz <- function(spec, contextual_viz_errors = FALSE) {
   lines <- character(0)
 
-  ## TODO: this needs to create from some list of available visualizations (maybe!)
-  # Map type to function name
-  viz_function <- switch(spec$viz_type,
-                         "map" = "viz_map",
-                         "treemap" = "viz_treemap",
-                         "stackedbars" = "viz_stackedbars",
-                         "stackedbar" = "viz_stackedbar",
-                         "histogram" = "viz_histogram",
-                         "heatmap" = "viz_heatmap",
-                         "timeline" = "viz_timeline",
-                         "bar" = "viz_bar",
-                         "scatter" = "viz_scatter",
-                         "density" = "viz_density",
-                         "boxplot" = "viz_boxplot",
-                         "pie" = "viz_pie",
-                         "donut" = "viz_pie",
-                         "lollipop" = "viz_lollipop",
-                         "dumbbell" = "viz_dumbbell",
-                         "gauge" = "viz_gauge",
-                         "funnel" = "viz_funnel",
-                         "pyramid" = "viz_funnel",
-                         "sankey" = "viz_sankey",
-                         "waffle" = "viz_waffle",
-                         spec$viz_type
-  )
+  # Map type to function name via registry
+  viz_function <- .viz_type_to_function(spec$viz_type)
 
   # Determine which dataset to use
   source_dataset <- spec[["data"]] %||% "data"  # Check if viz specifies a dataset (use [[ to avoid partial matching)
@@ -522,6 +526,13 @@
     # "pyramid" is a reversed funnel
     if (is.null(spec$reversed)) spec$reversed <- TRUE
   }
+  if (spec$viz_type == "scatter") {
+    # viz_scatter() uses color_var instead of group_var
+    if (!is.null(spec$group_var) && is.null(spec$color_var)) {
+      spec$color_var <- spec$group_var
+      spec$group_var <- NULL
+    }
+  }
 
   # Parameters to exclude: internal params and legacy parameter names
   exclude_params <- c(
@@ -531,6 +542,7 @@
     "height", "filter", "data", "has_data", "multi_dataset", "title_tabset",
     "nested_children", "drop_na_vars", "data_is_dataframe", "data_serialized", "alter_data",
     "show_when",  # Used only for wrapper div (data-show-when), not passed to viz_*()
+    "alt_text",   # Used only for accessibility wrapper div, not passed to viz_*()
     "export",     # Handled at generation level: enables hc_exporting() on the chart
     "annotations",      # Handled at generation level: adds plotLines/annotations to chart
     "reference_lines",  # Handled at generation level: adds plotLines to yAxis
@@ -557,7 +569,7 @@
   }
 
   # Pass cross_tab_filter_vars only to viz types that support it
-  cross_tab_supported_types <- c("stackedbar", "stackedbars", "timeline")
+  cross_tab_supported_types <- c("bar", "stackedbar", "stackedbars", "timeline")
   if (spec$viz_type %in% cross_tab_supported_types &&
       !is.null(spec$cross_tab_filter_vars) && length(spec$cross_tab_filter_vars) > 0) {
     args[["cross_tab_filter_vars"]] <- .serialize_arg(spec$cross_tab_filter_vars)

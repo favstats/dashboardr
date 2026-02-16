@@ -10,7 +10,7 @@ render_input(
   input_id,
   label = NULL,
   type = c("select_multiple", "select_single", "checkbox", "radio", "switch", "slider",
-    "text", "number", "button_group"),
+    "text", "number", "button_group", "date", "daterange"),
   filter_var,
   options = NULL,
   options_from = NULL,
@@ -54,7 +54,8 @@ render_input(
 - type:
 
   Input type: "select_multiple", "select_single", "checkbox", "radio",
-  "switch", "slider", "text", "number", or "button_group"
+  "switch", "slider", "text", "number", "button_group", "date", or
+  "daterange"
 
 - filter_var:
 

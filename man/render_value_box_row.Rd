@@ -9,6 +9,9 @@ render_value_box_row(boxes)
 \arguments{
 \item{boxes}{List of value box specifications, each containing title, value, bg_color, logo_url, logo_text}
 }
+\value{
+An htmltools tag object.
+}
 \description{
 Render a row of value boxes
 }

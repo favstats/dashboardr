@@ -38,6 +38,8 @@ viz_bar(
   legend_position = NULL,
   complete_groups = TRUE,
   y_var = NULL,
+  cross_tab_filter_vars = NULL,
+  title_map = NULL,
   backend = "highcharter"
 )
 }
@@ -128,6 +130,12 @@ Only applies when \code{group_var} is specified.}
 \item{y_var}{Optional character string. Name of a column containing pre-aggregated
 counts or values. When provided, skips aggregation and uses these values directly.
 Useful when working with already-aggregated data (e.g., Column 1: Group, Column 2: Count).}
+
+\item{cross_tab_filter_vars}{Optional character vector of variable names to use as
+cross-tab filter controls for this chart. Enables dynamic filtering.}
+
+\item{title_map}{Optional named list mapping filter values to custom chart titles.
+When cross_tab_filter_vars are used, this controls the displayed title for each filter value.}
 
 \item{backend}{Rendering backend: "highcharter" (default), "plotly", "echarts4r", or "ggiraph".}
 }

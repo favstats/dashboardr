@@ -2072,6 +2072,9 @@ async (page) => {
   };
 
   try {
+    // Ensure viewport is large enough for Quarto dashboard fill layouts
+    await page.setViewportSize({ width: 1440, height: 900 });
+
     await page.goto(scenario.url, {
       waitUntil: 'networkidle',
       timeout: 45000

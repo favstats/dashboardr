@@ -26,7 +26,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">dashboardr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -97,7 +97,108 @@
     </div>
 
     <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.5.0" id="dashboardr-050">dashboardr 0.5.0<a class="anchor" aria-label="anchor" href="#dashboardr-050"></a></h2>
+<div class="section level3">
+<h3 id="new-features-0-5-0">New Features<a class="anchor" aria-label="anchor" href="#new-features-0-5-0"></a></h3>
+<div class="section level4">
+<h4 id="standalone-html-export-0-5-0">Standalone HTML Export<a class="anchor" aria-label="anchor" href="#standalone-html-export-0-5-0"></a></h4>
+<ul><li>
+<code>generate_dashboard(standalone = TRUE)</code>: Generate a single self-contained HTML file with all CSS, JavaScript, images, and fonts embedded inline. The resulting file can be shared via email or file transfer without a web server.</li>
+</ul></div>
+<div class="section level4">
+<h4 id="new-vignettes-0-5-0">New Vignettes<a class="anchor" aria-label="anchor" href="#new-vignettes-0-5-0"></a></h4>
+<ul><li>
+<strong>Customizing Visualizations</strong>: Comprehensive guide to color palettes, tooltips, legends, data labels, axis formatting, error bars, sorting, and backend options — with GSS data examples.</li>
+<li>
+<strong>Date Inputs</strong>: Using <code>type = "date"</code> and <code>type = "daterange"</code> for time-based filtering.</li>
+<li>
+<strong>URL Parameters</strong>: Shareable dashboard links with pre-set filter state via <code><a href="../reference/enable_url_params.html">enable_url_params()</a></code>.</li>
+<li>
+<strong>Accessibility</strong>: WCAG 2.1 AA features including skip-to-content, focus indicators, modal focus trapping, keyboard tab navigation, ARIA live regions, and reduced motion support via <code><a href="../reference/enable_accessibility.html">enable_accessibility()</a></code>.</li>
+</ul></div>
+<div class="section level4">
+<h4 id="html-helper-functions-0-5-0">HTML Helper Functions<a class="anchor" aria-label="anchor" href="#html-helper-functions-0-5-0"></a></h4>
+<ul><li>New exported helpers: <code><a href="../reference/html_spacer.html">html_spacer()</a></code>, <code><a href="../reference/html_divider.html">html_divider()</a></code>, <code><a href="../reference/html_card.html">html_card()</a></code>, <code><a href="../reference/html_accordion.html">html_accordion()</a></code>, <code><a href="../reference/html_iframe.html">html_iframe()</a></code>, <code><a href="../reference/html_badge.html">html_badge()</a></code>, <code><a href="../reference/html_metric.html">html_metric()</a></code>.</li>
+</ul></div>
+</div>
+<div class="section level3">
+<h3 id="internal-0-5-0">Internal<a class="anchor" aria-label="anchor" href="#internal-0-5-0"></a></h3>
+<ul><li>Viz type registry (<code>R/viz_registry.R</code>) replaces hardcoded switch dispatch in <code>R/viz_generation.R</code>.</li>
+<li>Raw HTML in generated QMD replaced with clean R function calls.</li>
+<li>R CMD check clean (0 errors, 0 warnings).</li>
+</ul></div>
+</div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.4.2" id="dashboardr-042">dashboardr 0.4.2<a class="anchor" aria-label="anchor" href="#dashboardr-042"></a></h2>
+<div class="section level3">
+<h3 id="new-features-0-4-2">New Features<a class="anchor" aria-label="anchor" href="#new-features-0-4-2"></a></h3>
+<div class="section level4">
+<h4 id="widget-convenience-wrappers-0-4-2">Widget Convenience Wrappers<a class="anchor" aria-label="anchor" href="#widget-convenience-wrappers-0-4-2"></a></h4>
+<p>New exported convenience functions for embedding charts from alternative backends:</p>
+<ul><li>
+<code><a href="../reference/add_echarts.html">add_echarts()</a></code>: Embed an echarts4r chart directly into a dashboard page.</li>
+<li>
+<code><a href="../reference/add_ggiraph.html">add_ggiraph()</a></code>: Embed a ggiraph interactive plot directly into a dashboard page.</li>
+<li>
+<code><a href="../reference/add_ggplot.html">add_ggplot()</a></code>: Embed a static ggplot2 plot, rendered via Quarto’s knitr graphics device with optional <code>height</code>/<code>width</code> control.</li>
+</ul></div>
+<div class="section level4">
+<h4 id="mcp-server-for-llm-assistants-0-4-2">MCP Server for LLM Assistants<a class="anchor" aria-label="anchor" href="#mcp-server-for-llm-assistants-0-4-2"></a></h4>
+<ul><li>
+<code><a href="../reference/dashboardr_mcp_server.html">dashboardr_mcp_server()</a></code>: Launch an MCP (Model Context Protocol) server that exposes dashboardr documentation, function reference, example code, and visualization guides to LLM-powered coding assistants (Claude Desktop, Claude Code, Cursor, VS Code Copilot). Requires optional packages <code>ellmer</code> + <code>mcptools</code> (or <code>mcpr</code> as fallback).</li>
+</ul></div>
+</div>
+<div class="section level3">
+<h3 id="bug-fixes-0-4-2">Bug Fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-4-2"></a></h3>
+<div class="section level4">
+<h4 id="content-tabgroups-issue-0-4-2">Content Tabgroups (Issue #14)<a class="anchor" aria-label="anchor" href="#content-tabgroups-issue-0-4-2"></a></h4>
+<ul><li>
+<strong>Fixed</strong>: The <code>tabgroup</code> argument is now correctly applied to all content block types (<code>add_text</code>, <code>add_card</code>, <code>add_reactable</code>, and other content types), not just visualizations. Previously, <code>tabgroup</code> had no effect for non-viz content. Standalone content blocks, items inside content collections, and items added directly to pages via <code><a href="../reference/add_text.html">add_text()</a></code> / <code><a href="../reference/add_card.html">add_card()</a></code> / etc. now all respect <code>tabgroup</code> and render in their respective tabs.</li>
+</ul></div>
+<div class="section level4">
+<h4 id="ci-stability-0-4-2">CI Stability<a class="anchor" aria-label="anchor" href="#ci-stability-0-4-2"></a></h4>
+<ul><li>
+<strong>Fixed</strong>: GitHub Actions coverage and R CMD check workflows were failing with exit code 143 (OOM kill). Added <code>skip_on_covr_ci()</code> to feature-matrix and generation-heavy tests that were running under covr instrumentation without memory guards. Added memory diagnostics and <code>timeout-minutes</code> to workflows for better failure reporting.</li>
+</ul></div>
+</div>
+</div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.4.1" id="dashboardr-041">dashboardr 0.4.1<a class="anchor" aria-label="anchor" href="#dashboardr-041"></a></h2>
+<div class="section level3">
+<h3 id="bug-fixes-0-4-1">Bug Fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-4-1"></a></h3>
+<div class="section level4">
+<h4 id="content-tabgroups-issue-0-4-1">Content Tabgroups (Issue #14)<a class="anchor" aria-label="anchor" href="#content-tabgroups-issue-0-4-1"></a></h4>
+<ul><li>
+<strong>Fixed</strong>: The <code>tabgroup</code> argument is now correctly applied to all content block types (<code>add_text</code>, <code>add_card</code>, <code>add_reactable</code>, and other content types), not just visualizations. Previously, <code>tabgroup</code> had no effect for non-viz content. Standalone content blocks, items inside content collections, and items added directly to pages via <code><a href="../reference/add_text.html">add_text()</a></code> / <code><a href="../reference/add_card.html">add_card()</a></code> / etc. now all respect <code>tabgroup</code> and render in their respective tabs.</li>
+</ul></div>
+</div>
+</div>
+    <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.4.0" id="dashboardr-040">dashboardr 0.4.0<a class="anchor" aria-label="anchor" href="#dashboardr-040"></a></h2>
+<div class="section level3">
+<h3 id="bug-fixes-0-4-0">Bug Fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-4-0"></a></h3>
+<div class="section level4">
+<h4 id="cross-tab-stacked-bar-labels-critical-0-4-0">Cross-Tab Stacked Bar Labels (Critical)<a class="anchor" aria-label="anchor" href="#cross-tab-stacked-bar-labels-critical-0-4-0"></a></h4>
+<ul><li>
+<strong>Fixed</strong>: Stacked bar data labels showed full floating-point precision (e.g. <code>61.53846153846154</code>) when charts were rebuilt client-side via cross-tab filtering. The R-side rounding was correct, but the JavaScript <code>_rebuildStackedBarEcharts</code>, <code>_rebuildStackedBarPlotly</code>, and <code>_rebuildStackedBarSeries</code> (Highcharts) functions recomputed percentages from raw counts without rounding. All three JS rebuild paths now round to the configured <code>label_decimals</code> (default: 1 for percent, 0 for count).</li>
+<li>
+<strong>New</strong>: <code>labelDecimals</code> is now passed from R to the JS cross-tab config so client-side rebuilds respect the same decimal precision as the initial R render.</li>
+<li>
+<strong>New</strong>: Labels on very small bar segments (&lt; 5% of their stack) are now automatically hidden across all backends (echarts4r, Highcharts, Plotly, ggiraph) to avoid visual clutter.</li>
+</ul></div>
+<div class="section level4">
+<h4 id="quarto-discovery-0-4-0">Quarto Discovery<a class="anchor" aria-label="anchor" href="#quarto-discovery-0-4-0"></a></h4>
+<ul><li>
+<strong>Fixed</strong>: <code>preview(quarto = TRUE)</code> and <code><a href="../reference/dot-install_iconify_extension.html">.install_iconify_extension()</a></code> now use <code><a href="../reference/dot-find_quarto_path.html">.find_quarto_path()</a></code> which searches PATH, the <code>quarto</code> R package, and the RStudio-bundled Quarto location. Previously, only <code>Sys.which("quarto")</code> was used, causing failures in environments where Quarto was installed but not on PATH.</li>
+</ul></div>
+<div class="section level4">
+<h4 id="documentation--tests-0-4-0">Documentation &amp; Tests<a class="anchor" aria-label="anchor" href="#documentation--tests-0-4-0"></a></h4>
+<ul><li>Documented <code>legend_position</code> parameter across all 10 visualization functions.</li>
+<li>Added <code>.color</code> to <code><a href="https://rdrr.io/r/utils/globalVariables.html" class="external-link">globalVariables()</a></code> to suppress R CMD check note.</li>
+<li>Marked <code>sparkline_card</code> functions as <code>@keywords internal</code> to fix pkgdown reference index.</li>
+<li>Fixed all empty <code>testthat</code> tests and resolved Quarto detection skips.</li>
+</ul></div>
+</div>
 <div class="section level3">
 <h3 id="new-features-0-4-0">New Features<a class="anchor" aria-label="anchor" href="#new-features-0-4-0"></a></h3>
 <div class="section level4">

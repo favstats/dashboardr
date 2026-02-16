@@ -14,7 +14,8 @@ add_value_box(
   description = NULL,
   description_title = "About this source",
   tabgroup = NULL,
-  show_when = NULL
+  show_when = NULL,
+  aria_label = NULL
 )
 }
 \arguments{
@@ -37,6 +38,8 @@ add_value_box(
 \item{tabgroup}{Optional tabgroup for organizing content (character vector for nested tabs)}
 
 \item{show_when}{One-sided formula controlling conditional display based on input values.}
+
+\item{aria_label}{Optional ARIA label for accessibility.}
 }
 \description{
 Creates a modern value box with optional logo, custom background color,
@@ -60,7 +63,7 @@ content <- create_content() \%>\%
     logo_text = "$",
     bg_color = "#2E86AB"
   )
-  
+
 # Row of value boxes (pipeable!)
 content <- create_content() \%>\%
   add_value_box_row() \%>\%

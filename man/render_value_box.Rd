@@ -9,7 +9,8 @@ render_value_box(
   value,
   bg_color = "#2c3e50",
   logo_url = NULL,
-  logo_text = NULL
+  logo_text = NULL,
+  aria_label = NULL
 )
 }
 \arguments{
@@ -22,6 +23,11 @@ render_value_box(
 \item{logo_url}{Optional URL or path to logo image}
 
 \item{logo_text}{Optional text to display as logo (if no logo_url)}
+
+\item{aria_label}{Optional ARIA label for accessibility.}
+}
+\value{
+An htmltools tag object.
 }
 \description{
 Render a single value box

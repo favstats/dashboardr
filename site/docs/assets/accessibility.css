@@ -1,0 +1,124 @@
+/**
+ * Accessibility Styles for dashboardr
+ *
+ * Provides skip-to-content link, focus indicators, reduced motion support,
+ * and high-contrast enhancements for WCAG 2.1 AA compliance.
+ */
+
+/* =========================================================
+ * Skip-to-content link
+ * Visible only when focused (keyboard navigation)
+ * ========================================================= */
+.dashboardr-skip-link {
+  position: absolute;
+  top: -100%;
+  left: 0;
+  z-index: 999999;
+  padding: 8px 16px;
+  background: #0d6efd;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  border-radius: 0 0 4px 0;
+  transition: top 0.15s ease;
+}
+
+.dashboardr-skip-link:focus {
+  top: 0;
+  outline: 3px solid #ffc107;
+  outline-offset: 0;
+}
+
+/* =========================================================
+ * Focus indicators
+ * Ensure :focus-visible outlines on all interactive elements
+ * ========================================================= */
+
+/* Tabs */
+[role="tab"]:focus-visible {
+  outline: 2px solid #0d6efd;
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* Inputs (select, checkbox, radio, etc.) */
+.dashboardr-input:focus-visible,
+.dashboardr-input-group select:focus-visible,
+.dashboardr-input-group input:focus-visible,
+.dashboardr-btn-group .dashboardr-btn:focus-visible {
+  outline: 2px solid #0d6efd;
+  outline-offset: 2px;
+}
+
+/* Modal close button */
+.dashboardr-modal-close:focus-visible {
+  outline: 2px solid #ffc107;
+  outline-offset: 2px;
+}
+
+/* Sidebar toggle */
+.bslib-sidebar-layout > .collapse-toggle:focus-visible {
+  outline: 2px solid #0d6efd;
+  outline-offset: 2px;
+}
+
+/* Generic links and buttons */
+a:focus-visible,
+button:focus-visible {
+  outline: 2px solid #0d6efd;
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* =========================================================
+ * ARIA live region for filter announcements
+ * ========================================================= */
+#dashboardr-live-region {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* =========================================================
+ * Reduced motion
+ * Respects user's prefers-reduced-motion setting
+ * ========================================================= */
+@media (prefers-reduced-motion: reduce) {
+  .dashboardr-modal-container {
+    animation: none !important;
+  }
+
+  .dashboardr-modal-close {
+    transition: none !important;
+  }
+
+  .dashboardr-skip-link {
+    transition: none !important;
+  }
+
+  /* Disable Highcharts animations */
+  .highcharts-container * {
+    transition: none !important;
+  }
+
+  /* Disable generic transitions */
+  .nav-tabs .nav-link,
+  .tab-pane,
+  .collapse,
+  .collapsing {
+    transition: none !important;
+  }
+}
+
+/* =========================================================
+ * Alt text wrapper for visualizations
+ * ========================================================= */
+.dashboardr-viz-a11y[aria-label] {
+  /* No visual change, just ensures the element is recognized */
+  position: relative;
+}

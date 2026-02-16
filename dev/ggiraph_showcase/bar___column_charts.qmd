@@ -1,0 +1,213 @@
+---
+title: "{{< iconify ph chart-bar >}} Bar & Column Charts"
+format: html
+---
+
+```{r, include=FALSE}
+# Initialize dashboardr page configuration (CSS/JS for charts)
+dashboardr::.page_config()
+```
+
+```{r, echo=FALSE, results='asis'}
+cat('<a href="#dashboardr-main-content" class="dashboardr-skip-link">Skip to main content</a>')
+```
+
+```{r, echo=FALSE, results='asis'}
+dashboardr::enable_accessibility()
+```
+
+```{r setup}
+#| echo: false
+#| warning: false
+#| message: false
+#| error: false
+#| results: 'hide'
+
+# Load dashboardr (includes dplyr, highcharter as dependencies)
+library(dashboardr)
+
+# Global chunk options
+knitr::opts_chunk$set(
+  echo = FALSE,
+  warning = FALSE,
+  message = FALSE,
+  error = FALSE,
+  fig.width = 12,
+  fig.height = 8,
+  dpi = 300
+)
+
+# Load multiple datasets
+
+# Load survey
+survey <- readRDS('survey_500obs.rds')
+cat('survey loaded:', nrow(survey), 'rows,', ncol(survey), 'columns\n')
+
+# Load funnel
+funnel <- readRDS('funnel_5obs.rds')
+cat('funnel loaded:', nrow(funnel), 'rows,', ncol(funnel), 'columns\n')
+
+```
+
+```{r, echo=FALSE, results='asis'}
+cat('<div id="dashboardr-main-content" role="main">')
+```
+
+## Bars
+
+
+::: {.panel-tabset}
+
+### Ungrouped
+
+
+```{r bars-ungrouped}
+# Ungrouped Bar (color_palette)
+result <- viz_bar(
+  data = survey,
+  title = "Ungrouped Bar (color_palette)",
+  x_var = "category",
+  color_palette = c("#E15759", "#4E79A7", "#76B7B2", "#F28E2B"),
+  data_labels_enabled = TRUE
+)
+
+result
+```
+
+
+### Grouped
+
+
+```{r bars-grouped}
+# Grouped Bar (color_palette)
+result <- viz_bar(
+  data = survey,
+  title = "Grouped Bar (color_palette)",
+  x_var = "category",
+  group_var = "group",
+  color_palette = c("#E15759", "#4E79A7"),
+  data_labels_enabled = TRUE
+)
+
+result
+```
+
+
+### Percent
+
+
+```{r bars-percent}
+# Percent Bar (labels should show %)
+result <- viz_bar(
+  data = survey,
+  title = "Percent Bar (labels should show %)",
+  x_var = "category",
+  bar_type = "percent",
+  color_palette = c("#E15759", "#4E79A7", "#76B7B2", "#F28E2B"),
+  data_labels_enabled = TRUE
+)
+
+result
+```
+
+
+:::
+
+## Stacked Bar (percent, labels)
+
+```{r stacked}
+# Stacked Bar (percent, labels)
+result <- viz_stackedbar(
+  data = survey,
+  title = "Stacked Bar (percent, labels)",
+  x_var = "category",
+  stack_var = "group",
+  stacked_type = "percent",
+  color_palette = c("#E15759", "#4E79A7"),
+  data_labels_enabled = TRUE,
+  backend = "ggiraph"
+)
+
+result
+```
+
+## Lollipops
+
+
+::: {.panel-tabset}
+
+### Ungrouped
+
+
+```{r lollipops-ungrouped}
+# Ungrouped Lollipop (color + labels)
+result <- viz_lollipop(
+  data = survey,
+  title = "Ungrouped Lollipop (color + labels)",
+  x_var = "category",
+  color_palette = c("#E15759", "#4E79A7", "#76B7B2", "#F28E2B"),
+  data_labels_enabled = TRUE
+)
+
+result
+```
+
+
+### Grouped
+
+
+```{r lollipops-grouped}
+# Grouped Lollipop (color_palette)
+result <- viz_lollipop(
+  data = survey,
+  title = "Grouped Lollipop (color_palette)",
+  x_var = "category",
+  group_var = "group",
+  color_palette = c("#E15759", "#4E79A7"),
+  data_labels_enabled = TRUE
+)
+
+result
+```
+
+
+:::
+
+## Funnel (color + labels)
+
+```{r funnel-color-labels}
+# Funnel (color + labels)
+result <- viz_funnel(
+  data = funnel,
+  title = "Funnel (color + labels)",
+  x_var = "stage",
+  y_var = "count",
+  color_palette = c("#E15759", "#4E79A7", "#76B7B2", "#F28E2B", "#59A14F"),
+  data_labels_enabled = TRUE,
+  backend = "ggiraph"
+)
+
+result
+```
+
+## Histogram (color + labels)
+
+```{r histogram}
+# Histogram (color + labels)
+result <- viz_histogram(
+  data = survey,
+  title = "Histogram (color + labels)",
+  x_var = "age",
+  bins = 15,
+  color_palette = "#4E79A7",
+  data_labels_enabled = TRUE,
+  backend = "ggiraph"
+)
+
+result
+```
+
+
+```{r, echo=FALSE, results='asis'}
+cat('</div>')
+```

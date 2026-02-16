@@ -30,7 +30,7 @@ Uses Choices.js for a polished multi-select experience."><meta property="og:imag
 
     <a class="navbar-brand me-2" href="../index.html">dashboardr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -109,7 +109,7 @@ Uses Choices.js for a polished multi-select experience.</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">enable_inputs</span><span class="op">(</span>linked <span class="op">=</span> <span class="cn">FALSE</span>, show_when <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">enable_inputs</span><span class="op">(</span>linked <span class="op">=</span> <span class="cn">FALSE</span>, show_when <span class="op">=</span> <span class="cn">FALSE</span>, url_params <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -124,6 +124,10 @@ select inputs. Set automatically when the page uses <code><a href="add_linked_in
 <dt id="arg-show-when">show_when<a class="anchor" aria-label="anchor" href="#arg-show-when"></a></dt>
 <dd><p>If TRUE, also include script for conditional viz visibility
 (<code>show_when</code> in <code><a href="add_viz.html">add_viz()</a></code>). Set automatically when the page uses it.</p></dd>
+
+
+<dt id="arg-url-params">url_params<a class="anchor" aria-label="anchor" href="#arg-url-params"></a></dt>
+<dd><p>If TRUE, also include script for URL parameter support.</p></dd>
 
 </dl></div>
     <div class="section level2">

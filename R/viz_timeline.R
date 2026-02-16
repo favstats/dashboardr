@@ -1110,6 +1110,38 @@ viz_timeline <- function(data,
     effective_group <- y_var
   }
 
+  # SPECIAL CASE: numeric response with grouping in percentage mode -> mean per group
+
+  # Mirrors the same special case in the highcharter backend (line ~717).
+  # Percentage mode counts categorical responses, but for numeric y_var the resulting
+
+  # agg_data has one row per unique numeric value (hundreds of micro-bars), so we
+  # re-aggregate as mean.
+  plot_data <- config$plot_data
+  weight_var <- config$weight_var
+  if (agg == "percentage" && !is.null(group_var) && is.numeric(plot_data[[y_var]])) {
+    if (!is.null(weight_var) && weight_var %in% names(plot_data)) {
+      agg_data <- plot_data %>%
+        dplyr::group_by(!!rlang::sym(time_var_plot), !!rlang::sym(group_var)) %>%
+        dplyr::summarise(
+          value = {
+            w <- !!rlang::sym(weight_var)
+            v <- !!rlang::sym(y_var)
+            if (sum(w, na.rm = TRUE) == 0) NA_real_ else sum(v * w, na.rm = TRUE) / sum(w, na.rm = TRUE)
+          },
+          .groups = "drop"
+        )
+    } else {
+      agg_data <- plot_data %>%
+        dplyr::group_by(!!rlang::sym(time_var_plot), !!rlang::sym(group_var)) %>%
+        dplyr::summarise(
+          value = mean(!!rlang::sym(y_var), na.rm = TRUE),
+          .groups = "drop"
+        )
+    }
+    value_col <- "value"
+  }
+
   # Build tooltip
   agg_data$.tooltip <- paste0(
     agg_data[[time_var_plot]],
@@ -1154,7 +1186,7 @@ viz_timeline <- function(data,
 
   if (!is.null(color_palette)) {
     p <- p + ggplot2::scale_color_manual(values = color_palette)
-    if (is_stacked || chart_type == "area") {
+    if (is_stacked || chart_type %in% c("area", "column", "bar")) {
       p <- p + ggplot2::scale_fill_manual(values = color_palette)
     }
   }

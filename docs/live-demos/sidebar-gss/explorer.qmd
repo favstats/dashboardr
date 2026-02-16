@@ -3,17 +3,8 @@ title: "Explorer"
 format: dashboard
 ---
 
-```{r, include=FALSE}
-# Initialize dashboardr page configuration (CSS/JS for charts)
-dashboardr::.page_config()
-```
-
-```{r, echo=FALSE, results='asis'}
-dashboardr::enable_inputs(linked = TRUE, show_when = TRUE)
-```
-
-```{r, echo=FALSE, results='asis'}
-dashboardr::enable_sidebar()
+```{r, echo=FALSE, results='asis', message=FALSE, warning=FALSE}
+dashboardr::.page_config(accessibility = TRUE, inputs = TRUE, linked = TRUE, show_when = TRUE, sidebar = TRUE)
 ```
 
 ```{r setup}

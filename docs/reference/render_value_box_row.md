@@ -14,3 +14,7 @@ render_value_box_row(boxes)
 
   List of value box specifications, each containing title, value,
   bg_color, logo_url, logo_text
+
+## Value
+
+An htmltools tag object.

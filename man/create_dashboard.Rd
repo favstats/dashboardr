@@ -96,7 +96,8 @@ create_dashboard(
   powered_by_dashboardr = TRUE,
   chart_export = FALSE,
   backend = "highcharter",
-  contextual_viz_errors = FALSE
+  contextual_viz_errors = FALSE,
+  url_params = FALSE
 )
 }
 \arguments{
@@ -302,6 +303,8 @@ horizontal scrolling issues on mobile.}
 
 \item{contextual_viz_errors}{Logical. If TRUE, generated visualization chunks wrap viz calls
 in tryCatch and prepend contextual labels (title/type) to error messages. Default: FALSE.}
+
+\item{url_params}{Logical. If TRUE, enable URL parameter support for inputs. Default: FALSE.}
 }
 \value{
 A dashboard_project object

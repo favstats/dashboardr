@@ -24,7 +24,7 @@ scenarios:
     modes: [smoke, full]
     source_type: docs
     backend: highcharter
-    url_path: /live-demos/sidebar-gss/explorer.html
+    url_path: /live-demos/sidebar-gss/docs/explorer.html
     expect_chart_backend: [highcharter]
     interaction_plan: [linked_inputs, sidebar_toggle, show_when_toggle, filter]
     expect_filter_effect: true

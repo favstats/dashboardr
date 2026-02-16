@@ -205,6 +205,25 @@ Functions for adding rich content blocks to pages
 - [`add_badge()`](https://favstats.github.io/dashboardr/reference/add_badge.md)
   : Add a status badge
 
+## HTML Helpers
+
+Standalone HTML generation functions for use in custom content
+
+- [`html_accordion()`](https://favstats.github.io/dashboardr/reference/html_accordion.md)
+  : Create a collapsible accordion section
+- [`html_badge()`](https://favstats.github.io/dashboardr/reference/html_badge.md)
+  : Create a status badge
+- [`html_card()`](https://favstats.github.io/dashboardr/reference/html_card.md)
+  : Create a Bootstrap-style card
+- [`html_divider()`](https://favstats.github.io/dashboardr/reference/html_divider.md)
+  : Create a horizontal divider
+- [`html_iframe()`](https://favstats.github.io/dashboardr/reference/html_iframe.md)
+  : Create an iframe embed
+- [`html_metric()`](https://favstats.github.io/dashboardr/reference/html_metric.md)
+  : Create a metric card
+- [`html_spacer()`](https://favstats.github.io/dashboardr/reference/html_spacer.md)
+  : Create a vertical spacer
+
 ## Modals
 
 Functions for adding interactive modal dialogs
@@ -255,6 +274,10 @@ Functions for adding interactive inputs to dashboards
   : Enable show_when (conditional visibility) script only
 - [`enable_chart_export()`](https://favstats.github.io/dashboardr/reference/enable_chart_export.md)
   : Enable chart export buttons (PNG/SVG/PDF/CSV)
+- [`enable_accessibility()`](https://favstats.github.io/dashboardr/reference/enable_accessibility.md)
+  : Enable Accessibility Enhancements
+- [`enable_url_params()`](https://favstats.github.io/dashboardr/reference/enable_url_params.md)
+  : Enable URL Parameter Deep Linking
 - [`end_input_row()`](https://favstats.github.io/dashboardr/reference/end_input_row.md)
   : End an input row
 - [`render_input()`](https://favstats.github.io/dashboardr/reference/render_input.md)
@@ -287,6 +310,12 @@ Functions for embedding external content
   : Add a generic htmlwidget to the dashboard
 - [`add_plotly()`](https://favstats.github.io/dashboardr/reference/add_plotly.md)
   : Add a plotly chart to the dashboard
+- [`add_echarts()`](https://favstats.github.io/dashboardr/reference/add_echarts.md)
+  : Add an echarts4r chart to the dashboard
+- [`add_ggiraph()`](https://favstats.github.io/dashboardr/reference/add_ggiraph.md)
+  : Add a ggiraph interactive plot to the dashboard
+- [`add_ggplot()`](https://favstats.github.io/dashboardr/reference/add_ggplot.md)
+  : Add a static ggplot2 plot to the dashboard
 - [`add_leaflet()`](https://favstats.github.io/dashboardr/reference/add_leaflet.md)
   : Add a leaflet map to the dashboard
 - [`add_iframe()`](https://favstats.github.io/dashboardr/reference/add_iframe.md)
@@ -348,6 +377,13 @@ S3 methods for displaying objects
   : Combine Visualization Collections with + Operator
 - [`` `+`( ``*`<content_collection>`*`)`](https://favstats.github.io/dashboardr/reference/plus-.content_collection.md)
   : Combine Content Collections with + Operator
+
+## MCP Server
+
+Model Context Protocol server for LLM-assisted dashboard coding
+
+- [`dashboardr_mcp_server()`](https://favstats.github.io/dashboardr/reference/dashboardr_mcp_server.md)
+  : Start dashboardr MCP Server
 
 ## Page Object Methods
 

@@ -226,6 +226,46 @@ window.Quarto = {
 </header>
 
 
+
+<style>
+/* Ensure chart containers expand to fit content */
+.cell-output-display,
+.cell-output,
+.panel-tabset-tabby > .tab-content,
+.panel-tabset > .tab-content,
+.tab-pane,
+.tab-pane.active,
+.card-body,
+.quarto-figure,
+section {
+  overflow: visible !important;
+  height: auto !important;
+  max-height: none !important;
+}
+.highcharts-container,
+.html-widget,
+.htmlwidget {
+  overflow: visible !important;
+}
+</style>
+<script>
+(function() {
+  function reflowCharts() {
+    if (typeof Highcharts !== 'undefined' && Highcharts.charts) {
+      Highcharts.charts.forEach(function(c) { if (c) try { c.reflow(); } catch(e) {} });
+    }
+  }
+  [0, 100, 250, 500, 1000, 2000].forEach(function(d) {
+    setTimeout(function() { window.dispatchEvent(new Event('resize')); requestAnimationFrame(reflowCharts); }, d);
+  });
+  document.addEventListener('click', function(e) {
+    if (e.target.matches('.nav-link, [data-bs-toggle="tab"]')) setTimeout(reflowCharts, 50);
+  });
+})();
+</script>
+
+<link rel="stylesheet" href="assets/accessibility.css?v=20260216171428">
+<script src="assets/accessibility.js?v=20260216171428"></script>
 <section id="general-social-survey-2020" class="level1">
 <h1>General Social Survey 2020</h1>
 <p>Exploring happiness, trust, and social attitudes across America.</p>
@@ -291,8 +331,84 @@ window.Quarto = {
 <span id="cb1-56"><a href="#cb1-56" aria-hidden="true" tabindex="-1"></a><span class="fu">generate_dashboard</span>(dashboard)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p><a href="https://github.com/favstats/dashboardr/blob/main/R/tutorial_dashboard.R">View full showcase_dashboard source code</a></p>
 </details>
-<div style="display: flex; gap: 1.5rem; flex-wrap: wrap; margin-bottom: 2rem;">  <div style="flex: 1; min-width: 300px;">    <div class="custom-value-box" style="    background: #3498db;     border-radius: 12px;     padding: 2rem;     color: white;     box-shadow: 0 4px 6px rgba(0,0,0,0.1);     transition: transform 0.3s ease, box-shadow 0.3s ease;     display: flex;     align-items: center;     gap: 1.5rem;     position: relative;     overflow: hidden;    ">      <div style="flex-shrink: 0; display: flex; align-items: center; justify-content: center; width: 80px;">        <div style="font-size: 3rem; font-weight: 700; opacity: 0.3;">N</div>            </div>      <div style="flex: 1;">        <div style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; opacity: 0.9; margin-bottom: 0.5rem; font-weight: 600;">          Total Respondents        </div>        <div style="font-size: 1.75rem; font-weight: 800; letter-spacing: -0.02em; white-space: nowrap;">          2,849        </div>      </div>    </div>  </div>  <div style="flex: 1; min-width: 300px;">    <div class="custom-value-box" style="    background: #27ae60;     border-radius: 12px;     padding: 2rem;     color: white;     box-shadow: 0 4px 6px rgba(0,0,0,0.1);     transition: transform 0.3s ease, box-shadow 0.3s ease;     display: flex;     align-items: center;     gap: 1.5rem;     position: relative;     overflow: hidden;    ">      <div style="flex-shrink: 0; display: flex; align-items: center; justify-content: center; width: 80px;">        <div style="font-size: 3rem; font-weight: 700; opacity: 0.3;"></div>            </div>      <div style="flex: 1;">        <div style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; opacity: 0.9; margin-bottom: 0.5rem; font-weight: 600;">          Very Happy        </div>        <div style="font-size: 1.75rem; font-weight: 800; letter-spacing: -0.02em; white-space: nowrap;">          32%        </div>      </div>    </div>  </div>  <div style="flex: 1; min-width: 300px;">    <div class="custom-value-box" style="    background: #9b59b6;     border-radius: 12px;     padding: 2rem;     color: white;     box-shadow: 0 4px 6px rgba(0,0,0,0.1);     transition: transform 0.3s ease, box-shadow 0.3s ease;     display: flex;     align-items: center;     gap: 1.5rem;     position: relative;     overflow: hidden;    ">      <div style="flex-shrink: 0; display: flex; align-items: center; justify-content: center; width: 80px;">        <div style="font-size: 3rem; font-weight: 700; opacity: 0.3;"></div>            </div>      <div style="flex: 1;">        <div style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; opacity: 0.9; margin-bottom: 0.5rem; font-weight: 600;">          Trust Others        </div>        <div style="font-size: 1.75rem; font-weight: 800; letter-spacing: -0.02em; white-space: nowrap;">          34%        </div>      </div>    </div>  </div></div>
-<div style="display: flex; gap: 1.5rem; flex-wrap: wrap; margin-bottom: 2rem;">  <div style="flex: 1; min-width: 300px;">    <div class="custom-value-box" style="    background: #f39c12;     border-radius: 12px;     padding: 2rem;     color: white;     box-shadow: 0 4px 6px rgba(0,0,0,0.1);     transition: transform 0.3s ease, box-shadow 0.3s ease;     display: flex;     align-items: center;     gap: 1.5rem;     position: relative;     overflow: hidden;    ">      <div style="flex-shrink: 0; display: flex; align-items: center; justify-content: center; width: 80px;">        <div style="font-size: 3rem; font-weight: 700; opacity: 0.3;"></div>            </div>      <div style="flex: 1;">        <div style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; opacity: 0.9; margin-bottom: 0.5rem; font-weight: 600;">          College Educated        </div>        <div style="font-size: 1.75rem; font-weight: 800; letter-spacing: -0.02em; white-space: nowrap;">          28%        </div>      </div>    </div>  </div>  <div style="flex: 1; min-width: 300px;">    <div class="custom-value-box" style="    background: #e74c3c;     border-radius: 12px;     padding: 2rem;     color: white;     box-shadow: 0 4px 6px rgba(0,0,0,0.1);     transition: transform 0.3s ease, box-shadow 0.3s ease;     display: flex;     align-items: center;     gap: 1.5rem;     position: relative;     overflow: hidden;    ">      <div style="flex-shrink: 0; display: flex; align-items: center; justify-content: center; width: 80px;">        <div style="font-size: 3rem; font-weight: 700; opacity: 0.3;"></div>            </div>      <div style="flex: 1;">        <div style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; opacity: 0.9; margin-bottom: 0.5rem; font-weight: 600;">          Regions        </div>        <div style="font-size: 1.75rem; font-weight: 800; letter-spacing: -0.02em; white-space: nowrap;">          9        </div>      </div>    </div>  </div>  <div style="flex: 1; min-width: 300px;">    <div class="custom-value-box" style="    background: #1abc9c;     border-radius: 12px;     padding: 2rem;     color: white;     box-shadow: 0 4px 6px rgba(0,0,0,0.1);     transition: transform 0.3s ease, box-shadow 0.3s ease;     display: flex;     align-items: center;     gap: 1.5rem;     position: relative;     overflow: hidden;    ">      <div style="flex-shrink: 0; display: flex; align-items: center; justify-content: center; width: 80px;">        <div style="font-size: 3rem; font-weight: 700; opacity: 0.3;"></div>            </div>      <div style="flex: 1;">        <div style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; opacity: 0.9; margin-bottom: 0.5rem; font-weight: 600;">          Survey Year        </div>        <div style="font-size: 1.75rem; font-weight: 800; letter-spacing: -0.02em; white-space: nowrap;">          2020        </div>      </div>    </div>  </div></div>
+<div class="cell">
+<div class="cell-output-display">
+<div style="display: flex; gap: 1.5rem; flex-wrap: wrap; margin-bottom: 2rem;">
+<div style="flex: 1; min-width: 300px;">
+<div class="custom-value-box" style="background: #3498db; border-radius: 12px; padding: 2rem; color: white; box-shadow: 0 4px 6px rgba(0,0,0,0.1); transition: transform 0.3s ease, box-shadow 0.3s ease; display: flex; align-items: center; gap: 1.5rem; position: relative; overflow: hidden;">
+<div style="flex-shrink: 0; display: flex; align-items: center; justify-content: center; width: 80px;">
+<div style="font-size: 3rem; font-weight: 700; opacity: 0.3;">N</div>
+</div>
+<div style="flex: 1;">
+<div style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; opacity: 0.9; margin-bottom: 0.5rem; font-weight: 600;">Total Respondents</div>
+<div style="font-size: 1.75rem; font-weight: 800; letter-spacing: -0.02em; white-space: nowrap;">2,849</div>
+</div>
+</div>
+</div>
+<div style="flex: 1; min-width: 300px;">
+<div class="custom-value-box" style="background: #27ae60; border-radius: 12px; padding: 2rem; color: white; box-shadow: 0 4px 6px rgba(0,0,0,0.1); transition: transform 0.3s ease, box-shadow 0.3s ease; display: flex; align-items: center; gap: 1.5rem; position: relative; overflow: hidden;">
+<div style="flex-shrink: 0; display: flex; align-items: center; justify-content: center; width: 80px;">
+<div style="font-size: 3rem; font-weight: 700; opacity: 0.3;"><iconify-icon icon="ph:smiley"></iconify-icon></div>
+</div>
+<div style="flex: 1;">
+<div style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; opacity: 0.9; margin-bottom: 0.5rem; font-weight: 600;">Very Happy</div>
+<div style="font-size: 1.75rem; font-weight: 800; letter-spacing: -0.02em; white-space: nowrap;">32%</div>
+</div>
+</div>
+</div>
+<div style="flex: 1; min-width: 300px;">
+<div class="custom-value-box" style="background: #9b59b6; border-radius: 12px; padding: 2rem; color: white; box-shadow: 0 4px 6px rgba(0,0,0,0.1); transition: transform 0.3s ease, box-shadow 0.3s ease; display: flex; align-items: center; gap: 1.5rem; position: relative; overflow: hidden;">
+<div style="flex-shrink: 0; display: flex; align-items: center; justify-content: center; width: 80px;">
+<div style="font-size: 3rem; font-weight: 700; opacity: 0.3;"><iconify-icon icon="ph:handshake"></iconify-icon></div>
+</div>
+<div style="flex: 1;">
+<div style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; opacity: 0.9; margin-bottom: 0.5rem; font-weight: 600;">Trust Others</div>
+<div style="font-size: 1.75rem; font-weight: 800; letter-spacing: -0.02em; white-space: nowrap;">34%</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div style="display: flex; gap: 1.5rem; flex-wrap: wrap; margin-bottom: 2rem;">
+<div style="flex: 1; min-width: 300px;">
+<div class="custom-value-box" style="background: #f39c12; border-radius: 12px; padding: 2rem; color: white; box-shadow: 0 4px 6px rgba(0,0,0,0.1); transition: transform 0.3s ease, box-shadow 0.3s ease; display: flex; align-items: center; gap: 1.5rem; position: relative; overflow: hidden;">
+<div style="flex-shrink: 0; display: flex; align-items: center; justify-content: center; width: 80px;">
+<div style="font-size: 3rem; font-weight: 700; opacity: 0.3;"><iconify-icon icon="ph:graduation-cap"></iconify-icon></div>
+</div>
+<div style="flex: 1;">
+<div style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; opacity: 0.9; margin-bottom: 0.5rem; font-weight: 600;">College Educated</div>
+<div style="font-size: 1.75rem; font-weight: 800; letter-spacing: -0.02em; white-space: nowrap;">28%</div>
+</div>
+</div>
+</div>
+<div style="flex: 1; min-width: 300px;">
+<div class="custom-value-box" style="background: #e74c3c; border-radius: 12px; padding: 2rem; color: white; box-shadow: 0 4px 6px rgba(0,0,0,0.1); transition: transform 0.3s ease, box-shadow 0.3s ease; display: flex; align-items: center; gap: 1.5rem; position: relative; overflow: hidden;">
+<div style="flex-shrink: 0; display: flex; align-items: center; justify-content: center; width: 80px;">
+<div style="font-size: 3rem; font-weight: 700; opacity: 0.3;"><iconify-icon icon="ph:map-pin"></iconify-icon></div>
+</div>
+<div style="flex: 1;">
+<div style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; opacity: 0.9; margin-bottom: 0.5rem; font-weight: 600;">Regions</div>
+<div style="font-size: 1.75rem; font-weight: 800; letter-spacing: -0.02em; white-space: nowrap;">9</div>
+</div>
+</div>
+</div>
+<div style="flex: 1; min-width: 300px;">
+<div class="custom-value-box" style="background: #1abc9c; border-radius: 12px; padding: 2rem; color: white; box-shadow: 0 4px 6px rgba(0,0,0,0.1); transition: transform 0.3s ease, box-shadow 0.3s ease; display: flex; align-items: center; gap: 1.5rem; position: relative; overflow: hidden;">
+<div style="flex-shrink: 0; display: flex; align-items: center; justify-content: center; width: 80px;">
+<div style="font-size: 3rem; font-weight: 700; opacity: 0.3;"><iconify-icon icon="ph:calendar"></iconify-icon></div>
+</div>
+<div style="flex: 1;">
+<div style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; opacity: 0.9; margin-bottom: 0.5rem; font-weight: 600;">Survey Year</div>
+<div style="font-size: 1.75rem; font-weight: 800; letter-spacing: -0.02em; white-space: nowrap;">2020</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
 <hr>
 <section id="quick-navigation" class="level2">
 <h2 class="anchored" data-anchor-id="quick-navigation">Quick Navigation</h2>
@@ -785,189 +901,186 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="an">format:</span><span class="co"> html</span></span>
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
 <span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="in">```{r, include=FALSE}</span></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="in"># Initialize dashboardr page configuration (CSS/JS for charts)</span></span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="in">dashboardr::.page_config()</span></span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="fu"># General Social Survey 2020</span></span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>Exploring happiness, trust, and social attitudes across America.</span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a><span class="in">```{r setup}</span></span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a><span class="in">#| echo: false</span></span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a><span class="in">#| warning: false</span></span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a><span class="in">#| message: false</span></span>
-<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a><span class="in">#| error: false</span></span>
-<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a><span class="in">#| results: 'hide'</span></span>
-<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a><span class="in"># Load dashboardr (includes dplyr, highcharter as dependencies)</span></span>
-<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a><span class="in">library(dashboardr)</span></span>
-<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a><span class="in"># Global chunk options</span></span>
-<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a><span class="in">knitr::opts_chunk$set(</span></span>
-<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a><span class="in">  echo = FALSE,</span></span>
-<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a><span class="in">  warning = FALSE,</span></span>
-<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a><span class="in">  message = FALSE,</span></span>
-<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a><span class="in">  error = FALSE,</span></span>
-<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a><span class="in">  fig.width = 12,</span></span>
-<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a><span class="in">  fig.height = 8,</span></span>
-<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a><span class="in">  dpi = 300</span></span>
-<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a><span class="in">)</span></span>
-<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="in">```{r, echo=FALSE, results='asis', message=FALSE, warning=FALSE}</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="in">dashboardr::.page_config(accessibility = TRUE)</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="fu"># General Social Survey 2020</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>Exploring happiness, trust, and social attitudes across America.</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="in">```{r setup}</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a><span class="in">#| echo: false</span></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a><span class="in">#| warning: false</span></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a><span class="in">#| message: false</span></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a><span class="in">#| error: false</span></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a><span class="in">#| results: 'hide'</span></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a><span class="in"># Load dashboardr (includes dplyr, highcharter as dependencies)</span></span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a><span class="in">library(dashboardr)</span></span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a><span class="in"># Global chunk options</span></span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a><span class="in">knitr::opts_chunk$set(</span></span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a><span class="in">  echo = FALSE,</span></span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a><span class="in">  warning = FALSE,</span></span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a><span class="in">  message = FALSE,</span></span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a><span class="in">  error = FALSE,</span></span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a><span class="in">  fig.width = 12,</span></span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a><span class="in">  fig.height = 8,</span></span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a><span class="in">  dpi = 300</span></span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a><span class="in">)</span></span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a>&lt;details&gt;</span>
-<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a>&lt;summary&gt;{{&lt; iconify ph code &gt;}} View Full Dashboard Code&lt;/summary&gt;</span>
-<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a><span class="in">```r</span></span>
-<span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dashboardr)</span>
-<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(gssr)</span>
-<span id="cb2-45"><a href="#cb2-45" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
-<span id="cb2-46"><a href="#cb2-46" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-47"><a href="#cb2-47" aria-hidden="true" tabindex="-1"></a><span class="co"># Load and prepare GSS data</span></span>
-<span id="cb2-48"><a href="#cb2-48" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(gss_all)</span>
-<span id="cb2-49"><a href="#cb2-49" aria-hidden="true" tabindex="-1"></a>gss_clean <span class="ot">&lt;-</span> gss_all <span class="sc">%&gt;%</span></span>
-<span id="cb2-50"><a href="#cb2-50" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(year <span class="sc">&gt;=</span> <span class="dv">2010</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb2-51"><a href="#cb2-51" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb2-52"><a href="#cb2-52" aria-hidden="true" tabindex="-1"></a>    <span class="at">sex =</span> haven<span class="sc">::</span><span class="fu">as_factor</span>(sex),</span>
-<span id="cb2-53"><a href="#cb2-53" aria-hidden="true" tabindex="-1"></a>    <span class="at">degree =</span> haven<span class="sc">::</span><span class="fu">as_factor</span>(degree),</span>
-<span id="cb2-54"><a href="#cb2-54" aria-hidden="true" tabindex="-1"></a>    <span class="at">happy =</span> haven<span class="sc">::</span><span class="fu">as_factor</span>(happy),</span>
-<span id="cb2-55"><a href="#cb2-55" aria-hidden="true" tabindex="-1"></a>    <span class="at">region =</span> haven<span class="sc">::</span><span class="fu">as_factor</span>(region),</span>
-<span id="cb2-56"><a href="#cb2-56" aria-hidden="true" tabindex="-1"></a>    <span class="at">polviews =</span> haven<span class="sc">::</span><span class="fu">as_factor</span>(polviews),</span>
-<span id="cb2-57"><a href="#cb2-57" aria-hidden="true" tabindex="-1"></a>    <span class="at">partyid =</span> haven<span class="sc">::</span><span class="fu">as_factor</span>(partyid)</span>
-<span id="cb2-58"><a href="#cb2-58" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
-<span id="cb2-59"><a href="#cb2-59" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(age), <span class="sc">!</span><span class="fu">is.na</span>(sex), <span class="sc">!</span><span class="fu">is.na</span>(degree))</span>
-<span id="cb2-60"><a href="#cb2-60" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-61"><a href="#cb2-61" aria-hidden="true" tabindex="-1"></a><span class="co"># Create visualizations with nested tabsets</span></span>
-<span id="cb2-62"><a href="#cb2-62" aria-hidden="true" tabindex="-1"></a>analysis_vizzes <span class="ot">&lt;-</span> <span class="fu">create_content</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb2-63"><a href="#cb2-63" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_viz</span>(<span class="at">type =</span> <span class="st">"stackedbar"</span>,</span>
-<span id="cb2-64"><a href="#cb2-64" aria-hidden="true" tabindex="-1"></a>          <span class="at">x_var =</span> <span class="st">"degree"</span>, <span class="at">stack_var =</span> <span class="st">"happy"</span>,</span>
-<span id="cb2-65"><a href="#cb2-65" aria-hidden="true" tabindex="-1"></a>          <span class="at">title =</span> <span class="st">"Happiness by Education"</span>,</span>
-<span id="cb2-66"><a href="#cb2-66" aria-hidden="true" tabindex="-1"></a>          <span class="at">tabgroup =</span> <span class="st">"happiness"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb2-67"><a href="#cb2-67" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_viz</span>(<span class="at">type =</span> <span class="st">"boxplot"</span>,</span>
-<span id="cb2-68"><a href="#cb2-68" aria-hidden="true" tabindex="-1"></a>          <span class="at">x_var =</span> <span class="st">"happy"</span>, <span class="at">y_var =</span> <span class="st">"age"</span>,</span>
-<span id="cb2-69"><a href="#cb2-69" aria-hidden="true" tabindex="-1"></a>          <span class="at">title =</span> <span class="st">"Age by Happiness"</span>,</span>
-<span id="cb2-70"><a href="#cb2-70" aria-hidden="true" tabindex="-1"></a>          <span class="at">tabgroup =</span> <span class="st">"happiness"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb2-71"><a href="#cb2-71" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_viz</span>(<span class="at">type =</span> <span class="st">"histogram"</span>,</span>
-<span id="cb2-72"><a href="#cb2-72" aria-hidden="true" tabindex="-1"></a>          <span class="at">x_var =</span> <span class="st">"age"</span>,</span>
-<span id="cb2-73"><a href="#cb2-73" aria-hidden="true" tabindex="-1"></a>          <span class="at">title =</span> <span class="st">"Age Distribution"</span>,</span>
-<span id="cb2-74"><a href="#cb2-74" aria-hidden="true" tabindex="-1"></a>          <span class="at">tabgroup =</span> <span class="st">"age"</span>)</span>
-<span id="cb2-75"><a href="#cb2-75" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-76"><a href="#cb2-76" aria-hidden="true" tabindex="-1"></a><span class="co"># Create dashboard with value boxes</span></span>
-<span id="cb2-77"><a href="#cb2-77" aria-hidden="true" tabindex="-1"></a>dashboard <span class="ot">&lt;-</span> <span class="fu">create_dashboard</span>(</span>
-<span id="cb2-78"><a href="#cb2-78" aria-hidden="true" tabindex="-1"></a>  <span class="at">output_dir =</span> <span class="st">"showcase_dashboard"</span>,</span>
-<span id="cb2-79"><a href="#cb2-79" aria-hidden="true" tabindex="-1"></a>  <span class="at">title =</span> <span class="st">"GSS Data Explorer"</span>,</span>
-<span id="cb2-80"><a href="#cb2-80" aria-hidden="true" tabindex="-1"></a>  <span class="at">theme =</span> <span class="st">"flatly"</span></span>
-<span id="cb2-81"><a href="#cb2-81" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span></span>
-<span id="cb2-82"><a href="#cb2-82" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_page</span>(</span>
-<span id="cb2-83"><a href="#cb2-83" aria-hidden="true" tabindex="-1"></a>    <span class="at">name =</span> <span class="st">"Overview"</span>,</span>
-<span id="cb2-84"><a href="#cb2-84" aria-hidden="true" tabindex="-1"></a>    <span class="at">content =</span> <span class="fu">create_content</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb2-85"><a href="#cb2-85" aria-hidden="true" tabindex="-1"></a>      <span class="fu">add_value_box_row</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb2-86"><a href="#cb2-86" aria-hidden="true" tabindex="-1"></a>        <span class="fu">add_value_box</span>(<span class="at">title =</span> <span class="st">"Respondents"</span>, <span class="at">value =</span> <span class="st">"2,849"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb2-87"><a href="#cb2-87" aria-hidden="true" tabindex="-1"></a>        <span class="fu">add_value_box</span>(<span class="at">title =</span> <span class="st">"Very Happy"</span>, <span class="at">value =</span> <span class="st">"32%"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb2-88"><a href="#cb2-88" aria-hidden="true" tabindex="-1"></a>      <span class="fu">end_value_box_row</span>(),</span>
-<span id="cb2-89"><a href="#cb2-89" aria-hidden="true" tabindex="-1"></a>    <span class="at">is_landing_page =</span> <span class="cn">TRUE</span></span>
-<span id="cb2-90"><a href="#cb2-90" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
-<span id="cb2-91"><a href="#cb2-91" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_page</span>(</span>
-<span id="cb2-92"><a href="#cb2-92" aria-hidden="true" tabindex="-1"></a>    <span class="at">name =</span> <span class="st">"Demographics"</span>,</span>
-<span id="cb2-93"><a href="#cb2-93" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> gss_clean,</span>
-<span id="cb2-94"><a href="#cb2-94" aria-hidden="true" tabindex="-1"></a>    <span class="at">content =</span> analysis_vizzes</span>
-<span id="cb2-95"><a href="#cb2-95" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb2-96"><a href="#cb2-96" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-97"><a href="#cb2-97" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate</span></span>
-<span id="cb2-98"><a href="#cb2-98" aria-hidden="true" tabindex="-1"></a><span class="fu">generate_dashboard</span>(dashboard)</span>
-<span id="cb2-99"><a href="#cb2-99" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb2-100"><a href="#cb2-100" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-101"><a href="#cb2-101" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="ot">View full showcase_dashboard source code</span><span class="co">](https://github.com/favstats/dashboardr/blob/main/R/tutorial_dashboard.R)</span></span>
-<span id="cb2-102"><a href="#cb2-102" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-103"><a href="#cb2-103" aria-hidden="true" tabindex="-1"></a>&lt;/details&gt;</span>
+<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a>&lt;details&gt;</span>
+<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a>&lt;summary&gt;{{&lt; iconify ph code &gt;}} View Full Dashboard Code&lt;/summary&gt;</span>
+<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a><span class="in">```r</span></span>
+<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dashboardr)</span>
+<span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(gssr)</span>
+<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb2-45"><a href="#cb2-45" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-46"><a href="#cb2-46" aria-hidden="true" tabindex="-1"></a><span class="co"># Load and prepare GSS data</span></span>
+<span id="cb2-47"><a href="#cb2-47" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(gss_all)</span>
+<span id="cb2-48"><a href="#cb2-48" aria-hidden="true" tabindex="-1"></a>gss_clean <span class="ot">&lt;-</span> gss_all <span class="sc">%&gt;%</span></span>
+<span id="cb2-49"><a href="#cb2-49" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(year <span class="sc">&gt;=</span> <span class="dv">2010</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb2-50"><a href="#cb2-50" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb2-51"><a href="#cb2-51" aria-hidden="true" tabindex="-1"></a>    <span class="at">sex =</span> haven<span class="sc">::</span><span class="fu">as_factor</span>(sex),</span>
+<span id="cb2-52"><a href="#cb2-52" aria-hidden="true" tabindex="-1"></a>    <span class="at">degree =</span> haven<span class="sc">::</span><span class="fu">as_factor</span>(degree),</span>
+<span id="cb2-53"><a href="#cb2-53" aria-hidden="true" tabindex="-1"></a>    <span class="at">happy =</span> haven<span class="sc">::</span><span class="fu">as_factor</span>(happy),</span>
+<span id="cb2-54"><a href="#cb2-54" aria-hidden="true" tabindex="-1"></a>    <span class="at">region =</span> haven<span class="sc">::</span><span class="fu">as_factor</span>(region),</span>
+<span id="cb2-55"><a href="#cb2-55" aria-hidden="true" tabindex="-1"></a>    <span class="at">polviews =</span> haven<span class="sc">::</span><span class="fu">as_factor</span>(polviews),</span>
+<span id="cb2-56"><a href="#cb2-56" aria-hidden="true" tabindex="-1"></a>    <span class="at">partyid =</span> haven<span class="sc">::</span><span class="fu">as_factor</span>(partyid)</span>
+<span id="cb2-57"><a href="#cb2-57" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb2-58"><a href="#cb2-58" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(age), <span class="sc">!</span><span class="fu">is.na</span>(sex), <span class="sc">!</span><span class="fu">is.na</span>(degree))</span>
+<span id="cb2-59"><a href="#cb2-59" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-60"><a href="#cb2-60" aria-hidden="true" tabindex="-1"></a><span class="co"># Create visualizations with nested tabsets</span></span>
+<span id="cb2-61"><a href="#cb2-61" aria-hidden="true" tabindex="-1"></a>analysis_vizzes <span class="ot">&lt;-</span> <span class="fu">create_content</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb2-62"><a href="#cb2-62" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_viz</span>(<span class="at">type =</span> <span class="st">"stackedbar"</span>,</span>
+<span id="cb2-63"><a href="#cb2-63" aria-hidden="true" tabindex="-1"></a>          <span class="at">x_var =</span> <span class="st">"degree"</span>, <span class="at">stack_var =</span> <span class="st">"happy"</span>,</span>
+<span id="cb2-64"><a href="#cb2-64" aria-hidden="true" tabindex="-1"></a>          <span class="at">title =</span> <span class="st">"Happiness by Education"</span>,</span>
+<span id="cb2-65"><a href="#cb2-65" aria-hidden="true" tabindex="-1"></a>          <span class="at">tabgroup =</span> <span class="st">"happiness"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb2-66"><a href="#cb2-66" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_viz</span>(<span class="at">type =</span> <span class="st">"boxplot"</span>,</span>
+<span id="cb2-67"><a href="#cb2-67" aria-hidden="true" tabindex="-1"></a>          <span class="at">x_var =</span> <span class="st">"happy"</span>, <span class="at">y_var =</span> <span class="st">"age"</span>,</span>
+<span id="cb2-68"><a href="#cb2-68" aria-hidden="true" tabindex="-1"></a>          <span class="at">title =</span> <span class="st">"Age by Happiness"</span>,</span>
+<span id="cb2-69"><a href="#cb2-69" aria-hidden="true" tabindex="-1"></a>          <span class="at">tabgroup =</span> <span class="st">"happiness"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb2-70"><a href="#cb2-70" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_viz</span>(<span class="at">type =</span> <span class="st">"histogram"</span>,</span>
+<span id="cb2-71"><a href="#cb2-71" aria-hidden="true" tabindex="-1"></a>          <span class="at">x_var =</span> <span class="st">"age"</span>,</span>
+<span id="cb2-72"><a href="#cb2-72" aria-hidden="true" tabindex="-1"></a>          <span class="at">title =</span> <span class="st">"Age Distribution"</span>,</span>
+<span id="cb2-73"><a href="#cb2-73" aria-hidden="true" tabindex="-1"></a>          <span class="at">tabgroup =</span> <span class="st">"age"</span>)</span>
+<span id="cb2-74"><a href="#cb2-74" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-75"><a href="#cb2-75" aria-hidden="true" tabindex="-1"></a><span class="co"># Create dashboard with value boxes</span></span>
+<span id="cb2-76"><a href="#cb2-76" aria-hidden="true" tabindex="-1"></a>dashboard <span class="ot">&lt;-</span> <span class="fu">create_dashboard</span>(</span>
+<span id="cb2-77"><a href="#cb2-77" aria-hidden="true" tabindex="-1"></a>  <span class="at">output_dir =</span> <span class="st">"showcase_dashboard"</span>,</span>
+<span id="cb2-78"><a href="#cb2-78" aria-hidden="true" tabindex="-1"></a>  <span class="at">title =</span> <span class="st">"GSS Data Explorer"</span>,</span>
+<span id="cb2-79"><a href="#cb2-79" aria-hidden="true" tabindex="-1"></a>  <span class="at">theme =</span> <span class="st">"flatly"</span></span>
+<span id="cb2-80"><a href="#cb2-80" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span></span>
+<span id="cb2-81"><a href="#cb2-81" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_page</span>(</span>
+<span id="cb2-82"><a href="#cb2-82" aria-hidden="true" tabindex="-1"></a>    <span class="at">name =</span> <span class="st">"Overview"</span>,</span>
+<span id="cb2-83"><a href="#cb2-83" aria-hidden="true" tabindex="-1"></a>    <span class="at">content =</span> <span class="fu">create_content</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb2-84"><a href="#cb2-84" aria-hidden="true" tabindex="-1"></a>      <span class="fu">add_value_box_row</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb2-85"><a href="#cb2-85" aria-hidden="true" tabindex="-1"></a>        <span class="fu">add_value_box</span>(<span class="at">title =</span> <span class="st">"Respondents"</span>, <span class="at">value =</span> <span class="st">"2,849"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb2-86"><a href="#cb2-86" aria-hidden="true" tabindex="-1"></a>        <span class="fu">add_value_box</span>(<span class="at">title =</span> <span class="st">"Very Happy"</span>, <span class="at">value =</span> <span class="st">"32%"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb2-87"><a href="#cb2-87" aria-hidden="true" tabindex="-1"></a>      <span class="fu">end_value_box_row</span>(),</span>
+<span id="cb2-88"><a href="#cb2-88" aria-hidden="true" tabindex="-1"></a>    <span class="at">is_landing_page =</span> <span class="cn">TRUE</span></span>
+<span id="cb2-89"><a href="#cb2-89" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb2-90"><a href="#cb2-90" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_page</span>(</span>
+<span id="cb2-91"><a href="#cb2-91" aria-hidden="true" tabindex="-1"></a>    <span class="at">name =</span> <span class="st">"Demographics"</span>,</span>
+<span id="cb2-92"><a href="#cb2-92" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> gss_clean,</span>
+<span id="cb2-93"><a href="#cb2-93" aria-hidden="true" tabindex="-1"></a>    <span class="at">content =</span> analysis_vizzes</span>
+<span id="cb2-94"><a href="#cb2-94" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb2-95"><a href="#cb2-95" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-96"><a href="#cb2-96" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate</span></span>
+<span id="cb2-97"><a href="#cb2-97" aria-hidden="true" tabindex="-1"></a><span class="fu">generate_dashboard</span>(dashboard)</span>
+<span id="cb2-98"><a href="#cb2-98" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb2-99"><a href="#cb2-99" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-100"><a href="#cb2-100" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="ot">View full showcase_dashboard source code</span><span class="co">](https://github.com/favstats/dashboardr/blob/main/R/tutorial_dashboard.R)</span></span>
+<span id="cb2-101"><a href="#cb2-101" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-102"><a href="#cb2-102" aria-hidden="true" tabindex="-1"></a>&lt;/details&gt;</span>
+<span id="cb2-103"><a href="#cb2-103" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-104"><a href="#cb2-104" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-105"><a href="#cb2-105" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-108"><a href="#cb2-108" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb2-109"><a href="#cb2-109" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: false</span></span>
-<span id="cb2-110"><a href="#cb2-110" aria-hidden="true" tabindex="-1"></a><span class="co">#| results: 'asis'</span></span>
-<span id="cb2-111"><a href="#cb2-111" aria-hidden="true" tabindex="-1"></a>dashboardr<span class="sc">::</span><span class="fu">render_value_box_row</span>(<span class="fu">list</span>(</span>
-<span id="cb2-112"><a href="#cb2-112" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list</span>(</span>
-<span id="cb2-113"><a href="#cb2-113" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Total Respondents"</span>,</span>
-<span id="cb2-114"><a href="#cb2-114" aria-hidden="true" tabindex="-1"></a>    <span class="at">value =</span> <span class="st">"2,849"</span>,</span>
-<span id="cb2-115"><a href="#cb2-115" aria-hidden="true" tabindex="-1"></a>    <span class="at">bg_color =</span> <span class="st">"#3498db"</span>,</span>
-<span id="cb2-116"><a href="#cb2-116" aria-hidden="true" tabindex="-1"></a>    <span class="at">logo_url =</span> <span class="cn">NULL</span>,</span>
-<span id="cb2-117"><a href="#cb2-117" aria-hidden="true" tabindex="-1"></a>    <span class="at">logo_text =</span> <span class="st">"N"</span></span>
-<span id="cb2-118"><a href="#cb2-118" aria-hidden="true" tabindex="-1"></a>  ),</span>
-<span id="cb2-119"><a href="#cb2-119" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list</span>(</span>
-<span id="cb2-120"><a href="#cb2-120" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Very Happy"</span>,</span>
-<span id="cb2-121"><a href="#cb2-121" aria-hidden="true" tabindex="-1"></a>    <span class="at">value =</span> <span class="st">"32%"</span>,</span>
-<span id="cb2-122"><a href="#cb2-122" aria-hidden="true" tabindex="-1"></a>    <span class="at">bg_color =</span> <span class="st">"#27ae60"</span>,</span>
-<span id="cb2-123"><a href="#cb2-123" aria-hidden="true" tabindex="-1"></a>    <span class="at">logo_url =</span> <span class="cn">NULL</span>,</span>
-<span id="cb2-124"><a href="#cb2-124" aria-hidden="true" tabindex="-1"></a>    <span class="at">logo_text =</span> <span class="st">"{{&lt; iconify ph smiley &gt;}}"</span></span>
-<span id="cb2-125"><a href="#cb2-125" aria-hidden="true" tabindex="-1"></a>  ),</span>
-<span id="cb2-126"><a href="#cb2-126" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list</span>(</span>
-<span id="cb2-127"><a href="#cb2-127" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Trust Others"</span>,</span>
-<span id="cb2-128"><a href="#cb2-128" aria-hidden="true" tabindex="-1"></a>    <span class="at">value =</span> <span class="st">"34%"</span>,</span>
-<span id="cb2-129"><a href="#cb2-129" aria-hidden="true" tabindex="-1"></a>    <span class="at">bg_color =</span> <span class="st">"#9b59b6"</span>,</span>
-<span id="cb2-130"><a href="#cb2-130" aria-hidden="true" tabindex="-1"></a>    <span class="at">logo_url =</span> <span class="cn">NULL</span>,</span>
-<span id="cb2-131"><a href="#cb2-131" aria-hidden="true" tabindex="-1"></a>    <span class="at">logo_text =</span> <span class="st">"{{&lt; iconify ph handshake &gt;}}"</span></span>
-<span id="cb2-132"><a href="#cb2-132" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb2-133"><a href="#cb2-133" aria-hidden="true" tabindex="-1"></a>))</span>
-<span id="cb2-134"><a href="#cb2-134" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb2-135"><a href="#cb2-135" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-136"><a href="#cb2-136" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-139"><a href="#cb2-139" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb2-140"><a href="#cb2-140" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: false</span></span>
-<span id="cb2-141"><a href="#cb2-141" aria-hidden="true" tabindex="-1"></a><span class="co">#| results: 'asis'</span></span>
-<span id="cb2-142"><a href="#cb2-142" aria-hidden="true" tabindex="-1"></a>dashboardr<span class="sc">::</span><span class="fu">render_value_box_row</span>(<span class="fu">list</span>(</span>
-<span id="cb2-143"><a href="#cb2-143" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list</span>(</span>
-<span id="cb2-144"><a href="#cb2-144" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"College Educated"</span>,</span>
-<span id="cb2-145"><a href="#cb2-145" aria-hidden="true" tabindex="-1"></a>    <span class="at">value =</span> <span class="st">"28%"</span>,</span>
-<span id="cb2-146"><a href="#cb2-146" aria-hidden="true" tabindex="-1"></a>    <span class="at">bg_color =</span> <span class="st">"#f39c12"</span>,</span>
-<span id="cb2-147"><a href="#cb2-147" aria-hidden="true" tabindex="-1"></a>    <span class="at">logo_url =</span> <span class="cn">NULL</span>,</span>
-<span id="cb2-148"><a href="#cb2-148" aria-hidden="true" tabindex="-1"></a>    <span class="at">logo_text =</span> <span class="st">"{{&lt; iconify ph graduation-cap &gt;}}"</span></span>
-<span id="cb2-149"><a href="#cb2-149" aria-hidden="true" tabindex="-1"></a>  ),</span>
-<span id="cb2-150"><a href="#cb2-150" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list</span>(</span>
-<span id="cb2-151"><a href="#cb2-151" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Regions"</span>,</span>
-<span id="cb2-152"><a href="#cb2-152" aria-hidden="true" tabindex="-1"></a>    <span class="at">value =</span> <span class="st">"9"</span>,</span>
-<span id="cb2-153"><a href="#cb2-153" aria-hidden="true" tabindex="-1"></a>    <span class="at">bg_color =</span> <span class="st">"#e74c3c"</span>,</span>
-<span id="cb2-154"><a href="#cb2-154" aria-hidden="true" tabindex="-1"></a>    <span class="at">logo_url =</span> <span class="cn">NULL</span>,</span>
-<span id="cb2-155"><a href="#cb2-155" aria-hidden="true" tabindex="-1"></a>    <span class="at">logo_text =</span> <span class="st">"{{&lt; iconify ph map-pin &gt;}}"</span></span>
-<span id="cb2-156"><a href="#cb2-156" aria-hidden="true" tabindex="-1"></a>  ),</span>
-<span id="cb2-157"><a href="#cb2-157" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list</span>(</span>
-<span id="cb2-158"><a href="#cb2-158" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Survey Year"</span>,</span>
-<span id="cb2-159"><a href="#cb2-159" aria-hidden="true" tabindex="-1"></a>    <span class="at">value =</span> <span class="st">"2020"</span>,</span>
-<span id="cb2-160"><a href="#cb2-160" aria-hidden="true" tabindex="-1"></a>    <span class="at">bg_color =</span> <span class="st">"#1abc9c"</span>,</span>
-<span id="cb2-161"><a href="#cb2-161" aria-hidden="true" tabindex="-1"></a>    <span class="at">logo_url =</span> <span class="cn">NULL</span>,</span>
-<span id="cb2-162"><a href="#cb2-162" aria-hidden="true" tabindex="-1"></a>    <span class="at">logo_text =</span> <span class="st">"{{&lt; iconify ph calendar &gt;}}"</span></span>
-<span id="cb2-163"><a href="#cb2-163" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb2-164"><a href="#cb2-164" aria-hidden="true" tabindex="-1"></a>))</span>
-<span id="cb2-165"><a href="#cb2-165" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb2-107"><a href="#cb2-107" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb2-108"><a href="#cb2-108" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: false</span></span>
+<span id="cb2-109"><a href="#cb2-109" aria-hidden="true" tabindex="-1"></a>dashboardr<span class="sc">::</span><span class="fu">render_value_box_row</span>(<span class="fu">list</span>(</span>
+<span id="cb2-110"><a href="#cb2-110" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list</span>(</span>
+<span id="cb2-111"><a href="#cb2-111" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Total Respondents"</span>,</span>
+<span id="cb2-112"><a href="#cb2-112" aria-hidden="true" tabindex="-1"></a>    <span class="at">value =</span> <span class="st">"2,849"</span>,</span>
+<span id="cb2-113"><a href="#cb2-113" aria-hidden="true" tabindex="-1"></a>    <span class="at">bg_color =</span> <span class="st">"#3498db"</span>,</span>
+<span id="cb2-114"><a href="#cb2-114" aria-hidden="true" tabindex="-1"></a>    <span class="at">logo_url =</span> <span class="cn">NULL</span>,</span>
+<span id="cb2-115"><a href="#cb2-115" aria-hidden="true" tabindex="-1"></a>    <span class="at">logo_text =</span> <span class="st">"N"</span></span>
+<span id="cb2-116"><a href="#cb2-116" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb2-117"><a href="#cb2-117" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list</span>(</span>
+<span id="cb2-118"><a href="#cb2-118" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Very Happy"</span>,</span>
+<span id="cb2-119"><a href="#cb2-119" aria-hidden="true" tabindex="-1"></a>    <span class="at">value =</span> <span class="st">"32%"</span>,</span>
+<span id="cb2-120"><a href="#cb2-120" aria-hidden="true" tabindex="-1"></a>    <span class="at">bg_color =</span> <span class="st">"#27ae60"</span>,</span>
+<span id="cb2-121"><a href="#cb2-121" aria-hidden="true" tabindex="-1"></a>    <span class="at">logo_url =</span> <span class="cn">NULL</span>,</span>
+<span id="cb2-122"><a href="#cb2-122" aria-hidden="true" tabindex="-1"></a>    <span class="at">logo_text =</span> <span class="st">"{{&lt; iconify ph smiley &gt;}}"</span></span>
+<span id="cb2-123"><a href="#cb2-123" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb2-124"><a href="#cb2-124" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list</span>(</span>
+<span id="cb2-125"><a href="#cb2-125" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Trust Others"</span>,</span>
+<span id="cb2-126"><a href="#cb2-126" aria-hidden="true" tabindex="-1"></a>    <span class="at">value =</span> <span class="st">"34%"</span>,</span>
+<span id="cb2-127"><a href="#cb2-127" aria-hidden="true" tabindex="-1"></a>    <span class="at">bg_color =</span> <span class="st">"#9b59b6"</span>,</span>
+<span id="cb2-128"><a href="#cb2-128" aria-hidden="true" tabindex="-1"></a>    <span class="at">logo_url =</span> <span class="cn">NULL</span>,</span>
+<span id="cb2-129"><a href="#cb2-129" aria-hidden="true" tabindex="-1"></a>    <span class="at">logo_text =</span> <span class="st">"{{&lt; iconify ph handshake &gt;}}"</span></span>
+<span id="cb2-130"><a href="#cb2-130" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb2-131"><a href="#cb2-131" aria-hidden="true" tabindex="-1"></a>))</span>
+<span id="cb2-132"><a href="#cb2-132" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb2-133"><a href="#cb2-133" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-134"><a href="#cb2-134" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-137"><a href="#cb2-137" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb2-138"><a href="#cb2-138" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: false</span></span>
+<span id="cb2-139"><a href="#cb2-139" aria-hidden="true" tabindex="-1"></a>dashboardr<span class="sc">::</span><span class="fu">render_value_box_row</span>(<span class="fu">list</span>(</span>
+<span id="cb2-140"><a href="#cb2-140" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list</span>(</span>
+<span id="cb2-141"><a href="#cb2-141" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"College Educated"</span>,</span>
+<span id="cb2-142"><a href="#cb2-142" aria-hidden="true" tabindex="-1"></a>    <span class="at">value =</span> <span class="st">"28%"</span>,</span>
+<span id="cb2-143"><a href="#cb2-143" aria-hidden="true" tabindex="-1"></a>    <span class="at">bg_color =</span> <span class="st">"#f39c12"</span>,</span>
+<span id="cb2-144"><a href="#cb2-144" aria-hidden="true" tabindex="-1"></a>    <span class="at">logo_url =</span> <span class="cn">NULL</span>,</span>
+<span id="cb2-145"><a href="#cb2-145" aria-hidden="true" tabindex="-1"></a>    <span class="at">logo_text =</span> <span class="st">"{{&lt; iconify ph graduation-cap &gt;}}"</span></span>
+<span id="cb2-146"><a href="#cb2-146" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb2-147"><a href="#cb2-147" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list</span>(</span>
+<span id="cb2-148"><a href="#cb2-148" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Regions"</span>,</span>
+<span id="cb2-149"><a href="#cb2-149" aria-hidden="true" tabindex="-1"></a>    <span class="at">value =</span> <span class="st">"9"</span>,</span>
+<span id="cb2-150"><a href="#cb2-150" aria-hidden="true" tabindex="-1"></a>    <span class="at">bg_color =</span> <span class="st">"#e74c3c"</span>,</span>
+<span id="cb2-151"><a href="#cb2-151" aria-hidden="true" tabindex="-1"></a>    <span class="at">logo_url =</span> <span class="cn">NULL</span>,</span>
+<span id="cb2-152"><a href="#cb2-152" aria-hidden="true" tabindex="-1"></a>    <span class="at">logo_text =</span> <span class="st">"{{&lt; iconify ph map-pin &gt;}}"</span></span>
+<span id="cb2-153"><a href="#cb2-153" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb2-154"><a href="#cb2-154" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list</span>(</span>
+<span id="cb2-155"><a href="#cb2-155" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Survey Year"</span>,</span>
+<span id="cb2-156"><a href="#cb2-156" aria-hidden="true" tabindex="-1"></a>    <span class="at">value =</span> <span class="st">"2020"</span>,</span>
+<span id="cb2-157"><a href="#cb2-157" aria-hidden="true" tabindex="-1"></a>    <span class="at">bg_color =</span> <span class="st">"#1abc9c"</span>,</span>
+<span id="cb2-158"><a href="#cb2-158" aria-hidden="true" tabindex="-1"></a>    <span class="at">logo_url =</span> <span class="cn">NULL</span>,</span>
+<span id="cb2-159"><a href="#cb2-159" aria-hidden="true" tabindex="-1"></a>    <span class="at">logo_text =</span> <span class="st">"{{&lt; iconify ph calendar &gt;}}"</span></span>
+<span id="cb2-160"><a href="#cb2-160" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb2-161"><a href="#cb2-161" aria-hidden="true" tabindex="-1"></a>))</span>
+<span id="cb2-162"><a href="#cb2-162" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb2-163"><a href="#cb2-163" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-164"><a href="#cb2-164" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-165"><a href="#cb2-165" aria-hidden="true" tabindex="-1"></a>---</span>
 <span id="cb2-166"><a href="#cb2-166" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-167"><a href="#cb2-167" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-168"><a href="#cb2-168" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb2-168"><a href="#cb2-168" aria-hidden="true" tabindex="-1"></a><span class="fu">## Quick Navigation</span></span>
 <span id="cb2-169"><a href="#cb2-169" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-170"><a href="#cb2-170" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-171"><a href="#cb2-171" aria-hidden="true" tabindex="-1"></a><span class="fu">## Quick Navigation</span></span>
+<span id="cb2-171"><a href="#cb2-171" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="ot">{{&lt; iconify ph users-three &gt;}} Demographics</span><span class="co">](demographics.html)</span> - Explore happiness and wellbeing by demographic groups</span>
 <span id="cb2-172"><a href="#cb2-172" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-173"><a href="#cb2-173" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-174"><a href="#cb2-174" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="ot">{{&lt; iconify ph users-three &gt;}} Demographics</span><span class="co">](demographics.html)</span> - Explore happiness and wellbeing by demographic groups</span>
+<span id="cb2-174"><a href="#cb2-174" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-175"><a href="#cb2-175" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-176"><a href="#cb2-176" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-177"><a href="#cb2-177" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-177"><a href="#cb2-177" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="ot">{{&lt; iconify ph handshake &gt;}} Trust &amp; Social Capital</span><span class="co">](trust___social_capital.html)</span> - Filter and explore trust patterns across regions</span>
 <span id="cb2-178"><a href="#cb2-178" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-179"><a href="#cb2-179" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-180"><a href="#cb2-180" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="ot">{{&lt; iconify ph handshake &gt;}} Trust &amp; Social Capital</span><span class="co">](trust___social_capital.html)</span> - Filter and explore trust patterns across regions</span>
+<span id="cb2-180"><a href="#cb2-180" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-181"><a href="#cb2-181" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-182"><a href="#cb2-182" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-183"><a href="#cb2-183" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-183"><a href="#cb2-183" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="ot">{{&lt; iconify ph chart-bar &gt;}} Political Attitudes</span><span class="co">](political_attitudes.html)</span> - Party identification and ideology breakdowns</span>
 <span id="cb2-184"><a href="#cb2-184" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-185"><a href="#cb2-185" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-186"><a href="#cb2-186" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="ot">{{&lt; iconify ph chart-bar &gt;}} Political Attitudes</span><span class="co">](political_attitudes.html)</span> - Party identification and ideology breakdowns</span>
+<span id="cb2-186"><a href="#cb2-186" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-187"><a href="#cb2-187" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-188"><a href="#cb2-188" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-189"><a href="#cb2-189" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-190"><a href="#cb2-190" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-191"><a href="#cb2-191" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-192"><a href="#cb2-192" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="ot">{{&lt; iconify ph info &gt;}} About</span><span class="co">](about.html)</span> - Data sources and methodology</span>
+<span id="cb2-189"><a href="#cb2-189" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="ot">{{&lt; iconify ph info &gt;}} About</span><span class="co">](about.html)</span> - Data sources and methodology</span>
 </code><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
 </div></div></div></div></div>
 </div> <!-- /content -->

@@ -159,6 +159,69 @@ Gallery](https://favstats.github.io/dashboardr/gallery/) by [opening a
 Gallery
 submission](https://github.com/favstats/dashboardr/issues/new?labels=gallery-submission&title=%5BGallery%5D+My+Dashboard).
 
+## LLM Support
+
+dashboardr includes a built-in [MCP
+server](https://modelcontextprotocol.io/) that gives AI coding
+assistants full access to dashboardr documentation, function help, and
+runnable examples. Works with Claude Code, Claude Desktop, VS Code
+Copilot, Cursor, and any MCP-compatible client.
+
+### Setup
+
+First, install the optional dependencies:
+
+``` r
+install.packages(c("ellmer", "mcptools"))
+```
+
+Then configure your client:
+
+**Claude Code:**
+
+``` bash
+claude mcp add dashboardr -- Rscript -e "dashboardr::dashboardr_mcp_server()"
+```
+
+**Claude Desktop** (`claude_desktop_config.json`):
+
+``` json
+{
+  "mcpServers": {
+    "dashboardr": {
+      "command": "Rscript",
+      "args": ["-e", "dashboardr::dashboardr_mcp_server()"]
+    }
+  }
+}
+```
+
+**VS Code / Cursor** (`.vscode/mcp.json` or Cursor equivalent):
+
+``` json
+{
+  "mcp": {
+    "servers": {
+      "dashboardr": {
+        "type": "stdio",
+        "command": "Rscript",
+        "args": ["-e", "dashboardr::dashboardr_mcp_server()"]
+      }
+    }
+  }
+}
+```
+
+### Available Tools
+
+| Tool | Description |
+|----|----|
+| `dashboardr_guide` | Full package guide — architecture, API overview, quick start |
+| `dashboardr_function_help` | Look up help for any exported function |
+| `dashboardr_list_functions` | List functions by category (viz, content, input, layout, …) |
+| `dashboardr_example` | Get runnable example code for common patterns |
+| `dashboardr_viz_types` | Quick reference of all visualization types and parameters |
+
 ## License
 
 MIT License - see
@@ -421,6 +484,10 @@ Functions for adding interactive inputs to dashboards
   : Enable show_when (conditional visibility) script only
 - [`enable_chart_export()`](https://favstats.github.io/dashboardr/reference/enable_chart_export.md)
   : Enable chart export buttons (PNG/SVG/PDF/CSV)
+- [`enable_accessibility()`](https://favstats.github.io/dashboardr/reference/enable_accessibility.md)
+  : Enable Accessibility Enhancements
+- [`enable_url_params()`](https://favstats.github.io/dashboardr/reference/enable_url_params.md)
+  : Enable URL Parameter Deep Linking
 - [`end_input_row()`](https://favstats.github.io/dashboardr/reference/end_input_row.md)
   : End an input row
 - [`render_input()`](https://favstats.github.io/dashboardr/reference/render_input.md)
@@ -453,6 +520,12 @@ Functions for embedding external content
   : Add a generic htmlwidget to the dashboard
 - [`add_plotly()`](https://favstats.github.io/dashboardr/reference/add_plotly.md)
   : Add a plotly chart to the dashboard
+- [`add_echarts()`](https://favstats.github.io/dashboardr/reference/add_echarts.md)
+  : Add an echarts4r chart to the dashboard
+- [`add_ggiraph()`](https://favstats.github.io/dashboardr/reference/add_ggiraph.md)
+  : Add a ggiraph interactive plot to the dashboard
+- [`add_ggplot()`](https://favstats.github.io/dashboardr/reference/add_ggplot.md)
+  : Add a static ggplot2 plot to the dashboard
 - [`add_leaflet()`](https://favstats.github.io/dashboardr/reference/add_leaflet.md)
   : Add a leaflet map to the dashboard
 - [`add_iframe()`](https://favstats.github.io/dashboardr/reference/add_iframe.md)
@@ -514,6 +587,13 @@ S3 methods for displaying objects
   : Combine Visualization Collections with + Operator
 - [`` `+`( ``*`<content_collection>`*`)`](https://favstats.github.io/dashboardr/reference/plus-.content_collection.md)
   : Combine Content Collections with + Operator
+
+## MCP Server
+
+Model Context Protocol server for LLM-assisted dashboard coding
+
+- [`dashboardr_mcp_server()`](https://favstats.github.io/dashboardr/reference/dashboardr_mcp_server.md)
+  : Start dashboardr MCP Server
 
 ## Page Object Methods
 
@@ -588,3 +668,4 @@ S3 methods for page objects
   viz_treemap()](https://favstats.github.io/dashboardr/articles/treemap_vignette.md):
 - [Creating Maps with
   viz_map()](https://favstats.github.io/dashboardr/articles/map_vignette.md):
+

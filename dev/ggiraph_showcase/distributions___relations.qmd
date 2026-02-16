@@ -1,0 +1,223 @@
+---
+title: "{{< iconify ph chart-scatter >}} Distributions & Relations"
+format: html
+---
+
+```{r, include=FALSE}
+# Initialize dashboardr page configuration (CSS/JS for charts)
+dashboardr::.page_config()
+```
+
+```{r, echo=FALSE, results='asis'}
+cat('<a href="#dashboardr-main-content" class="dashboardr-skip-link">Skip to main content</a>')
+```
+
+```{r, echo=FALSE, results='asis'}
+dashboardr::enable_accessibility()
+```
+
+```{r setup}
+#| echo: false
+#| warning: false
+#| message: false
+#| error: false
+#| results: 'hide'
+
+# Load dashboardr (includes dplyr, highcharter as dependencies)
+library(dashboardr)
+
+# Global chunk options
+knitr::opts_chunk$set(
+  echo = FALSE,
+  warning = FALSE,
+  message = FALSE,
+  error = FALSE,
+  fig.width = 12,
+  fig.height = 8,
+  dpi = 300
+)
+
+# Load multiple datasets
+
+# Load survey
+survey <- readRDS('survey_500obs.rds')
+cat('survey loaded:', nrow(survey), 'rows,', ncol(survey), 'columns\n')
+
+# Load heatmap
+heatmap <- readRDS('heatmap_15obs.rds')
+cat('heatmap loaded:', nrow(heatmap), 'rows,', ncol(heatmap), 'columns\n')
+
+# Load dumbbell
+dumbbell <- readRDS('dumbbell_5obs.rds')
+cat('dumbbell loaded:', nrow(dumbbell), 'rows,', ncol(dumbbell), 'columns\n')
+
+# Load sankey
+sankey <- readRDS('sankey_6obs.rds')
+cat('sankey loaded:', nrow(sankey), 'rows,', ncol(sankey), 'columns\n')
+
+```
+
+```{r, echo=FALSE, results='asis'}
+cat('<div id="dashboardr-main-content" role="main">')
+```
+
+## Boxplot (color_palette fills)
+
+```{r boxplot}
+# Boxplot (color_palette fills)
+result <- viz_boxplot(
+  data = survey,
+  title = "Boxplot (color_palette fills)",
+  x_var = "category",
+  y_var = "income",
+  color_palette = c("#E15759", "#4E79A7", "#76B7B2", "#F28E2B"),
+  backend = "ggiraph"
+)
+
+result
+```
+
+## Density (grouped, color_palette)
+
+```{r density}
+# Density (grouped, color_palette)
+result <- viz_density(
+  data = survey,
+  title = "Density (grouped, color_palette)",
+  x_var = "age",
+  group_var = "gender",
+  color_palette = c("#E15759", "#4E79A7"),
+  backend = "ggiraph"
+)
+
+result
+```
+
+## Scatter (color_var + palette)
+
+```{r scatter}
+# Scatter (color_var + palette)
+result <- viz_scatter(
+  data = survey,
+  title = "Scatter (color_var + palette)",
+  x_var = "age",
+  y_var = "income",
+  color_var = "region",
+  color_palette = c("#E15759", "#4E79A7", "#76B7B2", "#F28E2B"),
+  backend = "ggiraph"
+)
+
+result
+```
+
+## Pie & Donut
+
+
+::: {.panel-tabset}
+
+### Pie
+
+
+```{r pie-donut-pie}
+# Pie Chart (color_palette)
+result <- viz_pie(
+  data = survey,
+  title = "Pie Chart (color_palette)",
+  x_var = "region",
+  color_palette = c("#E15759", "#4E79A7", "#76B7B2", "#F28E2B")
+)
+
+result
+```
+
+
+### Donut
+
+
+```{r pie-donut-donut}
+# Donut Chart (color_palette)
+result <- viz_pie(
+  data = survey,
+  title = "Donut Chart (color_palette)",
+  x_var = "category",
+  color_palette = c("#E15759", "#4E79A7", "#76B7B2", "#F28E2B"),
+  inner_size = "50%"
+)
+
+result
+```
+
+
+:::
+
+## Waffle (color_palette)
+
+```{r waffle}
+# Waffle (color_palette)
+result <- viz_waffle(
+  data = survey,
+  title = "Waffle (color_palette)",
+  x_var = "region",
+  color_palette = c("#E15759", "#4E79A7", "#76B7B2", "#F28E2B"),
+  backend = "ggiraph"
+)
+
+result
+```
+
+## Heatmap (gradient palette)
+
+```{r heatmap}
+# Heatmap (gradient palette)
+result <- viz_heatmap(
+  data = heatmap,
+  title = "Heatmap (gradient palette)",
+  x_var = "x_cat",
+  y_var = "y_cat",
+  value_var = "activity",
+  color_palette = c("#f7fbff", "#08519c"),
+  backend = "ggiraph"
+)
+
+result
+```
+
+## Dumbbell (low/high colors)
+
+```{r dumbbell}
+# Dumbbell (low/high colors)
+result <- viz_dumbbell(
+  data = dumbbell,
+  title = "Dumbbell (low/high colors)",
+  x_var = "department",
+  low_var = "q1_score",
+  high_var = "q4_score",
+  low_color = "#E15759",
+  high_color = "#4E79A7",
+  backend = "ggiraph"
+)
+
+result
+```
+
+## Sankey (color_palette)
+
+```{r sankey}
+# Sankey (color_palette)
+result <- viz_sankey(
+  data = sankey,
+  title = "Sankey (color_palette)",
+  from_var = "source",
+  to_var = "target",
+  value_var = "flow",
+  color_palette = c("#E15759", "#4E79A7", "#76B7B2"),
+  backend = "ggiraph"
+)
+
+result
+```
+
+
+```{r, echo=FALSE, results='asis'}
+cat('</div>')
+```

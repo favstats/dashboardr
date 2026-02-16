@@ -1,0 +1,128 @@
+---
+title: "Date Inputs"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Date Inputs}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  eval = FALSE
+)
+```
+
+dashboardr provides two date input types for filtering time-based data: **date** (single date picker) and **daterange** (start/end date pair).
+
+```{r setup}
+library(dashboardr)
+library(dplyr)
+```
+
+## Date Picker
+
+Use `type = "date"` to add a single date picker that filters a date column in your data:
+
+```{r}
+page <- create_page("Events") %>%
+  add_input(
+    input_id = "event_date",
+    type = "date",
+    label = "Select Date",
+    filter_var = "date",
+    value = "2020-01-01"
+  ) %>%
+  add_viz(
+    type = "timeline",
+    time_var = "date",
+    y_var = "count"
+  )
+```
+
+The `value` parameter sets the initial date. Dates should be provided in `"YYYY-MM-DD"` format.
+
+You can also constrain the date range with `min` and `max`:
+
+```{r}
+page <- create_page("Constrained") %>%
+  add_input(
+    input_id = "start",
+    type = "date",
+    label = "Start Date",
+    filter_var = "date",
+    value = "2020-01-01",
+    min = "2018-01-01",
+    max = "2022-12-31"
+  )
+```
+
+## Date Range
+
+Use `type = "daterange"` to add a pair of date pickers (start and end) that filter
+data to a date window:
+
+```{r}
+page <- create_page("Time Window") %>%
+  add_input(
+    input_id = "period",
+    type = "daterange",
+    label = "Date Range",
+    filter_var = "date",
+    value = c("2018-01-01", "2021-12-31"),
+    min = "2000-01-01",
+    max = "2022-12-31"
+  )
+```
+
+The `value` parameter takes a two-element character vector: `c(start_date, end_date)`.
+
+## Integration with Cross-Tab Filtering
+
+Date inputs work with dashboardr's cross-tab filtering system. When a user changes
+the date, all charts on the page that use the filtered variable are updated
+automatically.
+
+```{r}
+data <- data.frame(
+  date = seq(as.Date("2020-01-01"), as.Date("2020-12-31"), by = "month"),
+  sales = round(runif(12, 100, 500)),
+  category = rep(c("A", "B"), 6)
+)
+
+dashboard <- create_dashboard(
+  title = "Sales Dashboard",
+  data = data
+) %>%
+  add_page(
+    create_page("Sales") %>%
+      add_input(
+        input_id = "date_range",
+        type = "daterange",
+        label = "Period",
+        filter_var = "date",
+        value = c("2020-01-01", "2020-12-31")
+      ) %>%
+      add_viz(
+        type = "bar",
+        x_var = "category",
+        title = "Sales by Category",
+        cross_tab_filter_vars = "date"
+      ) %>%
+      add_viz(
+        type = "timeline",
+        time_var = "date",
+        y_var = "sales",
+        title = "Sales Over Time",
+        cross_tab_filter_vars = "date"
+      )
+  )
+```
+
+## Requirements
+
+Date inputs require `enable_inputs()` to be active on the page. This is added
+automatically when you use `add_input()` via the page builder, but if you are
+building pages manually, make sure to include it.

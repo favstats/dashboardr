@@ -1,0 +1,9 @@
+[
+  {
+    "objectID": "test_layout.html",
+    "href": "test_layout.html",
+    "title": "Test Layout",
+    "section": "",
+    "text": "Trying to obtain this:\n\nA row with multiple objects / metrics / custom html elements\n\n\n\n\n\n\n📊\n\n\nVB 1\n100\n\n\n\n\n\n\n📊\n\n\nVB 2\n200\n\n\n\n\n\n\n📊\n\n\nVB 3\n300\n\n\n\n\n\n\n\n\n\n\n\n\nNote\n\n\n\nAdd_value_box_row works correctly with multiple value boxes\n\n\n\n\nTrying to obtain the same result using\n\nadd_layout_column\nadd_layout_row\n\n\n\n\n\n\n\nWarning\n\n\n\nThe layout functions are not working as expected, the metrics are not being displayed in the same row and column as they should be, and the metric element do not properly render\n\n\n\n\n\n\n\n\n\n\n\n\n\nmetric 1 - this is between add_layout_row and column\n100\nsubtitle1\n\n\n\n\n\n\n\n\n\n\n\n\n\nmetric 2 -this is also between add_layout_row and column\n2000\nsubtitle2\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nmetric 3 - this is alone\n3000\nsubtitle2"
+  }
+]

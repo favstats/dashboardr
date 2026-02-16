@@ -197,10 +197,50 @@ test_that("content types are rendered in page generation", {
   expect_true(grepl("::: \\{.callout-note\\}", qmd_content, fixed = FALSE))
   expect_true(grepl("## Note", qmd_content, fixed = TRUE))
   expect_true(grepl("Test callout", qmd_content, fixed = TRUE))
-  expect_true(grepl("<hr style=", qmd_content, fixed = TRUE))
+  expect_true(grepl("dashboardr::html_divider", qmd_content, fixed = TRUE))
   expect_true(grepl("```r", qmd_content, fixed = TRUE))
   expect_true(grepl("print\\('test'\\)", qmd_content, fixed = FALSE))
-  expect_true(grepl("height: 2rem", qmd_content, fixed = TRUE))
+  expect_true(grepl("dashboardr::html_spacer", qmd_content, fixed = TRUE))
+})
+
+test_that("accordion renders as raw HTML details/summary in QMD", {
+  proj <- create_dashboard("test_accordion", output_dir = tempdir())
+
+  test_content <- create_content() %>%
+    add_accordion(title = "My Section", text = "Simple accordion body")
+
+  proj <- add_page(proj, "Test", content = test_content)
+  generate_dashboard(proj, render = FALSE)
+
+  qmd_path <- file.path(tempdir(), "test.qmd")
+  qmd_content <- paste(readLines(qmd_path), collapse = "\n")
+
+  # Must use raw HTML, not an R chunk
+  expect_true(grepl("<details>", qmd_content, fixed = TRUE))
+  expect_true(grepl("<summary>My Section</summary>", qmd_content, fixed = TRUE))
+  expect_true(grepl("Simple accordion body", qmd_content, fixed = TRUE))
+  expect_false(grepl("html_accordion", qmd_content, fixed = TRUE))
+})
+
+test_that("accordion with backtick-fenced code in body does not break QMD", {
+  proj <- create_dashboard("test_accordion_code", output_dir = tempdir())
+
+  code_body <- "```r\nlibrary(dashboardr)\ndata <- mtcars\n```"
+  test_content <- create_content() %>%
+    add_accordion(title = "View Code", text = code_body)
+
+  proj <- add_page(proj, "Test", content = test_content)
+  generate_dashboard(proj, render = FALSE)
+
+  qmd_path <- file.path(tempdir(), "test.qmd")
+  qmd_content <- paste(readLines(qmd_path), collapse = "\n")
+
+  # The fenced code must appear inside <details>, not inside an R chunk
+  expect_true(grepl("<details>", qmd_content, fixed = TRUE))
+  expect_true(grepl("<summary>View Code</summary>", qmd_content, fixed = TRUE))
+  expect_true(grepl("library(dashboardr)", qmd_content, fixed = TRUE))
+  # Must NOT wrap in an R chunk (which would collide with inner backticks)
+  expect_false(grepl("html_accordion", qmd_content, fixed = TRUE))
 })
 
 test_that("iframe renders correctly in QMD", {
@@ -215,11 +255,11 @@ test_that("iframe renders correctly in QMD", {
   qmd_path <- file.path(tempdir(), "test.qmd")
   qmd_content <- paste(readLines(qmd_path), collapse = "\n")
   
-  # Check iframe tag is present
-  expect_true(grepl("<iframe", qmd_content, fixed = TRUE))
+  # Check iframe R call is present
+  expect_true(grepl("dashboardr::html_iframe", qmd_content, fixed = TRUE))
   expect_true(grepl("https://example.com", qmd_content, fixed = TRUE))
-  expect_true(grepl("height: 400px", qmd_content, fixed = TRUE))
-  expect_true(grepl("width: 100%", qmd_content, fixed = TRUE))
+  expect_true(grepl("400px", qmd_content, fixed = TRUE))
+  expect_true(grepl("100%", qmd_content, fixed = TRUE))
 })
 
 test_that("video (YouTube) renders correctly in QMD", {

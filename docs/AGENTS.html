@@ -26,7 +26,7 @@
 
     <a class="navbar-brand me-2" href="index.html">dashboardr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -115,6 +115,8 @@
 <code>dashboardr-doc-sync</code>: Keep multi-agent docs in sync from canonical ai/ sources and prevent adapter drift.</li>
 <li>
 <code>dashboardr-maintainer</code>: Maintain dashboardr with strict API compatibility, deterministic generation, and low-risk internal refactors.</li>
+<li>
+<code>dashboardr-mcp</code>: Build and maintain the dashboardr MCP server for LLM-assisted dashboard coding.</li>
 <li>
 <code>dashboardr-release-safety</code>: Apply release-grade safety checks for compatibility, deterministic output, and governance drift.</li>
 <li>
@@ -227,6 +229,10 @@
 <h3 id="id_3-keep-docs-short-and-linked">3) Keep Docs Short and Linked<a class="anchor" aria-label="anchor" href="#id_3-keep-docs-short-and-linked"></a></h3>
 <ul><li>Update <code>CONTRIBUTING.md</code>, <code>dev/ARCHITECTURE.md</code>, and <code>dev/TEST_STRATEGY.md</code> when workflow changes.</li>
 </ul></div>
+</div>
+<div class="section level2">
+<h2 id="shortcut-commands">Shortcut Commands<a class="anchor" aria-label="anchor" href="#shortcut-commands"></a></h2>
+<p>When the user says <strong>“rebuild”</strong>, run <code>Rscript dev/rebuild.R</code> from the package root. Flags: <code>--skip-demos</code>, <code>--skip-pkgdown</code>. Pass them if the user specifies (e.g. “rebuild skip demos”).</p>
 </div>
 <div class="section level2">
 <h2 id="if-uncertain">If Uncertain<a class="anchor" aria-label="anchor" href="#if-uncertain"></a></h2>

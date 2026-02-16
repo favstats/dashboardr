@@ -278,9 +278,9 @@ add_modal.page_object <- function(x, modal_id, title = NULL,
       # Convert data.frame to HTML table
       html_parts <- c(html_parts, .df_to_html_table(modal_content))
     } else if (is.character(modal_content)) {
-      # Wrap in paragraph if it doesn't contain HTML tags
+      # Render markdown to HTML if content doesn't already contain HTML tags
       if (!grepl("<[^>]+>", modal_content)) {
-        html_parts <- c(html_parts, paste0("<p>", modal_content, "</p>"))
+        html_parts <- c(html_parts, commonmark::markdown_html(modal_content))
       } else {
         html_parts <- c(html_parts, modal_content)
       }

@@ -365,6 +365,11 @@ viz_funnel <- function(data,
     base
   }, character(1))
 
+  # Pre-compute data label column
+  if (isTRUE(config$data_labels_enabled)) {
+    funnel_df$.label <- formatC(values, format = "f", big.mark = ",", digits = 0)
+  }
+
   p <- ggplot2::ggplot(funnel_df, ggplot2::aes(
     x = .data$stage, y = .data$value
   )) +
@@ -379,6 +384,14 @@ viz_funnel <- function(data,
 
   if (!is.null(color_palette)) {
     p <- p + ggplot2::scale_fill_manual(values = color_palette)
+  }
+
+  # --- Data labels ---
+  if (isTRUE(config$data_labels_enabled)) {
+    p <- p + ggplot2::geom_text(
+      ggplot2::aes(label = .data$.label),
+      hjust = 0.5, size = 3
+    )
   }
 
   ggiraph::girafe(ggobj = p)

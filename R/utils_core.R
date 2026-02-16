@@ -680,15 +680,28 @@ density = list(
   df
 }
 
-#' Generate page configuration HTML
-#' 
-#' Internal helper that outputs CSS and JavaScript for chart containers and reflow.
-#' Called from generated QMD setup chunks.
-#' 
-#' @return Invisible NULL (outputs HTML via knitr)
+#' Page configuration and dependency loader
+#'
+#' Outputs chart-container CSS/JS for reflow and, when feature flags are
+#' supplied, loads all page-level CSS/JS dependencies (accessibility, inputs,
+#' modals, sidebar, chart export) in a single call.
+#'
+#' @param accessibility Logical; include accessibility CSS/JS (default TRUE).
+#' @param inputs Logical; include input filter CSS/JS.
+#' @param linked Logical; include linked-input script (only when \code{inputs = TRUE}).
+#' @param show_when Logical; include show_when script.
+#' @param url_params Logical; include URL-params script (only when \code{inputs = TRUE}).
+#' @param modals Logical; include modal CSS/JS.
+#' @param chart_export Logical; enable Highcharts export buttons.
+#' @param sidebar Logical; include sidebar CSS/JS.
+#' @return An \code{htmltools::tagList} of HTML tags (rendered via
+#'   \code{results='asis'}).
 #' @keywords internal
 #' @export
-.page_config <- function() {
+.page_config <- function(accessibility = TRUE, inputs = FALSE,
+                         linked = FALSE, show_when = FALSE,
+                         url_params = FALSE, modals = FALSE,
+                         chart_export = FALSE, sidebar = FALSE) {
   css <- "
 <style>
 /* Ensure chart containers expand to fit content */
@@ -727,7 +740,19 @@ section {
 })();
 </script>
 "
-  knitr::asis_output(css)
+  tags <- list(htmltools::HTML(css))
+  if (isTRUE(accessibility)) tags <- c(tags, list(enable_accessibility()))
+  if (isTRUE(modals))        tags <- c(tags, list(enable_modals()))
+  if (isTRUE(inputs)) {
+    tags <- c(tags, list(enable_inputs(
+      linked = linked, show_when = show_when, url_params = url_params
+    )))
+  } else if (isTRUE(show_when)) {
+    tags <- c(tags, list(enable_show_when()))
+  }
+  if (isTRUE(chart_export))  tags <- c(tags, list(enable_chart_export()))
+  if (isTRUE(sidebar))       tags <- c(tags, list(enable_sidebar()))
+  htmltools::tagList(tags)
 }
 
 
@@ -759,7 +784,7 @@ section {
     if (!is.null(cross_tab_config$filterVars)) {
       cross_tab_config$filterVars <- as.list(cross_tab_config$filterVars)
     }
-    config_json <- jsonlite::toJSON(cross_tab_config, auto_unbox = TRUE)
+    config_json <- jsonlite::toJSON(cross_tab_config, auto_unbox = TRUE, null = "null")
     script_tag <- htmltools::tags$script(
       htmltools::HTML(paste0(
         "window.dashboardrCrossTab = window.dashboardrCrossTab || {};",

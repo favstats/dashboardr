@@ -1,0 +1,166 @@
+# Accessibility
+
+dashboardr includes built-in accessibility enhancements targeting WCAG
+2.1 AA compliance. These features are activated with
+[`enable_accessibility()`](https://favstats.github.io/dashboardr/reference/enable_accessibility.md).
+
+``` r
+library(dashboardr)
+```
+
+## Enabling Accessibility
+
+Add
+[`enable_accessibility()`](https://favstats.github.io/dashboardr/reference/enable_accessibility.md)
+to include the accessibility CSS and JavaScript:
+
+``` r
+page <- create_page("Analysis") %>%
+  add_viz(
+    type = "bar",
+    x_var = "category",
+    title = "Results",
+    alt_text = "Bar chart showing category counts"
+  )
+```
+
+[`enable_accessibility()`](https://favstats.github.io/dashboardr/reference/enable_accessibility.md)
+is called automatically during page generation.
+
+## Features
+
+### Skip-to-Content Link
+
+A “Skip to main content” link appears at the top of the page when a
+keyboard user presses Tab. This allows users to bypass navigation and
+jump directly to the dashboard content.
+
+### Focus Indicators
+
+All interactive elements (tabs, inputs, buttons, links) receive visible
+focus outlines when navigated via keyboard. The default focus style uses
+a 3px blue outline that meets WCAG contrast requirements.
+
+### Modal Focus Trapping
+
+When a modal dialog is open, Tab and Shift+Tab cycle focus only within
+the modal’s focusable elements. When the modal closes, focus returns to
+the element that triggered it.
+
+### Tab Keyboard Navigation
+
+Dashboard tabs support full keyboard navigation:
+
+- **Arrow Left/Right**: Move between tabs
+- **Home**: Jump to the first tab
+- **End**: Jump to the last tab
+- **Enter/Space**: Activate the focused tab
+
+### ARIA Live Region
+
+Filter changes are announced to screen readers via an ARIA live region.
+When a user changes a filter input, the announcement includes the filter
+name and selected values.
+
+### Reduced Motion
+
+When the user’s operating system has “reduce motion” enabled
+(`prefers-reduced-motion: reduce`), all CSS transitions and animations
+are disabled.
+
+## Alt Text for Visualizations
+
+Add descriptive alt text to charts using the `alt_text` parameter on any
+[`add_viz()`](https://favstats.github.io/dashboardr/reference/add_viz.md)
+call:
+
+``` r
+page <- create_page("Demographics") %>%
+  add_viz(
+    type = "bar",
+    x_var = "age_group",
+    title = "Age Distribution",
+    alt_text = "Bar chart showing the distribution of respondents across age groups, with 25-34 being the largest group"
+  ) %>%
+  add_viz(
+    type = "stackedbar",
+    x_var = "region",
+    stack_var = "gender",
+    title = "Gender by Region",
+    alt_text = "Stacked bar chart comparing gender proportions across four regions"
+  )
+```
+
+### ARIA Labels on Value Boxes and Metrics
+
+Value boxes and metrics support `aria_label` for screen reader
+descriptions:
+
+``` r
+page <- create_page("Summary") %>%
+  add_value_box(
+    title = "Total Responses",
+    value = "1,234",
+    icon = "mdi:account-group",
+    aria_label = "Total survey responses: 1,234"
+  ) %>%
+  add_metric(
+    title = "Response Rate",
+    value = "78%",
+    aria_label = "Survey response rate: 78 percent"
+  )
+```
+
+## Example Dashboard
+
+``` r
+data <- data.frame(
+  category = rep(c("A", "B", "C", "D"), each = 25),
+  region = rep(c("North", "South"), 50),
+  value = round(rnorm(100, 50, 10))
+)
+
+dashboard <- create_dashboard(
+  title = "Accessible Dashboard",
+  data = data
+) %>%
+  add_page(
+    create_page("Overview") %>%
+      add_value_box(
+        title = "Records",
+        value = "100",
+        aria_label = "Total records: 100"
+      ) %>%
+      add_viz(
+        type = "bar",
+        x_var = "category",
+        title = "Categories",
+        alt_text = "Bar chart showing counts for categories A through D"
+      ) %>%
+      add_viz(
+        type = "stackedbar",
+        x_var = "category",
+        stack_var = "region",
+        title = "By Region",
+        alt_text = "Stacked bar chart showing regional breakdown per category"
+      )
+  )
+```
+
+## WCAG 2.1 AA Notes
+
+The accessibility features target WCAG 2.1 Level AA. Key areas covered:
+
+- **1.3.1 Info and Relationships**: ARIA roles and labels on interactive
+  elements
+- **2.1.1 Keyboard**: All functionality available via keyboard
+- **2.4.1 Bypass Blocks**: Skip-to-content link
+- **2.4.3 Focus Order**: Logical tab order with focus trapping in modals
+- **2.4.7 Focus Visible**: Visible focus indicators on all interactive
+  elements
+- **2.3.3 Animation from Interactions**: Reduced motion support
+- **4.1.3 Status Messages**: ARIA live region for filter announcements
+
+Chart accessibility depends on the rendering backend. Highcharts
+includes built-in screen reader support and keyboard navigation for
+chart data points.

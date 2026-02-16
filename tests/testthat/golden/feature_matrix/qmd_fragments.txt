@@ -6,3 +6,4 @@ dashboardr:::.render_filterable_table(table_obj_1, table_id = 'table_obj_1', cap
 show_when_close()
 show_when_close()
 ### Row
+  cross_tab_filter_vars = "cyl"

@@ -247,13 +247,54 @@ build_mixed_project <- function(output_dir) {
   invisible(TRUE)
 }
 
+build_layout_metric_project <- function(output_dir) {
+  df <- build_demo_data()
+
+  content <- create_content(data = df) |>
+    add_html("<div id=\"pw-marker-layout-metric\" data-pw-backend=\"highcharter\"></div>") |>
+    add_layout_column() |>
+    add_layout_row() |>
+    add_metric(value = 42, title = "Total Users") |>
+    add_metric(value = 88, title = "Avg Score") |>
+    add_metric(value = 7, title = "Active") |>
+    end_layout_row() |>
+    end_layout_column() |>
+    add_viz(
+      type = "bar",
+      x_var = "cyl",
+      title = "Cylinders"
+    )
+
+  proj <- create_dashboard(
+    output_dir = output_dir,
+    title = "Playwright: Layout Metrics",
+    allow_inside_pkg = TRUE,
+    backend = "highcharter"
+  ) |>
+    add_page(
+      name = "Index",
+      data = df,
+      content = content,
+      is_landing_page = TRUE
+    )
+
+  generate_dashboard(
+    proj,
+    render = TRUE,
+    open = FALSE,
+    quiet = TRUE
+  )
+
+  invisible(TRUE)
+}
+
 scenario_for_backend <- function(backend, mode) {
   expect_filter <- !identical(backend, "ggiraph")
   list(
     id = paste0("generated-", backend, "-core"),
     source_type = "generated",
     backend = backend,
-    url_path = paste0("/backend-", backend, "/index.html"),
+    url_path = paste0("/backend-", backend, "/docs/index.html"),
     expect_chart_backend = c(backend),
     interaction_plan = c("filter", "linked_inputs", "tab_click", "sidebar_toggle", "show_when_toggle"),
     expect_filter_effect = expect_filter,
@@ -324,7 +365,7 @@ main <- function() {
         id = "generated-mixed-widgets",
         source_type = "generated",
         backend = "mixed",
-        url_path = "/backend-mixed/index.html",
+        url_path = "/backend-mixed/docs/index.html",
         expect_chart_backend = c("plotly", "leaflet"),
         interaction_plan = c("filter", "tab_click", "sidebar_toggle", "show_when_toggle"),
         expect_filter_effect = FALSE,
@@ -338,6 +379,37 @@ main <- function() {
         modes = c("full")
       )
     }
+  }
+
+  # Layout-metric scenario (no sidebar, metrics in layout row)
+  layout_metric_target <- file.path(output_dir, "layout-metric")
+  layout_metric_ok <- tryCatch({
+    build_layout_metric_project(layout_metric_target)
+    TRUE
+  }, error = function(e) {
+    skipped[[length(skipped) + 1L]] <<- list(
+      id = "generated-layout-metric",
+      reason = conditionMessage(e)
+    )
+    FALSE
+  })
+
+  if (layout_metric_ok) {
+    scenarios[[length(scenarios) + 1L]] <- list(
+      id = "generated-layout-metric",
+      source_type = "generated",
+      backend = "highcharter",
+      url_path = "/layout-metric/docs/index.html",
+      expect_chart_backend = c("highcharter"),
+      interaction_plan = character(0),
+      expect_filter_effect = FALSE,
+      required_selectors = c(
+        "#pw-marker-layout-metric",
+        ".dashboardr-metric"
+      ),
+      forbidden_console_patterns = character(0),
+      modes = c("smoke", "full")
+    )
   }
 
   if (!length(scenarios)) {

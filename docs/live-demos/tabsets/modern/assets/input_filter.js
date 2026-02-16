@@ -140,7 +140,13 @@
     
     // Initialize BUTTON GROUP inputs
     initButtonGroupInputs();
-    
+
+    // Initialize DATE inputs
+    initDateInputs();
+
+    // Initialize DATERANGE inputs
+    initDaterangeInputs();
+
     // Note: storeOriginalData and applyAllFilters are called by waitForChartsAndApply
     // after charts are fully loaded to avoid flickering
   }
@@ -584,6 +590,87 @@
   }
 
   /**
+   * Initialize DATE inputs
+   */
+  function initDateInputs() {
+    const dateInputs = document.querySelectorAll('input[data-input-type="date"]');
+
+    dateInputs.forEach(input => {
+      const inputId = input.id;
+
+      if (input.dataset.dashboardrInitialized === 'true') return;
+
+      const filterVar = input.dataset.filterVar;
+      if (!filterVar) {
+        console.warn('Date input ' + inputId + ' missing data-filter-var');
+        return;
+      }
+
+      input.dataset.dashboardrInitialized = 'true';
+
+      inputState[inputId] = {
+        filterVar: filterVar,
+        inputType: 'date',
+        value: input.value || ''
+      };
+
+      defaultValues[inputId] = { value: input.value || '' };
+
+      input.addEventListener('change', function() {
+        inputState[inputId].value = input.value || '';
+        debugInputState(inputId, 'date-change');
+        applyAllFilters();
+      });
+    });
+  }
+
+  /**
+   * Initialize DATERANGE inputs
+   */
+  function initDaterangeInputs() {
+    var containers = document.querySelectorAll('[data-input-type="daterange"]');
+
+    containers.forEach(function(container) {
+      var inputId = container.id;
+
+      if (container.dataset.dashboardrInitialized === 'true') return;
+
+      var filterVar = container.dataset.filterVar;
+      if (!filterVar) {
+        console.warn('Daterange input ' + inputId + ' missing data-filter-var');
+        return;
+      }
+
+      container.dataset.dashboardrInitialized = 'true';
+
+      var startInput = container.querySelector('[data-role="start"]');
+      var endInput = container.querySelector('[data-role="end"]');
+
+      inputState[inputId] = {
+        filterVar: filterVar,
+        inputType: 'daterange',
+        start: startInput ? startInput.value : '',
+        end: endInput ? endInput.value : ''
+      };
+
+      defaultValues[inputId] = {
+        start: startInput ? startInput.value : '',
+        end: endInput ? endInput.value : ''
+      };
+
+      function onDateChange() {
+        inputState[inputId].start = startInput ? startInput.value : '';
+        inputState[inputId].end = endInput ? endInput.value : '';
+        debugInputState(inputId, 'daterange-change');
+        applyAllFilters();
+      }
+
+      if (startInput) startInput.addEventListener('change', onDateChange);
+      if (endInput) endInput.addEventListener('change', onDateChange);
+    });
+  }
+
+  /**
    * Update slider track fill based on value
    */
   function updateSliderTrack(input) {
@@ -592,6 +679,50 @@
     const value = parseFloat(input.value);
     const percent = ((value - min) / (max - min)) * 100;
     input.style.setProperty('--slider-percent', percent + '%');
+  }
+
+  /**
+   * Parse a date-like string into a comparable ISO date string (YYYY-MM-DD).
+   * Handles: ISO (2024-01-15), YYYY (2024), YYYY-QN (2024-Q1),
+   * Mon YYYY (Jan 2024), and various date-like formats.
+   * Returns '' if parsing fails.
+   */
+  function _parseDateLike(str) {
+    if (!str || typeof str !== 'string') return '';
+    str = str.trim();
+
+    // Already ISO YYYY-MM-DD
+    if (/^\d{4}-\d{2}-\d{2}$/.test(str)) return str;
+
+    // Year only (YYYY) → first day of year
+    if (/^\d{4}$/.test(str)) return str + '-01-01';
+
+    // Quarter (2024-Q1, 2024 Q2, Q3 2024)
+    var qMatch = str.match(/^(\d{4})[- ]?Q([1-4])$/i) || str.match(/^Q([1-4])[- ]?(\d{4})$/i);
+    if (qMatch) {
+      var year = qMatch[1].length === 4 ? qMatch[1] : qMatch[2];
+      var q = qMatch[1].length === 4 ? qMatch[2] : qMatch[1];
+      var month = String((parseInt(q, 10) - 1) * 3 + 1).padStart(2, '0');
+      return year + '-' + month + '-01';
+    }
+
+    // Month names: Jan 2024, January 2024, 2024-Jan
+    var months = { jan: '01', feb: '02', mar: '03', apr: '04', may: '05', jun: '06',
+                   jul: '07', aug: '08', sep: '09', oct: '10', nov: '11', dec: '12' };
+    var mMatch = str.match(/^([A-Za-z]+)\s+(\d{4})$/) || str.match(/^(\d{4})[- ]([A-Za-z]+)$/);
+    if (mMatch) {
+      var mName = (mMatch[1].length > 2 ? mMatch[1] : mMatch[2]).substring(0, 3).toLowerCase();
+      var mYear = mMatch[1].length === 4 ? mMatch[1] : mMatch[2];
+      if (months[mName]) return mYear + '-' + months[mName] + '-01';
+    }
+
+    // Try native Date parse as last resort
+    var d = new Date(str);
+    if (!isNaN(d.getTime())) {
+      return d.toISOString().substring(0, 10);
+    }
+
+    return '';
   }
 
   /**
@@ -702,8 +833,10 @@
     const switchFilters = {};
     const textFilters = {};
     const numberFilters = {};
+    const dateFilters = {};
+    const daterangeFilters = {};
     const periodFilters = {};  // Special handling for period presets
-    
+
     Object.keys(inputState).forEach(id => {
       const state = inputState[id];
       if (state.inputType === 'slider') {
@@ -725,6 +858,17 @@
         if (rawValue !== '' && rawValue !== null && rawValue !== undefined) {
           numberFilters[state.filterVar] = state.value;
         }
+      } else if (state.inputType === 'date') {
+        if (state.value && state.value.trim()) {
+          dateFilters[state.filterVar] = state.value.trim();
+        }
+      } else if (state.inputType === 'daterange') {
+        if ((state.start && state.start.trim()) || (state.end && state.end.trim())) {
+          daterangeFilters[state.filterVar] = {
+            start: state.start ? state.start.trim() : '',
+            end: state.end ? state.end.trim() : ''
+          };
+        }
       } else if (state.filterVar === 'period') {
         // Handle period presets (maps to year ranges)
         periodFilters[state.filterVar] = state.selected;
@@ -739,6 +883,8 @@
       switchFilters: switchFilters,
       textFilters: textFilters,
       numberFilters: numberFilters,
+      dateFilters: dateFilters,
+      daterangeFilters: daterangeFilters,
       periodFilters: periodFilters,
       chartEntries: entries.map(function(e) {
         return { id: e.id, backend: e.backend, x: e.x, filterVars: e.filterVars };
@@ -776,7 +922,9 @@
             sliderFilters,
             textFilters,
             numberFilters,
-            switchOverrides
+            switchOverrides,
+            dateFilters,
+            daterangeFilters
           );
           if (result) crossTabHandled.add(entry.id);
         }
@@ -1120,6 +1268,15 @@
 
     // Update any charts that have dynamic title templates
     updateDynamicTitles();
+
+    // Dispatch event for URL params and accessibility modules
+    try {
+      document.dispatchEvent(new CustomEvent('dashboardr:filter-changed', {
+        detail: { inputState: inputState }
+      }));
+    } catch (e) {
+      // CustomEvent not supported in very old browsers
+    }
   }
 
   function computeVisibleCategories(allCategories, filters, sliderFilters, periodFilters, xVarName) {
@@ -1687,7 +1844,7 @@
    * @param {Object} switchOverrides - Switch-controlled series per filterVar ({filterVar -> [{seriesName, visible, override}]})
    * @returns {boolean} True if chart was rebuilt, false if cross-tab doesn't apply
    */
-  function rebuildFromCrossTab(entry, crossTabInfo, filters, sliderFilters, textFilters, numberFilters, switchOverrides) {
+  function rebuildFromCrossTab(entry, crossTabInfo, filters, sliderFilters, textFilters, numberFilters, switchOverrides, dateFilters, daterangeFilters) {
     if (!crossTabInfo || !crossTabInfo.data || !crossTabInfo.config) {
       return false;
     }
@@ -1775,6 +1932,27 @@
           String(row[filterVar]) === String(numberValue)
         );
       }
+
+      // Date filter (exact match on parsed date)
+      var dateValue = dateFilters && dateFilters[filterVar];
+      if (dateValue) {
+        filteredData = filteredData.filter(function(row) {
+          var parsed = _parseDateLike(String(row[filterVar]));
+          return parsed === dateValue;
+        });
+      }
+
+      // Date range filter (start <= date <= end)
+      var drInfo = daterangeFilters && daterangeFilters[filterVar];
+      if (drInfo) {
+        filteredData = filteredData.filter(function(row) {
+          var parsed = _parseDateLike(String(row[filterVar]));
+          if (!parsed) return false;
+          if (drInfo.start && parsed < drInfo.start) return false;
+          if (drInfo.end && parsed > drInfo.end) return false;
+          return true;
+        });
+      }
     }
     
     // ---- Branch by backend + chart type ----
@@ -1784,7 +1962,9 @@
       if (!chart) return false;
       const ok = (config.chartType === 'timeline')
         ? _rebuildTimelineSeries(chart, filteredData, config)
-        : _rebuildStackedBarSeries(chart, filteredData, config);
+        : (config.chartType === 'bar')
+          ? _rebuildBarSeries(chart, filteredData, config)
+          : _rebuildStackedBarSeries(chart, filteredData, config);
       if (ok && switchOverrides) {
         Object.keys(switchOverrides).forEach(filterVar => {
           switchOverrides[filterVar].forEach(sw => {
@@ -2250,6 +2430,108 @@
     syncEchartsLegend(option, visibleGroupValues);
 
     inst.setOption(option, true);
+    return true;
+  }
+
+  /**
+   * Rebuild a simple bar chart's series from filtered cross-tab data.
+   */
+  function _rebuildBarSeries(chart, filteredData, config) {
+    var xVar = config.xVar;
+    var groupVar = config.groupVar;
+    // Guard against R NULL serialized as {} (empty object) which is truthy in JS
+    if (groupVar && typeof groupVar === 'object' && !Array.isArray(groupVar) && Object.keys(groupVar).length === 0) groupVar = null;
+    var xOrder = config.xOrder;
+    var groupOrder = config.groupOrder;
+    var labelDec = (config.labelDecimals != null) ? config.labelDecimals : 0;
+
+    if (groupVar) {
+      // Grouped bar chart: sum by xVar + groupVar
+      var summed = {};
+      filteredData.forEach(function(row) {
+        var xVal = String(row[xVar]);
+        var gVal = String(row[groupVar]);
+        var key = xVal + '|||' + gVal;
+        if (!summed[key]) summed[key] = { xVal: xVal, gVal: gVal, n: 0 };
+        summed[key].n += row.n;
+      });
+
+      var byX = {};
+      Object.values(summed).forEach(function(item) {
+        if (!byX[item.xVal]) byX[item.xVal] = {};
+        byX[item.xVal][item.gVal] = item.n;
+      });
+
+      var activeXValues = new Set(Object.keys(byX));
+      var orderedX = xOrder && xOrder.length > 0
+        ? xOrder.filter(function(xv) { return activeXValues.has(xv); })
+        : Object.keys(byX);
+
+      var activeGroups = new Set(Object.values(summed).map(function(s) { return s.gVal; }));
+      var orderedGroups = groupOrder && groupOrder.length > 0
+        ? groupOrder.filter(function(g) { return activeGroups.has(g); })
+        : Array.from(activeGroups);
+
+      if (chart.xAxis && chart.xAxis[0]) {
+        chart.xAxis[0].setCategories(orderedX, false);
+      }
+
+      orderedGroups.forEach(function(gVal) {
+        var seriesData = orderedX.map(function(xVal) {
+          return (byX[xVal] && byX[xVal][gVal]) ? byX[xVal][gVal] : 0;
+        });
+        var series = (chart.series || []).find(function(s) { return s && s.name === gVal; });
+        if (series) {
+          series.setData(seriesData, false);
+          series.setVisible(true, false);
+          series.update({ showInLegend: true }, false);
+        }
+      });
+
+      // Hide series not in filtered data
+      (chart.series || []).forEach(function(series) {
+        if (!series || typeof series !== 'object') return;
+        if (!activeGroups.has(series.name)) {
+          series.setVisible(false, false);
+          series.update({ showInLegend: false }, false);
+        }
+      });
+    } else {
+      // Simple bar chart: sum by xVar only
+      var counts = {};
+      filteredData.forEach(function(row) {
+        var xVal = String(row[xVar]);
+        if (!counts[xVal]) counts[xVal] = 0;
+        counts[xVal] += row.n;
+      });
+
+      var activeX = new Set(Object.keys(counts));
+      var orderedXSimple = xOrder && xOrder.length > 0
+        ? xOrder.filter(function(xv) { return activeX.has(xv); })
+        : Object.keys(counts);
+
+      if (chart.xAxis && chart.xAxis[0]) {
+        chart.xAxis[0].setCategories(orderedXSimple, false);
+      }
+
+      var seriesData = orderedXSimple.map(function(xVal) {
+        return counts[xVal] || 0;
+      });
+
+      if (chart.series && chart.series[0]) {
+        chart.series[0].setData(seriesData, false);
+      }
+    }
+
+    // Update title if template
+    if (config.titleTemplate) {
+      var newTitle = config.titleTemplate;
+      if (chart.setTitle) {
+        chart.setTitle({ text: newTitle }, null, false);
+      }
+    }
+
+    chart.redraw();
     return true;
   }
 

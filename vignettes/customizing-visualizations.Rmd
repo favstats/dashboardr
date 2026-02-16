@@ -1,0 +1,377 @@
+---
+title: "Customizing Visualizations"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Customizing Visualizations}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 7,
+  fig.height = 5,
+  warning = FALSE,
+  message = FALSE
+)
+```
+
+This vignette covers the customization options available across dashboardr visualization functions. We use General Social Survey (GSS) data from the `gssr` package to demonstrate each feature.
+
+```{r setup}
+library(dashboardr)
+library(dplyr)
+```
+
+<details>
+<summary>Data preparation (click to expand)</summary>
+
+```{r data-prep}
+library(gssr)
+
+data(gss_all)
+
+gss <- gss_all %>%
+  filter(year >= 2000) %>%
+  select(year, sex, race, degree, happy, rincome, age, marital) %>%
+  mutate(
+    sex = haven::as_factor(sex),
+    race = haven::as_factor(race),
+    degree = haven::as_factor(degree),
+    happy = haven::as_factor(happy),
+    rincome = haven::as_factor(rincome),
+    marital = haven::as_factor(marital)
+  ) %>%
+  filter(!is.na(sex), !is.na(race), !is.na(degree))
+```
+
+</details>
+
+## Color Palettes
+
+Use `color_palette` to control the colors used in any visualization. You can pass:
+
+- A **named vector** to map specific categories to specific colors
+- An **unnamed vector** for a sequential palette
+
+### Named palette (category mapping)
+
+```{r}
+viz_bar(
+  data = gss,
+  x_var = "race",
+  title = "Respondents by Race",
+  color_palette = c(
+    "White" = "#4E79A7",
+    "Black" = "#F28E2B",
+    "Other" = "#76B7B2"
+  )
+)
+```
+
+### Grouped bar with palette
+
+```{r}
+viz_bar(
+  data = gss,
+  x_var = "degree",
+  group_var = "sex",
+  title = "Education by Gender",
+  color_palette = c("Male" = "#4E79A7", "Female" = "#E15759")
+)
+```
+
+### Unnamed sequential palette
+
+```{r}
+viz_bar(
+  data = gss,
+  x_var = "race",
+  title = "Sequential Palette",
+  color_palette = c("#264653", "#2A9D8F", "#E9C46A")
+)
+```
+
+## Tooltips
+
+The `tooltip()` helper gives you full control over hover information.
+
+### Format strings
+
+Use `{placeholders}` to insert dynamic values:
+
+```{r}
+viz_bar(
+  data = gss,
+  x_var = "race",
+  title = "Custom Tooltip Format",
+  tooltip = tooltip(format = "{category}: {value} respondents")
+)
+```
+
+### Prefix and suffix shortcuts
+
+```{r}
+viz_bar(
+  data = gss,
+  x_var = "degree",
+  bar_type = "percent",
+  title = "Education Distribution",
+  tooltip = tooltip(suffix = "%")
+)
+```
+
+### Styled tooltips
+
+```{r}
+viz_bar(
+  data = gss,
+  x_var = "happy",
+  title = "Happiness Levels",
+  tooltip = tooltip(
+    format = "<b>{category}</b><br/>Count: {value}",
+    backgroundColor = "#2d3436",
+    borderColor = "#636e72",
+    borderRadius = 8,
+    style = list(color = "white", fontSize = "13px")
+  )
+)
+```
+
+### Shared tooltips for grouped charts
+
+```{r}
+viz_bar(
+  data = gss,
+  x_var = "degree",
+  group_var = "sex",
+  title = "Shared Tooltip",
+  tooltip = tooltip(shared = TRUE)
+)
+```
+
+## Legends
+
+Control the legend with `legend_position`:
+
+```{r}
+viz_bar(
+  data = gss,
+  x_var = "degree",
+  group_var = "sex",
+  title = "Legend at Bottom",
+  legend_position = "bottom"
+)
+```
+
+```{r}
+viz_bar(
+  data = gss,
+  x_var = "degree",
+  group_var = "sex",
+  title = "Legend on the Right",
+  legend_position = "right"
+)
+```
+
+## Data Labels
+
+Toggle data labels with `data_labels_enabled` and control decimal precision with `label_decimals`:
+
+```{r}
+viz_bar(
+  data = gss,
+  x_var = "race",
+  title = "Without Data Labels",
+  data_labels_enabled = FALSE
+)
+```
+
+```{r}
+viz_bar(
+  data = gss,
+  x_var = "degree",
+  bar_type = "percent",
+  title = "Percentage Labels (1 decimal)",
+  label_decimals = 1
+)
+```
+
+## Axis Labels and Formatting
+
+Customize axis labels with `x_label` and `y_label`:
+
+```{r}
+viz_bar(
+  data = gss,
+  x_var = "degree",
+  title = "Custom Axis Labels",
+  x_label = "Highest Degree Earned",
+  y_label = "Number of Respondents"
+)
+```
+
+## Error Bars
+
+Add error bars to bar charts with `error_bars`. Options include `"se"` (standard error), `"sd"` (standard deviation), and `"ci"` (confidence interval):
+
+```{r}
+# Need a numeric value variable for error bars
+degree_age <- gss %>%
+  filter(!is.na(age))
+
+viz_bar(
+  data = degree_age,
+  x_var = "degree",
+  value_var = "age",
+  bar_type = "mean",
+  title = "Mean Age by Education (with 95% CI)",
+  error_bars = "ci",
+  ci_level = 0.95,
+  y_label = "Mean Age"
+)
+```
+
+```{r}
+viz_bar(
+  data = degree_age,
+  x_var = "degree",
+  value_var = "age",
+  bar_type = "mean",
+  title = "Mean Age by Education (SE bars)",
+  error_bars = "se",
+  error_bar_color = "#E15759"
+)
+```
+
+## Horizontal Bars
+
+Flip the orientation with `horizontal = TRUE`:
+
+```{r}
+viz_bar(
+  data = gss,
+  x_var = "degree",
+  title = "Horizontal Bar Chart",
+  horizontal = TRUE
+)
+```
+
+## Sorting
+
+Sort bars by value rather than category order:
+
+```{r}
+viz_bar(
+  data = gss,
+  x_var = "marital",
+  title = "Sorted Descending",
+  sort_by_value = TRUE,
+  sort_desc = TRUE
+)
+```
+
+```{r}
+viz_bar(
+  data = gss,
+  x_var = "marital",
+  title = "Sorted Ascending",
+  sort_by_value = TRUE,
+  sort_desc = FALSE
+)
+```
+
+## Custom Category Order
+
+Use `x_order` to specify a custom display order:
+
+```{r}
+viz_bar(
+  data = gss,
+  x_var = "degree",
+  title = "Custom Degree Order",
+  x_order = c("Graduate", "Bachelor", "Junior College", "High School", "Lt High School")
+)
+```
+
+## Missing Values
+
+Include `NA` values in charts using `include_na` and `na_label`:
+
+```{r}
+viz_bar(
+  data = gss,
+  x_var = "happy",
+  title = "Happiness (including missing)",
+  include_na = TRUE,
+  na_label = "Not Reported"
+)
+```
+
+## Themes and Fonts
+
+Use theme functions to apply consistent styling across a dashboard. These are applied at the dashboard level:
+
+```r
+dashboard <- create_dashboard(
+  title = "GSS Analysis",
+  data = gss
+) %>%
+  apply_theme(theme_modern(
+    font_family = "Inter"
+  ))
+```
+
+Available built-in themes:
+
+- `theme_modern()` — Clean modern look with Inter font
+- `theme_clean()` — Minimal styling
+- `theme_academic()` — Academic/research style
+
+## Chart Backends
+
+dashboardr supports multiple rendering backends. Pass `backend` to any viz function:
+
+```{r}
+viz_bar(
+  data = gss,
+  x_var = "race",
+  title = "Highcharter (default)",
+  backend = "highcharter"
+)
+```
+
+```{r}
+viz_bar(
+  data = gss,
+  x_var = "race",
+  title = "ECharts Backend",
+  backend = "echarts4r"
+)
+```
+
+See `vignette("chart-backends")` for a full comparison of available backends and their capabilities.
+
+## Combining Customizations
+
+Most options can be combined freely:
+
+```{r}
+viz_bar(
+  data = gss,
+  x_var = "degree",
+  group_var = "sex",
+  bar_type = "percent",
+  title = "Education by Gender",
+  subtitle = "GSS 2000-2021",
+  x_label = "Highest Degree",
+  y_label = "Percentage",
+  horizontal = TRUE,
+  color_palette = c("Male" = "#4E79A7", "Female" = "#E15759"),
+  legend_position = "bottom",
+  label_decimals = 0,
+  tooltip = tooltip(suffix = "%", shared = TRUE)
+)
+```

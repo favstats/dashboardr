@@ -11,7 +11,8 @@ generate_dashboard(
   incremental = FALSE,
   preview = NULL,
   show_progress = TRUE,
-  quiet = FALSE
+  quiet = FALSE,
+  standalone = FALSE
 )
 }
 \arguments{
@@ -38,6 +39,11 @@ visual indicators for each generation stage. Set to FALSE for minimal output.}
 \item{quiet}{Whether to suppress all output (default: FALSE). When TRUE, completely
 silences all messages, progress indicators, and Quarto rendering output. Useful for
 scripts and automated workflows. Overrides show_progress.}
+
+\item{standalone}{Whether to embed all resources (CSS, JS, images, fonts) into a single
+self-contained HTML file (default: FALSE). When TRUE, sets Quarto's
+\code{embed-resources: true} so the output HTML can be shared without a web server.
+Implies \code{render = TRUE}.}
 }
 \value{
 Invisibly returns the project object with build_info attached
@@ -63,5 +69,8 @@ dashboard \%>\% generate_dashboard(preview = "Analysis")
 
 # Quiet mode for scripts
 dashboard \%>\% generate_dashboard(render = FALSE, quiet = TRUE)
+
+# Standalone HTML (single file, all resources embedded)
+dashboard \%>\% generate_dashboard(standalone = TRUE)
 }
 }

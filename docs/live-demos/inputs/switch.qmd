@@ -3,13 +3,8 @@ title: "{{< iconify ph toggle-right >}} Switch"
 format: html
 ---
 
-```{r, include=FALSE}
-# Initialize dashboardr page configuration (CSS/JS for charts)
-dashboardr::.page_config()
-```
-
-```{r, echo=FALSE, results='asis'}
-dashboardr::enable_inputs()
+```{r, echo=FALSE, results='asis', message=FALSE, warning=FALSE}
+dashboardr::.page_config(accessibility = TRUE, inputs = TRUE)
 ```
 
 ```{r setup}
@@ -60,7 +55,10 @@ add_input(
 ```
 
 
-<div style='height: 1rem;'></div>
+```{r}
+#| echo: false
+dashboardr::html_spacer("1rem")
+```
 
 
 ```{r}
@@ -135,7 +133,10 @@ dashboardr::render_input_row(list(
 ```
 
 
-<div style='height: 0.5rem;'></div>
+```{r}
+#| echo: false
+dashboardr::html_spacer("0.5rem")
+```
 
 ## Female Authorship with Benchmark
 

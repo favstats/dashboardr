@@ -34,3 +34,18 @@ Each page can have:
 ------------------------------------------------------------------------
 
 *Data is simulated for demonstration purposes.*
+
+### Source Code
+
+The full R code that generates this dashboard is available on GitHub:
+
+- [View Source
+  Code](https://github.com/favstats/dashboardr/blob/main/pkgdown/build-sidebar-demo.R)
+
+------------------------------------------------------------------------
+
+### Learn More
+
+- [dashboardr Documentation](https://favstats.github.io/dashboardr/)
+
+- [Community Gallery](https://favstats.github.io/dashboardr/gallery/)

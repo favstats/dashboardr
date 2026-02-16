@@ -4,7 +4,7 @@
 \alias{enable_inputs}
 \title{Enable Input Filter Functionality}
 \usage{
-enable_inputs(linked = FALSE, show_when = FALSE)
+enable_inputs(linked = FALSE, show_when = FALSE, url_params = FALSE)
 }
 \arguments{
 \item{linked}{If TRUE, also include script for linked (cascading) parent-child
@@ -12,6 +12,8 @@ select inputs. Set automatically when the page uses \code{add_linked_inputs()}.}
 
 \item{show_when}{If TRUE, also include script for conditional viz visibility
 (\code{show_when} in \code{add_viz()}). Set automatically when the page uses it.}
+
+\item{url_params}{If TRUE, also include script for URL parameter support.}
 }
 \value{
 HTML tags to include input filter functionality

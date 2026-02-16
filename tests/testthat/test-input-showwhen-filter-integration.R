@@ -118,8 +118,9 @@ test_that("layout_row/layout_column can host show_when and filter-aware blocks",
   expect_no_error(generate_dashboard(proj, render = FALSE, open = FALSE, quiet = TRUE))
 
   qmd <- readLines(file.path(temp_dir, "layout_combo.qmd"), warn = FALSE)
-  expect_true(any(grepl("^## Column", qmd)))
-  expect_true(any(grepl("^### Row", qmd)))
+  # Non-dashboard mode (no sidebar): no ## Column or ### Row headings
+  expect_false(any(grepl("^## Column", qmd)))
+  expect_false(any(grepl("^### Row", qmd)))
   expect_true(any(grepl("show_when_open\\(", qmd)))
   expect_true(any(grepl("filter_vars\\s*=", qmd)))
 })
