@@ -1,3 +1,43 @@
+# dashboardr 0.5.0
+
+## New Features
+
+### Standalone HTML Export
+
+- `generate_dashboard(standalone = TRUE)`: Generate a single self-contained HTML file with all CSS, JavaScript, images, and fonts embedded inline. The resulting file can be shared via email or file transfer without a web server.
+
+### New Vignettes
+
+- **Customizing Visualizations**: Comprehensive guide to color palettes, tooltips, legends, data labels, axis formatting, error bars, sorting, and backend options — with GSS data examples.
+- **Date Inputs**: Using `type = "date"` and `type = "daterange"` for time-based filtering.
+- **URL Parameters**: Shareable dashboard links with pre-set filter state via `enable_url_params()`.
+- **Accessibility**: WCAG 2.1 AA features including skip-to-content, focus indicators, modal focus trapping, keyboard tab navigation, ARIA live regions, and reduced motion support via `enable_accessibility()`.
+
+### Enhanced Metric Cards
+
+- `html_metric()` / `add_metric()` gain `bg_color`, `text_color`, `value_prefix`, `value_suffix`, and `border_radius` parameters for richer styling, similar to `add_value_box()`.
+
+### Layout Row Styling
+
+- `add_layout_row()` gains a `style` parameter for inline CSS on the row wrapper (e.g. `style = "text-align: center;"`). Applied to `layout-ncol` divs in non-dashboard mode and `### Row` attributes in dashboard mode.
+
+### HTML Helper Functions
+
+- New exported helpers: `html_spacer()`, `html_divider()`, `html_card()`, `html_accordion()`, `html_iframe()`, `html_badge()`, `html_metric()`.
+
+## Bug Fixes
+
+### Layout Row Metrics (Issue #15)
+
+- **Fixed**: Metrics inside `add_layout_row()` / `end_layout_row()` now render side-by-side as expected, consistent with `add_value_box_row()` behavior.
+- **Fixed**: `text_color` on metric cards now properly applies to title and subtitle text (Bootstrap `text-muted` class was overriding the inherited color).
+
+## Internal
+
+- Viz type registry (`R/viz_registry.R`) replaces hardcoded switch dispatch in `R/viz_generation.R`.
+- Raw HTML in generated QMD replaced with clean R function calls.
+- R CMD check clean (0 errors, 0 warnings).
+
 # dashboardr 0.4.2
 
 ## New Features
