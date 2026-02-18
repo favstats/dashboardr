@@ -16,6 +16,10 @@ NULL
 if (getRversion() >= "2.15.1") utils::globalVariables(c(
   ".color", ".data", ".filtered", ".mean_val", ".stack_var_col", ".value_plot", ".weight",
   ".x_factor", ".x_plot", ".x_raw", ".x_var_col", ".y_plot", ".y_raw",
+  # viz_boxplot cross-tab columns
+  ".dashboardr_group", ".dashboardr_value",
+  # viz_scatter cross-tab columns
+  ".dashboardr_x", ".dashboardr_y", ".dashboardr_size",
   ":=", "across",
   "age", "age_1a", "category", "class_1a", "class_raw",
   "degree", "degree_1a", "degree_raw",

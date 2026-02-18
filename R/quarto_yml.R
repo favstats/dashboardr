@@ -38,6 +38,18 @@
   # Add resources to copy assets directory to output
   yaml_lines <- c(yaml_lines, "  resources:")
   yaml_lines <- c(yaml_lines, "    - assets/")
+  # Cross-tab asset files (when cross_tab_data_mode = "asset")
+  if (identical(proj$cross_tab_data_mode %||% "inline", "asset")) {
+    yaml_lines <- c(yaml_lines, "    - cross_tab/")
+  }
+  # Deferred chart option files (when deferred_charts = TRUE)
+  if (isTRUE(proj$deferred_charts)) {
+    yaml_lines <- c(yaml_lines, "    - charts/")
+  }
+  # Also include custom CSS so Quarto copies it to output-dir
+  if (!is.null(proj$custom_css)) {
+    yaml_lines <- c(yaml_lines, paste0("    - ", basename(proj$custom_css)))
+  }
 
   yaml_lines <- c(yaml_lines, "")
 
@@ -45,9 +57,9 @@
   yaml_lines <- c(yaml_lines, "website:")
   yaml_lines <- c(yaml_lines, paste0("  title: \"", proj$title, "\""))
 
-  # Add favicon if provided
+  # Add favicon if provided (use basename since file is copied to output dir)
   if (!is.null(proj$favicon)) {
-    yaml_lines <- c(yaml_lines, paste0("  favicon: ", proj$favicon))
+    yaml_lines <- c(yaml_lines, paste0("  favicon: ", basename(proj$favicon)))
   }
 
   # Navbar configuration
@@ -197,14 +209,14 @@
         for (page_name in section$menu_pages) {
           if (!is.null(proj$pages[[page_name]])) {
             page <- proj$pages[[page_name]]
-            
-            # Generate filename same way as other pages
-            filename <- tolower(gsub("[^a-zA-Z0-9]", "_", page_name))
+
+            # Use page slug if provided, otherwise derive from name
+            filename <- page$slug %||% tolower(gsub("[^a-zA-Z0-9]", "_", page_name))
             page_qmd <- paste0(filename, ".qmd")
-            
+
             # Get page text with icon if available
             page_text_content <- .quarto_nav_text(page_name, page$icon)
-            
+
             yaml_lines <- c(yaml_lines,
               paste0("          - href: ", page_qmd),
               paste0("            text: ", page_text_content)
@@ -220,14 +232,14 @@
         )
       }
     }
-    
+
     # Now add any left-aligned pages that are NOT in any menu or sidebar
     for (page_name in names(pages_left)) {
       if (!page_name %in% pages_in_sections) {
         page <- pages_left[[page_name]]
-        
-        # Use lowercase with underscores for filenames
-        filename <- tolower(gsub("[^a-zA-Z0-9]", "_", page_name))
+
+        # Use page slug if provided, otherwise derive from name
+        filename <- page$slug %||% tolower(gsub("[^a-zA-Z0-9]", "_", page_name))
         
         # Build text with icon if provided
         text_content <- .quarto_nav_text(page_name, page$icon)
@@ -243,8 +255,8 @@
     for (page_name in names(pages_left)) {
       page <- pages_left[[page_name]]
 
-      # Use lowercase with underscores for filenames
-      filename <- tolower(gsub("[^a-zA-Z0-9]", "_", page_name))
+      # Use page slug if provided, otherwise derive from name
+      filename <- page$slug %||% tolower(gsub("[^a-zA-Z0-9]", "_", page_name))
 
       # Build text with icon if provided
       text_content <- .quarto_nav_text(page_name, page$icon)
@@ -329,13 +341,13 @@
             if (!is.null(proj$pages[[page_name]])) {
               page <- proj$pages[[page_name]]
               
-              # Generate filename same way as other pages
-              filename <- tolower(gsub("[^a-zA-Z0-9]", "_", page_name))
+              # Use page slug if provided, otherwise derive from name
+              filename <- page$slug %||% tolower(gsub("[^a-zA-Z0-9]", "_", page_name))
               page_qmd <- paste0(filename, ".qmd")
-              
+
               # Get page text with icon if available
               page_text_content <- .quarto_nav_text(page_name, page$icon)
-              
+
               yaml_lines <- c(yaml_lines,
                 paste0("          - href: ", page_qmd),
                 paste0("            text: ", page_text_content)
@@ -358,8 +370,8 @@
       for (page_name in names(pages_right)) {
         page <- pages_right[[page_name]]
 
-        # Use lowercase with underscores for filenames
-        filename <- tolower(gsub("[^a-zA-Z0-9]", "_", page_name))
+        # Use page slug if provided, otherwise derive from name
+        filename <- page$slug %||% tolower(gsub("[^a-zA-Z0-9]", "_", page_name))
 
         # Build text with icon if provided
         text_content <- .quarto_nav_text(page_name, page$icon)
@@ -502,8 +514,8 @@
             }
             pages_added <- pages_added + 1
 
-            # Use lowercase with underscores for filenames
-            filename <- tolower(gsub("[^a-zA-Z0-9]", "_", matching_page))
+            # Use page slug if provided, otherwise derive from name
+            filename <- proj$pages[[matching_page]]$slug %||% tolower(gsub("[^a-zA-Z0-9]", "_", matching_page))
 
             # Build text with icon if provided
             text_content <- .quarto_nav_text(matching_page, proj$pages[[matching_page]]$icon)
@@ -629,8 +641,8 @@
             next  # Skip landing page as it's already added
           }
 
-          # Use lowercase with underscores for filenames
-          filename <- tolower(gsub("[^a-zA-Z0-9]", "_", page_name))
+          # Use page slug if provided, otherwise derive from name
+          filename <- proj$pages[[page_name]]$slug %||% tolower(gsub("[^a-zA-Z0-9]", "_", page_name))
 
           # Build text with icon if provided
           text_content <- .quarto_nav_text(page_name, proj$pages[[page_name]]$icon)
@@ -770,9 +782,9 @@
   # Always include modal.css and pagination.css from assets
   css_files <- c("assets/modal.css", "assets/pagination.css")
   
-  # Add custom CSS if provided
+  # Add custom CSS if provided (use basename since file is copied to output_dir)
   if (!is.null(proj$custom_css)) {
-    css_files <- c(css_files, proj$custom_css)
+    css_files <- c(css_files, basename(proj$custom_css))
   }
   
   # Write CSS section

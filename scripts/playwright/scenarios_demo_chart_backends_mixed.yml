@@ -13,11 +13,14 @@ scenarios:
     backend: echarts4r
     url_path: /here/docs/layout_1___default_one_column.html
     expect_chart_backend: [echarts4r]
-    interaction_plan: [slider, filter, sidebar_toggle]
+    interaction_plan: [slider, filter, tooltip_hover, sidebar_toggle]
     preferred_filter_var: region
     preferred_slider_var: year
     expect_filter_effect: true
     expect_slider_effect: true
+    expect_dynamic_title_effect: true
+    require_dynamic_title_placeholders_resolved: true
+    expect_tooltip_effect: true
     expect_dynamic_text_effect: true
     min_non_empty_charts_expected: 1
     required_selectors:
@@ -33,11 +36,14 @@ scenarios:
     backend: echarts4r
     url_path: /here/docs/layout_2___explicit_one_column.html
     expect_chart_backend: [echarts4r]
-    interaction_plan: [slider, filter, sidebar_toggle]
+    interaction_plan: [slider, filter, tooltip_hover, sidebar_toggle]
     preferred_filter_var: year
     preferred_slider_var: year
     expect_filter_effect: true
     expect_slider_effect: true
+    expect_dynamic_title_effect: true
+    require_dynamic_title_placeholders_resolved: true
+    expect_tooltip_effect: true
     expect_dynamic_text_effect: true
     min_non_empty_charts_expected: 2
     required_selectors:
@@ -53,11 +59,14 @@ scenarios:
     backend: echarts4r
     url_path: /here/docs/layout_3___two_columns.html
     expect_chart_backend: [echarts4r]
-    interaction_plan: [filter, sidebar_toggle]
+    interaction_plan: [filter, tooltip_hover, sidebar_toggle]
     preferred_filter_var: education
     preferred_slider_var: year
     expect_filter_effect: true
     expect_slider_effect: false
+    expect_dynamic_title_effect: true
+    require_dynamic_title_placeholders_resolved: true
+    expect_tooltip_effect: true
     min_non_empty_charts_expected: 2
     require_education_boxplot_categories: true
     required_selectors:
@@ -74,11 +83,14 @@ scenarios:
     backend: echarts4r
     url_path: /here/docs/layout_4___two_columns___table.html
     expect_chart_backend: [echarts4r]
-    interaction_plan: [slider, filter, sidebar_toggle]
+    interaction_plan: [slider, filter, tooltip_hover, sidebar_toggle]
     preferred_filter_var: year
     preferred_slider_var: year
     expect_filter_effect: true
     expect_slider_effect: true
+    expect_dynamic_title_effect: true
+    require_dynamic_title_placeholders_resolved: true
+    expect_tooltip_effect: true
     expect_dynamic_text_effect: true
     min_non_empty_charts_expected: 2
     required_selectors:
@@ -96,11 +108,14 @@ scenarios:
     backend: echarts4r
     url_path: /here/docs/layout_5___two_columns_stacked.html
     expect_chart_backend: [echarts4r]
-    interaction_plan: [filter, sidebar_toggle]
+    interaction_plan: [filter, tooltip_hover, sidebar_toggle]
     preferred_filter_var: happiness
     preferred_slider_var: year
     expect_filter_effect: true
     expect_slider_effect: false
+    expect_dynamic_title_effect: true
+    require_dynamic_title_placeholders_resolved: true
+    expect_tooltip_effect: true
     min_non_empty_charts_expected: 4
     required_selectors:
       - ".five-left-r1"
@@ -116,11 +131,14 @@ scenarios:
     backend: plotly
     url_path: /here_plotly/docs/layout_1___default_one_column.html
     expect_chart_backend: [plotly]
-    interaction_plan: [slider, filter, sidebar_toggle]
+    interaction_plan: [slider, filter, tooltip_hover, sidebar_toggle]
     preferred_filter_var: region
     preferred_slider_var: year
     expect_filter_effect: true
     expect_slider_effect: true
+    expect_dynamic_title_effect: true
+    require_dynamic_title_placeholders_resolved: true
+    expect_tooltip_effect: true
     expect_dynamic_text_effect: true
     min_non_empty_charts_expected: 1
     required_selectors:
@@ -136,11 +154,14 @@ scenarios:
     backend: plotly
     url_path: /here_plotly/docs/layout_2___explicit_one_column.html
     expect_chart_backend: [plotly]
-    interaction_plan: [slider, filter, sidebar_toggle]
+    interaction_plan: [slider, filter, tooltip_hover, sidebar_toggle]
     preferred_filter_var: year
     preferred_slider_var: year
     expect_filter_effect: true
     expect_slider_effect: true
+    expect_dynamic_title_effect: true
+    require_dynamic_title_placeholders_resolved: true
+    expect_tooltip_effect: true
     expect_dynamic_text_effect: true
     min_non_empty_charts_expected: 2
     required_selectors:
@@ -156,11 +177,14 @@ scenarios:
     backend: plotly
     url_path: /here_plotly/docs/layout_3___two_columns.html
     expect_chart_backend: [plotly]
-    interaction_plan: [filter, sidebar_toggle]
+    interaction_plan: [filter, tooltip_hover, sidebar_toggle]
     preferred_filter_var: education
     preferred_slider_var: year
     expect_filter_effect: true
     expect_slider_effect: false
+    expect_dynamic_title_effect: true
+    require_dynamic_title_placeholders_resolved: true
+    expect_tooltip_effect: true
     min_non_empty_charts_expected: 2
     require_education_boxplot_categories: true
     required_selectors:
@@ -177,11 +201,14 @@ scenarios:
     backend: plotly
     url_path: /here_plotly/docs/layout_4___two_columns___table.html
     expect_chart_backend: [plotly]
-    interaction_plan: [slider, filter, sidebar_toggle]
+    interaction_plan: [slider, filter, tooltip_hover, sidebar_toggle]
     preferred_filter_var: year
     preferred_slider_var: year
     expect_filter_effect: true
     expect_slider_effect: true
+    expect_dynamic_title_effect: true
+    require_dynamic_title_placeholders_resolved: true
+    expect_tooltip_effect: true
     expect_dynamic_text_effect: true
     min_non_empty_charts_expected: 2
     required_selectors:
@@ -199,11 +226,14 @@ scenarios:
     backend: plotly
     url_path: /here_plotly/docs/layout_5___two_columns_stacked.html
     expect_chart_backend: [plotly]
-    interaction_plan: [filter, sidebar_toggle]
+    interaction_plan: [filter, tooltip_hover, sidebar_toggle]
     preferred_filter_var: happiness
     preferred_slider_var: year
     expect_filter_effect: true
     expect_slider_effect: false
+    expect_dynamic_title_effect: true
+    require_dynamic_title_placeholders_resolved: true
+    expect_tooltip_effect: true
     min_non_empty_charts_expected: 4
     required_selectors:
       - ".five-left-r1"
@@ -219,11 +249,14 @@ scenarios:
     backend: highcharter
     url_path: /here_hc/docs/layout_1___default_one_column.html
     expect_chart_backend: [highcharter]
-    interaction_plan: [slider, filter, sidebar_toggle]
+    interaction_plan: [slider, filter, tooltip_hover, sidebar_toggle]
     preferred_filter_var: region
     preferred_slider_var: year
     expect_filter_effect: true
     expect_slider_effect: true
+    expect_dynamic_title_effect: true
+    require_dynamic_title_placeholders_resolved: true
+    expect_tooltip_effect: true
     expect_dynamic_text_effect: true
     min_non_empty_charts_expected: 1
     required_selectors:
@@ -239,11 +272,14 @@ scenarios:
     backend: highcharter
     url_path: /here_hc/docs/layout_2___explicit_one_column.html
     expect_chart_backend: [highcharter]
-    interaction_plan: [slider, filter, sidebar_toggle]
+    interaction_plan: [slider, filter, tooltip_hover, sidebar_toggle]
     preferred_filter_var: year
     preferred_slider_var: year
     expect_filter_effect: true
     expect_slider_effect: true
+    expect_dynamic_title_effect: true
+    require_dynamic_title_placeholders_resolved: true
+    expect_tooltip_effect: true
     expect_dynamic_text_effect: true
     min_non_empty_charts_expected: 2
     required_selectors:
@@ -259,11 +295,14 @@ scenarios:
     backend: highcharter
     url_path: /here_hc/docs/layout_3___two_columns.html
     expect_chart_backend: [highcharter]
-    interaction_plan: [filter, sidebar_toggle]
+    interaction_plan: [filter, tooltip_hover, sidebar_toggle]
     preferred_filter_var: education
     preferred_slider_var: year
     expect_filter_effect: true
     expect_slider_effect: false
+    expect_dynamic_title_effect: true
+    require_dynamic_title_placeholders_resolved: true
+    expect_tooltip_effect: true
     min_non_empty_charts_expected: 2
     require_education_boxplot_categories: true
     required_selectors:
@@ -280,11 +319,14 @@ scenarios:
     backend: highcharter
     url_path: /here_hc/docs/layout_4___two_columns___table.html
     expect_chart_backend: [highcharter]
-    interaction_plan: [slider, filter, sidebar_toggle]
+    interaction_plan: [slider, filter, tooltip_hover, sidebar_toggle]
     preferred_filter_var: year
     preferred_slider_var: year
     expect_filter_effect: true
     expect_slider_effect: true
+    expect_dynamic_title_effect: true
+    require_dynamic_title_placeholders_resolved: true
+    expect_tooltip_effect: true
     expect_dynamic_text_effect: true
     min_non_empty_charts_expected: 2
     required_selectors:
@@ -302,11 +344,14 @@ scenarios:
     backend: highcharter
     url_path: /here_hc/docs/layout_5___two_columns_stacked.html
     expect_chart_backend: [highcharter]
-    interaction_plan: [filter, sidebar_toggle]
+    interaction_plan: [filter, tooltip_hover, sidebar_toggle]
     preferred_filter_var: happiness
     preferred_slider_var: year
     expect_filter_effect: true
     expect_slider_effect: false
+    expect_dynamic_title_effect: true
+    require_dynamic_title_placeholders_resolved: true
+    expect_tooltip_effect: true
     min_non_empty_charts_expected: 4
     required_selectors:
       - ".five-left-r1"

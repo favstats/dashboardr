@@ -24,7 +24,8 @@ viz_boxplot(
   tooltip_prefix = "",
   tooltip_suffix = "",
   legend_position = NULL,
-  backend = "highcharter"
+  backend = "highcharter",
+  cross_tab_filter_vars = NULL
 )
 }
 \arguments{
@@ -75,6 +76,9 @@ See \code{\link{tooltip}} for full customization options.}
 \item{legend_position}{Position of the legend ("top", "bottom", "left", "right", "none")}
 
 \item{backend}{Rendering backend: "highcharter" (default), "plotly", "echarts4r", or "ggiraph".}
+
+\item{cross_tab_filter_vars}{Optional character vector of variable names to use for
+client-side cross-tab filtering when dashboard inputs are present.}
 }
 \value{
 A \code{highcharter} boxplot object.

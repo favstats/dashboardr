@@ -419,10 +419,10 @@
   if (!is.null(spec$data_serialized) && nchar(spec$data_serialized) > 0 &&
       (is.null(spec$data) || !is.character(spec$data) || !nzchar(spec$data))) {
     # Wrap in as.data.frame() since viz functions expect data frames, not lists
-    args[["data"]] <- paste0("as.data.frame(", spec$data_serialized, ")")
+    args[["data"]] <- paste0("as.data.frame(", spec$data_serialized, ", check.names = FALSE)")
   } else if (!is.null(spec$data) && (is.data.frame(spec$data) || (is.list(spec$data) && !is.null(names(spec$data))))) {
     # Legacy: data frame still in data field (fallback)
-    args[["data"]] <- paste0("as.data.frame(", .serialize_arg(spec$data), ")")
+    args[["data"]] <- paste0("as.data.frame(", .serialize_arg(spec$data), ", check.names = FALSE)")
   } else if (("data_path" %in% names(spec) && !is.null(spec[["data_path"]])) || 
       ("has_data" %in% names(spec) && isTRUE(spec$has_data))) {
     
@@ -569,7 +569,7 @@
   }
 
   # Pass cross_tab_filter_vars only to viz types that support it
-  cross_tab_supported_types <- c("bar", "stackedbar", "stackedbars", "timeline")
+  cross_tab_supported_types <- c("bar", "stackedbar", "stackedbars", "timeline", "pie", "scatter", "boxplot")
   if (spec$viz_type %in% cross_tab_supported_types &&
       !is.null(spec$cross_tab_filter_vars) && length(spec$cross_tab_filter_vars) > 0) {
     args[["cross_tab_filter_vars"]] <- .serialize_arg(spec$cross_tab_filter_vars)
@@ -731,8 +731,20 @@
     call_str <- c(call_str, "", "result <- dashboardr:::.embed_cross_tab(result)")
   }
 
-  # Wrap in explicit height container AFTER cross-tab embed
-  if (!is.null(spec$height)) {
+  # Deferred chart: replace full widget with placeholder if deferred mode is active
+  # and this viz has a show_when condition (hidden by default)
+  is_deferred <- isTRUE(.dashboardr_pkg_env$deferred_charts) && !is.null(spec$show_when)
+  if (is_deferred) {
+    chart_height <- spec$height %||% 400
+    call_str <- c(call_str,
+      "",
+      "# Deferred chart: save options to JSON and output placeholder",
+      paste0("result <- dashboardr:::.defer_chart(result, height = ", chart_height, ")")
+    )
+  }
+
+  # Wrap in explicit height container AFTER cross-tab embed (skip for deferred - already has height)
+  if (!is.null(spec$height) && !is_deferred) {
     call_str <- c(call_str,
       "",
       "# Force container height with explicit wrapper",

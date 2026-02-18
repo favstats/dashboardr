@@ -120,6 +120,17 @@
 #' @param contextual_viz_errors Logical. If TRUE, generated visualization chunks wrap viz calls
 #'   in tryCatch and prepend contextual labels (title/type) to error messages. Default: FALSE.
 #' @param url_params Logical. If TRUE, enable URL parameter support for inputs. Default: FALSE.
+#' @param cross_tab_data_mode How cross-tab data is embedded: "inline" (default, current behavior)
+#'   or "asset" (write to external .json files for lazy loading). Asset mode reduces HTML size
+#'   dramatically for dashboards with many filtered charts.
+#' @param min_cell_size Integer. Minimum cell count for privacy protection in cross-tab data.
+#'   Rows where 0 < n < min_cell_size are suppressed (removed) from cross-tab output.
+#'   Set to 0 to disable suppression. Default: 0 (opt-in).
+#' @param rds_bundle_threshold Integer. If the dashboard has at least this many pending
+#'   generated datasets, write them as one bundled `.rds` list file instead of many
+#'   individual `.rds` files. Default: 5. Set to 0 or Inf to disable bundling.
+#' @param deferred_charts Logical. If TRUE, only render initially visible charts; others become
+#'   lightweight placeholders that load on demand when revealed by show_when. Default: FALSE.
 #' @return A dashboard_project object
 #' @export
 #' @examples
@@ -286,7 +297,11 @@ create_dashboard <- function(output_dir = "site",
                             chart_export = FALSE,
                             backend = "highcharter",
                             contextual_viz_errors = FALSE,
-                            url_params = FALSE) {
+                            url_params = FALSE,
+                            cross_tab_data_mode = c("inline", "asset"),
+                            min_cell_size = 0L,
+                            rds_bundle_threshold = 5L,
+                            deferred_charts = FALSE) {
 
   output_dir <- .resolve_output_dir(output_dir, allow_inside_pkg)
 
@@ -302,6 +317,35 @@ create_dashboard <- function(output_dir = "site",
   
   if (!is.logical(contextual_viz_errors) || length(contextual_viz_errors) != 1 || is.na(contextual_viz_errors)) {
     stop("contextual_viz_errors must be TRUE or FALSE", call. = FALSE)
+  }
+
+  # Validate cross_tab_data_mode
+  cross_tab_data_mode <- match.arg(cross_tab_data_mode)
+
+  # Validate min_cell_size
+  min_cell_size <- as.integer(min_cell_size)
+  if (is.na(min_cell_size) || min_cell_size < 0L) {
+    stop("min_cell_size must be a non-negative integer", call. = FALSE)
+  }
+
+  # Validate rds_bundle_threshold
+  if (!is.numeric(rds_bundle_threshold) || length(rds_bundle_threshold) != 1 || is.na(rds_bundle_threshold)) {
+    stop("rds_bundle_threshold must be a non-negative integer, 0, or Inf", call. = FALSE)
+  }
+  if (is.finite(rds_bundle_threshold)) {
+    rds_bundle_threshold <- as.integer(rds_bundle_threshold)
+    if (is.na(rds_bundle_threshold) || rds_bundle_threshold < 0L) {
+      stop("rds_bundle_threshold must be a non-negative integer, 0, or Inf", call. = FALSE)
+    }
+  } else if (!is.infinite(rds_bundle_threshold) || rds_bundle_threshold < 0) {
+    stop("rds_bundle_threshold must be a non-negative integer, 0, or Inf", call. = FALSE)
+  } else {
+    rds_bundle_threshold <- Inf
+  }
+
+  # Validate deferred_charts
+  if (!is.logical(deferred_charts) || length(deferred_charts) != 1 || is.na(deferred_charts)) {
+    stop("deferred_charts must be TRUE or FALSE", call. = FALSE)
   }
 
   # Validate tabset_theme
@@ -432,6 +476,10 @@ create_dashboard <- function(output_dir = "site",
     backend = backend,
     contextual_viz_errors = contextual_viz_errors,
     url_params = url_params,
+    cross_tab_data_mode = cross_tab_data_mode,
+    min_cell_size = min_cell_size,
+    rds_bundle_threshold = rds_bundle_threshold,
+    deferred_charts = deferred_charts,
     pages = list(),
     data_files = NULL
   ), class = "dashboard_project")
@@ -564,7 +612,7 @@ create_dashboard <- function(output_dir = "site",
   if (identical(item$type, "viz") && !is.null(item$data_serialized) && nzchar(item$data_serialized)) {
     viz_label <- item$title %||% item$viz_type %||% path_label
     viz_df <- tryCatch(
-      as.data.frame(eval(parse(text = item$data_serialized), envir = baseenv())),
+      as.data.frame(eval(parse(text = item$data_serialized), envir = baseenv()), check.names = FALSE),
       error = function(e) {
         stop(
           "Failed to deserialize inline viz data in page '", page_name,
@@ -725,8 +773,10 @@ create_dashboard <- function(output_dir = "site",
 #' @param lazy_debug Override debug mode for lazy loading on this page (default: NULL = inherit from dashboard)
 #' @param pagination_separator Text to show in pagination navigation (e.g., "of" -> "1 of 3"), default: NULL = inherit from dashboard
 #' @param time_var Name of the time/x-axis column in the data (e.g., "year", "decade", "date").
-#'   Used by input filters when switching metrics. If NULL (default), the JavaScript will try to 
+#'   Used by input filters when switching metrics. If NULL (default), the JavaScript will try to
 #'   auto-detect from common column names (year, decade, time, date).
+#' @param slug Optional custom slug for the page filename. If provided, overrides the
+#'   default name-based slug. Non-alphanumeric characters are replaced with underscores.
 #' @return The updated dashboard_project object
 #' @export
 #' @examples
@@ -768,7 +818,8 @@ add_dashboard_page <- function(proj, name, data = NULL, data_path = NULL,
                                lazy_load_tabs = NULL,
                                lazy_debug = NULL,
                                pagination_separator = NULL,
-                               time_var = NULL) {
+                               time_var = NULL,
+                               slug = NULL) {
   if (!inherits(proj, "dashboard_project")) {
     stop("proj must be a dashboard_project object", call. = FALSE)
   }
@@ -1334,6 +1385,11 @@ add_dashboard_page <- function(proj, name, data = NULL, data_path = NULL,
     url_params = proj$url_params %||% FALSE,
     tabgroup_labels = page_tabgroup_labels
   )
+
+  # Store slug for filename generation (if provided, overrides default name-based slug)
+  if (!is.null(slug)) {
+    page$slug <- tolower(gsub("[^a-zA-Z0-9]", "_", slug))
+  }
 
   proj$pages[[name]] <- page
 

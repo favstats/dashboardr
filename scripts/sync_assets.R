@@ -11,11 +11,6 @@ managed_mirrors <- list(
     "input_filter.js", "linked_inputs.js", "modal.css", "modal.js",
     "pagination.css", "show_when.js", "sidebar.css", "tab-scroll-fix.js"
   ),
-  "dev/showwhen/docs/assets" = c(
-    "choices.min.css", "choices.min.js", "filter_hook.js", "input_filter.css",
-    "input_filter.js", "linked_inputs.js", "modal.css", "modal.js",
-    "pagination.css", "show_when.js", "sidebar.css", "tab-scroll-fix.js"
-  ),
   "inst/tutorial_dashboard/assets" = c(
     "modal.css", "modal.js", "pagination.css"
   )

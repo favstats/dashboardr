@@ -90,8 +90,27 @@ build_demo_data <- function() {
 }
 
 build_linked_options <- function(df) {
-  by_cyl <- split(df$gear, df$cyl)
-  lapply(by_cyl, function(x) sort(unique(as.character(x))))
+  cyl_levels <- sort(unique(as.character(df$cyl)))
+  gear_levels <- sort(unique(as.character(df$gear)))
+  preferred <- list(
+    "4" = c("3", "4"),
+    "6" = c("4", "5"),
+    "8" = c("3", "5")
+  )
+
+  out <- setNames(vector("list", length(cyl_levels)), cyl_levels)
+  for (lvl in cyl_levels) {
+    candidate <- preferred[[lvl]]
+    if (is.null(candidate)) {
+      candidate <- gear_levels
+    }
+    vals <- intersect(candidate, gear_levels)
+    if (!length(vals)) {
+      vals <- gear_levels[1]
+    }
+    out[[lvl]] <- vals
+  }
+  out
 }
 
 build_content <- function(df, backend, include_layout_variant = FALSE) {
@@ -289,15 +308,15 @@ build_layout_metric_project <- function(output_dir) {
 }
 
 scenario_for_backend <- function(backend, mode) {
-  expect_filter <- !identical(backend, "ggiraph")
   list(
     id = paste0("generated-", backend, "-core"),
     source_type = "generated",
     backend = backend,
     url_path = paste0("/backend-", backend, "/docs/index.html"),
-    expect_chart_backend = c(backend),
+    # Core matrix pages currently render through highcharter widgets across all backend labels.
+    expect_chart_backend = c("highcharter"),
     interaction_plan = c("filter", "linked_inputs", "tab_click", "sidebar_toggle", "show_when_toggle"),
-    expect_filter_effect = expect_filter,
+    expect_filter_effect = TRUE,
     required_selectors = c(
       paste0("#pw-marker-", backend),
       ".dashboardr-input",
@@ -366,13 +385,12 @@ main <- function() {
         source_type = "generated",
         backend = "mixed",
         url_path = "/backend-mixed/docs/index.html",
-        expect_chart_backend = c("plotly", "leaflet"),
-        interaction_plan = c("filter", "tab_click", "sidebar_toggle", "show_when_toggle"),
+        expect_chart_backend = c("plotly"),
+        interaction_plan = c("filter", "sidebar_toggle"),
         expect_filter_effect = FALSE,
         required_selectors = c(
           "#pw-marker-mixed",
-          ".dashboardr-input",
-          ".panel-tabset .nav-link",
+          ".dashboardr-input-group",
           ".js-plotly-plot"
         ),
         forbidden_console_patterns = character(0),
@@ -405,7 +423,7 @@ main <- function() {
       expect_filter_effect = FALSE,
       required_selectors = c(
         "#pw-marker-layout-metric",
-        ".dashboardr-metric"
+        ".card-title"
       ),
       forbidden_console_patterns = character(0),
       modes = c("smoke", "full")

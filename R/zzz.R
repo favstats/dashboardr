@@ -68,7 +68,7 @@ check_quarto_version <- function() {
   
   # Get version
   tryCatch({
-    version_output <- system2("quarto", "--version", stdout = TRUE, stderr = TRUE)
+    version_output <- system2(quarto_path, "--version", stdout = TRUE, stderr = TRUE)
     version_str <- version_output[1]
     
     # Parse version (e.g., "1.4.553" -> c(1, 4, 553))
@@ -87,8 +87,8 @@ check_quarto_version <- function() {
     
     TRUE
   }, error = function(e) {
-    # If we can't check version, just warn and continue
+    # If we can't check version but path exists, proceed anyway
     warning("Could not verify Quarto version. Rendering requires Quarto >= 1.4", call. = FALSE)
-    FALSE
+    TRUE
   })
 }

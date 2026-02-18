@@ -69,7 +69,7 @@ gss <- gss_all %>%
 ```
 
 ```{r, include = FALSE}
-devtools::load_all()
+library(dashboardr)
 ```
 
 We now have a dataset with about `r nrow(gss)` respondents from 2024 onwards, with variables for demographics (age, sex, race, education) and attitudes (happiness, political views).

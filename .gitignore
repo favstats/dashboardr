@@ -16,14 +16,33 @@ tests/testthat/*/docs/
 here/
 here_hc/
 here_plotly/
+algosoc/
 input_matrix_echarts/
 input_matrix_plotly/
 input_matrix_hc/
 input_matrix_mixed/
+input_nosidebar_echarts/
+input_nosidebar_hc/
+input_nosidebar_plotly/
+sidebar_gss_demo_echarts/
+sidebar_gss_demo_plotly/
+sidebar_single_echarts/
+sidebar_single_hc/
+sidebar_single_plotly/
+site/
 output/playwright/
 dev/**/docs/
 dev/**/site_libs/
 dev/**/.quarto/
+
+# Exclude all .quarto directories
+**/.quarto/
+
+# Exclude vignettes build artifacts
+vignettes/lib/
+
+# macOS metadata
+.DS_Store
 
 # Local-only AI governance artifacts
 ai/

@@ -25,7 +25,8 @@ viz_pie(
   tooltip_suffix = "",
   center_text = NULL,
   legend_position = NULL,
-  backend = "highcharter"
+  backend = "highcharter",
+  cross_tab_filter_vars = NULL
 )
 }
 \arguments{
@@ -77,6 +78,9 @@ Only visible when inner_size > "0\%".}
 \item{legend_position}{Position of the legend ("top", "bottom", "left", "right", "none")}
 
 \item{backend}{Rendering backend: "highcharter" (default), "plotly", "echarts4r", or "ggiraph".}
+
+\item{cross_tab_filter_vars}{Optional character vector of variable names to use for
+client-side cross-tab filtering when dashboard inputs are present.}
 }
 \value{
 A highcharter plot object.

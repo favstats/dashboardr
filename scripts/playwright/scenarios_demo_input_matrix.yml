@@ -1,413 +1,549 @@
 version: 1
-
 defaults:
   forbidden_console_patterns:
-    - "Uncaught"
-    - "Unhandled promise rejection"
-    - "Cannot read properties of undefined"
+  - Uncaught
+  - Unhandled promise rejection
+  - Cannot read properties of undefined
   max_large_empty_cards: 0
+  require_show_when_consistency: yes
   font_expectations:
-    - selector: "body"
-      contains_any: ["system-ui", "Segoe UI", "Roboto", "Helvetica", "Arial", "sans-serif"]
-      not_contains_any: ["Times New Roman"]
-    - selector: ".navbar .nav-link, .navbar-brand, .menu-text"
-      contains_any: ["system-ui", "Segoe UI", "Roboto", "Helvetica", "Arial", "sans-serif"]
-      not_contains_any: ["Times New Roman"]
-    - selector: ".dashboardr-input-group label, .dashboardr-radio-group label, .dashboardr-checkbox-group label"
-      contains_any: ["system-ui", "Segoe UI", "Roboto", "Helvetica", "Arial", "sans-serif"]
-      not_contains_any: ["Times New Roman"]
-
+  - selector: body
+    contains_any:
+    - system-ui
+    - Segoe UI
+    - Roboto
+    - Helvetica
+    - Arial
+    - sans-serif
+    not_contains_any: Times New Roman
+  - selector: .navbar .nav-link, .navbar-brand, .menu-text
+    contains_any:
+    - system-ui
+    - Segoe UI
+    - Roboto
+    - Helvetica
+    - Arial
+    - sans-serif
+    not_contains_any: Times New Roman
+  - selector: .dashboardr-input-group label, .dashboardr-radio-group label, .dashboardr-checkbox-group
+      label
+    contains_any:
+    - system-ui
+    - Segoe UI
+    - Roboto
+    - Helvetica
+    - Arial
+    - sans-serif
+    not_contains_any: Times New Roman
 scenarios:
-  - id: input-matrix-echarts-p1
-    modes: [smoke, full]
-    source_type: docs
-    backend: echarts4r
-    url_path: /input_matrix_echarts/docs/p1_bar_palette_slider.html
-    expect_chart_backend: [echarts4r]
-    interaction_plan: [slider, filter, sidebar_toggle]
-    preferred_filter_var: region
-    preferred_slider_var: year
-    expect_filter_effect: false
-    expect_slider_effect: false
-    expect_dynamic_text_effect: true
-    dynamic_text_selectors: ["#p1_dynamic_low", "#p1_dynamic_high", ".dashboardr-slider-value"]
-    min_non_empty_charts_expected: 1
-    required_selectors:
-      - "#pw-title-p1"
-      - ".dashboardr-checkbox-group[data-filter-var='region']"
-      - ".dashboardr-slider[data-filter-var='year']"
-    required_texts:
-      - "P1_Bar_Palette_Slider"
-    forbidden_console_patterns: []
-
-  - id: input-matrix-echarts-p2
-    modes: [smoke, full]
-    source_type: docs
-    backend: echarts4r
-    url_path: /input_matrix_echarts/docs/p2_stackedbar_palette.html
-    expect_chart_backend: [echarts4r]
-    interaction_plan: [filter, sidebar_toggle]
-    preferred_filter_var: education
-    expect_filter_effect: true
-    require_all_inputs_affect_all_charts: true
-    min_non_empty_charts_expected: 1
-    required_selectors:
-      - "#pw-title-p2"
-      - "select[data-filter-var='education']"
-      - ".dashboardr-button-group[data-filter-var='channel']"
-    required_texts:
-      - "P2_Stackedbar_Palette"
-    forbidden_console_patterns: []
-
-  - id: input-matrix-echarts-p3
-    modes: [full]
-    source_type: docs
-    backend: echarts4r
-    url_path: /input_matrix_echarts/docs/p3_timeline_radio.html
-    expect_chart_backend: [echarts4r]
-    interaction_plan: [slider, filter, sidebar_toggle]
-    preferred_filter_var: channel
-    preferred_slider_var: year
-    expect_filter_effect: true
-    expect_slider_effect: true
-    expect_dynamic_text_effect: true
-    dynamic_text_selectors: ["#p3_dynamic_early", "#p3_dynamic_late", ".dashboardr-slider-value"]
-    require_all_inputs_affect_all_charts: true
-    min_non_empty_charts_expected: 1
-    required_selectors:
-      - "#pw-title-p3"
-      - ".dashboardr-radio-group[data-filter-var='channel']"
-      - ".dashboardr-slider[data-filter-var='year']"
-    required_texts:
-      - "P3_Timeline_Radio"
-    forbidden_console_patterns: []
-
-  - id: input-matrix-echarts-p4
-    modes: [full]
-    source_type: docs
-    backend: echarts4r
-    url_path: /input_matrix_echarts/docs/p4_linked_inputs.html
-    expect_chart_backend: [echarts4r]
-    interaction_plan: [linked_inputs, filter, sidebar_toggle]
-    preferred_filter_var: segment
-    expect_filter_effect: true
-    require_all_input_vars_affect_all_charts: true
-    min_non_empty_charts_expected: 1
-    required_selectors:
-      - "#pw-title-p4"
-      - "[data-linked-child-id]"
-      - "select[data-filter-var='segment']"
-    required_texts:
-      - "P4_Linked_Inputs"
-    forbidden_console_patterns: []
-
-  - id: input-matrix-echarts-p5
-    modes: [smoke, full]
-    source_type: docs
-    backend: echarts4r
-    url_path: /input_matrix_echarts/docs/p5_complex_show_when.html
-    expect_chart_backend: [echarts4r]
-    interaction_plan: [show_when_toggle, filter, sidebar_toggle]
-    preferred_filter_var: view_mode
-    expect_filter_effect: false
-    expect_dynamic_text_effect: true
-    dynamic_text_selectors: ["#p5_dynamic_detail"]
-    min_non_empty_charts_expected: 1
-    required_selectors:
-      - "#pw-title-p5"
-      - "[data-show-when]"
-      - "input[data-input-type='switch'][data-filter-var='benchmark_toggle']"
-    required_texts:
-      - "P5_Complex_Show_When"
-    forbidden_texts:
-      - "undefined"
-    forbidden_console_patterns: []
-
-  - id: input-matrix-echarts-p6
-    modes: [full]
-    source_type: docs
-    backend: echarts4r
-    url_path: /input_matrix_echarts/docs/p6_text_number.html
-    expect_chart_backend: [echarts4r]
-    interaction_plan: [filter, sidebar_toggle]
-    preferred_filter_var: year
-    expect_filter_effect: true
-    require_all_input_vars_affect_all_charts: true
-    min_non_empty_charts_expected: 1
-    required_selectors:
-      - "#pw-title-p6"
-      - "input[data-input-type='text'][data-filter-var='region']"
-      - "input[data-input-type='number'][data-filter-var='year']"
-    required_texts:
-      - "P6_Text_Number"
-    forbidden_console_patterns: []
-
-  - id: input-matrix-plotly-p1
-    modes: [smoke, full]
-    source_type: docs
-    backend: plotly
-    url_path: /input_matrix_plotly/docs/p1_bar_palette_slider.html
-    expect_chart_backend: [plotly]
-    interaction_plan: [slider, filter, sidebar_toggle]
-    preferred_filter_var: region
-    preferred_slider_var: year
-    expect_filter_effect: false
-    expect_slider_effect: false
-    expect_dynamic_text_effect: true
-    dynamic_text_selectors: ["#p1_dynamic_low", "#p1_dynamic_high", ".dashboardr-slider-value"]
-    min_non_empty_charts_expected: 1
-    required_selectors:
-      - "#pw-title-p1"
-      - ".dashboardr-checkbox-group[data-filter-var='region']"
-      - ".dashboardr-slider[data-filter-var='year']"
-    required_texts:
-      - "P1_Bar_Palette_Slider"
-    forbidden_console_patterns: []
-
-  - id: input-matrix-plotly-p2
-    modes: [smoke, full]
-    source_type: docs
-    backend: plotly
-    url_path: /input_matrix_plotly/docs/p2_stackedbar_palette.html
-    expect_chart_backend: [plotly]
-    interaction_plan: [filter, sidebar_toggle]
-    preferred_filter_var: education
-    expect_filter_effect: true
-    require_all_inputs_affect_all_charts: true
-    min_non_empty_charts_expected: 1
-    required_selectors:
-      - "#pw-title-p2"
-      - "select[data-filter-var='education']"
-      - ".dashboardr-button-group[data-filter-var='channel']"
-    required_texts:
-      - "P2_Stackedbar_Palette"
-    forbidden_console_patterns: []
-
-  - id: input-matrix-plotly-p3
-    modes: [full]
-    source_type: docs
-    backend: plotly
-    url_path: /input_matrix_plotly/docs/p3_timeline_radio.html
-    expect_chart_backend: [plotly]
-    interaction_plan: [slider, filter, sidebar_toggle]
-    preferred_filter_var: channel
-    preferred_slider_var: year
-    expect_filter_effect: true
-    expect_slider_effect: true
-    expect_dynamic_text_effect: true
-    dynamic_text_selectors: ["#p3_dynamic_early", "#p3_dynamic_late", ".dashboardr-slider-value"]
-    require_all_inputs_affect_all_charts: true
-    min_non_empty_charts_expected: 1
-    required_selectors:
-      - "#pw-title-p3"
-      - ".dashboardr-radio-group[data-filter-var='channel']"
-      - ".dashboardr-slider[data-filter-var='year']"
-    required_texts:
-      - "P3_Timeline_Radio"
-    forbidden_console_patterns: []
-
-  - id: input-matrix-plotly-p4
-    modes: [full]
-    source_type: docs
-    backend: plotly
-    url_path: /input_matrix_plotly/docs/p4_linked_inputs.html
-    expect_chart_backend: [plotly]
-    interaction_plan: [linked_inputs, filter, sidebar_toggle]
-    preferred_filter_var: segment
-    expect_filter_effect: true
-    require_all_input_vars_affect_all_charts: true
-    min_non_empty_charts_expected: 1
-    required_selectors:
-      - "#pw-title-p4"
-      - "[data-linked-child-id]"
-      - "select[data-filter-var='segment']"
-    required_texts:
-      - "P4_Linked_Inputs"
-    forbidden_console_patterns: []
-
-  - id: input-matrix-plotly-p5
-    modes: [smoke, full]
-    source_type: docs
-    backend: plotly
-    url_path: /input_matrix_plotly/docs/p5_complex_show_when.html
-    expect_chart_backend: [plotly]
-    interaction_plan: [show_when_toggle, filter, sidebar_toggle]
-    preferred_filter_var: view_mode
-    expect_filter_effect: false
-    expect_dynamic_text_effect: true
-    dynamic_text_selectors: ["#p5_dynamic_detail"]
-    min_non_empty_charts_expected: 1
-    required_selectors:
-      - "#pw-title-p5"
-      - "[data-show-when]"
-      - "input[data-input-type='switch'][data-filter-var='benchmark_toggle']"
-    required_texts:
-      - "P5_Complex_Show_When"
-    forbidden_texts:
-      - "undefined"
-    forbidden_console_patterns: []
-
-  - id: input-matrix-plotly-p6
-    modes: [full]
-    source_type: docs
-    backend: plotly
-    url_path: /input_matrix_plotly/docs/p6_text_number.html
-    expect_chart_backend: [plotly]
-    interaction_plan: [filter, sidebar_toggle]
-    preferred_filter_var: year
-    expect_filter_effect: true
-    require_all_input_vars_affect_all_charts: true
-    min_non_empty_charts_expected: 1
-    required_selectors:
-      - "#pw-title-p6"
-      - "input[data-input-type='text'][data-filter-var='region']"
-      - "input[data-input-type='number'][data-filter-var='year']"
-    required_texts:
-      - "P6_Text_Number"
-    forbidden_console_patterns: []
-
-  - id: input-matrix-highcharter-p1
-    modes: [smoke, full]
-    source_type: docs
-    backend: highcharter
-    url_path: /input_matrix_hc/docs/p1_bar_palette_slider.html
-    expect_chart_backend: [highcharter]
-    interaction_plan: [slider, filter, sidebar_toggle]
-    preferred_filter_var: region
-    preferred_slider_var: year
-    expect_filter_effect: false
-    expect_slider_effect: false
-    expect_dynamic_text_effect: true
-    dynamic_text_selectors: ["#p1_dynamic_low", "#p1_dynamic_high", ".dashboardr-slider-value"]
-    min_non_empty_charts_expected: 1
-    required_selectors:
-      - "#pw-title-p1"
-      - ".dashboardr-checkbox-group[data-filter-var='region']"
-      - ".dashboardr-slider[data-filter-var='year']"
-    required_texts:
-      - "P1_Bar_Palette_Slider"
-    forbidden_console_patterns: []
-
-  - id: input-matrix-highcharter-p2
-    modes: [smoke, full]
-    source_type: docs
-    backend: highcharter
-    url_path: /input_matrix_hc/docs/p2_stackedbar_palette.html
-    expect_chart_backend: [highcharter]
-    interaction_plan: [filter, sidebar_toggle]
-    preferred_filter_var: education
-    expect_filter_effect: true
-    require_all_inputs_affect_all_charts: true
-    min_non_empty_charts_expected: 1
-    required_selectors:
-      - "#pw-title-p2"
-      - "select[data-filter-var='education']"
-      - ".dashboardr-button-group[data-filter-var='channel']"
-    required_texts:
-      - "P2_Stackedbar_Palette"
-    forbidden_console_patterns: []
-
-  - id: input-matrix-highcharter-p3
-    modes: [full]
-    source_type: docs
-    backend: highcharter
-    url_path: /input_matrix_hc/docs/p3_timeline_radio.html
-    expect_chart_backend: [highcharter]
-    interaction_plan: [slider, filter, sidebar_toggle]
-    preferred_filter_var: channel
-    preferred_slider_var: year
-    expect_filter_effect: true
-    expect_slider_effect: true
-    expect_dynamic_text_effect: true
-    dynamic_text_selectors: ["#p3_dynamic_early", "#p3_dynamic_late", ".dashboardr-slider-value"]
-    require_all_inputs_affect_all_charts: true
-    min_non_empty_charts_expected: 1
-    required_selectors:
-      - "#pw-title-p3"
-      - ".dashboardr-radio-group[data-filter-var='channel']"
-      - ".dashboardr-slider[data-filter-var='year']"
-    required_texts:
-      - "P3_Timeline_Radio"
-    forbidden_console_patterns: []
-
-  - id: input-matrix-highcharter-p4
-    modes: [full]
-    source_type: docs
-    backend: highcharter
-    url_path: /input_matrix_hc/docs/p4_linked_inputs.html
-    expect_chart_backend: [highcharter]
-    interaction_plan: [linked_inputs, filter, sidebar_toggle]
-    preferred_filter_var: segment
-    expect_filter_effect: true
-    require_all_input_vars_affect_all_charts: true
-    min_non_empty_charts_expected: 1
-    required_selectors:
-      - "#pw-title-p4"
-      - "[data-linked-child-id]"
-      - "select[data-filter-var='segment']"
-    required_texts:
-      - "P4_Linked_Inputs"
-    forbidden_console_patterns: []
-
-  - id: input-matrix-highcharter-p5
-    modes: [smoke, full]
-    source_type: docs
-    backend: highcharter
-    url_path: /input_matrix_hc/docs/p5_complex_show_when.html
-    expect_chart_backend: [highcharter]
-    interaction_plan: [show_when_toggle, filter, sidebar_toggle]
-    preferred_filter_var: view_mode
-    expect_filter_effect: false
-    expect_dynamic_text_effect: true
-    dynamic_text_selectors: ["#p5_dynamic_detail"]
-    min_non_empty_charts_expected: 1
-    required_selectors:
-      - "#pw-title-p5"
-      - "[data-show-when]"
-      - "input[data-input-type='switch'][data-filter-var='benchmark_toggle']"
-    required_texts:
-      - "P5_Complex_Show_When"
-    forbidden_texts:
-      - "undefined"
-    forbidden_console_patterns: []
-
-  - id: input-matrix-highcharter-p6
-    modes: [full]
-    source_type: docs
-    backend: highcharter
-    url_path: /input_matrix_hc/docs/p6_text_number.html
-    expect_chart_backend: [highcharter]
-    interaction_plan: [filter, sidebar_toggle]
-    preferred_filter_var: year
-    expect_filter_effect: true
-    require_all_input_vars_affect_all_charts: true
-    min_non_empty_charts_expected: 1
-    required_selectors:
-      - "#pw-title-p6"
-      - "input[data-input-type='text'][data-filter-var='region']"
-      - "input[data-input-type='number'][data-filter-var='year']"
-    required_texts:
-      - "P6_Text_Number"
-    forbidden_console_patterns: []
-
-  - id: input-matrix-mixed-m1
-    modes: [smoke, full]
-    source_type: docs
-    backend: mixed
-    url_path: /input_matrix_mixed/docs/m1_mixed_backends_integration.html
-    expect_chart_backend: [mixed]
-    interaction_plan: [slider, filter, sidebar_toggle]
-    preferred_filter_var: region
-    preferred_slider_var: year
-    expect_filter_effect: true
-    expect_slider_effect: true
-    expect_dynamic_text_effect: true
-    dynamic_text_selectors: ["#m1_dynamic_low", "#m1_dynamic_high", ".dashboardr-slider-value"]
-    min_non_empty_charts_expected: 3
-    required_selectors:
-      - "#pw-title-m1"
-      - ".dashboardr-checkbox-group[data-filter-var='region']"
-      - ".dashboardr-slider[data-filter-var='year']"
-    required_texts:
-      - "M1_Mixed_Backends_Integration"
-    forbidden_console_patterns: []
+- id: input-matrix-echarts-p1
+  modes:
+  - smoke
+  - full
+  source_type: docs
+  backend: echarts4r
+  url_path: /input_matrix_echarts/docs/p1_bar_palette_slider.html
+  expect_chart_backend: echarts4r
+  interaction_plan:
+  - slider
+  - filter
+  - tooltip_hover
+  - sidebar_toggle
+  preferred_filter_var: region
+  preferred_slider_var: year
+  expect_filter_effect: no
+  expect_slider_effect: no
+  expect_dynamic_text_effect: yes
+  dynamic_text_selectors:
+  - '#p1_dynamic_low'
+  - '#p1_dynamic_high'
+  - .dashboardr-slider-value
+  min_non_empty_charts_expected: 1
+  required_selectors:
+  - '#pw-title-p1'
+  - .dashboardr-checkbox-group[data-filter-var='region']
+  - .dashboardr-slider[data-filter-var='year']
+  required_texts: P1_Bar_Palette_Slider
+  forbidden_console_patterns: []
+  expect_dynamic_title_effect: yes
+  require_dynamic_title_placeholders_resolved: yes
+  expect_tooltip_effect: yes
+- id: input-matrix-echarts-p2
+  modes:
+  - smoke
+  - full
+  source_type: docs
+  backend: echarts4r
+  url_path: /input_matrix_echarts/docs/p2_stackedbar_palette.html
+  expect_chart_backend: echarts4r
+  interaction_plan:
+  - filter
+  - tooltip_hover
+  - sidebar_toggle
+  preferred_filter_var: education
+  expect_filter_effect: yes
+  require_all_inputs_affect_all_charts: yes
+  min_non_empty_charts_expected: 1
+  required_selectors:
+  - '#pw-title-p2'
+  - select[data-filter-var='education']
+  - .dashboardr-button-group[data-filter-var='channel']
+  required_texts: P2_Stackedbar_Palette
+  forbidden_console_patterns: []
+  expect_dynamic_title_effect: yes
+  require_dynamic_title_placeholders_resolved: yes
+  expect_tooltip_effect: yes
+- id: input-matrix-echarts-p3
+  modes: full
+  source_type: docs
+  backend: echarts4r
+  url_path: /input_matrix_echarts/docs/p3_timeline_radio.html
+  expect_chart_backend: echarts4r
+  interaction_plan:
+  - slider
+  - filter
+  - sidebar_toggle
+  preferred_filter_var: channel
+  preferred_slider_var: year
+  expect_filter_effect: yes
+  expect_slider_effect: yes
+  expect_dynamic_text_effect: yes
+  dynamic_text_selectors:
+  - '#p3_dynamic_early'
+  - '#p3_dynamic_late'
+  - .dashboardr-slider-value
+  require_all_inputs_affect_all_charts: yes
+  min_non_empty_charts_expected: 1
+  required_selectors:
+  - '#pw-title-p3'
+  - .dashboardr-radio-group[data-filter-var='channel']
+  - .dashboardr-slider[data-filter-var='year']
+  required_texts: P3_Timeline_Radio
+  forbidden_console_patterns: []
+  expect_dynamic_title_effect: yes
+  require_dynamic_title_placeholders_resolved: yes
+- id: input-matrix-echarts-p4
+  modes: full
+  source_type: docs
+  backend: echarts4r
+  url_path: /input_matrix_echarts/docs/p4_linked_inputs.html
+  expect_chart_backend: echarts4r
+  interaction_plan:
+  - linked_inputs
+  - filter
+  - sidebar_toggle
+  preferred_filter_var: segment
+  expect_filter_effect: yes
+  require_all_input_vars_affect_all_charts: yes
+  min_non_empty_charts_expected: 1
+  required_selectors:
+  - '#pw-title-p4'
+  - '[data-linked-child-id]'
+  - select[data-filter-var='segment']
+  required_texts: P4_Linked_Inputs
+  forbidden_console_patterns: []
+  expect_dynamic_title_effect: yes
+  require_dynamic_title_placeholders_resolved: yes
+- id: input-matrix-echarts-p5
+  modes:
+  - smoke
+  - full
+  source_type: docs
+  backend: echarts4r
+  url_path: /input_matrix_echarts/docs/p5_complex_show_when.html
+  expect_chart_backend: echarts4r
+  interaction_plan:
+  - show_when_toggle
+  - filter
+  - tooltip_hover
+  - sidebar_toggle
+  preferred_filter_var: view_mode
+  expect_filter_effect: yes
+  expect_dynamic_text_effect: yes
+  expect_dynamic_title_effect: yes
+  require_dynamic_title_placeholders_resolved: yes
+  dynamic_text_selectors: '#p5_dynamic_detail'
+  dynamic_binding_rules:
+  - selector: .callout-title, .callout .callout-title, .callout-title-container
+    vars: view_mode
+    match_mode: any
+  min_non_empty_charts_expected: 1
+  required_selectors:
+  - '#pw-title-p5'
+  - '[data-show-when]'
+  - input[data-input-type='switch'][data-filter-var='benchmark_toggle']
+  required_texts: P5_Complex_Show_When
+  forbidden_texts: undefined
+  forbidden_console_patterns: []
+  expect_tooltip_effect: yes
+- id: input-matrix-echarts-p6
+  modes: full
+  source_type: docs
+  backend: echarts4r
+  url_path: /input_matrix_echarts/docs/p6_text_number.html
+  expect_chart_backend: echarts4r
+  interaction_plan:
+  - filter
+  - sidebar_toggle
+  preferred_filter_var: year
+  expect_filter_effect: yes
+  require_all_input_vars_affect_all_charts: yes
+  min_non_empty_charts_expected: 1
+  required_selectors:
+  - '#pw-title-p6'
+  - input[data-input-type='text'][data-filter-var='region']
+  - input[data-input-type='number'][data-filter-var='year']
+  required_texts: P6_Text_Number
+  forbidden_console_patterns: []
+  expect_dynamic_title_effect: yes
+  require_dynamic_title_placeholders_resolved: yes
+- id: input-matrix-plotly-p1
+  modes:
+  - smoke
+  - full
+  source_type: docs
+  backend: plotly
+  url_path: /input_matrix_plotly/docs/p1_bar_palette_slider.html
+  expect_chart_backend: plotly
+  interaction_plan:
+  - slider
+  - filter
+  - tooltip_hover
+  - sidebar_toggle
+  preferred_filter_var: region
+  preferred_slider_var: year
+  expect_filter_effect: no
+  expect_slider_effect: no
+  expect_dynamic_text_effect: yes
+  dynamic_text_selectors:
+  - '#p1_dynamic_low'
+  - '#p1_dynamic_high'
+  - .dashboardr-slider-value
+  min_non_empty_charts_expected: 1
+  required_selectors:
+  - '#pw-title-p1'
+  - .dashboardr-checkbox-group[data-filter-var='region']
+  - .dashboardr-slider[data-filter-var='year']
+  required_texts: P1_Bar_Palette_Slider
+  forbidden_console_patterns: []
+  expect_dynamic_title_effect: yes
+  require_dynamic_title_placeholders_resolved: yes
+  expect_tooltip_effect: yes
+- id: input-matrix-plotly-p2
+  modes:
+  - smoke
+  - full
+  source_type: docs
+  backend: plotly
+  url_path: /input_matrix_plotly/docs/p2_stackedbar_palette.html
+  expect_chart_backend: plotly
+  interaction_plan:
+  - filter
+  - tooltip_hover
+  - sidebar_toggle
+  preferred_filter_var: education
+  expect_filter_effect: yes
+  require_all_inputs_affect_all_charts: yes
+  min_non_empty_charts_expected: 1
+  required_selectors:
+  - '#pw-title-p2'
+  - select[data-filter-var='education']
+  - .dashboardr-button-group[data-filter-var='channel']
+  required_texts: P2_Stackedbar_Palette
+  forbidden_console_patterns: []
+  expect_dynamic_title_effect: yes
+  require_dynamic_title_placeholders_resolved: yes
+  expect_tooltip_effect: yes
+- id: input-matrix-plotly-p3
+  modes: full
+  source_type: docs
+  backend: plotly
+  url_path: /input_matrix_plotly/docs/p3_timeline_radio.html
+  expect_chart_backend: plotly
+  interaction_plan:
+  - slider
+  - filter
+  - sidebar_toggle
+  preferred_filter_var: channel
+  preferred_slider_var: year
+  expect_filter_effect: yes
+  expect_slider_effect: yes
+  expect_dynamic_text_effect: yes
+  dynamic_text_selectors:
+  - '#p3_dynamic_early'
+  - '#p3_dynamic_late'
+  - .dashboardr-slider-value
+  require_all_inputs_affect_all_charts: yes
+  min_non_empty_charts_expected: 1
+  required_selectors:
+  - '#pw-title-p3'
+  - .dashboardr-radio-group[data-filter-var='channel']
+  - .dashboardr-slider[data-filter-var='year']
+  required_texts: P3_Timeline_Radio
+  forbidden_console_patterns: []
+  expect_dynamic_title_effect: yes
+  require_dynamic_title_placeholders_resolved: yes
+- id: input-matrix-plotly-p4
+  modes: full
+  source_type: docs
+  backend: plotly
+  url_path: /input_matrix_plotly/docs/p4_linked_inputs.html
+  expect_chart_backend: plotly
+  interaction_plan:
+  - linked_inputs
+  - filter
+  - sidebar_toggle
+  preferred_filter_var: segment
+  expect_filter_effect: yes
+  require_all_input_vars_affect_all_charts: yes
+  min_non_empty_charts_expected: 1
+  required_selectors:
+  - '#pw-title-p4'
+  - '[data-linked-child-id]'
+  - select[data-filter-var='segment']
+  required_texts: P4_Linked_Inputs
+  forbidden_console_patterns: []
+  expect_dynamic_title_effect: yes
+  require_dynamic_title_placeholders_resolved: yes
+- id: input-matrix-plotly-p5
+  modes:
+  - smoke
+  - full
+  source_type: docs
+  backend: plotly
+  url_path: /input_matrix_plotly/docs/p5_complex_show_when.html
+  expect_chart_backend: plotly
+  interaction_plan:
+  - show_when_toggle
+  - filter
+  - tooltip_hover
+  - sidebar_toggle
+  preferred_filter_var: view_mode
+  expect_filter_effect: yes
+  expect_dynamic_text_effect: yes
+  expect_dynamic_title_effect: yes
+  require_dynamic_title_placeholders_resolved: yes
+  dynamic_text_selectors: '#p5_dynamic_detail'
+  dynamic_binding_rules:
+  - selector: .callout-title, .callout .callout-title, .callout-title-container
+    vars: view_mode
+    match_mode: any
+  min_non_empty_charts_expected: 1
+  required_selectors:
+  - '#pw-title-p5'
+  - '[data-show-when]'
+  - input[data-input-type='switch'][data-filter-var='benchmark_toggle']
+  required_texts: P5_Complex_Show_When
+  forbidden_texts: undefined
+  forbidden_console_patterns: []
+  expect_tooltip_effect: yes
+- id: input-matrix-plotly-p6
+  modes: full
+  source_type: docs
+  backend: plotly
+  url_path: /input_matrix_plotly/docs/p6_text_number.html
+  expect_chart_backend: plotly
+  interaction_plan:
+  - filter
+  - sidebar_toggle
+  preferred_filter_var: year
+  expect_filter_effect: yes
+  require_all_input_vars_affect_all_charts: yes
+  min_non_empty_charts_expected: 1
+  required_selectors:
+  - '#pw-title-p6'
+  - input[data-input-type='text'][data-filter-var='region']
+  - input[data-input-type='number'][data-filter-var='year']
+  required_texts: P6_Text_Number
+  forbidden_console_patterns: []
+  expect_dynamic_title_effect: yes
+  require_dynamic_title_placeholders_resolved: yes
+- id: input-matrix-highcharter-p1
+  modes:
+  - smoke
+  - full
+  source_type: docs
+  backend: highcharter
+  url_path: /input_matrix_hc/docs/p1_bar_palette_slider.html
+  expect_chart_backend: highcharter
+  interaction_plan:
+  - slider
+  - filter
+  - tooltip_hover
+  - sidebar_toggle
+  preferred_filter_var: region
+  preferred_slider_var: year
+  expect_filter_effect: no
+  expect_slider_effect: no
+  expect_dynamic_text_effect: yes
+  dynamic_text_selectors:
+  - '#p1_dynamic_low'
+  - '#p1_dynamic_high'
+  - .dashboardr-slider-value
+  min_non_empty_charts_expected: 1
+  required_selectors:
+  - '#pw-title-p1'
+  - .dashboardr-checkbox-group[data-filter-var='region']
+  - .dashboardr-slider[data-filter-var='year']
+  required_texts: P1_Bar_Palette_Slider
+  forbidden_console_patterns: []
+  expect_dynamic_title_effect: yes
+  require_dynamic_title_placeholders_resolved: yes
+  expect_tooltip_effect: yes
+- id: input-matrix-highcharter-p2
+  modes:
+  - smoke
+  - full
+  source_type: docs
+  backend: highcharter
+  url_path: /input_matrix_hc/docs/p2_stackedbar_palette.html
+  expect_chart_backend: highcharter
+  interaction_plan:
+  - filter
+  - tooltip_hover
+  - sidebar_toggle
+  preferred_filter_var: education
+  expect_filter_effect: yes
+  require_all_inputs_affect_all_charts: yes
+  min_non_empty_charts_expected: 1
+  required_selectors:
+  - '#pw-title-p2'
+  - select[data-filter-var='education']
+  - .dashboardr-button-group[data-filter-var='channel']
+  required_texts: P2_Stackedbar_Palette
+  forbidden_console_patterns: []
+  expect_dynamic_title_effect: yes
+  require_dynamic_title_placeholders_resolved: yes
+  expect_tooltip_effect: yes
+- id: input-matrix-highcharter-p3
+  modes: full
+  source_type: docs
+  backend: highcharter
+  url_path: /input_matrix_hc/docs/p3_timeline_radio.html
+  expect_chart_backend: highcharter
+  interaction_plan:
+  - slider
+  - filter
+  - sidebar_toggle
+  preferred_filter_var: channel
+  preferred_slider_var: year
+  expect_filter_effect: yes
+  expect_slider_effect: yes
+  expect_dynamic_text_effect: yes
+  dynamic_text_selectors:
+  - '#p3_dynamic_early'
+  - '#p3_dynamic_late'
+  - .dashboardr-slider-value
+  require_all_inputs_affect_all_charts: yes
+  min_non_empty_charts_expected: 1
+  required_selectors:
+  - '#pw-title-p3'
+  - .dashboardr-radio-group[data-filter-var='channel']
+  - .dashboardr-slider[data-filter-var='year']
+  required_texts: P3_Timeline_Radio
+  forbidden_console_patterns: []
+  expect_dynamic_title_effect: yes
+  require_dynamic_title_placeholders_resolved: yes
+- id: input-matrix-highcharter-p4
+  modes: full
+  source_type: docs
+  backend: highcharter
+  url_path: /input_matrix_hc/docs/p4_linked_inputs.html
+  expect_chart_backend: highcharter
+  interaction_plan:
+  - linked_inputs
+  - filter
+  - sidebar_toggle
+  preferred_filter_var: segment
+  expect_filter_effect: yes
+  require_all_input_vars_affect_all_charts: yes
+  min_non_empty_charts_expected: 1
+  required_selectors:
+  - '#pw-title-p4'
+  - '[data-linked-child-id]'
+  - select[data-filter-var='segment']
+  required_texts: P4_Linked_Inputs
+  forbidden_console_patterns: []
+  expect_dynamic_title_effect: yes
+  require_dynamic_title_placeholders_resolved: yes
+- id: input-matrix-highcharter-p5
+  modes:
+  - smoke
+  - full
+  source_type: docs
+  backend: highcharter
+  url_path: /input_matrix_hc/docs/p5_complex_show_when.html
+  expect_chart_backend: highcharter
+  interaction_plan:
+  - show_when_toggle
+  - filter
+  - tooltip_hover
+  - sidebar_toggle
+  preferred_filter_var: view_mode
+  expect_filter_effect: yes
+  expect_dynamic_text_effect: yes
+  expect_dynamic_title_effect: yes
+  require_dynamic_title_placeholders_resolved: yes
+  dynamic_text_selectors: '#p5_dynamic_detail'
+  dynamic_binding_rules:
+  - selector: .callout-title, .callout .callout-title, .callout-title-container
+    vars: view_mode
+    match_mode: any
+  min_non_empty_charts_expected: 1
+  required_selectors:
+  - '#pw-title-p5'
+  - '[data-show-when]'
+  - input[data-input-type='switch'][data-filter-var='benchmark_toggle']
+  required_texts: P5_Complex_Show_When
+  forbidden_texts: undefined
+  forbidden_console_patterns: []
+  expect_tooltip_effect: yes
+- id: input-matrix-highcharter-p6
+  modes: full
+  source_type: docs
+  backend: highcharter
+  url_path: /input_matrix_hc/docs/p6_text_number.html
+  expect_chart_backend: highcharter
+  interaction_plan:
+  - filter
+  - sidebar_toggle
+  preferred_filter_var: year
+  expect_filter_effect: yes
+  require_all_input_vars_affect_all_charts: yes
+  min_non_empty_charts_expected: 1
+  required_selectors:
+  - '#pw-title-p6'
+  - input[data-input-type='text'][data-filter-var='region']
+  - input[data-input-type='number'][data-filter-var='year']
+  required_texts: P6_Text_Number
+  forbidden_console_patterns: []
+  expect_dynamic_title_effect: yes
+  require_dynamic_title_placeholders_resolved: yes
+- id: input-matrix-mixed-m1
+  modes:
+  - smoke
+  - full
+  source_type: docs
+  backend: mixed
+  url_path: /input_matrix_mixed/docs/m1_mixed_backends_integration.html
+  expect_chart_backend: mixed
+  interaction_plan:
+  - slider
+  - filter
+  - sidebar_toggle
+  preferred_filter_var: region
+  preferred_slider_var: year
+  expect_filter_effect: yes
+  expect_slider_effect: yes
+  expect_dynamic_text_effect: yes
+  dynamic_text_selectors:
+  - '#m1_dynamic_low'
+  - '#m1_dynamic_high'
+  - .dashboardr-slider-value
+  min_non_empty_charts_expected: 3
+  required_selectors:
+  - '#pw-title-m1'
+  - .dashboardr-checkbox-group[data-filter-var='region']
+  - .dashboardr-slider[data-filter-var='year']
+  required_texts: M1_Mixed_Backends_Integration
+  forbidden_console_patterns: []

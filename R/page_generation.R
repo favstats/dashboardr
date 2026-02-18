@@ -6,6 +6,18 @@
 # Helper function to generate data loading code based on file type and location
 # Supports: local RDS, local parquet, remote RDS (URL), remote parquet (URL)
 .generate_data_load_code <- function(data_path, var_name = "data") {
+  bundle_ref <- .parse_rds_bundle_ref(data_path)
+  if (!is.null(bundle_ref)) {
+    bundle_file <- gsub("'", "\\\\'", basename(bundle_ref$bundle_file), fixed = TRUE)
+    bundle_key <- gsub("'", "\\\\'", bundle_ref$bundle_key, fixed = TRUE)
+    return(c(
+      "if (!exists('.dashboardr_bundle_cache', inherits = FALSE)) .dashboardr_bundle_cache <- list()",
+      paste0("if (is.null(.dashboardr_bundle_cache[['", bundle_file, "']])) .dashboardr_bundle_cache[['", bundle_file, "']] <- readRDS('", bundle_file, "')"),
+      paste0("if (!('", bundle_key, "' %in% names(.dashboardr_bundle_cache[['", bundle_file, "']]))) stop(\"Bundle key '", bundle_key, "' not found in ", bundle_file, "\", call. = FALSE)"),
+      paste0(var_name, " <- .dashboardr_bundle_cache[['", bundle_file, "']][['", bundle_key, "']]")
+    ))
+  }
+
   is_url <- grepl("^https?://", data_path)
   is_parquet <- grepl("\\.parquet$", data_path, ignore.case = TRUE)
   
@@ -78,6 +90,34 @@
   }
   if (isTRUE(page$chart_export))          cfg_args <- c(cfg_args, "chart_export = TRUE")
   if (page_has_sidebar)                   cfg_args <- c(cfg_args, "sidebar = TRUE")
+  if (isTRUE(.dashboardr_pkg_env$deferred_charts)) cfg_args <- c(cfg_args, "deferred_charts = TRUE")
+
+  # Pass optimization settings so they're available in the Quarto child R process
+  ct_mode <- .dashboardr_pkg_env$cross_tab_data_mode %||% "inline"
+  if (!identical(ct_mode, "inline")) {
+    cfg_args <- c(cfg_args, paste0("cross_tab_data_mode = \"", ct_mode, "\""))
+    ct_dir <- .dashboardr_pkg_env$cross_tab_output_dir
+    if (!is.null(ct_dir)) {
+      cfg_args <- c(cfg_args, paste0("cross_tab_output_dir = \"", gsub("\\\\", "/", ct_dir), "\""))
+    }
+  }
+  mcs <- .dashboardr_pkg_env$min_cell_size %||% 0L
+  if (mcs > 0L) {
+    cfg_args <- c(cfg_args, paste0("min_cell_size = ", mcs, "L"))
+  }
+  if (isTRUE(.dashboardr_pkg_env$deferred_charts)) {
+    ch_dir <- .dashboardr_pkg_env$charts_output_dir
+    if (!is.null(ch_dir)) {
+      cfg_args <- c(cfg_args, paste0("charts_output_dir = \"", gsub("\\\\", "/", ch_dir), "\""))
+    }
+  }
+
+  # Add page-specific cross-tab prefix to prevent ID collisions across pages
+  page_slug <- page$slug %||% tolower(gsub("[^a-zA-Z0-9]+", "_", page$name %||% "page"))
+  page_slug <- gsub("^_|_$", "", page_slug)  # trim leading/trailing underscores
+  if (nzchar(page_slug) && page_slug != "_pageless") {
+    cfg_args <- c(cfg_args, paste0("crosstab_prefix = \"", page_slug, "\""))
+  }
 
   config_call <- paste0("dashboardr::.page_config(", paste(cfg_args, collapse = ", "), ")")
 
@@ -2100,6 +2140,11 @@
     paste0("  help = ", .serialize_arg(block$help), ","),
     paste0("  disabled = ", .serialize_arg(block$disabled %||% FALSE))
   )
+  if (!is.null(block$icons)) {
+    lines <- c(lines,
+      paste0("  , icons = ", .serialize_arg(block$icons))
+    )
+  }
   if (!is.null(linked_child_id) && !is.null(options_by_parent)) {
     lines <- c(lines,
       paste0("  , linked_child_id = ", .serialize_arg(linked_child_id)),
@@ -2171,7 +2216,8 @@
       paste0("    mt = ", .serialize_arg(input$mt), ","),
       paste0("    mr = ", .serialize_arg(input$mr), ","),
       paste0("    mb = ", .serialize_arg(input$mb), ","),
-      paste0("    ml = ", .serialize_arg(input$ml)),
+      paste0("    ml = ", .serialize_arg(input$ml), ","),
+      paste0("    icons = ", .serialize_arg(input$icons)),
       if (i < length(block$inputs)) "  )," else "  )"
     )
     lines <- c(lines, input_lines)
@@ -2369,6 +2415,9 @@
       inner <- list(op = "not", condition = inner)
     }
     inner
+  } else if (op == "(") {
+    # Parenthesized expression — just unwrap
+    .expr_to_condition(expr[[2]])
   } else {
     stop("Unsupported operator in show_when: ", op, call. = FALSE)
   }

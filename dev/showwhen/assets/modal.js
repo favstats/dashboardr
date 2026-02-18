@@ -72,11 +72,31 @@
       document.body.style.overflow = '';
     }
     
+    // Find a .modal-content element by ID.
+    // Quarto can generate a <section id="..."> from headings that shadows
+    // the dashboardr <div id="..." class="modal-content">, so getElementById
+    // alone may return the wrong element.  Fall back to querySelectorAll.
+    function findModalContent(id) {
+      var el = document.getElementById(id);
+      if (el && el.classList.contains('modal-content')) return el;
+
+      // Fallback: find the .modal-content with this ID (handles duplicate IDs)
+      var candidates = document.querySelectorAll('.modal-content#' + CSS.escape(id));
+      if (candidates.length > 0) return candidates[0];
+
+      // Last resort: case-insensitive scan
+      var all = document.querySelectorAll('.modal-content[id]');
+      for (var i = 0; i < all.length; i++) {
+        if (all[i].id.toLowerCase() === id.toLowerCase()) return all[i];
+      }
+      return null;
+    }
+
     // Open modal function
     function openModal(contentId) {
       console.log('Attempting to open modal:', contentId);
 
-      const content = document.getElementById(contentId);
+      const content = findModalContent(contentId);
       if (!content) {
         console.error('Modal content not found: ' + contentId);
         return;
@@ -91,7 +111,6 @@
       modalBody.innerHTML = '';
       modalBody.appendChild(clonedContent);
       modalOverlay.style.display = 'flex';
-      modalOverlay.style.zIndex = '100000';
       document.body.style.overflow = 'hidden';
 
       console.log('Modal should now be visible');
@@ -155,40 +174,14 @@
           
           if (modalId) {
             console.log('Extracted modal ID:', modalId);
-            let modalContent = document.getElementById(modalId);
-            console.log('Searched for element with ID:', modalId);
-            console.log('Result of getElementById:', modalContent);
-            
-            // Fallback: try case-insensitive search if not found
-            if (!modalContent) {
-              console.log('Trying case-insensitive search...');
-              const allElements = document.querySelectorAll('[id]');
-              for (const el of allElements) {
-                if (el.id.toLowerCase() === modalId.toLowerCase()) {
-                  modalContent = el;
-                  console.log('Found with case-insensitive match:', el.id);
-                  break;
-                }
-              }
-            }
+            let modalContent = findModalContent(modalId);
 
-            // Only open if there's a matching modal-content div
-            if (modalContent && modalContent.classList.contains('modal-content')) {
+            if (modalContent) {
               console.log('Found matching modal content:', modalContent);
-              console.log('Modal content classes:', modalContent.className);
-              console.log('Modal content display:', window.getComputedStyle(modalContent).display);
               e.preventDefault(); // Only prevent default if we found a valid modal
               openModal(modalId);
             } else {
               console.log('No matching modal content found for ID:', modalId);
-              console.log('modalContent element:', modalContent);
-              if (modalContent) {
-                console.log('modalContent classes:', modalContent.className);
-                console.log('Does it have modal-content class?', modalContent.classList.contains('modal-content'));
-              } else {
-                console.log('Element with ID not found in document');
-                console.log('All elements with modal-content class:', document.querySelectorAll('.modal-content').length);
-              }
               // Don't prevent default if no valid modal found - let the link work normally
             }
           } else {

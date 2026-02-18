@@ -329,3 +329,59 @@ test_that("multi-dataset summary output shows all datasets", {
   
 })
 
+test_that("rds bundling writes a single bundle when threshold is met", {
+  dashboard <- create_dashboard(
+    output_dir = tempfile("bundle_threshold_on"),
+    title = "Bundle Test",
+    rds_bundle_threshold = 5
+  ) %>%
+    add_page(
+      "Analysis",
+      data = list(
+        d1 = data.frame(x = 1:10),
+        d2 = data.frame(x = 11:20),
+        d3 = data.frame(x = 21:30),
+        d4 = data.frame(x = 31:40),
+        d5 = data.frame(x = 41:50)
+      ),
+      is_landing_page = TRUE
+    )
+
+  generate_dashboard(dashboard, render = FALSE, quiet = TRUE)
+
+  rds_files <- list.files(dashboard$output_dir, pattern = "\\.rds$", full.names = FALSE)
+  expect_equal(sort(rds_files), "dashboard_data_bundle.rds")
+
+  bundle <- readRDS(file.path(dashboard$output_dir, "dashboard_data_bundle.rds"))
+  expect_true(is.list(bundle))
+  expect_length(bundle, 5)
+
+  qmd <- paste(readLines(file.path(dashboard$output_dir, "index.qmd"), warn = FALSE), collapse = "\n")
+  expect_true(grepl("\\.dashboardr_bundle_cache", qmd))
+  expect_true(grepl("dashboard_data_bundle\\.rds", qmd))
+})
+
+test_that("rds bundling can be disabled", {
+  dashboard <- create_dashboard(
+    output_dir = tempfile("bundle_threshold_off"),
+    title = "No Bundle Test",
+    rds_bundle_threshold = Inf
+  ) %>%
+    add_page(
+      "Analysis",
+      data = list(
+        d1 = data.frame(x = 1:10),
+        d2 = data.frame(x = 11:20),
+        d3 = data.frame(x = 21:30),
+        d4 = data.frame(x = 31:40),
+        d5 = data.frame(x = 41:50)
+      ),
+      is_landing_page = TRUE
+    )
+
+  generate_dashboard(dashboard, render = FALSE, quiet = TRUE)
+
+  rds_files <- list.files(dashboard$output_dir, pattern = "\\.rds$", full.names = FALSE)
+  expect_false("dashboard_data_bundle.rds" %in% rds_files)
+  expect_true(length(rds_files) >= 5)
+})

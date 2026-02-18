@@ -17,4 +17,19 @@ Internal helper that extracts cross-tab attributes from a visualization
 and embeds them as JavaScript for client-side filtering. Used by generated
 QMD code when interactive inputs are present.
 }
+\details{
+Supports two modes (controlled by \code{cross_tab_data_mode} in
+\code{create_dashboard()}):
+\describe{
+\item{inline}{(default) Embeds the full cross-tab JSON inline in a
+\code{<script>} tag. Simple but can make HTML pages very large.}
+\item{asset}{Writes cross-tab data to an external \code{.json} file in
+\code{cross_tab/} and emits a lightweight stub with a URL pointer.
+The JS fetches the data on first filter interaction.}
+}
+
+Privacy filtering (\code{min_cell_size}): When the cross-tab data has an
+\code{n} column and \code{min_cell_size > 0}, rows where
+\code{0 < n < min_cell_size} are removed and a build-time warning is emitted.
+}
 \keyword{internal}

@@ -13,9 +13,12 @@ scenarios:
     backend: echarts4r
     url_path: /sidebar_gss_demo_echarts/docs/explorer.html
     expect_chart_backend: [echarts4r]
-    interaction_plan: [linked_inputs, filter, show_when_toggle, sidebar_toggle]
+    interaction_plan: [linked_inputs, filter, show_when_toggle, tooltip_hover, sidebar_toggle]
     preferred_filter_var: breakdown_type
     expect_filter_effect: true
+    expect_dynamic_title_effect: true
+    require_dynamic_title_placeholders_resolved: true
+    expect_tooltip_effect: true
     min_non_empty_charts_expected: 1
     max_large_empty_cards: 0
     large_empty_card_min_height: 180
@@ -36,9 +39,12 @@ scenarios:
     backend: plotly
     url_path: /sidebar_gss_demo_plotly/docs/explorer.html
     expect_chart_backend: [plotly]
-    interaction_plan: [linked_inputs, filter, show_when_toggle, sidebar_toggle]
+    interaction_plan: [linked_inputs, filter, show_when_toggle, tooltip_hover, sidebar_toggle]
     preferred_filter_var: breakdown_type
     expect_filter_effect: true
+    expect_dynamic_title_effect: true
+    require_dynamic_title_placeholders_resolved: true
+    expect_tooltip_effect: true
     min_non_empty_charts_expected: 1
     max_large_empty_cards: 0
     large_empty_card_min_height: 180

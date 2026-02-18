@@ -515,7 +515,7 @@ viz_bar <- function(data,
         cross_tab <- data %>%
           dplyr::count(dplyr::across(dplyr::all_of(group_vars)), name = "n")
       }
-      chart_id <- paste0("crosstab_", substr(digest::digest(paste(x_var, group_var %||% "", collapse = "_")), 1, 8))
+      chart_id <- .next_crosstab_id()
       chart_config <- list(
         chartId = chart_id,
         chartType = "bar",
@@ -561,7 +561,8 @@ viz_bar <- function(data,
       result <- highcharter::hc_chart(result, id = cross_tab_attrs$id)
     }
   }
-  result <- .register_chart_widget(result, backend = backend)
+  ct_fv <- if (!is.null(cross_tab_attrs)) cross_tab_attrs$config$filterVars else NULL
+  result <- .register_chart_widget(result, backend = backend, filter_vars = ct_fv)
   return(result)
 }
 
@@ -606,7 +607,7 @@ viz_bar <- function(data,
         categories = x_categories,
         title = list(text = final_x_label)
       ) %>%
-      highcharter::hc_yAxis(title = list(text = final_y_label))
+      highcharter::hc_yAxis(min = 0, startOnTick = FALSE, title = list(text = final_y_label))
   } else {
     # For vertical bars, x-axis is categories (horizontal), y-axis is values (vertical)
     hc <- hc %>%
@@ -614,7 +615,7 @@ viz_bar <- function(data,
         categories = x_categories,
         title = list(text = final_x_label)
       ) %>%
-      highcharter::hc_yAxis(title = list(text = final_y_label))
+      highcharter::hc_yAxis(min = 0, startOnTick = FALSE, title = list(text = final_y_label))
   }
   
   # Check if we need error bars

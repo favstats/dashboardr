@@ -42,6 +42,8 @@ add_input(
   mb = NULL,
   ml = NULL,
   tabgroup = NULL,
+  icons = NULL,
+  show_when = NULL,
   .linked_parent_id = NULL,
   .options_by_parent = NULL
 )
@@ -127,6 +129,14 @@ labels are shown at the min/max positions.}
 \item{ml}{Margin left (CSS value)}
 
 \item{tabgroup}{Optional tabgroup for organizing content}
+
+\item{icons}{Optional character vector of Iconify icon names (e.g., "ph:calendar",
+"ph:users-three"). Must be same length as \code{options}. When provided, icons
+are rendered before option text for radio and button_group types.}
+
+\item{show_when}{Optional one-sided formula for conditional visibility of this input
+(e.g., \code{~ demo == "By Age"}). Wraps the input in a show-when container so it
+only appears when the condition is met.}
 
 \item{.linked_parent_id}{Internal. ID of linked parent input for cascading inputs}
 

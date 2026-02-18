@@ -29,7 +29,8 @@ add_page(
   lazy_load_tabs = NULL,
   lazy_debug = NULL,
   pagination_separator = NULL,
-  time_var = NULL
+  time_var = NULL,
+  slug = NULL
 )
 }
 \arguments{
@@ -87,6 +88,9 @@ Set to FALSE for pageless dashboards (created with \code{create_page("")}).}
 \item{time_var}{Name of the time/x-axis column in the data (e.g., "year", "decade", "date").
 Used by input filters when switching metrics. If NULL (default), the JavaScript will try to
 auto-detect from common column names (year, decade, time, date).}
+
+\item{slug}{Optional custom slug for the page filename. If provided, overrides the
+default name-based slug. Non-alphanumeric characters are replaced with underscores.}
 }
 \value{
 Modified dashboard project with the new page added.

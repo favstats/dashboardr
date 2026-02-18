@@ -14,8 +14,14 @@
   align,
   size = "md",
   help = NULL,
-  disabled = FALSE
+  disabled = FALSE,
+  icons = NULL
 )
+}
+\arguments{
+\item{icons}{Optional character vector of Iconify icon names (e.g., "ph:users-three").
+Must be same length as options. When provided, icons are rendered before button text
+using the iconify-icon web component.}
 }
 \description{
 Generate HTML for button group input

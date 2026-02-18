@@ -68,9 +68,12 @@
   }
   
   # Attach cross-tab filter_vars for client-side filtering
+  # Only set if the viz doesn't already have user-specified cross_tab_filter_vars
   if (!is.null(filter_vars) && length(filter_vars) > 0) {
     for (i in seq_along(viz_list)) {
-      viz_list[[i]]$cross_tab_filter_vars <- filter_vars
+      if (is.null(viz_list[[i]]$cross_tab_filter_vars)) {
+        viz_list[[i]]$cross_tab_filter_vars <- filter_vars
+      }
     }
   }
 

@@ -7,17 +7,18 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r, include = FALSE}
+```{r, include = FALSE, purl = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
-  eval = FALSE
+  eval = FALSE,
+  purl = FALSE
 )
 ```
 
 dashboardr provides two date input types for filtering time-based data: **date** (single date picker) and **daterange** (start/end date pair).
 
-```{r setup}
+```{r setup, purl = FALSE}
 library(dashboardr)
 library(dplyr)
 ```
@@ -26,7 +27,7 @@ library(dplyr)
 
 Use `type = "date"` to add a single date picker that filters a date column in your data:
 
-```{r}
+```{r, purl = FALSE}
 page <- create_page("Events") %>%
   add_input(
     input_id = "event_date",
@@ -46,7 +47,7 @@ The `value` parameter sets the initial date. Dates should be provided in `"YYYY-
 
 You can also constrain the date range with `min` and `max`:
 
-```{r}
+```{r, purl = FALSE}
 page <- create_page("Constrained") %>%
   add_input(
     input_id = "start",
@@ -64,7 +65,7 @@ page <- create_page("Constrained") %>%
 Use `type = "daterange"` to add a pair of date pickers (start and end) that filter
 data to a date window:
 
-```{r}
+```{r, purl = FALSE}
 page <- create_page("Time Window") %>%
   add_input(
     input_id = "period",
@@ -85,7 +86,7 @@ Date inputs work with dashboardr's cross-tab filtering system. When a user chang
 the date, all charts on the page that use the filtered variable are updated
 automatically.
 
-```{r}
+```{r, purl = FALSE}
 data <- data.frame(
   date = seq(as.Date("2020-01-01"), as.Date("2020-12-31"), by = "month"),
   sales = round(runif(12, 100, 500)),

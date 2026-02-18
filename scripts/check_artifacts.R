@@ -43,7 +43,22 @@ detect_base_ref <- function() {
 base_ref <- detect_base_ref()
 range_expr <- if (identical(base_ref, "HEAD")) "HEAD" else sprintf("%s...HEAD", base_ref)
 
-changed <- normalize_paths(run_git(c("diff", "--name-only", "--diff-filter=ACMRD", range_expr)))
+changed_status <- run_git(c("diff", "--name-status", "--diff-filter=ACMRD", range_expr))
+changed <- character(0)
+if (length(changed_status) > 0) {
+  for (line in changed_status) {
+    parts <- strsplit(line, "\t", fixed = TRUE)[[1]]
+    if (length(parts) < 2) next
+    status <- parts[[1]]
+    # Enforce only for newly introduced paths (A/C/R). Modified legacy paths are
+    # handled by dedicated sync/governance checks and should not block this gate.
+    if (grepl("^A|^C|^R", status)) {
+      path_idx <- if (grepl("^R", status) && length(parts) >= 3) 3 else 2
+      changed <- c(changed, parts[[path_idx]])
+    }
+  }
+  changed <- normalize_paths(changed)
+}
 include_untracked <- identical(tolower(Sys.getenv("CI", unset = "false")), "true") ||
   identical(tolower(Sys.getenv("CHECK_ARTIFACTS_INCLUDE_UNTRACKED", unset = "false")), "true")
 untracked <- if (include_untracked) {

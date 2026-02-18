@@ -1949,19 +1949,22 @@ end_sidebar <- function(sidebar_container) {
 #' Add linked parent-child inputs (cascading dropdowns)
 #'
 #' Creates two linked select inputs where the child's available options depend on
-#' the parent's current selection. Use inside a sidebar (after \code{add_sidebar()}).
+#' the parent's current selection. Can be used inside a sidebar (after
+#' \code{add_sidebar()}), inside an input row (after \code{add_input_row()}),
+#' or directly in a content collection.
 #'
-#' @param x A sidebar_container (from \code{add_sidebar()}).
+#' @param x A sidebar_container, input_row_container, or content_collection.
 #' @param parent List with: \code{id}, \code{label}, \code{options}; optionally
 #'   \code{default_selected}, \code{filter_var}.
 #' @param child List with: \code{id}, \code{label}, \code{options_by_parent}
 #'   (named list mapping each parent value to a character vector of child options);
 #'   optionally \code{filter_var}.
 #' @param type Input type for parent: \code{"select"} (default) or \code{"radio"}.
-#' @return The modified sidebar_container for piping.
+#' @return The modified container for piping.
 #' @export
 #' @examples
 #' \dontrun{
+#' # Inside a sidebar
 #' add_sidebar() %>%
 #'   add_linked_inputs(
 #'     parent = list(id = "dimension", label = "Dimension",
@@ -1974,10 +1977,24 @@ end_sidebar <- function(sidebar_container) {
 #'                  ))
 #'   ) %>%
 #'   end_sidebar()
+#'
+#' # Inside main content (no sidebar needed)
+#' create_content(data = my_data) %>%
+#'   add_linked_inputs(
+#'     parent = list(id = "category", label = "Category",
+#'                   options = c("Overall", "By Age", "By Gender")),
+#'     child = list(id = "value", label = "Value",
+#'                  options_by_parent = list(
+#'                    "Overall" = c("All"),
+#'                    "By Age" = c("18-34", "35-54", "55+"),
+#'                    "By Gender" = c("Male", "Female")
+#'                  ))
+#'   )
 #' }
 add_linked_inputs <- function(x, parent, child, type = "select") {
-  if (!inherits(x, "sidebar_container")) {
-    stop("add_linked_inputs() must be used inside add_sidebar()", call. = FALSE)
+  if (!inherits(x, "sidebar_container") && !inherits(x, "input_row_container") &&
+      !inherits(x, "content_collection")) {
+    stop("add_linked_inputs() must be used with a content_collection, input_row_container, or sidebar_container", call. = FALSE)
   }
   stopifnot(is.list(parent), is.list(child))
   if (is.null(parent$id) || is.null(parent$label) || is.null(parent$options)) {
@@ -2081,6 +2098,12 @@ add_linked_inputs <- function(x, parent, child, type = "select") {
 #' @param ml Margin left (CSS value)
 #' @param default_value Default value for the input (alias for value, used for reset)
 #' @param tabgroup Optional tabgroup for organizing content
+#' @param icons Optional character vector of Iconify icon names (e.g., "ph:calendar",
+#'   "ph:users-three"). Must be same length as \code{options}. When provided, icons
+#'   are rendered before option text for radio and button_group types.
+#' @param show_when Optional one-sided formula for conditional visibility of this input
+#'   (e.g., \code{~ demo == "By Age"}). Wraps the input in a show-when container so it
+#'   only appears when the condition is met.
 #' @param .linked_parent_id Internal. ID of linked parent input for cascading inputs
 #' @param .options_by_parent Internal. Named list mapping parent values to child options
 #' @return Updated content_collection or input_row_container
@@ -2217,6 +2240,8 @@ add_input <- function(content,
                       mb = NULL,
                       ml = NULL,
                       tabgroup = NULL,
+                      icons = NULL,
+                      show_when = NULL,
                       .linked_parent_id = NULL,
                       .options_by_parent = NULL) {
   
@@ -2351,7 +2376,8 @@ add_input <- function(content,
     mt = mt,
     mr = mr,
     mb = mb,
-    ml = ml
+    ml = ml,
+    icons = icons
   )
   
   # Check if we're adding to a row container
@@ -2399,7 +2425,8 @@ add_input <- function(content,
       help = help,
       disabled = disabled,
       .linked_parent_id = .linked_parent_id,
-      .options_by_parent = .options_by_parent
+      .options_by_parent = .options_by_parent,
+      icons = icons
     ), class = "content_block")
     content$blocks <- c(content$blocks, list(input_block))
     content$needs_inputs <- TRUE
@@ -2458,9 +2485,11 @@ add_input <- function(content,
     mt = mt,
     mr = mr,
     mb = mb,
-    ml = ml
+    ml = ml,
+    icons = icons,
+    show_when = show_when
   ), class = "content_block")
-  
+
   insertion_idx <- length(content$items) + 1
   input_block$.insertion_index <- insertion_idx
   content$items <- c(content$items, list(input_block))

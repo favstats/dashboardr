@@ -7,18 +7,19 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r, include = FALSE}
+```{r, include = FALSE, purl = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
-  eval = FALSE
+  eval = FALSE,
+  purl = FALSE
 )
 ```
 
 dashboardr includes built-in accessibility enhancements targeting WCAG 2.1 AA
 compliance. These features are activated with `enable_accessibility()`.
 
-```{r setup}
+```{r setup, purl = FALSE}
 library(dashboardr)
 ```
 
@@ -26,7 +27,7 @@ library(dashboardr)
 
 Add `enable_accessibility()` to include the accessibility CSS and JavaScript:
 
-```{r}
+```{r, purl = FALSE}
 page <- create_page("Analysis") %>%
   add_viz(
     type = "bar",
@@ -84,7 +85,7 @@ disabled.
 Add descriptive alt text to charts using the `alt_text` parameter on any
 `add_viz()` call:
 
-```{r}
+```{r, purl = FALSE}
 page <- create_page("Demographics") %>%
   add_viz(
     type = "bar",
@@ -105,7 +106,7 @@ page <- create_page("Demographics") %>%
 
 Value boxes and metrics support `aria_label` for screen reader descriptions:
 
-```{r}
+```{r, purl = FALSE}
 page <- create_page("Summary") %>%
   add_value_box(
     title = "Total Responses",
@@ -122,7 +123,7 @@ page <- create_page("Summary") %>%
 
 ## Example Dashboard
 
-```{r}
+```{r, purl = FALSE}
 data <- data.frame(
   category = rep(c("A", "B", "C", "D"), each = 25),
   region = rep(c("North", "South"), 50),

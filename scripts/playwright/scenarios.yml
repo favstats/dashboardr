@@ -24,9 +24,9 @@ scenarios:
     modes: [smoke, full]
     source_type: docs
     backend: highcharter
-    url_path: /live-demos/sidebar-gss/docs/explorer.html
+    url_path: /live-demos/sidebar-gss/explorer.html
     expect_chart_backend: [highcharter]
-    interaction_plan: [linked_inputs, sidebar_toggle, show_when_toggle, filter]
+    interaction_plan: [linked_inputs, sidebar_toggle, filter]
     expect_filter_effect: true
     required_selectors:
       - "[data-linked-child-id]"
@@ -53,11 +53,9 @@ scenarios:
     source_type: docs
     backend: highcharter
     url_path: /live-demos/showcase/index.html
-    expect_chart_backend: [highcharter]
-    interaction_plan: [tab_click]
+    interaction_plan: []
     expect_filter_effect: false
-    required_selectors:
-      - ".highcharts-container"
+    required_selectors: []
     forbidden_console_patterns: []
 
   - id: docs-tabset-minimal

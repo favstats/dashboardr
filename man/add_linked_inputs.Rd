@@ -7,7 +7,7 @@
 add_linked_inputs(x, parent, child, type = "select")
 }
 \arguments{
-\item{x}{A sidebar_container (from \code{add_sidebar()}).}
+\item{x}{A sidebar_container, input_row_container, or content_collection.}
 
 \item{parent}{List with: \code{id}, \code{label}, \code{options}; optionally
 \code{default_selected}, \code{filter_var}.}
@@ -19,14 +19,17 @@ optionally \code{filter_var}.}
 \item{type}{Input type for parent: \code{"select"} (default) or \code{"radio"}.}
 }
 \value{
-The modified sidebar_container for piping.
+The modified container for piping.
 }
 \description{
 Creates two linked select inputs where the child's available options depend on
-the parent's current selection. Use inside a sidebar (after \code{add_sidebar()}).
+the parent's current selection. Can be used inside a sidebar (after
+\code{add_sidebar()}), inside an input row (after \code{add_input_row()}),
+or directly in a content collection.
 }
 \examples{
 \dontrun{
+# Inside a sidebar
 add_sidebar() \%>\%
   add_linked_inputs(
     parent = list(id = "dimension", label = "Dimension",
@@ -39,5 +42,18 @@ add_sidebar() \%>\%
                  ))
   ) \%>\%
   end_sidebar()
+
+# Inside main content (no sidebar needed)
+create_content(data = my_data) \%>\%
+  add_linked_inputs(
+    parent = list(id = "category", label = "Category",
+                  options = c("Overall", "By Age", "By Gender")),
+    child = list(id = "value", label = "Value",
+                 options_by_parent = list(
+                   "Overall" = c("All"),
+                   "By Age" = c("18-34", "35-54", "55+"),
+                   "By Gender" = c("Male", "Female")
+                 ))
+  )
 }
 }

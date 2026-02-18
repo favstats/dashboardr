@@ -137,6 +137,26 @@ enable_show_when <- function() {
   htmltools::tags$script(src = paste0("assets/show_when.js?v=", version))
 }
 
+#' Enable Deferred Charts
+#'
+#' Adds the deferred charts JavaScript module that watches for show_when
+#' visibility changes and hydrates chart placeholders on demand.
+#'
+#' @return HTML tags for deferred_charts.js and supporting CSS
+#' @keywords internal
+#' @export
+enable_deferred_charts <- function() {
+  version <- format(Sys.time(), "%Y%m%d%H%M%S")
+  htmltools::tagList(
+    htmltools::tags$style(htmltools::HTML(
+      "@keyframes spin { to { transform: rotate(360deg); } }
+       .dashboardr-deferred-chart { transition: all 0.3s ease; }
+       .dashboardr-deferred-hydrated { background: transparent !important; border: none !important; }"
+    )),
+    htmltools::tags$script(src = paste0("assets/deferred_charts.js?v=", version))
+  )
+}
+
 #' Enable URL Parameter Deep Linking
 #'
 #' Adds JavaScript that reads filter state from URL query parameters on page load
@@ -406,6 +426,14 @@ render_viz_html <- function(result) {
       }
       html_lines <- c(html_lines, '    </optgroup>')
     }
+  } else if (is.character(options) && !is.null(names(options))) {
+    # Named character vector: names = display labels, values = filter values
+    opt_vals <- unname(options)
+    opt_labels <- names(options)
+    for (j in seq_along(opt_vals)) {
+      selected <- if (opt_vals[j] %in% default_selected) ' selected' else ''
+      html_lines <- c(html_lines, paste0('    <option value="', htmltools::htmlEscape(opt_vals[j]), '"', selected, '>', htmltools::htmlEscape(opt_labels[j]), '</option>'))
+    }
   } else {
     for (opt in options) {
       selected <- if (opt %in% default_selected) ' selected' else ''
@@ -497,14 +525,17 @@ render_viz_html <- function(result) {
 }
 
 #' Generate HTML for radio input
+#' @param icons Optional character vector of Iconify icon names (e.g., "ph:calendar").
+#'   Must be same length as options. When provided, icons are rendered before radio text.
 #' @keywords internal
 .generate_radio_html <- function(input_id, label, filter_var, options,
                                   default_selected, width, align, inline,
                                   size = "md", help = NULL, disabled = FALSE,
-                                  columns = NULL, stacked = FALSE, 
+                                  columns = NULL, stacked = FALSE,
                                   stacked_align = "center",
                                   group_align = "left",
-                                  ncol = NULL, nrow = NULL) {
+                                  ncol = NULL, nrow = NULL,
+                                  icons = NULL) {
   if (is.null(default_selected) && length(options) > 0) default_selected <- options[1]
   
   # Build layout class: stacked takes priority, then inline, then columns, then default (vertical)
@@ -533,24 +564,40 @@ render_viz_html <- function(result) {
   disabled_attr <- if (disabled) ' disabled' else ''
   
   html_lines <- c()
-  html_lines <- c(html_lines, paste0('<div class="dashboardr-input-group align-', align, size_class, '" style="width: ', width, ';">'))
-  
+
+  # Include Iconify web component script if icons are provided
+  if (!is.null(icons) && length(icons) > 0) {
+    html_lines <- c(html_lines, '<script>if(!document.querySelector("script[src*=\\"iconify-icon\\"]")){var s=document.createElement("script");s.src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js";document.head.appendChild(s);}</script>')
+  }
+
+  # For inline radios: skip inline width so CSS can handle sizing and
+  # align-center can properly center the group.
+  if (inline && width == "100%") {
+    html_lines <- c(html_lines, paste0('<div class="dashboardr-input-group align-', align, size_class, '">'))
+  } else {
+    html_lines <- c(html_lines, paste0('<div class="dashboardr-input-group align-', align, size_class, '" style="width: ', width, ';">'))
+  }
+
   if (!is.null(label) && nzchar(label)) {
     html_lines <- c(html_lines, paste0('  <label class="dashboardr-input-label">', label, '</label>'))
   }
-  
+
   style_attr <- if (nchar(grid_style) > 0) paste0(' style="', grid_style, '"') else ""
   html_lines <- c(html_lines, paste0('  <div id="', input_id, '" class="dashboardr-radio-group', layout_class, '"', style_attr, ' data-filter-var="', filter_var, '" data-input-type="radio">'))
-  
+
   for (i in seq_along(options)) {
     opt <- options[i]
     checked <- if (opt %in% default_selected) ' checked' else ''
     opt_id <- paste0(input_id, '_', i)
+    icon_html <- ""
+    if (!is.null(icons) && i <= length(icons) && nzchar(icons[i])) {
+      icon_html <- paste0('<iconify-icon icon="', htmltools::htmlEscape(icons[i]), '" inline style="margin-right:4px;vertical-align:-0.125em;"></iconify-icon>')
+    }
     html_lines <- c(html_lines,
       paste0('    <label class="dashboardr-radio">'),
       paste0('      <input type="radio" id="', opt_id, '" name="', input_id, '" value="', htmltools::htmlEscape(opt), '"', checked, disabled_attr, '>'),
       paste0('      <span class="dashboardr-radio-mark"></span>'),
-      paste0('      <span class="dashboardr-radio-text">', htmltools::htmlEscape(opt), '</span>'),
+      paste0('      <span class="dashboardr-radio-text">', icon_html, htmltools::htmlEscape(opt), '</span>'),
       paste0('    </label>'))
   }
   
@@ -735,40 +782,61 @@ render_viz_html <- function(result) {
 }
 
 #' Generate HTML for button group input
+#' @param icons Optional character vector of Iconify icon names (e.g., "ph:users-three").
+#'   Must be same length as options. When provided, icons are rendered before button text
+#'   using the iconify-icon web component.
 #' @keywords internal
 .generate_button_group_html <- function(input_id, label, filter_var, options,
                                          default_selected, width, align,
-                                         size = "md", help = NULL, disabled = FALSE) {
+                                         size = "md", help = NULL, disabled = FALSE,
+                                         icons = NULL) {
   if (is.null(default_selected) && length(options) > 0) default_selected <- options[1]
   size_class <- paste0(" size-", size)
   disabled_attr <- if (disabled) ' disabled' else ''
-  
+
   html_lines <- c()
-  html_lines <- c(html_lines, paste0('<div class="dashboardr-input-group align-', align, size_class, '" style="width: ', width, ';">'))
-  
+
+  # Include Iconify web component script if icons are provided
+  if (!is.null(icons) && length(icons) > 0) {
+    html_lines <- c(html_lines, '<script>if(!document.querySelector("script[src*=\\"iconify-icon\\"]")){var s=document.createElement("script");s.src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js";document.head.appendChild(s);}</script>')
+  }
+
+  # For button groups: skip inline width so CSS width:auto takes effect
+  # and align-center can properly center the group. Only keep inline width
+  # if user specified something other than "100%" (e.g., a fixed "500px").
+  if (width == "100%") {
+    html_lines <- c(html_lines, paste0('<div class="dashboardr-input-group align-', align, size_class, '">'))
+  } else {
+    html_lines <- c(html_lines, paste0('<div class="dashboardr-input-group align-', align, size_class, '" style="width: ', width, ';">'))
+  }
+
   if (!is.null(label) && nzchar(label)) {
     html_lines <- c(html_lines, paste0('  <label class="dashboardr-input-label">', label, '</label>'))
   }
-  
+
   html_lines <- c(html_lines, paste0('  <div id="', input_id, '" class="dashboardr-button-group" data-filter-var="', filter_var, '" data-input-type="button_group">'))
-  
+
   for (i in seq_along(options)) {
     opt <- options[i]
     active_class <- if (opt %in% default_selected) ' active' else ''
     opt_id <- paste0(input_id, '_', i)
+    icon_html <- ""
+    if (!is.null(icons) && i <= length(icons) && nzchar(icons[i])) {
+      icon_html <- paste0('<iconify-icon icon="', htmltools::htmlEscape(icons[i]), '" inline style="margin-right:4px;vertical-align:-0.125em;"></iconify-icon>')
+    }
     html_lines <- c(html_lines,
-      paste0('    <button type="button" id="', opt_id, '" class="dashboardr-button-option', active_class, '" data-value="', htmltools::htmlEscape(opt), '"', disabled_attr, '>', htmltools::htmlEscape(opt), '</button>'))
+      paste0('    <button type="button" id="', opt_id, '" class="dashboardr-button-option', active_class, '" data-value="', htmltools::htmlEscape(opt), '"', disabled_attr, '>', icon_html, htmltools::htmlEscape(opt), '</button>'))
   }
-  
+
   html_lines <- c(html_lines, '  </div>')
-  
+
   if (!is.null(help) && nzchar(help)) {
     html_lines <- c(html_lines, paste0('  <span class="dashboardr-input-help">', htmltools::htmlEscape(help), '</span>'))
   }
-  
+
   html_lines <- c(html_lines, paste0('<script>if(typeof dashboardrFilterHook!=="undefined")dashboardrFilterHook("', input_id, '","', filter_var, '");</script>'))
   html_lines <- c(html_lines, '</div>')
-  
+
   paste(html_lines, collapse = "\n")
 }
 
@@ -936,6 +1004,9 @@ render_viz_html <- function(result) {
 #' @param nrow Number of rows for grid layout of options
 #' @param columns Column configuration for grid layout
 #' @param disabled Whether the input is disabled
+#' @param icons Optional character vector of Iconify icon names (e.g., "ph:calendar",
+#'   "ph:users-three"). Must be same length as \code{options}. When provided, icons
+#'   are rendered before option text for radio and button_group types.
 #' @param linked_child_id ID of linked child input for cascading inputs
 #' @param options_by_parent Named list mapping parent values to child options
 #' @return HTML output (invisible)
@@ -970,6 +1041,7 @@ render_input <- function(input_id,
                          size = c("md", "sm", "lg"),
                          help = NULL,
                          disabled = FALSE,
+                         icons = NULL,
                          linked_child_id = NULL,
                          options_by_parent = NULL) {
   
@@ -1003,7 +1075,7 @@ render_input <- function(input_id,
                                           size, help, disabled, columns, stacked, stacked_align, group_align, ncol, nrow),
     "radio" = .generate_radio_html(input_id, label, filter_var, options,
                                     default_selected, width, align, inline,
-                                    size, help, disabled, columns, stacked, stacked_align, group_align, ncol, nrow),
+                                    size, help, disabled, columns, stacked, stacked_align, group_align, ncol, nrow, icons),
     "switch" = .generate_switch_html(input_id, label, filter_var, value, width, align,
                                       toggle_series, override, size, help, disabled),
     "slider" = .generate_slider_html(input_id, label, filter_var, min, max, step,
@@ -1015,7 +1087,7 @@ render_input <- function(input_id,
                                       value, width, align, size, help, disabled),
     "button_group" = .generate_button_group_html(input_id, label, filter_var, options,
                                                   default_selected, width, align,
-                                                  size, help, disabled),
+                                                  size, help, disabled, icons),
     "date" = .generate_date_html(input_id, label, filter_var, value, min, max,
                                   width, align, size, help, disabled),
     "daterange" = .generate_daterange_html(input_id, label, filter_var, value, min, max,
@@ -1101,7 +1173,7 @@ render_input_row <- function(inputs, style = "boxed", align = "center") {
         input$inline %||% TRUE, input$size %||% "md", input$help,
         input$disabled %||% FALSE, input$columns, input$stacked %||% FALSE,
         input$stacked_align %||% "center", input$group_align %||% "left",
-        input$ncol, input$nrow
+        input$ncol, input$nrow, input$icons
       ),
       "switch" = .generate_switch_html(
         input$input_id, input$label, input$filter_var, input$value,
@@ -1130,7 +1202,8 @@ render_input_row <- function(inputs, style = "boxed", align = "center") {
       "button_group" = .generate_button_group_html(
         input$input_id, input$label, input$filter_var, options,
         input$default_selected, input$width %||% "300px", "center",
-        input$size %||% "md", input$help, input$disabled %||% FALSE
+        input$size %||% "md", input$help, input$disabled %||% FALSE,
+        input$icons
       ),
       ""
     )

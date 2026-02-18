@@ -28,7 +28,7 @@ library(dplyr)
 ```
 
 ```{r, include=FALSE}
-devtools::load_all()
+library(dashboardr)
 ```
 
 ### Preparing Map Data

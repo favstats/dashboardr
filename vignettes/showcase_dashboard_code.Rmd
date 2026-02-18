@@ -7,11 +7,12 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r setup, include=FALSE}
+```{r setup, include=FALSE, purl=FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
-  eval = FALSE
+  eval = FALSE,
+  purl = FALSE
 )
 ```
 
@@ -31,7 +32,7 @@ Click on any visualization in the live demo to see the "View R Code" accordion, 
 
 ## Data Preparation {#data-prep}
 
-```{r data-prep-code}
+```{r data-prep-code, purl = FALSE}
 library(dashboardr)
 library(dplyr)
 
@@ -54,7 +55,7 @@ gss_clean <- gss_panel20 %>%
 
 ### Happiness by Education {#demographics-happiness-education}
 
-```{r demographics-happiness-education-code}
+```{r demographics-happiness-education-code, purl = FALSE}
 add_viz(type = "stackedbar",
         x_var = "degree_1a",
         stack_var = "happy_1a",
@@ -79,7 +80,7 @@ add_viz(type = "stackedbar",
 
 ### Happiness by Gender {#demographics-happiness-gender}
 
-```{r demographics-happiness-gender-code}
+```{r demographics-happiness-gender-code, purl = FALSE}
 add_viz(type = "stackedbar",
         x_var = "sex_1a",
         stack_var = "happy_1a",
@@ -105,7 +106,7 @@ add_viz(type = "stackedbar",
 
 ### Party ID by Political Views {#politics-party-views}
 
-```{r politics-party-views-code}
+```{r politics-party-views-code, purl = FALSE}
 add_viz(type = "stackedbar",
         x_var = "polviews_1a",
         stack_var = "partyid_1a",
@@ -128,7 +129,7 @@ add_viz(type = "stackedbar",
 
 ### Trust by Region {#politics-trust-region}
 
-```{r politics-trust-region-code}
+```{r politics-trust-region-code, purl = FALSE}
 add_viz(type = "stackedbar",
         x_var = "region_1a",
         stack_var = "trust_1a",
@@ -152,7 +153,7 @@ add_viz(type = "stackedbar",
 
 ### Gender by Social Class {#politics-gender-class}
 
-```{r politics-gender-class-code}
+```{r politics-gender-class-code, purl = FALSE}
 add_viz(type = "stackedbar",
         x_var = "class_1a",
         stack_var = "sex_1a",
@@ -181,7 +182,7 @@ add_viz(type = "stackedbar",
 
 ### Trust by Education and Age {#social-trust-education-age}
 
-```{r social-trust-education-age-code}
+```{r social-trust-education-age-code, purl = FALSE}
 add_viz(type = "heatmap",
         x_var = "degree_1a",
         y_var = "age_1a",
@@ -207,7 +208,7 @@ add_viz(type = "heatmap",
 
 ### Trust by Region and Education {#social-trust-region-education}
 
-```{r social-trust-region-education-code}
+```{r social-trust-region-education-code, purl = FALSE}
 add_viz(type = "heatmap",
         x_var = "region_1a",
         y_var = "degree_1a",
@@ -235,7 +236,7 @@ add_viz(type = "heatmap",
 
 ### Overall Happiness by Education {#summary-happiness-education}
 
-```{r summary-happiness-education-code}
+```{r summary-happiness-education-code, purl = FALSE}
 add_viz(type = "stackedbar",
         x_var = "degree_1a",
         stack_var = "happy_1a",
@@ -259,7 +260,7 @@ add_viz(type = "stackedbar",
 
 ### Overall Trust by Politics {#summary-trust-politics}
 
-```{r summary-trust-politics-code}
+```{r summary-trust-politics-code, purl = FALSE}
 add_viz(type = "heatmap",
         x_var = "partyid_1a",
         y_var = "polviews_1a",

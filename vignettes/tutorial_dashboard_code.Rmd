@@ -7,11 +7,12 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r setup, include=FALSE}
+```{r setup, include=FALSE, purl=FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
-  eval = FALSE
+  eval = FALSE,
+  purl = FALSE
 )
 ```
 
@@ -33,7 +34,7 @@ Click on any visualization in the live demo to see the "View R Code" accordion, 
 
 The Tutorial Dashboard uses data from the **General Social Survey (GSS)** via the `gssr` package:
 
-```{r data-prep-code}
+```{r data-prep-code, purl = FALSE}
 library(dashboardr)
 library(dplyr)
 
@@ -58,7 +59,7 @@ gss_clean <- gss_panel20 %>%
 
 This is the first visualization in the "Example 1: Stacked Bars" tabset.
 
-```{r stacked-bar-happiness-education-code}
+```{r stacked-bar-happiness-education-code, purl = FALSE}
 add_viz(type = "stackedbar",
         x_var = "degree_1a",
         stack_var = "happy_1a",
@@ -92,7 +93,7 @@ add_viz(type = "stackedbar",
 
 This is the second visualization in the "Example 1: Stacked Bars" tabset.
 
-```{r stacked-bar-happiness-gender-code}
+```{r stacked-bar-happiness-gender-code, purl = FALSE}
 add_viz(type = "stackedbar",
         x_var = "sex_1a",
         stack_var = "happy_1a",
@@ -120,7 +121,7 @@ add_viz(type = "stackedbar",
 
 This heatmap is in the "Example 2: Heatmap" tabset.
 
-```{r heatmap-trust-education-age-code}
+```{r heatmap-trust-education-age-code, purl = FALSE}
 add_viz(type = "heatmap",
         x_var = "degree_1a",
         y_var = "age_1a",
@@ -154,7 +155,7 @@ add_viz(type = "heatmap",
 
 This heatmap shows educational and regional patterns.
 
-```{r heatmap-trust-region-education-code}
+```{r heatmap-trust-region-education-code, purl = FALSE}
 add_viz(type = "heatmap",
         x_var = "region_1a",
         y_var = "degree_1a",
@@ -184,7 +185,7 @@ These charts appear on the "Standalone Charts" page without tabset grouping.
 
 ### Overall Happiness by Education {#standalone-happiness-education}
 
-```{r standalone-happiness-education-code}
+```{r standalone-happiness-education-code, purl = FALSE}
 add_viz(type = "stackedbar",
         x_var = "degree_1a",
         stack_var = "happy_1a",
@@ -210,7 +211,7 @@ add_viz(type = "stackedbar",
 
 ### Trust by Party and Political Views {#standalone-trust-politics}
 
-```{r standalone-trust-politics-code}
+```{r standalone-trust-politics-code, purl = FALSE}
 add_viz(type = "heatmap",
         x_var = "partyid_1a",
         y_var = "polviews_1a",
@@ -240,7 +241,7 @@ add_viz(type = "heatmap",
 
 Here's the full structure showing how the Tutorial Dashboard combines visualizations:
 
-```{r full-dashboard-structure}
+```{r full-dashboard-structure, purl = FALSE}
 library(dashboardr)
 
 # Create content with visualizations and accordions

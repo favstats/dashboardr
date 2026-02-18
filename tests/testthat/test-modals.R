@@ -7,17 +7,21 @@ test_that("enable_modals returns HTML tags", {
 
 test_that("modal_link creates correct HTML", {
   link <- modal_link("Click me", "modal1")
-  
+
   expect_s3_class(link, "shiny.tag")
   expect_equal(link$name, "a")
   expect_equal(link$attribs$href, "#modal1")  # Modern approach uses href with modal ID
   expect_equal(as.character(link$children[[1]]), "Click me")
+  # Must include modal-link class so JS recognises the trigger
+  expect_true(grepl("modal-link", link$attribs$class))
 })
 
 test_that("modal_link with custom class", {
   link <- modal_link("Button", "modal2", class = "btn btn-primary")
-  
-  expect_equal(link$attribs$class, "btn btn-primary")
+
+  # Custom class is appended after mandatory modal-link class
+  expect_true(grepl("modal-link", link$attribs$class))
+  expect_true(grepl("btn btn-primary", link$attribs$class))
 })
 
 test_that("modal_content creates hidden div with correct ID", {

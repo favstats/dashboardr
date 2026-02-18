@@ -40,7 +40,7 @@ gss <- gss_all %>%
 ```
 
 ```{r, include=FALSE}
-devtools::load_all()
+library(dashboardr)
 ```
 
 ## 📊 Basic Box Plot

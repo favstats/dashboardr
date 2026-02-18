@@ -814,6 +814,67 @@
   }
 
   /**
+   * Ensure cross-tab data is loaded for a lazy entry.
+   * Returns a Promise that resolves with the crossTabInfo (with .data populated).
+   * If already loaded or not lazy, resolves immediately.
+   */
+  function _ensureCrossTabData(chartId, info) {
+    // Already loaded or not lazy
+    if (!info._lazy || info.data) {
+      return Promise.resolve(info);
+    }
+
+    // Already fetching - return existing promise
+    if (info._fetchPromise) {
+      return info._fetchPromise;
+    }
+
+    // Show a small loading indicator on the chart container
+    var chartEl = document.querySelector('[data-dashboardr-chart-id="' + chartId + '"]');
+    if (!chartEl) {
+      // Try finding by Highcharts chart id
+      chartEl = document.getElementById(chartId);
+    }
+    var spinner = null;
+    if (chartEl) {
+      spinner = document.createElement('div');
+      spinner.className = 'dashboardr-crosstab-loading';
+      spinner.style.cssText = 'position:absolute;top:0;left:0;right:0;bottom:0;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.7);z-index:10;pointer-events:none;';
+      spinner.innerHTML = '<div style="width:24px;height:24px;border:3px solid #e5e7eb;border-top-color:#f39917;border-radius:50%;animation:spin 0.8s linear infinite"></div>';
+      if (getComputedStyle(chartEl).position === 'static') {
+        chartEl.style.position = 'relative';
+      }
+      chartEl.appendChild(spinner);
+    }
+
+    info._fetchPromise = fetch(info._url)
+      .then(function(response) {
+        if (!response.ok) throw new Error('Failed to load cross-tab data: ' + response.status);
+        return response.json();
+      })
+      .then(function(data) {
+        info.data = data;
+        delete info._lazy;
+        delete info._fetchPromise;
+        // Remove spinner
+        if (spinner && spinner.parentNode) {
+          spinner.parentNode.removeChild(spinner);
+        }
+        return info;
+      })
+      .catch(function(err) {
+        console.error('dashboardr: Failed to load cross-tab data for ' + chartId + ':', err);
+        delete info._fetchPromise;
+        if (spinner && spinner.parentNode) {
+          spinner.parentNode.removeChild(spinner);
+        }
+        return info;
+      });
+
+    return info._fetchPromise;
+  }
+
+  /**
    * Apply all filters together
    */
   function applyAllFilters() {
@@ -910,11 +971,29 @@
 
     // Rebuild charts from cross-tab data (all backends that support it)
     const crossTabHandled = new Set();
+    const lazyPromises = [];
     if (window.dashboardrCrossTab) {
       entries.forEach(entry => {
         if (!entry || !entry.id) return;
         const crossTabInfo = window.dashboardrCrossTab[entry.id];
-        if (crossTabInfo) {
+        if (!crossTabInfo) return;
+
+        if (crossTabInfo._lazy && !crossTabInfo.data) {
+          // Lazy entry: fetch data first, then rebuild
+          crossTabHandled.add(entry.id); // Mark as handled to prevent fallback
+          const promise = _ensureCrossTabData(entry.id, crossTabInfo).then(function(loaded) {
+            if (loaded && loaded.data) {
+              rebuildFromCrossTab(
+                entry, loaded, filters, sliderFilters,
+                textFilters, numberFilters, switchOverrides,
+                dateFilters, daterangeFilters
+              );
+              // Note: lazy charts are revealed by the bulk reveal at end of applyAllFilters
+            }
+          });
+          lazyPromises.push(promise);
+        } else {
+          // Already loaded: synchronous rebuild
           const result = rebuildFromCrossTab(
             entry,
             crossTabInfo,
@@ -949,12 +1028,14 @@
       
       // Store original categories if not already stored
       if (!chart._originalCategories && chart.xAxis && chart.xAxis[0] && chart.xAxis[0].categories) {
-        chart._originalCategories = chart.xAxis[0].categories.slice();
+        var cats = chart.xAxis[0].categories;
+        chart._originalCategories = Array.isArray(cats) ? cats.slice() : null;
       }
       
-      // Get original x-axis categories
-      const originalCategories = chart._originalCategories || 
+      // Get original x-axis categories (ensure it's always an array or null)
+      const rawCats = chart._originalCategories ||
         (chart.xAxis && chart.xAxis[0] && chart.xAxis[0].categories ? chart.xAxis[0].categories : null);
+      const originalCategories = Array.isArray(rawCats) ? rawCats : null;
       
       // Also check for numeric x-axis (no categories, but has point.x values)
       const firstNumericSeries = (chart.series || []).find(s =>
@@ -1269,6 +1350,26 @@
     // Update any charts that have dynamic title templates
     updateDynamicTitles();
 
+    // Reveal all deferred charts by fading out the loading overlay.
+    // deferred_charts.js creates a white overlay on top while the chart renders underneath.
+    document.querySelectorAll('.dashboardr-deferred-pending-filters').forEach(function(el) {
+      el.classList.remove('dashboardr-deferred-pending-filters');
+      // Fade out the overlay to smoothly reveal the chart underneath
+      var overlay = el.querySelector('.dashboardr-deferred-overlay');
+      if (overlay) {
+        overlay.style.opacity = '0';
+        // Remove overlay from DOM after transition completes
+        setTimeout(function() {
+          if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
+        }, 400);
+      }
+      // Reflow charts now that they're visible with correct data
+      var container = el.querySelector('[id$="_container"]');
+      if (container && container._hcChart) {
+        try { container._hcChart.reflow(); } catch(e) {}
+      }
+    });
+
     // Dispatch event for URL params and accessibility modules
     try {
       document.dispatchEvent(new CustomEvent('dashboardr:filter-changed', {
@@ -1276,6 +1377,14 @@
       }));
     } catch (e) {
       // CustomEvent not supported in very old browsers
+    }
+
+    // Also dispatch a standard change event so show_when.js re-evaluates
+    // (show_when.js listens for 'change' events on the document)
+    try {
+      document.dispatchEvent(new Event('change', { bubbles: true }));
+    } catch (e) {
+      // Fallback for old browsers
     }
   }
 
@@ -1405,6 +1514,43 @@
     } else {
       option.legend = { data: legendNames, selected: selected };
     }
+  }
+
+  function _toFiniteNumber(value) {
+    const parsed = Number(value);
+    return Number.isFinite(parsed) ? parsed : null;
+  }
+
+  function _quantileSorted(sortedValues, p) {
+    const n = sortedValues.length;
+    if (!n) return null;
+    if (n === 1) return sortedValues[0];
+    const h = (n - 1) * p + 1;
+    const hf = Math.floor(h);
+    const lower = sortedValues[Math.max(0, hf - 1)];
+    const upper = sortedValues[Math.min(n - 1, hf)];
+    return lower + (h - hf) * (upper - lower);
+  }
+
+  function _computeBoxStats(values) {
+    const sorted = (Array.isArray(values) ? values : [])
+      .map(_toFiniteNumber)
+      .filter(v => v !== null)
+      .sort((a, b) => a - b);
+    if (!sorted.length) return null;
+
+    const q1 = _quantileSorted(sorted, 0.25);
+    const median = _quantileSorted(sorted, 0.5);
+    const q3 = _quantileSorted(sorted, 0.75);
+    const iqr = (q3 - q1);
+    const lowerFence = q1 - 1.5 * iqr;
+    const upperFence = q3 + 1.5 * iqr;
+    const nonOutliers = sorted.filter(v => v >= lowerFence && v <= upperFence);
+    const low = nonOutliers.length ? nonOutliers[0] : q1;
+    const high = nonOutliers.length ? nonOutliers[nonOutliers.length - 1] : q3;
+    const outliers = sorted.filter(v => v < lowerFence || v > upperFence);
+
+    return { low, q1, median, q3, high, outliers };
   }
 
   function applyPlotlyFilters(entry, filters, sliderFilters, textFilters, numberFilters, periodFilters) {
@@ -1558,7 +1704,8 @@
   }
 
   function filterRowsByInputs(data, filterVars, filters, sliderFilters, textFilters, numberFilters, periodFilters) {
-    if (!data || data.length === 0) return data;
+    if (!Array.isArray(data)) return [];
+    if (data.length === 0) return data;
     let rows = data.slice();
     const allLabels = ['all', 'alle', 'tous', 'todo', 'tutti', 'すべて', '全部'];
 
@@ -1620,12 +1767,17 @@
 
     // DT widgets
     chartRegistry.getDTs().forEach(dt => {
-      if (!dt.el || !dt.data || typeof $ === 'undefined') return;
+      if (!dt.el || !dt.data || typeof $ === 'undefined' || !$.fn || !$.fn.dataTable) return;
+
+      const root = $(dt.el);
+      const tableNode = root.is('table') ? root[0] : root.find('table').first()[0];
+      if (!tableNode || !$.fn.dataTable.isDataTable(tableNode)) return;
+
       const filtered = filterRowsByInputs(dt.data, dt.filterVars || [], filters, sliderFilters, textFilters, numberFilters, periodFilters);
-      const cols = dt.data.length ? Object.keys(dt.data[0]) : [];
-      const rows = filtered.map(r => cols.map(c => r[c]));
+      const cols = Array.isArray(dt.data) && dt.data.length ? Object.keys(dt.data[0]) : [];
+      const rows = Array.isArray(filtered) ? filtered.map(r => cols.map(c => r[c])) : [];
       try {
-        const instance = $(dt.el).DataTable();
+        const instance = $(tableNode).DataTable();
         instance.clear();
         instance.rows.add(rows);
         instance.draw(false);
@@ -1654,25 +1806,66 @@
     // Build a combined lookup: input_id → value  AND  filter_var → value
     var lookup = {};
 
+    var setLookup = function(key, value) {
+      if (!key) return;
+      if (value === undefined || value === null) return;
+      var text = String(value).trim();
+      if (!text) return;
+      lookup[key] = text;
+    };
+
+    // Primary source: normalized dashboardr input state (covers all input types)
+    Object.keys(inputState).forEach(function(inputId) {
+      var state = inputState[inputId] || {};
+      var filterVar = state.filterVar;
+      var value = null;
+
+      if (state.inputType === 'slider') {
+        if (Array.isArray(state.labels) && state.labels.length > 0) {
+          var idx = resolveSliderLabelIndex(state);
+          value = state.labels[idx] !== undefined ? state.labels[idx] : state.value;
+        } else {
+          value = state.value;
+        }
+      } else if (state.inputType === 'switch') {
+        value = state.value ? 'true' : 'false';
+      } else if (state.inputType === 'daterange') {
+        var start = state.start || '';
+        var end = state.end || '';
+        if (start || end) value = start + ' to ' + end;
+      } else if (Array.isArray(state.selected)) {
+        if (state.selected.length === 1) {
+          value = state.selected[0];
+        } else if (state.selected.length > 1) {
+          value = state.selected.join(', ');
+        }
+      } else if (Object.prototype.hasOwnProperty.call(state, 'value')) {
+        value = state.value;
+      }
+
+      setLookup(inputId, value);
+      setLookup(filterVar, value);
+    });
+
     // From select elements
     document.querySelectorAll('select').forEach(function(el) {
       var id = el.id;
       var fv = el.getAttribute('data-filter-var');
       var val = el.value;
-      if (id && val) lookup[id] = val;
-      if (fv && val) lookup[fv] = val;
+      setLookup(id, val);
+      setLookup(fv, val);
     });
 
     // From checked radio buttons
     document.querySelectorAll('input[type="radio"]:checked').forEach(function(el) {
       var id = el.name || el.id;
       var val = el.value;
-      if (id && val) lookup[id] = val;
+      setLookup(id, val);
       // Also resolve filter_var from the parent radio group container
       var group = el.closest('[data-filter-var]');
       if (group) {
         var fv = group.getAttribute('data-filter-var');
-        if (fv && val) lookup[fv] = val;
+        setLookup(fv, val);
       }
     });
 
@@ -1850,14 +2043,16 @@
     }
     
     const { data, config } = crossTabInfo;
-    const { filterVars } = config;
-    
+    let filterVars = config.filterVars;
+    if (typeof filterVars === 'string') filterVars = [filterVars];
+    if (!Array.isArray(filterVars)) filterVars = [];
+
     // ---- Shared Step 1: Filter the cross-tab data based on filter selections ----
     let filteredData = data.slice();
-    
+
     // Common "All" labels that mean "don't filter" (case-insensitive)
     const allLabels = ['all', 'alle', 'tous', 'todo', 'tutti', 'すべて', '全部'];
-    
+
     for (const filterVar of filterVars) {
       // Collect switch-overridden series names for this filterVar
       // These series should always be included in the data when their switch is ON
@@ -1960,11 +2155,20 @@
     if (backend === 'highcharter') {
       const chart = chartRegistry && chartRegistry.resolveHighchart ? chartRegistry.resolveHighchart(entry) : null;
       if (!chart) return false;
-      const ok = (config.chartType === 'timeline')
-        ? _rebuildTimelineSeries(chart, filteredData, config)
-        : (config.chartType === 'bar')
-          ? _rebuildBarSeries(chart, filteredData, config)
-          : _rebuildStackedBarSeries(chart, filteredData, config);
+      let ok = false;
+      if (config.chartType === 'timeline') {
+        ok = _rebuildTimelineSeries(chart, filteredData, config);
+      } else if (config.chartType === 'bar') {
+        ok = _rebuildBarSeries(chart, filteredData, config);
+      } else if (config.chartType === 'pie') {
+        ok = _rebuildPieSeries(chart, filteredData, config);
+      } else if (config.chartType === 'scatter') {
+        ok = _rebuildScatterSeries(chart, filteredData, config);
+      } else if (config.chartType === 'boxplot') {
+        ok = _rebuildBoxplotSeries(chart, filteredData, config);
+      } else {
+        ok = _rebuildStackedBarSeries(chart, filteredData, config);
+      }
       if (ok && switchOverrides) {
         Object.keys(switchOverrides).forEach(filterVar => {
           switchOverrides[filterVar].forEach(sw => {
@@ -1987,16 +2191,397 @@
       return ok;
     }
     if (backend === 'plotly') {
-      return (config.chartType === 'timeline')
-        ? _rebuildTimelinePlotly(entry, filteredData, config, switchOverrides)
-        : _rebuildStackedBarPlotly(entry, filteredData, config, switchOverrides);
+      if (config.chartType === 'timeline') {
+        return _rebuildTimelinePlotly(entry, filteredData, config, switchOverrides);
+      }
+      if (config.chartType === 'bar') {
+        return _rebuildBarPlotly(entry, filteredData, config, switchOverrides);
+      }
+      if (config.chartType === 'pie') {
+        return _rebuildPiePlotly(entry, filteredData, config);
+      }
+      if (config.chartType === 'scatter') {
+        return _rebuildScatterPlotly(entry, filteredData, config);
+      }
+      if (config.chartType === 'boxplot') {
+        return _rebuildBoxplotPlotly(entry, filteredData, config);
+      }
+      return _rebuildStackedBarPlotly(entry, filteredData, config, switchOverrides);
     }
     if (backend === 'echarts4r') {
-      return (config.chartType === 'timeline')
-        ? _rebuildTimelineEcharts(entry, filteredData, config, switchOverrides)
-        : _rebuildStackedBarEcharts(entry, filteredData, config, switchOverrides);
+      if (config.chartType === 'timeline') {
+        return _rebuildTimelineEcharts(entry, filteredData, config, switchOverrides);
+      }
+      if (config.chartType === 'bar') {
+        return _rebuildBarEcharts(entry, filteredData, config, switchOverrides);
+      }
+      if (config.chartType === 'pie') {
+        return _rebuildPieEcharts(entry, filteredData, config);
+      }
+      if (config.chartType === 'scatter') {
+        return _rebuildScatterEcharts(entry, filteredData, config);
+      }
+      if (config.chartType === 'boxplot') {
+        return _rebuildBoxplotEcharts(entry, filteredData, config);
+      }
+      return _rebuildStackedBarEcharts(entry, filteredData, config, switchOverrides);
     }
     return false;
+  }
+
+  function _rebuildBarPlotly(entry, filteredData, config, switchOverrides) {
+    if (!entry || !entry.el || typeof Plotly === 'undefined') return false;
+    if (!entry.original || !entry.original.data) {
+      if (chartRegistry && chartRegistry.adapters && chartRegistry.adapters.plotly) {
+        chartRegistry.adapters.plotly.storeOriginal(entry);
+      }
+    }
+    const original = entry.original && entry.original.data ? entry.original : { data: entry.el.data || [], layout: entry.el.layout || {} };
+    const data = original.data || [];
+    const xVar = config.xVar;
+    let groupVar = config.groupVar;
+    if (groupVar && typeof groupVar === 'object' && !Array.isArray(groupVar) && Object.keys(groupVar).length === 0) {
+      groupVar = null;
+    }
+    const xOrder = config.xOrder;
+    const groupOrder = config.groupOrder;
+    const isHorizontal = data.some(t => t && t.orientation === 'h');
+
+    const switchHidden = new Set();
+    const switchShown = new Set();
+    if (switchOverrides) {
+      Object.keys(switchOverrides).forEach(filterVar => {
+        switchOverrides[filterVar].forEach(sw => {
+          const seriesName = normalizeSeriesName(sw.seriesName);
+          if (!seriesName) return;
+          if (!sw.visible) switchHidden.add(seriesName);
+          else if (sw.override) switchShown.add(seriesName);
+        });
+      });
+    }
+
+    let traces = [];
+
+    if (groupVar) {
+      const summed = {};
+      filteredData.forEach(row => {
+        const xVal = String(row[xVar]);
+        const rawGroup = row[groupVar];
+        const gVal = normalizeSeriesName(rawGroup);
+        if (!gVal) return;
+        const key = xVal + '|||' + gVal;
+        if (!summed[key]) summed[key] = { xVal, gVal, n: 0 };
+        summed[key].n += row.n;
+      });
+
+      const byX = {};
+      Object.values(summed).forEach(item => {
+        if (!byX[item.xVal]) byX[item.xVal] = {};
+        byX[item.xVal][item.gVal] = item.n;
+      });
+
+      const activeXValues = new Set(Object.keys(byX));
+      const orderedX = xOrder && xOrder.length > 0
+        ? xOrder.filter(xv => activeXValues.has(xv))
+        : Object.keys(byX);
+      const activeGroups = uniqueNonEmptyNames(Object.values(summed).map(s => s.gVal));
+      const orderedGroupsRaw = groupOrder && groupOrder.length > 0
+        ? groupOrder.filter(g => activeGroups.includes(g))
+        : activeGroups;
+      const orderedGroups = uniqueNonEmptyNames(orderedGroupsRaw);
+      const traceOrder = uniqueNonEmptyNames(data.map(t => t && t.name));
+      const seriesOrder = traceOrder.length
+        ? traceOrder.filter(name => orderedGroups.includes(name))
+        : orderedGroups;
+      const allGroups = uniqueNonEmptyNames([...seriesOrder, ...orderedGroups, ...Array.from(switchShown)]);
+
+      traces = allGroups.map(groupName => {
+        const orig = data.find(t => normalizeSeriesName(t && t.name) === groupName);
+        const trace = orig ? (chartRegistry && chartRegistry.deepClone ? chartRegistry.deepClone(orig) : JSON.parse(JSON.stringify(orig))) : {};
+        trace.type = trace.type || 'bar';
+        trace.name = groupName;
+
+        if (orderedGroups.includes(groupName)) {
+          const values = orderedX.map(xVal => (byX[xVal] && byX[xVal][groupName]) ? byX[xVal][groupName] : 0);
+          if (isHorizontal) {
+            trace.y = orderedX;
+            trace.x = values;
+            trace.orientation = 'h';
+          } else {
+            trace.x = orderedX;
+            trace.y = values;
+          }
+          trace.visible = true;
+          trace.showlegend = true;
+        } else {
+          if (isHorizontal) {
+            trace.y = orderedX;
+            trace.x = orderedX.map(() => 0);
+            trace.orientation = 'h';
+          } else {
+            trace.x = orderedX;
+            trace.y = orderedX.map(() => 0);
+          }
+          trace.visible = 'legendonly';
+        }
+
+        if (switchHidden.has(groupName)) trace.visible = 'legendonly';
+        if (switchShown.has(groupName)) trace.visible = true;
+        return trace;
+      });
+
+      const layoutGrouped = original.layout || entry.el.layout || {};
+      if (isHorizontal) {
+        layoutGrouped.yaxis = layoutGrouped.yaxis || {};
+        layoutGrouped.yaxis.categoryorder = 'array';
+        layoutGrouped.yaxis.categoryarray = orderedX;
+      } else {
+        layoutGrouped.xaxis = layoutGrouped.xaxis || {};
+        layoutGrouped.xaxis.categoryorder = 'array';
+        layoutGrouped.xaxis.categoryarray = orderedX;
+      }
+      layoutGrouped.barmode = layoutGrouped.barmode || 'group';
+      Plotly.react(entry.el, traces, layoutGrouped);
+      return true;
+    }
+
+    // Simple (ungrouped) bar
+    const counts = {};
+    filteredData.forEach(row => {
+      const xVal = String(row[xVar]);
+      if (!counts[xVal]) counts[xVal] = 0;
+      counts[xVal] += row.n;
+    });
+
+    const activeX = new Set(Object.keys(counts));
+    const orderedXSimple = xOrder && xOrder.length > 0
+      ? xOrder.filter(xv => activeX.has(xv))
+      : Object.keys(counts);
+    const seriesValues = orderedXSimple.map(xVal => counts[xVal] || 0);
+    const origSimple = data[0] || {};
+    const traceSimple = chartRegistry && chartRegistry.deepClone
+      ? chartRegistry.deepClone(origSimple)
+      : JSON.parse(JSON.stringify(origSimple));
+    traceSimple.type = traceSimple.type || 'bar';
+    traceSimple.visible = true;
+    if (isHorizontal) {
+      traceSimple.y = orderedXSimple;
+      traceSimple.x = seriesValues;
+      traceSimple.orientation = 'h';
+    } else {
+      traceSimple.x = orderedXSimple;
+      traceSimple.y = seriesValues;
+    }
+
+    const layoutSimple = original.layout || entry.el.layout || {};
+    if (isHorizontal) {
+      layoutSimple.yaxis = layoutSimple.yaxis || {};
+      layoutSimple.yaxis.categoryorder = 'array';
+      layoutSimple.yaxis.categoryarray = orderedXSimple;
+    } else {
+      layoutSimple.xaxis = layoutSimple.xaxis || {};
+      layoutSimple.xaxis.categoryorder = 'array';
+      layoutSimple.xaxis.categoryarray = orderedXSimple;
+    }
+    Plotly.react(entry.el, [traceSimple], layoutSimple);
+    return true;
+  }
+
+  function _rebuildPiePlotly(entry, filteredData, config) {
+    if (!entry || !entry.el || typeof Plotly === 'undefined') return false;
+    if (!entry.original || !entry.original.data) {
+      if (chartRegistry && chartRegistry.adapters && chartRegistry.adapters.plotly) {
+        chartRegistry.adapters.plotly.storeOriginal(entry);
+      }
+    }
+    const original = entry.original && entry.original.data ? entry.original : { data: entry.el.data || [], layout: entry.el.layout || {} };
+    const data = original.data || [];
+    const xVar = config.xVar;
+    if (!xVar) return false;
+
+    const counts = {};
+    filteredData.forEach(row => {
+      const label = String(row[xVar]);
+      if (!counts[label]) counts[label] = 0;
+      counts[label] += Number(row.n) || 0;
+    });
+
+    const activeLabels = new Set(Object.keys(counts));
+    const labels = Array.isArray(config.xOrder) && config.xOrder.length > 0
+      ? config.xOrder.filter(lbl => activeLabels.has(lbl))
+      : Object.keys(counts);
+    const values = labels.map(lbl => counts[lbl] || 0);
+
+    const trace = data[0]
+      ? (chartRegistry && chartRegistry.deepClone ? chartRegistry.deepClone(data[0]) : JSON.parse(JSON.stringify(data[0])))
+      : {};
+    trace.type = 'pie';
+    trace.labels = labels;
+    trace.values = values;
+    trace.visible = true;
+    if (config.colorMap && typeof config.colorMap === 'object') {
+      trace.marker = trace.marker || {};
+      trace.marker.colors = labels.map(lbl => config.colorMap[lbl] || null).filter(v => v !== null);
+    }
+
+    const layout = original.layout || entry.el.layout || {};
+    Plotly.react(entry.el, [trace], layout);
+    return true;
+  }
+
+  function _rebuildScatterPlotly(entry, filteredData, config) {
+    if (!entry || !entry.el || typeof Plotly === 'undefined') return false;
+    if (!entry.original || !entry.original.data) {
+      if (chartRegistry && chartRegistry.adapters && chartRegistry.adapters.plotly) {
+        chartRegistry.adapters.plotly.storeOriginal(entry);
+      }
+    }
+    const original = entry.original && entry.original.data ? entry.original : { data: entry.el.data || [], layout: entry.el.layout || {} };
+    const data = original.data || [];
+
+    const xVar = config.xVar;
+    const yVar = config.yVar;
+    const groupVar = config.groupVar;
+    const sizeVar = config.sizeVar;
+    if (!xVar || !yVar) return false;
+
+    const rows = filteredData.filter(row => _toFiniteNumber(row[xVar]) !== null && _toFiniteNumber(row[yVar]) !== null);
+    let traces = [];
+
+    if (groupVar) {
+      const activeGroups = uniqueNonEmptyNames(rows.map(row => row[groupVar]));
+      const orderedGroups = Array.isArray(config.groupOrder) && config.groupOrder.length > 0
+        ? uniqueNonEmptyNames(config.groupOrder).filter(g => activeGroups.includes(g))
+        : activeGroups;
+      const traceOrder = uniqueNonEmptyNames(data.map(t => t && t.name));
+      const groups = traceOrder.length
+        ? uniqueNonEmptyNames([...traceOrder.filter(g => orderedGroups.includes(g)), ...orderedGroups])
+        : orderedGroups;
+
+      traces = groups.map(groupName => {
+        const orig = data.find(t => normalizeSeriesName(t && t.name) === groupName);
+        const trace = orig ? (chartRegistry && chartRegistry.deepClone ? chartRegistry.deepClone(orig) : JSON.parse(JSON.stringify(orig))) : {};
+        const groupRows = rows.filter(row => normalizeSeriesName(row[groupVar]) === groupName);
+        trace.type = 'scatter';
+        trace.mode = trace.mode || 'markers';
+        trace.name = groupName;
+        trace.x = groupRows.map(row => Number(row[xVar]));
+        trace.y = groupRows.map(row => Number(row[yVar]));
+        trace.marker = trace.marker || {};
+        if (sizeVar) {
+          trace.marker.size = groupRows.map(row => {
+            const val = _toFiniteNumber(row[sizeVar]);
+            return val !== null ? val : (config.pointSize || 4);
+          });
+        } else if (!trace.marker.size) {
+          trace.marker.size = config.pointSize || 4;
+        }
+        if (config.alpha != null && trace.marker.opacity == null) {
+          trace.marker.opacity = config.alpha;
+        }
+        if (config.colorMap && config.colorMap[groupName]) {
+          trace.marker.color = config.colorMap[groupName];
+        }
+        trace.visible = true;
+        return trace;
+      });
+    } else {
+      const orig = data[0] || {};
+      const trace = chartRegistry && chartRegistry.deepClone
+        ? chartRegistry.deepClone(orig)
+        : JSON.parse(JSON.stringify(orig));
+      trace.type = 'scatter';
+      trace.mode = trace.mode || 'markers';
+      trace.x = rows.map(row => Number(row[xVar]));
+      trace.y = rows.map(row => Number(row[yVar]));
+      trace.marker = trace.marker || {};
+      if (sizeVar) {
+        trace.marker.size = rows.map(row => {
+          const val = _toFiniteNumber(row[sizeVar]);
+          return val !== null ? val : (config.pointSize || 4);
+        });
+      } else if (!trace.marker.size) {
+        trace.marker.size = config.pointSize || 4;
+      }
+      if (config.alpha != null && trace.marker.opacity == null) {
+        trace.marker.opacity = config.alpha;
+      }
+      traces = [trace];
+    }
+
+    const layout = original.layout || entry.el.layout || {};
+    Plotly.react(entry.el, traces, layout);
+    return true;
+  }
+
+  function _rebuildBoxplotPlotly(entry, filteredData, config) {
+    if (!entry || !entry.el || typeof Plotly === 'undefined') return false;
+    if (!entry.original || !entry.original.data) {
+      if (chartRegistry && chartRegistry.adapters && chartRegistry.adapters.plotly) {
+        chartRegistry.adapters.plotly.storeOriginal(entry);
+      }
+    }
+    const original = entry.original && entry.original.data ? entry.original : { data: entry.el.data || [], layout: entry.el.layout || {} };
+    const data = original.data || [];
+    const xVar = config.xVar;
+    const yVar = config.yVar;
+    if (!xVar || !yVar) return false;
+
+    const grouped = {};
+    filteredData.forEach(row => {
+      const group = String(row[xVar]);
+      const y = _toFiniteNumber(row[yVar]);
+      if (y === null) return;
+      if (!grouped[group]) grouped[group] = [];
+      grouped[group].push(y);
+    });
+
+    const activeGroups = Object.keys(grouped);
+    const groups = Array.isArray(config.xOrder) && config.xOrder.length > 0
+      ? config.xOrder.filter(g => activeGroups.includes(g))
+      : activeGroups;
+    const horizontal = !!config.horizontal;
+    const showOutliers = config.showOutliers !== false;
+
+    const traces = groups.map(group => {
+      const orig = data.find(t => normalizeSeriesName(t && t.name) === normalizeSeriesName(group));
+      const trace = orig ? (chartRegistry && chartRegistry.deepClone ? chartRegistry.deepClone(orig) : JSON.parse(JSON.stringify(orig))) : {};
+      const values = grouped[group] || [];
+      trace.type = 'box';
+      trace.name = group;
+      trace.boxpoints = showOutliers ? 'outliers' : false;
+      if (horizontal) {
+        trace.orientation = 'h';
+        trace.x = values;
+        trace.y = Array(values.length).fill(group);
+      } else {
+        trace.orientation = 'v';
+        trace.x = Array(values.length).fill(group);
+        trace.y = values;
+      }
+      if (config.colorMap && config.colorMap[group]) {
+        trace.marker = trace.marker || {};
+        trace.line = trace.line || {};
+        trace.marker.color = config.colorMap[group];
+        trace.line.color = config.colorMap[group];
+      }
+      return trace;
+    });
+
+    const layout = original.layout || entry.el.layout || {};
+    if (horizontal) {
+      layout.yaxis = layout.yaxis || {};
+      layout.yaxis.type = 'category';
+      layout.yaxis.categoryorder = 'array';
+      layout.yaxis.categoryarray = groups;
+    } else {
+      layout.xaxis = layout.xaxis || {};
+      layout.xaxis.type = 'category';
+      layout.xaxis.categoryorder = 'array';
+      layout.xaxis.categoryarray = groups;
+    }
+    Plotly.react(entry.el, traces, layout);
+    return true;
   }
 
   function _rebuildStackedBarPlotly(entry, filteredData, config, switchOverrides) {
@@ -2149,7 +2734,7 @@
       ? uniqueNonEmptyNames(filteredData.map(r => r[groupVar]))
       : [];
     let groupValues = groupVar
-      ? (config.groupOrder && config.groupOrder.length
+      ? (Array.isArray(config.groupOrder) && config.groupOrder.length
           ? uniqueNonEmptyNames(config.groupOrder).filter(g => activeGroups.includes(g))
           : activeGroups)
       : [String(config.yVar || 'value')];
@@ -2395,7 +2980,7 @@
       ? uniqueNonEmptyNames(filteredData.map(r => r[groupVar]))
       : [];
     let groupValues = groupVar
-      ? (config.groupOrder && config.groupOrder.length
+      ? (Array.isArray(config.groupOrder) && config.groupOrder.length
           ? uniqueNonEmptyNames(config.groupOrder).filter(g => activeGroups.includes(g))
           : activeGroups)
       : [String(config.yVar || 'value')];
@@ -2439,6 +3024,572 @@
     return true;
   }
 
+  function _rebuildBarEcharts(entry, filteredData, config, switchOverrides) {
+    if (!entry || !entry.el || typeof echarts === 'undefined') return false;
+    const inst = echarts.getInstanceByDom(entry.el);
+    if (!inst) return false;
+    if (!entry.original || !entry.original.option) {
+      if (chartRegistry && chartRegistry.adapters && chartRegistry.adapters.echarts4r) {
+        chartRegistry.adapters.echarts4r.storeOriginal(entry);
+      }
+    }
+    const original = entry.original && entry.original.option ? entry.original.option : inst.getOption();
+    if (!original) return false;
+
+    const option = chartRegistry && chartRegistry.deepClone ? chartRegistry.deepClone(original) : JSON.parse(JSON.stringify(original));
+    if (option.dataset) delete option.dataset;
+
+    const xVar = config.xVar;
+    let groupVar = config.groupVar;
+    if (groupVar && typeof groupVar === 'object' && !Array.isArray(groupVar) && Object.keys(groupVar).length === 0) {
+      groupVar = null;
+    }
+    const xOrder = config.xOrder;
+    const groupOrder = config.groupOrder;
+
+    const xAxisCfg = Array.isArray(option.xAxis)
+      ? (option.xAxis[0] = option.xAxis[0] || {})
+      : (option.xAxis = option.xAxis || {});
+    const yAxisCfg = Array.isArray(option.yAxis)
+      ? (option.yAxis[0] = option.yAxis[0] || {})
+      : (option.yAxis = option.yAxis || {});
+    const originalXAxis = Array.isArray(original.xAxis) ? (original.xAxis[0] || {}) : (original.xAxis || {});
+    const originalYAxis = Array.isArray(original.yAxis) ? (original.yAxis[0] || {}) : (original.yAxis || {});
+    const isHorizontal = String(originalYAxis.type || '').toLowerCase() === 'category' ||
+      (String(originalXAxis.type || '').toLowerCase() === 'value' &&
+       String(originalYAxis.type || '').toLowerCase() === 'category');
+
+    const switchHidden = new Set();
+    const switchShown = new Set();
+    if (switchOverrides) {
+      Object.keys(switchOverrides).forEach(filterVar => {
+        switchOverrides[filterVar].forEach(sw => {
+          const seriesName = normalizeSeriesName(sw.seriesName);
+          if (!seriesName) return;
+          if (!sw.visible) switchHidden.add(seriesName);
+          else if (sw.override) switchShown.add(seriesName);
+        });
+      });
+    }
+
+    if (groupVar) {
+      const summed = {};
+      filteredData.forEach(row => {
+        const xVal = String(row[xVar]);
+        const rawGroup = row[groupVar];
+        const gVal = normalizeSeriesName(rawGroup);
+        if (!gVal) return;
+        const key = xVal + '|||' + gVal;
+        if (!summed[key]) summed[key] = { xVal, gVal, n: 0 };
+        summed[key].n += row.n;
+      });
+
+      const byX = {};
+      Object.values(summed).forEach(item => {
+        if (!byX[item.xVal]) byX[item.xVal] = {};
+        byX[item.xVal][item.gVal] = item.n;
+      });
+
+      const activeXValues = new Set(Object.keys(byX));
+      const orderedX = xOrder && xOrder.length > 0
+        ? xOrder.filter(xv => activeXValues.has(xv))
+        : Object.keys(byX);
+      const activeGroups = uniqueNonEmptyNames(Object.values(summed).map(s => s.gVal));
+      const orderedGroupsRaw = groupOrder && groupOrder.length > 0
+        ? groupOrder.filter(g => activeGroups.includes(g))
+        : activeGroups;
+      const orderedGroups = uniqueNonEmptyNames(orderedGroupsRaw);
+
+      const baseSeries = (option.series || [])
+        .filter(s => s && typeof s === 'object')
+        .map(series => {
+          const name = normalizeSeriesName(series.name);
+          if (!name) return null;
+          series.name = name;
+          return series;
+        })
+        .filter(Boolean);
+      const originalSeries = (original.series || [])
+        .filter(s => s && typeof s === 'object')
+        .map(series => {
+          const name = normalizeSeriesName(series.name);
+          if (!name) return null;
+          series.name = name;
+          return series;
+        })
+        .filter(Boolean);
+      const seriesOrder = uniqueNonEmptyNames(baseSeries.map(s => s.name))
+        .filter(name => orderedGroups.includes(name));
+      const allGroups = uniqueNonEmptyNames([...seriesOrder, ...orderedGroups, ...Array.from(switchShown)]);
+      const visibleGroups = allGroups.filter(name => !switchHidden.has(name) || switchShown.has(name));
+
+      if (isHorizontal) {
+        yAxisCfg.type = 'category';
+        yAxisCfg.data = orderedX;
+        xAxisCfg.type = 'value';
+        xAxisCfg.data = null;
+      } else {
+        xAxisCfg.type = 'category';
+        xAxisCfg.data = orderedX;
+        yAxisCfg.type = 'value';
+        yAxisCfg.data = null;
+      }
+
+      option.series = visibleGroups.map(groupName => {
+        const orig = originalSeries.find(s => s && s.name === groupName) || {};
+        const s = chartRegistry && chartRegistry.deepClone ? chartRegistry.deepClone(orig) : JSON.parse(JSON.stringify(orig));
+        s.name = groupName;
+        s.type = s.type || 'bar';
+        if (s.encode) delete s.encode;
+        if (s.datasetIndex !== undefined) delete s.datasetIndex;
+        const values = orderedX.map(xVal => (byX[xVal] && byX[xVal][groupName]) ? byX[xVal][groupName] : 0);
+        if (isHorizontal) {
+          s.data = orderedX.map((xVal, idx) => [values[idx], xVal]);
+        } else {
+          s.data = values;
+        }
+        s.show = true;
+        return s;
+      });
+      syncEchartsLegend(option, visibleGroups);
+      inst.setOption(option, true);
+      return true;
+    }
+
+    // Simple (ungrouped) bar
+    const counts = {};
+    filteredData.forEach(row => {
+      const xVal = String(row[xVar]);
+      if (!counts[xVal]) counts[xVal] = 0;
+      counts[xVal] += row.n;
+    });
+    const activeX = new Set(Object.keys(counts));
+    const orderedXSimple = xOrder && xOrder.length > 0
+      ? xOrder.filter(xv => activeX.has(xv))
+      : Object.keys(counts);
+    const valuesSimple = orderedXSimple.map(xVal => counts[xVal] || 0);
+
+    if (isHorizontal) {
+      yAxisCfg.type = 'category';
+      yAxisCfg.data = orderedXSimple;
+      xAxisCfg.type = 'value';
+      xAxisCfg.data = null;
+    } else {
+      xAxisCfg.type = 'category';
+      xAxisCfg.data = orderedXSimple;
+      yAxisCfg.type = 'value';
+      yAxisCfg.data = null;
+    }
+
+    const origSeriesSimple = ((original.series || []).find(s => s && typeof s === 'object')) || {};
+    const simpleSeries = chartRegistry && chartRegistry.deepClone
+      ? chartRegistry.deepClone(origSeriesSimple)
+      : JSON.parse(JSON.stringify(origSeriesSimple));
+    simpleSeries.type = simpleSeries.type || 'bar';
+    if (simpleSeries.encode) delete simpleSeries.encode;
+    if (simpleSeries.datasetIndex !== undefined) delete simpleSeries.datasetIndex;
+    if (isHorizontal) {
+      simpleSeries.data = orderedXSimple.map((xVal, idx) => [valuesSimple[idx], xVal]);
+    } else {
+      simpleSeries.data = valuesSimple;
+    }
+    option.series = [simpleSeries];
+    syncEchartsLegend(option, []);
+    inst.setOption(option, true);
+    return true;
+  }
+
+  function _rebuildPieEcharts(entry, filteredData, config) {
+    if (!entry || !entry.el || typeof echarts === 'undefined') return false;
+    const inst = echarts.getInstanceByDom(entry.el);
+    if (!inst) return false;
+    if (!entry.original || !entry.original.option) {
+      if (chartRegistry && chartRegistry.adapters && chartRegistry.adapters.echarts4r) {
+        chartRegistry.adapters.echarts4r.storeOriginal(entry);
+      }
+    }
+    const original = entry.original && entry.original.option ? entry.original.option : inst.getOption();
+    if (!original) return false;
+
+    const option = chartRegistry && chartRegistry.deepClone ? chartRegistry.deepClone(original) : JSON.parse(JSON.stringify(original));
+    const xVar = config.xVar;
+    if (!xVar) return false;
+
+    const counts = {};
+    filteredData.forEach(row => {
+      const label = String(row[xVar]);
+      if (!counts[label]) counts[label] = 0;
+      counts[label] += Number(row.n) || 0;
+    });
+
+    const activeLabels = new Set(Object.keys(counts));
+    const labels = Array.isArray(config.xOrder) && config.xOrder.length > 0
+      ? config.xOrder.filter(lbl => activeLabels.has(lbl))
+      : Object.keys(counts);
+
+    const seriesData = labels.map(label => {
+      const item = { name: label, value: counts[label] || 0 };
+      if (config.colorMap && config.colorMap[label]) {
+        item.itemStyle = { color: config.colorMap[label] };
+      }
+      return item;
+    });
+
+    if (!option.series || !option.series.length) option.series = [{}];
+    const series = option.series[0];
+    series.type = 'pie';
+    series.data = seriesData;
+    series.name = series.name || xVar;
+    if (series.encode) delete series.encode;
+    if (series.datasetIndex !== undefined) delete series.datasetIndex;
+    if (option.dataset) delete option.dataset;
+    syncEchartsLegend(option, labels);
+    inst.setOption(option, true);
+    return true;
+  }
+
+  function _rebuildScatterEcharts(entry, filteredData, config) {
+    if (!entry || !entry.el || typeof echarts === 'undefined') return false;
+    const inst = echarts.getInstanceByDom(entry.el);
+    if (!inst) return false;
+    if (!entry.original || !entry.original.option) {
+      if (chartRegistry && chartRegistry.adapters && chartRegistry.adapters.echarts4r) {
+        chartRegistry.adapters.echarts4r.storeOriginal(entry);
+      }
+    }
+    const original = entry.original && entry.original.option ? entry.original.option : inst.getOption();
+    if (!original) return false;
+
+    const option = chartRegistry && chartRegistry.deepClone ? chartRegistry.deepClone(original) : JSON.parse(JSON.stringify(original));
+    if (option.dataset) delete option.dataset;
+
+    const xVar = config.xVar;
+    const yVar = config.yVar;
+    const groupVar = config.groupVar;
+    const sizeVar = config.sizeVar;
+    if (!xVar || !yVar) return false;
+
+    const rows = filteredData.filter(row => _toFiniteNumber(row[xVar]) !== null && _toFiniteNumber(row[yVar]) !== null);
+    let groups;
+    if (groupVar) {
+      const active = uniqueNonEmptyNames(rows.map(row => row[groupVar]));
+      groups = Array.isArray(config.groupOrder) && config.groupOrder.length > 0
+        ? uniqueNonEmptyNames(config.groupOrder).filter(g => active.includes(g))
+        : active;
+    } else {
+      groups = ['__all__'];
+    }
+
+    option.series = groups.map(groupName => {
+      const orig = (original.series || []).find(s => normalizeSeriesName(s && s.name) === normalizeSeriesName(groupName)) || {};
+      const s = chartRegistry && chartRegistry.deepClone ? chartRegistry.deepClone(orig) : JSON.parse(JSON.stringify(orig));
+      const groupRows = groupVar ? rows.filter(row => normalizeSeriesName(row[groupVar]) === groupName) : rows;
+      s.type = 'scatter';
+      s.name = groupVar ? groupName : (s.name || 'Values');
+      if (s.encode) delete s.encode;
+      if (s.datasetIndex !== undefined) delete s.datasetIndex;
+      s.data = groupRows.map(row => {
+        const x = Number(row[xVar]);
+        const y = Number(row[yVar]);
+        if (sizeVar) {
+          const sz = _toFiniteNumber(row[sizeVar]);
+          return [x, y, sz !== null ? sz : (config.pointSize || 4)];
+        }
+        return [x, y];
+      });
+      s.symbolSize = sizeVar
+        ? function(params) {
+            const val = Array.isArray(params.value) ? Number(params.value[2]) : Number(params.value);
+            return Number.isFinite(val) ? val : (config.pointSize || 4);
+          }
+        : (s.symbolSize || config.pointSize || 4);
+      if (config.colorMap && config.colorMap[groupName]) {
+        s.itemStyle = s.itemStyle || {};
+        s.itemStyle.color = config.colorMap[groupName];
+      }
+      return s;
+    });
+    syncEchartsLegend(option, groupVar ? groups : []);
+    inst.setOption(option, true);
+    return true;
+  }
+
+  function _rebuildBoxplotEcharts(entry, filteredData, config) {
+    if (!entry || !entry.el || typeof echarts === 'undefined') return false;
+    const inst = echarts.getInstanceByDom(entry.el);
+    if (!inst) return false;
+    if (!entry.original || !entry.original.option) {
+      if (chartRegistry && chartRegistry.adapters && chartRegistry.adapters.echarts4r) {
+        chartRegistry.adapters.echarts4r.storeOriginal(entry);
+      }
+    }
+    const original = entry.original && entry.original.option ? entry.original.option : inst.getOption();
+    if (!original) return false;
+
+    const option = chartRegistry && chartRegistry.deepClone ? chartRegistry.deepClone(original) : JSON.parse(JSON.stringify(original));
+    if (option.dataset) delete option.dataset;
+
+    const xVar = config.xVar;
+    const yVar = config.yVar;
+    if (!xVar || !yVar) return false;
+
+    const grouped = {};
+    filteredData.forEach(row => {
+      const group = String(row[xVar]);
+      const value = _toFiniteNumber(row[yVar]);
+      if (value === null) return;
+      if (!grouped[group]) grouped[group] = [];
+      grouped[group].push(value);
+    });
+
+    const activeGroups = Object.keys(grouped);
+    const groups = Array.isArray(config.xOrder) && config.xOrder.length > 0
+      ? config.xOrder.filter(g => activeGroups.includes(g))
+      : activeGroups;
+
+    const boxData = groups.map(group => {
+      const stats = _computeBoxStats(grouped[group]);
+      return stats ? {
+        name: group,
+        value: [stats.low, stats.q1, stats.median, stats.q3, stats.high]
+      } : null;
+    }).filter(Boolean);
+
+    const outlierRows = [];
+    if (config.showOutliers !== false) {
+      groups.forEach(group => {
+        const stats = _computeBoxStats(grouped[group]);
+        if (!stats || !stats.outliers || !stats.outliers.length) return;
+        stats.outliers.forEach(outlier => {
+          outlierRows.push([group, outlier]);
+        });
+      });
+    }
+
+    const xAxisCfg = Array.isArray(option.xAxis)
+      ? (option.xAxis[0] = option.xAxis[0] || {})
+      : (option.xAxis = option.xAxis || {});
+    const yAxisCfg = Array.isArray(option.yAxis)
+      ? (option.yAxis[0] = option.yAxis[0] || {})
+      : (option.yAxis = option.yAxis || {});
+    const horizontal = !!config.horizontal;
+    if (horizontal) {
+      yAxisCfg.type = 'category';
+      yAxisCfg.data = groups;
+      xAxisCfg.type = 'value';
+      xAxisCfg.data = null;
+    } else {
+      xAxisCfg.type = 'category';
+      xAxisCfg.data = groups;
+      yAxisCfg.type = 'value';
+      yAxisCfg.data = null;
+    }
+
+    const baseSeries = (option.series || []).filter(s => s && typeof s === 'object');
+    const boxSeriesOrig = baseSeries.find(s => String(s.type || '').toLowerCase() === 'boxplot') || baseSeries[0] || {};
+    const boxSeries = chartRegistry && chartRegistry.deepClone ? chartRegistry.deepClone(boxSeriesOrig) : JSON.parse(JSON.stringify(boxSeriesOrig));
+    boxSeries.type = 'boxplot';
+    boxSeries.name = boxSeries.name || (yVar || 'Values');
+    boxSeries.data = boxData.map(item => item.value);
+    if (boxSeries.encode) delete boxSeries.encode;
+    if (boxSeries.datasetIndex !== undefined) delete boxSeries.datasetIndex;
+
+    const seriesList = [boxSeries];
+    if (outlierRows.length > 0) {
+      const outlierOrig = baseSeries.find(s => String(s.type || '').toLowerCase() === 'scatter') || {};
+      const outlierSeries = chartRegistry && chartRegistry.deepClone ? chartRegistry.deepClone(outlierOrig) : JSON.parse(JSON.stringify(outlierOrig));
+      outlierSeries.type = 'scatter';
+      outlierSeries.name = outlierSeries.name || 'Outliers';
+      outlierSeries.data = horizontal
+        ? outlierRows.map(item => [item[1], item[0]])
+        : outlierRows;
+      if (outlierSeries.encode) delete outlierSeries.encode;
+      if (outlierSeries.datasetIndex !== undefined) delete outlierSeries.datasetIndex;
+      seriesList.push(outlierSeries);
+    }
+    option.series = seriesList;
+    syncEchartsLegend(option, seriesList.map(s => s && s.name));
+    inst.setOption(option, true);
+    return true;
+  }
+
+  function _rebuildPieSeries(chart, filteredData, config) {
+    const xVar = config.xVar;
+    if (!xVar) return false;
+
+    const counts = {};
+    filteredData.forEach(row => {
+      const label = String(row[xVar]);
+      if (!counts[label]) counts[label] = 0;
+      counts[label] += Number(row.n) || 0;
+    });
+
+    const activeLabels = new Set(Object.keys(counts));
+    const labels = Array.isArray(config.xOrder) && config.xOrder.length > 0
+      ? config.xOrder.filter(lbl => activeLabels.has(lbl))
+      : Object.keys(counts);
+
+    const seriesData = labels.map(label => {
+      const point = { name: label, y: counts[label] || 0 };
+      if (config.colorMap && config.colorMap[label]) point.color = config.colorMap[label];
+      return point;
+    });
+
+    const pieSeries = (chart.series || []).find(s => s && String(s.type || '').toLowerCase() === 'pie');
+    if (!pieSeries) return false;
+    pieSeries.setData(seriesData, false);
+    pieSeries.setVisible(true, false);
+    pieSeries.update({ showInLegend: true }, false);
+    chart.redraw();
+    return true;
+  }
+
+  function _rebuildScatterSeries(chart, filteredData, config) {
+    const xVar = config.xVar;
+    const yVar = config.yVar;
+    const groupVar = config.groupVar;
+    if (!xVar || !yVar) return false;
+
+    const rows = filteredData.filter(row => _toFiniteNumber(row[xVar]) !== null && _toFiniteNumber(row[yVar]) !== null);
+    let groups;
+    if (groupVar) {
+      const active = uniqueNonEmptyNames(rows.map(row => row[groupVar]));
+      groups = Array.isArray(config.groupOrder) && config.groupOrder.length > 0
+        ? uniqueNonEmptyNames(config.groupOrder).filter(g => active.includes(g))
+        : active;
+    } else {
+      groups = ['__all__'];
+    }
+
+    const seriesNamesHandled = new Set();
+    const scatterSeries = (chart.series || []).filter(s => s && String(s.type || '').toLowerCase() === 'scatter');
+
+    groups.forEach(groupName => {
+      const seriesName = groupVar
+        ? groupName
+        : ((scatterSeries[0] && scatterSeries[0].name) || String(config.yVar || 'Value'));
+      const groupRows = groupVar ? rows.filter(row => normalizeSeriesName(row[groupVar]) === groupName) : rows;
+      const points = groupRows.map(row => [Number(row[xVar]), Number(row[yVar])]);
+      let series = (chart.series || []).find(s => s && s.name === seriesName && String(s.type || '').toLowerCase() === 'scatter');
+      if (series) {
+        series.setData(points, false);
+        series.setVisible(true, false);
+        series.update({ showInLegend: !!groupVar }, false);
+      } else {
+        chart.addSeries({
+          type: 'scatter',
+          name: seriesName,
+          data: points,
+          marker: {
+            radius: config.pointSize || 4,
+            fillOpacity: config.alpha != null ? config.alpha : 0.7
+          },
+          showInLegend: !!groupVar
+        }, false);
+      }
+      seriesNamesHandled.add(seriesName);
+    });
+
+    scatterSeries.forEach(series => {
+      if (!series || typeof series !== 'object') return;
+      if (!seriesNamesHandled.has(series.name)) {
+        series.setData([], false);
+        series.setVisible(false, false);
+        series.update({ showInLegend: false }, false);
+      }
+    });
+
+    chart.redraw();
+    return true;
+  }
+
+  function _rebuildBoxplotSeries(chart, filteredData, config) {
+    const xVar = config.xVar;
+    const yVar = config.yVar;
+    if (!xVar || !yVar) return false;
+
+    const grouped = {};
+    filteredData.forEach(row => {
+      const group = String(row[xVar]);
+      const value = _toFiniteNumber(row[yVar]);
+      if (value === null) return;
+      if (!grouped[group]) grouped[group] = [];
+      grouped[group].push(value);
+    });
+
+    const activeGroups = Object.keys(grouped);
+    const groups = Array.isArray(config.xOrder) && config.xOrder.length > 0
+      ? config.xOrder.filter(g => activeGroups.includes(g))
+      : activeGroups;
+
+    if (chart.xAxis && chart.xAxis[0] && typeof chart.xAxis[0].setCategories === 'function') {
+      chart.xAxis[0].setCategories(groups, false);
+    }
+
+    const boxSeries = (chart.series || []).find(s => s && String(s.type || '').toLowerCase() === 'boxplot');
+    if (!boxSeries) return false;
+
+    const boxData = groups.map(group => {
+      const stats = _computeBoxStats(grouped[group]);
+      if (!stats) return null;
+      if (config.colorMap && config.colorMap[group]) {
+        return {
+          low: stats.low,
+          q1: stats.q1,
+          median: stats.median,
+          q3: stats.q3,
+          high: stats.high,
+          color: config.colorMap[group]
+        };
+      }
+      return [stats.low, stats.q1, stats.median, stats.q3, stats.high];
+    }).filter(Boolean);
+    boxSeries.setData(boxData, false);
+    boxSeries.setVisible(true, false);
+    boxSeries.update({ showInLegend: false }, false);
+
+    const showOutliers = config.showOutliers !== false;
+    const outlierPoints = [];
+    if (showOutliers) {
+      groups.forEach((group, idx) => {
+        const stats = _computeBoxStats(grouped[group]);
+        if (!stats || !stats.outliers || !stats.outliers.length) return;
+        stats.outliers.forEach(outlier => {
+          outlierPoints.push({ x: idx, y: outlier });
+        });
+      });
+    }
+
+    let outlierSeries = (chart.series || []).find(s => s && String(s.type || '').toLowerCase() === 'scatter');
+    if (showOutliers && outlierPoints.length > 0) {
+      if (!outlierSeries) {
+        chart.addSeries({
+          type: 'scatter',
+          name: 'Outliers',
+          data: outlierPoints,
+          showInLegend: false,
+          marker: {
+            fillColor: 'white',
+            lineWidth: 1,
+            lineColor: 'black',
+            symbol: 'circle'
+          }
+        }, false);
+      } else {
+        outlierSeries.setData(outlierPoints, false);
+        outlierSeries.setVisible(true, false);
+        outlierSeries.update({ showInLegend: false }, false);
+      }
+    } else if (outlierSeries) {
+      outlierSeries.setData([], false);
+      outlierSeries.setVisible(false, false);
+      outlierSeries.update({ showInLegend: false }, false);
+    }
+
+    chart.redraw();
+    return true;
+  }
+
   /**
    * Rebuild a simple bar chart's series from filtered cross-tab data.
    */
@@ -2450,6 +3601,8 @@
     var xOrder = config.xOrder;
     var groupOrder = config.groupOrder;
     var labelDec = (config.labelDecimals != null) ? config.labelDecimals : 0;
+    var barType = config.barType || 'count';
+    var isPercent = (barType === 'percent');
 
     if (groupVar) {
       // Grouped bar chart: sum by xVar + groupVar
@@ -2468,6 +3621,12 @@
         byX[item.xVal][item.gVal] = item.n;
       });
 
+      // Calculate total for percentage mode
+      var grandTotal = 0;
+      if (isPercent) {
+        Object.values(summed).forEach(function(item) { grandTotal += item.n; });
+      }
+
       var activeXValues = new Set(Object.keys(byX));
       var orderedX = xOrder && xOrder.length > 0
         ? xOrder.filter(function(xv) { return activeXValues.has(xv); })
@@ -2484,7 +3643,11 @@
 
       orderedGroups.forEach(function(gVal) {
         var seriesData = orderedX.map(function(xVal) {
-          return (byX[xVal] && byX[xVal][gVal]) ? byX[xVal][gVal] : 0;
+          var count = (byX[xVal] && byX[xVal][gVal]) ? byX[xVal][gVal] : 0;
+          if (isPercent && grandTotal > 0) {
+            return Math.round((count / grandTotal * 100) * 10) / 10;
+          }
+          return count;
         });
         var series = (chart.series || []).find(function(s) { return s && s.name === gVal; });
         if (series) {
@@ -2505,10 +3668,12 @@
     } else {
       // Simple bar chart: sum by xVar only
       var counts = {};
+      var total = 0;
       filteredData.forEach(function(row) {
         var xVal = String(row[xVar]);
         if (!counts[xVal]) counts[xVal] = 0;
         counts[xVal] += row.n;
+        total += row.n;
       });
 
       var activeX = new Set(Object.keys(counts));
@@ -2521,7 +3686,11 @@
       }
 
       var seriesData = orderedXSimple.map(function(xVal) {
-        return counts[xVal] || 0;
+        var count = counts[xVal] || 0;
+        if (isPercent && total > 0) {
+          return Math.round((count / total * 100) * 10) / 10;
+        }
+        return count;
       });
 
       if (chart.series && chart.series[0]) {
@@ -2538,6 +3707,19 @@
     }
 
     chart.redraw();
+
+    // Force yAxis to start at 0 for bar charts (prevents floating bars)
+    if (chart.yAxis && chart.yAxis[0]) {
+      try {
+        chart.yAxis[0].update({ min: 0, startOnTick: false }, true);
+      } catch(e) {}
+    }
+
+    // Schedule a reflow to handle cases where chart was hidden during redraw
+    requestAnimationFrame(function() {
+      try { chart.reflow(); } catch(e) {}
+    });
+
     return true;
   }
 
@@ -2685,24 +3867,38 @@
     var sampleTime = Object.values(aggBuckets)[0].time;
     var isNumericTime = !isNaN(Number(sampleTime));
 
-    // Get sorted unique time values
+    // Get unique time values, preserving config order if available
     var allTimes = [];
     var seenTimes = {};
-    Object.values(aggBuckets).forEach(function(a) {
-      if (!seenTimes[a.time]) { seenTimes[a.time] = true; allTimes.push(a.time); }
-    });
-    if (isNumericTime) {
-      allTimes.sort(function(a, b) { return Number(a) - Number(b); });
+    if (config.timeCategories && config.timeCategories.length > 0) {
+      // Use R-side factor order (chronological)
+      config.timeCategories.forEach(function(t) {
+        var ts = String(t);
+        if (!seenTimes[ts]) {
+          // Only include times that exist in the data
+          var exists = Object.values(aggBuckets).some(function(a) { return a.time === ts; });
+          if (exists) { seenTimes[ts] = true; allTimes.push(ts); }
+        }
+      });
     } else {
-      allTimes.sort();
+      Object.values(aggBuckets).forEach(function(a) {
+        if (!seenTimes[a.time]) { seenTimes[a.time] = true; allTimes.push(a.time); }
+      });
+      if (isNumericTime) {
+        allTimes.sort(function(a, b) { return Number(a) - Number(b); });
+      } else {
+        allTimes.sort();
+      }
     }
 
     var activeGroups = new Set(Object.keys(byGroup));
 
     // Respect group_order from config if provided
     var orderedGroups;
-    if (config.groupOrder && config.groupOrder.length > 0) {
-      orderedGroups = config.groupOrder.filter(function(g) { return activeGroups.has(g); });
+    var cfgGroupOrder = config.groupOrder;
+    if (cfgGroupOrder && typeof cfgGroupOrder === 'string') cfgGroupOrder = [cfgGroupOrder];
+    if (Array.isArray(cfgGroupOrder) && cfgGroupOrder.length > 0) {
+      orderedGroups = cfgGroupOrder.filter(function(g) { return activeGroups.has(g); });
     } else {
       orderedGroups = Array.from(activeGroups);
     }

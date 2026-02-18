@@ -69,10 +69,8 @@ all_content <- create_content() %>%
 # ============================================================================
 
 dashboard <- create_dashboard(
-  name = "modal_r_first",
   output_dir = tempfile(),
-  title = "R-First Modal Example",
-  allow_inside_pkg = TRUE
+  title = "R-First Modal Example"
 ) %>%
   add_page(
     name = "Survey",

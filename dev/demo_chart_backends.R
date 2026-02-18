@@ -132,7 +132,7 @@ layout_page_one_column <- function(sidebar_block, data) {
   create_page(name = "Layout 1 - Default One Column", data = data) %>%
     add_content(sidebar_block) %>%
     add_text("### Layout 1: global default one-column page (single full-width chart)") %>%
-    add_viz(type = "timeline", time_var = "year", y_var = "score", group_var = "region", title = "Score trend by region")
+    add_viz(type = "timeline", time_var = "year", y_var = "score", group_var = "region", title = "Score trend by region (year: {year})")
 }
 
 layout_page_explicit_one_column <- function(sidebar_block, data) {
@@ -141,10 +141,10 @@ layout_page_explicit_one_column <- function(sidebar_block, data) {
     add_text("### Layout 2: explicit one-column layout API") %>%
     add_layout_column(class = "two-one-col") %>%
       add_layout_row(class = "two-r1") %>%
-        add_viz(type = "timeline", time_var = "year", y_var = "income", group_var = "region", title = "Income trend by region") %>%
+        add_viz(type = "timeline", time_var = "year", y_var = "income", group_var = "region", title = "Income trend by region (year: {year})") %>%
       end_layout_row() %>%
       add_layout_row(class = "two-r2") %>%
-        add_viz(type = "timeline", time_var = "year", y_var = "score", group_var = "region", title = "Score trend by region") %>%
+        add_viz(type = "timeline", time_var = "year", y_var = "score", group_var = "region", title = "Score trend by region (year: {year})") %>%
       end_layout_row() %>%
     end_layout_column()
 }
@@ -155,12 +155,12 @@ layout_page_two_columns <- function(sidebar_block, data) {
     add_text("### Layout 3: explicit 2-column split") %>%
     add_layout_column(class = "three-left") %>%
       add_layout_row(class = "three-left-r1") %>%
-        add_viz(type = "boxplot", x_var = "education", y_var = "income", title = "Income by education") %>%
+        add_viz(type = "boxplot", x_var = "education", y_var = "income", title = "Income by education ({education})") %>%
       end_layout_row() %>%
     end_layout_column() %>%
     add_layout_column(class = "three-right") %>%
       add_layout_row(class = "three-right-r1") %>%
-        add_viz(type = "bar", x_var = "education", title = "Responses by education") %>%
+        add_viz(type = "bar", x_var = "education", title = "Responses by education ({education})") %>%
       end_layout_row() %>%
     end_layout_column()
 }
@@ -171,12 +171,12 @@ layout_page_two_columns_footer <- function(sidebar_block, data, table_data) {
     add_text("### Layout 4: two-column charts with table below") %>%
     add_layout_column(class = "four-left") %>%
       add_layout_row(class = "four-left-r1") %>%
-        add_viz(type = "timeline", time_var = "year", y_var = "income", group_var = "region", title = "Income trend by region") %>%
+        add_viz(type = "timeline", time_var = "year", y_var = "income", group_var = "region", title = "Income trend by region (year: {year})") %>%
       end_layout_row() %>%
     end_layout_column() %>%
     add_layout_column(class = "four-right") %>%
       add_layout_row(class = "four-right-r1") %>%
-        add_viz(type = "timeline", time_var = "year", y_var = "score", group_var = "region", title = "Score trend by region") %>%
+        add_viz(type = "timeline", time_var = "year", y_var = "score", group_var = "region", title = "Score trend by region (year: {year})") %>%
       end_layout_row() %>%
     end_layout_column() %>%
     add_DT(
@@ -192,18 +192,18 @@ layout_page_two_columns_stacked <- function(sidebar_block, data) {
     add_text("### Layout 5: stacked two-column sections only") %>%
     add_layout_column(class = "five-left") %>%
       add_layout_row(class = "five-left-r1") %>%
-        add_viz(type = "timeline", time_var = "year", y_var = "income", group_var = "happiness", title = "Income trend by happiness") %>%
+        add_viz(type = "timeline", time_var = "year", y_var = "income", group_var = "happiness", title = "Income trend by happiness ({happiness})") %>%
       end_layout_row() %>%
       add_layout_row(class = "five-left-r2") %>%
-        add_viz(type = "bar", x_var = "happiness", title = "Happiness count") %>%
+        add_viz(type = "bar", x_var = "happiness", title = "Happiness count ({happiness})") %>%
       end_layout_row() %>%
     end_layout_column() %>%
     add_layout_column(class = "five-right") %>%
       add_layout_row(class = "five-right-r1") %>%
-        add_viz(type = "timeline", time_var = "year", y_var = "score", group_var = "happiness", title = "Score trend by happiness") %>%
+        add_viz(type = "timeline", time_var = "year", y_var = "score", group_var = "happiness", title = "Score trend by happiness ({happiness})") %>%
       end_layout_row() %>%
       add_layout_row(class = "five-right-r2") %>%
-        add_viz(type = "boxplot", x_var = "happiness", y_var = "income", title = "Income by happiness") %>%
+        add_viz(type = "boxplot", x_var = "happiness", y_var = "income", title = "Income by happiness ({happiness})") %>%
       end_layout_row() %>%
     end_layout_column()
 }

@@ -149,10 +149,11 @@ test_that("modal_content function creates proper HTML structure", {
 
 test_that("modal_link creates proper anchor tag", {
   link <- modal_link("Click me", "my-modal")
-  
+
   expect_s3_class(link, "shiny.tag")
   expect_equal(link$name, "a")
   expect_equal(link$attribs$href, "#my-modal")
+  expect_true(grepl("modal-link", link$attribs$class))
 })
 
 test_that("enable_modals returns necessary assets", {

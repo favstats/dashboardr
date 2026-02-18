@@ -38,6 +38,7 @@ viz_timeline(
   cross_tab_filter_vars = NULL,
   title_map = NULL,
   legend_position = NULL,
+  data_labels_enabled = FALSE,
   backend = "highcharter"
 )
 }
@@ -133,6 +134,9 @@ See \code{\link{tooltip}} for full customization options.}
 for dynamic title updates when filtering by cross-tab variables.}
 
 \item{legend_position}{Position of the legend ("top", "bottom", "left", "right", "none")}
+
+\item{data_labels_enabled}{Logical. If TRUE, display data point values directly on
+the chart. Default FALSE.}
 
 \item{backend}{Rendering backend: "highcharter" (default), "plotly", "echarts4r", or "ggiraph".}
 }

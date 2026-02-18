@@ -43,7 +43,7 @@ gss <- gss_all %>%
 ```
 
 ```{r, include=FALSE}
-devtools::load_all()
+library(dashboardr)
 ```
 
 **Important**: Treemaps require **pre-aggregated data** with a value column. You typically need to `count()` or `summarize()` your data first.

@@ -157,6 +157,33 @@ To skip regeneration and test existing outputs only:
 bash scripts/playwright/run_demo_input_matrix.sh --skip-regenerate
 ```
 
+## No-Sidebar Complex Inputs Sweep: `demo_inputs_no_sidebar_backends.R`
+
+Run dedicated tests for complex inline/top-of-page inputs without any sidebar (echarts4r, plotly, highcharter):
+
+```bash
+bash scripts/playwright/run_demo_inputs_no_sidebar.sh --mode full --headless
+```
+
+This command:
+
+1. Runs `devtools::install()` (unless skipped).
+2. Regenerates `input_nosidebar_echarts/`, `input_nosidebar_plotly/`, and `input_nosidebar_hc/`.
+3. Runs scenarios from `scripts/playwright/scenarios_demo_inputs_no_sidebar.yml`.
+4. Serves from repo root so URLs like `/input_nosidebar_plotly/docs/n2_inline_showwhen_modes.html` resolve.
+
+Coverage highlights:
+
+- Inline inputs only (no sidebar): `select_multiple`, `select_single`, `button_group`, `checkbox`, `radio`, `slider`, `switch`, `linked_inputs`
+- Complex behavior: `show_when` transitions, dynamic text blocks, dynamic title placeholders
+- Multi-chart propagation checks on linked-input pages
+
+To skip regeneration and test existing outputs only:
+
+```bash
+bash scripts/playwright/run_demo_inputs_no_sidebar.sh --skip-regenerate
+```
+
 ## Notes
 
 - `smoke` runs a deterministic minimum scenario set.

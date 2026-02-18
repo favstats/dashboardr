@@ -4,6 +4,7 @@ library(testthat)
 
 # Access internal functions
 .generate_data_load_code <- dashboardr:::.generate_data_load_code
+.make_rds_bundle_ref <- dashboardr:::.make_rds_bundle_ref
 
 # --- .generate_data_load_code ---
 
@@ -40,6 +41,18 @@ test_that(".generate_data_load_code custom var_name", {
 test_that(".generate_data_load_code case insensitive parquet", {
   code <- .generate_data_load_code("data/survey.PARQUET")
   expect_true(grepl("arrow::read_parquet", code))
+})
+
+test_that(".generate_data_load_code bundled RDS reference", {
+  bundle_ref <- .make_rds_bundle_ref(
+    bundle_file = "dashboard_data_bundle.rds",
+    bundle_key = "dataset_small_10obs.rds"
+  )
+  code <- .generate_data_load_code(bundle_ref, var_name = "survey_data")
+  expect_true(any(grepl("\\.dashboardr_bundle_cache", code)))
+  expect_true(any(grepl("dashboard_data_bundle\\.rds", code)))
+  expect_true(any(grepl("dataset_small_10obs\\.rds", code)))
+  expect_true(any(grepl("survey_data <-", code)))
 })
 
 test_that(".generate_global_setup_chunk loads externalized table filter data", {

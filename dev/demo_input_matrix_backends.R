@@ -351,7 +351,7 @@ page_p1 <- function(data, sidebar_title) {
       weight_var = "count",
       color_palette = c("#4E79A7", "#59A14F", "#F28E2B"),
       cross_tab_filter_vars = c("region", "age", "year", "education", "happiness", "channel", "segment", "dimension", "question"),
-      title = "Segment composition by region"
+      title = "Segment composition by region ({region}, {year})"
     )
 }
 
@@ -367,7 +367,7 @@ page_p2 <- function(data, sidebar_title) {
       weight_var = "count",
       color_palette = unname(happiness_palette),
       cross_tab_filter_vars = c("education", "channel", "region", "year", "segment", "dimension", "question"),
-      title = "Education composition by happiness"
+      title = "Education composition by happiness ({education}, {channel})"
     )
 }
 
@@ -384,7 +384,7 @@ page_p3 <- function(data, sidebar_title) {
       group_var = "channel",
       color_palette = c("#4E79A7", "#F28E2B", "#59A14F"),
       cross_tab_filter_vars = c("channel", "year", "region", "education", "happiness", "segment", "dimension", "question"),
-      title = "Score trend by channel"
+      title = "Score trend by channel ({channel}, {year})"
     )
 }
 
@@ -400,7 +400,7 @@ page_p4 <- function(data, sidebar_title) {
       weight_var = "count",
       color_palette = c("#4E79A7", "#F28E2B", "#76B7B2"),
       cross_tab_filter_vars = c("segment", "dimension", "question", "region", "education", "happiness", "channel", "year"),
-      title = "Responses by question and segment"
+      title = "Responses by question and segment ({segment}, {dimension}, {question})"
     )
 }
 
@@ -433,7 +433,8 @@ page_p5 <- function(data, sidebar_title) {
       group_var = "series_label",
       y_var = "count",
       color_palette = unname(series_palette),
-      title = "Observed vs benchmark by region"
+      cross_tab_filter_vars = c("view_mode", "region", "series_label"),
+      title = "Observed vs benchmark by region ({view_mode})"
     )
 }
 
@@ -448,7 +449,7 @@ page_p6 <- function(data, table_data, sidebar_title) {
       group_var = "region",
       color_palette = unname(region_palette),
       cross_tab_filter_vars = c("region", "year", "education", "happiness", "channel", "segment", "dimension", "question"),
-      title = "Income trend by region"
+      title = "Income trend by region (year: {year})"
     ) %>%
     add_DT(
       table_data = table_data,

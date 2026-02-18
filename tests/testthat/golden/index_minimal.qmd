@@ -4,7 +4,7 @@ format: html
 ---
 
 ```{r, echo=FALSE, results='asis', message=FALSE, warning=FALSE}
-dashboardr::.page_config(accessibility = TRUE)
+dashboardr::.page_config(accessibility = TRUE, crosstab_prefix = "home")
 ```
 
 ```{r setup}

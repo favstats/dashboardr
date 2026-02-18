@@ -689,14 +689,37 @@
     padding: 1rem;
     gap: 1rem;
   }
-  
+
   .dashboardr-input-group {
     width: 100%;
     max-width: 100%;
   }
-  
+
   .dashboardr-button-group {
     flex-wrap: wrap;
+    border-radius: 8px;
+    overflow: visible;
+    border: none;
+    gap: 4px;
+    justify-content: center;
+  }
+
+  .dashboardr-button-option {
+    border: 1px solid #d1d5db;
+    border-radius: 6px !important;
+    border-right: 1px solid #d1d5db;
+    flex: 0 1 auto;
+    text-align: center;
+    font-size: 13px;
+    padding: 8px 12px;
+  }
+
+  .dashboardr-button-option:last-child {
+    border-right: 1px solid #d1d5db;
+  }
+
+  .dashboardr-button-option.active {
+    border-color: #3b82f6;
   }
 }
 

@@ -48,9 +48,12 @@ enable_modals <- function() {
 #' # [View Details](#details-modal)
 #' }
 modal_link <- function(text, modal_id, class = NULL) {
+  # Always include modal-link class so the JS recognises the trigger
+
+  link_class <- if (is.null(class)) "modal-link" else paste("modal-link", class)
   htmltools::tags$a(
     href = paste0("#", modal_id),
-    class = class,
+    class = link_class,
     text
   )
 }

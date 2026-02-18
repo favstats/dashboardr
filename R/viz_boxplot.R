@@ -32,6 +32,8 @@
 #'   See \code{\link{tooltip}} for full customization options.
 #' @param tooltip_prefix Optional string prepended to values in tooltip.
 #' @param tooltip_suffix Optional string appended to values in tooltip.
+#' @param cross_tab_filter_vars Optional character vector of variable names to use for
+#'   client-side cross-tab filtering when dashboard inputs are present.
 #'
 #' @param backend Rendering backend: "highcharter" (default), "plotly", "echarts4r", or "ggiraph".
 #' @return A `highcharter` boxplot object.
@@ -93,7 +95,8 @@ viz_boxplot <- function(data,
                         tooltip_prefix = "",
                         tooltip_suffix = "",
                         legend_position = NULL,
-                        backend = "highcharter") {
+                        backend = "highcharter",
+                        cross_tab_filter_vars = NULL) {
   
   # Convert variable arguments to strings (supports both quoted and unquoted)
   y_var <- .as_var_string(rlang::enquo(y_var))
@@ -292,6 +295,40 @@ viz_boxplot <- function(data,
     legend_position = legend_position
   )
 
+  # Prepare cross-tab data for client-side filtering (all backends)
+  cross_tab_attrs <- NULL
+  if (!is.null(cross_tab_filter_vars) && length(cross_tab_filter_vars) > 0) {
+    valid_filter_vars <- cross_tab_filter_vars[cross_tab_filter_vars %in% names(df)]
+    if (length(valid_filter_vars) > 0) {
+      group_value <- if (!is.null(x_var)) NULL else as.character(categories[1])
+      cross_tab <- df %>%
+        dplyr::mutate(
+          .dashboardr_group = if (!is.null(x_var)) as.character(.data[[x_var]]) else group_value,
+          .dashboardr_value = as.numeric(.data[[y_var]])
+        ) %>%
+        dplyr::select(dplyr::all_of(valid_filter_vars), .dashboardr_group, .dashboardr_value)
+
+      chart_id <- .next_crosstab_id()
+      chart_config <- list(
+        chartId = chart_id,
+        chartType = "boxplot",
+        xVar = ".dashboardr_group",
+        yVar = ".dashboardr_value",
+        filterVars = valid_filter_vars,
+        xOrder = as.character(categories),
+        horizontal = horizontal,
+        showOutliers = show_outliers
+      )
+      if (!is.null(color_palette) && !is.null(names(color_palette))) {
+        chart_config$colorMap <- as.list(color_palette)
+      }
+      if (!is.null(title) && grepl("\\{\\w+\\}", title)) {
+        chart_config$titleTemplate <- title
+      }
+      cross_tab_attrs <- list(data = cross_tab, config = chart_config, id = chart_id)
+    }
+  }
+
   # Dispatch to backend renderer
   backend <- .normalize_backend(backend)
   backend <- match.arg(backend, c("highcharter", "plotly", "echarts4r", "ggiraph"))
@@ -303,6 +340,14 @@ viz_boxplot <- function(data,
     ggiraph     = .viz_boxplot_ggiraph
   )
   result <- render_fn(boxplot_data, config)
+  if (!is.null(cross_tab_attrs)) {
+    attr(result, "cross_tab_data") <- cross_tab_attrs$data
+    attr(result, "cross_tab_config") <- cross_tab_attrs$config
+    attr(result, "cross_tab_id") <- cross_tab_attrs$id
+    if (identical(backend, "highcharter")) {
+      result <- highcharter::hc_chart(result, id = cross_tab_attrs$id)
+    }
+  }
   result <- .register_chart_widget(result, backend = backend)
   return(result)
 }

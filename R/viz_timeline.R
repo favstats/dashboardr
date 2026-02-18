@@ -113,6 +113,8 @@
 #' }
 #'
 #' @param legend_position Position of the legend ("top", "bottom", "left", "right", "none")
+#' @param data_labels_enabled Logical. If TRUE, display data point values directly on
+#'   the chart. Default FALSE.
 #' @export
 
 
@@ -150,6 +152,7 @@ viz_timeline <- function(data,
                             cross_tab_filter_vars = NULL,
                             title_map = NULL,
                             legend_position = NULL,
+                            data_labels_enabled = FALSE,
                             backend = "highcharter") {
 
   # Convert variable arguments to strings (supports both quoted and unquoted)
@@ -481,7 +484,8 @@ viz_timeline <- function(data,
     time_var = time_var,
     x_label = x_label, y_label = y_label,
     y_filter_label = y_filter_label,
-    legend_position = legend_position
+    legend_position = legend_position,
+    data_labels_enabled = data_labels_enabled
   )
 
   # Prepare cross-tab data for client-side filtering (all backends)
@@ -489,32 +493,72 @@ viz_timeline <- function(data,
   if (!is.null(cross_tab_filter_vars) && length(cross_tab_filter_vars) > 0) {
     valid_filter_vars <- cross_tab_filter_vars[cross_tab_filter_vars %in% names(data)]
     if (length(valid_filter_vars) > 0) {
-      group_vars <- c(time_var, y_var, valid_filter_vars)
-      if (!is.null(group_var)) group_vars <- c(group_vars, group_var)
-      if (!is.null(weight_var) && weight_var %in% names(data) && is.numeric(data[[weight_var]])) {
+      # When y_filter is present with percentage agg, compute % directly
+      # (don't group by y_var — aggregate across all values)
+      use_pct_crosstab <- filter_applied && agg == "percentage"
+      # When percentage agg WITHOUT y_filter, y_var is categorical — it becomes the groupVar
+      use_pct_categorical <- !filter_applied && agg == "percentage"
+
+      if (use_pct_crosstab) {
+        # Percentage cross-tab with y_filter: group by time + filters + group, compute % matching y_filter
+        group_vars_ct <- c(time_var, valid_filter_vars)
+        if (!is.null(group_var)) group_vars_ct <- c(group_vars_ct, group_var)
         cross_tab <- data %>%
-          dplyr::group_by(dplyr::across(dplyr::all_of(group_vars))) %>%
+          dplyr::filter(!is.na(.data[[y_var]])) %>%
+          dplyr::group_by(dplyr::across(dplyr::all_of(group_vars_ct))) %>%
           dplyr::summarise(
-            value = weighted.mean(.data[[y_var]], w = .data[[weight_var]], na.rm = TRUE),
+            value = sum(.data[[y_var]] %in% y_filter, na.rm = TRUE) / dplyr::n() * 100,
             .groups = "drop"
           )
-      } else {
+      } else if (agg == "percentage") {
+        # Percentage cross-tab without y_filter: count each y_var category per time+filters+group
+        # This handles categorical y_var (e.g., important1) where mean() would fail
+        group_vars <- c(time_var, y_var, valid_filter_vars)
+        if (!is.null(group_var)) group_vars <- c(group_vars, group_var)
+        pct_group_vars <- c(time_var, valid_filter_vars)
+        if (!is.null(group_var)) pct_group_vars <- c(pct_group_vars, group_var)
         cross_tab <- data %>%
-          dplyr::group_by(dplyr::across(dplyr::all_of(group_vars))) %>%
-          dplyr::summarise(value = mean(.data[[y_var]], na.rm = TRUE), .groups = "drop")
+          dplyr::filter(!is.na(.data[[y_var]])) %>%
+          dplyr::count(dplyr::across(dplyr::all_of(group_vars)), name = "count") %>%
+          dplyr::group_by(dplyr::across(dplyr::all_of(pct_group_vars))) %>%
+          dplyr::mutate(value = round(.data$count / sum(.data$count) * 100, 1)) %>%
+          dplyr::ungroup() %>%
+          dplyr::select(-count)
+      } else {
+        # Standard cross-tab: group by time + y_var + filters + group, compute mean
+        group_vars <- c(time_var, y_var, valid_filter_vars)
+        if (!is.null(group_var)) group_vars <- c(group_vars, group_var)
+        if (!is.null(weight_var) && weight_var %in% names(data) && is.numeric(data[[weight_var]])) {
+          cross_tab <- data %>%
+            dplyr::group_by(dplyr::across(dplyr::all_of(group_vars))) %>%
+            dplyr::summarise(
+              value = weighted.mean(.data[[y_var]], w = .data[[weight_var]], na.rm = TRUE),
+              .groups = "drop"
+            )
+        } else {
+          cross_tab <- data %>%
+            dplyr::group_by(dplyr::across(dplyr::all_of(group_vars))) %>%
+            dplyr::summarise(value = mean(.data[[y_var]], na.rm = TRUE), .groups = "drop")
+        }
       }
-      chart_id <- paste0("crosstab_", substr(digest::digest(
-        paste(time_var, y_var, group_var %||% "", collapse = "_")
-      ), 1, 8))
+      chart_id <- .next_crosstab_id()
+      # For percentage agg (with or without y_filter), the numeric values are in 'value' column.
+      # For categorical percentage (no y_filter), y_var becomes the grouping dimension.
+      ct_yVar <- if (use_pct_crosstab || use_pct_categorical) "value" else y_var
+      ct_groupVar <- if (use_pct_categorical && is.null(group_var)) y_var else group_var
+      ct_groupOrder_col <- ct_groupVar %||% "group"
       chart_config <- list(
         chartId = chart_id,
         chartType = "timeline",
         timeVar = time_var,
-        yVar = y_var,
-        groupVar = group_var,
+        yVar = ct_yVar,
+        groupVar = ct_groupVar,
         agg = agg,
         filterVars = valid_filter_vars,
-        groupOrder = if (!is.null(group_order)) group_order else unique(as.character(cross_tab[[group_var %||% "group"]])),
+        groupOrder = if (!is.null(group_order)) group_order else {
+          if (ct_groupOrder_col %in% names(cross_tab)) unique(as.character(cross_tab[[ct_groupOrder_col]])) else character(0)
+        },
+        timeCategories = if (is_time_categorical) time_categories else NULL,
         colorMap = if (!is.null(color_palette) && !is.null(names(color_palette))) as.list(color_palette) else NULL
       )
       if (!is.null(title) && grepl("\\{\\w+\\}", title)) {
@@ -550,7 +594,8 @@ viz_timeline <- function(data,
       result <- highcharter::hc_chart(result, id = cross_tab_attrs$id)
     }
   }
-  result <- .register_chart_widget(result, backend = backend)
+  ct_fv <- if (!is.null(cross_tab_attrs)) cross_tab_attrs$config$filterVars else NULL
+  result <- .register_chart_widget(result, backend = backend, filter_vars = ct_fv)
   return(result)
 }
 
@@ -578,6 +623,7 @@ viz_timeline <- function(data,
   time_var <- config$time_var
   x_label <- config$x_label; y_label <- config$y_label
   y_filter_label <- config$y_filter_label
+  data_labels_enabled <- config$data_labels_enabled
 
   # Create base chart
   hc <- highchart() %>%
@@ -924,6 +970,26 @@ viz_timeline <- function(data,
         useHTML = TRUE,
         headerFormat = "<b>{point.x}</b><br>",
         pointFormat = paste0("{series.name}: ", pre, "{point.y:.1f}", suf)
+      )
+  }
+
+  # --- Data labels ---
+  if (isTRUE(data_labels_enabled)) {
+    dl_suffix <- if (agg == "percentage") "%" else ""
+    dl_format <- paste0("{point.y:.0f}", dl_suffix)
+    hc <- hc %>%
+      highcharter::hc_plotOptions(
+        series = list(
+          dataLabels = list(
+            enabled = TRUE,
+            format = dl_format,
+            style = list(
+              fontSize = "11px",
+              fontWeight = "600",
+              textOutline = "2px white"
+            )
+          )
+        )
       )
   }
 

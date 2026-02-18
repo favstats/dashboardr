@@ -34,6 +34,8 @@
 #' @param tooltip_suffix Optional string appended to tooltip values.
 #' @param center_text Optional character string. Text to display in the center of a donut chart.
 #'   Only visible when inner_size > "0%".
+#' @param cross_tab_filter_vars Optional character vector of variable names to use for
+#'   client-side cross-tab filtering when dashboard inputs are present.
 #'
 #' @param backend Rendering backend: "highcharter" (default), "plotly", "echarts4r", or "ggiraph".
 #' @return A highcharter plot object.
@@ -72,7 +74,8 @@ viz_pie <- function(data,
                     tooltip_suffix = "",
                     center_text = NULL,
                     legend_position = NULL,
-                    backend = "highcharter") {
+                    backend = "highcharter",
+                    cross_tab_filter_vars = NULL) {
 
   # Convert variable arguments to strings (supports both quoted and unquoted)
   x_var <- .as_var_string(rlang::enquo(x_var))
@@ -177,6 +180,42 @@ viz_pie <- function(data,
     legend_position = legend_position
   )
 
+  # Prepare cross-tab data for client-side filtering (all backends)
+  cross_tab_attrs <- NULL
+  if (!is.null(cross_tab_filter_vars) && length(cross_tab_filter_vars) > 0) {
+    valid_filter_vars <- cross_tab_filter_vars[cross_tab_filter_vars %in% names(data)]
+    if (length(valid_filter_vars) > 0) {
+      group_vars <- c(x_var, valid_filter_vars)
+      if (!is.null(y_var) && y_var %in% names(data) && is.numeric(data[[y_var]])) {
+        cross_tab <- data %>%
+          dplyr::group_by(dplyr::across(dplyr::all_of(group_vars))) %>%
+          dplyr::summarise(n = sum(.data[[y_var]], na.rm = TRUE), .groups = "drop")
+      } else if (!is.null(weight_var) && weight_var %in% names(data) && is.numeric(data[[weight_var]])) {
+        cross_tab <- data %>%
+          dplyr::group_by(dplyr::across(dplyr::all_of(group_vars))) %>%
+          dplyr::summarise(n = sum(.data[[weight_var]], na.rm = TRUE), .groups = "drop")
+      } else {
+        cross_tab <- data %>%
+          dplyr::count(dplyr::across(dplyr::all_of(group_vars)), name = "n")
+      }
+      chart_id <- .next_crosstab_id()
+      chart_config <- list(
+        chartId = chart_id,
+        chartType = "pie",
+        xVar = x_var,
+        filterVars = valid_filter_vars,
+        xOrder = if (!is.null(x_order)) as.character(x_order) else unique(as.character(agg_data$name))
+      )
+      if (!is.null(color_palette) && !is.null(names(color_palette))) {
+        chart_config$colorMap <- as.list(color_palette)
+      }
+      if (!is.null(title) && grepl("\\{\\w+\\}", title)) {
+        chart_config$titleTemplate <- title
+      }
+      cross_tab_attrs <- list(data = cross_tab, config = chart_config, id = chart_id)
+    }
+  }
+
   # Dispatch to backend renderer
   backend <- .normalize_backend(backend)
   backend <- match.arg(backend, c("highcharter", "plotly", "echarts4r", "ggiraph"))
@@ -188,6 +227,14 @@ viz_pie <- function(data,
     ggiraph     = .viz_pie_ggiraph
   )
   result <- render_fn(agg_data, config)
+  if (!is.null(cross_tab_attrs)) {
+    attr(result, "cross_tab_data") <- cross_tab_attrs$data
+    attr(result, "cross_tab_config") <- cross_tab_attrs$config
+    attr(result, "cross_tab_id") <- cross_tab_attrs$id
+    if (identical(backend, "highcharter")) {
+      result <- highcharter::hc_chart(result, id = cross_tab_attrs$id)
+    }
+  }
   result <- .register_chart_widget(result, backend = backend)
   return(result)
 }

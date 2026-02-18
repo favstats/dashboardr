@@ -105,8 +105,11 @@
   margin-top: 0;
 }
 
-/* Hidden content that will be shown in modal */
-.modal-content {
+/* Hidden content that will be shown in modal.
+   Use an attribute selector to target only dashboardr modal-content divs
+   (which carry an inline display:none) and avoid colliding with Bootstrap's
+   .modal-content class used inside .modal-dialog. */
+div.modal-content[style*="display:none"] {
   display: none;
 }
 

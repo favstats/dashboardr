@@ -2,6 +2,21 @@
 # utils_core
 # =================================================================
 
+# Global counter for unique cross-tab IDs (reset per session)
+.crosstab_counter <- new.env(parent = emptyenv())
+.crosstab_counter$n <- 0L
+
+.next_crosstab_id <- function(prefix = "crosstab") {
+  .crosstab_counter$n <- .crosstab_counter$n + 1L
+  # Use page-specific prefix if set (prevents ID collision across QMD pages)
+  page_prefix <- .dashboardr_pkg_env$crosstab_prefix
+  if (!is.null(page_prefix) && nzchar(page_prefix)) {
+    paste0(page_prefix, "_", prefix, "_", sprintf("%04d", .crosstab_counter$n))
+  } else {
+    paste0(prefix, "_", sprintf("%04d", .crosstab_counter$n))
+  }
+}
+
 .pkg_root <- function(start = getwd()) {
   cur <- normalizePath(start, winslash = "/", mustWork = TRUE)
   repeat {
@@ -38,6 +53,37 @@
 }
 
 `%||%` <- function(x, y) if (is.null(x)) y else x
+
+.dashboardr_rds_bundle_prefix <- "dashboardr-rds-bundle://"
+
+.make_rds_bundle_ref <- function(bundle_file, bundle_key) {
+  paste0(
+    .dashboardr_rds_bundle_prefix,
+    utils::URLencode(as.character(bundle_file), reserved = TRUE),
+    "#",
+    utils::URLencode(as.character(bundle_key), reserved = TRUE)
+  )
+}
+
+.parse_rds_bundle_ref <- function(path) {
+  if (!is.character(path) || length(path) != 1L || is.na(path)) {
+    return(NULL)
+  }
+  if (!startsWith(path, .dashboardr_rds_bundle_prefix)) {
+    return(NULL)
+  }
+
+  encoded <- substring(path, nchar(.dashboardr_rds_bundle_prefix) + 1L)
+  parts <- strsplit(encoded, "#", fixed = TRUE)[[1]]
+  if (length(parts) != 2L || !nzchar(parts[[1]]) || !nzchar(parts[[2]])) {
+    return(NULL)
+  }
+
+  list(
+    bundle_file = utils::URLdecode(parts[[1]]),
+    bundle_key = utils::URLdecode(parts[[2]])
+  )
+}
 
 .suggest_alternative <- function(input, valid_options) {
   if (is.null(input) || length(valid_options) == 0) return(NULL)
@@ -129,7 +175,7 @@
       quoted <- paste0('"', escaped, '"')
       # Include name if present (e.g., c("key" = "value"))
       if (!is.null(names(arg)) && nchar(names(arg)) > 0) {
-        return(paste0('"', names(arg), '" = ', quoted))
+        return(paste0('c("', gsub('"', '\\"', names(arg), fixed = TRUE), '" = ', quoted, ')'))
       }
       return(quoted)
     } else {
@@ -694,6 +740,17 @@ density = list(
 #' @param modals Logical; include modal CSS/JS.
 #' @param chart_export Logical; enable Highcharts export buttons.
 #' @param sidebar Logical; include sidebar CSS/JS.
+#' @param deferred_charts Logical; include deferred charts JS/CSS for on-demand chart hydration.
+#' @param cross_tab_data_mode Character. How cross-tab data is embedded: "inline"
+#'   (default) or "asset" (external JSON files for lazy loading).
+#' @param min_cell_size Integer. Minimum cell count for privacy protection in
+#'   cross-tab data. Rows where 0 < n < min_cell_size are suppressed. Default 0.
+#' @param cross_tab_output_dir Character. Directory path for writing external
+#'   cross-tab JSON files when \code{cross_tab_data_mode = "asset"}.
+#' @param charts_output_dir Character. Directory path for writing deferred chart
+#'   JSON files when \code{deferred_charts = TRUE}.
+#' @param crosstab_prefix Character. Page-specific prefix for cross-tab IDs to
+#'   prevent ID collisions across multiple QMD pages.
 #' @return An \code{htmltools::tagList} of HTML tags (rendered via
 #'   \code{results='asis'}).
 #' @keywords internal
@@ -701,7 +758,27 @@ density = list(
 .page_config <- function(accessibility = TRUE, inputs = FALSE,
                          linked = FALSE, show_when = FALSE,
                          url_params = FALSE, modals = FALSE,
-                         chart_export = FALSE, sidebar = FALSE) {
+                         chart_export = FALSE, sidebar = FALSE,
+                         deferred_charts = FALSE,
+                         cross_tab_data_mode = "inline",
+                         min_cell_size = 0L,
+                         cross_tab_output_dir = NULL,
+                         charts_output_dir = NULL,
+                         crosstab_prefix = NULL) {
+  # Store optimization settings in package env for .embed_cross_tab() and .defer_chart()
+  .dashboardr_pkg_env$cross_tab_data_mode <- cross_tab_data_mode
+  .dashboardr_pkg_env$min_cell_size <- as.integer(min_cell_size)
+  .dashboardr_pkg_env$deferred_charts <- deferred_charts
+  # Reset per-page flag so first chart renders inline (loads JS dependencies)
+  .dashboardr_pkg_env$.first_chart_rendered <- NULL
+  # Store page-specific prefix for cross-tab IDs (prevents collision across pages)
+  .dashboardr_pkg_env$crosstab_prefix <- crosstab_prefix
+  if (!is.null(cross_tab_output_dir)) {
+    .dashboardr_pkg_env$cross_tab_output_dir <- cross_tab_output_dir
+  }
+  if (!is.null(charts_output_dir)) {
+    .dashboardr_pkg_env$charts_output_dir <- charts_output_dir
+  }
   css <- "
 <style>
 /* Ensure chart containers expand to fit content */
@@ -750,8 +827,9 @@ section {
   } else if (isTRUE(show_when)) {
     tags <- c(tags, list(enable_show_when()))
   }
-  if (isTRUE(chart_export))  tags <- c(tags, list(enable_chart_export()))
-  if (isTRUE(sidebar))       tags <- c(tags, list(enable_sidebar()))
+  if (isTRUE(chart_export))    tags <- c(tags, list(enable_chart_export()))
+  if (isTRUE(sidebar))         tags <- c(tags, list(enable_sidebar()))
+  if (isTRUE(deferred_charts)) tags <- c(tags, list(enable_deferred_charts()))
   htmltools::tagList(tags)
 }
 
@@ -762,6 +840,20 @@ section {
 #' and embeds them as JavaScript for client-side filtering. Used by generated
 #' QMD code when interactive inputs are present.
 #'
+#' Supports two modes (controlled by \code{cross_tab_data_mode} in
+#' \code{create_dashboard()}):
+#' \describe{
+#'   \item{inline}{(default) Embeds the full cross-tab JSON inline in a
+#'     \code{<script>} tag. Simple but can make HTML pages very large.}
+#'   \item{asset}{Writes cross-tab data to an external \code{.json} file in
+#'     \code{cross_tab/} and emits a lightweight stub with a URL pointer.
+#'     The JS fetches the data on first filter interaction.}
+#' }
+#'
+#' Privacy filtering (\code{min_cell_size}): When the cross-tab data has an
+#' \code{n} column and \code{min_cell_size > 0}, rows where
+#' \code{0 < n < min_cell_size} are removed and a build-time warning is emitted.
+#'
 #' @param result A visualization result (highchart object)
 #' @return The result wrapped with cross-tab JavaScript if applicable
 #' @keywords internal
@@ -770,34 +862,239 @@ section {
   cross_tab_data <- attr(result, "cross_tab_data")
   cross_tab_config <- attr(result, "cross_tab_config")
   cross_tab_id <- attr(result, "cross_tab_id")
-  
- if (!is.null(cross_tab_data)) {
+
+  if (!is.null(cross_tab_data)) {
     # Strip haven_labelled columns to prevent jsonlite::toJSON C stack overflow
     for (col in names(cross_tab_data)) {
       if (inherits(cross_tab_data[[col]], "haven_labelled")) {
         cross_tab_data[[col]] <- as.vector(cross_tab_data[[col]])
       }
     }
-    cross_tab_json <- jsonlite::toJSON(cross_tab_data, dataframe = "rows")
-    # Ensure filterVars is always serialized as an array, even with one element
-    # (auto_unbox would turn c("country") into "country" instead of ["country"])
-    if (!is.null(cross_tab_config$filterVars)) {
-      cross_tab_config$filterVars <- as.list(cross_tab_config$filterVars)
+
+    # --- Privacy filtering ---
+    min_cell_size <- .dashboardr_pkg_env$min_cell_size %||% 0L
+    if (min_cell_size > 0L && "n" %in% names(cross_tab_data)) {
+      n_col <- cross_tab_data$n
+      small_mask <- !is.na(n_col) & n_col > 0 & n_col < min_cell_size
+      n_small <- sum(small_mask)
+      if (n_small > 0) {
+        # Build informative warning
+        chart_label <- cross_tab_config$title %||% cross_tab_id %||% "unknown"
+        smallest_idx <- which(small_mask)[which.min(n_col[small_mask])]
+        smallest_n <- n_col[smallest_idx]
+        # Find which filter_var group the smallest cell belongs to
+        filter_vars <- cross_tab_config$filterVars
+        group_info <- ""
+        if (!is.null(filter_vars)) {
+          parts <- vapply(filter_vars, function(fv) {
+            val <- cross_tab_data[[fv]][smallest_idx]
+            if (!is.null(val) && !is.na(val)) paste0(fv, "='", val, "'") else ""
+          }, character(1))
+          parts <- parts[nchar(parts) > 0]
+          if (length(parts) > 0) group_info <- paste0(", group: ", paste(parts, collapse = ", "))
+        }
+        message(
+          "Cross-tab privacy: chart '", chart_label, "' has ", n_small,
+          " cell(s) with n < ", min_cell_size,
+          " (smallest: n=", smallest_n, group_info, ")"
+        )
+        # Suppress small cells
+        cross_tab_data <- cross_tab_data[!small_mask, , drop = FALSE]
+      }
     }
-    config_json <- jsonlite::toJSON(cross_tab_config, auto_unbox = TRUE, null = "null")
-    script_tag <- htmltools::tags$script(
-      htmltools::HTML(paste0(
-        "window.dashboardrCrossTab = window.dashboardrCrossTab || {};",
-        "window.dashboardrCrossTab[\"", cross_tab_id, "\"] = {",
-        "data: ", cross_tab_json, ",",
-        "config: ", config_json,
-        "};"
-      ))
-    )
-    result <- htmltools::tagList(script_tag, result)
+
+    # Ensure array fields are always serialized as JSON arrays (not scalars)
+    # auto_unbox = TRUE would convert single-element vectors to strings
+    array_fields <- c("filterVars", "groupOrder", "stackOrder", "xOrder", "colorMap")
+    for (fld in array_fields) {
+      if (!is.null(cross_tab_config[[fld]]) && !is.list(cross_tab_config[[fld]])) {
+        cross_tab_config[[fld]] <- as.list(cross_tab_config[[fld]])
+      }
+    }
+
+    # --- Branch: inline vs asset mode ---
+    cross_tab_mode <- .dashboardr_pkg_env$cross_tab_data_mode %||% "inline"
+
+    if (identical(cross_tab_mode, "asset")) {
+      # Asset mode: write data to external JSON file
+      cross_tab_dir <- .dashboardr_pkg_env$cross_tab_output_dir
+      if (!is.null(cross_tab_dir)) {
+        if (!dir.exists(cross_tab_dir)) {
+          dir.create(cross_tab_dir, recursive = TRUE)
+        }
+        json_filename <- paste0(cross_tab_id, ".json")
+        json_path <- file.path(cross_tab_dir, json_filename)
+        cross_tab_json <- jsonlite::toJSON(cross_tab_data, dataframe = "rows")
+        writeLines(cross_tab_json, json_path)
+
+        # Emit lightweight stub with URL pointer
+        config_json <- jsonlite::toJSON(cross_tab_config, auto_unbox = TRUE, null = "null")
+        script_tag <- htmltools::tags$script(
+          htmltools::HTML(paste0(
+            "window.dashboardrCrossTab = window.dashboardrCrossTab || {};",
+            "window.dashboardrCrossTab[\"", cross_tab_id, "\"] = {",
+            "_lazy: true,",
+            "_url: \"cross_tab/", json_filename, "\",",
+            "config: ", config_json,
+            "};"
+          ))
+        )
+        result <- htmltools::tagList(script_tag, result)
+      } else {
+        # Fallback to inline if output dir not set (shouldn't happen)
+        warning("cross_tab_data_mode is 'asset' but output directory not set; falling back to inline")
+        cross_tab_json <- jsonlite::toJSON(cross_tab_data, dataframe = "rows")
+        config_json <- jsonlite::toJSON(cross_tab_config, auto_unbox = TRUE, null = "null")
+        script_tag <- htmltools::tags$script(
+          htmltools::HTML(paste0(
+            "window.dashboardrCrossTab = window.dashboardrCrossTab || {};",
+            "window.dashboardrCrossTab[\"", cross_tab_id, "\"] = {",
+            "data: ", cross_tab_json, ",",
+            "config: ", config_json,
+            "};"
+          ))
+        )
+        result <- htmltools::tagList(script_tag, result)
+      }
+    } else {
+      # Inline mode (default): embed full JSON
+      cross_tab_json <- jsonlite::toJSON(cross_tab_data, dataframe = "rows")
+      config_json <- jsonlite::toJSON(cross_tab_config, auto_unbox = TRUE, null = "null")
+      script_tag <- htmltools::tags$script(
+        htmltools::HTML(paste0(
+          "window.dashboardrCrossTab = window.dashboardrCrossTab || {};",
+          "window.dashboardrCrossTab[\"", cross_tab_id, "\"] = {",
+          "data: ", cross_tab_json, ",",
+          "config: ", config_json,
+          "};"
+        ))
+      )
+      result <- htmltools::tagList(script_tag, result)
+    }
   }
-  
+
+  # Preserve cross_tab_id on the (possibly wrapped) result so .defer_chart() can read it
+  if (!is.null(cross_tab_id)) {
+    attr(result, "cross_tab_id") <- cross_tab_id
+  }
+
   result
+}
+
+#' Defer a chart: save options to JSON and return a placeholder
+#'
+#' When deferred charts mode is active, this replaces the full widget with a
+#' lightweight placeholder div. The chart options are saved to an external JSON
+#' file and the JS module \code{deferred_charts.js} hydrates the placeholder
+#' when it becomes visible.
+#'
+#' @param result A visualization result (highchart or other htmlwidget)
+#' @param chart_id Unique chart identifier
+#' @param height Chart height in pixels (default 400)
+#' @return An htmltools tag (placeholder div) or the original result if deferral fails
+#' @keywords internal
+#' @export
+.defer_chart <- function(result, chart_id = NULL, height = 400) {
+  charts_dir <- .dashboardr_pkg_env$charts_output_dir
+  if (is.null(charts_dir)) return(result)
+
+  # Keep the first chart per page inline so its JS dependencies (e.g. Highcharts) are loaded.
+  # Wrap it in a container with the correct height so the htmlwidget doesn't use its
+
+  # default sizing policy (which yields ~117px), causing overflow when Highcharts renders
+  # at the configured height (e.g. 650px).
+  if (is.null(.dashboardr_pkg_env$.first_chart_rendered)) {
+    .dashboardr_pkg_env$.first_chart_rendered <- TRUE
+    wrapped <- htmltools::div(
+      class = "dashboardr-inline-chart",
+      style = paste0("width:100%;height:", height, "px;min-height:", height, "px;overflow:hidden;"),
+      result
+    )
+    return(wrapped)
+  }
+
+  if (is.null(chart_id)) {
+    chart_id <- .generate_chart_id("deferred")
+  }
+
+  # If result is a tagList (from .embed_cross_tab()), extract the widget and script tags
+  script_tags <- NULL
+  widget <- result
+  if (inherits(result, "shiny.tag.list")) {
+    tags_list <- as.list(result)
+    script_tags <- Filter(function(t) {
+      inherits(t, "shiny.tag") && identical(t$name, "script")
+    }, tags_list)
+    # Find the actual widget inside the tagList
+    widget_candidates <- Filter(function(t) inherits(t, "htmlwidget"), tags_list)
+    if (length(widget_candidates) > 0) {
+      widget <- widget_candidates[[1]]
+    }
+  }
+
+  # Extract chart options based on backend
+  chart_options <- NULL
+  backend <- .detect_widget_backend(widget)
+
+  if (identical(backend, "highcharter") && inherits(widget, "htmlwidget")) {
+    chart_options <- widget$x$hc_opts
+  } else if (identical(backend, "echarts4r") && inherits(widget, "htmlwidget")) {
+    chart_options <- widget$x$opts
+  } else if (identical(backend, "plotly") && inherits(widget, "htmlwidget")) {
+    chart_options <- list(data = widget$x$data, layout = widget$x$layout)
+  }
+
+  if (is.null(chart_options)) {
+    # Can't extract options - render normally
+    return(result)
+  }
+
+  # Also extract cross-tab ID so JS can link deferred chart to cross-tab data
+  cross_tab_id <- attr(result, "cross_tab_id") %||% attr(widget, "cross_tab_id")
+
+  # Build the JSON payload
+  payload <- list(
+    options = chart_options,
+    backend = backend,
+    chartId = chart_id,
+    crossTabId = cross_tab_id
+  )
+
+  # Save to file
+  json_filename <- paste0(chart_id, ".json")
+  json_path <- file.path(charts_dir, json_filename)
+  json_content <- jsonlite::toJSON(payload, auto_unbox = TRUE, null = "null",
+                                    force = TRUE, digits = 6)
+  writeLines(json_content, json_path)
+
+  # Build placeholder div — uses absolute overlay so deferred_charts.js
+
+  # can seamlessly replace it without layout jumps
+  placeholder <- htmltools::div(
+    class = "dashboardr-deferred-chart",
+    `data-chart-url` = paste0("charts/", json_filename),
+    `data-chart-id` = chart_id,
+    `data-chart-backend` = backend,
+    `data-chart-height` = height,
+    style = paste0(
+      "height:", height, "px;min-height:", height, "px;",
+      "position:relative;overflow:hidden;border-radius:8px;"
+    ),
+    htmltools::div(
+      class = "dashboardr-deferred-overlay",
+      style = "position:absolute;top:0;left:0;right:0;bottom:0;background:#fff;display:flex;align-items:center;justify-content:center;z-index:10;transition:opacity 0.35s ease-out;",
+      htmltools::HTML(
+        '<div style="text-align:center;color:#b0b0b0;font-size:0.85rem;"><div style="width:28px;height:28px;border:3px solid #e5e7eb;border-top-color:#f39917;border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 8px;"></div></div>'
+      )
+    )
+  )
+
+  # Preserve cross-tab script tags alongside the placeholder
+  if (length(script_tags) > 0) {
+    return(htmltools::tagList(script_tags, placeholder))
+  }
+
+  placeholder
 }
 
 #' Generate a unique chart id for dashboardr widgets

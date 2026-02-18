@@ -52,7 +52,7 @@ gss <- gss_all %>%
 </details>
 
 ```{r, include = FALSE}
-devtools::load_all()
+library(dashboardr)
 ```
 
 ## 🔍 Filtering Data

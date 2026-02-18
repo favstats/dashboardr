@@ -7,18 +7,19 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r, include = FALSE}
+```{r, include = FALSE, purl = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
-  eval = FALSE
+  eval = FALSE,
+  purl = FALSE
 )
 ```
 
 dashboardr can sync filter state to URL query parameters, enabling shareable
 links that restore a specific view of the dashboard.
 
-```{r setup}
+```{r setup, purl = FALSE}
 library(dashboardr)
 ```
 
@@ -30,7 +31,7 @@ URL parameters to control).
 
 The simplest way is to set `url_params = TRUE` on `enable_inputs()`:
 
-```{r}
+```{r, purl = FALSE}
 page <- create_page("Analysis") %>%
   add_input(
     input_id = "region",
@@ -90,7 +91,7 @@ This activates the "Demographics" parent tab and then the "Age" child tab.
 
 ## Example Dashboard
 
-```{r}
+```{r, purl = FALSE}
 data <- data.frame(
   region = rep(c("North", "South", "East", "West"), each = 25),
   year = rep(2018:2022, 20),

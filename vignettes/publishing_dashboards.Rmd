@@ -7,11 +7,12 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r, include = FALSE}
+```{r, include = FALSE, purl = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
-  eval = FALSE
+  eval = FALSE,
+  purl = FALSE
 )
 ```
 
@@ -64,7 +65,7 @@ You need:
 - The `dashboardr` package installed
 - A dashboard you want to publish (see the `getting-started` vignette if you need to create one)
 
-```{r setup}
+```{r setup, purl = FALSE}
 # Install packages if you don't have them
 install.packages(c("usethis", "gert"))
 library(dashboardr)
@@ -110,7 +111,7 @@ sudo dnf install git
 
 Git needs to know your name and email. Run this in R with **your** information:
 
-```{r configure}
+```{r configure, purl = FALSE}
 library(usethis)
 
 use_git_config(
@@ -125,7 +126,7 @@ use_git_config(
 
 Run this command to verify your setup:
 
-```{r check}
+```{r check, purl = FALSE}
 git_sitrep()
 ```
 
@@ -152,7 +153,7 @@ GitHub needs a way to verify it's really you. We'll create a Personal Access Tok
 
 Run this command in R:
 
-```{r create-token}
+```{r create-token, purl = FALSE}
 usethis::create_github_token()
 ```
 
@@ -172,7 +173,7 @@ On the GitHub page:
 
 Now tell R about your token:
 
-```{r store-token}
+```{r store-token, purl = FALSE}
 gitcreds::gitcreds_set()
 ```
 
@@ -188,7 +189,7 @@ Now comes the fun part - publishing your dashboard!
 
 First, create and render your dashboard as usual:
 
-```{r generate}
+```{r generate, purl = FALSE}
 # Example dashboard
 my_data <- data.frame(
   category = c("A", "B", "C", "D"),
@@ -216,7 +217,7 @@ generate_dashboard(dashboard, render = TRUE)
 
 Now for the magic command with the key arguments shown explicitly:
 
-```{r publish}
+```{r publish, purl = FALSE}
 publish_dashboard(
   message = "Initial commit",  # Your commit message
   path = "/docs"               # Folder with your dashboard (default)
@@ -225,7 +226,7 @@ publish_dashboard(
 
 Or simply:
 
-```{r publish-simple}
+```{r publish-simple, purl = FALSE}
 publish_dashboard()  # Uses defaults above
 ```
 
@@ -278,7 +279,7 @@ Copy this URL and wait 2-5 minutes, then visit it to see your live dashboard!
 
 For more advanced scenarios:
 
-```{r publish-options}
+```{r publish-options, purl = FALSE}
 # Publish to an organization instead of your personal account
 publish_dashboard(organisation = "my-organization")
 
@@ -297,7 +298,7 @@ Made changes to your dashboard? Here's how to update the published version.
 
 Make your changes and regenerate:
 
-```{r update-generate}
+```{r update-generate, purl = FALSE}
 # Make changes to your dashboard
 dashboard <- create_dashboard(
   output_dir = "my_dashboard",
@@ -316,7 +317,7 @@ generate_dashboard(dashboard, render = TRUE)
 
 ## ⬆️ Step 2: Push Your Updates
 
-```{r update}
+```{r update, purl = FALSE}
 update_dashboard()
 ```
 
@@ -333,7 +334,7 @@ update_dashboard()
 
 ### Update Options
 
-```{r update-options}
+```{r update-options, purl = FALSE}
 # Custom commit message
 update_dashboard(message = "Added new visualizations")
 
@@ -357,7 +358,7 @@ update_dashboard(ask = FALSE)
 
 Here's a full example from start to finish:
 
-```{r complete-workflow}
+```{r complete-workflow, purl = FALSE}
 library(dashboardr)
 
 # 1. Create your dashboard
@@ -454,12 +455,12 @@ This keeps your repository small and protects sensitive data.
 ## 2. Write Descriptive Commit Messages
 
 Instead of:
-```{r bad-message}
+```{r bad-message, purl = FALSE}
 update_dashboard(message = "update")
 ```
 
 Do this:
-```{r good-message}
+```{r good-message, purl = FALSE}
 update_dashboard(message = "Added new bar chart for regional analysis")
 ```
 

@@ -2369,7 +2369,7 @@ save_widget <- function(widget, file, selfcontained = TRUE) {
   # Check if per-viz data was serialized (from add_viz(data = df))
   if (!is.null(item$data_serialized) && nchar(item$data_serialized) > 0) {
     # Deserialize the inline data frame
-    viz_args$data <- as.data.frame(eval(parse(text = item$data_serialized)))
+    viz_args$data <- as.data.frame(eval(parse(text = item$data_serialized)), check.names = FALSE)
   } else if (is.null(viz_args$data) || is.character(viz_args$data)) {
     # Use collection-level data if no per-viz data and data is NULL or a string reference
     viz_args$data <- data

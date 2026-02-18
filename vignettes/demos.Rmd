@@ -7,11 +7,12 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r, include = FALSE}
+```{r, include = FALSE, purl = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
-  eval = FALSE
+  eval = FALSE,
+  purl = FALSE
 )
 ```
 
@@ -67,7 +68,7 @@ The tutorial dashboard is perfect for learning the basics:
 
 **[View Complete Code Documentation →](tutorial_dashboard_code.html)**
 
-```{r}
+```{r, purl = FALSE}
 library(dashboardr)
 
 # Generate and open the tutorial dashboard
@@ -86,14 +87,14 @@ The showcase dashboard demonstrates advanced features:
 
 **[View Complete Code Documentation →](showcase_dashboard_code.html)**
 
-```{r}
+```{r, purl = FALSE}
 # Generate and open the showcase dashboard
 showcase_dashboard()
 ```
 
 ## Setting a Tabset Theme
 
-```{r}
+```{r, purl = FALSE}
 # Set theme at dashboard level
 create_dashboard(
   title = "My Dashboard",
@@ -106,7 +107,7 @@ Available themes: `pills`, `modern`, `minimal`, `classic`, `underline`, `segment
 
 ## Creating Nested Tabs
 
-```{r}
+```{r, purl = FALSE}
 # 1 Level - Different tabgroup names create separate tabs
 create_viz() %>%
   add_viz(type = "bar", x_var = "age", tabgroup = "age") %>%
@@ -128,7 +129,7 @@ create_viz() %>%
 
 Sidebars provide a dedicated space for filters that stays visible as users scroll:
 
-```{r}
+```{r, purl = FALSE}
 create_content(data = my_data) %>%
   add_sidebar(width = "280px", title = "Filters") %>%
     add_text("Filter the data:") %>%
@@ -155,7 +156,7 @@ See the [Sidebar Demo](../live-demos/sidebar/index.html) for live examples.
 
 ## Loading Overlays
 
-```{r}
+```{r, purl = FALSE}
 # Add overlay to a page
 add_page(
   name = "Analysis",
@@ -177,7 +178,7 @@ All demos require:
 1. **Quarto CLI** installed on your system
 2. **gssr package** for GSS data (for tutorial/showcase):
 
-```{r}
+```{r, purl = FALSE}
 install.packages("gssr")
 ```
 

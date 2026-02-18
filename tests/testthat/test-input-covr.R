@@ -255,15 +255,15 @@ test_that("add_linked_inputs creates parent-child inputs", {
   expect_true(isTRUE(cc$sidebar$needs_linked_inputs))
 })
 
-test_that("add_linked_inputs error: not in sidebar", {
-  expect_error(
-    add_linked_inputs(
-      create_content(),
-      parent = list(id = "dim", label = "X", options = c("A")),
-      child = list(id = "q", label = "Y", options_by_parent = list("A" = c("a")))
-    ),
-    "sidebar"
+test_that("add_linked_inputs works in standalone content collections", {
+  cc <- add_linked_inputs(
+    create_content(),
+    parent = list(id = "dim", label = "X", options = c("A")),
+    child = list(id = "q", label = "Y", options_by_parent = list("A" = c("a")))
   )
+
+  expect_true(inherits(cc, "content_collection"))
+  expect_true(isTRUE(cc$needs_linked_inputs))
 })
 
 test_that("add_linked_inputs error: missing parent fields", {

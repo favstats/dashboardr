@@ -31,6 +31,8 @@
 #'   syntax, use the \code{tooltip} parameter instead.
 #' @param jitter Logical. Whether to add jittering to reduce overplotting. Defaults to `FALSE`.
 #' @param jitter_amount Numeric. Amount of jittering if `jitter = TRUE`. Defaults to 0.2.
+#' @param cross_tab_filter_vars Optional character vector of variable names to use for
+#'   client-side cross-tab filtering when dashboard inputs are present.
 #'
 #' @param backend Rendering backend: "highcharter" (default), "plotly", "echarts4r", or "ggiraph".
 #' @return A highcharter plot object.
@@ -91,7 +93,8 @@ viz_scatter <- function(data,
                            jitter = FALSE,
                            jitter_amount = 0.2,
                            legend_position = NULL,
-                           backend = "highcharter") {
+                           backend = "highcharter",
+                           cross_tab_filter_vars = NULL) {
   
   # Convert variable arguments to strings (supports both quoted and unquoted)
   x_var <- .as_var_string(rlang::enquo(x_var))
@@ -136,6 +139,10 @@ viz_scatter <- function(data,
   vars_to_select <- c(x_var, y_var)
   if (!is.null(color_var)) vars_to_select <- c(vars_to_select, color_var)
   if (!is.null(size_var)) vars_to_select <- c(vars_to_select, size_var)
+  if (!is.null(cross_tab_filter_vars) && length(cross_tab_filter_vars) > 0) {
+    vars_to_select <- c(vars_to_select, cross_tab_filter_vars)
+  }
+  vars_to_select <- unique(vars_to_select)
   
   plot_data <- data %>%
     dplyr::select(dplyr::all_of(vars_to_select)) %>%
@@ -229,6 +236,45 @@ viz_scatter <- function(data,
     legend_position = legend_position
   )
 
+  # Prepare cross-tab data for client-side filtering (all backends)
+  cross_tab_attrs <- NULL
+  if (!is.null(cross_tab_filter_vars) && length(cross_tab_filter_vars) > 0) {
+    valid_filter_vars <- cross_tab_filter_vars[cross_tab_filter_vars %in% names(plot_data)]
+    if (length(valid_filter_vars) > 0) {
+      keep_cols <- unique(c(valid_filter_vars, x_var_numeric, y_var_plot, color_var, size_var))
+      cross_tab <- plot_data %>%
+        dplyr::select(dplyr::all_of(keep_cols)) %>%
+        dplyr::mutate(
+          .dashboardr_x = as.numeric(.data[[x_var_numeric]]),
+          .dashboardr_y = as.numeric(.data[[y_var_plot]]),
+          .dashboardr_group = if (!is.null(color_var)) as.character(.data[[color_var]]) else "__all__",
+          .dashboardr_size = if (!is.null(size_var)) as.numeric(.data[[size_var]]) else NA_real_
+        ) %>%
+        dplyr::select(dplyr::all_of(valid_filter_vars), .dashboardr_x, .dashboardr_y, .dashboardr_group, .dashboardr_size)
+
+      chart_id <- .next_crosstab_id()
+      chart_config <- list(
+        chartId = chart_id,
+        chartType = "scatter",
+        xVar = ".dashboardr_x",
+        yVar = ".dashboardr_y",
+        groupVar = if (!is.null(color_var)) ".dashboardr_group" else NULL,
+        sizeVar = if (!is.null(size_var)) ".dashboardr_size" else NULL,
+        filterVars = valid_filter_vars,
+        groupOrder = if (!is.null(color_var)) unique(as.character(plot_data[[color_var]])) else NULL,
+        pointSize = point_size,
+        alpha = alpha
+      )
+      if (!is.null(color_palette) && !is.null(names(color_palette))) {
+        chart_config$colorMap <- as.list(color_palette)
+      }
+      if (!is.null(title) && grepl("\\{\\w+\\}", title)) {
+        chart_config$titleTemplate <- title
+      }
+      cross_tab_attrs <- list(data = cross_tab, config = chart_config, id = chart_id)
+    }
+  }
+
   # Dispatch to backend renderer
   backend <- .normalize_backend(backend)
   backend <- match.arg(backend, c("highcharter", "plotly", "echarts4r", "ggiraph"))
@@ -240,6 +286,14 @@ viz_scatter <- function(data,
     ggiraph     = .viz_scatter_ggiraph
   )
   result <- render_fn(plot_data, config)
+  if (!is.null(cross_tab_attrs)) {
+    attr(result, "cross_tab_data") <- cross_tab_attrs$data
+    attr(result, "cross_tab_config") <- cross_tab_attrs$config
+    attr(result, "cross_tab_id") <- cross_tab_attrs$id
+    if (identical(backend, "highcharter")) {
+      result <- highcharter::hc_chart(result, id = cross_tab_attrs$id)
+    }
+  }
   result <- .register_chart_widget(result, backend = backend)
   return(result)
 }

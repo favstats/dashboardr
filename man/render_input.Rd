@@ -34,6 +34,7 @@ render_input(
   size = c("md", "sm", "lg"),
   help = NULL,
   disabled = FALSE,
+  icons = NULL,
   linked_child_id = NULL,
   options_by_parent = NULL
 )
@@ -97,6 +98,10 @@ Can also be a named list for grouped options in selects.}
 \item{help}{Help text displayed below the input}
 
 \item{disabled}{Whether the input is disabled}
+
+\item{icons}{Optional character vector of Iconify icon names (e.g., "ph:calendar",
+"ph:users-three"). Must be same length as \code{options}. When provided, icons
+are rendered before option text for radio and button_group types.}
 
 \item{linked_child_id}{ID of linked child input for cascading inputs}
 

@@ -1,484 +1,752 @@
 version: 1
-
 defaults:
   forbidden_console_patterns:
-    - "Uncaught"
-    - "Unhandled promise rejection"
-    - "Cannot read properties of undefined"
+  - Uncaught
+  - Unhandled promise rejection
+  - Cannot read properties of undefined
   max_large_empty_cards: 0
+  require_show_when_consistency: yes
   font_expectations:
-    - selector: "body"
-      contains_any: ["system-ui", "Segoe UI", "Roboto", "Helvetica", "Arial", "sans-serif"]
-      not_contains_any: ["Times New Roman"]
-    - selector: ".navbar .nav-link, .navbar-brand, .menu-text"
-      contains_any: ["system-ui", "Segoe UI", "Roboto", "Helvetica", "Arial", "sans-serif"]
-      not_contains_any: ["Times New Roman"]
-    - selector: ".dashboardr-input-group label, .dashboardr-radio-group label, .dashboardr-checkbox-group label"
-      contains_any: ["system-ui", "Segoe UI", "Roboto", "Helvetica", "Arial", "sans-serif"]
-      not_contains_any: ["Times New Roman"]
-
+  - selector: body
+    contains_any:
+    - system-ui
+    - Segoe UI
+    - Roboto
+    - Helvetica
+    - Arial
+    - sans-serif
+    not_contains_any: Times New Roman
+  - selector: .navbar .nav-link, .navbar-brand, .menu-text
+    contains_any:
+    - system-ui
+    - Segoe UI
+    - Roboto
+    - Helvetica
+    - Arial
+    - sans-serif
+    not_contains_any: Times New Roman
+  - selector: .dashboardr-input-group label, .dashboardr-radio-group label, .dashboardr-checkbox-group
+      label
+    contains_any:
+    - system-ui
+    - Segoe UI
+    - Roboto
+    - Helvetica
+    - Arial
+    - sans-serif
+    not_contains_any: Times New Roman
 scenarios:
-  # ---------------------------------------------------------------------------
-  # S1: All-input sidebar + filterable stacked bar (smoke)
-  # ---------------------------------------------------------------------------
-  - id: single-graph-echarts-s1
-    modes: [smoke, full]
-    source_type: docs
-    backend: echarts4r
-    url_path: /sidebar_single_echarts/docs/s1_all_inputs_single_bar.html
-    expect_chart_backend: [echarts4r]
-    interaction_plan: [slider, filter, sidebar_toggle]
-    preferred_filter_var: region
-    preferred_slider_var: year
-    expect_filter_effect: true
-    expect_slider_effect: true
-    expect_dynamic_text_effect: true
-    require_all_input_vars_affect_all_charts: true
-    dynamic_text_selectors: ["#s1_dynamic_low", "#s1_dynamic_high", ".dashboardr-slider-value"]
-    min_non_empty_charts_expected: 1
-    required_selectors:
-      - "#s1_dynamic_low"
-      - ".dashboardr-checkbox-group[data-filter-var='happiness']"
-      - ".dashboardr-slider[data-filter-var='year']"
-      - ".collapse-toggle"
-    required_texts:
-      - "S1_All_Inputs_Single_Bar"
-    forbidden_console_patterns: []
-
-  - id: single-graph-plotly-s1
-    modes: [smoke, full]
-    source_type: docs
-    backend: plotly
-    url_path: /sidebar_single_plotly/docs/s1_all_inputs_single_bar.html
-    expect_chart_backend: [plotly]
-    interaction_plan: [slider, filter, sidebar_toggle]
-    preferred_filter_var: region
-    preferred_slider_var: year
-    expect_filter_effect: true
-    expect_slider_effect: true
-    expect_dynamic_text_effect: true
-    require_all_input_vars_affect_all_charts: true
-    dynamic_text_selectors: ["#s1_dynamic_low", "#s1_dynamic_high", ".dashboardr-slider-value"]
-    min_non_empty_charts_expected: 1
-    required_selectors:
-      - "#s1_dynamic_low"
-      - ".dashboardr-checkbox-group[data-filter-var='happiness']"
-      - ".dashboardr-slider[data-filter-var='year']"
-      - ".collapse-toggle"
-    required_texts:
-      - "S1_All_Inputs_Single_Bar"
-    forbidden_console_patterns: []
-
-  - id: single-graph-hc-s1
-    modes: [smoke, full]
-    source_type: docs
-    backend: highcharter
-    url_path: /sidebar_single_hc/docs/s1_all_inputs_single_bar.html
-    expect_chart_backend: [highcharter]
-    interaction_plan: [slider, filter, sidebar_toggle]
-    preferred_filter_var: region
-    preferred_slider_var: year
-    expect_filter_effect: true
-    expect_slider_effect: true
-    expect_dynamic_text_effect: true
-    require_all_input_vars_affect_all_charts: true
-    dynamic_text_selectors: ["#s1_dynamic_low", "#s1_dynamic_high", ".dashboardr-slider-value"]
-    min_non_empty_charts_expected: 1
-    required_selectors:
-      - "#s1_dynamic_low"
-      - ".dashboardr-checkbox-group[data-filter-var='happiness']"
-      - ".dashboardr-slider[data-filter-var='year']"
-      - ".collapse-toggle"
-    required_texts:
-      - "S1_All_Inputs_Single_Bar"
-    forbidden_console_patterns: []
-
-  # ---------------------------------------------------------------------------
-  # S2: Filterable timeline + show_when (smoke)
-  # ---------------------------------------------------------------------------
-  - id: single-graph-echarts-s2
-    modes: [smoke, full]
-    source_type: docs
-    backend: echarts4r
-    url_path: /sidebar_single_echarts/docs/s2_pie_showwhen.html
-    expect_chart_backend: [echarts4r]
-    interaction_plan: [filter, show_when_toggle, sidebar_toggle]
-    preferred_filter_var: education
-    expect_filter_effect: true
-    expect_dynamic_text_effect: false
-    require_all_input_vars_affect_all_charts: true
-    min_non_empty_charts_expected: 1
-    required_selectors:
-      - "#s2_education"
-      - "[data-show-when]"
-      - ".collapse-toggle"
-    required_texts:
-      - "S2_Pie_ShowWhen"
-    forbidden_console_patterns: []
-
-  - id: single-graph-plotly-s2
-    modes: [smoke, full]
-    source_type: docs
-    backend: plotly
-    url_path: /sidebar_single_plotly/docs/s2_pie_showwhen.html
-    expect_chart_backend: [plotly]
-    interaction_plan: [filter, show_when_toggle, sidebar_toggle]
-    preferred_filter_var: education
-    expect_filter_effect: true
-    expect_dynamic_text_effect: false
-    require_all_input_vars_affect_all_charts: true
-    min_non_empty_charts_expected: 1
-    required_selectors:
-      - "#s2_education"
-      - "[data-show-when]"
-      - ".collapse-toggle"
-    required_texts:
-      - "S2_Pie_ShowWhen"
-    forbidden_console_patterns: []
-
-  - id: single-graph-hc-s2
-    modes: [smoke, full]
-    source_type: docs
-    backend: highcharter
-    url_path: /sidebar_single_hc/docs/s2_pie_showwhen.html
-    expect_chart_backend: [highcharter]
-    interaction_plan: [filter, show_when_toggle, sidebar_toggle]
-    preferred_filter_var: education
-    expect_filter_effect: true
-    expect_dynamic_text_effect: false
-    require_all_input_vars_affect_all_charts: true
-    min_non_empty_charts_expected: 1
-    required_selectors:
-      - "#s2_education"
-      - "[data-show-when]"
-      - ".collapse-toggle"
-    required_texts:
-      - "S2_Pie_ShowWhen"
-    forbidden_console_patterns: []
-
-  # ---------------------------------------------------------------------------
-  # S3: Filterable timeline + linked inputs (full)
-  # ---------------------------------------------------------------------------
-  - id: single-graph-echarts-s3
-    modes: [full]
-    source_type: docs
-    backend: echarts4r
-    url_path: /sidebar_single_echarts/docs/s3_scatter_linked.html
-    expect_chart_backend: [echarts4r]
-    interaction_plan: [linked_inputs, filter, sidebar_toggle]
-    preferred_filter_var: region
-    expect_filter_effect: true
-    require_all_input_vars_affect_all_charts: true
-    min_non_empty_charts_expected: 1
-    required_selectors:
-      - "#dimension"
-      - "[data-linked-child-id]"
-      - ".collapse-toggle"
-    required_texts:
-      - "S3_Scatter_Linked"
-    forbidden_console_patterns: []
-
-  - id: single-graph-plotly-s3
-    modes: [full]
-    source_type: docs
-    backend: plotly
-    url_path: /sidebar_single_plotly/docs/s3_scatter_linked.html
-    expect_chart_backend: [plotly]
-    interaction_plan: [linked_inputs, filter, sidebar_toggle]
-    preferred_filter_var: region
-    expect_filter_effect: true
-    require_all_input_vars_affect_all_charts: true
-    min_non_empty_charts_expected: 1
-    required_selectors:
-      - "#dimension"
-      - "[data-linked-child-id]"
-      - ".collapse-toggle"
-    required_texts:
-      - "S3_Scatter_Linked"
-    forbidden_console_patterns: []
-
-  - id: single-graph-hc-s3
-    modes: [full]
-    source_type: docs
-    backend: highcharter
-    url_path: /sidebar_single_hc/docs/s3_scatter_linked.html
-    expect_chart_backend: [highcharter]
-    interaction_plan: [linked_inputs, filter, sidebar_toggle]
-    preferred_filter_var: region
-    expect_filter_effect: true
-    require_all_input_vars_affect_all_charts: true
-    min_non_empty_charts_expected: 1
-    required_selectors:
-      - "#dimension"
-      - "[data-linked-child-id]"
-      - ".collapse-toggle"
-    required_texts:
-      - "S3_Scatter_Linked"
-    forbidden_console_patterns: []
-
-  # ---------------------------------------------------------------------------
-  # S4: Filterable timeline + checkbox + slider (smoke)
-  # ---------------------------------------------------------------------------
-  - id: single-graph-echarts-s4
-    modes: [smoke, full]
-    source_type: docs
-    backend: echarts4r
-    url_path: /sidebar_single_echarts/docs/s4_boxplot_checkbox_slider.html
-    expect_chart_backend: [echarts4r]
-    interaction_plan: [slider, filter, sidebar_toggle]
-    preferred_filter_var: region
-    preferred_slider_var: year
-    expect_filter_effect: true
-    expect_slider_effect: true
-    expect_dynamic_text_effect: true
-    require_all_input_vars_affect_all_charts: true
-    dynamic_text_selectors: ["#s4_dynamic_low", "#s4_dynamic_high", ".dashboardr-slider-value"]
-    min_non_empty_charts_expected: 1
-    required_selectors:
-      - "#s4_dynamic_low"
-      - ".dashboardr-checkbox-group[data-filter-var='region']"
-      - ".dashboardr-slider[data-filter-var='year']"
-      - ".collapse-toggle"
-    required_texts:
-      - "S4_Boxplot_Checkbox_Slider"
-    forbidden_console_patterns: []
-
-  - id: single-graph-plotly-s4
-    modes: [smoke, full]
-    source_type: docs
-    backend: plotly
-    url_path: /sidebar_single_plotly/docs/s4_boxplot_checkbox_slider.html
-    expect_chart_backend: [plotly]
-    interaction_plan: [slider, filter, sidebar_toggle]
-    preferred_filter_var: region
-    preferred_slider_var: year
-    expect_filter_effect: true
-    expect_slider_effect: true
-    expect_dynamic_text_effect: true
-    require_all_input_vars_affect_all_charts: true
-    dynamic_text_selectors: ["#s4_dynamic_low", "#s4_dynamic_high", ".dashboardr-slider-value"]
-    min_non_empty_charts_expected: 1
-    required_selectors:
-      - "#s4_dynamic_low"
-      - ".dashboardr-checkbox-group[data-filter-var='region']"
-      - ".dashboardr-slider[data-filter-var='year']"
-      - ".collapse-toggle"
-    required_texts:
-      - "S4_Boxplot_Checkbox_Slider"
-    forbidden_console_patterns: []
-
-  - id: single-graph-hc-s4
-    modes: [smoke, full]
-    source_type: docs
-    backend: highcharter
-    url_path: /sidebar_single_hc/docs/s4_boxplot_checkbox_slider.html
-    expect_chart_backend: [highcharter]
-    interaction_plan: [slider, filter, sidebar_toggle]
-    preferred_filter_var: region
-    preferred_slider_var: year
-    expect_filter_effect: true
-    expect_slider_effect: true
-    expect_dynamic_text_effect: true
-    require_all_input_vars_affect_all_charts: true
-    dynamic_text_selectors: ["#s4_dynamic_low", "#s4_dynamic_high", ".dashboardr-slider-value"]
-    min_non_empty_charts_expected: 1
-    required_selectors:
-      - "#s4_dynamic_low"
-      - ".dashboardr-checkbox-group[data-filter-var='region']"
-      - ".dashboardr-slider[data-filter-var='year']"
-      - ".collapse-toggle"
-    required_texts:
-      - "S4_Boxplot_Checkbox_Slider"
-    forbidden_console_patterns: []
-
-  # ---------------------------------------------------------------------------
-  # S5: Filterable timeline + reset button (full)
-  # ---------------------------------------------------------------------------
-  - id: single-graph-echarts-s5
-    modes: [full]
-    source_type: docs
-    backend: echarts4r
-    url_path: /sidebar_single_echarts/docs/s5_bar_reset_button.html
-    expect_chart_backend: [echarts4r]
-    interaction_plan: [filter, sidebar_toggle]
-    preferred_filter_var: region
-    expect_filter_effect: true
-    require_all_input_vars_affect_all_charts: true
-    min_non_empty_charts_expected: 1
-    required_selectors:
-      - "#s5_education"
-      - ".dashboardr-checkbox-group[data-filter-var='region']"
-      - ".collapse-toggle"
-    required_texts:
-      - "S5_Bar_Reset_Button"
-    forbidden_console_patterns: []
-
-  - id: single-graph-plotly-s5
-    modes: [full]
-    source_type: docs
-    backend: plotly
-    url_path: /sidebar_single_plotly/docs/s5_bar_reset_button.html
-    expect_chart_backend: [plotly]
-    interaction_plan: [filter, sidebar_toggle]
-    preferred_filter_var: region
-    expect_filter_effect: true
-    require_all_input_vars_affect_all_charts: true
-    min_non_empty_charts_expected: 1
-    required_selectors:
-      - "#s5_education"
-      - ".dashboardr-checkbox-group[data-filter-var='region']"
-      - ".collapse-toggle"
-    required_texts:
-      - "S5_Bar_Reset_Button"
-    forbidden_console_patterns: []
-
-  - id: single-graph-hc-s5
-    modes: [full]
-    source_type: docs
-    backend: highcharter
-    url_path: /sidebar_single_hc/docs/s5_bar_reset_button.html
-    expect_chart_backend: [highcharter]
-    interaction_plan: [filter, sidebar_toggle]
-    preferred_filter_var: region
-    expect_filter_effect: true
-    require_all_input_vars_affect_all_charts: true
-    min_non_empty_charts_expected: 1
-    required_selectors:
-      - "#s5_education"
-      - ".dashboardr-checkbox-group[data-filter-var='region']"
-      - ".collapse-toggle"
-    required_texts:
-      - "S5_Bar_Reset_Button"
-    forbidden_console_patterns: []
-
-  # ---------------------------------------------------------------------------
-  # S6: Show_when on chart itself (smoke)
-  # Filterable chart hidden/shown by show_when on view_mode select.
-  # Dynamic text toggles between "Chart view" and "Summary view".
-  # ---------------------------------------------------------------------------
-  - id: single-graph-echarts-s6
-    modes: [smoke, full]
-    source_type: docs
-    backend: echarts4r
-    url_path: /sidebar_single_echarts/docs/s6_showwhen_on_chart.html
-    expect_chart_backend: []
-    interaction_plan: [filter, show_when_toggle, sidebar_toggle]
-    preferred_filter_var: region
-    expect_filter_effect: true
-    expect_dynamic_text_effect: true
-    dynamic_text_selectors: ["#s6_dynamic_chart", "#s6_dynamic_summary"]
-    min_non_empty_charts_expected: 0
-    required_selectors:
-      - "#s6_dynamic_chart"
-      - "[data-show-when]"
-      - ".collapse-toggle"
-    required_texts:
-      - "S6_ShowWhen_On_Chart"
-    forbidden_console_patterns: []
-
-  - id: single-graph-plotly-s6
-    modes: [smoke, full]
-    source_type: docs
-    backend: plotly
-    url_path: /sidebar_single_plotly/docs/s6_showwhen_on_chart.html
-    expect_chart_backend: []
-    interaction_plan: [filter, show_when_toggle, sidebar_toggle]
-    preferred_filter_var: region
-    expect_filter_effect: true
-    expect_dynamic_text_effect: true
-    dynamic_text_selectors: ["#s6_dynamic_chart", "#s6_dynamic_summary"]
-    min_non_empty_charts_expected: 0
-    required_selectors:
-      - "#s6_dynamic_chart"
-      - "[data-show-when]"
-      - ".collapse-toggle"
-    required_texts:
-      - "S6_ShowWhen_On_Chart"
-    forbidden_console_patterns: []
-
-  - id: single-graph-hc-s6
-    modes: [smoke, full]
-    source_type: docs
-    backend: highcharter
-    url_path: /sidebar_single_hc/docs/s6_showwhen_on_chart.html
-    expect_chart_backend: []
-    interaction_plan: [filter, show_when_toggle, sidebar_toggle]
-    preferred_filter_var: region
-    expect_filter_effect: true
-    expect_dynamic_text_effect: true
-    dynamic_text_selectors: ["#s6_dynamic_chart", "#s6_dynamic_summary"]
-    min_non_empty_charts_expected: 0
-    required_selectors:
-      - "#s6_dynamic_chart"
-      - "[data-show-when]"
-      - ".collapse-toggle"
-    required_texts:
-      - "S6_ShowWhen_On_Chart"
-    forbidden_console_patterns: []
-
-  # ---------------------------------------------------------------------------
-  # S7: Stacked bar + compound show_when (full)
-  # show_when toggles callouts based on region radio selection.
-  # ---------------------------------------------------------------------------
-  - id: single-graph-echarts-s7
-    modes: [full]
-    source_type: docs
-    backend: echarts4r
-    url_path: /sidebar_single_echarts/docs/s7_stacked_compound_showwhen.html
-    expect_chart_backend: [echarts4r]
-    interaction_plan: [filter, show_when_toggle, sidebar_toggle]
-    preferred_filter_var: region
-    expect_filter_effect: true
-    expect_dynamic_text_effect: true
-    require_all_input_vars_affect_all_charts: true
-    dynamic_text_selectors: ["#s7_dynamic_midwest", "#s7_dynamic_other"]
-    min_non_empty_charts_expected: 1
-    required_selectors:
-      - "#s7_region_1"
-      - "[data-show-when]"
-      - ".collapse-toggle"
-    required_texts:
-      - "S7_Stacked_Compound_ShowWhen"
-    forbidden_console_patterns: []
-
-  - id: single-graph-plotly-s7
-    modes: [full]
-    source_type: docs
-    backend: plotly
-    url_path: /sidebar_single_plotly/docs/s7_stacked_compound_showwhen.html
-    expect_chart_backend: [plotly]
-    interaction_plan: [filter, show_when_toggle, sidebar_toggle]
-    preferred_filter_var: region
-    expect_filter_effect: true
-    expect_dynamic_text_effect: true
-    require_all_input_vars_affect_all_charts: true
-    dynamic_text_selectors: ["#s7_dynamic_midwest", "#s7_dynamic_other"]
-    min_non_empty_charts_expected: 1
-    required_selectors:
-      - "#s7_region_1"
-      - "[data-show-when]"
-      - ".collapse-toggle"
-    required_texts:
-      - "S7_Stacked_Compound_ShowWhen"
-    forbidden_console_patterns: []
-
-  - id: single-graph-hc-s7
-    modes: [full]
-    source_type: docs
-    backend: highcharter
-    url_path: /sidebar_single_hc/docs/s7_stacked_compound_showwhen.html
-    expect_chart_backend: [highcharter]
-    interaction_plan: [filter, show_when_toggle, sidebar_toggle]
-    preferred_filter_var: region
-    expect_filter_effect: true
-    expect_dynamic_text_effect: true
-    require_all_input_vars_affect_all_charts: true
-    dynamic_text_selectors: ["#s7_dynamic_midwest", "#s7_dynamic_other"]
-    min_non_empty_charts_expected: 1
-    required_selectors:
-      - "#s7_region_1"
-      - "[data-show-when]"
-      - ".collapse-toggle"
-    required_texts:
-      - "S7_Stacked_Compound_ShowWhen"
-    forbidden_console_patterns: []
+- id: single-graph-echarts-s1
+  modes:
+  - smoke
+  - full
+  source_type: docs
+  backend: echarts4r
+  url_path: /sidebar_single_echarts/docs/s1_all_inputs_single_bar.html
+  expect_chart_backend: echarts4r
+  interaction_plan:
+  - slider
+  - filter
+  - tooltip_hover
+  - modal_toggle
+  - sidebar_toggle
+  preferred_filter_var: region
+  preferred_slider_var: year
+  expect_filter_effect: yes
+  expect_slider_effect: yes
+  expect_dynamic_text_effect: yes
+  expect_dynamic_title_effect: yes
+  require_dynamic_title_placeholders_resolved: yes
+  expect_modal_effect: yes
+  require_all_input_vars_affect_all_charts: yes
+  dynamic_text_selectors:
+  - '#s1_dynamic_low'
+  - '#s1_dynamic_high'
+  - .dashboardr-slider-value
+  min_non_empty_charts_expected: 1
+  required_selectors:
+  - '#s1_dynamic_low'
+  - .dashboardr-checkbox-group[data-filter-var='happiness']
+  - .dashboardr-slider[data-filter-var='year']
+  - .modal-link
+  - .collapse-toggle
+  required_texts: S1_All_Inputs_Single_Bar
+  forbidden_console_patterns: []
+  expect_tooltip_effect: yes
+- id: single-graph-plotly-s1
+  modes:
+  - smoke
+  - full
+  source_type: docs
+  backend: plotly
+  url_path: /sidebar_single_plotly/docs/s1_all_inputs_single_bar.html
+  expect_chart_backend: plotly
+  interaction_plan:
+  - slider
+  - filter
+  - tooltip_hover
+  - modal_toggle
+  - sidebar_toggle
+  preferred_filter_var: region
+  preferred_slider_var: year
+  expect_filter_effect: yes
+  expect_slider_effect: yes
+  expect_dynamic_text_effect: yes
+  expect_dynamic_title_effect: yes
+  require_dynamic_title_placeholders_resolved: yes
+  expect_modal_effect: yes
+  require_all_input_vars_affect_all_charts: yes
+  dynamic_text_selectors:
+  - '#s1_dynamic_low'
+  - '#s1_dynamic_high'
+  - .dashboardr-slider-value
+  min_non_empty_charts_expected: 1
+  required_selectors:
+  - '#s1_dynamic_low'
+  - .dashboardr-checkbox-group[data-filter-var='happiness']
+  - .dashboardr-slider[data-filter-var='year']
+  - .modal-link
+  - .collapse-toggle
+  required_texts: S1_All_Inputs_Single_Bar
+  forbidden_console_patterns: []
+  expect_tooltip_effect: yes
+- id: single-graph-hc-s1
+  modes:
+  - smoke
+  - full
+  source_type: docs
+  backend: highcharter
+  url_path: /sidebar_single_hc/docs/s1_all_inputs_single_bar.html
+  expect_chart_backend: highcharter
+  interaction_plan:
+  - slider
+  - filter
+  - tooltip_hover
+  - modal_toggle
+  - sidebar_toggle
+  preferred_filter_var: region
+  preferred_slider_var: year
+  expect_filter_effect: yes
+  expect_slider_effect: yes
+  expect_dynamic_text_effect: yes
+  expect_dynamic_title_effect: yes
+  require_dynamic_title_placeholders_resolved: yes
+  expect_modal_effect: yes
+  require_all_input_vars_affect_all_charts: yes
+  dynamic_text_selectors:
+  - '#s1_dynamic_low'
+  - '#s1_dynamic_high'
+  - .dashboardr-slider-value
+  min_non_empty_charts_expected: 1
+  required_selectors:
+  - '#s1_dynamic_low'
+  - .dashboardr-checkbox-group[data-filter-var='happiness']
+  - .dashboardr-slider[data-filter-var='year']
+  - .modal-link
+  - .collapse-toggle
+  required_texts: S1_All_Inputs_Single_Bar
+  forbidden_console_patterns: []
+  expect_tooltip_effect: yes
+- id: single-graph-echarts-s2
+  modes:
+  - smoke
+  - full
+  source_type: docs
+  backend: echarts4r
+  url_path: /sidebar_single_echarts/docs/s2_pie_showwhen.html
+  expect_chart_backend: echarts4r
+  interaction_plan:
+  - filter
+  - tooltip_hover
+  - show_when_toggle
+  - sidebar_toggle
+  preferred_filter_var: education
+  expect_filter_effect: yes
+  expect_dynamic_text_effect: no
+  expect_dynamic_title_effect: yes
+  require_dynamic_title_placeholders_resolved: yes
+  require_all_input_vars_affect_all_charts: yes
+  min_non_empty_charts_expected: 1
+  required_selectors:
+  - '#s2_education'
+  - '[data-show-when]'
+  - .collapse-toggle
+  required_texts: S2_Pie_ShowWhen
+  forbidden_console_patterns: []
+  expect_tooltip_effect: yes
+- id: single-graph-plotly-s2
+  modes:
+  - smoke
+  - full
+  source_type: docs
+  backend: plotly
+  url_path: /sidebar_single_plotly/docs/s2_pie_showwhen.html
+  expect_chart_backend: plotly
+  interaction_plan:
+  - filter
+  - tooltip_hover
+  - show_when_toggle
+  - sidebar_toggle
+  preferred_filter_var: education
+  expect_filter_effect: yes
+  expect_dynamic_text_effect: no
+  expect_dynamic_title_effect: yes
+  require_dynamic_title_placeholders_resolved: yes
+  require_all_input_vars_affect_all_charts: yes
+  min_non_empty_charts_expected: 1
+  required_selectors:
+  - '#s2_education'
+  - '[data-show-when]'
+  - .collapse-toggle
+  required_texts: S2_Pie_ShowWhen
+  forbidden_console_patterns: []
+  expect_tooltip_effect: yes
+- id: single-graph-hc-s2
+  modes:
+  - smoke
+  - full
+  source_type: docs
+  backend: highcharter
+  url_path: /sidebar_single_hc/docs/s2_pie_showwhen.html
+  expect_chart_backend: highcharter
+  interaction_plan:
+  - filter
+  - tooltip_hover
+  - show_when_toggle
+  - sidebar_toggle
+  preferred_filter_var: education
+  expect_filter_effect: yes
+  expect_dynamic_text_effect: no
+  expect_dynamic_title_effect: yes
+  require_dynamic_title_placeholders_resolved: yes
+  require_all_input_vars_affect_all_charts: yes
+  min_non_empty_charts_expected: 1
+  required_selectors:
+  - '#s2_education'
+  - '[data-show-when]'
+  - .collapse-toggle
+  required_texts: S2_Pie_ShowWhen
+  forbidden_console_patterns: []
+  expect_tooltip_effect: yes
+- id: single-graph-echarts-s3
+  modes: full
+  source_type: docs
+  backend: echarts4r
+  url_path: /sidebar_single_echarts/docs/s3_scatter_linked.html
+  expect_chart_backend: echarts4r
+  interaction_plan:
+  - linked_inputs
+  - filter
+  - sidebar_toggle
+  preferred_filter_var: region
+  expect_filter_effect: yes
+  expect_dynamic_title_effect: yes
+  require_dynamic_title_placeholders_resolved: yes
+  require_all_input_vars_affect_all_charts: yes
+  min_non_empty_charts_expected: 1
+  required_selectors:
+  - '#dimension'
+  - '[data-linked-child-id]'
+  - .collapse-toggle
+  required_texts: S3_Scatter_Linked
+  forbidden_console_patterns: []
+- id: single-graph-plotly-s3
+  modes: full
+  source_type: docs
+  backend: plotly
+  url_path: /sidebar_single_plotly/docs/s3_scatter_linked.html
+  expect_chart_backend: plotly
+  interaction_plan:
+  - linked_inputs
+  - filter
+  - sidebar_toggle
+  preferred_filter_var: region
+  expect_filter_effect: yes
+  expect_dynamic_title_effect: yes
+  require_dynamic_title_placeholders_resolved: yes
+  require_all_input_vars_affect_all_charts: yes
+  min_non_empty_charts_expected: 1
+  required_selectors:
+  - '#dimension'
+  - '[data-linked-child-id]'
+  - .collapse-toggle
+  required_texts: S3_Scatter_Linked
+  forbidden_console_patterns: []
+- id: single-graph-hc-s3
+  modes: full
+  source_type: docs
+  backend: highcharter
+  url_path: /sidebar_single_hc/docs/s3_scatter_linked.html
+  expect_chart_backend: highcharter
+  interaction_plan:
+  - linked_inputs
+  - filter
+  - sidebar_toggle
+  preferred_filter_var: region
+  expect_filter_effect: yes
+  expect_dynamic_title_effect: yes
+  require_dynamic_title_placeholders_resolved: yes
+  require_all_input_vars_affect_all_charts: yes
+  min_non_empty_charts_expected: 1
+  required_selectors:
+  - '#dimension'
+  - '[data-linked-child-id]'
+  - .collapse-toggle
+  required_texts: S3_Scatter_Linked
+  forbidden_console_patterns: []
+- id: single-graph-echarts-s4
+  modes:
+  - smoke
+  - full
+  source_type: docs
+  backend: echarts4r
+  url_path: /sidebar_single_echarts/docs/s4_boxplot_checkbox_slider.html
+  expect_chart_backend: echarts4r
+  interaction_plan:
+  - slider
+  - filter
+  - tooltip_hover
+  - sidebar_toggle
+  preferred_filter_var: region
+  preferred_slider_var: year
+  expect_filter_effect: yes
+  expect_slider_effect: yes
+  expect_dynamic_text_effect: yes
+  expect_dynamic_title_effect: yes
+  require_dynamic_title_placeholders_resolved: yes
+  require_all_input_vars_affect_all_charts: yes
+  dynamic_text_selectors:
+  - '#s4_dynamic_low'
+  - '#s4_dynamic_high'
+  - .dashboardr-slider-value
+  min_non_empty_charts_expected: 1
+  required_selectors:
+  - '#s4_dynamic_low'
+  - .dashboardr-checkbox-group[data-filter-var='region']
+  - .dashboardr-slider[data-filter-var='year']
+  - .collapse-toggle
+  required_texts: S4_Boxplot_Checkbox_Slider
+  forbidden_console_patterns: []
+  expect_tooltip_effect: yes
+- id: single-graph-plotly-s4
+  modes:
+  - smoke
+  - full
+  source_type: docs
+  backend: plotly
+  url_path: /sidebar_single_plotly/docs/s4_boxplot_checkbox_slider.html
+  expect_chart_backend: plotly
+  interaction_plan:
+  - slider
+  - filter
+  - tooltip_hover
+  - sidebar_toggle
+  preferred_filter_var: region
+  preferred_slider_var: year
+  expect_filter_effect: yes
+  expect_slider_effect: yes
+  expect_dynamic_text_effect: yes
+  expect_dynamic_title_effect: yes
+  require_dynamic_title_placeholders_resolved: yes
+  require_all_input_vars_affect_all_charts: yes
+  dynamic_text_selectors:
+  - '#s4_dynamic_low'
+  - '#s4_dynamic_high'
+  - .dashboardr-slider-value
+  min_non_empty_charts_expected: 1
+  required_selectors:
+  - '#s4_dynamic_low'
+  - .dashboardr-checkbox-group[data-filter-var='region']
+  - .dashboardr-slider[data-filter-var='year']
+  - .collapse-toggle
+  required_texts: S4_Boxplot_Checkbox_Slider
+  forbidden_console_patterns: []
+  expect_tooltip_effect: yes
+- id: single-graph-hc-s4
+  modes:
+  - smoke
+  - full
+  source_type: docs
+  backend: highcharter
+  url_path: /sidebar_single_hc/docs/s4_boxplot_checkbox_slider.html
+  expect_chart_backend: highcharter
+  interaction_plan:
+  - slider
+  - filter
+  - tooltip_hover
+  - sidebar_toggle
+  preferred_filter_var: region
+  preferred_slider_var: year
+  expect_filter_effect: yes
+  expect_slider_effect: yes
+  expect_dynamic_text_effect: yes
+  expect_dynamic_title_effect: yes
+  require_dynamic_title_placeholders_resolved: yes
+  require_all_input_vars_affect_all_charts: yes
+  dynamic_text_selectors:
+  - '#s4_dynamic_low'
+  - '#s4_dynamic_high'
+  - .dashboardr-slider-value
+  min_non_empty_charts_expected: 1
+  required_selectors:
+  - '#s4_dynamic_low'
+  - .dashboardr-checkbox-group[data-filter-var='region']
+  - .dashboardr-slider[data-filter-var='year']
+  - .collapse-toggle
+  required_texts: S4_Boxplot_Checkbox_Slider
+  forbidden_console_patterns: []
+  expect_tooltip_effect: yes
+- id: single-graph-echarts-s5
+  modes: full
+  source_type: docs
+  backend: echarts4r
+  url_path: /sidebar_single_echarts/docs/s5_bar_reset_button.html
+  expect_chart_backend: echarts4r
+  interaction_plan:
+  - filter
+  - sidebar_toggle
+  preferred_filter_var: region
+  expect_filter_effect: yes
+  require_all_input_vars_affect_all_charts: yes
+  min_non_empty_charts_expected: 1
+  required_selectors:
+  - '#s5_education'
+  - .dashboardr-checkbox-group[data-filter-var='region']
+  - .collapse-toggle
+  required_texts: S5_Bar_Reset_Button
+  forbidden_console_patterns: []
+  expect_dynamic_title_effect: yes
+  require_dynamic_title_placeholders_resolved: yes
+- id: single-graph-plotly-s5
+  modes: full
+  source_type: docs
+  backend: plotly
+  url_path: /sidebar_single_plotly/docs/s5_bar_reset_button.html
+  expect_chart_backend: plotly
+  interaction_plan:
+  - filter
+  - sidebar_toggle
+  preferred_filter_var: region
+  expect_filter_effect: yes
+  require_all_input_vars_affect_all_charts: yes
+  min_non_empty_charts_expected: 1
+  required_selectors:
+  - '#s5_education'
+  - .dashboardr-checkbox-group[data-filter-var='region']
+  - .collapse-toggle
+  required_texts: S5_Bar_Reset_Button
+  forbidden_console_patterns: []
+  expect_dynamic_title_effect: yes
+  require_dynamic_title_placeholders_resolved: yes
+- id: single-graph-hc-s5
+  modes: full
+  source_type: docs
+  backend: highcharter
+  url_path: /sidebar_single_hc/docs/s5_bar_reset_button.html
+  expect_chart_backend: highcharter
+  interaction_plan:
+  - filter
+  - sidebar_toggle
+  preferred_filter_var: region
+  expect_filter_effect: yes
+  require_all_input_vars_affect_all_charts: yes
+  min_non_empty_charts_expected: 1
+  required_selectors:
+  - '#s5_education'
+  - .dashboardr-checkbox-group[data-filter-var='region']
+  - .collapse-toggle
+  required_texts: S5_Bar_Reset_Button
+  forbidden_console_patterns: []
+  expect_dynamic_title_effect: yes
+  require_dynamic_title_placeholders_resolved: yes
+- id: single-graph-echarts-s6
+  modes:
+  - smoke
+  - full
+  source_type: docs
+  backend: echarts4r
+  url_path: /sidebar_single_echarts/docs/s6_showwhen_on_chart.html
+  expect_chart_backend: []
+  interaction_plan:
+  - filter
+  - tooltip_hover
+  - show_when_toggle
+  - sidebar_toggle
+  preferred_filter_var: region
+  expect_filter_effect: yes
+  expect_dynamic_text_effect: yes
+  dynamic_text_selectors:
+  - '#s6_dynamic_chart'
+  - '#s6_dynamic_summary'
+  dynamic_binding_rules:
+  - selector: '#s6_dynamic_chart, #s6_dynamic_summary'
+    vars: view_mode
+    match_mode: any
+  min_non_empty_charts_expected: 0
+  required_selectors:
+  - '#s6_dynamic_chart'
+  - '[data-show-when]'
+  - .collapse-toggle
+  required_texts: S6_ShowWhen_On_Chart
+  forbidden_console_patterns: []
+  expect_dynamic_title_effect: yes
+  require_dynamic_title_placeholders_resolved: yes
+  expect_tooltip_effect: yes
+- id: single-graph-plotly-s6
+  modes:
+  - smoke
+  - full
+  source_type: docs
+  backend: plotly
+  url_path: /sidebar_single_plotly/docs/s6_showwhen_on_chart.html
+  expect_chart_backend: []
+  interaction_plan:
+  - filter
+  - tooltip_hover
+  - show_when_toggle
+  - sidebar_toggle
+  preferred_filter_var: region
+  expect_filter_effect: yes
+  expect_dynamic_text_effect: yes
+  dynamic_text_selectors:
+  - '#s6_dynamic_chart'
+  - '#s6_dynamic_summary'
+  dynamic_binding_rules:
+  - selector: '#s6_dynamic_chart, #s6_dynamic_summary'
+    vars: view_mode
+    match_mode: any
+  min_non_empty_charts_expected: 0
+  required_selectors:
+  - '#s6_dynamic_chart'
+  - '[data-show-when]'
+  - .collapse-toggle
+  required_texts: S6_ShowWhen_On_Chart
+  forbidden_console_patterns: []
+  expect_dynamic_title_effect: yes
+  require_dynamic_title_placeholders_resolved: yes
+  expect_tooltip_effect: yes
+- id: single-graph-hc-s6
+  modes:
+  - smoke
+  - full
+  source_type: docs
+  backend: highcharter
+  url_path: /sidebar_single_hc/docs/s6_showwhen_on_chart.html
+  expect_chart_backend: []
+  interaction_plan:
+  - filter
+  - tooltip_hover
+  - show_when_toggle
+  - sidebar_toggle
+  preferred_filter_var: region
+  expect_filter_effect: yes
+  expect_dynamic_text_effect: yes
+  dynamic_text_selectors:
+  - '#s6_dynamic_chart'
+  - '#s6_dynamic_summary'
+  dynamic_binding_rules:
+  - selector: '#s6_dynamic_chart, #s6_dynamic_summary'
+    vars: view_mode
+    match_mode: any
+  min_non_empty_charts_expected: 0
+  required_selectors:
+  - '#s6_dynamic_chart'
+  - '[data-show-when]'
+  - .collapse-toggle
+  required_texts: S6_ShowWhen_On_Chart
+  forbidden_console_patterns: []
+  expect_dynamic_title_effect: yes
+  require_dynamic_title_placeholders_resolved: yes
+  expect_tooltip_effect: yes
+- id: single-graph-echarts-s7
+  modes: full
+  source_type: docs
+  backend: echarts4r
+  url_path: /sidebar_single_echarts/docs/s7_stacked_compound_showwhen.html
+  expect_chart_backend: echarts4r
+  interaction_plan:
+  - filter
+  - show_when_toggle
+  - sidebar_toggle
+  preferred_filter_var: region
+  expect_filter_effect: yes
+  expect_dynamic_text_effect: yes
+  require_all_input_vars_affect_all_charts: yes
+  dynamic_text_selectors:
+  - '#s7_dynamic_midwest'
+  - '#s7_dynamic_other'
+  min_non_empty_charts_expected: 1
+  required_selectors:
+  - '#s7_region_1'
+  - '[data-show-when]'
+  - .collapse-toggle
+  required_texts: S7_Stacked_Compound_ShowWhen
+  forbidden_console_patterns: []
+  expect_dynamic_title_effect: yes
+  require_dynamic_title_placeholders_resolved: yes
+- id: single-graph-plotly-s7
+  modes: full
+  source_type: docs
+  backend: plotly
+  url_path: /sidebar_single_plotly/docs/s7_stacked_compound_showwhen.html
+  expect_chart_backend: plotly
+  interaction_plan:
+  - filter
+  - show_when_toggle
+  - sidebar_toggle
+  preferred_filter_var: region
+  expect_filter_effect: yes
+  expect_dynamic_text_effect: yes
+  require_all_input_vars_affect_all_charts: yes
+  dynamic_text_selectors:
+  - '#s7_dynamic_midwest'
+  - '#s7_dynamic_other'
+  min_non_empty_charts_expected: 1
+  required_selectors:
+  - '#s7_region_1'
+  - '[data-show-when]'
+  - .collapse-toggle
+  required_texts: S7_Stacked_Compound_ShowWhen
+  forbidden_console_patterns: []
+  expect_dynamic_title_effect: yes
+  require_dynamic_title_placeholders_resolved: yes
+- id: single-graph-hc-s7
+  modes: full
+  source_type: docs
+  backend: highcharter
+  url_path: /sidebar_single_hc/docs/s7_stacked_compound_showwhen.html
+  expect_chart_backend: highcharter
+  interaction_plan:
+  - filter
+  - show_when_toggle
+  - sidebar_toggle
+  preferred_filter_var: region
+  expect_filter_effect: yes
+  expect_dynamic_text_effect: yes
+  require_all_input_vars_affect_all_charts: yes
+  dynamic_text_selectors:
+  - '#s7_dynamic_midwest'
+  - '#s7_dynamic_other'
+  min_non_empty_charts_expected: 1
+  required_selectors:
+  - '#s7_region_1'
+  - '[data-show-when]'
+  - .collapse-toggle
+  required_texts: S7_Stacked_Compound_ShowWhen
+  forbidden_console_patterns: []
+  expect_dynamic_title_effect: yes
+  require_dynamic_title_placeholders_resolved: yes
+- id: single-graph-echarts-s8
+  modes: full
+  source_type: docs
+  backend: echarts4r
+  url_path: /sidebar_single_echarts/docs/s8_orchestrated_showwhen_demo.html
+  expect_chart_backend: echarts4r
+  interaction_plan:
+  - filter
+  - show_when_toggle
+  - tooltip_hover
+  - sidebar_toggle
+  preferred_filter_var: region
+  expect_filter_effect: yes
+  expect_dynamic_text_effect: yes
+  dynamic_text_selectors:
+  - '#s8_question_region'
+  - '#s8_question_education'
+  - '#s8_snapshot_note'
+  - '#s8_time_note'
+  dynamic_binding_rules:
+  - selector: '#s8_question_region, #s8_question_education'
+    vars: s8_topic
+    match_mode: any
+  - selector: '#s8_snapshot_note, #s8_time_note'
+    vars: s8_view
+    match_mode: any
+  min_non_empty_charts_expected: 1
+  required_selectors:
+  - '#s8_topic'
+  - ".dashboardr-radio-group[data-filter-var='s8_view']"
+  - '#s8_demo_mode'
+  - '[data-show-when]'
+  - .collapse-toggle
+  required_texts: S8_Orchestrated_ShowWhen_Demo
+  forbidden_console_patterns: []
+  expect_dynamic_title_effect: yes
+  require_dynamic_title_placeholders_resolved: yes
+  expect_tooltip_effect: yes
+- id: single-graph-plotly-s8
+  modes: full
+  source_type: docs
+  backend: plotly
+  url_path: /sidebar_single_plotly/docs/s8_orchestrated_showwhen_demo.html
+  expect_chart_backend: plotly
+  interaction_plan:
+  - filter
+  - show_when_toggle
+  - tooltip_hover
+  - sidebar_toggle
+  preferred_filter_var: region
+  expect_filter_effect: yes
+  expect_dynamic_text_effect: yes
+  dynamic_text_selectors:
+  - '#s8_question_region'
+  - '#s8_question_education'
+  - '#s8_snapshot_note'
+  - '#s8_time_note'
+  dynamic_binding_rules:
+  - selector: '#s8_question_region, #s8_question_education'
+    vars: s8_topic
+    match_mode: any
+  - selector: '#s8_snapshot_note, #s8_time_note'
+    vars: s8_view
+    match_mode: any
+  min_non_empty_charts_expected: 1
+  required_selectors:
+  - '#s8_topic'
+  - ".dashboardr-radio-group[data-filter-var='s8_view']"
+  - '#s8_demo_mode'
+  - '[data-show-when]'
+  - .collapse-toggle
+  required_texts: S8_Orchestrated_ShowWhen_Demo
+  forbidden_console_patterns: []
+  expect_dynamic_title_effect: yes
+  require_dynamic_title_placeholders_resolved: yes
+  expect_tooltip_effect: yes
+- id: single-graph-hc-s8
+  modes: full
+  source_type: docs
+  backend: highcharter
+  url_path: /sidebar_single_hc/docs/s8_orchestrated_showwhen_demo.html
+  expect_chart_backend: highcharter
+  interaction_plan:
+  - filter
+  - show_when_toggle
+  - tooltip_hover
+  - sidebar_toggle
+  preferred_filter_var: region
+  expect_filter_effect: yes
+  expect_dynamic_text_effect: yes
+  dynamic_text_selectors:
+  - '#s8_question_region'
+  - '#s8_question_education'
+  - '#s8_snapshot_note'
+  - '#s8_time_note'
+  dynamic_binding_rules:
+  - selector: '#s8_question_region, #s8_question_education'
+    vars: s8_topic
+    match_mode: any
+  - selector: '#s8_snapshot_note, #s8_time_note'
+    vars: s8_view
+    match_mode: any
+  min_non_empty_charts_expected: 1
+  required_selectors:
+  - '#s8_topic'
+  - ".dashboardr-radio-group[data-filter-var='s8_view']"
+  - '#s8_demo_mode'
+  - '[data-show-when]'
+  - .collapse-toggle
+  required_texts: S8_Orchestrated_ShowWhen_Demo
+  forbidden_console_patterns: []
+  expect_dynamic_title_effect: yes
+  require_dynamic_title_placeholders_resolved: yes
+  expect_tooltip_effect: yes

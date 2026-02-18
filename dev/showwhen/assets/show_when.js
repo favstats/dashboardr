@@ -164,7 +164,10 @@
       var fv = group.getAttribute('data-filter-var');
       if (!fv) return;
       var active = group.querySelector('.dashboardr-button-option.active');
-      if (active && active.value != null) values[fv] = active.value;
+      if (active) {
+        var btnVal = active.getAttribute('data-value') || active.value;
+        if (btnVal != null) values[fv] = btnVal;
+      }
     });
 
     // Collect from non-radio/checkbox inputs (slider, text, number, etc.)

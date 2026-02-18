@@ -21,8 +21,13 @@
   stacked_align = "center",
   group_align = "left",
   ncol = NULL,
-  nrow = NULL
+  nrow = NULL,
+  icons = NULL
 )
+}
+\arguments{
+\item{icons}{Optional character vector of Iconify icon names (e.g., "ph:calendar").
+Must be same length as options. When provided, icons are rendered before radio text.}
 }
 \description{
 Generate HTML for radio input

@@ -78,7 +78,7 @@ gss_timeline <- gss_all %>%
 </details>
 
 ```{r, include = FALSE}
-devtools::load_all()
+library(dashboardr)
 ```
 
 ## 📦 What Content Collections Store

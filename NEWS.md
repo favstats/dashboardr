@@ -1,3 +1,50 @@
+# dashboardr 0.5.1
+
+## New Features
+
+### Deferred Charts
+
+- `deferred_charts = TRUE` in `create_dashboard()`: Only renders initially visible charts; others become lightweight JSON placeholders that load on demand when revealed by `show_when`. Dramatically reduces initial page load time for dashboards with many hidden chart states.
+
+### Cross-Tab Asset Mode
+
+- `cross_tab_data_mode = "asset"` in `create_dashboard()`: Writes cross-tab data to external `.json` files instead of inlining in HTML. Reduces HTML file size for dashboards with many filtered charts.
+- `min_cell_size` parameter for privacy protection — suppresses cross-tab rows where cell count is below the threshold.
+- `rds_bundle_threshold` parameter bundles generated datasets into a single `.rds` file for large dashboards.
+
+### Input Enhancements
+
+- **Icons on inputs**: `icons` parameter on `add_input()`, `render_input()`, and internal radio/button group generators. Supports Iconify icon names (e.g., `"ph:calendar"`) rendered before option text.
+- **show_when on inputs**: `show_when` parameter on `add_input()` wraps the input in a conditional visibility container, enabling inputs that appear/disappear based on other filter selections.
+- **Linked inputs outside sidebar**: `add_linked_inputs()` now works in content collections and input rows, not just sidebars.
+
+### Page Slugs
+
+- `slug` parameter on `add_dashboard_page()` / `add_page()` for custom page filenames, overriding the default name-based slug.
+
+### Timeline Data Labels
+
+- `data_labels_enabled` parameter on `viz_timeline()` to display data point values directly on the chart.
+
+### Multi-Backend Viz Improvements
+
+- Enhanced `viz_boxplot`, `viz_scatter`, `viz_pie`, `viz_stackedbar`, and `viz_timeline` with improved cross-tab support and backend-specific rendering.
+
+## Bug Fixes
+
+- Fixed show_when re-evaluation after button group clicks (standard `change` event dispatch in `input_filter.js`).
+- Fixed custom CSS not loading in published dashboards (copy to publish dir + resources in `_quarto.yml`).
+
+## Documentation & Packaging
+
+- Fixed all code/documentation mismatches (added `@param` entries for new parameters).
+- Fixed vignette errors: replaced `devtools::load_all()` with `library(dashboardr)` in 10 vignettes; added `purl = FALSE` to 7 documentation-only vignettes.
+- Updated `.Rbuildignore` to exclude demo output directories, `.quarto` dirs, `vignettes/lib/`, and `.DS_Store` files.
+- Added `globalVariables()` entries for NSE columns in `viz_boxplot` and `viz_scatter`.
+- R CMD check clean (0 errors, 0 warnings).
+
+---
+
 # dashboardr 0.5.0
 
 ## New Features

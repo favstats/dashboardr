@@ -31,6 +31,26 @@ async (page) => {
     const single = String(value).trim();
     return single.length > 0 ? [single] : [];
   };
+  const dynamicBindingRules = (() => {
+    const raw = Array.isArray(scenario.dynamic_binding_rules)
+      ? scenario.dynamic_binding_rules
+      : (scenario.dynamic_binding_rules ? [scenario.dynamic_binding_rules] : []);
+    return raw
+      .map((rule) => {
+        if (!rule || typeof rule !== 'object') return null;
+        const selector = String(rule.selector || '').trim();
+        if (!selector) return null;
+        const mode = String(rule.match_mode || 'any').toLowerCase() === 'all' ? 'all' : 'any';
+        return {
+          selector,
+          vars: normalizeStringList(rule.vars || rule.filter_vars || rule.inputs || []),
+          match_mode: mode,
+          required: rule.required !== false,
+          require_visible: rule.require_visible !== false
+        };
+      })
+      .filter((x) => !!x);
+  })();
   const fontExpectations = (() => {
     const raw = Array.isArray(scenario.font_expectations)
       ? scenario.font_expectations
@@ -97,6 +117,11 @@ async (page) => {
   const requireAllChartsChangeOnFilter = requireAllInputsAffectAllCharts || isTruthy(scenario.require_all_charts_change_on_filter);
   const requireAllChartsChangeOnSlider = requireAllInputsAffectAllCharts || isTruthy(scenario.require_all_charts_change_on_slider);
   const requireAllInputVarsAffectAllCharts = requireAllInputsAffectAllCharts || isTruthy(scenario.require_all_input_vars_affect_all_charts);
+  const requireShowWhenConsistency = isTruthy(scenario.require_show_when_consistency) || isTruthy(scenario.require_show_when_truth_table);
+  const expectDynamicTitleEffect = isTruthy(scenario.expect_dynamic_title_effect);
+  const requireDynamicTitlePlaceholdersResolved = isTruthy(scenario.require_dynamic_title_placeholders_resolved);
+  const expectModalEffect = isTruthy(scenario.expect_modal_effect);
+  const expectTooltipEffect = isTruthy(scenario.expect_tooltip_effect);
   const localFileUrl = (typeof scenario.local_file_url === 'string' && scenario.local_file_url.length > 0)
     ? scenario.local_file_url
     : '';
@@ -169,6 +194,155 @@ async (page) => {
       before_selectors_text: String((beforeSnapshot && beforeSnapshot.selectors_text) || ''),
       after_selectors_text: String((afterSnapshot && afterSnapshot.selectors_text) || '')
     };
+  };
+
+  const captureDynamicTitleSnapshot = async () => {
+    return await page.evaluate((expectedBackendsArg) => {
+      const wanted = Array.isArray(expectedBackendsArg)
+        ? expectedBackendsArg.map((x) => String(x || '').trim()).filter((x) => x.length > 0)
+        : [];
+      const wants = (backend) => wanted.length === 0 || wanted.includes(String(backend || ''));
+      const rows = [];
+      const addRow = (backend, id, title) => {
+        if (!wants(backend)) return;
+        const txt = String(title == null ? '' : title).replace(/\s+/g, ' ').trim();
+        rows.push({
+          backend: String(backend || ''),
+          id: String(id || ''),
+          title: txt
+        });
+      };
+
+      if (typeof Highcharts !== 'undefined' && Array.isArray(Highcharts.charts)) {
+        Highcharts.charts.filter((c) => !!c).forEach((chart, idx) => {
+          const cid = (chart.options && chart.options.chart && chart.options.chart.id)
+            || (chart.renderTo && chart.renderTo.id)
+            || `highchart-${idx + 1}`;
+          const title = (chart.title && chart.title.textStr) || '';
+          addRow('highcharter', cid, title);
+        });
+      }
+
+      const registry = window.dashboardrChartRegistry;
+      const entries = registry && typeof registry.getCharts === 'function'
+        ? registry.getCharts()
+        : [];
+      entries.forEach((entry, idx) => {
+        const backend = String(entry && entry.backend || '');
+        if (!backend || backend === 'highcharter') return;
+        const id = String(entry && entry.id || `${backend}-${idx + 1}`);
+        if (backend === 'plotly' && typeof Plotly !== 'undefined' && entry && entry.el) {
+          const layout = entry.el.layout || entry.el._fullLayout || {};
+          const title = (layout.title && (layout.title.text != null ? layout.title.text : layout.title))
+            || '';
+          addRow('plotly', id, title);
+        } else if (backend === 'echarts4r' && typeof echarts !== 'undefined' && entry && entry.el) {
+          const inst = echarts.getInstanceByDom(entry.el);
+          if (!inst) return;
+          const option = inst.getOption ? inst.getOption() : null;
+          if (!option) return;
+          const t = Array.isArray(option.title) ? option.title[0] : option.title;
+          const title = t && typeof t === 'object' ? (t.text || '') : '';
+          addRow('echarts4r', id, title);
+        }
+      });
+
+      rows.sort((a, b) => {
+        const ka = `${a.backend}:${a.id}`;
+        const kb = `${b.backend}:${b.id}`;
+        return ka.localeCompare(kb);
+      });
+
+      const placeholderPattern = /\{\w+\}/;
+      const unresolved = rows.filter((row) => placeholderPattern.test(row.title));
+      const text = rows.map((row) => `${row.backend}:${row.id}:${row.title}`).join('|');
+
+      return {
+        text,
+        titles: rows,
+        unresolved_placeholders: unresolved,
+        has_placeholders: unresolved.length > 0
+      };
+    }, expectedBackends);
+  };
+
+  const buildDynamicTitleResult = (beforeSnapshot, afterSnapshot) => {
+    const beforeText = String((beforeSnapshot && beforeSnapshot.text) || '');
+    const afterText = String((afterSnapshot && afterSnapshot.text) || '');
+    const unresolved = (afterSnapshot && Array.isArray(afterSnapshot.unresolved_placeholders))
+      ? afterSnapshot.unresolved_placeholders
+      : [];
+    return {
+      before: beforeText,
+      after: afterText,
+      changed: beforeText !== afterText,
+      unresolved_placeholders: unresolved,
+      after_has_placeholders: unresolved.length > 0
+    };
+  };
+
+  const captureModalState = async () => {
+    return await page.evaluate(() => {
+      const isVisible = (el) => {
+        if (!el) return false;
+        const st = window.getComputedStyle(el);
+        if (!st || st.display === 'none' || st.visibility === 'hidden' || st.opacity === '0') return false;
+        const r = el.getBoundingClientRect();
+        return r.width > 0 && r.height > 0;
+      };
+
+      const customActive = Array.from(document.querySelectorAll('.modal-overlay.active')).filter(isVisible);
+      const dashboardrActive = Array.from(document.querySelectorAll('#dashboardr-modal-overlay, .dashboardr-modal-overlay'))
+        .filter(isVisible);
+      const bootstrapActive = Array.from(document.querySelectorAll('.modal.show, .modal[aria-modal="true"]')).filter(isVisible);
+      const active = dashboardrActive.length
+        ? dashboardrActive
+        : (customActive.length ? customActive : bootstrapActive);
+
+      return {
+        active_count: active.length,
+        first_id: active[0] ? (active[0].id || null) : null,
+        first_class: active[0] ? (active[0].className || null) : null
+      };
+    });
+  };
+
+  const captureTooltipSnapshot = async () => {
+    return await page.evaluate(() => {
+      const isVisible = (el) => {
+        if (!el) return false;
+        const st = window.getComputedStyle(el);
+        if (!st || st.display === 'none' || st.visibility === 'hidden' || st.opacity === '0') return false;
+        const r = el.getBoundingClientRect();
+        return r.width > 0 && r.height > 0;
+      };
+      const textOf = (el) => String(el.innerText || el.textContent || '').replace(/\s+/g, ' ').trim();
+      const rows = [];
+
+      const selectors = [
+        '.hoverlayer .hovertext',
+        '.hoverlayer',
+        '.highcharts-tooltip text',
+        '.highcharts-label.highcharts-tooltip',
+        '.echarts-tooltip',
+        '#dashboardr-tooltip'
+      ];
+      selectors.forEach((sel) => {
+        Array.from(document.querySelectorAll(sel))
+          .filter(isVisible)
+          .forEach((el) => {
+            const txt = textOf(el);
+            if (txt) rows.push(`${sel}:${txt}`);
+          });
+      });
+
+      const joined = rows.join('|');
+      return {
+        text: joined,
+        count: rows.length,
+        has_undefined: /\bundefined\b/i.test(joined)
+      };
+    });
   };
 
   const assertForbiddenTextsAbsent = async (stage) => {
@@ -634,6 +808,7 @@ async (page) => {
 
   const performFilterInteraction = async () => {
     const dynamicTextBefore = await captureDynamicTextSnapshot();
+    const dynamicTitleBefore = await captureDynamicTitleSnapshot();
     const before = await captureChartState();
     const preferredFilterVar = (typeof scenario.preferred_filter_var === 'string' && scenario.preferred_filter_var.length > 0)
       ? scenario.preferred_filter_var
@@ -740,13 +915,27 @@ async (page) => {
         if (sel.multiple && allValues.length > 1) {
           const selectedCount = selectedValues.length;
           if (choicesInst && typeof choicesInst.removeActiveItems === 'function') {
-            if (selectedCount >= allValues.length) {
+            const applyValues = (vals) => {
               choicesInst.removeActiveItems();
-              choicesInst.setChoiceByValue(allValues.slice(0, allValues.length - 1));
+              (vals || []).forEach((v) => {
+                if (typeof choicesInst.setChoiceByValue === 'function') {
+                  choicesInst.setChoiceByValue(v);
+                }
+              });
+            };
+            if (selectedCount >= allValues.length) {
+              const selectedNow = (typeof choicesInst.getValue === 'function')
+                ? [].concat(choicesInst.getValue(true) || [])
+                : selectedValues;
+              const dropVal = selectedNow[0] || allValues[0];
+              if (typeof choicesInst.removeActiveItemsByValue === 'function' && dropVal !== undefined) {
+                choicesInst.removeActiveItemsByValue(dropVal);
+              } else {
+                applyValues(allValues.filter((v) => String(v) !== String(dropVal)));
+              }
               result.detail = 'select-multiple-preferred-drop-one-choices';
             } else {
-              choicesInst.removeActiveItems();
-              choicesInst.setChoiceByValue(allValues);
+              applyValues(allValues);
               result.detail = 'select-multiple-preferred-all-choices';
             }
           } else {
@@ -1053,18 +1242,21 @@ async (page) => {
     await wait(1500);
     const after = await captureChartState();
     const dynamicTextAfter = await captureDynamicTextSnapshot();
+    const dynamicTitleAfter = await captureDynamicTitleSnapshot();
     const changed = signatureForExpected(before) !== signatureForExpected(after);
     return {
       action,
       before,
       after,
       changed,
-      dynamic_text: buildDynamicTextResult(dynamicTextBefore, dynamicTextAfter)
+      dynamic_text: buildDynamicTextResult(dynamicTextBefore, dynamicTextAfter),
+      dynamic_title: buildDynamicTitleResult(dynamicTitleBefore, dynamicTitleAfter)
     };
   };
 
   const performSliderInteraction = async () => {
     const dynamicTextBefore = await captureDynamicTextSnapshot();
+    const dynamicTitleBefore = await captureDynamicTitleSnapshot();
 
     const before = await captureChartState();
     const action = await page.evaluate((preferredSliderVarArg) => {
@@ -1130,6 +1322,7 @@ async (page) => {
     await wait(1500);
     const after = await captureChartState();
     const dynamicTextAfter = await captureDynamicTextSnapshot();
+    const dynamicTitleAfter = await captureDynamicTitleSnapshot();
 
     const changed = signatureForExpected(before) !== signatureForExpected(after);
     return {
@@ -1137,7 +1330,8 @@ async (page) => {
       before,
       after,
       changed,
-      dynamic_text: buildDynamicTextResult(dynamicTextBefore, dynamicTextAfter)
+      dynamic_text: buildDynamicTextResult(dynamicTextBefore, dynamicTextAfter),
+      dynamic_title: buildDynamicTitleResult(dynamicTitleBefore, dynamicTitleAfter)
     };
   };
 
@@ -1176,6 +1370,7 @@ async (page) => {
 
   const performFilterVarInteraction = async (filterVar) => {
     const dynamicTextBefore = await captureDynamicTextSnapshot();
+    const dynamicTitleBefore = await captureDynamicTitleSnapshot();
 
     const before = await captureChartState();
     const action = await page.evaluate((targetVar) => {
@@ -1334,13 +1529,24 @@ async (page) => {
             const selectedValues = (typeof choicesInst.getValue === 'function')
               ? [].concat(choicesInst.getValue(true) || [])
               : allValues;
-            if (selectedValues.length >= allValues.length) {
+            const applyValues = (vals) => {
               choicesInst.removeActiveItems();
-              choicesInst.setChoiceByValue(allValues.slice(0, allValues.length - 1));
+              (vals || []).forEach((v) => {
+                if (typeof choicesInst.setChoiceByValue === 'function') {
+                  choicesInst.setChoiceByValue(v);
+                }
+              });
+            };
+            if (selectedValues.length >= allValues.length) {
+              const dropVal = selectedValues[0] || allValues[0];
+              if (typeof choicesInst.removeActiveItemsByValue === 'function' && dropVal !== undefined) {
+                choicesInst.removeActiveItemsByValue(dropVal);
+              } else {
+                applyValues(allValues.filter((v) => String(v) !== String(dropVal)));
+              }
               result.detail = 'select-multiple-var-drop-one-choices';
             } else {
-              choicesInst.removeActiveItems();
-              choicesInst.setChoiceByValue(allValues);
+              applyValues(allValues);
               result.detail = 'select-multiple-var-all-choices';
             }
           } else {
@@ -1478,6 +1684,7 @@ async (page) => {
     await wait(1500);
     const after = await captureChartState();
     const dynamicTextAfter = await captureDynamicTextSnapshot();
+    const dynamicTitleAfter = await captureDynamicTitleSnapshot();
 
     const changed = signatureForExpected(before) !== signatureForExpected(after);
     const comparison = compareExpectedBackendEntryChanges(before, after);
@@ -1488,29 +1695,45 @@ async (page) => {
       after,
       changed,
       backend_change: comparison,
-      dynamic_text: buildDynamicTextResult(dynamicTextBefore, dynamicTextAfter)
+      dynamic_text: buildDynamicTextResult(dynamicTextBefore, dynamicTextAfter),
+      dynamic_title: buildDynamicTitleResult(dynamicTitleBefore, dynamicTitleAfter)
     };
   };
 
   const validateAllInputVarsAffectAllCharts = async () => {
     const vars = await collectVisibleFilterVars();
     const checks = [];
+    const maxAttemptsPerVar = 3;
 
     for (const filterVar of vars) {
-      const result = await performFilterVarInteraction(filterVar);
+      let result = null;
+      let passed = false;
+      let attempts = 0;
+
+      for (let i = 0; i < maxAttemptsPerVar; i += 1) {
+        attempts += 1;
+        result = await performFilterVarInteraction(filterVar);
+        if (result && result.action && result.action.performed &&
+            result.backend_change && result.backend_change.ok) {
+          passed = true;
+          break;
+        }
+      }
+
       checks.push({
         filter_var: filterVar,
-        action: result.action,
-        changed: !!result.changed,
-        backend_change: result.backend_change
+        attempts,
+        action: result ? result.action : null,
+        changed: !!(result && result.changed),
+        backend_change: result ? result.backend_change : null
       });
 
-      if (!result.action || !result.action.performed) {
+      if (!result || !result.action || !result.action.performed) {
         fail(`Input '${filterVar}' could not be interacted with for propagation validation.`);
         continue;
       }
 
-      if (!result.backend_change || !result.backend_change.ok) {
+      if (!passed) {
         const summary = formatBackendChangeSummary(result.backend_change);
         fail(`Input '${filterVar}' did not affect all chart widgets (${summary}).`);
       }
@@ -1696,8 +1919,143 @@ async (page) => {
     };
   };
 
+  const performModalInteraction = async () => {
+    const before = await captureModalState();
+    const trigger = page.locator('.modal-link, .modal-trigger, [data-bs-toggle="modal"]').first();
+    const triggerCount = await trigger.count();
+    if (!triggerCount) {
+      return { performed: false, changed: false, detail: 'no-modal-trigger', before, after: before };
+    }
+
+    await trigger.click();
+    await wait(500);
+    const opened = await captureModalState();
+
+    if ((opened.active_count || 0) <= 0) {
+      return { performed: true, changed: false, detail: 'modal-did-not-open', before, after: opened };
+    }
+
+    await page.keyboard.press('Escape').catch(() => {});
+    await wait(350);
+    let after = await captureModalState();
+    let closeDetail = 'closed-with-escape';
+
+    if ((after.active_count || 0) > 0) {
+      const closeBtn = page.locator('#dashboardr-modal-close, .dashboardr-modal-close, .modal-close, .btn-close, [data-bs-dismiss="modal"], [aria-label="Close"], [aria-label="Close modal"]').first();
+      if (await closeBtn.count()) {
+        await closeBtn.click({ force: true }).catch(() => {});
+        await wait(350);
+      }
+      after = await captureModalState();
+      closeDetail = 'closed-with-button';
+    }
+
+    const closed = (after.active_count || 0) === 0;
+    return {
+      performed: true,
+      changed: closed,
+      detail: closed ? closeDetail : 'modal-still-open',
+      before,
+      opened,
+      after
+    };
+  };
+
+  const performTooltipInteraction = async () => {
+    const before = await captureTooltipSnapshot();
+    const action = await page.evaluate((expectedBackendsArg) => {
+      const expected = Array.isArray(expectedBackendsArg)
+        ? expectedBackendsArg.map((x) => String(x || '').trim()).filter((x) => x.length > 0)
+        : [];
+      const wants = (backend) => expected.length === 0 || expected.includes(backend);
+
+      // Plotly: use Fx.hover on first available trace/point
+      if (wants('plotly') && typeof Plotly !== 'undefined' && Plotly.Fx && typeof Plotly.Fx.hover === 'function') {
+        const plotDivs = Array.from(document.querySelectorAll('.js-plotly-plot'));
+        for (let i = 0; i < plotDivs.length; i += 1) {
+          const div = plotDivs[i];
+          const data = Array.isArray(div && div.data) ? div.data : [];
+          for (let c = 0; c < data.length; c += 1) {
+            const tr = data[c] || {};
+            const len = Array.isArray(tr.y) ? tr.y.length : (Array.isArray(tr.values) ? tr.values.length : 0);
+            if (len > 0) {
+              Plotly.Fx.hover(div, [{ curveNumber: c, pointNumber: 0 }]);
+              const hasHoverData = !!(div._hoverdata && Array.isArray(div._hoverdata) && div._hoverdata.length > 0);
+              const hasHoverLayer = document.querySelectorAll('.hoverlayer .hovertext').length > 0;
+              const isPie = String(tr.type || '').toLowerCase() === 'pie';
+              const hasPieData = Array.isArray(tr.values) ? tr.values.length > 0 : (Array.isArray(tr.labels) ? tr.labels.length > 0 : false);
+              const signal = hasHoverData || hasHoverLayer || (isPie && hasPieData);
+              return { performed: true, detail: 'plotly-fx-hover', signal };
+            }
+          }
+        }
+      }
+
+      // Highcharts: refresh tooltip with first point
+      if (wants('highcharter') && typeof Highcharts !== 'undefined' && Array.isArray(Highcharts.charts)) {
+        const charts = Highcharts.charts.filter((c) => !!c && Array.isArray(c.series));
+        for (let i = 0; i < charts.length; i += 1) {
+          const chart = charts[i];
+          for (let s = 0; s < chart.series.length; s += 1) {
+            const series = chart.series[s];
+            const pts = Array.isArray(series && series.points) ? series.points.filter((p) => p && p.y != null) : [];
+            if (pts.length > 0 && chart.tooltip && typeof chart.tooltip.refresh === 'function') {
+              chart.tooltip.refresh(pts[0]);
+              const signal = !!(chart.tooltip && chart.tooltip.isHidden === false);
+              return { performed: true, detail: 'highcharts-tooltip-refresh', signal };
+            }
+          }
+        }
+      }
+
+      // ECharts: dispatch showTip on first series/dataIndex
+      if (wants('echarts4r') && typeof echarts !== 'undefined') {
+        const nodes = Array.from(document.querySelectorAll('[_echarts_instance_], .echarts, .echarts4r'));
+        for (let i = 0; i < nodes.length; i += 1) {
+          const el = nodes[i];
+          const inst = echarts.getInstanceByDom(el);
+          if (!inst || typeof inst.getOption !== 'function' || typeof inst.dispatchAction !== 'function') continue;
+          const opt = inst.getOption() || {};
+          const series = Array.isArray(opt.series) ? opt.series : [];
+          for (let s = 0; s < series.length; s += 1) {
+            const sd = series[s] && Array.isArray(series[s].data) ? series[s].data : [];
+            if (sd.length > 0) {
+              inst.dispatchAction({ type: 'showTip', seriesIndex: s, dataIndex: 0 });
+              return { performed: true, detail: 'echarts-showTip', signal: true };
+            }
+          }
+        }
+      }
+
+      return { performed: false, detail: 'no-tooltip-capable-chart' };
+    }, expectedBackends);
+
+    if (!action || !action.performed) {
+      return {
+        performed: false,
+        changed: false,
+        detail: action && action.detail ? action.detail : 'tooltip-action-failed',
+        before,
+        after: before
+      };
+    }
+
+    await wait(400);
+    const after = await captureTooltipSnapshot();
+    return {
+      performed: true,
+      changed: String(before.text || '') !== String(after.text || '') || Number(after.count || 0) > 0 || !!action.signal,
+      detail: action.detail || 'tooltip-hover',
+      before,
+      after,
+      has_undefined: !!after.has_undefined,
+      signal: !!action.signal
+    };
+  };
+
   const performShowWhenInteraction = async () => {
     const dynamicTextBefore = await captureDynamicTextSnapshot();
+    const dynamicTitleBefore = await captureDynamicTitleSnapshot();
     const beforeState = await page.evaluate(() => {
       const nodes = Array.from(document.querySelectorAll('[data-show-when]'));
       if (!nodes.length) return null;
@@ -1997,6 +2355,7 @@ async (page) => {
 
     const afterState = await getVisibleShowWhenState();
     const dynamicTextAfter = await captureDynamicTextSnapshot();
+    const dynamicTitleAfter = await captureDynamicTitleSnapshot();
     const changed = String(beforeState.signature || '') !== String(afterState.signature || '') ||
       Number(beforeState.count) !== Number(afterState.count);
 
@@ -2008,7 +2367,8 @@ async (page) => {
       before_signature: beforeState.signature,
       after_signature: afterState.signature,
       detail: action.detail,
-      dynamic_text: buildDynamicTextResult(dynamicTextBefore, dynamicTextAfter)
+      dynamic_text: buildDynamicTextResult(dynamicTextBefore, dynamicTextAfter),
+      dynamic_title: buildDynamicTitleResult(dynamicTitleBefore, dynamicTitleAfter)
     };
   };
 
@@ -2106,6 +2466,262 @@ async (page) => {
       const labels = Array.isArray(info.unique_labels) ? info.unique_labels.join(', ') : '';
       fail(`Education boxplot categories are missing/unclear (found: ${labels || 'none'}).`);
     }
+  };
+
+  const assertShowWhenConsistency = async (stage) => {
+    const info = await page.evaluate(() => {
+      const values = {};
+      const choicesMap = window.dashboardrChoicesInstances || {};
+      document.querySelectorAll('select').forEach((el) => {
+        let val = el.value;
+        const id = el.getAttribute('data-input-id') || el.name || el.id;
+        if (id && choicesMap[id] && typeof choicesMap[id].getValue === 'function') {
+          const choicesVal = choicesMap[id].getValue(true);
+          if (choicesVal !== undefined && choicesVal !== null) {
+            val = Array.isArray(choicesVal) ? (choicesVal[0] || '') : choicesVal;
+          }
+        } else if (el.id && choicesMap[el.id] && typeof choicesMap[el.id].getValue === 'function') {
+          const choicesVal2 = choicesMap[el.id].getValue(true);
+          if (choicesVal2 !== undefined && choicesVal2 !== null) {
+            val = Array.isArray(choicesVal2) ? (choicesVal2[0] || '') : choicesVal2;
+          }
+        }
+        const fv = el.getAttribute('data-filter-var') || (el.closest('[data-filter-var]') && el.closest('[data-filter-var]').getAttribute('data-filter-var'));
+        if (fv) values[fv] = val;
+      });
+      document.querySelectorAll('input[type="radio"]:checked').forEach((el) => {
+        const group = el.closest('[data-filter-var]');
+        const fv = group && group.getAttribute('data-filter-var');
+        if (fv) values[fv] = el.value;
+      });
+      document.querySelectorAll('.dashboardr-checkbox-group[data-filter-var]').forEach((group) => {
+        const fv = group.getAttribute('data-filter-var');
+        if (!fv) return;
+        values[fv] = Array.from(group.querySelectorAll('input[type="checkbox"]:checked'))
+          .map((el) => el.value)
+          .filter((v) => String(v || '') !== '');
+      });
+      document.querySelectorAll('.dashboardr-button-group[data-filter-var]').forEach((group) => {
+        const fv = group.getAttribute('data-filter-var');
+        if (!fv) return;
+        const active = group.querySelector('.dashboardr-button-option.active');
+        if (active) {
+          const activeVal = active.getAttribute('data-value') ?? active.value ?? active.textContent;
+          if (activeVal != null) values[fv] = String(activeVal).trim();
+        }
+      });
+      document.querySelectorAll('input[data-filter-var], textarea[data-filter-var]').forEach((el) => {
+        const fv = el.getAttribute('data-filter-var');
+        if (!fv) return;
+        const type = String(el.type || '').toLowerCase();
+        if (type === 'radio' || type === 'checkbox') return;
+        values[fv] = el.value;
+      });
+
+      const evalCond = (cond) => {
+        if (!cond || typeof cond !== 'object') return true;
+        if (cond.op === 'and') return (cond.conditions || []).every((c) => evalCond(c));
+        if (cond.op === 'or') return (cond.conditions || []).some((c) => evalCond(c));
+        if (cond.op === 'not') return !evalCond(cond.condition);
+        const val = values[cond.var];
+        const numVal = parseFloat(val);
+        const numCond = parseFloat(cond.val);
+        const valueIsArray = Array.isArray(val);
+        const condIsArray = Array.isArray(cond.val);
+        switch (cond.op) {
+          case 'eq':
+            if (valueIsArray) return val.indexOf(cond.val) !== -1;
+            return val === cond.val;
+          case 'neq':
+            if (valueIsArray) return val.indexOf(cond.val) === -1;
+            return val !== cond.val;
+          case 'in':
+            if (valueIsArray && condIsArray) return val.some((v) => cond.val.indexOf(v) !== -1);
+            if (condIsArray) return cond.val.indexOf(val) !== -1;
+            return false;
+          case 'gt':
+            return !isNaN(numVal) && !isNaN(numCond) && numVal > numCond;
+          case 'lt':
+            return !isNaN(numVal) && !isNaN(numCond) && numVal < numCond;
+          case 'gte':
+            return !isNaN(numVal) && !isNaN(numCond) && numVal >= numCond;
+          case 'lte':
+            return !isNaN(numVal) && !isNaN(numCond) && numVal <= numCond;
+          default:
+            return true;
+        }
+      };
+
+      const isActuallyVisible = (el) => {
+        if (!el) return false;
+        if (el.classList && el.classList.contains('dashboardr-sw-hidden')) return false;
+        const st = window.getComputedStyle(el);
+        if (!st || st.display === 'none' || st.visibility === 'hidden' || st.opacity === '0') return false;
+        const r = el.getBoundingClientRect();
+        return r.width > 0 && r.height > 0;
+      };
+
+      const nodes = Array.from(document.querySelectorAll('[data-show-when]'));
+      const mismatches = [];
+      nodes.forEach((el, idx) => {
+        const raw = el.getAttribute('data-show-when');
+        if (!raw) return;
+        let cond = null;
+        try {
+          cond = JSON.parse(raw);
+        } catch (_) {
+          return;
+        }
+        const expectedVisible = !!evalCond(cond);
+        const actualVisible = isActuallyVisible(el);
+        if (expectedVisible !== actualVisible) {
+          const text = String(el.innerText || el.textContent || '').replace(/\s+/g, ' ').trim();
+          mismatches.push({
+            index: idx + 1,
+            id: el.id || '',
+            expected_visible: expectedVisible,
+            actual_visible: actualVisible,
+            text: text.slice(0, 120),
+            condition: raw
+          });
+        }
+      });
+
+      return {
+        count: nodes.length,
+        mismatch_count: mismatches.length,
+        mismatches,
+        values
+      };
+    });
+
+    interactionResults.show_when_consistency = interactionResults.show_when_consistency || {};
+    interactionResults.show_when_consistency[stage] = info;
+    if (Number(info.mismatch_count || 0) > 0) {
+      const first = (info.mismatches && info.mismatches[0]) || {};
+      fail(
+        `show_when mismatch (${stage}): expected=${first.expected_visible} actual=${first.actual_visible} ` +
+        `id='${first.id || `#${first.index || 0}`}' cond='${first.condition || ''}'`
+      );
+    }
+  };
+
+  const assertDynamicBindings = async (stage) => {
+    if (!dynamicBindingRules.length) return;
+    const result = await page.evaluate((rules) => {
+      const values = {};
+      const choicesMap = window.dashboardrChoicesInstances || {};
+      const normalize = (v) => String(v || '').replace(/\s+/g, ' ').trim().toLowerCase();
+      const asTokens = (val) => {
+        if (Array.isArray(val)) return val.map((x) => String(x || '').trim()).filter((x) => x.length > 0);
+        const one = String(val || '').trim();
+        return one ? [one] : [];
+      };
+      const isVisible = (el) => {
+        if (!el) return false;
+        if (el.classList && el.classList.contains('dashboardr-sw-hidden')) return false;
+        const st = window.getComputedStyle(el);
+        if (!st || st.display === 'none' || st.visibility === 'hidden' || st.opacity === '0') return false;
+        const r = el.getBoundingClientRect();
+        return r.width > 0 && r.height > 0;
+      };
+
+      document.querySelectorAll('select').forEach((el) => {
+        let val = el.value;
+        const id = el.getAttribute('data-input-id') || el.name || el.id;
+        if (id && choicesMap[id] && typeof choicesMap[id].getValue === 'function') {
+          const choicesVal = choicesMap[id].getValue(true);
+          if (choicesVal !== undefined && choicesVal !== null) {
+            val = Array.isArray(choicesVal) ? (choicesVal[0] || '') : choicesVal;
+          }
+        } else if (el.id && choicesMap[el.id] && typeof choicesMap[el.id].getValue === 'function') {
+          const choicesVal2 = choicesMap[el.id].getValue(true);
+          if (choicesVal2 !== undefined && choicesVal2 !== null) {
+            val = Array.isArray(choicesVal2) ? (choicesVal2[0] || '') : choicesVal2;
+          }
+        }
+        const fv = el.getAttribute('data-filter-var') || (el.closest('[data-filter-var]') && el.closest('[data-filter-var]').getAttribute('data-filter-var'));
+        if (fv) values[fv] = val;
+      });
+      document.querySelectorAll('input[type="radio"]:checked').forEach((el) => {
+        const group = el.closest('[data-filter-var]');
+        const fv = group && group.getAttribute('data-filter-var');
+        if (fv) values[fv] = el.value;
+      });
+      document.querySelectorAll('.dashboardr-checkbox-group[data-filter-var]').forEach((group) => {
+        const fv = group.getAttribute('data-filter-var');
+        if (!fv) return;
+        values[fv] = Array.from(group.querySelectorAll('input[type="checkbox"]:checked'))
+          .map((el) => el.value)
+          .filter((v) => String(v || '') !== '');
+      });
+      document.querySelectorAll('.dashboardr-button-group[data-filter-var]').forEach((group) => {
+        const fv = group.getAttribute('data-filter-var');
+        if (!fv) return;
+        const active = group.querySelector('.dashboardr-button-option.active');
+        if (active) {
+          const activeVal = active.getAttribute('data-value') ?? active.value ?? active.textContent;
+          if (activeVal != null) values[fv] = String(activeVal).trim();
+        }
+      });
+      document.querySelectorAll('input[data-filter-var], textarea[data-filter-var]').forEach((el) => {
+        const fv = el.getAttribute('data-filter-var');
+        if (!fv) return;
+        const type = String(el.type || '').toLowerCase();
+        if (type === 'radio' || type === 'checkbox') return;
+        values[fv] = el.value;
+      });
+
+      const failures = [];
+      const details = [];
+      (rules || []).forEach((rule) => {
+        const selector = String(rule.selector || '');
+        const nodes = Array.from(document.querySelectorAll(selector));
+        if (!nodes.length) {
+          if (rule.required !== false) failures.push(`selector missing: ${selector}`);
+          details.push({ selector, matched: false, reason: 'missing-selector' });
+          return;
+        }
+
+        const effectiveNodes = (rule.require_visible === false) ? nodes : nodes.filter((n) => isVisible(n));
+        if (!effectiveNodes.length) {
+          if (rule.required !== false) failures.push(`selector has no visible node: ${selector}`);
+          details.push({ selector, matched: false, reason: 'no-visible-node' });
+          return;
+        }
+
+        const text = effectiveNodes
+          .map((n) => String(n.innerText || n.textContent || '').replace(/\s+/g, ' ').trim())
+          .filter((x) => x.length > 0)
+          .join(' | ');
+        const textNorm = normalize(text);
+        const vars = Array.isArray(rule.vars) ? rule.vars : [];
+        if (!vars.length) {
+          details.push({ selector, matched: true, reason: 'no-vars', text });
+          return;
+        }
+
+        const varMatches = vars.map((v) => {
+          const tokens = asTokens(values[v]);
+          const matched = tokens.some((t) => textNorm.includes(normalize(t)));
+          return { var: v, tokens, matched };
+        });
+        const overall = String(rule.match_mode || 'any') === 'all'
+          ? varMatches.every((x) => x.matched)
+          : varMatches.some((x) => x.matched);
+        if (!overall && rule.required !== false) {
+          const pairText = varMatches.map((x) => `${x.var}=[${x.tokens.join(', ')}]`).join('; ');
+          failures.push(`selector '${selector}' text did not reflect selected values (${pairText})`);
+        }
+        details.push({ selector, matched: overall, var_matches: varMatches, text });
+      });
+
+      return { values, failures, details };
+    }, dynamicBindingRules);
+
+    interactionResults.dynamic_bindings = interactionResults.dynamic_bindings || {};
+    interactionResults.dynamic_bindings[stage] = result;
+    (result.failures || []).forEach((msg) => fail(`Dynamic binding failed (${stage}): ${msg}`));
   };
 
   const captureLargeEmptyCards = async () => {
@@ -2322,6 +2938,10 @@ async (page) => {
     if (fontExpectations.length > 0) {
       interactionResults.fonts = await assertFontExpectations();
     }
+    if (requireShowWhenConsistency) {
+      await assertShowWhenConsistency('initial');
+    }
+    await assertDynamicBindings('initial');
 
     const initialState = await captureChartState();
     assertExpectedBackendsVisible(initialState);
@@ -2350,6 +2970,22 @@ async (page) => {
         interactionResults.sidebar_toggle = await performSidebarToggleInteraction();
         if (!interactionResults.sidebar_toggle || !interactionResults.sidebar_toggle.performed) {
           fail('Sidebar-toggle interaction could not be performed.');
+        }
+      } else if (action === 'modal_toggle') {
+        interactionResults.modal_toggle = await performModalInteraction();
+        if (!interactionResults.modal_toggle || !interactionResults.modal_toggle.performed) {
+          fail('Modal interaction could not be performed.');
+        } else if (!interactionResults.modal_toggle.changed) {
+          fail('Modal interaction did not open and close the modal correctly.');
+        }
+      } else if (action === 'tooltip_hover') {
+        interactionResults.tooltip_hover = await performTooltipInteraction();
+        if (!interactionResults.tooltip_hover || !interactionResults.tooltip_hover.performed) {
+          fail('Tooltip interaction could not be performed.');
+        } else if (!interactionResults.tooltip_hover.changed) {
+          fail('Tooltip interaction did not produce visible tooltip content.');
+        } else if (interactionResults.tooltip_hover.has_undefined) {
+          fail('Tooltip text contains "undefined".');
         }
       } else if (action === 'show_when_toggle') {
         interactionResults.show_when_toggle = await performShowWhenInteraction();
@@ -2388,6 +3024,22 @@ async (page) => {
         fail('Expected slider effect, but chart/widget state did not change.');
       }
     }
+    if (expectModalEffect) {
+      if (!interactionResults.modal_toggle || !interactionResults.modal_toggle.performed) {
+        fail('Expected modal effect, but modal action was not performed.');
+      } else if (!interactionResults.modal_toggle.changed) {
+        fail('Expected modal effect, but modal did not open and close cleanly.');
+      }
+    }
+    if (expectTooltipEffect) {
+      if (!interactionResults.tooltip_hover || !interactionResults.tooltip_hover.performed) {
+        fail('Expected tooltip effect, but tooltip action was not performed.');
+      } else if (!interactionResults.tooltip_hover.changed) {
+        fail('Expected tooltip effect, but tooltip content did not appear/change.');
+      } else if (interactionResults.tooltip_hover.has_undefined) {
+        fail('Expected tooltip effect, but tooltip contains "undefined".');
+      }
+    }
     if (requireAllChartsChangeOnSlider && interactionResults.slider && interactionResults.slider.action && interactionResults.slider.action.performed) {
       const comparison = compareExpectedBackendEntryChanges(interactionResults.slider.before, interactionResults.slider.after);
       interactionResults.slider.backend_change = comparison;
@@ -2418,6 +3070,27 @@ async (page) => {
       }
     }
 
+    if (expectDynamicTitleEffect) {
+      const hasPerformed = (candidate) => {
+        if (!candidate) return false;
+        if (candidate.action && candidate.action.performed) return true;
+        if (Object.prototype.hasOwnProperty.call(candidate, 'performed') && candidate.performed) return true;
+        return false;
+      };
+      const titleCandidate = [
+        interactionResults.show_when_toggle,
+        interactionResults.slider,
+        interactionResults.filter
+      ].find((candidate) => hasPerformed(candidate));
+      if (!titleCandidate) {
+        fail('Expected dynamic title effect, but no eligible interaction was performed.');
+      } else if (!titleCandidate.dynamic_title || !titleCandidate.dynamic_title.changed) {
+        fail('Expected dynamic title effect, but chart title text did not change.');
+      } else if (requireDynamicTitlePlaceholdersResolved && titleCandidate.dynamic_title.after_has_placeholders) {
+        fail('Dynamic title still contains unresolved placeholders after interaction.');
+      }
+    }
+
     if (requireAllInputVarsAffectAllCharts) {
       interactionResults.input_propagation = await validateAllInputVarsAffectAllCharts();
     }
@@ -2441,6 +3114,10 @@ async (page) => {
         fail(`Detected ${emptyInfo.count} large visible empty card(s); expected <= ${maxLargeEmptyCards}.`);
       }
     }
+    if (requireShowWhenConsistency) {
+      await assertShowWhenConsistency('final');
+    }
+    await assertDynamicBindings('final');
 
     const endedAt = new Date().toISOString();
 

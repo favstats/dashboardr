@@ -41,7 +41,8 @@
   var styleEl = document.createElement('style');
   styleEl.textContent = ''
     + '.dashboardr-sw-hidden { display: none !important; height: 0 !important; min-height: 0 !important; overflow: hidden !important; margin: 0 !important; padding: 0 !important; }'
-    + '.bslib-grid > .hidden.html-fill-item.html-fill-container { display: none !important; height: 0 !important; min-height: 0 !important; overflow: hidden !important; margin: 0 !important; padding: 0 !important; }';
+    + '.bslib-grid > .hidden.html-fill-item.html-fill-container { display: none !important; height: 0 !important; min-height: 0 !important; overflow: hidden !important; margin: 0 !important; padding: 0 !important; }'
+    + '.viz-show-when { width: 100%; }';
   document.head.appendChild(styleEl);
 
   function hasVizContent(node) {
@@ -164,7 +165,10 @@
       var fv = group.getAttribute('data-filter-var');
       if (!fv) return;
       var active = group.querySelector('.dashboardr-button-option.active');
-      if (active && active.value != null) values[fv] = active.value;
+      if (active) {
+        var btnVal = active.getAttribute('data-value') || active.value;
+        if (btnVal != null) values[fv] = btnVal;
+      }
     });
 
     // Collect from non-radio/checkbox inputs (slider, text, number, etc.)

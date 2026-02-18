@@ -173,6 +173,21 @@ test_that("create_dashboard accepts contextual_viz_errors parameter", {
   expect_true(result_enabled$contextual_viz_errors)
 })
 
+test_that("create_dashboard accepts and validates rds_bundle_threshold", {
+  result_default <- create_dashboard("test", "Test")
+  result_custom <- create_dashboard("test", "Test", rds_bundle_threshold = 8)
+  result_disabled <- create_dashboard("test", "Test", rds_bundle_threshold = Inf)
+
+  expect_equal(result_default$rds_bundle_threshold, 5L)
+  expect_equal(result_custom$rds_bundle_threshold, 8L)
+  expect_true(is.infinite(result_disabled$rds_bundle_threshold))
+
+  expect_error(
+    create_dashboard("test", "Test", rds_bundle_threshold = -1),
+    "rds_bundle_threshold"
+  )
+})
+
 test_that("create_dashboard accepts pagination parameters", {
   result <- create_dashboard(
     "test", "Test",

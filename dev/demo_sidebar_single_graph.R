@@ -6,7 +6,7 @@
 #
 # Tests complex input logic with sidebar and ONE graph per page,
 # covering pie, scatter, boxplot, show_when on charts, reset buttons,
-# and compound show_when conditions.
+# compound show_when conditions, and orchestrated show_when-only controls.
 
 library(tidyverse)
 
@@ -239,6 +239,17 @@ page_s1 <- function(data, sidebar_title) {
       show_value = TRUE
     ) %>%
     end_sidebar() %>%
+    add_html("<a href='#s1-filter-help-modal' class='modal-link'>Open filter help modal</a>") %>%
+    add_modal(
+      modal_id = "s1-filter-help-modal",
+      title = "S1 Filter Context",
+      modal_content = md_text(
+        "This modal validates modal-link wiring and close behavior.",
+        "",
+        "- Active controls should update the chart and text states",
+        "- Modal should close via Escape and close icon"
+      )
+    ) %>%
     add_html("<div id='s1_dynamic_low' class='pw-dynamic-text'>Slider: early years (2019-2021)</div>", show_when = ~ year <= 2021) %>%
     add_html("<div id='s1_dynamic_high' class='pw-dynamic-text'>Slider: recent years (2022+)</div>", show_when = ~ year >= 2022) %>%
     add_viz(
@@ -251,7 +262,7 @@ page_s1 <- function(data, sidebar_title) {
       horizontal = TRUE,
       data_labels_enabled = TRUE,
       cross_tab_filter_vars = c("region", "education", "happiness", "channel", "segment", "year"),
-      title = "Responses by region and education"
+      title = "Responses by region and education ({education}, {channel}, {segment}, {year})"
     )
 }
 
@@ -269,7 +280,7 @@ page_s2 <- function(data, sidebar_title) {
       type = "select_single",
       filter_var = "education",
       options = education_levels,
-      default_selected = education_levels[1]
+      default_selected = "Graduate"
     ) %>%
     add_input(
       input_id = "s2_happiness",
@@ -293,15 +304,14 @@ page_s2 <- function(data, sidebar_title) {
       show_when = ~ education != "Graduate"
     ) %>%
     add_viz(
-      type = "timeline",
-      time_var = "year",
-      y_var = "count",
-      group_var = "region",
-      agg = "sum",
-      chart_type = "stacked_area",
+      type = "pie",
+      x_var = "region",
+      weight_var = "count",
+      inner_size = "45%",
+      data_labels_enabled = TRUE,
       color_palette = unname(region_palette),
       cross_tab_filter_vars = c("education", "happiness", "region", "year"),
-      title = "Response volume over time by region"
+      title = "Response share by region ({education})"
     )
 }
 
@@ -335,15 +345,14 @@ page_s3 <- function(data, sidebar_title) {
     ) %>%
     end_sidebar() %>%
     add_viz(
-      type = "timeline",
-      time_var = "year",
+      type = "scatter",
+      x_var = "income",
       y_var = "score",
-      group_var = "region",
-      agg = "mean",
-      chart_type = "line",
+      color_var = "region",
+      alpha = 0.7,
       color_palette = unname(region_palette),
       cross_tab_filter_vars = c("dimension", "question", "region"),
-      title = "Score trend by region"
+      title = "Income vs score ({region})"
     )
 }
 
@@ -379,15 +388,13 @@ page_s4 <- function(data, sidebar_title) {
     add_html("<div id='s4_dynamic_low' class='pw-dynamic-text'>Slider: early years</div>", show_when = ~ year <= 2021) %>%
     add_html("<div id='s4_dynamic_high' class='pw-dynamic-text'>Slider: recent years</div>", show_when = ~ year >= 2022) %>%
     add_viz(
-      type = "timeline",
-      time_var = "year",
+      type = "boxplot",
       y_var = "income",
-      group_var = "region",
-      agg = "mean",
-      chart_type = "line",
+      x_var = "region",
+      show_outliers = TRUE,
       color_palette = unname(region_palette),
       cross_tab_filter_vars = c("region", "year", "education"),
-      title = "Income trend by region"
+      title = "Income distribution by region ({year})"
     )
 }
 
@@ -426,7 +433,7 @@ page_s5 <- function(data, sidebar_title) {
       chart_type = "line",
       color_palette = unname(happiness_palette),
       cross_tab_filter_vars = c("region", "education", "happiness", "year", "channel", "segment"),
-      title = "Happiness trend over time"
+      title = "Happiness trend over time ({education}, {region})"
     )
 }
 
@@ -466,7 +473,7 @@ page_s6 <- function(data, sidebar_title) {
       color_palette = unname(education_palette),
       data_labels_enabled = TRUE,
       cross_tab_filter_vars = c("region", "education", "happiness", "year"),
-      title = "Region by education (chart view)",
+      title = "Region by education (chart view: {view_mode}, {region})",
       show_when = ~ view_mode == "Chart"
     ) %>%
     add_callout(
@@ -523,7 +530,116 @@ page_s7 <- function(data, sidebar_title) {
       stacked_type = "count",
       color_palette = unname(happiness_palette),
       cross_tab_filter_vars = c("education", "happiness", "region", "year"),
-      title = "Education by happiness level"
+      title = "Education by happiness level ({region})"
+    )
+}
+
+# =============================================================================
+# S8: Orchestrated show_when controls + secondary demographic filters
+# =============================================================================
+# Mirrors complex survey dashboards where:
+# - primary controls (topic/view) drive show_when logic but are not data columns
+# - secondary demographic button groups are shown conditionally and do filter data
+
+page_s8 <- function(data, sidebar_title) {
+  create_page(name = "S8_Orchestrated_ShowWhen_Demo", data = data) %>%
+    add_sidebar(position = "left", width = "300px", title = sidebar_title) %>%
+    add_input(
+      input_id = "s8_topic",
+      label = "Topic",
+      type = "button_group",
+      filter_var = "s8_topic",
+      options = c("Region Overview", "Education Mix"),
+      default_selected = "Region Overview",
+      inline = TRUE,
+      group_align = "center",
+      width = "100%"
+    ) %>%
+    add_input(
+      input_id = "s8_view",
+      label = "View",
+      type = "radio",
+      filter_var = "s8_view",
+      options = c("Snapshot", "Over Time"),
+      default_selected = "Snapshot",
+      inline = TRUE,
+      group_align = "center",
+      width = "100%"
+    ) %>%
+    add_input(
+      input_id = "s8_demo_mode",
+      label = "Demographic split",
+      type = "button_group",
+      filter_var = "s8_demo_mode",
+      options = c("By Region", "By Education", "Overall"),
+      default_selected = "By Region",
+      inline = TRUE,
+      group_align = "center",
+      width = "100%"
+    ) %>%
+    add_input(
+      input_id = "s8_region_secondary",
+      label = "Region filter",
+      type = "button_group",
+      filter_var = "region",
+      options = regions,
+      add_all = TRUE,
+      inline = TRUE,
+      group_align = "center",
+      width = "100%",
+      show_when = ~ s8_demo_mode == "By Region"
+    ) %>%
+    add_input(
+      input_id = "s8_education_secondary",
+      label = "Education filter",
+      type = "button_group",
+      filter_var = "education",
+      options = education_levels,
+      add_all = TRUE,
+      inline = TRUE,
+      group_align = "center",
+      width = "100%",
+      show_when = ~ s8_demo_mode == "By Education"
+    ) %>%
+    end_sidebar() %>%
+    add_html("<div id='s8_question_region' class='pw-dynamic-text'><strong>Region overview:</strong> distribution across regions.</div>", show_when = ~ s8_topic == "Region Overview") %>%
+    add_html("<div id='s8_question_education' class='pw-dynamic-text'><strong>Education mix:</strong> compare happiness composition by education.</div>", show_when = ~ s8_topic == "Education Mix") %>%
+    add_html("<div id='s8_snapshot_note' class='pw-dynamic-text'>Snapshot mode active.</div>", show_when = ~ s8_view == "Snapshot") %>%
+    add_html("<div id='s8_time_note' class='pw-dynamic-text'>Over-time mode active.</div>", show_when = ~ s8_view == "Over Time") %>%
+    add_viz(
+      type = "bar",
+      x_var = "region",
+      bar_type = "count",
+      weight_var = "count",
+      color_palette = unname(region_palette),
+      data_labels_enabled = TRUE,
+      cross_tab_filter_vars = c("region", "education", "happiness", "year"),
+      title = "Region overview ({region}, {s8_topic}, {s8_view})",
+      show_when = ~ s8_topic == "Region Overview" & s8_view == "Snapshot"
+    ) %>%
+    add_viz(
+      type = "stackedbar",
+      x_var = "education",
+      stack_var = "happiness",
+      stacked_type = "count",
+      weight_var = "count",
+      color_palette = unname(happiness_palette),
+      data_labels_enabled = TRUE,
+      cross_tab_filter_vars = c("region", "education", "happiness", "year"),
+      title = "Education mix ({education}, {s8_topic}, {s8_view})",
+      show_when = ~ s8_topic == "Education Mix" & s8_view == "Snapshot"
+    ) %>%
+    add_viz(
+      type = "timeline",
+      time_var = "year",
+      y_var = "count",
+      group_var = "region",
+      agg = "sum",
+      chart_type = "line",
+      color_palette = unname(region_palette),
+      cross_tab_filter_vars = c("region", "education", "happiness", "year"),
+      title = "Trend by region ({region}, {s8_view})",
+      show_when = ~ s8_view == "Over Time"
     )
 }
 
@@ -549,7 +665,8 @@ build_single_graph_dashboard <- function(title, output_dir, backend, sidebar_lab
       page_s4(boxplot_data, paste0(sidebar_label, " - S4")),
       page_s5(base_data, paste0(sidebar_label, " - S5")),
       page_s6(base_data, paste0(sidebar_label, " - S6")),
-      page_s7(stacked_data, paste0(sidebar_label, " - S7"))
+      page_s7(stacked_data, paste0(sidebar_label, " - S7")),
+      page_s8(base_data, paste0(sidebar_label, " - S8"))
     )
 }
 

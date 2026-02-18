@@ -12,7 +12,13 @@
   url_params = FALSE,
   modals = FALSE,
   chart_export = FALSE,
-  sidebar = FALSE
+  sidebar = FALSE,
+  deferred_charts = FALSE,
+  cross_tab_data_mode = "inline",
+  min_cell_size = 0L,
+  cross_tab_output_dir = NULL,
+  charts_output_dir = NULL,
+  crosstab_prefix = NULL
 )
 }
 \arguments{
@@ -31,6 +37,23 @@
 \item{chart_export}{Logical; enable Highcharts export buttons.}
 
 \item{sidebar}{Logical; include sidebar CSS/JS.}
+
+\item{deferred_charts}{Logical; include deferred charts JS/CSS for on-demand chart hydration.}
+
+\item{cross_tab_data_mode}{Character. How cross-tab data is embedded: "inline"
+(default) or "asset" (external JSON files for lazy loading).}
+
+\item{min_cell_size}{Integer. Minimum cell count for privacy protection in
+cross-tab data. Rows where 0 < n < min_cell_size are suppressed. Default 0.}
+
+\item{cross_tab_output_dir}{Character. Directory path for writing external
+cross-tab JSON files when \code{cross_tab_data_mode = "asset"}.}
+
+\item{charts_output_dir}{Character. Directory path for writing deferred chart
+JSON files when \code{deferred_charts = TRUE}.}
+
+\item{crosstab_prefix}{Character. Page-specific prefix for cross-tab IDs to
+prevent ID collisions across multiple QMD pages.}
 }
 \value{
 An \code{htmltools::tagList} of HTML tags (rendered via

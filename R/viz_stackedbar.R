@@ -345,6 +345,8 @@ viz_stackedbar <- function(data,
       weight_var = weight_var,
       data_labels_enabled = data_labels_enabled,
       label_decimals = label_decimals,
+      cross_tab_filter_vars = cross_tab_filter_vars,
+      title_map = title_map,
       legend_position = legend_position,
       backend = backend
     )
@@ -655,28 +657,40 @@ viz_stackedbar <- function(data,
   )
 
   # Prepare cross-tab data for client-side filtering (all backends)
+  # Use the binned/processed data (plot_data_temp) so stack_breaks are applied
   cross_tab_attrs <- NULL
   if (!is.null(cross_tab_filter_vars) && length(cross_tab_filter_vars) > 0) {
-    valid_filter_vars <- cross_tab_filter_vars[cross_tab_filter_vars %in% names(data)]
+    # Filter vars must exist in the pre-binning data (plot_data_temp still has them)
+    valid_filter_vars <- cross_tab_filter_vars[cross_tab_filter_vars %in% names(plot_data_temp)]
     if (length(valid_filter_vars) > 0) {
-      group_vars <- c(x_var, stack_var, valid_filter_vars)
-      if (!is.null(y_var) && y_var %in% names(data) && is.numeric(data[[y_var]])) {
-        cross_tab <- data %>%
+      # Use binned column names for x and stack vars
+      ct_x_var <- x_var_for_plot
+      ct_stack_var <- stack_var_for_plot
+      group_vars <- unique(c(ct_x_var, ct_stack_var, valid_filter_vars))
+      # Filter NAs from binned columns before counting
+      ct_data <- plot_data_temp %>%
+        dplyr::filter(!is.na(!!rlang::sym(ct_x_var)) & !is.na(!!rlang::sym(ct_stack_var)))
+      if (!is.null(weight_var) && weight_var %in% names(ct_data)) {
+        cross_tab <- ct_data %>%
           dplyr::group_by(dplyr::across(dplyr::all_of(group_vars))) %>%
-          dplyr::summarise(n = sum(.data[[y_var]], na.rm = TRUE), .groups = "drop")
+          dplyr::summarise(n = sum(!!rlang::sym(weight_var), na.rm = TRUE), .groups = "drop")
+      } else if (!is.null(y_var) && y_var %in% names(ct_data)) {
+        cross_tab <- ct_data %>%
+          dplyr::group_by(dplyr::across(dplyr::all_of(group_vars))) %>%
+          dplyr::summarise(n = sum(!!rlang::sym(y_var), na.rm = TRUE), .groups = "drop")
       } else {
-        cross_tab <- data %>%
+        cross_tab <- ct_data %>%
           dplyr::count(dplyr::across(dplyr::all_of(group_vars)), name = "n")
       }
-      chart_id <- paste0("crosstab_", substr(digest::digest(paste(x_var, stack_var, collapse = "_")), 1, 8))
+      chart_id <- .next_crosstab_id()
       chart_config <- list(
         chartId = chart_id,
-        xVar = x_var,
-        stackVar = stack_var,
+        xVar = ct_x_var,
+        stackVar = ct_stack_var,
         filterVars = valid_filter_vars,
         stackedType = stacked_type,
-        stackOrder = if (!is.null(stack_order)) stack_order else unique(as.character(cross_tab[[stack_var]])),
-        xOrder = if (!is.null(x_order)) x_order else unique(as.character(cross_tab[[x_var]])),
+        stackOrder = if (!is.null(stack_order)) stack_order else unique(as.character(cross_tab[[ct_stack_var]])),
+        xOrder = if (!is.null(x_order)) x_order else unique(as.character(cross_tab[[ct_x_var]])),
         colorMap = if (!is.null(color_palette) && !is.null(names(color_palette))) as.list(color_palette) else NULL,
         labelDecimals = if (!is.null(label_decimals)) as.integer(label_decimals) else if (stacked_type == "percent") 1L else 0L
       )
@@ -710,7 +724,8 @@ viz_stackedbar <- function(data,
       attr(result, "cross_tab_config") <- cross_tab_attrs$config
       attr(result, "cross_tab_id") <- cross_tab_attrs$id
     }
-    result <- .register_chart_widget(result, backend = backend)
+    ct_fv <- if (!is.null(cross_tab_attrs)) cross_tab_attrs$config$filterVars else NULL
+    result <- .register_chart_widget(result, backend = backend, filter_vars = ct_fv)
     return(result)
   }
 
@@ -819,10 +834,11 @@ viz_stackedbar <- function(data,
         paste0(
           "function() {
           var value = ", if (stacked_type == "percent") "this.percentage.toFixed(1)" else "this.y", ";
+          var totalValue = ", if (stacked_type == "percent") "100" else "((this.point && this.point.stackTotal != null) ? this.point.stackTotal : ((this.total != null) ? this.total : this.y))", ";
           var categoryLabel = this.point.category || this.series.chart.xAxis[0].categories[this.point.x] || this.x;
           return '<b>' + categoryLabel + '", x_tooltip_suffix_js, "</b><br/>' +
                  this.series.name + ': ", tooltip_prefix_js, "' + value + '", tooltip_suffix_js, "<br/>' +
-                 'Total: ' + ", if (stacked_type == "percent") "100" else "this.point.stackTotal", ";
+                 'Total: ' + totalValue;
         }"
         )
       )
@@ -857,7 +873,9 @@ viz_stackedbar <- function(data,
   # --- Legend position ---
   hchart_obj <- .apply_legend_highcharter(hchart_obj, config$legend_position, default_show = TRUE)
 
-  hchart_obj <- .register_chart_widget(hchart_obj, backend = "highcharter")
+  # Pass filter_vars from cross-tab config so JS knows which filters apply
+  ct_filter_vars <- if (!is.null(cross_tab_attrs)) cross_tab_attrs$config$filterVars else NULL
+  hchart_obj <- .register_chart_widget(hchart_obj, backend = "highcharter", filter_vars = ct_filter_vars)
   return(hchart_obj)
 }
 

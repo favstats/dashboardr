@@ -127,6 +127,52 @@
   list(content_blocks = updated_blocks, counters = counters)
 }
 
+.rewrite_data_path_for_bundle <- function(data_path, bundle_file, pending_keys) {
+  pending_files <- unique(basename(pending_keys))
+
+  rewrite_one <- function(path_value) {
+    if (!is.character(path_value) || length(path_value) != 1L || is.na(path_value)) {
+      return(path_value)
+    }
+    path_file <- basename(path_value)
+    if (!(path_file %in% pending_files)) {
+      return(path_value)
+    }
+    .make_rds_bundle_ref(bundle_file = bundle_file, bundle_key = path_file)
+  }
+
+  if (is.list(data_path)) {
+    updated <- data_path
+    for (i in seq_along(updated)) {
+      updated[[i]] <- rewrite_one(updated[[i]])
+    }
+    return(updated)
+  }
+
+  rewrite_one(data_path)
+}
+
+.rewrite_project_data_paths_for_bundle <- function(proj, bundle_file, pending_keys) {
+  if (is.null(proj$pages) || length(proj$pages) == 0) {
+    return(proj)
+  }
+
+  for (page_name in names(proj$pages)) {
+    page <- proj$pages[[page_name]]
+    if (is.null(page$data_path)) {
+      next
+    }
+    page$data_path <- .rewrite_data_path_for_bundle(
+      data_path = page$data_path,
+      bundle_file = bundle_file,
+      pending_keys = pending_keys
+    )
+    proj$pages[[page_name]] <- page
+  }
+
+  proj
+}
+
 
 #' Generate all dashboard files
 #'
@@ -179,6 +225,14 @@
 #' }
 generate_dashboard <- function(proj, render = TRUE, open = "browser", incremental = FALSE, preview = NULL,
                               show_progress = TRUE, quiet = FALSE, standalone = FALSE) {
+  # Reset cross-tab counter for this build
+  .crosstab_counter$n <- 0L
+
+  # Store cross-tab settings in package environment for .embed_cross_tab()
+  .dashboardr_pkg_env$cross_tab_data_mode <- proj$cross_tab_data_mode %||% "inline"
+  .dashboardr_pkg_env$min_cell_size <- proj$min_cell_size %||% 0L
+  .dashboardr_pkg_env$deferred_charts <- proj$deferred_charts %||% FALSE
+
   # Standalone mode: embed all resources into a single HTML file
   if (isTRUE(standalone)) {
     render <- TRUE
@@ -261,14 +315,62 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
   if (!dir.exists(output_dir)) {
     dir.create(output_dir, recursive = TRUE)
   }
+
+  # Standalone guard: asset mode incompatible with standalone
+  if (isTRUE(standalone) && identical(.dashboardr_pkg_env$cross_tab_data_mode, "asset")) {
+    if (!quiet) {
+      message("Note: cross_tab_data_mode='asset' is incompatible with standalone=TRUE; falling back to inline")
+    }
+    .dashboardr_pkg_env$cross_tab_data_mode <- "inline"
+  }
+
+  # Set up cross-tab asset output directory
+  if (identical(.dashboardr_pkg_env$cross_tab_data_mode, "asset")) {
+    cross_tab_dir <- file.path(output_dir, "cross_tab")
+    if (!dir.exists(cross_tab_dir)) {
+      dir.create(cross_tab_dir, recursive = TRUE)
+    }
+    .dashboardr_pkg_env$cross_tab_output_dir <- cross_tab_dir
+  } else {
+    .dashboardr_pkg_env$cross_tab_output_dir <- NULL
+  }
+
+  # Set up deferred charts output directory
+  if (isTRUE(.dashboardr_pkg_env$deferred_charts)) {
+    charts_dir <- file.path(output_dir, "charts")
+    if (!dir.exists(charts_dir)) {
+      dir.create(charts_dir, recursive = TRUE)
+    }
+    .dashboardr_pkg_env$charts_output_dir <- charts_dir
+  } else {
+    .dashboardr_pkg_env$charts_output_dir <- NULL
+  }
   
   # Save any pending data files (deferred from add_page)
   if (!is.null(proj$pending_data) && length(proj$pending_data) > 0) {
-    for (data_path in names(proj$pending_data)) {
-      saveRDS(proj$pending_data[[data_path]], file.path(output_dir, basename(data_path)))
-    }
-    if (!quiet) {
-      message("Saved ", length(proj$pending_data), " data file(s)")
+    bundle_threshold <- proj$rds_bundle_threshold %||% 0L
+    should_bundle <- is.finite(bundle_threshold) &&
+      as.integer(bundle_threshold) > 0L &&
+      length(proj$pending_data) >= as.integer(bundle_threshold)
+
+    if (isTRUE(should_bundle)) {
+      bundle_file <- "dashboard_data_bundle.rds"
+      saveRDS(proj$pending_data, file.path(output_dir, bundle_file))
+      proj <- .rewrite_project_data_paths_for_bundle(
+        proj = proj,
+        bundle_file = bundle_file,
+        pending_keys = names(proj$pending_data)
+      )
+      if (!quiet) {
+        message("Saved ", length(proj$pending_data), " data file(s) in bundled file: ", bundle_file)
+      }
+    } else {
+      for (data_path in names(proj$pending_data)) {
+        saveRDS(proj$pending_data[[data_path]], file.path(output_dir, basename(data_path)))
+      }
+      if (!quiet) {
+        message("Saved ", length(proj$pending_data), " data file(s)")
+      }
     }
   }
   
@@ -320,7 +422,13 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
     if (!is.null(proj$favicon) && file.exists(proj$favicon)) {
       file.copy(proj$favicon, file.path(output_dir, basename(proj$favicon)), overwrite = TRUE)
     }
-    
+
+    # Copy custom CSS if provided
+    if (!is.null(proj$custom_css) && file.exists(proj$custom_css)) {
+      file.copy(proj$custom_css, file.path(output_dir, basename(proj$custom_css)), overwrite = TRUE)
+      if (!quiet) message("Copied custom CSS: ", basename(proj$custom_css))
+    }
+
     # Copy modal and pagination assets (CSS and JS) to assets directory
     assets_dir <- file.path(output_dir, "assets")
     if (!dir.exists(assets_dir)) {
@@ -343,6 +451,7 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
     accessibility_css <- system.file("assets", "accessibility.css", package = "dashboardr")
     accessibility_js <- system.file("assets", "accessibility.js", package = "dashboardr")
     url_params_js <- system.file("assets", "url_params.js", package = "dashboardr")
+    deferred_charts_js <- system.file("assets", "deferred_charts.js", package = "dashboardr")
 
     if (file.exists(modal_css)) {
       file.copy(modal_css, file.path(assets_dir, "modal.css"), overwrite = TRUE)
@@ -391,6 +500,9 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
     }
     if (file.exists(url_params_js)) {
       file.copy(url_params_js, file.path(assets_dir, "url_params.js"), overwrite = TRUE)
+    }
+    if (file.exists(deferred_charts_js)) {
+      file.copy(deferred_charts_js, file.path(assets_dir, "deferred_charts.js"), overwrite = TRUE)
     }
 
     # Copy tabset theme SCSS file if using a built-in theme
@@ -482,8 +594,8 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
       # Check if this is the last page (only if no landing page will be shown after)
       is_last_page <- (current_page == total_pages && !will_show_landing)
 
-      # Use lowercase with underscores for filenames
-      filename <- tolower(gsub("[^a-zA-Z0-9]", "_", page_name))
+      # Use page slug if provided, otherwise derive from name
+      filename <- page$slug %||% tolower(gsub("[^a-zA-Z0-9]", "_", page_name))
       page_file <- file.path(output_dir, paste0(filename, ".qmd"))
 
       # Check if page needs rebuild
@@ -643,7 +755,7 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
               landing_page$content_blocks,
               output_dir = output_dir,
               counters = block_save_counters,
-              include_widgets = FALSE
+              include_widgets = TRUE
             )
             landing_page$content_blocks <- saved_landing_blocks$content_blocks
             block_save_counters <- saved_landing_blocks$counters
@@ -682,7 +794,8 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
       deleted_pages <- setdiff(old_pages, new_pages)
       
       for (deleted_name in deleted_pages) {
-        filename <- tolower(gsub("[^a-zA-Z0-9]", "_", deleted_name))
+        deleted_page <- manifest$pages[[deleted_name]]
+        filename <- deleted_page$slug %||% tolower(gsub("[^a-zA-Z0-9]", "_", deleted_name))
         page_file <- file.path(output_dir, paste0(filename, ".qmd"))
         if (file.exists(page_file)) {
           file.remove(page_file)
@@ -862,8 +975,8 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
         stem <- sub("\\.qmd$", "", q)
         stem <- sub("_p[0-9]+$", "", stem)
         for (nm in names(proj$pages)) {
-          nm_stem <- tolower(gsub("[^a-zA-Z0-9]", "_", nm))
-          if (identical(stem, nm_stem)) return(nm)
+          nm_slug <- proj$pages[[nm]]$slug %||% tolower(gsub("[^a-zA-Z0-9]", "_", nm))
+          if (identical(stem, nm_slug)) return(nm)
         }
         NA_character_
       }
@@ -906,6 +1019,48 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
     }
     
     if (!quiet) message("Dashboard rendered successfully")
+
+    # Copy cross_tab/ directory to publish directory (asset mode)
+    if (identical(proj$cross_tab_data_mode %||% "inline", "asset")) {
+      cross_tab_src <- file.path(output_dir_abs, "cross_tab")
+      cross_tab_dst <- file.path(publish_dir_abs, "cross_tab")
+      if (dir.exists(cross_tab_src)) {
+        if (!dir.exists(cross_tab_dst)) dir.create(cross_tab_dst, recursive = TRUE)
+        json_files <- list.files(cross_tab_src, pattern = "\\.json$", full.names = TRUE)
+        if (length(json_files) > 0) {
+          file.copy(json_files, file.path(cross_tab_dst, basename(json_files)), overwrite = TRUE)
+          if (!quiet) message("Copied ", length(json_files), " cross-tab JSON file(s) to publish directory")
+        }
+      }
+    }
+
+    # Copy charts/ directory to publish directory (deferred charts mode)
+    if (isTRUE(proj$deferred_charts)) {
+      charts_src <- file.path(output_dir_abs, "charts")
+      charts_dst <- file.path(publish_dir_abs, "charts")
+      if (dir.exists(charts_src)) {
+        if (!dir.exists(charts_dst)) dir.create(charts_dst, recursive = TRUE)
+        chart_files <- list.files(charts_src, pattern = "\\.json$", full.names = TRUE)
+        if (length(chart_files) > 0) {
+          file.copy(chart_files, file.path(charts_dst, basename(chart_files)), overwrite = TRUE)
+          if (!quiet) message("Copied ", length(chart_files), " chart options JSON file(s) to publish directory")
+        }
+      }
+    }
+
+    # Copy custom CSS to publish directory (Quarto may not copy it when rendering individual files)
+    if (!is.null(proj$custom_css)) {
+      css_name <- basename(proj$custom_css)
+      # Use absolute path: output_dir_abs / css_name (dashboardr copies CSS to project dir)
+      css_src_abs <- file.path(output_dir_abs, css_name)
+      css_dst_abs <- file.path(publish_dir_abs, css_name)
+      if (file.exists(css_src_abs)) {
+        file.copy(css_src_abs, css_dst_abs, overwrite = TRUE)
+        if (!quiet) message("Copied custom CSS to publish directory: ", css_name)
+      } else {
+        if (!quiet) message("Custom CSS not found at: ", css_src_abs)
+      }
+    }
 
     # Open in browser if requested and render succeeded
     if (open == "browser") {
@@ -1066,7 +1221,8 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
         if (is.list(page$data_path)) {
           # Multiple datasets
           for (dataset_name in names(page$data_path)) {
-            data_file <- basename(page$data_path[[dataset_name]])
+            ref <- .parse_rds_bundle_ref(page$data_path[[dataset_name]])
+            data_file <- if (!is.null(ref)) basename(ref$bundle_file) else basename(page$data_path[[dataset_name]])
             if (is.null(data_to_pages[[data_file]])) {
               data_to_pages[[data_file]] <- list(pages = c(), dataset_name = dataset_name)
             }
@@ -1074,7 +1230,8 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
           }
         } else {
           # Single dataset
-          data_file <- basename(page$data_path)
+          ref <- .parse_rds_bundle_ref(page$data_path)
+          data_file <- if (!is.null(ref)) basename(ref$bundle_file) else basename(page$data_path)
           if (is.null(data_to_pages[[data_file]])) {
             data_to_pages[[data_file]] <- list(pages = c(), dataset_name = NULL)
           }

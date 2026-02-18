@@ -97,7 +97,11 @@ create_dashboard(
   chart_export = FALSE,
   backend = "highcharter",
   contextual_viz_errors = FALSE,
-  url_params = FALSE
+  url_params = FALSE,
+  cross_tab_data_mode = c("inline", "asset"),
+  min_cell_size = 0L,
+  rds_bundle_threshold = 5L,
+  deferred_charts = FALSE
 )
 }
 \arguments{
@@ -305,6 +309,21 @@ horizontal scrolling issues on mobile.}
 in tryCatch and prepend contextual labels (title/type) to error messages. Default: FALSE.}
 
 \item{url_params}{Logical. If TRUE, enable URL parameter support for inputs. Default: FALSE.}
+
+\item{cross_tab_data_mode}{How cross-tab data is embedded: "inline" (default, current behavior)
+or "asset" (write to external .json files for lazy loading). Asset mode reduces HTML size
+dramatically for dashboards with many filtered charts.}
+
+\item{min_cell_size}{Integer. Minimum cell count for privacy protection in cross-tab data.
+Rows where 0 < n < min_cell_size are suppressed (removed) from cross-tab output.
+Set to 0 to disable suppression. Default: 0 (opt-in).}
+
+\item{rds_bundle_threshold}{Integer. If the dashboard has at least this many pending
+generated datasets, write them as one bundled \code{.rds} list file instead of many
+individual \code{.rds} files. Default: 5. Set to 0 or Inf to disable bundling.}
+
+\item{deferred_charts}{Logical. If TRUE, only render initially visible charts; others become
+lightweight placeholders that load on demand when revealed by show_when. Default: FALSE.}
 }
 \value{
 A dashboard_project object
