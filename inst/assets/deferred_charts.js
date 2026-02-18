@@ -137,7 +137,7 @@
       _createPlotly(container, options, chartId, crossTabId, height);
     }
 
-    // Set up ResizeObserver for proper sizing
+    // Set up ResizeObserver for proper sizing (store ref for cleanup)
     if (typeof ResizeObserver !== 'undefined') {
       var resizeObserver = new ResizeObserver(function() {
         if (backend === 'highcharter' && container._hcChart) {
@@ -145,6 +145,7 @@
         }
       });
       resizeObserver.observe(el);
+      el._dashboardrResizeObserver = resizeObserver;
     }
 
     // Schedule a debounced applyAllFilters after all pending hydrations complete.

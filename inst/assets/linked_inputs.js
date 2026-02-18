@@ -54,14 +54,16 @@
             'value', 'label', true
           );
         } else {
-          // Native select: update innerHTML directly
-          childEl.innerHTML = '';
+          // Native select: rebuild via DocumentFragment for atomic DOM update
+          var frag = document.createDocumentFragment();
           newOptions.forEach(function(opt) {
             var option = document.createElement('option');
             option.value = opt;
             option.textContent = opt;
-            childEl.appendChild(option);
+            frag.appendChild(option);
           });
+          childEl.innerHTML = '';
+          childEl.appendChild(frag);
         }
 
         // Fire change on the underlying select so input_filter.js picks it up

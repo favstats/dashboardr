@@ -11,6 +11,8 @@ html_metric(
   color = NULL,
   bg_color = NULL,
   text_color = NULL,
+  gradient = TRUE,
+  gradient_intensity = 0.45,
   value_prefix = NULL,
   value_suffix = NULL,
   border_radius = NULL,

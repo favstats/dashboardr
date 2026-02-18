@@ -100,8 +100,9 @@
         return;
       }
 
-      // Find input by filter_var
-      var input = document.querySelector('[data-filter-var="' + key + '"]');
+      // Find input by filter_var (escape key for safe CSS selector)
+      var escapedKey = typeof CSS !== 'undefined' && CSS.escape ? CSS.escape(key) : key;
+      var input = document.querySelector('[data-filter-var="' + escapedKey + '"]');
       if (!input) return;
 
       var inputType = input.dataset.inputType || input.getAttribute('data-input-type') || '';

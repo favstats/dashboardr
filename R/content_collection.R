@@ -1269,6 +1269,7 @@ add_badge <- function(content, text, color = "primary", tabgroup = NULL, show_wh
 #' @export
 add_metric <- function(content, value, title, icon = NULL, color = NULL,
                        bg_color = NULL, text_color = NULL,
+                       gradient = TRUE, gradient_intensity = 0.45,
                        value_prefix = NULL, value_suffix = NULL,
                        border_radius = NULL,
                        subtitle = NULL, tabgroup = NULL, show_when = NULL, aria_label = NULL) {
@@ -1280,6 +1281,8 @@ add_metric <- function(content, value, title, icon = NULL, color = NULL,
     color = color,
     bg_color = bg_color,
     text_color = text_color,
+    gradient = gradient,
+    gradient_intensity = gradient_intensity,
     value_prefix = value_prefix,
     value_suffix = value_suffix,
     border_radius = border_radius,

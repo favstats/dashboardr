@@ -67,7 +67,12 @@
       'textarea:not([disabled])',
       '[tabindex]:not([tabindex="-1"])'
     ];
-    return Array.from(container.querySelectorAll(selectors.join(', ')));
+    return Array.from(container.querySelectorAll(selectors.join(', ')))
+      .filter(function(el) {
+        // Skip elements hidden via display:none (offsetParent is null)
+        // but allow position:fixed elements which also have null offsetParent
+        return el.offsetParent !== null || getComputedStyle(el).position === 'fixed';
+      });
   }
 
   function initModalFocusTrap() {
@@ -166,7 +171,10 @@
       }
       if (!tablist) return;
 
-      var tabs = Array.from(tablist.querySelectorAll('[role="tab"]'));
+      var tabs = Array.from(tablist.querySelectorAll('[role="tab"]'))
+        .filter(function(t) {
+          return t.getAttribute('aria-disabled') !== 'true' && !t.disabled;
+        });
       if (tabs.length < 2) return;
 
       var currentIndex = tabs.indexOf(tab);

@@ -1,3 +1,21 @@
+# dashboardr 0.5.2
+
+## Metric Card Redesign (Issue #15)
+
+`add_metric()` / `html_metric()` now renders as a modern KPI card with centered text, gradient background, and bold value display — matching the `preview()` style. Previously, `generate_dashboard()` and `preview()` produced different metric visuals.
+
+### New Parameters
+
+- **`gradient`**: Controls gradient background. `TRUE` (default) uses the default purple gradient. Pass a color name or hex (e.g., `gradient = "red"`, `gradient = "#cb333b"`) to auto-generate a gradient from that color. `FALSE` for a plain flat card.
+- **`gradient_intensity`**: Controls how dramatic the gradient shift is (0–1, default 0.45). `0` = flat, `1` = maximum contrast. For dark colors, controls how much lighter the gradient start is; for light colors, controls how much darker the end is.
+- **`color`**: Now serves as the base color for gradient generation when `gradient` is active (instead of a left-border accent). With `gradient = FALSE`, it becomes a solid background color.
+
+### Layout Fixes
+
+- **`add_layout_row()` metrics in preview**: Layout containers (`add_layout_column()` / `add_layout_row()`) now render correctly in `preview()`. Previously, items inside layout rows were silently dropped. Row items now display side-by-side via CSS flex.
+
+---
+
 # dashboardr 0.5.1
 
 ## New Features

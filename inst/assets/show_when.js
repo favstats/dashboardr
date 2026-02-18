@@ -27,7 +27,7 @@
     if (!isDebugEnabled()) return;
     var row = { ts: Date.now(), event: event, payload: payload || null };
     debugState.events.push(row);
-    if (debugState.events.length > 1000) debugState.events.shift();
+    if (debugState.events.length > 1000) debugState.events.splice(0, 500);
     try {
       console.log('[dashboardr:debug]', event, payload || {});
     } catch (e) {

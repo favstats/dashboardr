@@ -2478,6 +2478,8 @@ save_widget <- function(widget, file, selfcontained = TRUE) {
     "input_row" = .render_input_row_block_direct(block),
     "reset_button" = render_reset_button(block),
     "modal" = .render_modal_block_direct(block),
+    "layout_column" = .render_layout_container_direct(block),
+    "layout_row" = .render_layout_container_direct(block),
     "viz" = NULL,  # Handled separately
     NULL
   )
@@ -2680,40 +2682,55 @@ save_widget <- function(widget, file, selfcontained = TRUE) {
 }
 
 
+#' Render layout_column / layout_row containers in preview
+#'
+#' Recursively renders child items. For layout_row, wraps children in a
+#' CSS flex row so they appear side-by-side (matching Quarto layout-ncol).
+#' @noRd
+.render_layout_container_direct <- function(block) {
+  items <- block$items %||% list()
+  if (length(items) == 0) return(NULL)
+
+  # Render each child item
+  child_tags <- lapply(items, function(item) {
+    if (is.null(item) || !is.list(item)) return(NULL)
+    .render_block_direct(item)
+  })
+  child_tags <- Filter(Negate(is.null), child_tags)
+  if (length(child_tags) == 0) return(NULL)
+
+  if (identical(block$type, "layout_row")) {
+    # Side-by-side flex row
+    htmltools::div(
+      style = "display: flex; gap: 15px; flex-wrap: wrap;",
+      lapply(child_tags, function(tag) {
+        htmltools::div(style = "flex: 1; min-width: 150px;", tag)
+      })
+    )
+  } else {
+    # Column: just stack children
+    htmltools::div(child_tags)
+  }
+}
+
 #' Render metric block
 #' @noRd
 .render_metric_block_direct <- function(block) {
-  bg_color <- block$color %||% "linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
-  
-  # Handle icon - render as iconify-icon element
-  icon_html <- NULL
-  if (!is.null(block$icon) && nchar(block$icon) > 0) {
-    # Check if it's an iconify format (collection:name)
-    if (grepl("^[a-zA-Z0-9_-]+:[a-zA-Z0-9_-]+$", block$icon)) {
-      icon_html <- htmltools::HTML(sprintf(
-        '<iconify-icon icon="%s" style="font-size: 2em; margin-bottom: 10px;"></iconify-icon>',
-        block$icon
-      ))
-    } else {
-      # Treat as emoji or text
-      icon_html <- htmltools::div(style = "font-size: 2em; margin-bottom: 10px;", block$icon)
-    }
-  }
-  
-  htmltools::div(
-    class = "metric",
-    style = paste0(
-      "background: ", bg_color, "; ",
-      "color: white; padding: 20px; border-radius: 12px; text-align: center; ",
-      "box-shadow: 0 4px 15px rgba(0,0,0,0.1);"
-    ),
-    icon_html,
-    htmltools::div(class = "metric-value", style = "font-size: 2.5em; font-weight: bold;", block$value),
-    htmltools::div(class = "metric-label", style = "font-size: 1em; opacity: 0.9; margin-top: 5px;", 
-                   block$label %||% block$title %||% ""),
-    if (!is.null(block$subtitle)) {
-      htmltools::div(style = "font-size: 0.85em; opacity: 0.7; margin-top: 5px;", block$subtitle)
-    }
+  # Delegate to html_metric() so preview and generate_dashboard produce identical output
+  html_metric(
+    value = block$value,
+    title = block$label %||% block$title %||% "",
+    icon = block$icon,
+    color = block$color,
+    bg_color = block$bg_color,
+    text_color = block$text_color,
+    gradient = block$gradient %||% TRUE,
+    gradient_intensity = block$gradient_intensity %||% 0.45,
+    value_prefix = block$value_prefix,
+    value_suffix = block$value_suffix,
+    border_radius = block$border_radius,
+    subtitle = block$subtitle,
+    aria_label = block$aria_label
   )
 }
 

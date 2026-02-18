@@ -126,39 +126,94 @@ html_badge <- function(text, color = "primary") {
 #' @export
 html_metric <- function(value, title, icon = NULL, color = NULL,
                         bg_color = NULL, text_color = NULL,
+                        gradient = TRUE, gradient_intensity = 0.45,
                         value_prefix = NULL, value_suffix = NULL,
                         border_radius = NULL,
                         subtitle = NULL, aria_label = NULL) {
-  icon_el <- if (!is.null(icon)) {
-    htmltools::HTML(paste0('<iconify-icon icon="', htmltools::htmlEscape(icon),
-                           '" style="font-size: 2em;"></iconify-icon>'))
-  }
-
-  # Build combined style string
-  styles <- character(0)
-  if (!is.null(color)) {
-    styles <- c(styles, paste0("border-left: 4px solid ", color, ";"))
-  }
-  if (!is.null(bg_color)) {
-    styles <- c(styles, paste0("background-color: ", bg_color, ";"))
-  }
-  if (!is.null(text_color)) {
-    styles <- c(styles, paste0("color: ", text_color, ";"))
-  }
-  if (!is.null(border_radius)) {
-    styles <- c(styles, paste0("border-radius: ", border_radius, ";"))
-  }
-  combined_style <- if (length(styles) > 0) paste(styles, collapse = " ") else NULL
-
   # Display value with optional prefix/suffix
   display_value <- paste0(value_prefix %||% "", value, value_suffix %||% "")
 
-  # When text_color is set, drop text-muted so the color inherits properly
-  title_class <- if (!is.null(text_color)) "card-subtitle mb-2" else "card-subtitle mb-2 text-muted"
-  subtitle_class <- if (!is.null(text_color)) "small" else "text-muted small"
+  # gradient_intensity: 0 = no shift (flat), 1 = maximum shift.
+  # Controls how far the second stop lightens/darkens from the base color.
+  intensity <- max(0, min(1, gradient_intensity))
 
+  # Determine background based on gradient + color arguments:
+  #   gradient = TRUE  + no color -> default purple gradient, white text
+  #   gradient = TRUE  + color    -> auto-gradient from that color, white text
+  #   gradient = "red"            -> auto-gradient from "red", white text
+  #   gradient = FALSE + color    -> solid color background
+  #   gradient = FALSE + no color -> plain light card, dark text
+  #   bg_color always overrides everything (explicit background)
+  #
+  # For auto-gradients: dark colors go light->dark, light colors go base->darker.
+  has_gradient <- !isFALSE(gradient)
+
+  # Resolve the base color for gradient generation
+  grad_color <- if (is.character(gradient)) gradient else color
+
+  if (has_gradient && !is.null(grad_color)) {
+    # Generate gradient from the base color
+    base_rgb <- tryCatch(grDevices::col2rgb(grad_color)[, 1],
+                         error = function(e) NULL)
+    if (!is.null(base_rgb)) {
+      luminance <- 0.299 * base_rgb[1] + 0.587 * base_rgb[2] + 0.114 * base_rgb[3]
+      if (luminance <= 140) {
+        # Dark color: gradient from lighter version -> base
+        light_hex <- sprintf("#%02x%02x%02x",
+                             min(255, round(base_rgb[1] + (255 - base_rgb[1]) * intensity)),
+                             min(255, round(base_rgb[2] + (255 - base_rgb[2]) * intensity)),
+                             min(255, round(base_rgb[3] + (255 - base_rgb[3]) * intensity)))
+        base_hex <- sprintf("#%02x%02x%02x", base_rgb[1], base_rgb[2], base_rgb[3])
+        default_bg <- paste0("linear-gradient(135deg, ", light_hex, " 0%, ", base_hex, " 100%)")
+      } else {
+        # Light color: gradient from base -> darker version
+        base_hex <- sprintf("#%02x%02x%02x", base_rgb[1], base_rgb[2], base_rgb[3])
+        darken <- 1 - intensity
+        dark_hex <- sprintf("#%02x%02x%02x",
+                            round(base_rgb[1] * darken),
+                            round(base_rgb[2] * darken),
+                            round(base_rgb[3] * darken))
+        default_bg <- paste0("linear-gradient(135deg, ", base_hex, " 0%, ", dark_hex, " 100%)")
+      }
+    } else {
+      default_bg <- grad_color
+    }
+  } else if (has_gradient) {
+    # gradient = TRUE, no color specified -> default purple gradient
+    default_bg <- "linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
+  } else if (!is.null(color)) {
+    # gradient = FALSE, color specified -> solid color
+    default_bg <- color
+  } else {
+    # gradient = FALSE, no color -> plain light card
+    default_bg <- "#f8f9fa"
+  }
+
+  bg <- bg_color %||% default_bg
+  fg <- text_color %||% if (has_gradient) "white" else "#212529"
+  radius <- border_radius %||% "12px"
+
+  # Build container style
+  container_style <- paste0(
+    "background: ", bg, "; ",
+    "color: ", fg, "; ",
+    "padding: 20px; ",
+    "border-radius: ", radius, "; ",
+    "text-align: center; ",
+    "box-shadow: 0 4px 15px rgba(0,0,0,0.1);"
+  )
+
+  # Icon element
+  icon_el <- if (!is.null(icon)) {
+    htmltools::HTML(paste0(
+      '<iconify-icon icon="', htmltools::htmlEscape(icon),
+      '" style="font-size: 2em; margin-bottom: 10px;"></iconify-icon>'
+    ))
+  }
+
+  # Subtitle element
   subtitle_el <- if (!is.null(subtitle)) {
-    htmltools::tags$p(class = subtitle_class, subtitle)
+    htmltools::div(style = "font-size: 0.85em; opacity: 0.7; margin-top: 5px;", subtitle)
   }
 
   aria_args <- list()
@@ -166,27 +221,14 @@ html_metric <- function(value, title, icon = NULL, color = NULL,
     aria_args <- list(role = "region", `aria-label` = aria_label)
   }
 
-  # Icon wrapper: use text_color inline style if set, otherwise text-primary class
-  icon_wrapper <- if (!is.null(text_color)) {
-    htmltools::div(style = paste0("color: ", text_color, ";"), icon_el)
-  } else {
-    htmltools::div(class = "text-primary", icon_el)
-  }
-
   do.call(htmltools::div, c(
-    list(class = "card mb-3", style = combined_style),
+    list(class = "metric mb-3", style = container_style),
     aria_args,
     list(
-      htmltools::div(class = "card-body",
-        htmltools::div(class = "d-flex justify-content-between align-items-start",
-          htmltools::div(
-            htmltools::tags$h6(class = title_class, title),
-            htmltools::tags$h2(class = "card-title mb-1", display_value),
-            subtitle_el
-          ),
-          icon_wrapper
-        )
-      )
+      icon_el,
+      htmltools::div(style = "font-size: 2.5em; font-weight: bold;", display_value),
+      htmltools::div(style = "font-size: 1em; opacity: 0.9; margin-top: 5px;", title),
+      subtitle_el
     )
   ))
 }

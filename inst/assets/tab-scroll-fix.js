@@ -59,13 +59,9 @@
     tab.dispatchEvent(new CustomEvent('shown.bs.tab', { bubbles: true }));
     
     // Restore scroll (using mousedown-captured value)
-    window.scrollTo(savedScroll.x, savedScroll.y);
     requestAnimationFrame(function() {
       window.scrollTo(savedScroll.x, savedScroll.y);
     });
-    setTimeout(function() {
-      window.scrollTo(savedScroll.x, savedScroll.y);
-    }, 50);
     
   }, { capture: true });
   

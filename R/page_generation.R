@@ -1910,6 +1910,8 @@
            "color = ", .serialize_arg(block$color), ", ",
            "bg_color = ", .serialize_arg(block$bg_color), ", ",
            "text_color = ", .serialize_arg(block$text_color), ", ",
+           "gradient = ", .serialize_arg(block$gradient %||% TRUE), ", ",
+           "gradient_intensity = ", .serialize_arg(block$gradient_intensity %||% 0.45), ", ",
            "value_prefix = ", .serialize_arg(block$value_prefix), ", ",
            "value_suffix = ", .serialize_arg(block$value_suffix), ", ",
            "border_radius = ", .serialize_arg(block$border_radius), ", ",
