@@ -8,11 +8,11 @@ skip_if_no_highcharts_cdn <- function() {
   skip_on_cran()
   skip_if_offline()
   tryCatch(
-    {
+    suppressWarnings({
       con <- url("https://code.highcharts.com/mapdata/custom/world.js", open = "r")
       on.exit(close(con))
       readLines(con, n = 1L)
-    },
+    }),
     error = function(e) {
       skip(paste0("Highcharts CDN unavailable: ", conditionMessage(e)))
     }

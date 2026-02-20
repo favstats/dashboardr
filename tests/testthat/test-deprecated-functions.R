@@ -116,11 +116,11 @@ test_that("create_map works but warns about deprecation", {
   skip_if_offline()
   # Highcharts CDN may rate-limit; skip gracefully
   tryCatch(
-    {
+    suppressWarnings({
       con <- url("https://code.highcharts.com/mapdata/custom/world.js", open = "r")
       on.exit(close(con))
       readLines(con, n = 1L)
-    },
+    }),
     error = function(e) skip(paste0("Highcharts CDN unavailable: ", conditionMessage(e)))
   )
 
