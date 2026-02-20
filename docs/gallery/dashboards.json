@@ -1,5 +1,15 @@
 [
   {
+    "id": "algosoc-ai-opinion-monitor",
+    "title": "AlgoSoc AI Opinion Monitor",
+    "description": "Public perceptions of AI and automated decision systems in the Netherlands, surveying ~4,000 respondents across engagement, attitudes, values, and social media dimensions. Features multilingual support (Dutch/English) and interactive visualizations.",
+    "image_url": "screenshots/algosoc-ai-opinion-monitor.png",
+    "dashboard_url": "https://monitor.algosoc.org/staging/",
+    "author": "Fabio Votta & Ernesto de León",
+    "tags": ["survey", "AI", "multilingual", "academia"],
+    "date_added": "2026-02-20"
+  },
+  {
     "id": "digiq-monitor",
     "title": "DigIQ Monitor",
     "description": "Digital competence monitoring dashboard for Dutch citizens (ages 10-100), featuring 11 dimensions, multilingual support (Dutch/English), and paginated visualizations.",
