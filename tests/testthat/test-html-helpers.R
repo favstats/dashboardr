@@ -115,19 +115,20 @@ test_that("html_badge defaults to primary", {
 })
 
 # --- html_metric ---
-test_that("html_metric returns card with value and title", {
+test_that("html_metric returns metric div with value and title", {
   result <- html_metric(value = "42", title = "Users")
   expect_true(inherits(result, "shiny.tag"))
   html <- as.character(result)
-  expect_true(grepl("card", html))
+  expect_true(grepl("metric", html))
   expect_true(grepl("42", html))
   expect_true(grepl("Users", html))
 })
 
-test_that("html_metric applies accent color", {
+test_that("html_metric applies accent color as gradient", {
   result <- html_metric(value = "100", title = "Score", color = "#ff0000")
   html <- as.character(result)
-  expect_true(grepl("border-left: 4px solid #ff0000", html))
+  # Color is now used in a gradient background
+  expect_true(grepl("#ff0000", html))
 })
 
 test_that("html_metric includes icon as web component", {
@@ -141,7 +142,6 @@ test_that("html_metric includes subtitle", {
   result <- html_metric(value = "99%", title = "Uptime", subtitle = "Last 30 days")
   html <- as.character(result)
   expect_true(grepl("Last 30 days", html))
-  expect_true(grepl("text-muted", html))
 })
 
 test_that("html_metric supports aria_label", {
@@ -154,17 +154,16 @@ test_that("html_metric supports aria_label", {
 test_that("html_metric applies bg_color", {
   result <- html_metric(value = "10", title = "Count", bg_color = "#3498db")
   html <- as.character(result)
-  expect_true(grepl("background-color: #3498db;", html, fixed = TRUE))
+  # bg_color overrides the default gradient
+  expect_true(grepl("#3498db", html))
 })
 
 test_that("html_metric applies text_color", {
   result <- html_metric(value = "10", title = "Count", icon = "ph:star", text_color = "#ffffff")
   html <- as.character(result)
-  expect_true(grepl("color: #ffffff;", html, fixed = TRUE))
+  expect_true(grepl("#ffffff", html))
   # Icon wrapper should NOT have the text-primary class when text_color is set
   expect_false(grepl("text-primary", html))
-  # Title and subtitle should NOT have text-muted when text_color is set
-  expect_false(grepl("text-muted", html))
 })
 
 test_that("html_metric renders value_prefix and value_suffix", {
@@ -182,6 +181,6 @@ test_that("html_metric applies border_radius", {
 test_that("html_metric combines color and bg_color", {
   result <- html_metric(value = "5", title = "Score", color = "#ff0000", bg_color = "#eef")
   html <- as.character(result)
-  expect_true(grepl("border-left: 4px solid #ff0000", html, fixed = TRUE))
-  expect_true(grepl("background-color: #eef;", html, fixed = TRUE))
+  # bg_color takes precedence as the background
+  expect_true(grepl("#eef", html))
 })

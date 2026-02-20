@@ -2,6 +2,23 @@
 # Tests for viz_map.R
 # =================================================================
 
+# Helper: skip if Highcharts CDN is unreachable (rate-limited, blocked, etc.)
+# skip_if_offline() only checks general internet; this checks the actual CDN.
+skip_if_no_highcharts_cdn <- function() {
+  skip_on_cran()
+  skip_if_offline()
+  tryCatch(
+    {
+      con <- url("https://code.highcharts.com/mapdata/custom/world.js", open = "r")
+      on.exit(close(con))
+      readLines(con, n = 1L)
+    },
+    error = function(e) {
+      skip(paste0("Highcharts CDN unavailable: ", conditionMessage(e)))
+    }
+  )
+}
+
 # Sample data for tests
 sample_country_data <- data.frame(
   iso2c = c("US", "DE", "FR", "GB", "JP"),
@@ -34,8 +51,7 @@ test_that("viz_map validates join_var exists in data", {
 
 # --- Tests requiring network for map data ---
 test_that("viz_map creates a highchart object", {
-  skip_on_cran()
-  skip_if_offline()  # Requires network for map data from highcharts.com
+  skip_if_no_highcharts_cdn()
   
   result <- viz_map(
     data = sample_country_data,
@@ -47,8 +63,7 @@ test_that("viz_map creates a highchart object", {
 })
 
 test_that("viz_map uses default join_var of iso2c", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_highcharts_cdn()
   
   result <- viz_map(
     data = sample_country_data,
@@ -60,8 +75,7 @@ test_that("viz_map uses default join_var of iso2c", {
 })
 
 test_that("viz_map accepts title parameter", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_highcharts_cdn()
   
   result <- viz_map(
     data = sample_country_data,
@@ -75,8 +89,7 @@ test_that("viz_map accepts title parameter", {
 })
 
 test_that("viz_map accepts subtitle parameter", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_highcharts_cdn()
   
   result <- viz_map(
     data = sample_country_data,
@@ -88,8 +101,7 @@ test_that("viz_map accepts subtitle parameter", {
 })
 
 test_that("viz_map accepts custom color palette", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_highcharts_cdn()
   
   result <- viz_map(
     data = sample_country_data,
@@ -101,8 +113,7 @@ test_that("viz_map accepts custom color palette", {
 })
 
 test_that("viz_map accepts na_color parameter", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_highcharts_cdn()
   
   result <- viz_map(
     data = sample_country_data,
@@ -114,8 +125,7 @@ test_that("viz_map accepts na_color parameter", {
 })
 
 test_that("viz_map accepts height parameter", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_highcharts_cdn()
   
   result <- viz_map(
     data = sample_country_data,
@@ -128,8 +138,7 @@ test_that("viz_map accepts height parameter", {
 })
 
 test_that("viz_map accepts border styling parameters", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_highcharts_cdn()
   
   result <- viz_map(
     data = sample_country_data,
@@ -142,8 +151,7 @@ test_that("viz_map accepts border styling parameters", {
 })
 
 test_that("viz_map disables credits by default", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_highcharts_cdn()
   
   result <- viz_map(
     data = sample_country_data,
@@ -156,8 +164,7 @@ test_that("viz_map disables credits by default", {
 })
 
 test_that("viz_map can enable credits", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_highcharts_cdn()
   
   result <- viz_map(
     data = sample_country_data,
@@ -169,8 +176,7 @@ test_that("viz_map can enable credits", {
 })
 
 test_that("viz_map includes map navigation controls", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_highcharts_cdn()
   
   result <- viz_map(
     data = sample_country_data,
@@ -181,8 +187,7 @@ test_that("viz_map includes map navigation controls", {
 })
 
 test_that("viz_map handles click_url_template", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_highcharts_cdn()
   
   result <- viz_map(
     data = sample_country_data,
@@ -197,8 +202,7 @@ test_that("viz_map handles click_url_template", {
 })
 
 test_that("viz_map uses click_var when specified", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_highcharts_cdn()
   
   result <- viz_map(
     data = sample_country_data,
@@ -211,8 +215,7 @@ test_that("viz_map uses click_var when specified", {
 })
 
 test_that("viz_map defaults click_var to join_var", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_highcharts_cdn()
   
   result <- viz_map(
     data = sample_country_data,
@@ -225,8 +228,7 @@ test_that("viz_map defaults click_var to join_var", {
 })
 
 test_that("viz_map accepts legend_title parameter", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_highcharts_cdn()
   
   result <- viz_map(
     data = sample_country_data,
@@ -238,8 +240,7 @@ test_that("viz_map accepts legend_title parameter", {
 })
 
 test_that("viz_map uses value_var as legend_title by default", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_highcharts_cdn()
   
   result <- viz_map(
     data = sample_country_data,
@@ -250,8 +251,7 @@ test_that("viz_map uses value_var as legend_title by default", {
 })
 
 test_that("viz_map accepts color_stops for custom scale", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_highcharts_cdn()
   
   result <- viz_map(
     data = sample_country_data,
@@ -267,8 +267,7 @@ test_that("viz_map accepts color_stops for custom scale", {
 })
 
 test_that("viz_map handles different map types", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_highcharts_cdn()
   
   # World map (default)
   world_map <- viz_map(
@@ -280,8 +279,7 @@ test_that("viz_map handles different map types", {
 })
 
 test_that("viz_map handles US map type", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_highcharts_cdn()
   skip_if_not_installed("highcharter")
 
   us_data <- data.frame(
@@ -300,8 +298,7 @@ test_that("viz_map handles US map type", {
 })
 
 test_that("viz_map handles haven_labelled variables", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_highcharts_cdn()
   skip_if_not_installed("haven")
   
   # Create data with haven_labelled class
@@ -318,8 +315,7 @@ test_that("viz_map handles haven_labelled variables", {
 })
 
 test_that("viz_map supports tooltip parameter", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_highcharts_cdn()
   
   result <- viz_map(
     data = sample_country_data,
@@ -331,8 +327,7 @@ test_that("viz_map supports tooltip parameter", {
 })
 
 test_that("viz_map supports legacy tooltip_format parameter", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_highcharts_cdn()
   
   result <- viz_map(
     data = sample_country_data,
@@ -344,8 +339,7 @@ test_that("viz_map supports legacy tooltip_format parameter", {
 })
 
 test_that("viz_map supports legacy tooltip_vars parameter", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_highcharts_cdn()
   
   result <- viz_map(
     data = sample_country_data,
@@ -357,8 +351,7 @@ test_that("viz_map supports legacy tooltip_vars parameter", {
 })
 
 test_that("viz_map tooltip priority: tooltip_format > tooltip_vars > tooltip", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_highcharts_cdn()
   
   # When multiple tooltip options provided, tooltip_format takes precedence
   result <- viz_map(
@@ -373,8 +366,7 @@ test_that("viz_map tooltip priority: tooltip_format > tooltip_vars > tooltip", {
 })
 
 test_that("viz_map works with non-standard variable names", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_highcharts_cdn()
   
   data_weird_names <- data.frame(
     `country code` = c("US", "DE"),

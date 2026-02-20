@@ -113,7 +113,17 @@ test_that("create_treemap works but warns about deprecation", {
 # Skip create_map test if highcharter maps not available
 test_that("create_map works but warns about deprecation", {
   skip_on_cran()
-  
+  skip_if_offline()
+  # Highcharts CDN may rate-limit; skip gracefully
+  tryCatch(
+    {
+      con <- url("https://code.highcharts.com/mapdata/custom/world.js", open = "r")
+      on.exit(close(con))
+      readLines(con, n = 1L)
+    },
+    error = function(e) skip(paste0("Highcharts CDN unavailable: ", conditionMessage(e)))
+  )
+
   data <- data.frame(
     iso2c = c("US", "DE", "FR"),
     value = c(100, 50, 30)
