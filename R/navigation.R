@@ -253,5 +253,4 @@ add_navbar_element <- function(proj, text = NULL, icon = NULL, href,
   
   proj
 }
-NA
 

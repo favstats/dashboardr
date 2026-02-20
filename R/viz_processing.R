@@ -1,17 +1,54 @@
 # =================================================================
-# viz_processing
+# Visualization Processing Pipeline
+# =================================================================
+#
+# Transforms a flat list of visualization specs (from a viz_collection
+# or content_collection) into the hierarchical structure that
+# page_generation.R needs to emit correct Quarto tabset markup.
+#
+# ## Processing Steps
+#
+#   1. Accept input — either a collection object or a plain list.
+#   2. Auto-detect filter_vars from embedded `add_input()` calls.
+#   3. Attach `data_path` and `cross_tab_filter_vars` to every viz.
+#   4. Separate pagination markers from real vizs (pagination markers
+#      are synthetic "type=pagination" items that split content
+#      across multiple QMD files).
+#   5. Assign each viz to a pagination section (1, 2, 3, …).
+#   6. Analyse tabgroup paths to decide whether filter-based grouping
+#      is needed (rare — only when the same root tab appears with
+#      different filter conditions).
+#   7. Build a tree hierarchy from tabgroup paths.
+#   8. Flatten the tree back to a result list of top-level vizs and
+#      tab_group objects, re-inserting pagination markers.
+#
+# ## Tabgroup Hierarchy
+#
+# Each viz may have a `tabgroup` field — a character vector defining
+# its position in a nested tab structure:
+#
+#   tabgroup = c("Demographics")           → top-level tab
+#   tabgroup = c("Demographics", "Age")    → nested tab
+#
+# Items sharing the same path prefix are grouped into the same
+# tab_group.  Single-item groups are "unwrapped" into standalone
+# vizs with a title inheriting the group label.
+#
+# Called from: page_generation.R (.generate_page_content)
 # =================================================================
 
-
-#' This function handles both viz_collection objects and plain lists of visualization
-#' specifications. It:
-#' - Attaches data_path to each visualization
-#' - Groups visualizations by their tabgroup parameter (supports nested hierarchies)
-#' - Converts single-item groups to standalone visualizations with group titles
-#' - Creates tab group objects for multi-item groups
-#' - Applies custom tab group labels if provided
-#' - Attaches cross_tab_filter_vars for client-side filtering when inputs are present
-#' @param filter_vars Character vector of filter_var values from add_input() calls (optional)
+#' Process visualizations into a renderable list with tabgroup hierarchy
+#'
+#' @param viz_input A viz_collection, content_collection, or plain list.
+#' @param data_path Path to the page's .rds data file.
+#' @param tabgroup_labels Optional named list of custom labels for tabgroups.
+#' @param shared_first_level Whether the first tabgroup level is shared
+#'   across all items (affects unwrapping logic).
+#' @param filter_vars Character vector of filter_var values from
+#'   `add_input()` calls (optional — auto-detected from collections).
+#' @param context_label Human-readable label for error messages.
+#' @return A list of visualization specs and tab_group objects ready
+#'   for QMD generation, or NULL if the input is empty.
 #' @keywords internal
 .process_visualizations <- function(viz_input, data_path, tabgroup_labels = NULL,
                                      shared_first_level = TRUE, filter_vars = NULL,
@@ -77,8 +114,10 @@
     }
   }
 
-  # IMPORTANT: Extract pagination markers and assign section numbers BEFORE processing hierarchy
-  # This ensures items on different sides of pagination don't get grouped together
+  # ── Step 4–5: Separate pagination markers & assign sections ──
+  # Pagination markers are synthetic blocks inserted by `add_pagination()`.
+  # They split the page into numbered sections so items on different
+  # sides of a page break never get grouped into the same tabgroup.
   pagination_positions <- list()  # Store position and marker for each pagination
   viz_only_list <- list()  # Visualizations without pagination markers
   current_section <- 1L  # Track which pagination section each item belongs to
@@ -101,8 +140,12 @@
     }
   }
   
-  # SMART APPROACH: Only use filter grouping when needed
-  # Detect if we have multiple parent tabs with same root but different filters
+  # ── Step 6: Analyse tabgroup paths for filter-based grouping ──
+  # Most dashboards use simple tabgroups and can be handled by the
+  # standard tree builder.  However, when the *same* root tab name
+  # appears with different filter conditions (e.g. two "Demographics"
+  # tabs, one filtered by age and one by gender), we need a special
+  # "filter-grouped" strategy that keeps them separate.
   
   # Step 1: Analyze structure - check for multiple parents with same root but different filters
   root_parents <- list()  # Track parent tabs by root name
@@ -166,7 +209,7 @@
     }
   }
   
-  # Step 3: Build hierarchy using appropriate strategy
+  # ── Step 7–8: Build tree hierarchy & flatten to result list ──
   if (any(unlist(needs_filter_grouping))) {
     # Use filter-based grouping for roots that need it
     tree <- list(visualizations = list(), children = list())

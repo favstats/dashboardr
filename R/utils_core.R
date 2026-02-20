@@ -1,8 +1,44 @@
 # =================================================================
-# utils_core
+# Core Utilities
+# =================================================================
+#
+# Low-level helpers shared across the package.  These are loaded
+# early and must not depend on heavy imports.
+#
+# ## Key subsystems
+#
+# **Cross-tab ID generator** (`.next_crosstab_id`)
+#   Every chart that supports client-side filtering needs a globally
+#   unique DOM id.  The counter lives in a dedicated environment so
+#   it persists across function calls but resets at the start of
+#   each `generate_dashboard()` run.
+#
+# **RDS bundle references** (`.make_rds_bundle_ref` / `.parse_rds_bundle_ref`)
+#   When many page datasets are packed into a single .rds bundle
+#   (see `dashboard_generation.R`, Stage 2), data_path strings are
+#   rewritten to a URI scheme: `dashboardr-rds-bundle://file#key`.
+#   The page_generation QMD code chunks parse these at render time
+#   to load the correct slice from the bundle.
+#
+# **Output directory resolution** (`.resolve_output_dir`)
+#   Prevents accidentally writing generated files inside the
+#   dashboardr package source tree (common in development).
+#
+# **Typo suggestions** (`.suggest_alternative`)
+#   Uses `adist()` (Levenshtein distance) to suggest likely matches
+#   when users mistype page names, viz types, etc.
+#
+# **R-code serialisation** (`.serialize_r_arg`)
+#   Converts arbitrary R objects into code strings for embedding
+#   inside generated .qmd R code chunks.
+#
 # =================================================================
 
-# Global counter for unique cross-tab IDs (reset per session)
+# -----------------------------------------------------------------
+# Cross-tab ID generator
+# -----------------------------------------------------------------
+
+# Global counter for unique cross-tab IDs (reset per `generate_dashboard()`)
 .crosstab_counter <- new.env(parent = emptyenv())
 .crosstab_counter$n <- 0L
 
@@ -52,7 +88,13 @@
   out_abs
 }
 
+# Local copy of %||% (see utils.R for the note on why there are
+# multiple definitions).  Must stay in sync with rlang::`%||%`.
 `%||%` <- function(x, y) if (is.null(x)) y else x
+
+# -----------------------------------------------------------------
+# RDS bundle reference URI scheme
+# -----------------------------------------------------------------
 
 .dashboardr_rds_bundle_prefix <- "dashboardr-rds-bundle://"
 
@@ -84,6 +126,10 @@
     bundle_key = utils::URLdecode(parts[[2]])
   )
 }
+
+# -----------------------------------------------------------------
+# Typo suggestion helpers
+# -----------------------------------------------------------------
 
 .suggest_alternative <- function(input, valid_options) {
   if (is.null(input) || length(valid_options) == 0) return(NULL)

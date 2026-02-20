@@ -1,10 +1,13 @@
 /**
  * Interactive Input Filter System for dashboardr
+ * ================================================
  *
- * Provides client-side filtering of Highcharts visualizations
- * using various input types.
- * 
- * Supports:
+ * The largest JS file in dashboardr. Handles ALL client-side input
+ * interactions: initialising inputs, tracking state, and updating
+ * charts/tables when filters change.
+ *
+ * ## Supported Input Types
+ *
  * - Select dropdowns (single/multiple) via Choices.js
  * - Checkboxes (multiple selection)
  * - Radio buttons (single selection)
@@ -13,8 +16,44 @@
  * - Text search (partial match filtering)
  * - Number inputs (precise numeric filtering)
  * - Button groups (segmented controls)
- * - Series-based filtering (e.g., by country/group)
- * - Category/point-based filtering (e.g., by decade/time period)
+ * - Date / date-range inputs
+ *
+ * ## File Structure (major sections)
+ *
+ *   Lines ~50-100    Global state, helpers, debug
+ *   Lines ~107-700   Input initialisation (one init* function per type)
+ *   Lines ~700-880   Lazy cross-tab data fetching (asset mode)
+ *   Lines ~880-1550  applyAllFilters() — Highcharts cross-tab filtering
+ *   Lines ~1556-1750 Plotly / ECharts / table filtering
+ *   Lines ~1800-1960 Dynamic titles, select/clear all, reset
+ *   Lines ~1960-3980 Cross-tab filtering engine (series-based, grouped,
+ *                    stacked, scatter, boxplot, heatmap, etc.)
+ *   Lines ~3980-4060 Bootstrap: init, event listeners, public API
+ *
+ * ## Event Flow
+ *
+ *   User clicks input → init*() handler fires
+ *     → updates inputState[filterVar]
+ *     → calls applyAllFilters()
+ *       → for each chart in registry:
+ *           store original data if not stored
+ *           filter cross-tab JSON by current inputState
+ *           update Highcharts series/categories
+ *       → dispatches 'dashboardr:filter-changed' event
+ *       → dispatches standard 'change' event (for show_when.js)
+ *
+ * ## Public API
+ *
+ *   window.dashboardrInputs.init()          — re-initialise inputs
+ *   window.dashboardrInputs.applyFilters()  — force filter re-apply
+ *   window.dashboardrInputs.reapply()       — reapply after DOM change
+ *   window.dashboardrInputs.resetFilters(btn) — reset to defaults
+ *   window.dashboardrInputs.state           — current filter state
+ *   window.dashboardrInputs.defaults        — default filter values
+ *   window.dashboardrInputs.choices          — Choices.js instances
+ *
+ *   window.dashboardrInputDebug.getState()   — snapshot of filter state
+ *   window.dashboardrInputDebug.getCharts()  — registered chart entries
  */
 
 (function() {
@@ -103,6 +142,16 @@
     }
     return [];
   }
+
+  // =================================================================
+  // Input Initialisation
+  // =================================================================
+  // One init* function per input type. Each:
+  //   1. Finds all DOM elements for that input type
+  //   2. Reads the data-filter-var and data-default-value attributes
+  //   3. Stores the initial value in inputState and defaultValues
+  //   4. Attaches event listeners that call applyAllFilters() on change
+  // =================================================================
 
   function initDashboardrInputs() {
     const hasChoices = typeof Choices !== 'undefined';
@@ -873,6 +922,17 @@
 
     return info._fetchPromise;
   }
+
+  // =================================================================
+  // Filter Application Engine
+  // =================================================================
+  // The core of the filtering system. applyAllFilters() is called
+  // whenever ANY input changes. It:
+  //   1. Collects current values from inputState
+  //   2. For each registered chart: filters its cross-tab data
+  //   3. Updates Highcharts series/categories via the Highcharts API
+  //   4. Dispatches events so show_when.js can re-evaluate
+  // =================================================================
 
   /**
    * Apply all filters together
@@ -1957,6 +2017,10 @@
     input.dispatchEvent(new Event('change'));
   }
   
+  // =================================================================
+  // Utility Functions: Reset, Select All, Clear All
+  // =================================================================
+
   /**
    * Reset filters to their default values
    */
@@ -3977,6 +4041,10 @@
     return true;
   }
 
+  // =================================================================
+  // Bootstrap: Initialisation & Event Listeners
+  // =================================================================
+
   // Track initialization state
   let initialized = false;
   let filtersApplied = false;
@@ -4026,7 +4094,10 @@
     }
   });
 
-  // Export API
+  // =================================================================
+  // Public API
+  // =================================================================
+
   window.dashboardrInputs = {
     init: initDashboardrInputs,
     applyFilters: applyAllFilters,

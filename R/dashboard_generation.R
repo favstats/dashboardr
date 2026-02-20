@@ -1,11 +1,92 @@
 # =================================================================
-# dashboard_generation
+# Dashboard Generation Pipeline
+# =================================================================
+#
+# This file orchestrates the complete dashboard build process, from
+# a `dashboard_project` object to a fully rendered HTML site.
+#
+# ## Build Pipeline Overview
+#
+# The main entry point is `generate_dashboard()`, which proceeds
+# through these stages:
+#
+#   ┌─────────────────────────────────────────────────────────┐
+#   │ 1. INITIALISATION                                       │
+#   │    Reset counters, validate project, resolve output dir  │
+#   ├─────────────────────────────────────────────────────────┤
+#   │ 2. DATA PERSISTENCE                                     │
+#   │    Save pending datasets as .rds files (or one bundle)   │
+#   ├─────────────────────────────────────────────────────────┤
+#   │ 3. SETUP — ASSET COPYING                                │
+#   │    Copy JS/CSS/SCSS/logos/favicons to output dir         │
+#   │    Install Quarto iconify extension if icons are used    │
+#   │    Generate _quarto.yml from project config              │
+#   ├─────────────────────────────────────────────────────────┤
+#   │ 4. PAGE GENERATION                                      │
+#   │    For each page:                                        │
+#   │      a) Check incremental manifest → skip if unchanged   │
+#   │      b) Serialise block assets (tables, charts, widgets) │
+#   │      c) Generate .qmd content from page config           │
+#   │      d) Write .qmd file to output dir                    │
+#   ├─────────────────────────────────────────────────────────┤
+#   │ 5. LANDING PAGE                                          │
+#   │    Generate index.qmd for the landing page (if any)      │
+#   ├─────────────────────────────────────────────────────────┤
+#   │ 6. INCREMENTAL CLEANUP                                   │
+#   │    Delete .qmd files for removed pages; save manifest    │
+#   ├─────────────────────────────────────────────────────────┤
+#   │ 7. QUARTO RENDERING                                     │
+#   │    Call `quarto::quarto_render()` on each .qmd file      │
+#   │    Copy custom CSS to publish dir after render            │
+#   ├─────────────────────────────────────────────────────────┤
+#   │ 8. POST-BUILD                                            │
+#   │    Show summary, open browser, return build_info          │
+#   └─────────────────────────────────────────────────────────┘
+#
+# ## Block Asset Serialisation (Stage 4b)
+#
+# Content blocks may contain large R objects (gt tables, highcharter
+# charts, ggplot objects, htmlwidgets).  These cannot be embedded
+# directly into a .qmd file as text.  Instead, each object is saved
+# as an individual .rds file in the output directory, and the block's
+# metadata is updated with a reference path.  At Quarto render time,
+# an R code chunk in the .qmd loads the .rds and renders it.
+#
+# The counter system (`block_save_counters`) ensures unique filenames
+# across all pages:  table_obj_1.rds, hc_obj_2.rds, etc.
+#
+# ## Incremental Builds
+#
+# When `incremental = TRUE`, each page config is hashed (xxhash64)
+# and compared to a manifest from the previous build.  Unchanged
+# pages skip both QMD generation and Quarto rendering.  See
+# `utils_incremental.R` for the manifest helpers.
+#
 # =================================================================
 
+# -----------------------------------------------------------------
+# Block asset serialisation helpers
+# -----------------------------------------------------------------
+
+#' Create fresh save counters for the block asset pipeline
+#' @keywords internal
 .new_block_save_counters <- function(table = 0L, hc = 0L, table_filter = 0L) {
   list(table = as.integer(table), hc = as.integer(hc), table_filter = as.integer(table_filter))
 }
 
+#' Save a single content block's R objects to .rds files
+#'
+#' Inspects the block's type and extracts any embedded R objects
+#' (tables, charts, widgets, ggplots). Each object is saved to a
+#' uniquely-named .rds file and the block is updated with a reference
+#' path so the QMD code chunk can reload it.
+#'
+#' @param block A content_block list.
+#' @param output_dir Path to write .rds files.
+#' @param counters Named list of integer counters (table, hc, table_filter).
+#' @param include_widgets Whether to serialise htmlwidget objects.
+#' @return List with updated `block` and `counters`.
+#' @keywords internal
 .save_block_assets <- function(block, output_dir, counters, include_widgets = TRUE) {
   if (!inherits(block, "content_block")) {
     return(list(block = block, counters = counters))
@@ -82,6 +163,8 @@
   list(block = block, counters = counters)
 }
 
+#' Recursively save block assets (handles nested items)
+#' @keywords internal
 .save_block_assets_recursive <- function(block, output_dir, counters, include_widgets = TRUE) {
   if (is.null(block) || !is.list(block)) {
     return(list(block = block, counters = counters))
@@ -107,6 +190,8 @@
   list(block = block, counters = counters)
 }
 
+#' Save assets for a list of content blocks (top-level entry point)
+#' @keywords internal
 .save_content_blocks_assets <- function(content_blocks, output_dir, counters, include_widgets = TRUE) {
   if (is.null(content_blocks) || length(content_blocks) == 0) {
     return(list(content_blocks = content_blocks, counters = counters))
@@ -127,6 +212,15 @@
   list(content_blocks = updated_blocks, counters = counters)
 }
 
+# -----------------------------------------------------------------
+# RDS bundle helpers — when rds_bundle_threshold is exceeded, all
+# per-page .rds data files are packed into a single bundle file.
+# These functions rewrite page data_path references to point into
+# the bundle instead of standalone files.
+# -----------------------------------------------------------------
+
+#' Rewrite a single data_path to reference the bundle
+#' @keywords internal
 .rewrite_data_path_for_bundle <- function(data_path, bundle_file, pending_keys) {
   pending_files <- unique(basename(pending_keys))
 
@@ -152,6 +246,8 @@
   rewrite_one(data_path)
 }
 
+#' Rewrite all page data_paths in a project to use the bundle
+#' @keywords internal
 .rewrite_project_data_paths_for_bundle <- function(proj, bundle_file, pending_keys) {
   if (is.null(proj$pages) || length(proj$pages) == 0) {
     return(proj)
@@ -225,10 +321,12 @@
 #' }
 generate_dashboard <- function(proj, render = TRUE, open = "browser", incremental = FALSE, preview = NULL,
                               show_progress = TRUE, quiet = FALSE, standalone = FALSE) {
-  # Reset cross-tab counter for this build
-  .crosstab_counter$n <- 0L
+  # ── Stage 1: INITIALISATION ─────────────────────────────────────
+  # Reset global counters and store project-level settings in the
+  # package environment so they're accessible from deeply nested
+  # helper functions during QMD generation.
 
-  # Store cross-tab settings in package environment for .embed_cross_tab()
+  .crosstab_counter$n <- 0L
   .dashboardr_pkg_env$cross_tab_data_mode <- proj$cross_tab_data_mode %||% "inline"
   .dashboardr_pkg_env$min_cell_size <- proj$min_cell_size %||% 0L
   .dashboardr_pkg_env$deferred_charts <- proj$deferred_charts %||% FALSE
@@ -346,7 +444,11 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
     .dashboardr_pkg_env$charts_output_dir <- NULL
   }
   
-  # Save any pending data files (deferred from add_page)
+  # ── Stage 2: DATA PERSISTENCE ───────────────────────────────────
+  # Write deferred page datasets to the output directory as .rds
+  # files.  When many datasets exceed `rds_bundle_threshold`, they
+  # are packed into a single bundle file for faster I/O.
+
   if (!is.null(proj$pending_data) && length(proj$pending_data) > 0) {
     bundle_threshold <- proj$rds_bundle_threshold %||% 0L
     should_bundle <- is.finite(bundle_threshold) &&
@@ -390,7 +492,11 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
   )
 
   tryCatch({
-    # Setup phase
+    # ── Stage 3: SETUP — ASSET COPYING ───────────────────────────
+    # Copy all static assets (JS, CSS, SCSS, external libraries,
+    # logo, favicon, tabset themes) into the output directory so
+    # Quarto can reference them during rendering.
+
     .progress_section("\u2699\ufe0f  Setup", show_progress)
     setup_start <- Sys.time()
     
@@ -544,7 +650,13 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
     setup_elapsed <- as.numeric(difftime(Sys.time(), setup_start, units = "secs"))
     .progress_step("Configuration files ready", setup_elapsed, show_progress)
 
-    # Page generation
+    # ── Stage 4: PAGE GENERATION ────────────────────────────────
+    # Iterate over every page in the project.  For each page:
+    #   4a. Check the incremental manifest — skip if unchanged.
+    #   4b. Serialise embedded R objects to .rds files.
+    #   4c. Generate .qmd content from the page config.
+    #   4d. Write the .qmd file to the output directory.
+
     if (show_progress) {
       cat("\n")
       cat("\u2551\n")
@@ -725,7 +837,9 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
       })
     }
 
-    # Generate landing page as index.qmd if specified
+    # ── Stage 5: LANDING PAGE ─────────────────────────────────────
+    # The landing page is generated separately as `index.qmd` so
+    # it becomes the root page of the rendered site.
     if (!is.null(proj$landing_page)) {
       landing_page_name <- proj$landing_page
       
@@ -787,7 +901,10 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
       }
     }
     
-    # Delete pages that no longer exist
+    # ── Stage 6: INCREMENTAL CLEANUP ──────────────────────────────
+    # Remove .qmd files for pages that existed in the previous
+    # manifest but are no longer in the current project.  Then
+    # persist the updated manifest for the next build.
     if (incremental && !is.null(manifest)) {
       old_pages <- names(manifest$pages)
       new_pages <- names(proj$pages)
@@ -825,7 +942,10 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
     
     if (!quiet) message("Dashboard files generated successfully")
 
-    # Render to HTML if requested
+    # ── Stage 7: QUARTO RENDERING ──────────────────────────────────
+    # Call Quarto to render each .qmd file to HTML.  In incremental
+    # mode, skip rendering entirely if no pages changed.
+
     render_success <- FALSE
     render_was_skipped <- FALSE
     if (render) {
@@ -866,7 +986,10 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
       }
     }
 
-    # Open browser if rendering was skipped but user requested it
+    # ── Stage 8: POST-BUILD ────────────────────────────────────────
+    # Open the rendered dashboard in the browser (if requested),
+    # display a build summary, and return the project with
+    # build_info attached.
     if (render_was_skipped && open == "browser") {
       output_dir_abs <- normalizePath(output_dir, mustWork = FALSE)
       publish_dir <- proj$publish_dir %||% "docs"
@@ -907,6 +1030,18 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
 }
 
 
+# -----------------------------------------------------------------
+# Quarto rendering helper
+# -----------------------------------------------------------------
+
+#' Invoke Quarto CLI to render .qmd files to HTML
+#'
+#' Handles publish directory creation, .rmarkdown remnant detection,
+#' per-file rendering, and post-render asset copying (custom CSS,
+#' cross-tab data, deferred chart JSON).
+#'
+#' @return Logical: TRUE if rendering succeeded.
+#' @keywords internal
 .render_dashboard <- function(output_dir, open = FALSE, quiet = FALSE, show_progress = TRUE, publish_dir = NULL, qmd_files = NULL, proj = NULL) {
   if (!requireNamespace("quarto", quietly = TRUE)) {
     if (!quiet) {
@@ -1392,7 +1527,9 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
     # CRITICAL: Clear viz_embedded_in_content so .generate_default_page_content uses
     # section_page$visualizations (the paginated subset) instead of content_blocks (full set)
     section_page$viz_embedded_in_content <- FALSE
-    section_page$content_blocks <- NULL  # Clear content_blocks to avoid duplication
+    # Preserve modal content blocks (hidden divs needed for popup triggers)
+    # but clear everything else to avoid duplication of viz/text content
+    section_page$content_blocks <- .extract_modal_content_blocks(page$content_blocks)
     
     # Generate base content
     content <- .generate_default_page_content(section_page)
@@ -1457,6 +1594,55 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
   
   # Return list of generated filenames for targeted rendering
   generated_files
+}
+
+#' Extract modal content blocks from a list of content blocks
+#'
+#' Filters content_blocks to only include modal-related items.
+#' Modal items are identified as content_blocks with type "modal" or
+#' text blocks containing dashboardr::modal_content() calls.
+#' Used during pagination to preserve modals on every paginated page.
+#'
+#' @param content_blocks List of content blocks/collections from a page
+#' @return Filtered list containing only modal blocks, or NULL if none found
+#' @keywords internal
+.extract_modal_content_blocks <- function(content_blocks) {
+  if (is.null(content_blocks)) return(NULL)
+
+  modal_blocks <- list()
+  for (block in content_blocks) {
+    if (is_content(block) && !is.null(block$items)) {
+      # Filter items to only modal content
+      modal_items <- Filter(function(item) {
+        # Check for explicit modal type
+        if (!is.null(item$type) && item$type == "modal") return(TRUE)
+        # Check for md_text containing modal_content() call (from add_modal.default)
+        if (!is.null(item$type) && item$type == "text" && !is.null(item$content)) {
+          return(grepl("modal_content\\(", item$content))
+        }
+        FALSE
+      }, block$items)
+
+      if (length(modal_items) > 0) {
+        # Create a minimal content collection with just modal items
+        modal_coll <- block
+        modal_coll$items <- modal_items
+        modal_blocks <- c(modal_blocks, list(modal_coll))
+      }
+    } else if (is_content_block(block)) {
+      # Direct content_block (not nested in a collection)
+      if (!is.null(block$type) && block$type == "modal") {
+        modal_blocks <- c(modal_blocks, list(block))
+      } else if (!is.null(block$type) && block$type == "text" && !is.null(block$content)) {
+        if (grepl("modal_content\\(", block$content)) {
+          modal_blocks <- c(modal_blocks, list(block))
+        }
+      }
+    }
+  }
+
+  if (length(modal_blocks) == 0) return(NULL)
+  modal_blocks
 }
 
 # ===================================================================

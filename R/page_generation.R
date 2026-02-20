@@ -1,7 +1,39 @@
 # =================================================================
-# page_generation
+# Page Generation — QMD Content Emission
 # =================================================================
-
+#
+# Converts a page specification (from `create_page()` / `add_page()`)
+# into the actual Quarto Markdown (.qmd) content that Quarto renders
+# to HTML.
+#
+# ## Responsibilities
+#
+# - Emit YAML front-matter (title, icon)
+# - Generate R code chunks that load page data (.rds / .parquet / URL
+#   / bundle) at render time
+# - Emit content blocks in order: text, images, callouts, tables,
+#   highcharter charts, ggplots, widgets, value boxes, sparklines,
+#   inputs, modals, layout wrappers, etc.
+# - Handle sidebar layout pages (Quarto `## Row` / `## Column`)
+# - Emit tab group wrappers (`::: {.panel-tabset}`)
+# - Wire up interactive inputs (`enable_inputs()`) and show_when
+#   conditional visibility
+# - Generate loading overlays, pagination links, and deferred chart
+#   JSON payloads
+#
+# ## Key Functions
+#
+# `.generate_default_page_content(page)` — main entry point; returns
+#   a character vector of QMD lines.
+#
+# `.generate_data_load_code(data_path)` — emits the R code that loads
+#   a dataset, handling local/remote RDS, parquet, and bundle refs.
+#
+# `.generate_paginated_page_files(...)` — splits a page across
+#   multiple .qmd files when pagination markers are present.
+#
+# Called from: dashboard_generation.R (Stage 4)
+# =================================================================
 
 # Helper function to generate data loading code based on file type and location
 # Supports: local RDS, local parquet, remote RDS (URL), remote parquet (URL)

@@ -1,9 +1,43 @@
-# ── MCP Server ──────────────────────────────────────────────────────────────
-# Provides dashboardr documentation, function help, and example code to
-# LLM-powered coding assistants via the Model Context Protocol.
-# Requires optional packages: ellmer + mcptools (primary) or ellmer + mcpr (alternative)
+# =================================================================
+# mcp_server.R — Model Context Protocol server for dashboardr
+# =================================================================
+#
+# Exposes dashboardr documentation, function help, runnable examples,
+# and visualization guides to LLM-powered coding assistants (Claude,
+# Copilot, Cursor, etc.) via the Model Context Protocol (MCP).
+#
+# Architecture
+# ────────────
+# The server provides 5 read-only tools (no side effects):
+#
+#   Tool                       Source                    Purpose
+#   ─────────────────────────  ────────────────────────  ─────────────────────
+#   dashboardr_guide           inst/mcp/guide.md         Full API guide
+#   dashboardr_function_help   man/*.Rd (parsed)         Per-function docs
+#   dashboardr_list_functions  .mcp_function_categories  Categorised function index
+#   dashboardr_example         inst/mcp/examples.R       Copy-paste code patterns
+#   dashboardr_viz_types       inline text               Chart type reference
+#
+# Dependencies (all optional, loaded at runtime):
+#   - ellmer:    Tool definitions (tool(), type_string(), type_enum())
+#   - mcptools:  Primary MCP backend (Posit-maintained)
+#   - mcpr:      Alternative MCP backend (devOpifex)
+#
+# Backend resolution:
+#   Preferred backend → try it → if missing, fall back to the other → if
+#   both missing, abort with install instructions.
+#
+# Transport modes:
+#   "stdio" — standard input/output (default, used by Claude Code / Desktop)
+#   "http"  — HTTP server on a configurable port
+# =================================================================
 
-# Runtime wrappers to avoid static `::` references for packages not in Suggests
+
+# ── ellmer runtime wrappers ────────────────────────────────────────────────
+# ellmer is not in Suggests (it's an optional enhancement), so we use
+# getExportedValue() to avoid R CMD check NOTEs about missing imports.
+# Each wrapper simply forwards arguments to the real ellmer function.
+
 .e_tool <- function(...) getExportedValue("ellmer", "tool")(...)
 .e_type_string <- function(...) getExportedValue("ellmer", "type_string")(...)
 .e_type_enum <- function(...) getExportedValue("ellmer", "type_enum")(...)
@@ -86,11 +120,13 @@ dashboardr_mcp_server <- function(
   backend <- match.arg(backend)
   transport <- match.arg(transport)
 
-  # Fall back if preferred backend isn't available
+  # Step 1: Resolve which backend package is available
   backend <- .mcp_resolve_backend(backend)
 
+  # Step 2: Build the list of 5 ellmer::tool() objects
   tools <- .mcp_tools()
 
+  # Step 3: Start the server (blocking — does not return)
   if (backend == "mcptools") {
     .mcp_serve_mcptools(tools, transport, port)
   } else {
@@ -98,6 +134,12 @@ dashboardr_mcp_server <- function(
   }
 }
 
+# Determine which MCP backend package to use.
+# Tries the user's preference first; if unavailable, falls back to the other.
+# Aborts with install instructions if neither is found.
+#
+# @param backend Character, "mcptools" or "mcpr"
+# @return Character, the resolved backend name
 .mcp_resolve_backend <- function(backend) {
   has_mcptools <- nzchar(system.file(package = "mcptools"))
   has_mcpr <- nzchar(system.file(package = "mcpr"))
@@ -125,6 +167,12 @@ dashboardr_mcp_server <- function(
   ))
 }
 
+# Launch the MCP server using the mcptools backend (Posit-maintained).
+# mcptools::mcp_server() is a blocking call that runs until the client disconnects.
+#
+# @param tools List of ellmer::tool() objects
+# @param transport "stdio" or "http"
+# @param port Integer, HTTP port (ignored for stdio)
 .mcp_serve_mcptools <- function(tools, transport, port) {
   getExportedValue("mcptools", "mcp_server")(
     tools = tools,
@@ -134,6 +182,13 @@ dashboardr_mcp_server <- function(
   )
 }
 
+# Launch the MCP server using the mcpr backend (devOpifex).
+# Creates a named server, registers all tools as capabilities,
+# then starts the appropriate transport (stdio or HTTP).
+#
+# @param tools List of ellmer::tool() objects
+# @param transport "stdio" or "http"
+# @param port Integer, HTTP port (ignored for stdio)
 .mcp_serve_mcpr <- function(tools, transport, port) {
   server <- getExportedValue("mcpr", "new_server")(
     name = "dashboardr",
@@ -156,6 +211,12 @@ dashboardr_mcp_server <- function(
 
 
 # ── Tool Registry ──────────────────────────────────────────────────────────
+# Central registry that instantiates all 5 MCP tools.
+# Each .tool_*() function returns an ellmer::tool() with:
+#   - fun:         R handler function (called when the LLM invokes the tool)
+#   - description: Prompt text that helps the LLM decide when to call it
+#   - name:        Stable tool name (must not change — clients cache it)
+#   - arguments:   Optional typed parameters (type_string, type_enum, etc.)
 
 .mcp_tools <- function() {
   list(
@@ -169,6 +230,8 @@ dashboardr_mcp_server <- function(
 
 
 # ── Tool 1: dashboardr_guide ──────────────────────────────────────────────
+# Returns the full API guide from inst/mcp/guide.md.
+# No parameters — the LLM should call this first to understand the framework.
 
 .tool_guide <- function() {
   .e_tool(
@@ -194,6 +257,10 @@ dashboardr_mcp_server <- function(
 
 
 # ── Tool 2: dashboardr_function_help ──────────────────────────────────────
+# Looks up a single function by name in the dashboardr namespace.
+# Falls back to parsing the .Rd file directly (works even without
+# help() database, e.g., in minimal R installations or containers).
+# Returns fuzzy-matched suggestions if the function isn't found.
 
 .tool_function_help <- function() {
   .e_tool(
@@ -215,6 +282,9 @@ dashboardr_mcp_server <- function(
   )
 }
 
+# Handler for dashboardr_function_help tool.
+# Strategy: check namespace → parse .Rd → render as plain text.
+# If not found, uses agrep() for fuzzy matching (Levenshtein distance ≤ 0.3).
 .mcp_function_help_handler <- function(function_name) {
   ns <- asNamespace("dashboardr")
   if (!exists(function_name, envir = ns)) {
@@ -240,6 +310,10 @@ dashboardr_mcp_server <- function(
   paste(help_text, collapse = "\n")
 }
 
+# Parse an .Rd file from inst/man and render it as plain text.
+# First tries exact filename match (function_name.Rd), then scans all .Rd
+# files for an \alias{} match (handles functions documented together).
+# Returns NULL if not found or on any parsing error.
 .mcp_help_fallback <- function(function_name) {
   man_dir <- system.file("man", package = "dashboardr")
   if (man_dir == "") return(NULL)
@@ -266,6 +340,9 @@ dashboardr_mcp_server <- function(
 
 
 # ── Tool 3: dashboardr_list_functions ─────────────────────────────────────
+# Lists exported functions grouped by category.
+# The category taxonomy is defined in .mcp_function_categories() below.
+# Supports filtering to a single category or returning all.
 
 .tool_list_functions <- function() {
   .e_tool(
@@ -312,6 +389,14 @@ dashboardr_mcp_server <- function(
   paste(lines, collapse = "\n")
 }
 
+# Canonical function-to-category mapping.
+# This is the single source of truth for the function index served by the
+# list_functions tool. When adding new exported functions to dashboardr,
+# add them here too so LLM assistants can discover them.
+#
+# Categories mirror the 3-layer architecture:
+#   dashboard → page → content/viz  (core creation flow)
+#   input, layout, theme, metric, modal, embed, content_blocks  (features)
 .mcp_function_categories <- function() {
   list(
     dashboard = c(
@@ -434,6 +519,9 @@ dashboardr_mcp_server <- function(
 
 
 # ── Tool 4: dashboardr_example ────────────────────────────────────────────
+# Returns runnable R code for common dashboard patterns.
+# Examples are stored externally in inst/mcp/examples.R (a named list)
+# so they can be maintained and tested independently of mcp_server.R.
 
 .tool_example <- function() {
   .e_tool(
@@ -471,6 +559,9 @@ dashboardr_mcp_server <- function(
   examples[[pattern]]
 }
 
+# Load examples from inst/mcp/examples.R.
+# The file is source()'d into a local environment so its last expression
+# (a named list) becomes $value. Each list element is a string of R code.
 .mcp_examples <- function() {
   examples_path <- system.file("mcp", "examples.R", package = "dashboardr")
   if (examples_path == "") {
@@ -483,6 +574,9 @@ dashboardr_mcp_server <- function(
 
 
 # ── Tool 5: dashboardr_viz_types ──────────────────────────────────────────
+# Quick reference of all chart types with key parameters and data shapes.
+# Content is inline (not in a file) because it's structured text that
+# maps directly to the viz_*() function signatures.
 
 .tool_viz_types <- function() {
   .e_tool(
@@ -497,6 +591,9 @@ dashboardr_mcp_server <- function(
   )
 }
 
+# Returns a markdown-formatted reference of all visualization types.
+# Organised by chart family (Comparison, Distribution, Composition,
+# Time Series, Relationship, Geographic, Metrics).
 .mcp_viz_types_handler <- function() {
   paste(
     "# dashboardr Visualization Types",

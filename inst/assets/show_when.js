@@ -1,8 +1,65 @@
 /**
- * Conditional visibility (show_when) for dashboardr
+ * Conditional Visibility System (show_when)
+ * ==========================================
  *
- * Elements with data-show-when attribute are shown or hidden based on
- * current input values. Condition is JSON: { var, op, val } or { op, conditions } for and/or.
+ * Controls which content blocks, inputs, and chart containers are
+ * visible based on the current state of interactive inputs (button
+ * groups, radios, selects, sliders).
+ *
+ * ## How It Works
+ *
+ * 1. R-side:  `show_when = ~ topic == "AI"` is translated into a
+ *    JSON condition and attached as a `data-show-when` attribute on
+ *    a wrapper `<div class="viz-show-when">`.
+ *
+ * 2. JS-side (this file): On every input change, `evaluate()` iterates
+ *    all `[data-show-when]` elements, tests their condition against
+ *    current input values, and toggles the `dashboardr-sw-hidden` CSS
+ *    class accordingly.
+ *
+ * ## Condition JSON Format
+ *
+ * Simple comparison:
+ *   { "var": "topic", "op": "==", "val": "AI" }
+ *
+ * Compound AND:
+ *   { "op": "and", "conditions": [ { "var": "topic", "op": "==", "val": "AI" },
+ *                                    { "var": "view",  "op": "==", "val": "Chart" } ] }
+ *
+ * Compound OR:
+ *   { "op": "or", "conditions": [ ... ] }
+ *
+ * Supported operators: ==, !=, <, >, <=, >=
+ *
+ * ## Event Flow
+ *
+ * input_filter.js dispatches a standard `change` event on `document`
+ * after every filter update.  This file listens for that event and
+ * calls `evaluate()`.  This decoupling means show_when works with
+ * ANY input type, including custom ones.
+ *
+ * ## Debug Mode
+ *
+ * Enable with any of:
+ *   - `window.DASHBOARDR_DEBUG = true`
+ *   - `localStorage.setItem('dashboardr_debug', '1')`
+ *   - URL param `?dashboardr_debug=1`
+ *
+ * Debug mode logs every evaluation to `window.dashboardrDebugState.events`
+ * and the browser console.
+ *
+ * ## Grid Collapse
+ *
+ * When all children of a bslib grid row are hidden, the row itself
+ * is collapsed (via `dashboardr-sw-hidden`) to prevent empty gaps.
+ * The `fixChartMinHeight()` function also overrides bslib's inline
+ * `grid-template-rows` to prevent charts from being squished in
+ * sidebar layouts.
+ *
+ * ## Public API
+ *
+ *   window.dashboardrShowWhenDebug.evaluate()  — force re-evaluation
+ *   window.dashboardrDebugState.events         — debug event log
  */
 (function() {
   'use strict';

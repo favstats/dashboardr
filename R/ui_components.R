@@ -221,10 +221,4 @@ text_lines <- function(lines) {
   paste(lines, collapse = "\n")
 }
 
-# NOTE: add_text() is now in R/content_collection.R for pipeable syntax
-# Keeping this comment for reference
-
-# NOTE: add_image() is now in R/content_collection.R for pipeable syntax
-# Keeping this comment for reference
-
 

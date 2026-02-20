@@ -1,5 +1,35 @@
 # =================================================================
-# viz_generation
+# Visualization Generation — QMD Emission for Charts & Content
+# =================================================================
+#
+# Converts processed visualization specs (from viz_processing.R)
+# into actual Quarto Markdown lines that render charts, tables,
+# and mixed content.
+#
+# ## Responsibilities
+#
+# - Emit R code chunks that call Highcharts / Plotly / ggplot / etc.
+# - Wrap related vizs in `::: {.panel-tabset}` tab groups
+# - Emit content blocks inline (text, images, callouts, spacers,
+#   dividers, iframes, code blocks, accordions, modals, etc.)
+# - Handle `show_when` wrappers (viz-show-when divs)
+# - Manage lazy-loaded (deferred) chart JSON payloads
+# - Inject cross-tab data for client-side filtering
+# - Split pages by pagination markers into separate .qmd files
+# - Apply dashboard layout mode (sidebar `## Row` containers)
+#
+# ## Key Functions
+#
+# `.generate_viz_from_specs(specs)` — main loop; classifies each
+#   spec as viz / content / tabgroup / pagination, then emits QMD.
+#
+# `.split_by_pagination(specs)` — splits a spec list into sections
+#   at pagination_break markers.
+#
+# `.emit_viz_chunk(spec)` — emits an R code chunk for a single
+#   visualization (internal to `.generate_viz_from_specs`).
+#
+# Called from: page_generation.R
 # =================================================================
 
 #' Split visualization specs by pagination markers
