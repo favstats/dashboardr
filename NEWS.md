@@ -1,3 +1,20 @@
+# dashboardr 0.6.0
+
+## Bug Fixes
+
+- **Fixed modals not rendering on paginated pages**: Modal dialogs now correctly render when used with `add_pagination()`.
+
+## Gallery
+
+- Added AlgoSoc AI Opinion Monitor to the community gallery.
+
+## Test Improvements
+
+- Improved CDN skip guards for Highcharts map tests to suppress HTTP 429 warnings.
+- Updated metric card test assertions for robustness.
+
+---
+
 # dashboardr 0.5.2
 
 ## Metric Card Redesign (Issue #15)
