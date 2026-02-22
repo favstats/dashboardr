@@ -49,7 +49,7 @@ test_that(".generate_data_load_code bundled RDS reference", {
     bundle_key = "dataset_small_10obs.rds"
   )
   code <- .generate_data_load_code(bundle_ref, var_name = "survey_data")
-  expect_true(any(grepl("\\.dashboardr_bundle_cache", code)))
+  expect_true(any(grepl("\\.load_bundle", code)))
   expect_true(any(grepl("dashboard_data_bundle\\.rds", code)))
   expect_true(any(grepl("dataset_small_10obs\\.rds", code)))
   expect_true(any(grepl("survey_data <-", code)))

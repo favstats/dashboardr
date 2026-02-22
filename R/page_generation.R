@@ -37,22 +37,41 @@
 
 # Helper function to generate data loading code based on file type and location
 # Supports: local RDS, local parquet, remote RDS (URL), remote parquet (URL)
+# Generate a one-time helper function definition for bundle loading.
+# Emitted once per page before any .generate_data_load_code() calls.
+.generate_bundle_helper_code <- function() {
+  c(
+    "# Bundle loader — reads the RDS bundle once, then extracts datasets by key",
+    ".load_bundle <- function(bundle_file, key) {",
+    "  if (!exists('.dashboardr_bundle_cache', inherits = FALSE))",
+    "    .dashboardr_bundle_cache <<- list()",
+    "  if (is.null(.dashboardr_bundle_cache[[bundle_file]]))",
+    "    .dashboardr_bundle_cache[[bundle_file]] <<- readRDS(bundle_file)",
+    "  if (!(key %in% names(.dashboardr_bundle_cache[[bundle_file]])))",
+    "    stop(\"Bundle key '\", key, \"' not found in \", bundle_file, call. = FALSE)",
+    "  .dashboardr_bundle_cache[[bundle_file]][[key]]",
+    "}",
+    ""
+  )
+}
+
+# Check if any data paths in a page reference an RDS bundle
+.page_uses_bundles <- function(data_path) {
+  paths <- if (is.list(data_path)) unlist(data_path) else data_path
+  any(vapply(paths, function(p) !is.null(.parse_rds_bundle_ref(p)), logical(1)))
+}
+
 .generate_data_load_code <- function(data_path, var_name = "data") {
   bundle_ref <- .parse_rds_bundle_ref(data_path)
   if (!is.null(bundle_ref)) {
     bundle_file <- gsub("'", "\\\\'", basename(bundle_ref$bundle_file), fixed = TRUE)
     bundle_key <- gsub("'", "\\\\'", bundle_ref$bundle_key, fixed = TRUE)
-    return(c(
-      "if (!exists('.dashboardr_bundle_cache', inherits = FALSE)) .dashboardr_bundle_cache <- list()",
-      paste0("if (is.null(.dashboardr_bundle_cache[['", bundle_file, "']])) .dashboardr_bundle_cache[['", bundle_file, "']] <- readRDS('", bundle_file, "')"),
-      paste0("if (!('", bundle_key, "' %in% names(.dashboardr_bundle_cache[['", bundle_file, "']]))) stop(\"Bundle key '", bundle_key, "' not found in ", bundle_file, "\", call. = FALSE)"),
-      paste0(var_name, " <- .dashboardr_bundle_cache[['", bundle_file, "']][['", bundle_key, "']]")
-    ))
+    return(paste0(var_name, " <- .load_bundle('", bundle_file, "', '", bundle_key, "')"))
   }
 
   is_url <- grepl("^https?://", data_path)
   is_parquet <- grepl("\\.parquet$", data_path, ignore.case = TRUE)
-  
+
   if (is_url && is_parquet) {
     # Remote parquet - arrow can read directly from URL
     paste0(var_name, " <- arrow::read_parquet('", data_path, "')")
@@ -2535,11 +2554,16 @@
 
   # Add data loading if data_path is present
   if (!is.null(page$data_path)) {
+    # Emit bundle helper once if any datasets use RDS bundles
+    if (.page_uses_bundles(page$data_path)) {
+      lines <- c(lines, .generate_bundle_helper_code())
+    }
+
     # Check if data_path is a list (multi-dataset) regardless of is_multi_dataset flag
     if (is.list(page$data_path)) {
       # Multiple datasets
       lines <- c(lines, "# Load multiple datasets", "")
-      
+
       for (dataset_name in names(page$data_path)) {
         data_path <- page$data_path[[dataset_name]]
         load_code <- .generate_data_load_code(data_path, dataset_name)

@@ -357,7 +357,7 @@ test_that("rds bundling writes a single bundle when threshold is met", {
   expect_length(bundle, 5)
 
   qmd <- paste(readLines(file.path(dashboard$output_dir, "index.qmd"), warn = FALSE), collapse = "\n")
-  expect_true(grepl("\\.dashboardr_bundle_cache", qmd))
+  expect_true(grepl("\\.load_bundle", qmd))
   expect_true(grepl("dashboard_data_bundle\\.rds", qmd))
 })
 
