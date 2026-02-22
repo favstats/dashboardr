@@ -1,3 +1,11 @@
+# dashboardr 0.6.1
+
+## Internal
+
+- **Cleaner generated QMD for bundled datasets**: Bundle loading now emits a `.load_bundle()` helper function once per page instead of repeating cache initialization boilerplate for every dataset.
+
+---
+
 # dashboardr 0.6.0
 
 ## Bug Fixes
