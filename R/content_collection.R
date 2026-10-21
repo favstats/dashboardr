@@ -334,6 +334,9 @@ add_image <- function(content_collection = NULL, src, alt = NULL, caption = NULL
 add_callout <- function(x, text, type = c("note", "tip", "warning", "caution", "important"),
                         title = NULL, icon = NULL, collapse = FALSE, tabgroup = NULL, show_when = NULL) {
   .validate_show_when(show_when)
+  # Resolve the callout type up front so every code path (incl. pages) gets a
+  # single value instead of the full choices vector
+  type <- match.arg(type)
   # Dispatch to page_object method if appropriate
   if (inherits(x, "page_object")) {
     return(add_callout.page_object(x, text, type = type, title = title, tabgroup = tabgroup, show_when = show_when))

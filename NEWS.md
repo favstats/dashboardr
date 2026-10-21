@@ -1,3 +1,12 @@
+# dashboardr 0.6.2
+
+## Bug Fixes
+
+- **Page items now keep their order relative to `add_content()`**: Text, callouts and other blocks added directly to a page (e.g. `create_page() |> add_content(x) |> add_callout("Note")`) were always rendered *before* all `add_content()` collections. They are now placed in the order they were added.
+- `add_callout()` on a page without an explicit `type` no longer emits one opening fence per callout type; it defaults to `"note"` like the content-collection method.
+
+---
+
 # dashboardr 0.6.1
 
 ## Internal

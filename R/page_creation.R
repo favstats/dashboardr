@@ -279,6 +279,10 @@ add_content <- function(page, ...) {
       stop("Argument ", i + 1, " must be a content collection (from create_viz/create_content)", call. = FALSE)
     }
     page$content <- c(page$content, list(content))
+    # Remember how many direct page items (add_text/add_callout/add_viz/...)
+    # existed when this collection was added, so .page_to_content() can
+    # interleave them in the order the user wrote them.
+    page$.content_positions <- c(page$.content_positions, length(page$.items))
   }
   
   page
@@ -366,15 +370,46 @@ add_pages <- function(proj, ...) {
 #' Convert page_object to content collection
 #' @noRd
 .page_to_content <- function(page) {
-  # Start with page's direct items
+  page_items <- page$.items
+  n_items <- length(page_items)
+
+  # Position (number of direct page items already added) at which each external
+  # content collection was added. Pages built before positions were tracked
+  # fall back to "after all direct items" (the previous behaviour).
+  positions <- page$.content_positions
+  if (is.null(positions) || length(positions) != length(page$content)) {
+    positions <- rep(n_items, length(page$content))
+  }
+  positions <- pmin(as.integer(positions), n_items)
+
+  # Helper: wrap a slice of direct page items into a minimal collection so it
+  # can be combined (in order) with the external collections. Defaults are left
+  # empty so they don't override defaults of earlier external collections.
+  .page_items_chunk <- function(from, to) {
+    structure(
+      list(items = page_items[seq.int(from, length.out = max(0L, to - from + 1L))],
+           tabgroup_labels = NULL, defaults = list(), data = page$data),
+      class = c("content_collection", "viz_collection")
+    )
+  }
+
+  # Start with page's direct items that were added before any add_content()
+  first_pos <- if (length(positions) > 0) positions[1] else n_items
   content <- create_viz(data = page$data)
-  content$items <- page$.items
+  content$items <- page_items[seq_len(first_pos)]
   content$tabgroup_labels <- page$.tabgroup_labels
   content$defaults <- page$viz_defaults
   
-  # Add external content collections
-  for (ext_content in page$content) {
+  # Add external content collections, interleaving direct page items that were
+  # added between / after them (e.g. add_content(x) |> add_callout("note"))
+  for (k in seq_along(page$content)) {
+    ext_content <- page$content[[k]]
     content <- combine_content(content, ext_content)
+
+    next_pos <- if (k < length(positions)) positions[k + 1] else n_items
+    if (next_pos > positions[k]) {
+      content <- combine_content(content, .page_items_chunk(positions[k] + 1L, next_pos))
+    }
     
     # Propagate sidebar from external content
     if (!is.null(ext_content$sidebar)) {
