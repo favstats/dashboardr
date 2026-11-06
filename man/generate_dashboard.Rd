@@ -10,9 +10,12 @@ generate_dashboard(
   open = "browser",
   incremental = FALSE,
   preview = NULL,
+  pages = NULL,
   show_progress = TRUE,
   quiet = FALSE,
-  standalone = FALSE
+  standalone = FALSE,
+  prune_data = FALSE,
+  cores = 1L
 )
 }
 \arguments{

@@ -1018,6 +1018,30 @@
   header_content <- c(header_content,
     "        <script src=\"assets/tab-scroll-fix.js\"></script>"
   )
+
+  # Page-aware language switcher script if configured via add_language_switcher()
+  if (!is.null(proj$language_switchers) && length(proj$language_switchers) > 0) {
+    targets_json <- paste0("[", paste0('"', gsub('"', '\\"', proj$language_switchers, fixed = TRUE), '"', collapse = ","), "]")
+    header_content <- c(header_content,
+      "        <script>",
+      "        document.addEventListener('DOMContentLoaded', function() {",
+      paste0("          var targets = ", targets_json, ";"),
+      "          var page = (window.location.pathname.split('/').pop() || 'index.html');",
+      "          if (!/\\.html$/i.test(page)) page = 'index.html';",
+      "          var suffix = page + (window.location.search || '') + (window.location.hash || '');",
+      "          document.querySelectorAll('#quarto-header .navbar-nav a.nav-link').forEach(function(a) {",
+      "            var href = (a.getAttribute('href') || '').trim();",
+      "            targets.forEach(function(t) {",
+      "              var base = t.replace(/\\/?$/, '/');",
+      "              if (href === t || href === base || href === base.replace(/\\/$/, '')) {",
+      "                a.setAttribute('href', base + suffix);",
+      "              }",
+      "            });",
+      "          });",
+      "        });",
+      "        </script>"
+    )
+  }
   
   # Write the collected header content once
   if (length(header_content) > 0) {
@@ -1459,7 +1483,7 @@
 #' @param colors Named list of color values
 #' @return Character vector of SCSS lines
 #' @noRd
-.generate_tabset_color_scss <- function(colors) {
+.generate_tabset_color_scss <- function(colors, tabset_theme = NULL) {
   scss_lines <- c(
     "/*-- scss:rules --*/",
     "",
@@ -1467,8 +1491,10 @@
     ""
   )
   
+  is_underline <- identical(tabset_theme, "underline")
+  
   # Map color keys to CSS selectors and properties
-  if (!is.null(colors$inactive_bg)) {
+  if (!is.null(colors$inactive_bg) && !is_underline) {
     scss_lines <- c(scss_lines,
       ".panel-tabset .nav-item {",
       paste0("  background-color: ", colors$inactive_bg, " !important;"),
@@ -1485,11 +1511,19 @@
   }
   
   if (!is.null(colors$active_bg)) {
-    scss_lines <- c(scss_lines,
-      ".panel-tabset .nav-tabs .nav-link.active {",
-      paste0("  background-color: ", colors$active_bg, " !important;"),
-      "}"
-    )
+    if (is_underline) {
+      scss_lines <- c(scss_lines,
+        ".panel-tabset .nav-tabs .nav-link.active::after {",
+        paste0("  background-color: ", colors$active_bg, " !important;"),
+        "}"
+      )
+    } else {
+      scss_lines <- c(scss_lines,
+        ".panel-tabset .nav-tabs .nav-link.active {",
+        paste0("  background-color: ", colors$active_bg, " !important;"),
+        "}"
+      )
+    }
   }
   
   if (!is.null(colors$active_text)) {
@@ -1501,11 +1535,19 @@
   }
   
   if (!is.null(colors$hover_bg)) {
-    scss_lines <- c(scss_lines,
-      ".panel-tabset .nav-item:hover {",
-      paste0("  background-color: ", colors$hover_bg, " !important;"),
-      "}"
-    )
+    if (is_underline) {
+      scss_lines <- c(scss_lines,
+        ".panel-tabset .nav-item a::after {",
+        paste0("  background-color: ", colors$hover_bg, " !important;"),
+        "}"
+      )
+    } else {
+      scss_lines <- c(scss_lines,
+        ".panel-tabset .nav-item:hover {",
+        paste0("  background-color: ", colors$hover_bg, " !important;"),
+        "}"
+      )
+    }
   }
   
   if (!is.null(colors$hover_text)) {
@@ -1580,6 +1622,31 @@
       ".navbar a:hover svg, .navbar .aa-DetachedSearchButton:hover svg, .navbar button:hover svg {",
       paste0("  fill: ", proj$navbar_text_hover_color, " !important;"),
       paste0("  stroke: ", proj$navbar_text_hover_color, " !important;"),
+      "}",
+      ""
+    )
+  }
+
+  # Propagate brand accent color (linkcolor or navbar_text_hover_color) to underline tabsets & blockquotes
+  brand_accent <- proj$linkcolor %||% proj$navbar_text_hover_color
+  if (!is.null(brand_accent)) {
+    if (identical(proj$tabset_theme, "underline") && is.null(proj$tabset_colors)) {
+      scss_lines <- c(scss_lines,
+        "/* Propagate brand accent color to underline tabsets */",
+        ".panel-tabset .nav-tabs .nav-link.active {",
+        paste0("  color: ", brand_accent, " !important;"),
+        "  font-weight: 700 !important;",
+        "}",
+        ".panel-tabset .nav-tabs .nav-link.active::after, .panel-tabset .nav-item a::after {",
+        paste0("  background-color: ", brand_accent, " !important;"),
+        "}",
+        ""
+      )
+    }
+    scss_lines <- c(scss_lines,
+      "/* Propagate brand accent color to blockquotes */",
+      "blockquote.blockquote {",
+      paste0("  border-left: 4px solid ", brand_accent, " !important;"),
       "}",
       ""
     )

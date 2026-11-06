@@ -254,3 +254,37 @@ add_navbar_element <- function(proj, text = NULL, icon = NULL, href,
   proj
 }
 
+
+#' Add a page-aware language switcher to the navbar
+#'
+#' Adds a navbar link that automatically preserves the current page filename,
+#' query string, and hash when switching between language versions of a dashboard
+#' (for example, switching from \code{wave_2.html} to \code{en/wave_2.html} instead
+#' of always redirecting to the landing page).
+#'
+#' @param proj Dashboard project object from \code{create_dashboard()}
+#' @param text Label for the switcher link (e.g., \code{"en"} or \code{"nl"})
+#' @param icon Optional Iconify icon (e.g., \code{"circle-flags:uk"} or \code{"circle-flags:nl"})
+#' @param target_base Relative base path to the other language build (e.g., \code{"./en/"} or \code{"../"})
+#' @param align Position in navbar: \code{"right"} (default) or \code{"left"}
+#'
+#' @return Modified dashboard project object
+#' @export
+add_language_switcher <- function(proj, text = "en", icon = "circle-flags:uk",
+                                  target_base = "./en/", align = c("right", "left")) {
+  align <- match.arg(align)
+  proj <- add_navbar_element(
+    proj = proj,
+    text = text,
+    icon = icon,
+    href = target_base,
+    align = align
+  )
+  if (is.null(proj$language_switchers)) {
+    proj$language_switchers <- character(0)
+  }
+  proj$language_switchers <- unique(c(proj$language_switchers, target_base))
+  proj
+}
+
+

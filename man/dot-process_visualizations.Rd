@@ -2,16 +2,7 @@
 % Please edit documentation in R/viz_processing.R
 \name{.process_visualizations}
 \alias{.process_visualizations}
-\title{This function handles both viz_collection objects and plain lists of visualization
-specifications. It:
-\itemize{
-\item Attaches data_path to each visualization
-\item Groups visualizations by their tabgroup parameter (supports nested hierarchies)
-\item Converts single-item groups to standalone visualizations with group titles
-\item Creates tab group objects for multi-item groups
-\item Applies custom tab group labels if provided
-\item Attaches cross_tab_filter_vars for client-side filtering when inputs are present
-}}
+\title{Process visualizations into a renderable list with tabgroup hierarchy}
 \usage{
 .process_visualizations(
   viz_input,
@@ -23,18 +14,25 @@ specifications. It:
 )
 }
 \arguments{
-\item{filter_vars}{Character vector of filter_var values from add_input() calls (optional)}
+\item{viz_input}{A viz_collection, content_collection, or plain list.}
+
+\item{data_path}{Path to the page's .rds data file.}
+
+\item{tabgroup_labels}{Optional named list of custom labels for tabgroups.}
+
+\item{shared_first_level}{Whether the first tabgroup level is shared
+across all items (affects unwrapping logic).}
+
+\item{filter_vars}{Character vector of filter_var values from
+\code{add_input()} calls (optional — auto-detected from collections).}
+
+\item{context_label}{Human-readable label for error messages.}
+}
+\value{
+A list of visualization specs and tab_group objects ready
+for QMD generation, or NULL if the input is empty.
 }
 \description{
-This function handles both viz_collection objects and plain lists of visualization
-specifications. It:
-\itemize{
-\item Attaches data_path to each visualization
-\item Groups visualizations by their tabgroup parameter (supports nested hierarchies)
-\item Converts single-item groups to standalone visualizations with group titles
-\item Creates tab group objects for multi-item groups
-\item Applies custom tab group labels if provided
-\item Attaches cross_tab_filter_vars for client-side filtering when inputs are present
-}
+Process visualizations into a renderable list with tabgroup hierarchy
 }
 \keyword{internal}

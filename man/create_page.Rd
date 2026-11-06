@@ -29,6 +29,7 @@ create_page(
   filter = NULL,
   drop_na_vars = NULL,
   shared_first_level = TRUE,
+  slug = NULL,
   ...
 )
 }

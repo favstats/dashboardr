@@ -320,7 +320,12 @@
 #' dashboard %>% generate_dashboard(standalone = TRUE)
 #' }
 generate_dashboard <- function(proj, render = TRUE, open = "browser", incremental = FALSE, preview = NULL,
-                              show_progress = TRUE, quiet = FALSE, standalone = FALSE) {
+                              pages = NULL, show_progress = TRUE, quiet = FALSE, standalone = FALSE,
+                              prune_data = FALSE, cores = 1L) {
+  # Allow `pages` as an intuitive alias for `preview`
+  if (is.null(preview) && !is.null(pages)) {
+    preview <- pages
+  }
   # ── Stage 1: INITIALISATION ─────────────────────────────────────
   # Reset global counters and store project-level settings in the
   # package environment so they're accessible from deeply nested
@@ -367,30 +372,32 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
     proj$powered_by_applied <- TRUE  # Mark as applied to avoid duplicate
   }
   
-  # Validate preview parameter
+  # Validate preview/pages parameter (supports matching by page display name OR slug)
   preview_pages <- NULL
   if (!is.null(preview)) {
-    # Normalize preview page names (case-insensitive)
     preview <- tolower(preview)
-    available_pages <- tolower(names(proj$pages))
+    available_names <- tolower(names(proj$pages))
+    available_slugs <- vapply(names(proj$pages), function(nm) {
+      tolower(proj$pages[[nm]]$slug %||% gsub("[^a-zA-Z0-9]", "_", nm))
+    }, character(1))
     
-    # Check each preview page exists
+    matched_pages <- character(0)
     for (p in preview) {
-      if (!p %in% available_pages) {
-        # Try to suggest alternatives
-        suggestion <- .suggest_alternative(p, names(proj$pages))
+      idx <- which(available_names == p | available_slugs == p)
+      if (length(idx) == 0) {
+        suggestion <- .suggest_alternative(p, c(names(proj$pages), unname(available_slugs)))
         if (!is.null(suggestion)) {
-          stop("Page '", preview[1], "' not found in dashboard. Did you mean '", suggestion, "'?\n",
+          stop("Page '", p, "' not found in dashboard. Did you mean '", suggestion, "'?\n",
                "Available pages: ", paste(names(proj$pages), collapse = ", "))
         } else {
-          stop("Page '", preview[1], "' not found in dashboard.\n",
+          stop("Page '", p, "' not found in dashboard.\n",
                "Available pages: ", paste(names(proj$pages), collapse = ", "))
         }
       }
+      matched_pages <- c(matched_pages, names(proj$pages)[idx])
     }
     
-    # Map preview names to actual page names
-    preview_pages <- names(proj$pages)[tolower(names(proj$pages)) %in% preview]
+    preview_pages <- unique(matched_pages)
     
     if (!quiet) {
       message("\U0001f4c4 Preview mode: Generating only ", length(preview_pages), " page(s): ", 
@@ -450,6 +457,41 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
   # are packed into a single bundle file for faster I/O.
 
   if (!is.null(proj$pending_data) && length(proj$pending_data) > 0) {
+    # Optional column pruning: create lightweight per-page RDS files containing only columns
+    # referenced by each page's visualizations, content_blocks, filters, or text
+    if (isTRUE(prune_data) && !is.null(proj$pages) && length(proj$pages) > 0) {
+      pruned_pending <- list()
+      for (pg_nm in names(proj$pages)) {
+        pg <- proj$pages[[pg_nm]]
+        if (is.null(pg$data_path) || !is.character(pg$data_path) || length(pg$data_path) != 1L) next
+        orig_key <- pg$data_path
+        df <- proj$pending_data[[orig_key]] %||% proj$pending_data[[basename(orig_key)]]
+        if (is.null(df) || !is.data.frame(df) || isTRUE(pg$needs_metric_data)) next
+        pg_strings <- as.character(unlist(
+          pg[intersect(names(pg), c("visualizations", "content_blocks", ".items", "text", "time_var"))],
+          recursive = TRUE, use.names = FALSE
+        ))
+        col_names <- colnames(df)
+        exact_hits <- intersect(col_names, pg_strings)
+        text_blob <- paste(pg_strings, collapse = " ")
+        token_hits <- col_names[vapply(col_names, function(cn) {
+          grepl(cn, text_blob, fixed = TRUE)
+        }, logical(1))]
+        used_cols <- unique(c(exact_hits, token_hits))
+        if (length(used_cols) > 0L && length(used_cols) < length(col_names)) {
+          pg_slug <- pg$slug %||% tolower(gsub("[^a-zA-Z0-9]", "_", pg_nm))
+          pruned_file <- paste0("dataset_", pg_slug, "_pruned.rds")
+          pruned_pending[[pruned_file]] <- df[, used_cols, drop = FALSE]
+          proj$pages[[pg_nm]]$data_path <- pruned_file
+        } else {
+          pruned_pending[[orig_key]] <- df
+        }
+      }
+      if (length(pruned_pending) > 0L) {
+        proj$pending_data <- pruned_pending
+      }
+    }
+
     bundle_threshold <- proj$rds_bundle_threshold %||% 0L
     should_bundle <- is.finite(bundle_threshold) &&
       as.integer(bundle_threshold) > 0L &&
@@ -627,19 +669,20 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
     
     # Generate color override SCSS if tabset_colors are specified
     if (!is.null(proj$tabset_colors) && length(proj$tabset_colors) > 0) {
-      color_scss <- .generate_tabset_color_scss(proj$tabset_colors)
+      color_scss <- .generate_tabset_color_scss(proj$tabset_colors, proj$tabset_theme)
       writeLines(color_scss, file.path(output_dir, "_tabset_colors.scss"))
       if (!quiet) message("Applied custom tabset colors")
     }
     
-    # Generate theme customization SCSS if navbar colors are specified
-    if (!is.null(proj$navbar_bg_color) || !is.null(proj$navbar_text_color) || !is.null(proj$navbar_text_hover_color)) {
+    # Generate theme customization SCSS if navbar or link colors are specified
+    if (!is.null(proj$navbar_bg_color) || !is.null(proj$navbar_text_color) || !is.null(proj$navbar_text_hover_color) || !is.null(proj$linkcolor)) {
       theme_scss <- .generate_theme_custom_scss(proj)
       writeLines(theme_scss, file.path(output_dir, "_theme_custom.scss"))
       custom_items <- c()
       if (!is.null(proj$navbar_bg_color)) custom_items <- c(custom_items, "navbar bg")
       if (!is.null(proj$navbar_text_color)) custom_items <- c(custom_items, "navbar text")
       if (!is.null(proj$navbar_text_hover_color)) custom_items <- c(custom_items, "navbar hover")
+      if (!is.null(proj$linkcolor)) custom_items <- c(custom_items, "brand accent")
       if (!quiet) message("Applied custom theme settings (", paste(custom_items, collapse = ", "), ")")
     }
 
@@ -970,7 +1013,8 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
           show_progress,
           proj$publish_dir,
           build_info$qmd_files,
-          proj = proj
+          proj = proj,
+          cores = cores
         )
         render_elapsed <- as.numeric(difftime(Sys.time(), render_start, units = "secs"))
         
@@ -1042,7 +1086,7 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
 #'
 #' @return Logical: TRUE if rendering succeeded.
 #' @keywords internal
-.render_dashboard <- function(output_dir, open = FALSE, quiet = FALSE, show_progress = TRUE, publish_dir = NULL, qmd_files = NULL, proj = NULL) {
+.render_dashboard <- function(output_dir, open = FALSE, quiet = FALSE, show_progress = TRUE, publish_dir = NULL, qmd_files = NULL, proj = NULL, cores = 1L) {
   if (!requireNamespace("quarto", quietly = TRUE)) {
     if (!quiet) {
       message("quarto package not available. Skipping render.")
@@ -1116,8 +1160,7 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
         NA_character_
       }
 
-      # Render each file individually to avoid rendering files from other dashboards
-      for (qmd_file in qmd_files) {
+      render_one_qmd <- function(qmd_file) {
         page_hint <- map_qmd_to_page(qmd_file)
         tryCatch({
           if (quiet) {
@@ -1125,19 +1168,39 @@ generate_dashboard <- function(proj, render = TRUE, open = "browser", incrementa
           } else {
             quarto::quarto_render(qmd_file, as_job = FALSE)
           }
+          NULL
         }, error = function(e_file) {
           page_msg <- if (!is.na(page_hint)) {
             paste0("page object '", page_hint, "'")
           } else {
             "an unknown page object"
           }
-          stop(
+          paste0(
             "Quarto render failed for ", page_msg,
             " (source QMD: ", qmd_file, "): ",
-            conditionMessage(e_file),
-            call. = FALSE
+            conditionMessage(e_file)
           )
         })
+      }
+
+      n_cores <- max(1L, as.integer(cores %||% 1L))
+      if (n_cores > 1L && length(qmd_files) > 1L && .Platform$OS.type != "windows") {
+        if (!quiet) message("Parallel rendering enabled (", n_cores, " cores)...")
+        first_err <- render_one_qmd(qmd_files[1])
+        if (!is.null(first_err)) stop(first_err, call. = FALSE)
+        rest_errs <- parallel::mclapply(
+          qmd_files[-1],
+          render_one_qmd,
+          mc.cores = min(n_cores, length(qmd_files) - 1L)
+        )
+        failed <- Filter(Negate(is.null), rest_errs)
+        if (length(failed) > 0) stop(failed[[1]], call. = FALSE)
+      } else {
+        # Render each file individually sequentially
+        for (qmd_file in qmd_files) {
+          err_msg <- render_one_qmd(qmd_file)
+          if (!is.null(err_msg)) stop(err_msg, call. = FALSE)
+        }
       }
     } else {
       # Fallback: render entire project (original behavior)

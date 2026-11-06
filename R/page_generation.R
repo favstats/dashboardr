@@ -184,9 +184,22 @@
     ""
   )
 
-  # Add custom text content if provided
+  # Add custom text content if provided (strip redundant # <Page Name> h1 that duplicates Quarto's page title)
   if (isTRUE(!is.null(page$text) && nzchar(page$text))) {
-    content <- c(content, page$text, "")
+    page_text_clean <- page$text
+    if (!is.null(page$name) && nzchar(trimws(page$name))) {
+      text_lines <- unlist(strsplit(paste(page_text_clean, collapse = "\n"), "\n", fixed = TRUE))
+      h1_idx <- grep("^\\s*#\\s+[^#]", text_lines)
+      if (length(h1_idx) > 0) {
+        first_h1 <- h1_idx[1]
+        h1_label <- trimws(sub("^\\s*#\\s+", "", text_lines[first_h1]))
+        if (tolower(h1_label) == tolower(trimws(page$name))) {
+          text_lines <- text_lines[-first_h1]
+          page_text_clean <- paste(text_lines, collapse = "\n")
+        }
+      }
+    }
+    content <- c(content, page_text_clean, "")
   }
 
   # Add global setup chunk with libraries, data, and settings

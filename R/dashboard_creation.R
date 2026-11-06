@@ -902,6 +902,8 @@ add_dashboard_page <- function(proj, name, data = NULL, data_path = NULL,
             # Mark that visualizations should NOT be rendered separately 
             # (they're embedded in content_blocks)
             visualizations$.embedded_in_content <- TRUE
+          } else {
+            visualizations <- NULL
           }
         } else {
           # Pure viz collection - pass to visualizations as before

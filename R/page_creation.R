@@ -92,6 +92,7 @@ create_page <- function(name,
                         filter = NULL,
                         drop_na_vars = NULL,
                         shared_first_level = TRUE,
+                        slug = NULL,
                         ...) {
 
   # Capture the calling environment for proper evaluation of symbols
@@ -152,6 +153,7 @@ create_page <- function(name,
       time_var = time_var,
       weight_var = weight_var,
       filter = filter,
+      slug = slug,
       # Visualization defaults
       viz_defaults = c(
         list(type = type, color_palette = color_palette, 
@@ -496,7 +498,8 @@ add_pages <- function(proj, ...) {
     lazy_load_tabs = page$lazy_load_tabs,
     lazy_debug = page$lazy_debug,
     pagination_separator = page$pagination_separator,
-    time_var = page$time_var
+    time_var = page$time_var,
+    slug = page$slug
   )
 }
 
